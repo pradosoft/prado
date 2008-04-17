@@ -164,7 +164,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setAttribute($control, $name, $value)
 	{
-        if ($control instanceof TControl && $control instanceof IControlContainer) 
+        if ($control instanceof IControlContainer) 
             $control=$control->getContainerClientID();
 		$this->callClientFunction('Prado.Element.setAttribute',array($control, $name, $value));
 	}
@@ -193,7 +193,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function show($element)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.show', $element);
 	}
@@ -204,7 +204,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function hide($element)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.hide', $element);
 	}
@@ -217,7 +217,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function toggle($element, $effect=null, $options=array())
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.toggle', array($element,$effect,$options));
 	}
@@ -228,7 +228,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function remove($element)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.remove', $element);
 	}
@@ -246,7 +246,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function update($element, $content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content, 'Element.update');
 	}
@@ -258,7 +258,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function addCssClass($element, $cssClass)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.addClassName', array($element, $cssClass));
 	}
@@ -270,7 +270,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function removeCssClass($element, $cssClass)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.removeClassName', array($element, $cssClass));
 	}
@@ -292,7 +292,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function scrollTo($element)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Element.scrollTo', $element);
 	}
@@ -314,7 +314,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setStyle($element, $styles)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction('Prado.Element.setStyle', array($element, $styles));
 	}
@@ -326,7 +326,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function appendContent($element, $content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content, 'Prado.Element.Insert.append');
 	}
@@ -338,7 +338,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function prependContent($element, $content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content, 'Prado.Element.Insert.prepend');
 	}
@@ -350,7 +350,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentAfter($element, $content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content, 'Prado.Element.Insert.after');
 	}
@@ -362,7 +362,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentBefore($element, $content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content, 'Prado.Element.Insert.before');
 	}
@@ -406,7 +406,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function replaceContent($element,$content)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->replace($element, $content);
 	}
@@ -458,7 +458,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function visualEffect($type, $element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->callClientFunction($type, array($element, $options));
 	}
@@ -470,7 +470,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function appear($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Appear', $element, $options);
 	}
@@ -482,7 +482,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function blindDown($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.BlindDown', $element, $options);
 	}
@@ -494,7 +494,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function blindUp($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.BlindUp', $element, $options);
 
@@ -507,7 +507,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function dropOut($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.DropOut', $element, $options);
 	}
@@ -519,7 +519,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function fade($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Fade', $element, $options);
 	}
@@ -531,7 +531,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function fold($element, $options = null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Fold', $element, $options);
 	}
@@ -543,7 +543,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function grow($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Grow', $element, $options);
 	}
@@ -555,7 +555,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function puff($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Puff', $element, $options);
 	}
@@ -567,7 +567,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function pulsate($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Pulsate', $element, $options);
 	}
@@ -579,7 +579,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function shake($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Shake', $element, $options);
 	}
@@ -591,7 +591,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function shrink($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Shrink', $element, $options);
 	}
@@ -603,7 +603,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function slideDown($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.SlideDown', $element, $options);
 	}
@@ -615,7 +615,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function slideUp($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.SlideUp', $element, $options);
 	}
@@ -627,7 +627,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function squish($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.Squish', $element, $options);
 	}
@@ -639,7 +639,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function switchOff($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Effect.SwitchOff', $element, $options);
 	}
@@ -651,7 +651,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function highlight($element, $options=null)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$this->visualEffect('Prado.Effect.Highlight', $element, $options);
 	}
@@ -663,7 +663,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setOpacity($element, $value)
 	{
-        if ($element instanceof TControl && $element instanceof IControlContainer) 
+        if ($element instanceof IControlContainer) 
             $element=$element->getContainerClientID();
 		$value = TPropertyValue::ensureFloat($value);
 		$this->callClientFunction('Element.setOpacity', array($element,$value));

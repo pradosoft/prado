@@ -2,7 +2,7 @@
 
 <h2>This test only passes only with "<i>Highlight elements</i>" deactivated!</h2>
 
-<com:TActiveLinkButton ID="ALB" Text="Test" Display="None" /><br />
+<com:TActiveLinkButton ID="ALB" Text="Test" /><br />
 
 <!-- spans added to access embedded id-less span via CSS selector from selenium -->
 <span id="acb">
