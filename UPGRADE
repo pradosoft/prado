@@ -18,6 +18,9 @@ Upgrading from v3.1.1
   to
      'albums' => array(self::MANY_TO_MANY, 'Artist', 'album_artists')
 - Active Record no longer automatically adds/removes/updates related objects.
+- 'Raw' mode for TCheckboxList and TRadioButtonList (and their active counter parts) now render
+  a surrounding <span> tag to allow client scripts to identify them with the ClientId. You may
+  have to check your CSS.
 
 
 Upgrading from v3.1.0

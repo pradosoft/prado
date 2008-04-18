@@ -366,17 +366,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 */
 	protected function getSpanNeeded ()
 	{
-		if ($this->getRepeatLayout()===TRepeatLayout::Raw)
-		{
-			$id=$this->getID();
-			// Check if we have a validator registered for this control
-			foreach ($this->getPage()->getValidators() as $v)
-			{
-				if ($v->getControlToValidate()===$id)
-					return true;
-			}
-		}
-		return false;
+		return $this->getRepeatLayout()===TRepeatLayout::Raw;
 	}
 	
 	/**
