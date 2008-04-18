@@ -360,6 +360,26 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
+	 * Wether the list should be rendered inside a span or not
+	 * 
+	 *@return boolean true if we need a span
+	 */
+	protected function getSpanNeeded ()
+	{
+		if ($this->getRepeatLayout()===TRepeatLayout::Raw)
+		{
+			$id=$this->getID();
+			// Check if we have a validator registered for this control
+			foreach ($this->getPage()->getValidators() as $v)
+			{
+				if ($v->getControlToValidate()===$id)
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter writer for rendering purpose.
@@ -368,6 +388,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	{
 		if($this->getItemCount()>0)
 		{
+			if ($needSpan=$this->getSpanNeeded())
+			{
+				$writer->addAttribute('id', $this->getClientId());
+				$writer->renderBeginTag('span');
+			}
 			$this->_isEnabled=$this->getEnabled(true);
 			$repeatInfo=$this->getRepeatInfo();
 			$accessKey=$this->getAccessKey();
@@ -380,6 +405,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$repeatInfo->renderRepeater($writer,$this);
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);
+			if ($needSpan)
+				$writer->renderEndTag();
 		}
 		//checkbox skipped the client control script in addAttributesToRender
 		if($this->getEnabled(true)
@@ -434,6 +461,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$options['ItemCount'] = $this->getItemCount();
 		return $options;
 	}
+	
 }
 
 ?>

@@ -607,10 +607,6 @@ Prado.WebUI.TBaseValidator.prototype =
 
 		this.options = options;
 		this.control = $(options.ControlToValidate);
-		if (!this.control && this.isListControlType()){
-			this.control = $(options.ControlToValidate + '_c0').parentNode;
-		}
-
 		this.message = $(options.ID);
 		if(this.control && this.message)
 		{
