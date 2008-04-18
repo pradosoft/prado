@@ -146,6 +146,10 @@ class TJSON
                 return (float) $var;
 
             case 'string':
+                if (($g=Prado::getApplication()->getGlobalization(false))!==null && 
+                    strtoupper($enc=$g->getCharset())!='UTF-8')
+                        $var=iconv($enc, 'UTF-8', $var);
+                        
                 // STRINGS ARE EXPECTED TO BE IN ASCII OR UTF-8 FORMAT
                 $ascii = '';
                 $strlen_var = strlen($var);

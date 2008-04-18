@@ -282,6 +282,12 @@ class TPage extends TTemplateControl
 
 		$this->setAdapter(new TActivePageAdapter($this));
 
+        // Decode Callback postData from UTF-8 to current Charset
+        if (($g=$this->getApplication()->getGlobalization(false))!==null && 
+            strtoupper($enc=$g->getCharset())!='UTF-8')
+                foreach ($this->_postData as $k=>$v)
+                    $this->_postData[$k]=iconv('UTF-8',$enc.'//IGNORE',$v);
+
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
 
