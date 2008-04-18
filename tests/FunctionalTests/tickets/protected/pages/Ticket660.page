@@ -1,4 +1,37 @@
 <com:TContent ID="Content">
+<style>
+.autocomplete
+{
+	border:1px solid #919EA9;
+	background-color:white;
+}
+.autocomplete ul, .autocomplete li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+ul.different
+{
+	background-color: pink;
+}
+
+.autocomplete li
+{
+	padding: 4px;
+	border-top: 1px solid #ccc;
+}
+
+.autocomplete .selected
+{
+	background-color: #ffc;
+}
+
+</style>
 
 This page uses ISO-8859-1 encoding.
 <div>
@@ -10,4 +43,8 @@ This page uses ISO-8859-1 encoding.
 <com:TActiveLabel ID="A" />
 </div>
 
+<div style="margin-top: 3em">
+Manual test of AutoComplete (enter some ISO-8859-1 characters..)<br />
+<com:TAutoComplete ID="AC" OnSuggest="suggest" ResultPanel.CssClass="autocomplete" />
+</div>
 </com:TContent>
