@@ -1,6 +1,7 @@
 <com:TContent ID="Content">
 
 <com:TActiveTextBox ID="ATB"  AutoPostBack="True" onTextChanged="onATB" /><br />
+<com:TActiveCheckBox ID="ACB" AutoPostBack="True" /><br />
 <com:TTextBox ID="TB"/><br />
 Callbacks: <com:TActiveLabel ID="X" Text="0"/>
 

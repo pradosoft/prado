@@ -85,7 +85,8 @@ Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
 	{
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
-		Event.stop(event);
+        if (!Prototype.Browser.IE)
+		    Event.stop(event);
 	}
 });
 
