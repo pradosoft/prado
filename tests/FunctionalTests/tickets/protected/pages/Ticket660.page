@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+
+This page uses ISO-8859-1 encoding.
+<div>
+<com:TActiveTextBox ID="T" />
+<com:TActiveButton ID="CB" OnClick="changeA" Text="Perform CallBack"/>
+<com:TButton ID="PB" OnClick="changeA" Text="Perform PostBack"/>
+</div>
+<div id="output">
+<com:TActiveLabel ID="A" />
+</div>
+
+</com:TContent>
