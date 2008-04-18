@@ -89,16 +89,6 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	private $_customStorage=false;
 
 	/**
-	 * Destructor.
-	 * Closes session.
-	 */
-	public function __destruct()
-	{
-		if($this->_started)
-			$this->close();
-	}
-
-	/**
 	 * @return string id of this module
 	 */
 	public function getID()
