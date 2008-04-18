@@ -27,6 +27,8 @@ Prado::using('System.Data.TDbCommand');
  * specifying {@link setConnectionString ConnectionString}, {@link setUsername Username}
  * and {@link setPassword Password}.
  *
+ * Since 3.1.2, the connection charset can be set (for MySQL databases only) using the {@link setCharset Charset} property.
+ * 
  * The following example shows how to create a TDbConnection instance and establish
  * the actual connection:
  * <code>
@@ -82,6 +84,7 @@ class TDbConnection extends TComponent
 	private $_dsn='';
 	private $_username='';
 	private $_password='';
+	private $_charset='';
 	private $_attributes=array();
 	private $_active=false;
 	private $_pdo=null;
@@ -92,16 +95,20 @@ class TDbConnection extends TComponent
 	 * Note, the DB connection is not established when this connection
 	 * instance is created. Set {@link setActive Active} property to true
 	 * to establish the connection.
+	 * Since 3.1.2, you can set the charset for MySql connection
+	 * 
 	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @param string The user name for the DSN string.
 	 * @param string The password for the DSN string.
+	 * @param string Charset used for DB Connection (MySql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
-	public function __construct($dsn='',$username='',$password='')
+	public function __construct($dsn='',$username='',$password='', $charset='')
 	{
 		$this->_dsn=$dsn;
 		$this->_username=$username;
 		$this->_password=$password;
+		$this->_charset=$charset;
 	}
 
 	/**
@@ -161,6 +168,7 @@ class TDbConnection extends TComponent
 									$this->getPassword(),$this->_attributes);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active=true;
+				$this->setConnectionCharset();
 			}
 			catch(PDOException $e)
 			{
@@ -179,6 +187,24 @@ class TDbConnection extends TComponent
 		$this->_active=false;
 	}
 
+	/*
+	 * Set the database connection charset.
+	 * Only MySql databases are supported for now. 
+	 * @since 3.1.2
+	 */
+	protected function setConnectionCharset()
+	{
+		if ($this->_charset === '' || $this->_active === false)
+			return;
+		switch ($this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
+		{
+			case 'mysql':
+				$stmt = $this->_pdo->prepare('SET CHARACTER SET ?');
+				$stmt->execute(array($this->_charset));
+			break;
+		}
+	}
+		
 	/**
 	 * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 */
@@ -228,6 +254,23 @@ class TDbConnection extends TComponent
 		$this->_password=$value;
 	}
 
+	/**
+	 * @return string the charset used for database connection. Defaults to emtpy string.
+	 */
+	public function getCharset ()
+	{
+		return $this>_charset;
+	}
+	
+	/**
+	 * @param string the charset used for database connection
+	 */
+	public function setCharset ($value)
+	{
+		$this->_charset=$value;
+		$this->setConnectionCharset();
+	}
+	
 	/**
 	 * @return PDO the PDO instance, null if the connection is not established yet
 	 */
