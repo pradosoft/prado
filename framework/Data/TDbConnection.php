@@ -27,7 +27,9 @@ Prado::using('System.Data.TDbCommand');
  * specifying {@link setConnectionString ConnectionString}, {@link setUsername Username}
  * and {@link setPassword Password}.
  *
- * Since 3.1.2, the connection charset can be set (for MySQL databases only) using the {@link setCharset Charset} property.
+ * Since 3.1.2, the connection charset can be set (for MySQL and PostgreSQL databases only) 
+ * using the {@link setCharset Charset} property. The value of this property is database dependant.
+ * e.g. for mysql, you can use 'latin1' for cp1252 West European, 'utf8' for unicode, ... 
  * 
  * The following example shows how to create a TDbConnection instance and establish
  * the actual connection:
@@ -100,7 +102,7 @@ class TDbConnection extends TComponent
 	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @param string The user name for the DSN string.
 	 * @param string The password for the DSN string.
-	 * @param string Charset used for DB Connection (MySql only). If not set, will use the default charset of your database server
+	 * @param string Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn='',$username='',$password='', $charset='')
@@ -200,9 +202,12 @@ class TDbConnection extends TComponent
 		{
 			case 'mysql':
 				$stmt = $this->_pdo->prepare('SET CHARACTER SET ?');
-				$stmt->execute(array($this->_charset));
+			break;
+			case 'pgsql':
+				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 			break;
 		}
+		$stmt->execute(array($this->_charset));
 	}
 		
 	/**
