@@ -32,6 +32,7 @@ CHG: Active Record many-to-many relationship change from self::HAS_MANY to self:
 CHG: Active Record no longer automatically performs adding/removing/updating related objects (Qiang)
 CHG: TJavaScript::encode() will encode data as a list if integer indices are detected (Qiang)
 CHG: Ticket#755 - Upgraded to Prototype 1.6 and Scriptaculous 1.8 (j, Christophe)
+ENH: Ticket#660 - Using Globalization.Charset in JSON for AJAX Callbacks (Michael)
 ENH: Ticket#722 - Added Read Only capabilities to TInPlaceTextBox (Christophe)
 ENH: Ticket#741 - Added CDbConnection.currentTransaction property (Qiang)
 ENH: Ticket#743 - Added status code header in HTTP response when in error (Qiang)
