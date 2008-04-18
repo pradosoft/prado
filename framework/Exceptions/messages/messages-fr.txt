@@ -1,5 +1,5 @@
 prado_application_singleton_required	= Il ne peut y avoir qu'une instance de : Prado.Application.
-prado_component_unknown					= Le type du composant '{0}' est inconnu.
+prado_component_unknown					= Le type du composant '{0}' est inconnu. Cela peut être causé par l'erreur de syntaxe dans le fichier {0} : {1}
 prado_using_invalid						= Le namespace '{0}' n'est pas valide. Assurez-vous que '.*' a été ajouté si vous souhaitez utiliser un namespace qui fasse référence à ce dossier
 prado_alias_redefined					= L'alias '{0}' ne peut pas être redéfini.
 prado_alias_invalid						= L'alias '{0}' fait référence à un chemin de dossier non valide : '{1}'. Seul les dossiers existants peuvent être mis en alias.
@@ -8,7 +8,7 @@ prado_aliasname_invalid					= L'alias '{0}' contient un caractère non autorisé
 component_property_undefined			= La proriété de l'objet '{0}.{1}' n'est pas définie.
 component_property_readonly				= La proriété de l'objet '{0}.{1}' est en lecture seule.
 component_event_undefined				= L'événement de l'objet '{0}.{1}' n'est pas défini.
-component_eventhandler_invalid			= L'événement de l'objet '{0}.{1}' n'est pas rataché à un handler valide.
+component_eventhandler_invalid			= L'événement de l'objet '{0}.{1}' n'est pas rataché à un handler valide '{2}'.
 component_expression_invalid			= L'objet '{0}' essaye d'évaluer un expression invalide '{1}' : {2}.
 component_statements_invalid			= L'objet '{0}' essaye d'évaluer une déclaration PHP invalide '{1}' : {2}.
 
@@ -34,82 +34,82 @@ application_service_unavailable			= Le service '{0}' n'est pas disponible actuel
 application_moduleid_duplicated			= Le module d'ID '{0}' de l'application n'est pas unique.
 application_runtimepath_failed			= Impossible de créer le dossier "runtime" '{0}'. Assurez-vous que le dossier parent existe et qu'il est accessible en écriture par le serveur Web.
 
-appconfig_aliaspath_invalid				= Application configuration <alias id="{0}"> uses an invalid file path "{1}".
-appconfig_alias_invalid					= Application configuration <alias> element must have an "id" attribute and a "path" attribute.
-appconfig_alias_redefined				= Application configuration <alias id="{0}"> cannot be redefined.
-appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
-appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
-appconfig_moduletype_required			= Application configuration <module id="{0}"> must have a "class" attribute.
-appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
-appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
-appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.
-appconfig_includefile_required			= Application configuration <include> element must have a "file" attribute.
+appconfig_aliaspath_invalid				= Configuration de l'application : l'élement <alias id="{0}"> pointe vers un chemin invalide "{1}".
+appconfig_alias_invalid					= Confirugation de l'application : l'élement <alias> doit avoir un attribut "id" et un attribut "path".
+appconfig_alias_redefined				= Configuration de l'application : l'élement <alias id="{0}"> ne peut pas être redéfini.
+appconfig_using_invalid					= Configuration de l'application : l'élément <using> doit avoir un attribut "namespace".
+appconfig_moduleid_required				= Configuration de l'application : l'élément <module> doit avoir un attribut "id".
+appconfig_moduletype_required			= Configuration de l'application : l'élement <module id="{0}"> doit avoir un attribut "class".
+appconfig_serviceid_required			= Configuration de l'application : l'élément <service> doit avoir un attribut "id".
+appconfig_servicetype_required			= Configuration de l'application : l'élément <service id="{0}"> doit avoit un attribut "class".
+appconfig_parameterid_required			= Configuration de l'application : l'élément <parameter> doit avoir un attribut "id".
+appconfig_includefile_required			= Configuration de l'application : l'élément <include> doit avoir un attribut "file".
 
-securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
-securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
-securitymanager_mcryptextension_required = Mcrypt PHP extension is required in order to use TSecurityManager's encryption feature.
+securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey ne doit pas être vide.
+securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey ne doit pas être vide.
+securitymanager_mcryptextension_required = L'extension PHP Mcrypt est nécessaier pour utiliser les fonctions de cryptage de TSecurityManager.
 
-uri_format_invalid						= '{0}' is not a valid URI.
+uri_format_invalid						= '{0}' n'est pas une URI valide.
 
-httprequest_separator_invalid			= THttpRequest.UrlParamSeparator can only contain a single character.
-httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' does not point to an existing module.
-httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a module extending from TUrlManager.
+httprequest_separator_invalid			= THttpRequest.UrlParamSeparator ne peut contenir qu'un seul caractère.
+httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' ne pointe pas vers un momdule exitant.
+httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' doit pointer vers un module héritant de TUrlManager.
 
-httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
+httpcookiecollection_httpcookie_required = THttpCookieCollection n'accepte que des objets de type THttpCookie.
 
-httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
-httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
+httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput ne peut pas être modifié après que THttpResponse ait été initialisé.
+httpresponse_file_inexistent			= THttpResponse ne peut pas envoyer le fichier '{0}'. Ce fichier n'existe pas.
 
-httpsession_sessionid_unchangeable		= THttpSession.SessionID cannot be modified after the session is started.
-httpsession_sessionname_unchangeable	= THttpSession.SessionName cannot be modified after the session is started.
-httpsession_sessionname_invalid			= THttpSession.SessionName must contain alphanumeric characters only.
-httpsession_savepath_unchangeable		= THttpSession.SavePath cannot be modified after the session is started.
-httpsession_savepath_invalid			= THttpSession.SavePath '{0}' is invalid.
-httpsession_storage_unchangeable		= THttpSession.Storage cannot be modified after the session is started.
-httpsession_cookiemode_unchangeable		= THttpSession.CookieMode cannot be modified after the session is started.
-httpsession_autostart_unchangeable		= THttpSession.AutoStart cannot be modified after the session module is initialized.
-httpsession_gcprobability_unchangeable	= THttpSession.GCProbability cannot be modified after the session is started.
-httpsession_gcprobability_invalid		= THttpSession.GCProbability must be an integer between 0 and 100.
-httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID cannot be modified after the session is started.
-httpsession_maxlifetime_unchangeable	= THttpSession.Timeout cannot be modified after the session is started.
+httpsession_sessionid_unchangeable		= THttpSession.SessionID ne peut pas être modifié après que la session ait démarré.
+httpsession_sessionname_unchangeable	= THttpSession.SessionName ne peut pas être modifié après que la session ait démarré.
+httpsession_sessionname_invalid			= THttpSession.SessionName ne peut contenir que des caractères alphanumériques.
+httpsession_savepath_unchangeable		= THttpSession.SavePath ne peut pas être modifié après que la session ait démarré.
+httpsession_savepath_invalid			= THttpSession.SavePath '{0}' est invalide.
+httpsession_storage_unchangeable		= THttpSession.Storage ne peut pas être modifié après que la session ait démarré.
+httpsession_cookiemode_unchangeable		= THttpSession.CookieMode ne peut pas être modifié après que la session ait démarré.
+httpsession_autostart_unchangeable		= THttpSession.AutoStart ne peut pas être modifié après que le module de session ait été initialisé.
+httpsession_gcprobability_unchangeable	= THttpSession.GCProbability ne peut pas être modifié après que la session ait démarré.
+httpsession_gcprobability_invalid		= THttpSession.GCProbability doit être un entier compris entre 0 et 100.
+httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID ne peut pas être modifié après que la session ait démarré.
+httpsession_maxlifetime_unchangeable	= THttpSession.Timeout ne peut pas être modifié après que la session ait démarré.
 
-assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' is invalid. Make sure it is in namespace form and points to a directory writable by the Web server process.
-assetmanager_basepath_unchangeable		= TAssetManager.BasePath cannot be modified after the module is initialized.
-assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl cannot be modified after the module is initialized.
-assetmanager_filepath_invalid			= TAssetManager is publishing an invalid file '{0}'.
-assetmanager_tarchecksum_invalid		= TAssetManager is publishing a tar file with invalid checksum '{0}'.
-assetmanager_tarfile_invalid			= TAssetManager is publishing an invalid tar file '{0}'.
-assetmanager_source_directory_invalid	= TAssetManager is copying an invalid directory '{0}'.
+assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' est invalide. Vérifier qu'il est bien au format 'namespace' et qu'il pointe bien vers un répertoire accessible en écriture par le propriétaire du processus serveur Web
+assetmanager_basepath_unchangeable		= TAssetManager.BasePath ne peut pas être modifié après l'initialisation du module.
+assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl ne peut pas être modifié après l'initialisation du module.
+assetmanager_filepath_invalid			= TAssetManager essaye de publier un fichier invalide '{0}'.
+assetmanager_tarchecksum_invalid		= TAssetManager essaye de publier une archive 'tar' avec un checksum invalide '{0}'.
+assetmanager_tarfile_invalid			= TAssetManager essaye de publier une archive 'tar' invalide '{0}'.
+assetmanager_source_directory_invalid	= TAssetManager essaye de copier un répertoire invalide '{0}'.
 
-cache_primary_duplicated				= At most one primary cache module is allowed. {0} is trying to register as another primary cache.
-sqlitecache_extension_required			= TSqliteCache requires SQLite PHP extension.
-sqlitecache_dbfile_required				= TSqliteCache.DbFile is required.
-sqlitecache_connection_failed			= TSqliteCache database connection failed. {0}.
-sqlitecache_table_creation_failed		= TSqliteCache failed to create cache database. {0}.
-sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile cannot be modified after the module is initialized.
-sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is in a proper namespace format.
+cache_primary_duplicated				= Un seul module au maximum de cache primaire est autorisé. {0} essaye de déclarer un autre module de cache primaire. 
+sqlitecache_extension_required			= TSqliteCache nécessite l'extension PHP SQLLite.
+sqlitecache_dbfile_required				= TSqliteCache.DbFile est nécessaire.
+sqlitecache_connection_failed			= Echec de la connexion à la base de données TSqliteCache. {0}.
+sqlitecache_table_creation_failed		= Echec de la créatin de la base de données TSqliteCache. {0}.
+sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile ne peut pas être modifié après l'initialisation du module.
+sqlitecache_dbfile_invalid				= TSqliteCache.DbFile est invalide. Vérifier qu'il est écrit au format 'Namespace'.
 
-memcache_extension_required				= TMemCache requires memcache PHP extension.
-memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
-memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
-memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
+memcache_extension_required				= TMemCache nécessite l'extension PHP memcache.
+memcache_connection_failed				= TMemCache ne peut pas se connecter au serveur memcache {0}:{1}.
+memcache_host_unchangeable				= TMemCache.Host ne peut pas être modifié après l'initialisation du module.
+memcache_port_unchangeable				= TMemCache.Port ne peut pas être modifié après l'initialisation du module.
 
-apccache_extension_required				= TAPCCache requires APC PHP extension.
-apccache_add_unsupported				= TAPCCache.add() is not supported.
-apccache_replace_unsupported			= TAPCCache.replace() is not supported.
-apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
-apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
+apccache_extension_required				= TAPCCache nécessite l'extension PHP APC.
+apccache_add_unsupported				= TAPCCache.add() n'est pas supporté.
+apccache_replace_unsupported			= TAPCCache.replace() n'est pas supporté.
+apccache_extension_not_enabled			= TAPCCache nécessite apc.enabled = 1 dans php.ini.
+apccache_extension_not_enabled_cli		= TAPCCache nécessite apc.enable_cli = 1 dans php.ini pour fonctionner en ligne de commande.
 
-errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
+errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' est invalide. Vérifier qu'il est écrit au format 'namespace' et qu'il pointe bien vers un répertoire valide
 
-pageservice_page_unknown				= Page '{0}' Not Found
-pageservice_pageclass_unknown			= Page class '{0}' is unknown.
-pageservice_basepath_invalid			= TPageService.BasePath '{0}' is not a valid directory.
-pageservice_page_required				= Page Name Required
-pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
-pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
-pageservice_pageclass_invalid			= Page class {0} is invalid. It should be TPage or extend from TPage.
-pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
+pageservice_page_unknown				= La page '{0}' n'a pas été trouvée
+pageservice_pageclass_unknown			= La classe de la page '{0}' est inconnue.
+pageservice_basepath_invalid			= TPageService.BasePath '{0}' n'est pas un répertoire valide.
+pageservice_page_required				= Le nom de la page est requis.
+pageservice_defaultpage_unchangeable	= TPageService.DefaultPage ne peut pas être modifié après l'initialisation du service.
+pageservice_basepath_unchangeable		= TPageService.BasePath ne peut pas être modifié après l'initialisation du service.
+pageservice_pageclass_invalid			= La classe de la page {0} est invalide. Cela devrait être TPage ou un héritage de TPage.
+pageservice_includefile_invalid			= Impossible de trouver le fichier de configuration du service de page {0}. Verifier qu'il est au format 'namespace' et que l'extension du fichier est '.xml'.
 
 pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
 pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
