@@ -2152,19 +2152,20 @@ interface IButtonControl
 }
 
 /**
- * IControlContainer interface
+ * ISurroundable interface
  *
- * If a control can have an additional surrounding tag, it should implement this interface.
+ * Identifies controls that may create an additional surrounding tag. The id of the
+ * tag can be obtained with {@link getSurroundingTagID}.
  *
  * @package System.Web.UI
  * @since 3.1.2
  */
-interface IControlContainer
+interface ISurroundable
 {
 	/**
-	 * @return string the id of the container html tag or of the input control itself if no container present.
+	 * @return string the id of the embedding tag of the control or the control's clientID if not surrounded
 	 */
-	public function getContainerClientID();
+	public function getSurroundingTagID();
 }
 
 /**

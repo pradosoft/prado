@@ -40,7 +40,7 @@
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
-class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, IControlContainer
+class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, ISurroundable
 {
 	private $_dataChanged=false;
 
@@ -268,9 +268,9 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return string the id of the surrounding tag or this clientID if no such tag present
+	 * @return string the id of the surrounding tag or this clientID if no such tag needed
 	 */
-	public function getContainerClientID()
+	public function getSurroundingTagID()
 	{
         return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
 	}
@@ -304,7 +304,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 			$onclick='';
         if($needspan=$this->getSpanNeeded())
         {
-            $writer->addAttribute('id',$this->getContainerClientID());
+            $writer->addAttribute('id',$this->getSurroundingTagID());
 			$writer->renderBeginTag('span');
         }
 		$clientID=$this->getClientID();
