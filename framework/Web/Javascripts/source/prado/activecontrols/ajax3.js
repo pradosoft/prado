@@ -632,13 +632,11 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 		var result;
 		if(this.ActiveControl.HasPriority)
 		{
-			result = Prado.CallbackRequest.enqueue(this);
+			return Prado.CallbackRequest.enqueue(this);
 			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
 		}
 		else
-			result =  Prado.CallbackRequest.dispatchNormalRequest(this);
-		
-		return result;
+			return Prado.CallbackRequest.dispatchNormalRequest(this);
 	},
 
 	abort : function()
