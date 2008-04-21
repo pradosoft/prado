@@ -341,7 +341,7 @@ class THttpResponse extends TModule implements ITextWriter
 			}
 		}
 		$fn=basename($fileName);
-		header("HTTP/1.1 {$this->_status} {$this->_reason}", true, $this->_status);
+		$this->sendHttpHeader();
 		if(is_array($headers))
 		{
 			foreach($headers as $h)

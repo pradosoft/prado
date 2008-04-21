@@ -460,3 +460,6 @@ ar_save_invalid							= The {0} instance cannot be saved because it is either de
 ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
+
+response_status_reason_missing			= HTTP 1.1 need reason for extended status-codes
+response_status_reason_badchars			= For HTTP 1.1 header, the token status-reason must not contain token CR or LF
