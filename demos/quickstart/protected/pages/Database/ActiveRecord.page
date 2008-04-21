@@ -411,9 +411,7 @@ $user2 = new UserRecord($data); //create by passing some existing data
 $user2->save(); //insert a new record
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Tip:</b>
-The objects are update with the primary key of those the tables that contains
-definitions that automatically creates a primary key for the newly insert records.
-For example, if you insert a new record into a MySQL table that has columns
+If you insert a new record into a MySQL table that has columns
 defined with "autoincrement", the Active Record objects will be updated with the new
 incremented value.</div>
 
