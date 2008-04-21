@@ -42,6 +42,23 @@ Prado::using('System.Web.THttpResponseAdapter');
  * THttpResponse sends charset header if either {@link setCharset() Charset}
  * or {@link TGlobalization::setCharset() TGlobalization.Charset} is set.
  *
+ * Since 3.1.2, HTTP status code can be set with the {@link setStatusCode StatusCode} property.
+ * 
+ * Note: Some HTTP Status codes can require additional header or body information. So, if you use {@link setStatusCode StatusCode}
+ * in your application, be sure to add theses informations.
+ * E.g : to make an http authentication :
+ * <code>
+ *  public function clickAuth ($sender, $param)
+ *  {
+ *     $response=$this->getResponse();
+ *     $response->setStatusCode(401);
+ *     $response->appendHeader('WWW-Authenticate: Basic realm="Test"');
+ *  } 
+ * </code>
+ *    
+ * This event handler will sent the 401 status code (Unauthorized) to the browser, with the WWW-Authenticate header field. This
+ * will force the browser to ask for a username and a password.
+ *  
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web
@@ -49,6 +66,17 @@ Prado::using('System.Web.THttpResponseAdapter');
  */
 class THttpResponse extends TModule implements ITextWriter
 {
+	/**
+	 * @var The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
+	 */
+	private static $HTTP_STATUS_CODES = array(
+		100 => 'Continue', 101 => 'Switching Protocols', 
+		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 
+		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect', 
+		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed', 
+		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported'
+	);
+
 	/**
 	 * @var boolean whether to buffer output
 	 */
@@ -65,6 +93,10 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var integer response status code
 	 */
 	private $_status=200;
+	/**
+	 * @var string reason correspond to status code
+	 */
+	private $_reason='OK';
 	/**
 	 * @var string HTML writer type
 	 */
@@ -224,11 +256,33 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 
 	/**
+	 * Set the HTTP status code for the response.
+	 * 
 	 * @param integer HTTP status code
 	 */
-	public function setStatusCode($status)
+	public function setStatusCode($status, $reason=null)
 	{
-		$this->_status=TPropertyValue::ensureInteger($status);
+		$status=TPropertyValue::ensureInteger($status);
+		if(isset(self::$HTTP_STATUS_CODES[$status])) {
+			$this->_reason=self::$HTTP_STATUS_CODES[$status];
+		}else{
+			if($reason===null || $reason==='') {
+				throw new TInvalidDataValueException("response_status_reason_missing");
+			}
+			$reason=TPropertyValue::ensureString($reason);
+			if(strpos($reason, "\r")!=false || strpos($reason, "\n")!=false) {
+				throw new TInvalidDataValueException("response_status_reason_barchars");
+			}
+			$this->_reason=$reason;
+		}
+		$this->_status=$status;
+	}
+
+	/**
+	 * @param string HTTP status reason
+	 */
+	public function getStatusReason() {
+		return $this->_reason;
 	}
 
 	/**
@@ -287,6 +341,7 @@ class THttpResponse extends TModule implements ITextWriter
 			}
 		}
 		$fn=basename($fileName);
+		header("HTTP/1.1 {$this->_status} {$this->_reason}", true, $this->_status);
 		if(is_array($headers))
 		{
 			foreach($headers as $h)
@@ -366,9 +421,18 @@ class THttpResponse extends TModule implements ITextWriter
 	public function flushContent()
 	{
 		Prado::trace("Flushing output",'System.Web.THttpResponse');
+		$this->sendHttpHeader();
 		$this->sendContentTypeHeader();
 		if($this->_bufferOutput)
 			ob_flush();
+	}
+	
+	/**
+	 * Send the HTTP header with the status code (defaults to 200) and status reason (defaults to OK)
+	 */
+	protected function sendHttpHeader ()
+	{
+		header("HTTP/1.1 {$this->_status} {$this->_reason}", true, $this->_status);
 	}
 
 	/**
