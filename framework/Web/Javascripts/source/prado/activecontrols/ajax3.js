@@ -612,14 +612,33 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 
 		if(!this.Enabled)
 			return;
-
+	
+		// Opera don't have onLoading/onLoaded state, so, simulate them just
+		// before sending the request.
+		if (Prototype.Browser.Opera)
+		{
+			if (this.ActiveControl.onLoading)
+			{
+				this.ActiveControl.onLoading(this,null);
+				Ajax.Responders.dispatch('onLoading',this, this.transport,null);
+			}
+			if (this.ActiveControl.onLoaded)
+			{
+				this.ActiveControl.onLoaded(this,null);
+				Ajax.Responders.dispatch('onLoaded',this, this.transport,null);
+			}
+		}
+		
+		var result;
 		if(this.ActiveControl.HasPriority)
 		{
-			return Prado.CallbackRequest.enqueue(this);
+			result = Prado.CallbackRequest.enqueue(this);
 			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
 		}
 		else
-			return Prado.CallbackRequest.dispatchNormalRequest(this);
+			result =  Prado.CallbackRequest.dispatchNormalRequest(this);
+		
+		return result;
 	},
 
 	abort : function()
