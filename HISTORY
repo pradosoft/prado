@@ -1,4 +1,8 @@
-Version 3.1.2 To be released
+Version 3.1.2 To Be Released
+============================
+
+
+Version 3.1.2 April 21, 2008
 ============================
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Christophe)
 BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dynamically isn't possible (Michael)
