@@ -18,11 +18,18 @@
  *
  * - <b>onPreDispatch</b> executed before a request is dispatched.
  * - <b>onUninitialized</b> executed when callback request is uninitialized.
- * - <b>onLoading</b> executed when callback request is initiated
- * - <b>onLoaded</b> executed when callback request begins.
+ * - <b>onLoading</b>* executed when callback request is initiated
+ * - <b>onLoaded</b>* executed when callback request begins.
  * - <b>onInteractive</b> executed when callback request is in progress.
  * - <b>onComplete</b>executed when callback response returns.
  *
+ * * Note that theses 2 events are not fired correctly by Opera. To make
+ *   them work in this browser, Prado will fire them just after onPreDispatch.
+ * 
+ * In a general way, onUninitialized, onLoading, onLoaded and onInteractive events 
+ * are not implemented consistently in all browsers.When cross browser compatibility is
+ * needed, it is best to avoid use them
+ * 
  * The OnSuccess and OnFailure events are raised when the
  * response is returned. A successful request/response will raise
  * OnSuccess event otherwise OnFailure will be raised.
