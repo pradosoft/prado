@@ -30,7 +30,7 @@ Prado.WebUI.TActiveRatingList = Base.extend(
 		for(var i = 0; i<this.options.ItemCount; i++)
 		{
 			var radio = $(this.options.ListID+'_c'+i);
-			var td = radio.parentNode;
+			var td = radio.parentNode.parentNode;
 			if(radio && td.tagName.toLowerCase()=='td')
 			{
 				this.radios.push(radio);
@@ -48,7 +48,7 @@ Prado.WebUI.TActiveRatingList = Base.extend(
 		if(this.enabled==false) return;
 		for(var i = 0; i<this.radios.length; i++)
 		{
-			var node = this.radios[i].parentNode;
+			var node = this.radios[i].parentNode.parentNode;
 			var action = i <= index ? 'addClassName' : 'removeClassName'
 			Element[action](node,"rating_hover");
 			Element.removeClassName(node,"rating_selected");
@@ -115,7 +115,7 @@ Prado.WebUI.TActiveRatingList = Base.extend(
 		var hasHalf = remainder >= halfMin && remainder <= halfMax;
 		for(var i = 0; i<this.radios.length; i++)
 		{
-			var node = this.radios[i].parentNode;
+			var node = this.radios[i].parentNode.parentNode;
 			var action = i > index ? 'removeClassName' : 'addClassName';
 			Element[action](node, "rating_selected");
 			if(i==index+1 && hasHalf)
@@ -150,7 +150,7 @@ Prado.WebUI.TActiveRatingList = Base.extend(
 		for(var i = 0; i<this.radios.length; i++)
 		{
 			var action = value ? 'removeClassName' : 'addClassName'
-			Element[action](this.radios[i].parentNode, "rating_disabled");
+			Element[action](this.radios[i].parentNode.parentNode, "rating_disabled");
 		}
 	}
 },

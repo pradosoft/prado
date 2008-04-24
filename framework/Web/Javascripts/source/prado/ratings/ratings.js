@@ -11,9 +11,9 @@ Prado.WebUI.TRatingList.prototype =
 		this.radios = document.getElementsByName(options.field);
 		for(var i = 0; i<this.radios.length; i++)
 		{
-			Event.observe(this.radios[i].parentNode, "mouseover", this.hover.bindEvent(this,i));
-			Event.observe(this.radios[i].parentNode, "mouseout", this.recover.bindEvent(this,i));
-			Event.observe(this.radios[i].parentNode, "click", this.click.bindEvent(this, i));
+			Event.observe(this.radios[i].parentNode.parentNode, "mouseover", this.hover.bindEvent(this,i));
+			Event.observe(this.radios[i].parentNode.parentNode, "mouseout", this.recover.bindEvent(this,i));
+			Event.observe(this.radios[i].parentNode.parentNode, "click", this.click.bindEvent(this, i));
 		}
 		this.caption = CAPTION();
 		this.element.appendChild(this.caption);
@@ -24,14 +24,14 @@ Prado.WebUI.TRatingList.prototype =
 	hover : function(ev,index)
 	{
 		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].parentNode.className = (i<=index) ? "rating_hover" : "";
+			this.radios[i].parentNode.parentNode.className = (i<=index) ? "rating_hover" : "";
 		this.setCaption(index);
 	},
 
 	recover : function(ev,index)
 	{
 		for(var i = 0; i<=index; i++)
-			Element.removeClassName(this.radios[i].parentNode, "rating_hover");
+			Element.removeClassName(this.radios[i].parentNode.parentNode, "rating_hover");
 		this.setRating(this.selectedIndex);
 	},
 
@@ -48,7 +48,7 @@ Prado.WebUI.TRatingList.prototype =
 	setRating: function(index)
 	{
 		for(var i = 0; i<=index; i++)
-			this.radios[i].parentNode.className = "rating_selected";
+			this.radios[i].parentNode.parentNode.className = "rating_selected";
 		this.setCaption(index);
 	},
 
