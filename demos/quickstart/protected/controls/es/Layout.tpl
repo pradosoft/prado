@@ -1,15 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
-<com:THead Title="Gu&iacute;a de comienzo r&aacute;pida con PRADO">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<com:THead Title="Gu&iacute;a de comienzo rápida con PRADO">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta http-equiv="content-language" content="es"/>
 </com:THead>
 
 <body>
 <com:TForm>
 <div id="header">
-<div class="title">Gu&iacute;a de comienzo r&aacute;pida con PRADO</div>
+<div class="title">Gu&iacute;a de comienzo rápida con PRADO</div>
 <div class="image"></div>
 </div>
 
@@ -19,8 +19,8 @@
 </div>
 <a href="?">Home</a> |
 <a href="http://www.pradosoft.com">PradoSoft.com</a> |
-<a href="../../../docs/quickstart.pdf">Versi&oacute;n en PDF</a> |
-<com:THyperLink ID="PrinterLink" Text="Versi&oacute;n en para imprimir" />
+<a href="../../../docs/quickstart.pdf">Versión en PDF</a> |
+<com:THyperLink ID="PrinterLink" Text="Versión en para imprimir" />
 </com:TPanel>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

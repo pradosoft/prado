@@ -1,1 +1,1 @@
-<p class="requires-version">Se requiere la versi&oacute;n de PRADO <strong><%= $this->Version %></strong> o superior.</p>
+<p class="requires-version">Se requiere la versión de PRADO <strong><%= $this->Version %></strong> o superior.</p>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
 <com:THead Title="PRADO QuickStart Sample">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta http-equiv="content-language" content="es"/>
 </com:THead>
 
@@ -12,7 +12,7 @@
 <div class="sampleheader">
 
 <div class="title">
-<a href="?">Gu&iacute;a de comienzo r&aacute;pida con PRADO</a> Ejemplo
+<a href="?">Guía de comienzo rápida con PRADO</a> Ejemplo
 </div>
 <div class="image"></div>
 
