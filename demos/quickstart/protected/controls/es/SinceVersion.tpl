@@ -1,1 +1,1 @@
-<p class="since-version">Disponible desde la versi&oacute;n de PRADO <strong><%= $this->Version %></strong>en adelante.</p>
+<p class="since-version">Disponible desde la versión de PRADO <strong><%= $this->Version %></strong>en adelante.</p>
