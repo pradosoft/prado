@@ -187,6 +187,23 @@ class EditUser extends TPage
 The <tt>onInit()</tt> method is invoked by PRADO during one of the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page lifecycles</a>. Other commonly overriden lifecycle methods include <tt>onPreInit()</tt>, <tt>onLoad()</tt> and <tt>onPreRender()</tt>.
 </com:TipBox>
 
+<h2>Adding Permission Check</h2>
+<p>
+To make the <tt>EditUser</tt> page also accessible by authenticated users (<tt>users="@"</tt>), we need to adjust the page configuration file <tt>protected/pages/users/config.xml</tt> accordingly.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <allow roles="admin"/>
+    <allow users="@" pages="EditUser"/>
+    <deny users="*"/>
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+
 <h2>Testing</h2>
 <p>
 To test the <tt>EditUser</tt> page, visit the URL <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>. You may be required to login first if you have not done so. Try logging in with different accounts (e.g. admin/demo, demo/demo) and see how the page displays differently.

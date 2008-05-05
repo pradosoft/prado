@@ -127,20 +127,6 @@ All <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">data-boun
 </com:TipBox>
 
 
-<h2>Adding Permission Check</h2>
-<p>
-Since <tt>AdminUser</tt> should only be accessible by administrators, we need to adjust the page configuration file <tt>protected/pages/users/config.xml</tt> accordingly.
-</p>
-<com:TTextHighlighter CssClass="source" Language="xml">
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <authorization>
-    <allow pages="NewUser,AdminUser" roles="admin" />
-    <deny users="?" />
-  </authorization>
-</configuration>
-</com:TTextHighlighter>
-
 <h2>Testing</h2>
 <p>
 To test the <tt>AdminUser</tt> page, visit the URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. You may be required to login as an administrator first if you have not done so. We shall expect to see the following result.

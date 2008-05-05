@@ -7,17 +7,23 @@ The <tt>NewPost</tt> page is provided to authenticated users for creating new bl
 </p>
 
 <p>
-Because <tt>NewPost</tt> can only be accessed by authenticated users, we add a page configuration file <tt>config.xml</tt> under the directory <tt>protected/pages/posts</tt>. The configuration specifies that guest users cannot access <tt>NewPost</tt> and <tt>EditPost</tt> which is to be introduced in the next section.
+Because <tt>NewPost</tt> can only be accessed by authenticated users, we add a page configuration file <tt>config.xml</tt> under the directory <tt>protected/pages/posts</tt>. The configuration specifies that authenticated users can access <tt>NewPost</tt> and <tt>EditPost</tt> which is to be introduced in the next section. All other users only have access to <tt>ListPost</tt> and <tt>ReadPost</tt>. 
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="xml">
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <deny pages="NewPost,EditPost" users="?" />
+    <allow pages="NewPost,EditPost" users="@" />
+    <allow pages="ListPost,ReadPost" />
+    <deny users="*" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
+
+<com:TipBox>
+It's always a good idea to start with a <tt>deny="*"</tt> catch all rule at the bottom and then step by step grant access to pages with additional rules.
+</com:TipBox>
 
 <p>
 As the number of our pages expands, we would like to modify <tt>MainLayout</tt> so that in the footer of our blog pages there are links to various pages, including the homepage, the <a href="?page=Day3.CreateNewUser">NewUser</a> page (visible to the administrator only), and the upcoming <tt>NewPost</tt> page (visible to authenticated users only).

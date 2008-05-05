@@ -189,18 +189,18 @@ PRADO offers a more systematic way of checking page access permissions. To do so
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <allow pages="NewUser" roles="admin" />
-    <deny users="?" />
+    <allow roles="admin"/>
+    <deny users="*"/>
   </authorization>
 </configuration>
 </com:TTextHighlighter>
 
 <p>
-The page configuration contains authorization rules that apply to the pages under the directory <tt>protected/pages/users</tt>. The above configuration reads that the <tt>NewUser</tt> can be accessed by users of role <tt>admin</tt> (see <a href="?page=Day3.Auth">BlogUser.createUser()</a> for why the word "admin"), and deny anonymous access (<tt>users="?"</tt> means guest users) for all pages under the directory.
+The page configuration contains authorization rules that apply to the pages under the directory <tt>protected/pages/users</tt>. The above configuration reads that users in the role <tt>admin</tt> can access all pages (see <a href="?page=Day3.Auth">BlogUser.createUser()</a> for why the word "admin"). For now all other users (<tt>users="*"</tt>) are denied acess to pages in this directory - except for the <tt>LoginUser</tt> page which by convention can always be accessed. 
 </p>
 
 <p>
-Now if we visit the <tt>NewUser</tt> page as a guest, we will be redirected to the <tt>LoginUser</tt> page first. If our login is successful, we will be redirected back to the <tt>NewUser</tt> page.
+Now if we visit the <tt>NewUser</tt> page as a guest, we will be redirected to the <tt>LoginUser</tt> page first. If our login as <tt>admin</tt> is successful, we will be redirected back to the <tt>NewUser</tt> page.
 </p>
 
 <com:TipBox>
