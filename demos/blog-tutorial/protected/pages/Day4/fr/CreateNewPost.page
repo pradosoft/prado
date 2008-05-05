@@ -8,7 +8,7 @@ La page <tt>NewPost</tt> permet aux utilisateurs authentifiés de créer des nou
 
 
 <p>
-Parce que la page <tt>NewPost</tt> ne peut être vu que par les utilisateurs authentifiés, nous ajoutons un fichier de configuration de page <tt>config.xml</tt> dans le dossier <tt>protected/pages/posts</tt>. Cette configuration indique que les invités ne peuvent voir les pages <tt>NewPost</tt> et <tt>EditPost</tt> qui sera implémentée dans la section suivante.
+Parce que la page <tt>NewPost</tt> ne peut être vue que par les utilisateurs authentifiés, nous ajoutons un fichier de configuration de page <tt>config.xml</tt> dans le dossier <tt>protected/pages/posts</tt>. Ce fichier indique que seuls les utilisateurs authentifiés peuvent voir les pages <tt>NewPost</tt> et <tt>EditPost</tt> qui sera implémentée dans la section suivante. Tous les autres utilisateurs n'ont accès qu'aux pages <tt>ListPost</tt> et <tt>ReadPost</tt>.
 </p>
 
 
@@ -16,11 +16,16 @@ Parce que la page <tt>NewPost</tt> ne peut être vu que par les utilisateurs aut
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <deny pages="NewPost,EditPost" roles="?" />
+    <allow pages="NewPost,EditPost" users="@" />
+    <allow pages="ListPost,ReadPost" />
+    <deny users="*" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
 
+<com:TipBox>
+	Il est souvent utile de démarrer les règles d'autorisation par un <tt>&lt;deny users="*"&gt;</tt>, puis, de le compléter en donnant pas à pas les accès aux différentes pages à l'aides de règles <tt>allow</tt> supplémentaires
+</com:TipBox>
 <p>
 Vu le nombre grandissant de pages, nous allons modifier le pied de page de notre <tt>gabarit principal</tt> pour qu'il inclus des liens vers : la page d'accueil, la page nouvel utilisateur <a href="?page=Day3.CreateNewUser">NewUser</a> (visible seulement par les administrateurs), et la page à venir : nouveau message <tt>NewPost</tt> (visible seulement par les utilisateurs authentifiés).
 </p>

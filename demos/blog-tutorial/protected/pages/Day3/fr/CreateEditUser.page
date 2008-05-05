@@ -20,7 +20,7 @@ Nous créons deux fichiers <tt>protected/pages/users/EditUser.page</tt> et <tt>p
 </p>
 
 <h2>Création du gabarit</h2>
-p>
+<p>
 Comme vous avez pu le deviner, la page <tt>EditUser</tt> est fortement ressemblante à la page <tt>NewUser</tt>. En dehors du titre de la page et du bouton "envoyer", il y a trois différences principales.
 </p>
 
@@ -188,6 +188,22 @@ class EditUser extends TPage
 <com:TipBox>
 La méthode <tt>onInit()</tt> est appelée par PRADO lors du <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">cycle de vie de la page</a>. Les autres méthodes couramment surchargées sont <tt>onPreInit()</tt>, <tt>onLoad()</tt> et <tt>onPreRender()</tt>.
 </com:TipBox>
+
+<h2>Ajout de la vérification des droits d'accès</h2>
+<p>
+Pour rendre la page <tt>EditUser</tt> accessible également par les utilisateurs authentifiés (<tt>users="@"</tt>), nous devons modifier le fichier de configuration <tt>protected/pages/users/config.xml</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?> 
+<configuration> 
+	<authorization> 
+		<allow roles="admin"/> 
+		<allow users="@" pages="EditUser"/> 
+		<deny users="*"/> 
+	</authorization> 
+</configuration> 
+ </com:TTextHighlighter> 
 
 <h2>Test</h2>
 

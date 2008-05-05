@@ -133,21 +133,6 @@ Dans le code précédent, la méthode <tt>deleteButtonClicked()</tt> est appelé
 Tous les <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">contrôles liés</a> sont basé sur le même modèle. C'est à dire, définition de la propriété <tt>DataSource</tt> pour savoir d'où proviennent les données et appel à la méthode <tt>dataBind()</tt> pour effectivement lier les données au contrôle.
 </com:TipBox>
 
-<h2>Ajout de la vérification des droits d'accès</h2>
-<p>
-Vu que seuls les administrateurs doivent pouvoir accéder à la page <tt>AdminUser</tt>, nous devons modifier notre fichier de configuration de page <tt>protected/pages/users/config.xml</tt>.
-</p>
-
-<com:TTextHighlighter CssClass="source" Language="xml">
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <authorization>
-    <allow pages="NewUser,AdminUser" roles="admin" />
-    <deny users="?" />
-  </authorization>
-</configuration>
-</com:TTextHighlighter>
-
 <h2>Test</h2>
 <!-- <h2>Testing</h2> -->
 <p>

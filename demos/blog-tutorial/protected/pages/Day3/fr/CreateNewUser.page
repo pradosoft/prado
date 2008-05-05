@@ -191,14 +191,14 @@ PRADO propose une approche complémentaire de vérification des droits. Pour ce 
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <allow pages="NewUser" roles="admin" />
-    <deny users="?" />
+    <allow roles="admin" />
+    <deny users="*" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
 
 <p>
-Le fichier de configuration de page contient les règles d'accès aux pages contenues dans le dossier <tt>protected/pages/users</tt>. Ce fichier indique que la page <tt>NewUser</tt> peut être vue par les utilisateurs dont le rôle est "admin" (concernant le mot "admin" voir <a href="?page=Day3.Auth">BlogUser.createUser()</a>), et toutes les autres pages de ce dossier interdites aux utilisateurs anonymes (<tt>users="?"</tt> signifie utilisateur anonyme).
+Le fichier de configuration de page contient les règles d'accès aux pages contenues dans le dossier <tt>protected/pages/users</tt>. Ce fichier indique que les utilisateurs dont le rôle est "admin" (concernant le mot "admin" voir <a href="?page=Day3.Auth">BlogUser.createUser()</a>) peuvent accéder à toutes les pages du dossier. Tous les autres utilisateurs (<tt>users="*"</tt>) ne sont pas autorisés à accéder à ces pages, excepté à la page <tt>LoginUser</tt> qui, par convention, peut toujours être chargée.
 </p>
 
 <p>
