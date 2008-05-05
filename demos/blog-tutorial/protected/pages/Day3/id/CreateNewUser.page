@@ -189,14 +189,14 @@ PRADO menawarkan cara lebih sistematis terhadap pemeriksaan perijinan akses hala
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <authorization>
-    <allow pages="NewUser" roles="admin" />
-    <deny users="?" />
+    <allow roles="admin" />
+    <deny users="*" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
 
 <p>
-Konfigurasi halaman berisi aturan otorisasi yang berlaku untuk halaman di bawah direktori <tt>protected/pages/users</tt>. Konfigurasi di atas terbaca bahwa <tt>NewUser</tt> bisa diakses oleh para pengguna dengan aturan <tt>admin</tt> (lihat <a href="?page=Day3.Auth">BlogUser.createUser()</a> untuk alasan kenapa kata "admin"), dan menolak akses anonim (<tt>users="?"</tt> berarti pengguna tamu) untuk seluruh halaman di bawah direktori.
+Konfigurasi halaman berisi aturan otorisasi yang berlaku untuk halaman di bawah direktori <tt>protected/pages/users</tt>. Konfigurasi di atas terbaca bahwa para pengguna dalam role <tt>admin</tt> dapat mengakses semua halaman (lihat <a href="?page=Day3.Auth">BlogUser.createUser()</a> untuk mengapa harus kata "admin"). Untuk saat ini semua para pengguna lain (<tt>users="*"</tt>) ditolak untuk mengakses halaman dalam direktori ini - kecuali untuk halaman <tt>LoginUser</tt> yang seharusnya selalu bisa diakses.
 </p>
 
 <p>

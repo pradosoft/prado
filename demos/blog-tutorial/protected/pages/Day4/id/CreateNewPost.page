@@ -7,7 +7,7 @@ Halaman <tt>NewPost</tt> disediakan untuk mengotentikasi pengguna untuk pembuata
 </p>
 
 <p>
-Karena <tt>NewPost</tt> hanya bisa diakses oleh pengguna terotentikasi, kita menambahkan file konfigurasi <tt>config.xml</tt> di bawah direktori <tt>protected/pages/posts</tt>. Konfigurasi menetapkan bahwa para pengguna tidak bisa mengakses <tt>NewPost</tt> dan <tt>EditPost</tt> yang akan diperkenalkan dalam bagian berikutnya.
+Karena <tt>NewPost</tt> hanya bisa diakses oleh pengguna terotentikasi, kita menambahkan file konfigurasi <tt>config.xml</tt> di bawah direktori <tt>protected/pages/posts</tt>. Konfigurasi menetapkan bahwa para pengguna tidak bisa mengakses <tt>NewPost</tt> dan <tt>EditPost</tt> yang akan diperkenalkan dalam bagian berikutnya. Semua pengguna lainnya hanya memiliki akses ke <tt>ListPost</tt> dan <tt>ReadPost</tt>
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="xml">
@@ -15,9 +15,15 @@ Karena <tt>NewPost</tt> hanya bisa diakses oleh pengguna terotentikasi, kita men
 <configuration>
   <authorization>
     <deny pages="NewPost,EditPost" users="?" />
+    <allow pages="ListPost,ReadPost" />
+    <deny users="*" />
   </authorization>
 </configuration>
 </com:TTextHighlighter>
+
+<com:TipBox>
+Selalu menjadi ide yang baik untuk memulai dengan <tt>deny="*"</tt> yang menampung semua aturan dari bawah dan secara bertahap memberikan akses ke halaman dengan aturan tambahan.
+</com:TipBox>
 
 <p>
 Karena jumlah halaman kita berkembang, kita ingin memodifikasi  <tt>MainLayout</tt> agar dalam footer pada halaman blog kita ada link ke berbagai halaman, termasuk homepage, halaman <a href="?page=Day3.CreateNewUser">NewUser</a> (hanya terlihat oleh administrator), dan halaman <tt>NewPost</tt> mendatang (hanya terlihat oleh pengguna terotentikasi).
@@ -53,7 +59,7 @@ Template halaman <tt>NewPost</tt> berisi <a href="http://www.pradosoft.com/demos
 
 &lt;com:TContent ID="Main">
 
-<h1>Create New Post</h1>
+<h1>Membuat Tulisan Baru</h1>
 
 <span>Title:</span>
 &lt;com:TRequiredFieldValidator

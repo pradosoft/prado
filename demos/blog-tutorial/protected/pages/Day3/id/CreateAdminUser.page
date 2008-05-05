@@ -127,20 +127,6 @@ Semua kontrol <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl"
 </com:TipBox>
 
 
-<h2>Menambahkan Pemeriksaan Perijinan</h2>
-<p>
-Karena <tt>AdminUser</tt> hanya bisa diakses oleh administrator, maka kita perlu menyesuaikan file konfigurasi halaman <tt>protected/pages/users/config.xml</tt>.
-</p>
-<com:TTextHighlighter CssClass="source" Language="xml">
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <authorization>
-    <allow pages="NewUser,AdminUser" roles="admin" />
-    <deny users="?" />
-  </authorization>
-</configuration>
-</com:TTextHighlighter>
-
 <h2>Pengujian</h2>
 <p>
 Untuk menguji halaman <tt>AdminUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. Anda mungkin perlu masuk sebagai administrator lebih dahulu jika Anda belum melakukannya. Kita akan melihat hasil seperti berikut.

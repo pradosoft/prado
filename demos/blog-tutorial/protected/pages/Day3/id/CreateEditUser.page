@@ -187,6 +187,23 @@ class EditUser extends TPage
 Metode <tt>onInit()</tt> dipanggil oleh PRADO selama salah satu <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">masa hidup halaman</a>. Metode masa hidup umum lainnya ditimpa termasuk <tt>onPreInit()</tt>, <tt>onLoad()</tt> dan <tt>onPreRender()</tt>.
 </com:TipBox>
 
+<h2>Menambah Pemeriksaan Perijinan</h2>
+<p>
+Agar halaman <tt>EditUser</tt> juga bisa diakses oleh para pengguna (<tt>users="@"</tt>), kita juga perlu menyesuaikan file konfigurasi halaman <tt>protected/pages/users/config.xml</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <allow roles="admin"/>
+    <allow users="@" pages="EditUser"/>
+    <deny users="*"/>
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+
 <h2>Pengujian</h2>
 <p>
 Untuk menguji halaman <tt>EditUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>. Anda mungkin perlu masuk lebih dulu jika Anda belum melakukannya. Coba masuk dengan akun berbeda (e.g. admin/demo, demo/demo) dan lihat bagaimana halaman ditampilkan secara berbeda.
