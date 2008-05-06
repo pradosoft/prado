@@ -1,6 +1,16 @@
-
+/**
+ * Utilities and extions to Prototype/Scriptaculous
+ * @file scriptaculous-adapter.js
+ */
+ 
+/**
+ * Extension to 
+ * <a href="http://www.prototypejs.org/api/function" target="_blank">Prototype's Function</a>
+ * @namespace Function
+ */
 /**
  * Similar to bindAsEventLister, but takes additional arguments.
+ * @function Function.bindEvent
  */
 Function.prototype.bindEvent = function()
 {
@@ -12,12 +22,18 @@ Function.prototype.bindEvent = function()
 };
 
 /**
- * Creates a new function by copying function definition from
+ * Extension to 
+ * <a href="http://www.prototypejs.org/api/class" target="_blank">Prototype's Class</a>
+ * @namespace Class
+ */
+ 
+/**
+ * Creates a new class by copying class definition from
  * the <tt>base</tt> and optional <tt>definition</tt>.
- * @param function a base function to copy from.
- * @param array additional definition
- * @param function return a new function with definition from both
- * <tt>base</tt> and <tt>definition</tt>.
+ * @function {Class} Class.extend
+ * @param {function} base - Base class to copy from.
+ * @param {optional Array} - Additional definition 
+ * @returns Constructor for the extended class
  */
 Class.extend = function(base, definition)
 {
@@ -28,12 +44,12 @@ Class.extend = function(base, definition)
 		return component;
 };
 
-/*
-	Base, version 1.0.2
-	Copyright 2006, Dean Edwards
-	License: http://creativecommons.org/licenses/LGPL/2.1/
-*/
-
+/**
+ * Base, version 1.0.2
+ * Copyright 2006, Dean Edwards
+ * License: http://creativecommons.org/licenses/LGPL/2.1/
+ * @class Base
+ */
 var Base = function() {
 	if (arguments.length) {
 		if (this == window) { // cast an object to this class
@@ -136,8 +152,18 @@ Base.implement = function(_interface) {
 };
 
 /**
- * Performs a post-back using javascript
- *
+ * Performs a PostBack using javascript.
+ * @function Prado.PostBack
+ * @param event - Event that triggered this postback
+ * @param options - Postback options
+ * @... {string} FormID - Form that should be posted back
+ * @... {optional boolean} CausesValidation - Validate before PostBack if true
+ * @... {optional string} ValidationGroup - Group to Validate 
+ * @... {optional string} ID - Validation ID 
+ * @... {optional string} PostBackUrl - Postback URL
+ * @... {optional boolean} TrackFocus - Keep track of focused element if true
+ * @... {string} EventTarget - Id of element that triggered PostBack
+ * @... {string} EventParameter - EventParameter for PostBack
  */
 Prado.PostBack = function(event,options)
 {
@@ -177,12 +203,17 @@ Prado.PostBack = function(event,options)
 	Event.fireEvent(form,"submit");
 };
 
+/**
+ * Prado utilities to manipulate DOM elements.
+ * @object Prado.Element
+ */
 Prado.Element =
 {
 	/**
 	 * Set the value of a particular element.
-	 * @param string element id
-	 * @param string new element value.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} value - New element value
 	 */
 	setValue : function(element, value)
 	{
@@ -191,6 +222,14 @@ Prado.Element =
 			el.value = value;
 	},
 
+	/**
+	 * Select options from a selectable element.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} method - Name of any {@link Prado.Element.Selection} method
+	 * @param {array|boolean|string} value - Values that should be selected
+	 * @param {int} total - Number of elements 
+	 */
 	select : function(element, method, value, total)
 	{
 		var el = $(element);
@@ -203,6 +242,11 @@ Prado.Element =
 		}
 	},
 
+	/**
+	 * Trigger a click event on a DOM element.
+	 * @function ?
+	 * @param {string} element - Element id
+	 */
 	click : function(element)
 	{
 		var el = $(element);
@@ -210,6 +254,12 @@ Prado.Element =
 			Event.fireEvent(el,'click');
 	},
 
+	/**
+	 * Check if an DOM element is disabled.
+	 * @function {boolean} ?
+	 * @param {string} element - Element id
+	 * @returns true if element is disabled
+	 */
 	isDisabled : function(element)
 	{
 		if(!element.attributes['disabled']) //FF
@@ -221,6 +271,13 @@ Prado.Element =
 			return value == true;
 	},
 
+	/**
+	 * Sets an attribute of a DOM element.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} attribute - Name of attribute
+	 * @param {string} value - Value of attribute
+	 */
 	setAttribute : function(element, attribute, value)
 	{
 		var el = $(element);
@@ -243,6 +300,13 @@ Prado.Element =
 			el.setAttribute(attribute, value);
 	},
 
+	/**
+	 * Sets the options for a select element. 
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {array[]} options - Array of options, each an array of structure 
+	 *   [ "optionText" , "optionValue" , "optionGroup" ]
+	 */
 	setOptions : function(element, options)
 	{
 		var el = $(element);
@@ -261,7 +325,11 @@ Prado.Element =
 	},
 
 	/**
-	 * Create opt-group options from an array of options[0]=text, options[1]=value, options[2]=group
+	 * Create opt-group options from an array of options. 
+	 * @function {array} ?
+	 * @param {array[]} options - Array of options, each an array of structure 
+	 *   [ "optionText" , "optionValue" , "optionGroup" ]
+	 * @returns Array of option DOM elements
 	 */
 	createOptions : function(options)
 	{
@@ -302,8 +370,9 @@ Prado.Element =
 	},
 
 	/**
-	 * A delayed focus on a particular element
-	 * @param {element} element to apply focus()
+	 * Set focus (delayed) on a particular element.
+	 * @function ?
+	 * @param {string} element - Element id
 	 */
 	focus : function(element)
 	{
@@ -313,6 +382,16 @@ Prado.Element =
 		return false;
 	},
 
+	/**
+	 * Replace a DOM element either with given content or
+	 * with content from a CallBack response boundary
+	 * using a replacement method.
+	 * @function ?
+	 * @param {string|element} element - DOM element or element id
+	 * @param {string} method - Name of method to use for replacement
+	 * @param {optional string} content - New content of element
+	 * @param {optional string} boundary - Boundary of new content
+	 */
 	replace : function(element, method, content, boundary)
 	{
 		if(boundary)
@@ -332,6 +411,17 @@ Prado.Element =
 		}
 	},
 
+	/**
+	 * Extract content from a text by its boundary id.
+	 * Boundaries have this form:
+	 * <pre>
+	 * &lt;!--123456--&gt;Democontent&lt;!--//123456--&gt;
+	 * </pre>
+	 * @function {string} ?
+	 * @param {string} text - Text that contains boundaries
+	 * @param {string} boundary - Boundary id
+	 * @returns Content from given boundaries
+	 */
 	extractContent : function(text, boundary)
 	{
 		var tagStart = '<!--'+boundary+'-->';
@@ -353,11 +443,24 @@ Prado.Element =
 			return null;*/
 	},
 
+	/**
+	 * Evaluate a javascript snippet from a string.
+	 * @function ?
+	 * @param {string} content - String containing the script
+	 */
 	evaluateScript : function(content)
 	{
 		content.evalScripts();
 	},
 	
+	/**
+	 * Set CSS style with Camelized keys.
+ 	 * See <a href="http://www.prototypejs.org/api/element/setstyle" target="_blank">Prototype's 
+ 	 * Element.setStyle</a> for details.
+	 * @function ?
+	 * @param {string|element} element - DOM element or element id
+	 * @param {object} styles - Object with style properties/values
+	 */
 	setStyle : function (element, styles)
 	{
 		var s = {}
@@ -370,8 +473,18 @@ Prado.Element =
 	}
 };
 
+/**
+ * Utilities for selections.
+ * @object Prado.Element.Selection
+ */
 Prado.Element.Selection =
 {
+	/**
+	 * Check if an DOM element can be selected.
+	 * @function {boolean} ?
+	 * @param {element} el - DOM elemet
+	 * @returns true if element is selectable
+	 */
 	isSelectable : function(el)
 	{
 		if(el && el.type)
@@ -389,6 +502,13 @@ Prado.Element.Selection =
 		return false;
 	},
 
+	/**
+	 * Set checked attribute of a checkbox or radiobutton to value.
+	 * @function {boolean} ?
+	 * @param {element} el - DOM element
+	 * @param {boolean} value - New value of checked attribute
+	 * @returns New value of checked attribute
+	 */
 	inputValue : function(el, value)
 	{
 		switch(el.type.toLowerCase())
@@ -399,6 +519,14 @@ Prado.Element.Selection =
 		}
 	},
 
+	/**
+	 * Set selected attribute for elements options by value.
+	 * If value is boolean, all elements options selected attribute will be set
+	 * to value. Otherwhise all options that have the given value will be selected. 
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {boolean|string} value - Value of options that should be selected or boolean value of selection status
+	 */
 	selectValue : function(elements, value)
 	{
 		elements.each(function(el)
@@ -413,6 +541,12 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Set selected attribute for elements options by array of values.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {string[]} value - Array of values to select
+	 */
 	selectValues : function(elements, values)
 	{
 		selection = this;
@@ -422,6 +556,12 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Set selected attribute for elements options by option index.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int} index - Index of option to select
+	 */
 	selectIndex : function(elements, index)
 	{
 		elements.each(function(el)
@@ -439,6 +579,11 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Set selected attribute to true for all elements options.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
 	selectAll : function(elements)
 	{
 		elements.each(function(el)
@@ -453,6 +598,11 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Toggle the selected attribute for elements options.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
 	selectInvert : function(elements)
 	{
 		elements.each(function(el)
@@ -467,6 +617,12 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Set selected attribute for elements options by array of option indices.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int[]} indices - Array of option indices to select
+	 */
 	selectIndices : function(elements, indices)
 	{
 		selection = this;
@@ -476,6 +632,11 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Unselect elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
 	selectClear : function(elements)
 	{
 		elements.each(function(el)
@@ -484,6 +645,13 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Get list elements of an element.
+	 * @function {element[]} ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int} total - Number of list elements to return
+	 * @returns Array of list DOM elements
+	 */
 	getListElements : function(element, total)
 	{
 		elements = new Array();
@@ -496,6 +664,15 @@ Prado.Element.Selection =
 		return elements;
 	},
 
+	/**
+	 * Set checked attribute of elements by value.
+	 * If value is boolean, checked attribute will be set to value. 
+	 * Otherwhise all elements that have the given value will be checked. 
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {boolean|String} value - Value that should be checked or boolean value of checked status
+	 * 	 
+	 */
 	checkValue : function(elements, value)
 	{
 		elements.each(function(el)
@@ -507,6 +684,13 @@ Prado.Element.Selection =
 		});
 	},
 
+	/**
+	 * Set checked attribute of elements by array of values.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {string[]} values - Values that should be checked
+	 * 	 
+	 */
 	checkValues : function(elements, values)
 	{
 		selection = this;
@@ -516,6 +700,12 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Set checked attribute of elements by list index.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {int} index - Index of element to set checked
+	 */
 	checkIndex : function(elements, index)
 	{
 		for(var i = 0; i<elements.length; i++)
@@ -525,6 +715,12 @@ Prado.Element.Selection =
 		}
 	},
 
+	/**
+	 * Set checked attribute of elements by array of list indices.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int[]} indices - Array of list indices to set checked
+	 */
 	checkIndices : function(elements, indices)
 	{
 		selection = this;
@@ -534,6 +730,11 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Uncheck elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 */
 	checkClear : function(elements)
 	{
 		elements.each(function(el)
@@ -542,6 +743,11 @@ Prado.Element.Selection =
 		});
 	},
 
+	/**
+	 * Set checked attribute of all elements to true.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 */
 	checkAll : function(elements)
 	{
 		elements.each(function(el)
@@ -550,6 +756,11 @@ Prado.Element.Selection =
 		})
 	},
 
+	/**
+	 * Toggle the checked attribute of elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
 	checkInvert : function(elements)
 	{
 		elements.each(function(el)
@@ -560,23 +771,51 @@ Prado.Element.Selection =
 };
 
 
+/**
+ * Utilities for insertion.
+ * @object Prado.Element.Insert
+ */
 Prado.Element.Insert =
 {
+	/**
+	 * Append content to element
+	 * @function ?
+	 * @param {element} element - DOM element that content should be appended to
+	 * @param {element} content - DOM element to append
+	 */
 	append: function(element, content)
 	{
 		$(element).insert(content);
 	},
 
+	/**
+	 * Prepend content to element
+	 * @function ?
+	 * @param {element} element - DOM element that content should be prepended to
+	 * @param {element} content - DOM element to prepend
+	 */
 	prepend: function(element, content)
 	{
 		$(element).insert({top:content});
 	},
 
+	/**
+	 * Insert content after element
+	 * @function ?
+	 * @param {element} element - DOM element that content should be inserted after
+	 * @param {element} content - DOM element to insert
+	 */
 	after: function(element, content)
 	{
 		$(element).insert({after:content});
 	},
 
+	/**
+	 * Insert content before element
+	 * @function ?
+	 * @param {element} element - DOM element that content should be inserted before
+	 * @param {element} content - DOM element to insert
+	 */
 	before: function(element, content)
 	{
 		$(element).insert({before:content});
@@ -585,10 +824,17 @@ Prado.Element.Insert =
 
 
 /**
- * Export scripaculous builder utilities as window[functions]
+ * Extension to 
+ * <a href="http://wiki.script.aculo.us/scriptaculous/show/builder" target="_blank">Scriptaculous' Builder</a>
+ * @namespace Builder
  */
+
 Object.extend(Builder,
 {
+	/**
+ 	 * Export scriptaculous builder utilities as window[functions]
+ 	 * @function ?
+ 	 */
 	exportTags:function()
 	{
 		var tags=["BUTTON","TT","PRE","H1","H2","H3","BR","CANVAS","HR","LABEL","TEXTAREA","FORM","STRONG","SELECT","OPTION","OPTGROUP","LEGEND","FIELDSET","P","UL","OL","LI","TD","TR","THEAD","TBODY","TFOOT","TABLE","TH","INPUT","SPAN","A","DIV","IMG", "CAPTION"];
@@ -608,20 +854,23 @@ Object.extend(Builder,
 		});
 	}
 });
-
 Builder.exportTags();
 
 /**
- * @class String extensions
+ * Extension to 
+ * <a href="http://www.prototypejs.org/api/string" target="_blank">Prototype's String</a>
+ * @namespace String
  */
 Object.extend(String.prototype, {
-	/**
-	 * @param {String} "left" to pad the string on the left, "right" to pad right.
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad
-	 * @return {String} padded character(s) on the left or right to satisfy minimum string length
-	 */
 
+	/**
+	 * Add padding to string
+	 * @function {string} ?
+	 * @param {string} side - "left" to pad the string on the left, "right" to pad right.
+	 * @param {int} len - Minimum string length.
+	 * @param {string} chr - Character(s) to pad
+	 * @returns Padded string
+	 */
 	pad : function(side, len, chr) {
 		if (!chr) chr = ' ';
 		var s = this;
@@ -631,47 +880,59 @@ Object.extend(String.prototype, {
 	},
 
 	/**
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad
-	 * @return {String} padded character(s) on the left to satisfy minimum string length
+	 * Add left padding to string
+	 * @function {string} ?
+	 * @param {int} len - Minimum string length.
+	 * @param {string} chr - Character(s) to pad
+	 * @returns Padded string
 	 */
 	padLeft : function(len, chr) {
 		return this.pad('left',len,chr);
 	},
 
 	/**
-	 * @param {Number} minimum string length.
-	 * @param {String} character(s) to pad
-	 * @return {String} padded character(s) on the right to satisfy minimum string length
+	 * Add right padding to string
+	 * @function {string} ?
+	 * @param {int} len - Minimum string length.
+	 * @param {string} chr - Character(s) to pad
+	 * @returns Padded string
 	 */
 	padRight : function(len, chr) {
 		return this.pad('right',len,chr);
 	},
 
 	/**
-	 * @param {Number} minimum string length.
-	 * @return {String} append zeros to the left to satisfy minimum string length.
+	 * Add zeros to the right of string
+	 * @function {string} ?
+	 * @param {int} len - Minimum string length.
+	 * @returns Padded string
 	 */
 	zerofill : function(len) {
 		return this.padLeft(len,'0');
 	},
 
 	/**
-	 * @return {String} removed white spaces from both ends.
+	 * Remove white spaces from both ends of string.
+	 * @function {string} ?
+	 * @returns Trimmed string
 	 */
 	trim : function() {
 		return this.replace(/^\s+|\s+$/g,'');
 	},
 
 	/**
-	 * @return {String} removed white spaces from the left end.
+	 * Remove white spaces from the left side of string.
+	 * @function {string} ?
+	 * @returns Trimmed string
 	 */
 	trimLeft : function() {
 		return this.replace(/^\s+/,'');
 	},
 
 	/**
-	 * @return {String} removed white spaces from the right end.
+	 * Remove white spaces from the right side of string.
+	 * @function {string} ?
+	 * @returns Trimmed string
 	 */
 	trimRight : function() {
 		return this.replace(/\s+$/,'');
@@ -679,9 +940,12 @@ Object.extend(String.prototype, {
 
 	/**
 	 * Convert period separated function names into a function reference.
-	 * e.g. "Prado.AJAX.Callback.Action.setValue".toFunction() will return
-	 * the actual function Prado.AJAX.Callback.Action.setValue()
-	 * @return {Function} the corresponding function represented by the string.
+	 * <br />Example:
+	 * <pre> 
+	 * "Prado.AJAX.Callback.Action.setValue".toFunction()
+	 * </pre>
+	 * @function {function} ?
+	 * @returns Reference to the corresponding function
 	 */
 	toFunction : function()
 	{
@@ -704,8 +968,9 @@ Object.extend(String.prototype, {
 	},
 
 	/**
-	 * Convert a string into integer, returns null if not integer.
-	 * @return {Number} null if string does not represent an integer.
+	 * Convert string into integer, returns null if not integer.
+	 * @function {int} ?
+	 * @returns Integer, null if string does not represent an integer.
 	 */
 	toInteger : function()
 	{
@@ -717,10 +982,11 @@ Object.extend(String.prototype, {
 	},
 
 	/**
-	 * Convert a string into a double/float value. <b>Internationalization
+	 * Convert string into a double/float value. <b>Internationalization
 	 * is not supported</b>
-	 * @param {String} the decimal character
-	 * @return {Double} null if string does not represent a float value
+	 * @function {double} ?
+	 * @param {string} decimalchar - Decimal character, defaults to "."
+	 * @returns Double, null if string does not represent a float value
 	 */
 	toDouble : function(decimalchar)
 	{
@@ -741,15 +1007,16 @@ Object.extend(String.prototype, {
 	},
 
 	/**
-	 * Convert strings that represent a currency value (e.g. a float with grouping
-	 * characters) to float. E.g. "10,000.50" will become "10000.50". The number
+	 * Convert strings that represent a currency value to float.
+	 * E.g. "10,000.50" will become "10000.50". The number
 	 * of dicimal digits, grouping and decimal characters can be specified.
 	 * <i>The currency input format is <b>very</b> strict, null will be returned if
 	 * the pattern does not match</i>.
-	 * @param {String} the grouping character, default is ","
-	 * @param {Number} number of decimal digits
-	 * @param {String} the decimal character, default is "."
-	 * @type {Double} the currency value as float.
+	 * @function {double} ?
+	 * @param {string} groupchar - Grouping character, defaults to ","
+	 * @param {int} digits - Number of decimal digits
+	 * @param {string} decimalchar - Decimal character, defaults to "."
+	 * @returns Double, null if string does not represent a currency value
 	 */
 	toCurrency : function(groupchar, digits, decimalchar)
 	{
@@ -774,8 +1041,9 @@ Object.extend(String.prototype, {
 	/**
 	 * Converts the string to a date by finding values that matches the
 	 * date format pattern.
-	 * @param string date format pattern, e.g. MM-dd-yyyy
-	 * @return {Date} the date extracted from the string
+	 * @function {Date} ?
+	 * @param {string} format - Date format pattern, e.g. MM-dd-yyyy
+	 * @returns Date extracted from the string
 	 */
 	toDate : function(format)
 	{
@@ -784,7 +1052,9 @@ Object.extend(String.prototype, {
 });
 
 /**
- * @class Event extensions.
+ * Extension to 
+ * <a href="http://www.prototypejs.org/api/event" target="_blank">Prototype's Event</a>
+ * @namespace Event
  */
 Object.extend(Event,
 {
@@ -792,14 +1062,14 @@ Object.extend(Event,
 	 * Register a function to be executed when the page is loaded.
 	 * Note that the page is only loaded if all resources (e.g. images)
 	 * are loaded.
-	 *
-	 * Example: Show an alert box with message "Page Loaded!" when the
+	 * <br />Example: 
+	 * <br />Show an alert box with message "Page Loaded!" when the
 	 * page finished loading.
-	 * <code>
+	 * <pre>
 	 * Event.OnLoad(function(){ alert("Page Loaded!"); });
-	 * </code>
-	 *
-	 * @param {Function} function to execute when page is loaded.
+	 * </pre>
+	 * @function ?
+	 * @param {function} fn - Function to execute when page is loaded.
 	 */
 	OnLoad : function (fn)
 	{
@@ -810,9 +1080,10 @@ Object.extend(Event,
 	},
 
 	/**
-	 * @param {Event} a keyboard event
-	 * @return {Number} the Unicode character code generated by the key
-	 * that was struck.
+	 * Returns the unicode character generated by key.
+	 * @param {event} e - Keyboard event
+	 * @function {int} ?
+	 * @returns Unicode character code generated by the key that was struck.
 	 */
 	keyCode : function(e)
 	{
@@ -820,9 +1091,10 @@ Object.extend(Event,
 	},
 
 	/**
-	 * @param {String} event type or event name.
-	 * @return {Boolean} true if event type is of HTMLEvent, false
-	 * otherwise
+	 * Checks if an Event is of type HTMLEvent.
+	 * @function {boolean} ?
+	 * @param {string} type - Event type or event name.
+	 * @return true if event is of type HTMLEvent.
 	 */
 	isHTMLEvent : function(type)
 	{
@@ -833,9 +1105,10 @@ Object.extend(Event,
 	},
 
 	/**
-	 * @param {String} event type or event name
-	 * @return {Boolean} true if event type is of MouseEvent,
-	 * false otherwise
+	 * Checks if an Event is a mouse event.
+	 * @function {boolean} ?
+	 * @param {string} type - Event type or event name
+	 * @return true if event is of type MouseEvent.
 	 */
 	isMouseEvent : function(type)
 	{
@@ -850,8 +1123,9 @@ Object.extend(Event,
 	 * dispatched, keyboard events or UIEvent can not be dispatch
 	 * via javascript consistently.
 	 * For the "submit" event the submit() method is called.
-	 * @param {Object} element id string or a DOM element.
-	 * @param {String} event type to dispatch.
+	 * @function ?
+	 * @param {element|string} element - Element id string or DOM element.
+	 * @param {string} type - Event type to dispatch.
 	 */
 	fireEvent : function(element,type)
 	{
@@ -894,9 +1168,20 @@ Object.extend(Event,
 });
 
 
-
+/**
+ * Extension to 
+ * <a href="http://www.prototypejs.org/api/date" target="_blank">Prototype's Date</a>
+ * @namespace Date
+ */
 Object.extend(Date.prototype,
 {
+	/**
+	 * SimpleFormat
+	 * @function ?
+	 * @param {string} format - TODO
+	 * @param {string} data - TODO
+	 * @returns TODO
+	 */
 	SimpleFormat: function(format, data)
 	{
 		data = data || {};
@@ -926,6 +1211,11 @@ Object.extend(Date.prototype,
 		return frm;
 	},
 
+	/**
+	 * toISODate
+	 * @function {string} ?
+	 * @returns TODO
+	 */
 	toISODate : function()
 	{
 		var y = this.getFullYear();
@@ -937,6 +1227,13 @@ Object.extend(Date.prototype,
 
 Object.extend(Date,
 {
+	/**
+	 * SimpleParse
+	 * @function ?
+	 * @param {string} format - TODO
+	 * @param {string} data - TODO
+	 * @returns TODO
+	 */
 	SimpleParse: function(value, format)
 	{
 		val=String(value);
@@ -1046,8 +1343,18 @@ Object.extend(Date,
 	}
 });
 
+/**
+ * Prado utilities for effects.
+ * @object Prado.Effect
+ */
 Prado.Effect = 
 {
+	/**
+	 * Highlights an element
+	 * @function ?
+	 * @param {element} element - DOM element to highlight
+	 * @param {optional object} options - Highlight options
+	 */
 	Highlight : function (element,options)
 	{
 		new Effect.Highlight(element,options);

@@ -1,16 +1,42 @@
-
+/**
+ * Prado base namespace
+ * @namespace Prado
+ */
 var Prado =
 {
+	/**
+	 * Version of Prado clientscripts
+	 * @var Version
+	 */
 	Version: '3.1',
 
 	/**
-	 * Returns browser information. Example
-	 * <code>
+	 * Returns browser information. 
+	 * <pre>
 	 * var browser = Prado.Browser();
 	 * alert(browser.ie); //should ouput true if IE, false otherwise
-	 * </code>
-	 * @param ${parameter}
-	 * @return ${return}
+	 * </pre>
+	 * @function {object} ?
+	 * @version 1.0
+	 * @returns browserinfo
+	 * @... {string} agent - Reported user agent
+	 * @... {string} ver - Reported agent version
+	 * @... {0|1} dom - 1 for DOM browsers 
+	 * @... {0|1} ns4 - 1 for Netscape 4
+	 * @... {0|1} ns6 - 1 for Netscape 6 and Firefox
+	 * @... {boolean} ie3 - true for IE 3
+	 * @... {0|1} ie5 - 1 for IE 5
+	 * @... {0|1} ie6 - 1 for IE 6
+	 * @... {0|1} ie4 - 1 for IE 4
+	 * @... {0|1} ie - 1 for IE 4-6
+	 * @... {0|1} hotjava - 1 for HotJava
+	 * @... {0|1} ver3 - 1 for IE3 and HotJava
+	 * @... {0|1} opera - 1 for Opera
+	 * @... {boolean} opera7 - true for Opera 7
+	 * @... {0|1} operaOld - 1 for older Opera    
+	 * @... {0|1} bw - 1 for IE 4-6, Netscape 4&6, Firefox and Opera
+	 * @... {boolean} mac - true for mac systems 
+	 * @... {static} Version - Version of returned structure (1.0)
 	 */
 	Browser : function()
 	{
@@ -37,6 +63,12 @@ var Prado =
 		return info;
 	},
 
+	/**
+	 * Import CSS from Url.
+	 * @function ?
+	 * @param doc - document DOM object
+	 * @param css_file - Url to CSS file
+	 */
 	ImportCss : function(doc, css_file)
 	{
 		if (Prado.Browser().ie)
