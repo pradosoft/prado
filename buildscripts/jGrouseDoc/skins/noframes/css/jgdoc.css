@@ -1,0 +1,473 @@
+
+@CHARSET "ISO-8859-1";
+/*      
+    jGrouseDoc "NO FRAMES" stylesheet file. 
+    @Copyright (c) 2007 by Denis Riabtchik. All rights reserved. See license.txt and http://jgrouse.com for details@
+    $Id: jgdoc.css 340 2008-01-21 16:13:59Z broofa $
+*/
+
+body
+{
+    /*font-family: Helvetica,Arial,sans-serif;
+    font-size: 0.9em;*/
+}
+    
+
+a 
+{
+    text-decoration: none;
+}
+
+.overviewTitle
+{
+    font-weight: bold;
+    font-size: 1.3em;
+    padding-top: 1em;
+    clear: both;
+}
+
+.overviewItem
+{
+}
+    
+
+.overviewSectionHeader
+{
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-top: 0.5em;
+}
+    
+.sectionHeader 
+{
+    border: 2px groove black;
+    font-size: 1.7em;
+    text-align: left;
+    font-weight: bold;
+    background-color: #ccccff;
+    color: black;
+    padding: 3px;
+}
+
+.logicalSummary
+{
+}
+
+.summaryTable
+{
+    border: 2px groove black;
+}
+
+.summaryTableHeader
+{
+    font-size: 1.7em;
+    text-align: left;
+    font-weight: bold;
+    background-color: #ccccff;
+    color: black;
+    padding: 4px;
+}
+
+.summaryTable .summaryItem
+{
+    border-top: 1px solid;
+    padding: 2px;
+}
+
+.summaryTable .summaryItemRef
+{
+    font-weight: bold;
+}
+
+.summaryTable .summaryItemDef
+{
+}
+
+.summaryTable .inheritanceSummary
+{
+    border-top: 1px solid;
+    padding: 2px;   
+}
+
+.summaryTable .summaryItemDesc
+{
+    padding-left: 2em;
+}
+
+.elementName
+{
+    font-weight: bold;
+}
+
+.descSection
+{
+    font-weight: bold;
+}
+
+            
+.navbar
+{
+    font-size: 0.9em;
+    padding-bottom: 4px;
+}
+
+.currentPage
+{
+    font-weight: bold;
+}
+
+.navbaritem
+{
+    float: left;
+    width: 10em;
+    background-color: #ccccff;
+    color: black;
+    padding: 4px;
+    margin: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: center;
+}
+
+.navbaritem a
+{
+    background-color: #ccccff;
+    color: black;
+    text-decoration: underline;
+}
+
+
+.projectDescRef
+{
+    font-weight: bold;
+}
+
+.paddedDetails
+{
+    padding-left: 5em;
+}
+
+.example
+{
+    font-size: 0.8em;
+    font-family: courier;
+    white-space: pre;
+}
+
+
+
+a.searchItem:visited, a.searchItem:link
+{
+    cursor: pointer;
+    display: block;
+    color: black;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+
+
+.jgdSelectedItem, a.jgdSelectedItem:visited, a.jgdSelectedItem:link
+{
+    background-color: #0a246a;
+    color: white;
+}
+
+
+
+
+.jgdSearchRect
+{
+    width:100%; 
+    height:20em; 
+    border: 2px inset; 
+    overflow: auto;
+    background-color: white;
+}
+
+.jgsSearchPanel
+{
+	position: absolute;
+	background-color: transparent;
+	clear: both;
+	line-height: 1.2em;
+}
+
+.jgdSearchString
+{
+
+}
+
+.jgsInfo
+{
+    white-space: pre;
+    background-color: white;
+    padding: 0.5em;
+    position: absolute;
+    border: 1px solid;
+}
+
+
+
+/*---------- NavTree ----------------*/
+
+
+
+.navTree a {
+  text-decoration: none;
+}
+.navTree a:hover {
+  text-decoration: underline;
+}
+
+.navTree .contents
+{
+   list-style: none;
+   padding-left: 10px;
+   margin-left: 0px;
+   clear: both;
+}
+
+.navTree .contents li
+{
+   clear: both;
+}
+
+
+.navTree .contents ul
+{
+   border-left: 1px solid #cccccc;
+   margin-left: 6px;
+   clear: both;
+}
+
+
+.navTree .contents span.node
+{
+    display: block;
+    float: left;
+}
+
+.navTree span.node
+{
+    cursor: pointer;
+}
+
+.navTree .open span.node
+{
+    background: url(open.gif) ;
+    background-repeat: no-repeat;
+    background-position: 0em 0.2em;    
+}
+
+.navTree .closed span.node
+{
+    background: url(closed.gif) ;
+    background-repeat: no-repeat;
+    background-position: 0em 0.2em;    
+}
+
+.navTree .leaf span.node
+{
+    background: url(node.gif) ;
+    background-repeat: no-repeat;
+    background-position: 0em 0.2em;    
+}
+
+.navTree .closed .contents
+{
+    display: none;  
+}
+
+.navTree .markerSpace
+{
+    padding-left: 15px;
+}
+
+.navTree .openAll
+{
+    background-image: url(openLarge.gif);
+    background-repeat: no-repeat;
+    padding-left: 25px;
+    padding-right: 10px;
+    background-position: left center;
+    cursor: pointer;
+}
+
+.navTree .closeAll
+{
+    background-image: url(closedLarge.gif);
+    background-repeat: no-repeat;
+    padding-left: 25px;
+    padding-right: 10px;
+    background-position: left center;
+    cursor: pointer;
+}
+
+.navTree .currentNode
+{
+	background-color: aqua;
+}
+
+.comment
+{
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+body
+{
+	font-family: sans-serif;
+	font-size: 0.9em;
+}
+
+.banner
+{
+}
+.banner h1
+{
+	margin: 0px;
+}
+
+.banner h1 a
+{
+	background:  transparent url(logo.gif) no-repeat scroll left center;
+	line-height: 100px;
+	margin: 0px;
+	padding-left: 130px;
+	display: block;
+	height: 100%;
+	color: black;
+	text-decoration: none;
+}
+
+.banner .bar
+{
+	background-color: #567a58;
+	color: white;
+	text-align: right;
+	font-size: 1.5em;
+	font-weight: bolder;
+	padding-right: 0.5em;
+	font-style: oblique;
+}
+
+.projectName
+{
+}
+
+.content
+{
+	float: right;
+	margin-left: -25em;
+    width: 100%;
+    overflow-Y: hidden;
+}
+
+.startup
+{
+	height: 100%;
+	overflow: hidden;
+}
+
+.navigation
+{
+	border: 2px outset;
+	float: left;
+	width: 20em;
+	background-color: white;
+	line-height: 1.3em;
+	/*padding-left: 0.5em;*/
+	overflow-x: auto;
+	margin-top: 0.5em;
+}
+
+.block
+{
+	margin-left: 22em;
+	float: none;
+	height: 100%;
+}
+
+.search
+{
+	padding-top: 0.5em;
+}
+
+.search .searchLabel
+{
+	float:left;
+	padding-right: 0.5em;
+	height: 1.4em;
+	padding-top: 4px;
+	font-weight: bold;
+}
+
+.search .searchBlock
+{
+	
+}
+
+.navigation h2
+{
+	text-align: center;
+	margin: 0px;
+	padding: 8px;
+	border-bottom: thin outset;
+	background-color: #D8D8D0;
+	cursor: pointer;
+}
+
+.navigation h2 a
+{
+	color: black;
+}
+
+.navigation h2 a:hover
+{
+	text-decoration: underline;
+}
+
+
+
+ul.navContent
+{
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+ul.navContent2
+{
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin: 0px;
+    padding: 4px;
+}
+
+ul.navContent.closed ul.navContent2
+{
+	display: none;
+} 
+
+.docScroll 
+{
+	clear: both;
+	overflow-Y: auto;
+}
+
+ul.paramoption
+{
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+a.srcUrlLink
+{
+  color:#66f;
+  font-size: 11px;
+	float: right;
+}

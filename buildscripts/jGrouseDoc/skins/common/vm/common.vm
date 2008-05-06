@@ -1,0 +1,604 @@
+#macro(writeLink $link)
+#set ($linkElement = $jg.get($link))
+$rootPath#if($linkElement.isContainer())
+#if($linkElement.isLogicalContainer())logical#{else}physical#end/${linkElement.path}.html#{else}
+logical/${linkElement.owner.path}.html#___$linkElement.localName#end
+#end
+
+
+#macro(writeContent $content)
+#foreach ($section in $content.sections)
+#if ($section.link && $section.resolvedPath && $section.resolvedPath.length() > 0)
+<a href="#writeLink($section.resolvedPath)">$section.text</a>#else$section.text#end
+#end    
+#end
+
+#macro (writeType $type)
+<span class="type">#writeContent($type)</span>
+#end
+
+
+
+
+#macro(genCommonAttrs $comment)
+    #if($comment.author.size() > 0)
+        <div class="authors">
+            <span class="descSection">Authors:</span>
+            #foreach($author in $comment.author)
+                <div class="paddedDetails">#writeContent($author.content)</div>
+            #end
+        </div>      
+    #end
+    #if ($comment.see.size() > 0)
+        <div class="seealso">
+            <span class="descSection">See also:</span>
+            #foreach($see in $comment.see)
+                <div class="paddedDetails">#writeContent($see.content)</div>
+            #end
+        </div>      
+    #end
+    #if ($comment.version.size() > 0)
+        <div class="version">
+            <span class="descSection">Version:</span>
+            #foreach($version in $comment.version)
+                <div class="paddedDetails">#writeContent($version.content)</div>
+            #end
+        </div>      
+    #end
+    #if ($comment.timestamp.size() > 0)
+        <div class="generated">
+            <span class="descSection">Generated on:</span>
+            <div class="paddedDetails">$jg.project.timestamp</div>
+        </div>      
+    #end
+    #if ($comment.since.size() > 0)
+        <div class="since">
+            <span class="descSection">Since:</span>
+            #foreach($since in $comment.since)
+                <div class="paddedDetails">#writeContent($since.content)</div>
+            #end
+        </div>      
+    #end
+    #if ($comment.deprecated.size() > 0)
+        <div class="deprecated">
+            <span class="descSection">Deprecated:</span>
+            #foreach($dep in $comment.deprecated)
+                <div class="paddedDetails">#writeContent($dep.content)</div>
+            #end
+        </div>      
+    #end
+#end
+
+
+#macro (writeFunctionParams $paramSet)
+#foreach($param in $paramSet.params)#if($velocityCount > 1), #end#if($param.hasModifier('optional'))[#end#writeType($param.typeLink) $param.name#if($param.hasModifier('optional'))]#end#end
+#end
+
+
+#macro(writeSrcURL $obj)
+    #if($obj.comment.srcUrl)
+        <a href="$obj.comment.srcUrl" class="srcUrlLink">view source</a>
+    #end    
+#end
+
+
+#macro(writeParamOption $paramOption)
+    <li>
+        <code>
+            #if($paramOption.hasModifier("optional"))[#end
+            <span class="modifiers">$paramOption.strModifiers</span>
+            #writeType($paramOption.typeLink)
+            $paramOption.name
+            #if($paramOption.hasModifier("optional"))]#end
+        </code> 
+        #writeContent($paramOption.content)
+    </li>
+#end
+
+
+#macro(writeParam $param)
+    <div class="param paddedDetails">
+        <code>
+            #if($param.hasModifier("optional"))[#end${param.name}#if($param.hasModifier("optional"))]#end
+        </code>
+        #writeContent($param.content)
+        #if($param.children.size() > 0)
+            <ul class="paramoption">
+                #foreach($paramOption in $param.children)
+                    #writeParamOption($paramOption)
+                #end
+            </ul>
+        #end
+    </div>   
+#end
+
+
+#macro(writePhysOwner $element)
+    #if($element.hasSamePhysOwner)
+        <span class="definedIn">Defined in </span>
+        <a href="#writeLink($element.physOwner)">$element.physOwner.comment.name</a>
+    #end
+#end
+
+
+
+
+#macro(writeFunctionDetails $func $memberType)
+    #set ($funcModifiers = $func.comment.modifiers)
+    #if ($func.comment.inheritdesc.size() == 0)
+        #set ($funcItself = $func)
+    #else
+       #set ($funcItself = $jg.get($func.comment.inheritdesc.get(0).name))
+    #end
+    #writeSrcURL($func)
+    <h3>
+        <a name="___$func.localName">
+            <span class="objType">$memberType</span>
+            <span class="objName">$func.localName</span>            
+        </a> 
+    </h3>
+    #if ($funcItself.comment.paramSets.size() > 0)
+        #foreach($paramSet in $funcItself.comment.paramSets)
+            <div>
+                <code>
+                    <span class="modifiers">$funcModifiers</span>
+                    #writeType($funcItself.comment.typeLink)
+                    ${funcItself.localName}(#writeFunctionParams($paramSet))
+                </code> 
+            </div>          
+        #end
+    #else
+            <div>
+                <code>
+                    <span class="modifiers">$funcModifiers</span>
+                    #writeType($funcItself.comment.typeLink)
+                    ${funcItself.localName}()
+                </code>
+            </div>    
+    #end
+    <div class="comment">
+        #writeContent($funcItself.comment.content)
+    </div>
+    #if ($funcItself.comment.paramSets.size() > 0)
+    	<div class="parameters">
+        <span class="descSection">Parameters:</span><br/>
+            #foreach($paramSet in $funcItself.comment.paramSets)
+                <div>
+                    <div class="paramset">#writeContent($paramSet.content)</div>
+                    <div>
+                    #foreach($param in $paramSet.params)
+                        #writeParam($param)
+                    #end
+                    </div>
+                </div>
+            #end
+        </div>
+    #end
+    #if($funcItself.comment.returnsTag )
+    	<div class="returns">
+	        <span class="descSection">Returns:</span><br/>
+	        <div class="paddedDetails">
+	            #set ($return = $funcItself.comment.returnsTag)
+	            #writeContent($return.content)
+	            #if($return.children.size() > 0)
+	                <ul class="paramoption">
+	                    #foreach($paramOption in $return.children)
+	                        #writeParamOption($paramOption)
+	                    #end
+	                </ul>
+	            #end
+	        </div>
+        </div>      
+    #end
+    #if($funcItself.comment.throws.size() > 0)
+    	<div class="throws">
+	        <span class="descSection">Throws:</span><br/>
+	        #foreach($throws in $funcItself.comment.throws)
+	                <div class="paddedDetails">#writeContent($throws.content)</div>
+	        #end
+        </div>
+    #end
+    #genCommonAttrs($funcItself.comment)
+    #writePhysOwner($func)
+    <hr/>       
+#end
+
+
+#macro(writeVarDetails $var)
+    #set ($varModifiers = $var.comment.modifiers)
+    #if ($var.comment.inheritdesc.size() == 0)
+        #set ($varItself = $var)
+    #else
+       #set ($varItself = $jg.get($var.comment.inheritdesc.get(0).name))
+    #end
+    
+    #writeSrcURL($var)
+    <h3>
+        <a name="___$var.localName">
+            <span class="objType">$var.commentType</span> <span class="modifiers">$varModifiers</span>
+            #writeType($varItself.comment.typeLink) 
+            <span class="objName">$var.localName</span>         
+        </a>
+    </h3>
+    <div class="comment">
+        #writeContent($varItself.comment.content)
+    </div>    
+    #genCommonAttrs($varItself.comment)
+    #writePhysOwner($var)
+    <hr />  
+#end
+
+
+
+
+#macro(writeLegacies $obj $memberType $memberName )
+    #foreach($legacy in $obj.legacies)
+        #if ($legacy.get($memberType).size() > 0)
+            <div class="summaryTable">
+                <div class="summaryTableHeader">
+                   $memberName inherited from <a href="#writeLink($legacy.ancestor.fullName)">$legacy.ancestor.fullName</a> 
+                </div>
+                <div class="inheritanceSummary">
+                    #foreach($item in $legacy.get($memberType))#if($velocityCount > 1), #end<a href="#writeLink($item.fullName)">$item.localName</a>#end
+                </div>
+             </div>
+             <br/>          
+        #end
+    #end
+#end
+
+
+
+#macro(writeVarSummary $variable)
+    #set ($varModifiers = $variable.comment.modifiers)
+    #if ($variable.comment.inheritdesc.size() == 0)
+        #set ($varItself = $variable)
+    #else
+       #set ($varItself = $jg.get($variable.comment.inheritdesc.get(0).name))
+    #end
+    <div class="summaryItemDef">
+        <span class="modifiers">$varModifiers</span>
+        #writeType($variable.comment.typeLink)
+        <a href="#writeLink($variable.fullName)"><span class="elementName">$variable.localName</span></a>
+    </div> 
+    <div class="summaryItemDesc">
+        #writeContent($varItself.comment.summary)
+    </div>  
+#end
+
+
+#macro(writeFuncSummary $func)
+    #set ($funcModifiers = $func.comment.modifiers)
+    #if ($func.comment.inheritdesc.size() == 0)
+        #set ($funcItself = $func)
+    #else
+       #set ($funcItself = $jg.get($func.comment.inheritdesc.get(0).name))
+    #end
+    #if ($funcItself.comment.paramSets.size() != 0)
+        #foreach($paramSet in $funcItself.comment.paramSets)
+            <div class="summaryItemDef">
+                <span class="modifiers">$funcModifiers</span>
+                #writeType($func.comment.typeLink)
+                <a href="#writeLink($func.fullName)"><span class="elementName">$func.localName</span></a>
+                (#writeFunctionParams($paramSet))
+            </div>          
+        #end
+    #else
+           <div class="summaryItemDef">
+                <span class="modifiers">$funcModifiers</span>
+                #writeType($func.comment.typeLink)
+                <a href="#writeLink($func.fullName)"><span class="elementName">$func.localName</span></a>()
+            </div>
+    #end
+    <div class="summaryItemDesc">
+        #writeContent($funcItself.comment.summary)
+    </div>  
+#end
+
+
+#macro(writeLogicalSummary $class)
+    <div class="summaryItemDef">
+        <span class="elementName">
+            <a href="${rootPath}logical/${class.path}.html">$class.comment.name</a>
+        </span>
+    </div>
+    <div class="summaryItemDesc">
+        #writeContent($class.comment.summary)
+    </div>
+#end
+
+
+#macro(writeSummary $coll $elemType $elemName)
+    #if($coll.size() != 0)
+        <div class="summaryTable $elemType">
+            <div class="summaryTableHeader">
+                <span class="objType">$elemName</span> Summary
+            </div>
+        #foreach($item in $coll)
+            <div class="summaryItem">
+                #if ($elemType == "namespace" || $elemType == "class" || $elemType == "interface" || $elemType == "struct"|| $elemType == "object")
+                    #writeLogicalSummary($item)
+                #elseif ($elemType == "function" || $elemType == "constructor" || $elemType == "ifunction" || $elemType == "event")
+                    #writeFuncSummary($item)
+                #elseif ($elemType == "variable" || $elemType == "property")
+                    #writeVarSummary($item)
+                #end
+            </div>
+        #end
+        </div>
+        <p/>
+    #end
+#end
+
+
+
+#macro(writeDetails $object $elemType $memberName)
+    #if ($object.get($elemType).size() > 0)
+        <div class="details $elemType">
+            <h2 class="sectionHeader">$memberName Details</h2>
+            #foreach($item in $object.get($elemType))
+                #if ($elemType == "function" || $elemType == "constructor" || $elemType == "ifunction" || $elemType == "event")
+                    #writeFunctionDetails($item $elemType)
+                #elseif ($elemType == "variable" || $elemType == "property")
+                    #writeVarDetails($item)
+                #end                
+            #end
+        </div>
+    #end
+#end
+
+
+
+
+
+#macro(navigationPane $elementType)
+<div class="navigation" id="navigation">
+    <ul class="navContent#if($elementType != "logical") closed#end">
+        <li>
+            <div class="navTree">
+                <h2 onclick="jgdoc.NavPanel.clicked(event)">
+                    <a href="javascript:jgdoc.NavPanel.dummy()">Navigation</a>
+                </h2>
+                <ul class="navContent2">
+                    <li>
+                        <div>
+                            <a class="openAll" href="javascript:jgdoc.NavTree.onOpenAll()">Open All</a>
+                            <a class="closeAll" href="javascript:jgdoc.NavTree.onCloseAll()">Close All</a>
+                        </div>
+                        <div>
+                            <ul id = "content" class="contents">
+                                Loading...
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+    <ul class="navContent#if($elementType != "file") closed#end">
+        <li>
+            <div class="fileTree">
+                <h2 onclick="jgdoc.NavPanel.clicked(event)">
+                    <a href="javascript:jgdoc.NavPanel.dummy()">Files</a>
+                </h2>
+                <ul class="navContent2">
+                    <li>
+                        #foreach($file in $jg.files)
+                            #if(!$file.isModuleFile())
+                            <div>
+                                <a href="physical/${file.path}.html">$file.comment.name</a>
+                            </div>                              
+                            #end
+                        #end
+                    </li>
+                </ul>
+            </div>
+        </li>       
+    </ul>
+    <ul class="navContent#if($elementType != "module") closed#end">
+        <li>
+            <div class="moduleTree">
+                <h2 onclick="jgdoc.NavPanel.clicked(event)">
+                    <a href="javascript:jgdoc.NavPanel.dummy()">Modules</a>
+                </h2>
+                <ul class="navContent2">
+                    <li>
+                        #foreach($module in $jg.modules)
+                            <div>
+                                <a href="physical/${module.path}.html">$module.comment.name</a>
+                            </div>                              
+                        #end                        
+                    </li>
+                </ul>
+            </div>
+        </li>       
+    </ul>
+</div>  
+    
+#end
+
+#macro(writeCSS $rootPath $aux_path)
+	<link rel="stylesheet" type="text/css" href="${rootPath}jgdoc.css"/>
+	<link rel="stylesheet" type="text/css" href="${rootPath}theme.css"/>
+	#if($aux_path && $aux_path != 'not_specified')
+	<link rel="stylesheet" type="text/css" href="${rootPath}$aux_css"/>
+	#end
+#end
+
+#macro(navbarPhys $isStartup)
+    <div class="navbar">
+        <div class="navbaritem">
+            #if ($isStartup == "yes")           
+                <a href="$rootPath/overview-summary-log.html">Logical View</a>
+            #else
+                <a href="$rootPath/overview-summary.html">Start</a>
+            #end
+        </div>
+        <div class="navbaritem">
+        	<a href="$rootPath/jgindex.html">Index</a>
+           </xsl:element>
+        </div>
+        <div class="navbaritem">
+        	<a href="$rootPath/jgsearch.html">Search</a>
+        </div>
+    </div>	
+#end
+
+#macro(navbarLog $isStartup)
+    <div class="navbar">
+        <div class="navbaritem">
+            #if ($isStartup == "yes")        	
+                <a href="$rootPath/overview-summary.html">Physical View</a>
+            #else
+                <a href="$rootPath/overview-summary-log.html">Start</a>
+            #end
+        </div>
+        <div class="navbaritem">
+            <a href="$rootPath/jgindex.html">Index</a>
+           </xsl:element>
+        </div>
+        <div class="navbaritem">
+            <a href="$rootPath/jgsearch.html">Search</a>
+        </div>
+    </div>
+#end
+
+#macro(writeClassAttributes $obj)
+#if($obj.comment.extends.size() > 0)
+    <div class="extends">
+        <span class="descSection">Extends </span>
+        #foreach ($tagContent in $obj.comment.extends)
+            #if($velocityCount > 1), #end #writeContent($tagContent.content)
+        #end
+    </div>                                      
+#end
+#if($obj.comment.implements.size() > 0)
+    <div class="implements">
+        <span class="descSection">Implements </span>
+        #foreach ($tagContent in $obj.comment.implements)
+            #if($velocityCount > 1), #end #writeContent($tagContent.content)
+        #end
+    </div>                                      
+#end
+
+#if($obj.subClasses.size() > 0)
+    <div class="subclasses">
+        <div class="descSection">
+            #if($obj.commentType == "class")Direct Known Subclasses:#{else}All Known Subinterfaces:#end
+        </div>
+        <div class="paddedDetails">
+            #foreach($subclass in $obj.subClasses)#if($velocityCount > 1), #end<a href="#writeLink($subclass.fullName)">$subclass.fullName</a>#end
+        </div>
+    </div>                                      
+#end
+
+#if($obj.implementors.size() > 0)
+    <div>
+        <div>
+            All Known Implementing Classes:
+        </div>
+        <div>
+            #foreach($subclass in $obj.implementors)#if($velocityCount > 1), #end<a href="#writeLink($subclass.fullName)">$subclass.fullName</a>#end
+        </div>
+    </div>                                      
+#end	
+#end
+
+#macro(writeModuleAttributes $obj)
+#if ($obj.comment.requires.size() > 0)
+    <div class="requires">
+        <span class="descSection">Requires modules: </span>
+        #foreach($tagContent in $obj.comment.requires)
+        	#if($velocityCount > 1), #end #writeContent($tagContent.content)
+        #end
+    </div>
+#end
+#end
+
+
+#macro(writeLogicalContainerSummary $obj)
+    #if ($obj.elementType == "logical_container" && $obj.commentType != "namespace")
+        #set($nested = "Nested")
+    #else
+       #set ($nested = "")
+    #end
+	
+    #writeSummary($obj.get("class") "class" "$nested Class")
+    #writeSummary($obj.get("interface") "interface" "$nested Interface")
+    #writeSummary($obj.object "object" "$nested Object")
+    #writeSummary($obj.structure "structure" "$nested Structure")
+
+    #writeSummary($obj.variable "variable" "Variable")
+    #writeLegacies($obj "variable" "Variables")
+    
+    
+    #writeSummary($obj.property "property" "Property")
+    #writeLegacies($obj "property" "Properties" )
+    
+    #writeSummary($obj.constructor "constructor" "Constructor")
+    
+    #writeSummary($obj.function "function" "Function")
+    #writeLegacies($obj "function" "Functions" )
+    
+    #writeSummary($obj.event "event" "Event")
+    #writeSummary($obj.ifunction "ifunction" "Function Interface")	
+#end
+
+#macro(writeLogicalContainerDetails $obj)
+	#writeDetails($obj "variable" "Variable")
+	#writeDetails($obj "property" "Property")
+	#writeDetails($obj "constructor" "Constructor")
+	#writeDetails($obj "function" "Function")
+	#writeDetails($obj "event" "Event")
+	#writeDetails($obj "ifunction" "Function Interface")
+#end
+
+#macro(writeContainer $obj)
+	#if($obj.comment.srcUrl)
+    <a href="$obj.comment.srcUrl" class="srcUrlLink">view source</a>
+    #end<H2>
+        <span class="objType">$obj.capCommentType</span> $obj.comment.name
+    </H2>
+    #writeClassAttributes($obj)
+    <hr/>
+    <!-- description -->
+    <div>
+       <code>
+            <span class="modifiers">$obj.comment.modifiers</span>
+            <span class="objType">$obj.commentType</span> 
+            <b>$obj.comment.name</b>
+       </code>
+    </div>
+    #writeModuleAttributes($obj)
+    #if($obj.comment.content)
+        <div class="comment">#writeContent($obj.comment.content)</div>
+    #end
+    #genCommonAttrs($obj.comment)
+    #if ($obj.physOwner)
+        <span class="definedIn">Defined in </span>
+        <a href="#writeLink($obj.physOwner.fullName)">$obj.physOwner.comment.name</a>
+    #end
+    <hr/> 
+    <p />
+    
+    #writeLogicalContainerSummary($obj)
+    <!-- ============== Details coming here =================== -->
+    #writeLogicalContainerDetails($obj)  
+#end
+
+#macro(writeOverview $object)
+    <div class="overviewItem">
+        <a href="#writeLink($object.fullName)" target="classFrame">
+            $object.fullName
+        </a>
+    </div>  
+#end
+
+#macro(writeRefOverview $coll $elementType $elementName)
+    #if ($coll.size() > 0)
+        <div class="overviewTitle">$elementName</div>
+        #foreach($item in $coll)
+            #writeOverview($item)           
+        #end
+    #end
+#end

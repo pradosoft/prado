@@ -1,0 +1,94 @@
+#if ($jg.get($objectName)) #set ($obj = $jg.get($objectName)) #end
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>$projectName</title>
+        <META http-equiv="Content-Type" content="text/html; charset=$encoding">        
+        <script>
+
+			(function()
+			{
+			    var loc = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
+                loc = loc.split('\\');
+                loc = loc.join('/');					    
+			    loc = loc.split('/');
+			    loc.pop();
+			    loc = loc.join('/');
+			    loc += '/' + '$trueRootPath';
+			
+			    document.write("<base href='" + loc + "'></base>");
+			})();
+         
+        </script>
+
+        <link rel="stylesheet" type="text/css" href="${rootPath}jgdoc.css">
+        <link rel="stylesheet" type="text/css" href="${rootPath}theme.css">
+        #if ($aux_css)
+        	<link rel="stylesheet" type="text/css" href="${rootPath}$aux_css">
+        #end
+	    <script type="text/javascript" src="navTree.js"></script>
+	    <script type="text/javascript" src="jgdoc.js"></script>
+	</head>
+    <body>
+        <div class="startup" id="startup">
+            <div class="banner" id="banner">
+                <h1 class="projectName">
+	               <a href=".">$projectName</a>   
+                </h1>
+                <div class="bar">
+	                 version $version
+	            </div>
+	         </div>
+             <div class="content" id="docContent">
+                  <div class="block">
+                        <div id="searchBlock">
+			                <div class="search" >
+			                    <div class="searchLabel">Search:</div>
+			                    <div class="searchBlock" style="height:100%">
+					                <input id="jgsSearchString" type="text" size="60" class="jgdSearchString"/>
+					                <div id="jgsSearchPanel" class="jgsSearchPanel" style="display:none">
+						                <div  class="jgdSearchRect" >
+						                    <div id="jgsSearchResults">
+						                        Loading....
+						                    </div>
+						                </div>
+					                   <div id="jgsInfo" class="jgsInfo" >No selection</div>
+                                    </div>
+                                 </div>
+			                </div>
+		                </div>
+		                <div id="docScroll" class="docScroll">
+		                    <div>
+			                    <hr/>
+						        <div>
+						        #if ($obj)	
+						        	#writeContainer($obj)              
+                                #else
+                                    <hr/>
+                                    #if($jg.project)
+                                    <div class="projectDesc">
+                                        <a name="desc"></a><br/>
+                                        #if($projectDesc && $projectDesc.length() > 0)
+                                        	<h1>$projectDesc</h1>
+                                        #end
+                                        #writeContent($jg.project.comment.content)
+                                        <p />
+                                        #genCommonAttrs($jg.project.comment)
+                                    </div>                                    	
+                                    #end
+                                #end
+						        </div>
+        		          </div>			                    
+		                </div>
+        	       </div>
+             </div>
+             #navigationPane($navSection)
+		</div>	
+	</body>
+    <script type="text/javascript">
+        jgdoc.Searcher.start();
+        jgdoc.NavTree.initialize("#if($obj)$obj.fullName#else'GLOBAL'#end");
+    </script>			
+	<script type="text/javascript" src="jsindex.js">
+    </script>
+</html>

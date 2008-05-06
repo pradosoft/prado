@@ -1,0 +1,99 @@
+body {
+	margin:10px;
+	padding:0px;
+}
+body,div,span,p,input {
+	color:#333333;
+    font-family:Verdana,sans-serif,Arial;
+    font-size: 10pt;
+}
+h1, h2, h3, h4 {
+    color:#821B18;
+    font-family:Verdana,Helvetica,Arial,Lucida Grande,Trebuchet MS;
+    font-weight:normal;
+    margin:0px 0px 10px;
+    padding:0px;
+}
+
+a, a span {
+    color:#CD2C27;
+    text-decoration:none;
+}
+a:hover {
+    color:#821B18;
+    text-decoration:underline;
+}
+
+hr{
+  border: 0px; 
+  border-top: solid 1px silver;
+  border-bottom: solid 1px #fff;
+}
+
+.banner { display: none }
+
+.comment {
+    background-color:#F0F0F0;
+    margin-bottom:5px;
+    margin-top:10px;
+    padding:1em 8px;
+}
+
+.summaryTable, .details { 
+    margin-top: .5em;
+    border: 1px solid silver;
+    font-size: 1em;
+}
+.summaryTableHeader, .details .sectionHeader {
+    border: 0;
+    background-color:#F0F0F0;
+    font-size:1.2em;
+    font-weight:bold;
+    padding:5px;
+    text-align:left;
+}
+.summaryTable .summaryItem {
+    padding: .25em;
+    border-top: 1px solid silver;
+}
+.summaryTable .summaryItemDef {
+    font-family: "courier new", courier;
+}
+.summaryTable .summaryItemDesc {
+    margin-top: .25em;
+}
+ 
+.details .comment {
+    background-color: #fff;
+}
+
+.details h3, .details div code {
+    margin-top: .25em;
+    padding: .25em;
+}
+.details h3 a span {
+    font-size: 18px;
+    color:#750000;
+}
+.details div code {
+    color: #000;
+    font-weight: bold;
+}
+.details div code span {
+    font-weight: normal;
+}
+
+.details .returns, .details .parameters {
+    border: 1px solid silver;
+    margin: .5em;
+}
+.details .returns br, .details .parameters br, .details h3 a span.objType {
+    display: none;
+}
+.details .returns .descSection, .details .parameters .descSection {
+    display: block;
+    border-bottom: 1px solid silver;
+    background-color:#F0F0F0;
+    padding: .25em;
+}
+    

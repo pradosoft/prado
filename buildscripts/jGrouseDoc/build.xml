@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+    <!-- 
+        jGrouseDoc Sample build file. 
+        @Copyright (c) 2007 by Denis Riabtchik. All rights reserved. See license.txt and http://jgrouse.com for details@
+        $Id: build.xml 522 2008-03-31 23:34:36Z denis.riabtchik $
+    -->
+
+<project name="jGrouseDoc Sample" basedir="." default="default" >
+    <description>
+            jGrouse sample file
+    </description>
+    <!--
+    <taskdef name="jgdoc" classname="jgrouse.jgdoc.ant.JGTask" classpath="${jGrouseHome}/jgdoc.jar"></taskdef>
+    <taskdef name="fastxslt" classname="jgrouse.jgdoc.ant.FastXsltTask" classpath="${jGrouseHome}/jgdoc.jar"></taskdef>
+    -->
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" description="jGrouseDoc task" depends="setup, clean, makeProjectFile, antgen, antrun, cleanupTempFiles">
+    </target>
+    
+    <target name="makeProjectFile" description="Extract comments from source code" depends="setup">
+        <mkdir dir="${outputDir}"/>
+        <jgdoc output="${outputDir}/${projectFile}" encoding="${encoding}" stopOnErrors="${stopOnErrors}" 
+        	suppressGlobalWarnings="${suppressGlobalWarnings}" outputformat="${outputFormat}" srcUrl="${srcUrl}"
+        	privateprefix="${privatePrefix}">
+            <fileset dir="${inputDir}" includes="${fileMask}">
+            </fileset>
+        </jgdoc>      
+    </target>
+    
+	<target name="antgen" depends="antgenxml, antgenvm"></target>
+    
+    <target name="antgenxml" depends="setup" if="isXML">
+        <delete file="${outputDir}/antgen.xml"/>
+        <xslt style="${jGrouseHome}/skins/${skin}/xslt/antgen.xslt" in="${outputDir}/${projectFile}" out="${outputDir}/antgen.xml">             
+            <param name="jGrouseHome" expression="${jGrouseHome}"/>
+            <param name="projectName" expression="${projectName}"/>
+            <param name="projectDesc" expression="${projectDesc}"/>
+            <param name="projectFile" expression="${projectFile}"/>
+            <param name="useFullNames" expression="${useFullNames}"/>
+            <param name="outDir" expression="${outputDir}"/>
+            <param name="version" expression="${appVersion}"/>
+            <param name="aux_css" expression="${aux_css}"/>
+            <param name="skinDir" expression="${jGrouseHome}/skins/${skin}"/>
+        </xslt>
+    </target>
+	
+	<target name="antgenvm" depends="setup" if="isBIN">
+        <delete file="${outputDir}/antgen.xml"/>
+        <vmtask resourcePath="., ${jGrouseHome}" source="${outputDir}/${projectFile}" loglevel="INFO">
+            <template templatename="skins/${skin}/vm/antgen.vm">
+                <output file="${outputDir}/antgen.xml">
+                    <param key="jGrouseHome" value="${jGrouseHome}"/>
+                    <param key="projectName" value="${projectName}"/>
+                    <param key="projectDesc" value="${projectDesc}"/>
+                    <param key="projectFile" value="${projectFile}"/>
+                    <param key="useFullNames" value="${useFullNames}"/>
+                    <param key="outDir" value="${outputDir}"/>
+                    <param key="version" value="${appVersion}"/>
+                    <param key="aux_css" value="${aux_css}"/>
+                    <param key="skin" value="${skin}"/>
+                    <param key="skinDir" value="${jGrouseHome}/skins/${skin}"/>
+                    <param key="commonSkin" value="${jGrouseHome}/skins/common"/>
+                </output>
+            </template>
+        </vmtask>
+	</target>
+    
+    <target name="antrun" depends="setup">
+        <ant antfile="${outputDir}/antgen.xml"></ant>
+        <ant antfile="${jGrouseHome}/themes/${theme}/build.xml"></ant>
+    </target>
+    
+    <target name="cleanupTempFiles" depends="setup">
+        <delete file="${outputDir}/antgen.xml"/>
+        <delete file="${outputDir}/${projectFile}"/>
+    </target>
+    
+    <target name="clean" depends="setup">
+          <delete dir="${outputDir}"></delete>
+    </target>
+    
+    <target name="setup">
+        <condition property="configFile" value="jgrousedoc.properties">
+            <not><isset property="configFile"/></not>
+        </condition>
+        <property file="${configFile}"/>
+        <fail message="jGrouseHome home not defined">
+            <condition>
+               <and>
+                 <not><isset property="jGrouseHome"/></not>
+                 <not><isset property="jGrouseHome.default"/></not>
+               </and>
+             </condition>
+        </fail>
+        <condition property="jGrouseHome" value="${jGrouseHome.default}">
+            <not><isset property="jGrouseHome"/></not>
+        </condition>
+        <condition property="jgdocTask" value="${jGrouseHome}/jgdoc.jar">
+            <not><isset property="jgdocTask"/></not>
+        </condition>
+        <taskdef name="jgdoc" classname="jgrouse.jgdoc.ant.JGTask" classpath="${jgdocTask}"></taskdef>
+        <taskdef name="fastxslt" classname="jgrouse.jgdoc.ant.FastXsltTask" classpath="${jgdocTask}"></taskdef>
+        
+        <condition property="inputDir" value="${inputDir.default}">
+            <isset property="inputDir.default"/>
+        </condition>
+        <condition property="inputDir" value="source">
+            <not><isset property="inputDir"/></not>
+        </condition>
+        <condition property="fileMask" value="${fileMask.default}">
+            <isset property="fileMask.default"/>
+        </condition>
+        <condition property="fileMask" value="**/*.js">
+              <not><isset property="fileMask"/></not>
+        </condition>
+        
+        <condition property="outputDir" value="${outputDir.default}">
+            <isset property="outputDir.default"/>
+        </condition>
+        <condition property="outputDir" value="api">
+              <not><isset property="outputDir"/></not>
+        </condition>
+        
+        <condition property="skin" value="noframes">
+              <not><isset property="skin"/></not>
+        </condition>
+        <condition property="theme" value="sample">
+              <not><isset property="theme"/></not>
+        </condition>
+        <condition property="projectFile" value="jgrouse.jgd">
+            <not><isset property="projectFile"/></not>
+        </condition>
+        <condition property="projectName" value="Project name not specified">
+            <not><isset property="projectName"/></not>
+        </condition>
+        <condition property="appVersion" value="Version not specified">
+            <not><isset property="appVersion"/></not>
+        </condition>
+        <condition property="projectDesc" value="Project Description not specified">
+            <not><isset property="projectDesc"/></not>
+        </condition>
+        <condition property="stopOnErrors" value="false">
+            <not><isset property="stopOnErrors"/></not>
+        </condition>
+        <condition property="srcUrl" value="not_defined">
+            <not><isset property="srcUrl"/></not>
+        </condition>
+        <condition property="privatePrefix" value="not_defined">
+            <not><isset property="privatePrefix"/></not>
+        </condition>
+        <condition property="outputFormat" value="BIN">
+            <not><isset property="outputFormat"/></not>
+        </condition>
+    	<condition property="isXML">
+    		<equals arg1="${outputFormat}" arg2="xml" casesensitive="false" trim="true"/>
+    	</condition>
+        <condition property="isBIN">
+            <equals arg1="${outputFormat}" arg2="bin" casesensitive="false" trim="true"/>
+        </condition>
+        <condition property="encoding" value="UTF-8">
+            <not><isset property="encoding"/></not>
+        </condition>
+        <condition property="srcEncoding" value="DEFAULT">
+	            <not><isset property="srcEncoding"/></not>
+        </condition>
+        <condition property="aux_css" value="not_specified">
+	            <not><isset property="aux_css"/></not>
+        </condition>
+    	
+    	
+        <taskdef name="vmtask" classname="jgrouse.jgdoc.ant.VMTask" classpath="${jgdocTask};${jGrouseHome}/velocity-dep-1.5.jar"></taskdef>
+    </target>
+        
+
+</project>

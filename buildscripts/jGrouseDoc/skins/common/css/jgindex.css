@@ -1,0 +1,53 @@
+/*      
+    jGrouseDoc stylesheet file for index page. 
+    Copyright (c) 2007 by Robert Kieffer and jGrouseDoc contributors 
+    $Id: jgindex.css 302 2007-12-24 22:51:11Z denis.riabtchik $
+*/
+@CHARSET "ISO-8859-1";
+
+  dt {
+    clear:both;
+    float:left;
+    width: 200px;
+    margin-left: 20px;
+  }
+  a {
+    color: #009;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #009;
+    text-decoration: underline;
+  }
+  dd {
+    /*float:left;*/
+  }
+  dt, dd {
+    margin: 0px;
+  }
+  dt.even, dd.even {
+    border-bottom: dashed 1px #ddd;
+  }
+  dt.odd, dd.odd {
+    border-bottom: dotted 1px #eee;
+  }
+  dt.is_namespace {
+    font-weight:bold;
+  }
+
+  #toc {
+    font-size: 12pt;
+    font-weight: bold;
+  }
+  #toc .has_entries a,
+  #toc .no_entries {padding: 0px 3px;}
+  #toc .no_entries {color:#999}
+
+  .letter_section {
+    clear:both;
+    margin: 0px;
+    padding:15px 0px 6px;
+  }
+  .letter_section a {
+    color:#000;
+  }

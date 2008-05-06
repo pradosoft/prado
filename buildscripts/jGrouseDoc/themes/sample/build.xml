@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<project name="sample theme" default="applyJGrouseDoc">
+
+    <target name="applyJGrouseDoc">
+        <echo>Applying sample theme</echo>
+    	<copy todir="${outputDir}" overwrite="yes">
+            <fileset dir="${jGrouseHome}/themes/sample/css" includes="*.css"></fileset>
+    	</copy>
+    	<copy todir="${outputDir}" overwrite="yes">
+            <fileset dir="${jGrouseHome}/themes/sample/img" includes="*"></fileset>
+    	</copy>
+    </target>
+</project>

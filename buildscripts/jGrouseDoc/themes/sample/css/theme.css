@@ -1,0 +1,122 @@
+/*--------- sample theme --------------*/
+
+body {
+	font-family: sans-serif;
+	font-size: 0.9em;
+}
+
+code {
+	font-size: 1.1em;
+}
+
+a:link, a:visited
+{
+	color: blue;
+}
+
+
+a:hover {
+	text-decoration: underline;
+}
+
+a[name]:hover {
+    text-decoration: none;
+}
+
+
+hr {
+	border: 1px;
+	background-color: #D0D0D0;
+}
+
+.summaryTable {
+	border: medium none;
+	margin-top: 0.5em;
+}
+
+.summaryTableHeader {
+	background-color: #66CCCC;
+	font-size: 1.3em;
+}
+
+.summaryTable .summaryItem {
+	border : none;
+	border-bottom: 1px solid;
+	border-color: #d0d0d0;
+	padding-top: 0.3em;
+}
+
+.summaryTable .summaryItemRef
+{
+	font-weight: normal;
+}
+
+
+.summaryTable .inheritanceSummary 
+{
+	border: none;
+}
+
+.sectionHeader {
+	background-color: #66CCCC;
+	border: medium none;
+	font-size: 1.3em;
+}
+
+.elementName {
+	font-weight: normal;
+}
+
+.paddedDetails {
+	font-size: 0.9em;
+}
+
+.paddedDetails code {
+	font-weight: bolder;
+}
+
+.type 
+{
+	color: green;
+	font-weight: bolder;
+}
+
+.modifiers
+{
+	color: purple;
+}
+
+.logicalDetail .summaryTable
+{
+	display: inherit;
+}
+
+.navbaritem
+{
+	background-color: #66CCCC;
+}
+
+.navbaritem a
+{
+    background-color: #66CCCC;
+    color: black;
+    text-decoration: underline;
+}
+
+/** this is to show how to hide parent names */
+.overview .parent
+{
+	/*display: none;*/
+}
+
+a.searchItem
+{
+    color: black;
+}
+
+a.jgdSelectedItem.searchItem 
+{
+	color: white;
+	text-decoration: none;
+}
+
