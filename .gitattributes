@@ -3077,6 +3077,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket745.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket769.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket785.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket828.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket849.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text

@@ -474,7 +474,7 @@ Prado.WebUI.TDatePicker.prototype =
 	},
 	
 	onChange : function()
-	{
+	{ 
 		if(this.options.InputMode == "TextBox")
 		{
 			this.control.value = this.formatDate();
@@ -525,10 +525,11 @@ Prado.WebUI.TDatePicker.prototype =
 			return;
 		var old=this.selectedDate;
 		this.selectedDate = this.newDate(date);
+		var dateChanged=(old - this.selectedDate != 0) || ( this.options.InputMode == "TextBox" && this.control.value != this.formatDate());
 
 		this.updateHeader();
 		this.update();
-		if (old - this.selectedDate !=0 && typeof(this.onChange) == "function")
+		if (dateChanged && typeof(this.onChange) == "function")
 			this.onChange(this, date);
 	},
 
