@@ -64,7 +64,7 @@ Comme vous avez pu le deviner, la page <tt>EditUser</tt> est fortement ressembla
     Display="Dynamic" />
 &lt;com:TEmailAddressValidator
     ControlToValidate="Email"
-    ErrorMessage="Vous avez indiqué un mot de passe invalide."
+    ErrorMessage="Vous avez indiqué un email invalide."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
