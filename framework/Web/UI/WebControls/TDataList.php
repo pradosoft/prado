@@ -1175,15 +1175,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 
 	private function getAlternatingItemDisplay()
 	{
-		if(($classPath=$this->getAlternatingItemRenderer())==='' && ($template=$this->_alternatingItemTemplate)===null)
+		if(($classPath=$this->getAlternatingItemRenderer())==='' && $this->_alternatingItemTemplate===null)
 			return array($this->getItemRenderer(),$this->_itemTemplate);
 		else
-			return array($classPath,$template);
+			return array($classPath,$this->_alternatingItemTemplate);
 	}
 
 	private function getSelectedItemDisplay($itemIndex)
 	{
-		if(($classPath=$this->getSelectedItemRenderer())==='' && ($template=$this->_selectedItemTemplate)===null)
+		if(($classPath=$this->getSelectedItemRenderer())==='' && $this->_selectedItemTemplate===null)
 		{
 			if($itemIndex%2===0)
 				return array($this->getItemRenderer(),$this->_itemTemplate);
@@ -1191,15 +1191,15 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 				return $this->getAlternatingItemDisplay();
 		}
 		else
-			return array($classPath,$template);
+			return array($classPath,$this->_selectedItemTemplate);
 	}
 
 	private function getEditItemDisplay($itemIndex)
 	{
-		if(($classPath=$this->getEditItemRenderer())==='' && ($template=$this->_editItemTemplate)===null)
+		if(($classPath=$this->getEditItemRenderer())==='' && $this->_editItemTemplate===null)
 			return $this->getSelectedItemDisplay($itemIndex);
 		else
-			return array($classPath,$template);
+			return array($classPath,$this->_editItemTemplate);
 	}
 
 	/**
