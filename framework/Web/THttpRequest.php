@@ -345,6 +345,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @return string the requested http procolol. Blank string if not defined.
+	 */
+	public function getHttpProtocolVersion ()
+	{
+		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'';
+	}
+	
+	/**
 	 * @return string part of that request URL after the host info (including pathinfo and query string)
 	 */
 	public function getRequestUri()

@@ -257,8 +257,11 @@ class THttpResponse extends TModule implements ITextWriter
 
 	/**
 	 * Set the HTTP status code for the response.
+	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@link THttpRequest::getHttpProtocolVersion})
+	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
 	 * 
 	 * @param integer HTTP status code
+	 * @param string HTTP status reason, defaults to standard HTTP reasons
 	 */
 	public function setStatusCode($status, $reason=null)
 	{
@@ -432,7 +435,10 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	protected function sendHttpHeader ()
 	{
-		header("HTTP/1.1 {$this->_status} {$this->_reason}", true, $this->_status);
+		if (($version=$this->getRequest()->getHttpProtocolVersion())==='')
+			header (' ', true, $this->_status);
+		else
+			header($version.' '.$this->_status.' '.$this->_reason, true, $this->_status);
 	}
 
 	/**
