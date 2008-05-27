@@ -71,6 +71,8 @@ Prado.Validation =  Class.create();
  * where <tt>formID</tt> is the HTML form ID, and the optional
  * <tt>groupID</tt> if present will only validate the validators
  * in a particular group.</p>
+ * <p>Use <code>{@link Prado.Validation.validateControl}(controlClientID)</code>
+ * to trigger validation for a single control.</p>
  * 
  * @object {static} Prado.Validation
  */
@@ -105,6 +107,24 @@ Object.extend(Prado.Validation,
 			throw new Error("Form '"+formID+"' is not registered with Prado.Validation");
 		}
 	},
+
+	/**
+	 * Validate all validators of a specific control.
+	 * @function {boolean} ?
+	 * @param {string} id - ID of DOM element to validate 
+	 * @return true if all validators are valid or no validators present, false otherwise.
+	 */
+    validateControl : function(id) 
+    {
+        var formId=this.getForm();
+
+		if (this.managers[formId])
+        {
+            return this.managers[formId].validateControl(id);
+        } else {
+			throw new Error("A validation manager needs to be created first.");
+        }
+    },
 
 	/**
 	 * Return first registered form
@@ -209,6 +229,12 @@ Prado.ValidationManager = Class.create();
 Prado.ValidationManager.prototype =
 {
 	/**
+	 * Hash of registered validators by control's clientID
+	 * @var controls
+	 */
+    controls: {},
+
+	/**
 	 * Initialize ValidationManager.
 	 * @constructor {protected} ?
 	 * @param {object} options - Options for initialization
@@ -282,6 +308,17 @@ Prado.ValidationManager.prototype =
 		this.updateSummary(group, true);
 		return valid;
 	},
+
+	/**
+	 * Perform validation for all validators of a single control.
+	 * @function {boolean} ?
+	 * @param {string} id - ID of DOM element to validate 
+	 * @return true if all validators are valid or no validators present, false otherwise.
+	 */
+    validateControl : function (id) 
+    {
+        return this.controls[id] ? this.controls[id].invoke('validate',null).all() : true;
+    },
 
 	/**
 	 * Focus on the first validator that is invalid and options.FocusOnError is true.
@@ -371,14 +408,17 @@ Prado.ValidationManager.prototype =
 	 */
 	addValidator : function(validator)
 	{
-		// Erase any existing validator with same options
-		this.validators = this.validators.reject(function(v)
-		{
-			return (v.options.ID==validator.options.ID);
-		});
+		// Remove previously registered validator with same ID
+        // to prevent stale validators created by AJAX updates
+        this.removeValidator(validator);
+
 		this.validators.push(validator);
 		if(validator.group && !this.groups.include(validator.group))
 			this.groups.push(validator.group);
+
+        if (typeof this.controls[validator.control.id] === 'undefined')
+            this.controls[validator.control.id] = Array();
+        this.controls[validator.control.id].push(validator);
 	},
 
 	/**
@@ -390,6 +430,24 @@ Prado.ValidationManager.prototype =
 	{
 		this.summaries.push(summary);
 	},
+
+	/**
+	 * Remove a validator from this manager
+	 * @function ?
+	 * @param {TBaseValidator} validator - Validator object
+	 */
+    removeValidator : function(validator)
+    {
+		this.validators = this.validators.reject(function(v)
+		{
+			return (v.options.ID==validator.options.ID);
+		});
+        if (this.controls[validator.control.id])
+            this.controls[validator.control.id].reject( function(v)
+            {
+                return (v.options.ID==validator.options.ID)
+            });
+    },
 
 	/**
 	 * Gets validators with errors.
@@ -473,7 +531,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	initialize : function(options)
 	{
 		/**
-		 * ValidationManager options
+		 * Validator options
 		 * @var {object} options 
 		 */
 		this.options = options;
@@ -705,7 +763,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * Initialize TBaseValidator.
 	 * @constructor {protected} ?
 	 * @param {object} options - Options for initialization.
-	 * @... {string} ID - ID of validation summary element.
+	 * @... {string} ID - ID of validator
 	 * @... {string} FormID - ID of form of this manager.
 	 * @... {string} ControlToValidate - ID of control to validate.
 	 * @... {optional string} InitialValue - Initial value of control to validate.
