@@ -572,10 +572,10 @@ class PradoBase
 		if($app===null || ($config = $app->getTranslationConfiguration())===null)
 			return strtr($text, $params);
 
-		Translation::init();
-
-		if(empty($catalogue) && isset($config['catalogue']))
-			$catalogue = $config['catalogue'];
+		if ($catalogue===null)
+			$catalogue=isset($config['catalogue'])?$config['catalogue']:'messages';
+			
+		Translation::init($catalogue);
 
 		//globalization charset
 		$appCharset = $app===null ? '' : $app->getCharset();
@@ -587,7 +587,7 @@ class PradoBase
 		if(empty($charset)) $charset = $appCharset;
 		if(empty($charset)) $charset = $defaultCharset;
 
-		return Translation::formatter()->format($text,$params,$catalogue,$charset);
+		return Translation::formatter($catalogue)->format($text,$params,$catalogue,$charset);
 	}
 }
 
