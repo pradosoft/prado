@@ -130,8 +130,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function redirect($url)
 	{
-		if(!$this->getApplication()->getRequestCompleted())
-			$this->getApplication()->onEndRequest();
+		Prado::trace("ActivePage redirect()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->appendContentPart($this->getResponse(), self::CALLBACK_REDIRECT, $url);
 		//$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
 	}
@@ -143,6 +142,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function renderResponse($writer)
 	{
+		Prado::trace("ActivePage renderResponse()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		//renders all the defered render() calls.
 		foreach($this->_controlsToRender as $rid => $forRender)
 			$forRender[0]->render($forRender[1]);
