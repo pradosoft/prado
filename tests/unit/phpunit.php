@@ -11,7 +11,7 @@
  * the right package in unit test and code coverage reports.
  */
 define('PRADO_FRAMEWORK_DIR', dirname(__FILE__).'/../../framework');
-set_include_path(PRADO_FRAMEWORK_DIR.':'.get_include_path());
+set_include_path(PRADO_FRAMEWORK_DIR.PATH_SEPARATOR.get_include_path());
 
 require_once dirname(__FILE__).'/Prado.php';
 require_once PRADO_FRAMEWORK_DIR.'/prado.php';
