@@ -77,8 +77,6 @@ class TErrorHandler extends TModule
 	public function init($config)
 	{
 		$this->getApplication()->setErrorHandler($this);
-		if($this->_templatePath===null)
-			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
 	}
 
 	/**
@@ -86,6 +84,8 @@ class TErrorHandler extends TModule
 	 */
 	public function getErrorTemplatePath()
 	{
+		if($this->_templatePath===null)
+			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
 		return $this->_templatePath;
 	}
 
