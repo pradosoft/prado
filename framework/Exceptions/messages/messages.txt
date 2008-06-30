@@ -349,6 +349,9 @@ clientscript_invalid_package_path		= Invalid PackagePath '{0}' for TClientScript
 tdatepicker_autopostback_unsupported	= '{0}' does not support AutoPostBack.
 globalization_cache_path_failed			= Unable to create translation message cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.
 globalization_source_path_failed		= Unable to create translation message path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+messagesource_connectionid_invalid      = MessageSource_Database.source '{0}' does not point to a valid TDataSourceConfig module.
+messagesource_connectionid_required     = ConnectionID in MessageSource_Database.source is required.
+
 callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
 callback_invalid_callback_options		= '{1}' is not a valid TCallbackOptions control for Callback control '{0}'.
 callback_invalid_clientside_options		= Callback ClientSide property must be either a string that is the ID of a TCallbackOptions control or an instance of TCallbackClientSideOptions.=======

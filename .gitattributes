@@ -2225,6 +2225,7 @@ framework/I18N/core/IMessageSource.php -text
 framework/I18N/core/MessageCache.php -text
 framework/I18N/core/MessageFormat.php -text
 framework/I18N/core/MessageSource.php -text
+framework/I18N/core/MessageSource_Database.php -text
 framework/I18N/core/MessageSource_MySQL.php -text
 framework/I18N/core/MessageSource_SQLite.php -text
 framework/I18N/core/MessageSource_XLIFF.php -text

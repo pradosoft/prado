@@ -108,26 +108,28 @@ abstract class MessageSource implements IMessageSource
 	
 	/**
 	 * Factory method to instantiate a new MessageSource depending on the
-	 * source type. The allowed source types are 'XLIFF', 'SQLite', 
-	 * 'MySQL', and 'gettext'. The source parameter is dependent on the 
-	 * source type. For 'gettext' and 'XLIFF', it should point to the directory
-	 * where the messages are stored. For database types, e.g. 'SQLite' and 
-	 * 'MySQL', it should be a PEAR DB style DSN string. 
+	 * source type. The allowed source types are 'XLIFF', 'gettext' and
+     * 'Database'. The source parameter depends on the source type. 
+     * For 'gettext' and 'XLIFF', 'source' should point to the directory 
+     * where the messages are stored. 
+     * For 'Database', 'source' should be a valid connection id.
+     * If (deprecated) 'MySQL' is used, 'source' must contain a valid 
+     * DSN.
 	 *
  	 * Custom message source are possible by supplying the a filename parameter
  	 * in the factory method.
 	 * 
 	 * @param string the message source type.
-	 * @param string the location of the resource.
+	 * @param string the location of the resource or the ConnectionID.
 	 * @param string the filename of the custom message source.
 	 * @return MessageSource a new message source of the specified type. 
 	 * @throws InvalidMessageSourceTypeException
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{
-		$types = array('XLIFF', 'SQLite', 'MySQL', 'gettext');
+		$types = array('XLIFF', 'MySQL', 'Database', 'gettext');
 		
-		if(empty($filename) && in_array($type, $types) == false)
+		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "'.$type.'", valid types are '.
 				implode(', ', $types));
 		

@@ -11,6 +11,12 @@ for both A and B.
 
 Upgrading from v3.1.2
 ---------------------
+- The Translation configuration now also accepts type 'Database' to
+  ease the setup of DB base translation. A valid ConnectionID has to 
+  be supplied in the source parameter:
+  <translation type="Database" source="db1" autosave="true" cache="false" />
+  Type 'MySQL' can still be used but is deprecated and might be removed
+  in a later release.
 
 
 Upgrading from v3.1.1

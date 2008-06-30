@@ -155,8 +155,10 @@ class TGlobalization extends TModule
 	/**
 	 * Sets the translation configuration. Example configuration:
 	 * <code>
-	 * $config['type'] = 'XLIFF'; //XLIFF, gettext, mysql or sqlite
-	 * $config['source'] = 'Path.to.directory'; //or database connection string
+	 * $config['type'] = 'XLIFF'; //XLIFF, gettext, Database or MySQL (deprecated)
+	 * $config['source'] = 'Path.to.directory'; // for types XLIFF and gettext
+	 * $config['source'] = 'connectionId'; // for type Database
+	 * $config['source'] = 'mysql://user:pw@host/db'; // for type MySQL (deprecated)
 	 * $config['catalogue'] = 'messages'; //default catalog
 	 * $config['autosave'] = 'true'; //save untranslated message
 	 * $config['cache'] = 'true'; //cache translated message
