@@ -1,6 +1,6 @@
 <?php
 /**
- * MessageSource_MySQL class file.
+ * MessageSource_Database class file.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the BSD License.
@@ -20,9 +20,9 @@
 require_once(dirname(__FILE__).'/MessageSource.php');
 
 /**
- * MessageSource_MySQL class.
+ * MessageSource_Database class.
  *
- * Retrive the message translation from a MySQL database.
+ * Retrive the message translation from a database.
  *
  * See the MessageSource::factory() method to instantiate this class.
  *
@@ -194,7 +194,7 @@ class MessageSource_Database extends MessageSource
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid');
 		$command->bindParameter(':moddate',$time,PDO::PARAM_INT);
 		$command->bindParameter(':catid',$cat_id,PDO::PARAM_INT);
-		$command->execute();
+		$result=$command->execute();
 
 		if(!empty($this->cache))
 			$this->cache->clean($variant, $this->culture);
@@ -235,6 +235,7 @@ class MessageSource_Database extends MessageSource
 		$command->bindParameter(':dateadded',$time,PDO::PARAM_INT);
 		foreach($messages as $message)
 		{
+			if (empty($message)) continue;
 			$count++; $inserted++;
 			$command->execute();
 		}

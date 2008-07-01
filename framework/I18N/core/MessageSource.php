@@ -34,9 +34,10 @@ require_once(dirname(__FILE__).'/MessageCache.php');
  * using the factory method. The default valid sources are
  *
  *  # XLIFF -- using XML XLIFF format to store the translation messages.
- *  # SQLite -- Store the translation messages in a SQLite database.
- *  # MySQL -- Using a MySQL database to store the messages.
  *  # gettext -- Translated messages are stored in the gettext format.
+ *  # Database -- Use an existing TDbConnection to store the messages.
+ *  # SQLite -- (Deprecated) Store the translation messages in a SQLite database.
+ *  # MySQL -- (Deprecated) Using a MySQL database to store the messages.
  *
  * A custom message source can be instantiated by specifying the filename
  * parameter to point to the custom class file. E.g.
@@ -50,13 +51,13 @@ require_once(dirname(__FILE__).'/MessageCache.php');
  * loadCatalogue method. It details how the resources are loaded and cached.
  * See also the existing message source types as examples.
  * 
- * The following example instantiates a MySQL message source, set the culture,
+ * The following example instantiates a Database message source, set the culture,
  * set the cache handler, and use the source in a message formatter. 
- * The messages are store in a database named "messages". The source parameter
- * for the actory method is a PEAR DB style DSN.
+ * The messages are stored using an existing connection. The source parameter
+ * for the factory method must contain a valid ConnectionID.
  * <code>
- *   $dsn = 'mysql://username:password@localhost/messages';
- *   $source = MessageSource::factory('MySQL', $dsn);
+ *   // db1 must be already configured
+ *   $source = MessageSource::factory('Database', 'db1');
  *   
  *   //set the culture and cache, store the cache in the /tmp directory.
  *   $source->setCulture('en_AU')l
@@ -112,9 +113,9 @@ abstract class MessageSource implements IMessageSource
      * 'Database'. The source parameter depends on the source type. 
      * For 'gettext' and 'XLIFF', 'source' should point to the directory 
      * where the messages are stored. 
-     * For 'Database', 'source' should be a valid connection id.
-     * If (deprecated) 'MySQL' is used, 'source' must contain a valid 
-     * DSN.
+     * For 'Database', 'source' must be a valid connection id.
+     * If one of the deprecated types 'MySQL' or 'SQLite' is used, 
+     * 'source' must contain a valid  DSN.
 	 *
  	 * Custom message source are possible by supplying the a filename parameter
  	 * in the factory method.
@@ -127,7 +128,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{
-		$types = array('XLIFF', 'MySQL', 'Database', 'gettext');
+		$types = array('XLIFF','gettext','Database','MySQL','SQLite');
 		
 		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "'.$type.'", valid types are '.
