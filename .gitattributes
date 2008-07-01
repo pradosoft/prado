@@ -2483,6 +2483,7 @@ framework/I18N/core/data/zh_SG.dat -text
 framework/I18N/core/data/zh_TW.dat -text
 framework/I18N/core/util.php -text
 framework/I18N/schema/mysql.sql -text
+framework/I18N/schema/postgresql.sql -text
 framework/I18N/schema/sqlite.sql -text
 framework/IO/TTarFileExtractor.php -text
 framework/IO/TTextWriter.php -text
