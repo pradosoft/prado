@@ -132,7 +132,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 
 <ul id="u3" class="block-content">
 	<li>
-	* <a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
 	extends TActiveTextBox to offer text completion suggestions.
 	</li>
 
