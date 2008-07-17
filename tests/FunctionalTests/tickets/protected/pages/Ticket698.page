@@ -1,0 +1,7 @@
+
+<com:TContent ID="Content">
+<com:TActiveButton ID="switchContentTypeButton" Text="change" onClick="switchContentTypeClicked" onCallback="switchContentTypeCallback" />
+	<com:TActivePanel ID="ContentPanel" >
+		<com:THtmlArea ID="EditHtmlTextBox"/>
+	</com:TActivePanel>
+</com:TContent>
