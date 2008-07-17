@@ -17,6 +17,10 @@ Upgrading from v3.1.2
   <translation type="Database" source="db1" autosave="true" cache="false" />
   Type 'MySQL' can still be used but is deprecated and might be removed
   in a later release.
+- TinyMCE (used by THtmlArea component) has been upgraded to version 3.1.0.1.
+  Since the 3.X branch of TinyMCE has a different API than 2.X, you should 
+  upgrade your Customs Plugins if you use any.
+  See http://wiki.moxiecode.com/index.php/TinyMCE:Migration_guide for more information.
 
 
 Upgrading from v3.1.1

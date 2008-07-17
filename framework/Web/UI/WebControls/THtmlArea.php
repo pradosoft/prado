@@ -301,7 +301,6 @@ class THtmlArea extends TTextBox
 		$this->loadJavascriptLibrary();
 		if($this->getEnableCompression())
 			$this->preLoadCompressedScript();
-		$this->applyJavascriptFixes();
 
 		parent::addAttributesToRender($writer);
 	}
@@ -346,27 +345,6 @@ class THtmlArea extends TTextBox
 		$scripts = $this->getPage()->getClientScript();
 		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
 			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
-	}
-
-	/**
-	 * Changes the TinyMCE triggerSave() function to allow for missing textareas.
-	 */
-	protected function applyJavascriptFixes()
-	{
-		$scripts = $this->getPage()->getClientScript();
-		$js = <<<EOD
-if(typeof(tinyMCE)!='undefined')
-{
-	TinyMCE_Control.prototype.triggerSave_old = TinyMCE_Control.prototype.triggerSave;
-	TinyMCE_Control.prototype.triggerSave = function(skip_cleanup, skip_callback)
-	{
-		if(this.getDoc()!=null)
-			this.triggerSave_old(skip_cleanup, skip_callback);
-	}
-}
-EOD;
-		if(!$scripts->isEndScriptRegistered('prado:THtmlArea:fix'))
-			$scripts->registerEndScript('prado:THtmlArea:fix', $js);
 	}
 
 	/**
@@ -434,7 +412,7 @@ EOD;
 		//$options['theme_advanced_buttons2'] = ' ';
 		$options['theme_advanced_buttons1'] = 'formatselect,fontselect,fontsizeselect,separator,bold,italic,underline,strikethrough,sub,sup';
 		$options['theme_advanced_buttons2'] = 'justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,separator,outdent,indent,separator,forecolor,backcolor,separator,hr,link,unlink,image,charmap,separator,removeformat,code,help';
-		$options['theme_advanced_buttons3'] = ' ';
+		$options['theme_advanced_buttons3'] = '';
 
 		$options['theme_advanced_toolbar_location'] = 'top';
 		$options['theme_advanced_toolbar_align'] = 'left';
