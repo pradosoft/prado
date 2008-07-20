@@ -12,6 +12,7 @@ BUG: Ticket#872 - use PATH_SEPARATOR in phpunit.php (fragmaster b)
 ENH: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
 ENH: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
+BUG: Ticket#886 - TSimpleDateFormatter: One month offset in time stamp with date pattern "yyyy" (Knut)
 
 Version 3.1.2 April 21, 2008
 ============================
