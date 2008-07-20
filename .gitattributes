@@ -3085,6 +3085,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket769.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket785.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket828.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket849.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket886.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket886.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text
@@ -3148,6 +3150,7 @@ tests/FunctionalTests/tickets/tests/Ticket703TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket708TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket72TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket769TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket886TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text
 tests/FunctionalTests/validators/index.php -text
@@ -3551,6 +3554,7 @@ tests/unit/TComponentTest.php -text
 tests/unit/Util/AllTests.php -text
 tests/unit/Util/TDateTimeStampTest.php -text
 tests/unit/Util/TLoggerTest.php -text
+tests/unit/Util/TSimpleDateFormatterTest.php -text
 tests/unit/Web/AllTests.php -text
 tests/unit/Web/TAssetManagerTest.php -text
 tests/unit/Web/TCacheHttpSessionTest.php -text

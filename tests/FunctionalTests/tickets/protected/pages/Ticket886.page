@@ -1,0 +1,8 @@
+<com:TContent ID="Content">
+
+	<com:TDatePicker ID="Year" DateFormat="yyyy" InputMode="DropDownList"/>
+	<com:TButton ID="SendButton" ButtonType="Submit" Text="Send" onClick="onButtonClicked" />
+	
+	<com:TLabel ID="Output"/>
+	
+</com:TContent>
