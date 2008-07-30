@@ -47,8 +47,9 @@ class TSqlMapConfig extends TDataSourceConfig
 	public function clearCache()
 	{
 		$cache = $this->getApplication()->getCache();
-		if(!is_null($cache))
+		if($cache !== null) {
 			$cache->delete($this->getCacheKey());
+		}	
 	}
 
 	/**
@@ -60,8 +61,9 @@ class TSqlMapConfig extends TDataSourceConfig
 		if($this->getEnableCache())
 		{
 			$cache = $this->getApplication()->getCache();
-			if(!is_null($cache))
+			if($cache !== null) {
 				return $cache->set($this->getCacheKey(), $manager);
+			}
 		}
 		return false;
 	}
@@ -75,7 +77,7 @@ class TSqlMapConfig extends TDataSourceConfig
 		if($this->getEnableCache())
 		{
 			$cache = $this->getApplication()->getCache();
-			if(!is_null($cache))
+			if($cache !== null)
 			{
 				$manager = $cache->get($this->getCacheKey());
 				if($manager instanceof TSqlMapManager)
@@ -104,7 +106,7 @@ class TSqlMapConfig extends TDataSourceConfig
 		else
 		{
 			$file = Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT);
-			if(is_null($file) || !is_file($file))
+			if($file === null || !is_file($file))
 				throw new TConfigurationException('sqlmap_configfile_invalid',$value);
 			else
 				$this->_configFile = $file;

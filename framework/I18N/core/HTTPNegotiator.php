@@ -51,8 +51,9 @@ class HTTPNegotiator
 	 */
 	function getLanguages()
 	{
-		if(!is_null($this->languages))
+		if($this->languages !== null) {
 			return $this->languages;
+		}
 
 		$this->languages = array();
 
@@ -107,8 +108,9 @@ class HTTPNegotiator
 	 */
 	function getCharsets()
 	{
-        if(!is_null($this->charsets))
+        if($this->charsets !== null) {
 			return $this->charsets;
+		}
 
 		$this->charsets = array();
 

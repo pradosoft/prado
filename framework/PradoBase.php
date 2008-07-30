@@ -414,7 +414,7 @@ class PradoBase
 						echo 'array(' . count($item) . ')';
 					else if (is_bool($item))
 						echo $item ? 'true' : 'false';
-					else if (is_null($item))
+					else if ($item === null)
 						echo 'NULL';
 					else if (is_resource($item))
 						echo get_resource_type($item);

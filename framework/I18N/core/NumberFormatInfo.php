@@ -155,7 +155,7 @@ class NumberFormatInfo
     public static function getInvariantInfo($type=NumberFormatInfo::DECIMAL)
     {
         static $invariant;
-		if(is_null($invariant))
+		if($invariant === null)
         {
             $culture = CultureInfo::getInvariantCulture();
             $invariant = $culture->NumberFormat;

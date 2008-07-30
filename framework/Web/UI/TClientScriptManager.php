@@ -115,7 +115,7 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		if(!isset($this->_registeredPradoScripts[$name]))
 		{
-			if(is_null(self::$_pradoScripts))
+			if(self::$_pradoScripts === null)
 			{
 				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH.'/packages.php';
 				list($packages,$deps)= include($packageFile);
@@ -207,8 +207,9 @@ class TClientScriptManager extends TApplicationComponent
 		$assets = Prado::getApplication()->getAssetManager();
 		if(strpos($base, $assets->getBaseUrl())===false)
 		{
-			if(!is_null($dir = Prado::getPathOfNameSpace($base)))
+			if(($dir = Prado::getPathOfNameSpace($base)) !== null) {
 				$base = $dir;
+			}
 			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
 		}
 		else
@@ -259,7 +260,9 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerPostBackControl($class,$options)
 	{
-		if(is_null($class)) return;
+		if($class === null) {
+			return;
+		}
 		if(!isset($options['FormID']) && ($form=$this->_page->getForm())!==null)
 			$options['FormID']=$form->getClientID();
 		$optionString=TJavaScript::encode($options);

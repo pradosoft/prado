@@ -91,7 +91,7 @@ class DateFormat
 	 */
 	function __construct($formatInfo=null)
 	{
-		if(is_null($formatInfo))
+		if($formatInfo === null)
 			$this->formatInfo = DateTimeFormatInfo::getInvariantInfo();
 		else if($formatInfo instanceof CultureInfo)
 			$this->formatInfo = $formatInfo->DateTimeFormat;
@@ -115,7 +115,7 @@ class DateFormat
 		else if(is_string($time))
 			$time = @strtotime($time);
 
-		if(is_null($pattern))
+		if($pattern === null)
 			$pattern = 'F';
 
 		$s = Prado::createComponent('System.Util.TDateTimeStamp');

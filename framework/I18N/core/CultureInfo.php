@@ -375,7 +375,7 @@ class CultureInfo
 	 */
 	function getDateTimeFormat()
 	{
-		if(is_null($this->dateTimeFormat))
+		if($this->dateTimeFormat === null)
 		{
 			$calendar = $this->getCalendar();
 			$info = $this->findInfo("calendar/{$calendar}", true);
@@ -455,7 +455,7 @@ class CultureInfo
 	static function getInvariantCulture()
 	{
 		static $invariant;
-		if(is_null($invariant))
+		if($invariant === null)
 			$invariant = new CultureInfo();
 		return $invariant;
 	}
@@ -478,7 +478,7 @@ class CultureInfo
 	 */
 	function getNumberFormat()
 	{
-		if(is_null($this->numberFormat))
+		if($this->numberFormat === null)
 		{
 			$elements = $this->findInfo('NumberElements');
 			$patterns = $this->findInfo('NumberPatterns');

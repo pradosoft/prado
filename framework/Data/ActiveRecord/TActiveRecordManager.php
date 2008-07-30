@@ -93,8 +93,9 @@ class TActiveRecordManager extends TComponent
 	 */
 	public function getRecordGateway()
 	{
-		if(is_null($this->_gateway))
+		if($this->_gateway === null) {
 			$this->_gateway = $this->createRecordGateway();
+		}
 		return $this->_gateway;
 	}
 

@@ -186,8 +186,9 @@ class MessageSource_gettext extends MessageSource
 	 */
 	private function getVariants($catalogue='messages')
 	{
-		if(is_null($catalogue))
+		if($catalogue === null) {
 			$catalogue = 'messages';
+		}
 
 		foreach($this->getCatalogueList($catalogue) as $variant)
 		{
@@ -423,8 +424,9 @@ class MessageSource_gettext extends MessageSource
 
 	protected function createMessageTemplate($catalogue)
 	{
-		if(is_null($catalogue))
+		if($catalogue === null) {
 			$catalogue = 'messages';
+		}
 		$variants = $this->getCatalogueList($catalogue);
 		$variant = array_shift($variants);
 		$mo_file = $this->getSource($variant);

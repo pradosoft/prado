@@ -79,7 +79,7 @@ class PradoCommandLineInterpreter
 	public static function getInstance()
 	{
 		static $instance;
-		if(is_null($instance))
+		if($instance === null)
 			$instance = new self;
 		return $instance;
 	}

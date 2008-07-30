@@ -189,10 +189,11 @@ class TSimpleDateFormatter
 	 */
 	public function isValidDate($value)
 	{
-		if(is_null($value))
+		if($value === null) {
 			return false;
-		else
-			return !is_null($this->parse($value, false));
+		} else {
+			return $this->parse($value, false) !== null;
+		}
 	}
 
 	/**
@@ -254,7 +255,7 @@ class TSimpleDateFormatter
 				if ($token=='yy')   { $x=2;$y=2; }
 				if ($token=='y')    { $x=2;$y=4; }
 				$year = $this->getInteger($value,$i_val,$x,$y);
-				if(is_null($year))
+				if($year === null)
 					return null;
 					//throw new TInvalidDataValueException('Invalid year', $value);
 				$i_val += strlen($year);
@@ -273,7 +274,7 @@ class TSimpleDateFormatter
 				$month=$this->getInteger($value,$i_val,
 									$this->length($token),2);
 				$iMonth = intval($month);
-				if(is_null($month) || $iMonth < 1 || $iMonth > 12 )
+				if($month === null || $iMonth < 1 || $iMonth > 12 )
 					return null;
 					//throw new TInvalidDataValueException('Invalid month', $value);
 				$i_val += strlen($month);
@@ -284,7 +285,7 @@ class TSimpleDateFormatter
 				$day = $this->getInteger($value,$i_val,
 									$this->length($token), 2);
 				$iDay = intval($day);
-				if(is_null($day) || $iDay < 1 || $iDay >31)
+				if($day === null || $iDay < 1 || $iDay >31)
 					return null;
 					//throw new TInvalidDataValueException('Invalid day', $value);
 				$i_val += strlen($day);
@@ -301,7 +302,7 @@ class TSimpleDateFormatter
 		}
 		if ($i_val != $this->length($value))
 			throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
-		if(!$defaultToCurrentTime && (is_null($month) || is_null($day) || is_null($year)))
+		if(!$defaultToCurrentTime && ($month === null || $day === null || $year === null))
 			return null;
 		else
 		{

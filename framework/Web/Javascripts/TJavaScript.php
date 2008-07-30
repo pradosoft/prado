@@ -208,7 +208,7 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value)
 	{
-		if(is_null(self::$_json))
+		if(self::$_json === null)
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->encode($value);
 	}
@@ -221,7 +221,7 @@ class TJavaScript
 	 */
 	public static function jsonDecode($value)
 	{
-		if(is_null(self::$_json))
+		if(self::$_json === null)
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->decode($value);
 	}

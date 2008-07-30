@@ -90,7 +90,7 @@ class NumberFormat
 	 */
 	function __construct($formatInfo=null)
 	{
-		if(is_null($formatInfo))
+		if($formatInfo === null)
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
 		else if($formatInfo instanceof CultureInfo)
 			$this->formatInfo = $formatInfo->NumberFormat;
@@ -143,8 +143,9 @@ class NumberFormat
 
 		//replace currency sign
 		$symbol = @$this->formatInfo->getCurrencySymbol($currency);
-		if(is_null($symbol))
+		if($symbol === null) {
 			$symbol = $currency;
+		}
 
 		$result = str_replace('¤',$symbol, $result);
 

@@ -152,7 +152,7 @@ class DateTimeFormatInfo
     static function getInvariantInfo()
     {
         static $invariant;
-		if(is_null($invariant))
+		if($invariant === null)
         {
             $culture = CultureInfo::getInvariantCulture();
             $invariant = $culture->getDateTimeFormat();
