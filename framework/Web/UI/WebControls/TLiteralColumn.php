@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TLiteralColumn.php 1397 2006-09-07 07:55:53Z wei $
  * @package System.Web.UI.WebControls

@@ -4,7 +4,7 @@
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.ActiveControls

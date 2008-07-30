@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
  * @package System.Data.Common.Pgsql

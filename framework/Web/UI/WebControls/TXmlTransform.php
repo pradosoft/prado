@@ -5,7 +5,7 @@
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com
- * @copyright Copyright &copy; 2005 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI.WebControls
  */

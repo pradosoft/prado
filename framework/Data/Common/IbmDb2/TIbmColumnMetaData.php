@@ -4,7 +4,7 @@
  *
  * @author Cesar Ramos <cramos[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2007 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TIbmColumnMetaData.php 1807 2007-03-31 06:42:15Z wei $
  * @package System.Data.ActiveRecord.Vendor

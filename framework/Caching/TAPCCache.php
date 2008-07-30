@@ -4,7 +4,7 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Caching
