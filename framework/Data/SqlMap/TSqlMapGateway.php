@@ -122,12 +122,13 @@ class TSqlMapGateway extends TComponent
 	 * @param string The name of the sql statement to execute.
 	 * @param mixed The object used to set the parameters in the SQL.
 	 * @param integer The maximum number of objects to store in each page.
+	 * @param integer The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
-	public function queryForPagedList($statementName, $parameter=null, $pageSize=10)
+	public function queryForPagedList($statementName, $parameter=null, $pageSize=10, $page=0)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return new TSqlMapPagedList($statement, $parameter, $pageSize);
+		return new TSqlMapPagedList($statement, $parameter, $pageSize, null, $page);
 	}
 
 	/**
@@ -142,12 +143,13 @@ class TSqlMapGateway extends TComponent
 	 * @param callback Row delegate handler, a valid callback required.
 	 * @param mixed The object used to set the parameters in the SQL.
 	 * @param integer The maximum number of objects to store in each page.
+	 * @param integer The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
-	public function queryForPagedListWithRowDelegate($statementName,$delegate, $parameter=null, $pageSize=10)
+	public function queryForPagedListWithRowDelegate($statementName,$delegate, $parameter=null, $pageSize=10, $page=0)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate);
+		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate,$page);
 	}
 
 

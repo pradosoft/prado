@@ -9,10 +9,11 @@ BUG: Ticket#859 - errorhandler error (stever)
 BUG: Ticket#860 - Prado::localize() bug (japplegame)
 BUG: Ticket#870 - Callback with redirect breaks lifecycle of page (stever)
 BUG: Ticket#872 - use PATH_SEPARATOR in phpunit.php (fragmaster b)
+BUG: Ticket#886 - TSimpleDateFormatter: One month offset in time stamp with date pattern "yyyy" (Knut)
 ENH: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
 ENH: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
+ENH: Ticket#893 - Added page parameter to queryForPagedList() to specify the initial page to load (Michael)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
-BUG: Ticket#886 - TSimpleDateFormatter: One month offset in time stamp with date pattern "yyyy" (Knut)
 
 Version 3.1.2 April 21, 2008
 ============================

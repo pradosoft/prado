@@ -41,12 +41,13 @@ class TSqlMapPagedList extends TPagedList
 	 * @param mixed query parameters
 	 * @param int page size
 	 * @param mixed delegate for each data row retrieved.
+	 * @param int number of page to fetch on initialization
 	 */
-	public function __construct(IMappedStatement $statement,$parameter, $pageSize, $delegate=null)
+	public function __construct(IMappedStatement $statement,$parameter, $pageSize, $delegate=null, $page=0)
 	{
 		parent::__construct();
 		parent::setCustomPaging(true);
-		$this->initialize($statement,$parameter, $pageSize);
+		$this->initialize($statement,$parameter, $pageSize, $page);
 		$this->_delegate=$delegate;
 	}
 
@@ -55,14 +56,15 @@ class TSqlMapPagedList extends TPagedList
 	 * @param IMappedStatement SqlMap statement.
 	 * @param mixed query parameters
 	 * @param int page size.
+	 * @param int number of page.
 	 */
-	protected function initialize($statement, $parameter, $pageSize)
+	protected function initialize($statement, $parameter, $pageSize, $page)
 	{
 		$this->_statement = $statement;
 		$this->_parameter = $parameter;
 		$this->setPageSize($pageSize);
 		$this->attachEventHandler('OnFetchData', array($this, 'fetchDataFromStatement'));
-		$this->gotoPage(0);
+		$this->gotoPage($page);
 	}
 
 	/**
