@@ -67,7 +67,7 @@ class TPropertyAccess
 			else if(is_object($object))
 			{
 				$getter = 'get'.$prop;
-				if(is_callable(array($object,$getter)))
+				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
 					$object = $object->{$getter}();
 				else if(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
@@ -102,7 +102,7 @@ class TPropertyAccess
 			else if(is_object($object))
 			{
 				$getter = 'get'.$prop;
-				if(is_callable(array($object,$getter)))
+				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
 					$object = $object->{$getter}();
 				else if(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
@@ -137,7 +137,7 @@ class TPropertyAccess
 		else if(is_object($object))
 		{
 			$setter = 'set'.$prop;
-			if (method_exists($object,$setter))
+			if (method_exists($object, $setter) && is_callable(array($object, $setter)))
 				$object->{$setter}($value);
 			else
 				$object->{$prop} = $value;
