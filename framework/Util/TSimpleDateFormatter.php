@@ -305,9 +305,12 @@ class TSimpleDateFormatter
 		if(!$defaultToCurrentTime && ($month === null || $day === null || $year === null))
 			return null;
 		else
-		{
-			$day = intval($day) <= 0 ? 1 : intval($day);
-			$month = intval($month) <= 0 ? 1 : intval($month);
+		{		
+			if(empty($year)) {
+				$year = date('Y');
+			}
+			$day = (int)$day <= 0 ? 1 : (int)$day;
+			$month = (int)$month <= 0 ? 1 : (int)$month;
 			$s = Prado::createComponent('System.Util.TDateTimeStamp');
 			return $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		}
