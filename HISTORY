@@ -1,5 +1,6 @@
 Version 3.1.3 To Be Released
 ============================
+BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
 BUG: Ticket#841 - Strange output from THttpResponse (Christophe)
 BUG: Ticket#847 - getBaseUrl sometimes fails (Christophe)

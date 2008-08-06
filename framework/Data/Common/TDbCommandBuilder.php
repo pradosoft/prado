@@ -105,11 +105,17 @@ class TDbCommandBuilder extends TComponent
 	public function applyOrdering($sql, $ordering)
 	{
 		$orders=array();
-		foreach($ordering as $name=>$direction)
+		foreach($ordering as $name => $direction)
 		{
 			$direction = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
-			$column = $this->getTableInfo()->getColumn($name)->getColumnName();
-			$orders[] = $column.' '.$direction;
+			if(strpos($name, '(') && strpos($name, ')')) {
+				// key is a function (bad practice, but we need to handle it)
+				$key = $name;
+			} else {
+				// key is a column
+				$key = $this->getTableInfo()->getColumn($name)->getColumnName();
+			}
+			$orders[] = $key.' '.$direction;
 		}
 		if(count($orders) > 0)
 			$sql .= ' ORDER BY '.implode(', ', $orders);
