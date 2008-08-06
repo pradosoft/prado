@@ -74,7 +74,7 @@ class MessageCache
 	 */
 	public function setLifeTime($time)
 	{
-		$this->lifetime = intval($time);
+		$this->lifetime = (int)$time;
 	}
 
 	/**
@@ -119,7 +119,7 @@ class MessageCache
 			return false;
 
 
-		$lastmodified = intval($lastmodified);
+		$lastmodified = (int)$lastmodified;
 		
 		if($lastmodified <= 0 || $lastmodified > filemtime($cache))
 			return false;		

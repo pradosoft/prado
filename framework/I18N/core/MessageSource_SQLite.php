@@ -109,7 +109,7 @@ class MessageSource_SQLite extends MessageSource
 			"SELECT date_modified FROM catalogue WHERE name = '{$source}'",
 			$db);
 			
-		$result = $rs ? intval(sqlite_fetch_single($rs)) : 0;
+		$result = $rs ? (int)sqlite_fetch_single($rs) : 0;
 		
 		sqlite_close($db);		
 	
@@ -129,7 +129,7 @@ class MessageSource_SQLite extends MessageSource
 		$rs = sqlite_query(
 			"SELECT COUNT(*) FROM catalogue WHERE name = '{$variant}'",
 			$db);
-		$result = $rs && intval(sqlite_fetch_single($rs));	
+		$result = $rs && (int)sqlite_fetch_single($rs);	
 		sqlite_close($db);
 
 		return $result;
@@ -181,7 +181,7 @@ class MessageSource_SQLite extends MessageSource
 		if(sqlite_num_rows($rs) != 1)
 			return false;
 		
-		$cat_id = intval(sqlite_fetch_single($rs));
+		$cat_id = (int)sqlite_fetch_single($rs);
 		
 		//first get the catalogue ID
 		$rs = sqlite_query(
@@ -189,7 +189,7 @@ class MessageSource_SQLite extends MessageSource
 				FROM trans_unit
 				WHERE cat_id = {$cat_id}", $db);
 
-		$count = intval(sqlite_fetch_single($rs));
+		$count = (int)sqlite_fetch_single($rs);
 
 		sqlite_close($db);	
 		

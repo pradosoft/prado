@@ -90,8 +90,8 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
 	{
-		$limit = $limit!==null ? intval($limit) : -1;
-		$offset = $offset!==null ? intval($offset) : -1;
+		$limit = $limit!==null ? (int)$limit : -1;
+		$offset = $offset!==null ? (int)$offset : -1;
 		$limitStr = $limit >= 0 ? ' LIMIT '.$limit : '';
 		$offsetStr = $offset >= 0 ? ' OFFSET '.$offset : '';
 		return $sql.$limitStr.$offsetStr;

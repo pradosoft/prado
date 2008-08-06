@@ -296,7 +296,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
 		if(($last=$lastNodes->item(0))!==null)
-			$count = intval($last->getAttribute('id'));
+			$count = (int)$last->getAttribute('id');
 		else
 			$count = 0;
 

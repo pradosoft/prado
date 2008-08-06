@@ -471,7 +471,7 @@ class DateFormat
 			throw new Exception('The pattern for AM/PM marker is "a".');
 
 		$hour = $date['hours'];
-		$ampm = intval($hour/12);
+		$ampm = (int)($hour/12);
 		return $this->formatInfo->AMPMMarkers[$ampm];
 	}
 

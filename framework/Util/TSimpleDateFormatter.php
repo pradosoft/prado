@@ -261,19 +261,19 @@ class TSimpleDateFormatter
 				$i_val += strlen($year);
 				if(strlen($year) == 2)
 				{
-					$iYear = intval($year);
+					$iYear = (int)$year;
 					if($iYear > 70)
 						$year = $iYear + 1900;
 					else
 						$year = $iYear + 2000;
 				}
-				$year = intval($year);
+				$year = (int)$year;
 			}
 			elseif($token=='MM' || $token=='M')
 			{
 				$month=$this->getInteger($value,$i_val,
 									$this->length($token),2);
-				$iMonth = intval($month);
+				$iMonth = (int)$month;
 				if($month === null || $iMonth < 1 || $iMonth > 12 )
 					return null;
 					//throw new TInvalidDataValueException('Invalid month', $value);
@@ -284,7 +284,7 @@ class TSimpleDateFormatter
 			{
 				$day = $this->getInteger($value,$i_val,
 									$this->length($token), 2);
-				$iDay = intval($day);
+				$iDay = (int)$day;
 				if($day === null || $iDay < 1 || $iDay >31)
 					return null;
 					//throw new TInvalidDataValueException('Invalid day', $value);

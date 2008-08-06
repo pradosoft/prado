@@ -331,7 +331,7 @@ class TDataGatewayCommand extends TComponent
 	public function count($criteria)
 	{
 		if($criteria===null)
-			return intval($this->getBuilder()->createCountCommand()->queryScalar());
+			return (int)$this->getBuilder()->createCountCommand()->queryScalar();
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$ordering = $criteria->getOrdersBy();
@@ -339,7 +339,7 @@ class TDataGatewayCommand extends TComponent
 		$offset = $criteria->getOffset();
 		$command = $this->getBuilder()->createCountCommand($where,$parameters,$ordering,$limit,$offset);
 		$this->onCreateCommand($command, $criteria);
-		return $this->onExecuteCommand($command, intval($command->queryScalar()));
+		return $this->onExecuteCommand($command, (int)$command->queryScalar());
 	}
 
 	/**

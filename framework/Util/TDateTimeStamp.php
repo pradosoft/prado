@@ -619,9 +619,9 @@ class TDateTimeStamp
 		$min = intval($min);
 		$sec = intval($sec);
 		*/
-		$mon = intval($mon);
-		$day = intval($day);
-		$year = intval($year);
+		$mon = (int)$mon;
+		$day = (int)$day;
+		$year = (int)$year;
 
 
 		$year = $this->digitCheck($year);

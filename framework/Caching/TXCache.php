@@ -54,8 +54,8 @@ class TXCache extends TCache
 		if(!function_exists('xcache_isset'))
 			throw new TConfigurationException('xcache_extension_required');
 
-		$enabled = intval(ini_get('xcache.cacher')) !== 0;
-		$var_size = intval(ini_get('xcache.var_size'));
+		$enabled = (int)ini_get('xcache.cacher') !== 0;
+		$var_size = (int)ini_get('xcache.var_size');
 
 		if(!($enabled && $var_size > 0))
 			throw new TConfigurationException('xcache_extension_not_enabled');

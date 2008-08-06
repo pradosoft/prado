@@ -186,7 +186,7 @@ class MessageSource_MySQL extends MessageSource
 			"SELECT date_modified FROM catalogue WHERE name = '{$source}'",
 			$this->db);
 
-		$result = $rs ? intval(mysql_result($rs,0)) : 0;
+		$result = $rs ? (int)mysql_result($rs,0) : 0;
 
 		return $result;
 	}
@@ -256,7 +256,7 @@ class MessageSource_MySQL extends MessageSource
 		if(mysql_num_rows($rs) != 1)
 			return false;
 
-		$cat_id = intval(mysql_result($rs,0));
+		$cat_id = (int)mysql_result($rs,0);
 
 		//first get the catalogue ID
 		$rs = mysql_query(
@@ -264,7 +264,7 @@ class MessageSource_MySQL extends MessageSource
 				FROM trans_unit
 				WHERE cat_id = {$cat_id}", $this->db);
 
-		$count = intval(mysql_result($rs,0));
+		$count = (int)mysql_result($rs,0);
 
 		return array($cat_id, $variant, $count);
 	}
