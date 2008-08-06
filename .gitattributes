@@ -3422,6 +3422,8 @@ tests/unit/Collections/TPagedDataSourceTest.php -text
 tests/unit/Collections/TPagedListTest.php -text
 tests/unit/Collections/TQueueTest.php -text
 tests/unit/Collections/TStackTest.php -text
+tests/unit/Data/DataGateway/AllTests.php -text
+tests/unit/Data/DataGateway/TSqlCriteriaTest.php -text
 tests/unit/Data/TDbCommandTest.php -text
 tests/unit/Data/TDbConnectionTest.php -text
 tests/unit/Data/TDbDataReaderTest.php -text

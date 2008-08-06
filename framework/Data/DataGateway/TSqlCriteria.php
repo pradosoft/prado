@@ -15,7 +15,7 @@
  *
  * Criteria object for data gateway finder methods. Usage:
  * <code>
- * $criteria = new TDbSqlCriteria;
+ * $criteria = new TSqlCriteria();
  * $criteria->Parameters[':name'] = 'admin';
  * $criteria->Parameters[':pass'] = 'prado';
  * $criteria->OrdersBy['level'] = 'desc';
@@ -68,15 +68,46 @@ class TSqlCriteria extends TComponent
 	 * @param string search conditions.
 	 */
 	public function setCondition($value)
-	{
-		if(!empty($value) && preg_match('/ORDER\s+BY\s+(.*?)$/i',$value,$matches)>0)
-		{
-			// condition contains ORDER BY, we need to strip it output
-			$this->_condition=substr($value,0,strpos($value,$matches[0]));
-			$this->setOrdersBy($matches[1]);
+	{		
+		if(empty($value)) {
+			return;
 		}
-		else
-			$this->_condition=$value;
+		
+		// supporting the following SELECT-syntax:
+		// [ORDER BY {col_name | expr | position}
+		//      [ASC | DESC], ...]
+		//    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
+		// See: http://dev.mysql.com/doc/refman/5.0/en/select.html
+		
+		if(preg_match('/ORDER\s+BY\s+(.*?)(?=LIMIT)|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
+			// condition contains ORDER BY
+			$value = str_replace($matches[0], '', $value);
+			if(strlen($matches[1]) > 0) {
+				$this->setOrdersBy($matches[1]);
+			} else if(strlen($matches[2]) > 0) {
+				$this->setOrdersBy($matches[2]);
+			}
+		}
+		
+		if(preg_match('/LIMIT\s+([\d\s,]+)/i', $value, $matches) > 0) {
+			// condition contains limit
+			$value = str_replace($matches[0], '', $value); // remove limit from query
+			if(strpos($matches[1], ',')) { // both offset and limit given
+				list($offset, $limit) = explode(',', $matches[1]);
+				$this->_limit = (int)$limit;
+				$this->_offset = (int)$offset;
+			} else { // only limit given
+				$this->_limit = (int)$matches[1];
+			}
+		}
+
+		if(preg_match('/OFFSET\s+(\d+)/i', $value, $matches) > 0) {
+			// condition contains offset
+			$value = str_replace($matches[0], '', $value); // remove offset from query
+			$this->_offset = (int)$matches[1]; // set offset in criteria
+		}
+		
+		$this->_condition = trim($value);
 	}
 
 	/**
