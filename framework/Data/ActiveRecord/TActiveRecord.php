@@ -175,7 +175,7 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @var TDbConnection database connection object.
 	 */
-	private $_connection;
+	protected $_connection; // use protected so that serialization is fine
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
