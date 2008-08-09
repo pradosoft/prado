@@ -482,6 +482,10 @@ abstract class TDataBoundControl extends TWebControl
 		}
 		else if(is_array($value))
 			return new TMap($value);
+		else if($value instanceof TDbDataReader) {
+			// read array from TDbDataReader since it's forward-only stream and can only be traversed once
+			return $value->readAll();
+		}
 		else if(($value instanceof Traversable) || $value===null)
 			return $value;
 		else
