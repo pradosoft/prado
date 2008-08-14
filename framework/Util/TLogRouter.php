@@ -757,7 +757,7 @@ class TDbLogRoute extends TLogRoute
 			if($this->_autoCreate)
 				$this->createDbTable();
 			else
-				throw TConfigurationException('db_logtable_inexistent',$this->_logTable);
+				throw new TConfigurationException('db_logtable_inexistent',$this->_logTable);
 		}
 
 		parent::init($config);

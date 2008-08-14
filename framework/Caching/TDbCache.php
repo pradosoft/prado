@@ -146,7 +146,7 @@ class TDbCache extends TCache
 				$db->createCommand($sql)->execute();
 			}
 			else
-				throw TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
+				throw new TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
 		}
 
 		parent::init($config);

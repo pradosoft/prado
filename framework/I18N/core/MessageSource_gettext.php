@@ -450,7 +450,7 @@ class MessageSource_gettext extends MessageSource
 		if($po->save() && $mo->save($mo_file))
 			return array($variant, $mo_file, $po_file);
 		else
-			throw TException("Unable to create file $po_file and $mo_file");
+			throw new TException("Unable to create file $po_file and $mo_file");
 	}
 }
 
