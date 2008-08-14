@@ -323,7 +323,7 @@ class TXmlDocument extends TXmlElement
 	public function __construct($version='1.0',$encoding='')
 	{
 		parent::__construct('');
-		$this->setversion($version);
+		$this->setVersion($version);
 		$this->setEncoding($encoding);
 	}
 
