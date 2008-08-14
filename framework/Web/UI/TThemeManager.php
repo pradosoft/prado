@@ -367,6 +367,22 @@ class TTheme extends TApplicationComponent implements ITheme
 	{
 		$this->_themePath=$value;
 	}
+	
+	/**
+	 * @return array list of skins for the theme
+	 */
+	public function getSkins()
+	{
+		return $this->_skins;
+	}
+
+ 	/**
+	 * @param array list of skins for the theme
+	 */
+	protected function setSkins($value)
+	{
+		$this->_skins = $value;
+	}
 
 	/**
 	 * Applies the theme to a particular control.

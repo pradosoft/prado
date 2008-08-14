@@ -21,6 +21,7 @@ ENH: Added Prado.Validation.validateControl(id) on client side to validate a spe
 ENH: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
 ENH: Ticket#890 - Minor optimization: Use $var===null over is_null($var) (Knut)
 ENH: Ticket#893 - Added page parameter to queryForPagedList() to specify the initial page to load (Michael)
+ENH: Ticket#896 - TTheme - enhance for subclassing (Knut)
 ENH: Ticket#898 - Minor optimization: Use (int) over intval() (Knut)
 ENH: Ticket#901 - Using TDbDataReader directly as a DataSource of TDataBoundControl's like TDataGrid (Knut)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
