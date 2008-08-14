@@ -21,7 +21,7 @@
  *
  * To use TJsonService, configure it in application configuration as follows,
  * <code>
- *  <service id="json" class="System.Services.TJsonService">
+ *  <service id="json" class="System.Web.Services.TJsonService">
  *    <json id="get_article" class="Path.To.JsonResponseClass1" .../>
  *    <json id="register_rating" class="Path.To.JsonResponseClass2" .../>
  *  </service>
@@ -163,7 +163,7 @@ abstract class TJsonResponse extends TApplicationComponent
 	}
 
 	/**
-	 * @return object json response content, null to supress output.
+	 * @return object json response content, null to suppress output.
 	 */
 	abstract public function getJsonContent();
 }
