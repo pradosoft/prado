@@ -87,7 +87,7 @@ class TActiveRecordGateway extends TComponent
 	 * @param string table name
 	 * @return TDbTableInfo table details.
 	 */
-	public function getTableInfo($connection, $tableName)
+	public function getTableInfo(TDbConnection $connection, $tableName)
 	{
 		$connStr = $connection->getConnectionString();
 		$key = $connStr.$tableName;

@@ -24,6 +24,7 @@ ENH: Ticket#893 - Added page parameter to queryForPagedList() to specify the ini
 ENH: Ticket#896 - TTheme - enhance for subclassing (Knut)
 ENH: Ticket#898 - Minor optimization: Use (int) over intval() (Knut)
 ENH: Ticket#901 - Using TDbDataReader directly as a DataSource of TDataBoundControl's like TDataGrid (Knut)
+ENH: Ticket#911 - prado-cli: Better error message if database connection fails when generating Active Record skeletons (Knut)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
 
 Version 3.1.2 April 21, 2008

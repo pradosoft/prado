@@ -661,24 +661,28 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected function generateActiveRecord($config, $tablename, $output)
 	{
 		$manager = TActiveRecordManager::getInstance();
-		$gateway = $manager->getRecordGateway();
-		$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
-		if(count($tableInfo->getColumns()) === 0)
-		{
-			echo '** Unable to find table or view "'.$tablename.'" in "'.$manager->getDbConnection()->getConnectionString()."\".\n";
-			return false;
-		}
-		else
-		{
-			$properties = array();
-			foreach($tableInfo->getColumns() as $field=>$column)
-				$properties[] = $this->generateProperty($field,$column);
-		}
+		if($connection = $manager->getDbConnection()) {
+			$gateway = $manager->getRecordGateway();
+			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
+			if(count($tableInfo->getColumns()) === 0)
+			{
+				echo '** Unable to find table or view "'.$tablename.'" in "'.$manager->getDbConnection()->getConnectionString()."\".\n";
+				return false;
+			}
+			else
+			{
+				$properties = array();
+				foreach($tableInfo->getColumns() as $field=>$column)
+					$properties[] = $this->generateProperty($field,$column);
+			}
 
-		$classname = basename($output, '.php');
-		$class = $this->generateClass($properties, $tablename, $classname);
-		echo "  Writing class $classname to file $output\n";
-		file_put_contents($output, $class);
+			$classname = basename($output, '.php');
+			$class = $this->generateClass($properties, $tablename, $classname);
+			echo "  Writing class $classname to file $output\n";
+			file_put_contents($output, $class);
+		} else {
+			echo '** Unable to connect to database with ConnectionID=\''.$config->getConnectionID()."'. Please check your settings in application.xml and ensure your database connection is set up first.\n";
+		}
 	}
 
 	protected function generateProperty($field,$column)
