@@ -351,6 +351,7 @@ class TClientScriptManager extends TApplicationComponent
 	 *     $this->Page->ClientScript->registerStyleSheetFile($url, $url);
 	 *   }
 	 * }
+	 * ?>
 	 * </code>
 	 *
 	 * @param string a unique key identifying the file
