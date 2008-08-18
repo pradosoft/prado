@@ -337,6 +337,22 @@ class TClientScriptManager extends TApplicationComponent
 
 	/**
 	 * Registers a CSS file to be rendered in the page head
+	 *
+	 * The CSS files in themes are registered in {@link OnPreRenderComplete onPreRenderComplete} if you want to override 
+	 * CSS styles in themes you need to register it after this event is completed.
+	 *
+	 * Example:
+	 * <code>
+	 * <?php
+	 * class BasePage extends TPage {
+	 *   public function onPreRenderComplete($param) {
+	 *     parent::onPreRenderComplete($param);
+	 *     $url = 'path/to/your/stylesheet.css';
+	 *     $this->Page->ClientScript->registerStyleSheetFile($url, $url);
+	 *   }
+	 * }
+	 * </code>
+	 *
 	 * @param string a unique key identifying the file
 	 * @param string URL to the CSS file
 	 * @param string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
