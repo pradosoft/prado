@@ -792,11 +792,11 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	 */
 	public function renderContents($writer)
 	{
+		$this->renderPrompt($writer);
+		
 		if($this->_items)
 		{
 			$writer->writeLine();
-			if($this->_items->getCount())
-				$this->renderPrompt($writer);
 			$previousGroup=null;
 			foreach($this->_items as $item)
 			{
