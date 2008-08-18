@@ -175,7 +175,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
      */
     public function getCssUrl()
     {
-        return $this->getViewState('CssUrl','');
+        return $this->getViewState('CssUrl','default');
     }
 
     /**
@@ -383,9 +383,19 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 	 */
 	protected function registerStyleSheet()
 	{
-		if(($url=$this->getCssUrl())==='')
-			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'tabpanel.css');
-		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		$url = $this->getCssUrl();
+		
+		if($url === '') {
+			return;
+		}
+		
+		if($url === 'default') {
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'tabpanel.css');
+		}
+		
+		if($url !== '') {
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
+		}
 	}
 
 	/**

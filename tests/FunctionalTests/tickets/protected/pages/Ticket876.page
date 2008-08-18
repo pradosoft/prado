@@ -1,0 +1,17 @@
+<com:TContent ID="Content">
+
+	<com:TButton ID="Button" Text="Set empty CssUrl" OnClick="onSetEmptyCssUrl"/>
+
+	<com:TTabPanel ID="TabPanel">
+		<com:TTabView Caption="View 1">
+			content for view 1
+		</com:TTabView>
+		<com:TTabView Caption="View 2">
+			content for view 2
+		</com:TTabView>
+		<com:TTabView Caption="View 3">
+			content for view 3
+		</com:TTabView>
+	</com:TTabPanel>
+
+</com:TContent>
