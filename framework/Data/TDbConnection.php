@@ -168,8 +168,10 @@ class TDbConnection extends TComponent
 			{
 				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),
 									$this->getPassword(),$this->_attributes);
+				// This attribute is only useful for PDO::MySql driver. 
+				// Ignore the warning if a driver doesn't understand this.
+				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 				$this->_active=true;
 				$this->setConnectionCharset();
 			}
