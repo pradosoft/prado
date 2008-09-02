@@ -176,12 +176,16 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		// Update all the buttons pagers attached to the same control.
 		// Dropdown pagers doesn't need to be re-rendered.
 		$controlToPaginate=$this->getControlToPaginate();
-		foreach ($this->getNamingContainer()->findControlsByType('TActivePager') as $control)
+		foreach ($this->getNamingContainer()->findControlsByType('TActivePager', false) as $control)
 		{
 			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate()===$controlToPaginate)
+			{
 				$control->render($param->getNewWriter());
+				// FIXME : With some very fast machine, the getNewWriter() consecutive calls are in the same microsecond, resulting
+				// of getting the same boundaries in ajax response. Wait 1 microsecond to avoid this. 
+				usleep(1);
+			}
 		}
-		
 		// Raise callback event
 		$this->onCallback($param);
 	}	
