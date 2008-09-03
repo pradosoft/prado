@@ -246,7 +246,9 @@ class TMysqlMetaData extends TDbMetaData
 			if($row['Key_name']==='PRIMARY')
 				$primary[] = $row['Column_name'];
 		}
-		if($this->getServerVersion() > 5)
+        // MySQL version was increased to >=5.1.21 instead of 5.x
+        // due to a MySQL bug (http://bugs.mysql.com/bug.php?id=19588)
+		if($this->getServerVersion() >= 5.121)
 			$foreign = $this->getForeignConstraints($schemaName,$tableName);
 		else
 			$foreign = $this->findForeignConstraints($schemaName,$tableName);

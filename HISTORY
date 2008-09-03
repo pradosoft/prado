@@ -19,6 +19,7 @@ BUG: Ticket#904 - TDbConnection: Add emulate prepares workaround for boolean com
 BUG: Ticket#908 - TDbCache::init / Exception (Knut)
 ENH: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
 ENH: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
+ENH: Workaround for slow meta data retrieval in MySQL<5.1.21 (Michael)
 ENH: Ticket#823 - PromptText/PromptValue only populated if there is data (Knut)
 ENH: Ticket#876 - Assign empty string to CssUrl on TTabPanel to avoid loading extra css (GoDZilla, Knut)
 ENH: Ticket#890 - Minor optimization: Use $var===null over is_null($var) (Knut)
