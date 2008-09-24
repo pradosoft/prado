@@ -378,7 +378,7 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @return TActiveRecordGateway record table gateway.
 	 */
-	public static function getRecordGateway()
+	public function getRecordGateway()
 	{
 		return TActiveRecordManager::getInstance()->getRecordGateway();
 	}
