@@ -62,6 +62,10 @@ $packages = array(
 		'prado/controls/tabpanel.js'
 	),
 	
+	'activedatepicker' => array(
+		'prado/activecontrols/activedatepicker.js'
+	),
+	
 );
 
 
@@ -78,6 +82,7 @@ $dependencies = array(
 		'slider'		=> array('prado', 'slider'),
 		'keyboard'		=> array('prado', 'keyboard'),
 		'tabpanel'		=> array('prado', 'tabpanel'),
+		'activedatepicker' => array ('datepicker', 'ajax', 'activedatepicker'),
 );
 
 return array($packages, $dependencies);

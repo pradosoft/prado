@@ -2517,6 +2517,7 @@ framework/Web/Javascripts/TJavaScript.php -text
 framework/Web/Javascripts/clientscripts.php -text
 framework/Web/Javascripts/source/packages.php -text
 framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js -text
+framework/Web/Javascripts/source/prado/activecontrols/activedatepicker.js -text
 framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js -text
 framework/Web/Javascripts/source/prado/activecontrols/json.js -text
@@ -2752,6 +2753,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveDatePicker.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveDatePicker.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.page -text
