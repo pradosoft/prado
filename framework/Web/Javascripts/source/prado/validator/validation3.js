@@ -1847,6 +1847,8 @@ Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	{
 		var a = this.getValidationValue();
 		var h = 0;
+		if (this.options.CaseSensitive==false)
+			a = a.toUpperCase();
 		for(var i = a.length-1; i >= 0; --i)
 			h += a.charCodeAt(i);
 		return h == this.options.TokenHash;
