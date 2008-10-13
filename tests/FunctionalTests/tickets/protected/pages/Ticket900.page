@@ -1,0 +1,45 @@
+<com:TContent ID="Content">
+
+Current Command:<com:TLabel ID="CommandName" Text="None." /><br />
+
+<com:TDataGrid
+    CellPadding="2"
+    ID="DataGrid"
+    DataKeyField="title"
+    AutoGenerateColumns="false"
+    OnEditCommand="editItem"
+    OnUpdateCommand="saveItem"
+    OnCancelCommand="cancelItem"
+    OnDeleteCommand="deleteItem"
+    >
+ 
+    <com:TTemplateColumn >
+        <prop:ItemTemplate>
+            <com:TLabel Text=<%# $this->Parent->Data['title']%>/>
+        </prop:ItemTemplate>
+        <prop:EditItemTemplate>
+            <com:TTextBox ID="TextBox" Text=<%# $this->Parent->Data['title']%>/>
+            <com:TRequiredFieldValidator
+                ControlToValidate="TextBox"
+                ErrorMessage="*"
+                Text="Field required."/>
+        </prop:EditItemTemplate>
+    </com:TTemplateColumn>
+    <com:TEditCommandColumn
+  	ButtonType="ImageButton"
+        HeaderText="Edit"
+	EditText="Edit"
+        UpdateText="Save"
+	CancelText="Cancel"
+        />
+    <com:TButtonColumn
+        ID="DeleteColumn"
+        HeaderText="Delete"
+        HeaderStyle.Width="50px"
+        ItemStyle.HorizontalAlign="Center"
+        ItemStyle.Font.Italic="false"
+        Text="Delete"
+        CommandName="delete"
+        />
+</com:TDataGrid>
+</com:TContent>
