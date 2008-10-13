@@ -51,6 +51,9 @@ Prado::using('System.I18N.TI18NControl');
  *   'fulldate',           'longdate', 'mediumdate', 'shortdate', 'fulltime',
  * 'longtime', 'mediumtime', and 'shorttime'. Custom patterns can   specified
  * when the Pattern property does not match the predefined   patterns.
+ * - <b>DefaultText</b>, string,
+ * <br>Gets or sets the default text. If Value is not set, DefaultText will be
+ * shown instead of todays date and time.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
@@ -146,7 +149,11 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	{
 		$value = $this->getViewState('Value','');
 		if(empty($value))
-			return time();
+		{
+			$defaultText = $this->getDefaultText();
+			if(empty($defaultText))
+				return time();
+		}
 		return $value;
 	}
 
@@ -157,6 +164,24 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	public function setValue($value)
 	{
 		$this->setViewState('Value',$value,'');
+	}
+	
+	/**
+	 * Get the default text value for this control.
+	 * @return string default text value
+	 */
+	public function getDefaultText()
+	{
+		return $this->getViewState('DefaultText','');
+	}
+	
+	/**
+	 * Set the default text value for this control.
+	 * @param string default text value
+	 */
+	public function setDefaultText($value)
+	{
+		$this->setViewState('DefaultText',$value,'');
 	}
 
 	/**
@@ -193,6 +218,11 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	 */
 	protected function getFormattedDate()
 	{
+		$value = $this->getValue();
+		$defaultText = $this->getDefaultText();
+		if(empty($value) && !empty($defaultText))
+			return $this->getDefaultText();
+		
 		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter
@@ -205,12 +235,12 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 		if(strlen($culture) && $app->getCulture() !== $culture)
 		{
 			$formatter = new DateFormat($culture);
-			return $formatter->format($this->getValue(),
+			return $formatter->format($value,
 									  $this->getPattern(),
 									  $this->getCharset());
 		}
 		//return the application wide culture formatted date time.
-		$result = self::$formatter->format($this->getValue(),
+		$result = self::$formatter->format($value,
 										$this->getPattern(),
 										$this->getCharset());
 		return $result;
@@ -222,4 +252,3 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	}
 
 }
-?>
