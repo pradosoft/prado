@@ -267,7 +267,10 @@ class TAssetManager extends TModule
 				else if(is_file($src.DIRECTORY_SEPARATOR.$file))
 				{
 					if(@filemtime($dst.DIRECTORY_SEPARATOR.$file)<@filemtime($src.DIRECTORY_SEPARATOR.$file))
+					{
 						@copy($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
+						@chmod($dst.DIRECTORY_SEPARATOR.$file, PRADO_CHMOD); 
+					}
 				}
 				else
 					$this->copyDirectory($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);

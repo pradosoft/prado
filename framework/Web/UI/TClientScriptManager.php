@@ -169,7 +169,10 @@ class TClientScriptManager extends TApplicationComponent
 		$scriptLoaderPath = $path.'/'.basename(self::SCRIPT_LOADER);
 		$scriptLoaderSrc = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_LOADER;
 		if(!is_file($scriptLoaderPath))
+		{
 			copy($scriptLoaderSrc, $scriptLoaderPath);
+			chmod($scriptLoaderPath, PRADO_CHMOD);
+		}
 		$url .= '/'.basename(self::SCRIPT_LOADER).'?js='.implode(',', $packages);
 		if($debug!==false && $this->getApplication()->getMode()===TApplicationMode::Debug)
 		{
