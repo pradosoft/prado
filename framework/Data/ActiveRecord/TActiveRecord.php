@@ -552,6 +552,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
+		$criteria->setLimit(1);
 		$data = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria);
 		return $this->populateObject($data);
 	}
@@ -629,6 +630,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
+		$criteria->setLimit(1);
 		$data = $this->getRecordGateway()->findRecordBySql($this,$criteria);
 		return $this->populateObject($data);
 	}
