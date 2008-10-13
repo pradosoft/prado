@@ -1,10 +1,5 @@
 Version 3.1.3 To Be Released
 ============================
-ENH: Ticket#822 - Not receiving emails from TEmailLogRoute (Carl)
-ENH: Ticket#809 - "LIMIT 1" for ActiveRecord find() and findBy() (Carl)
-BUG: Ticket#856 - Assets PRADO_CHMOD constant missing in several places (Carl)
-ENH: Ticket#848 - TCache "set" and "add" with empty values (Carl)
-ENH: Ticket#756 - TDateFormat & TNumberFormat - allow settings default text when Value isn't set. (Carl)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
 BUG: Ticket#841 - Strange output from THttpResponse (Christophe)
@@ -36,6 +31,12 @@ ENH: Ticket#911 - prado-cli: Better error message if database connection fails w
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
 NEW: Ticket#935 - Add TDatePicker (Brad, Christophe)
 NEW: Ticket#853 - Add Drag and drop components (Christophe)
+ENH: Ticket#809 - "LIMIT 1" for ActiveRecord find() and findBy() (Carl)
+BUG: Ticket#856 - Assets PRADO_CHMOD constant missing in several places (Carl)
+ENH: Ticket#848 - TCache "set" and "add" with empty values (Carl)
+ENH: Ticket#756 - TDateFormat & TNumberFormat - allow settings default text when Value isn't set. (Carl)
+ENH: Ticket#822 - Not receiving emails from TEmailLogRoute (Carl)
+ENH: Ticket#913 - PRADO Copyright notice in HTML source (Carl)
 
 Version 3.1.2 April 21, 2008
 ============================
