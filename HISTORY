@@ -35,6 +35,7 @@ ENH: Ticket#901 - Using TDbDataReader directly as a DataSource of TDataBoundCont
 ENH: Ticket#911 - prado-cli: Better error message if database connection fails when generating Active Record skeletons (Knut)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
 NEW: Ticket#935 - Add TDatePicker (Brad, Christophe)
+NEW: Ticket#853 - Add Drag and drop components (Christophe)
 
 Version 3.1.2 April 21, 2008
 ============================
