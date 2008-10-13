@@ -136,7 +136,8 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	/**
 	 * Stores a value identified by a key into cache.
 	 * If the cache already contains such a key, the existing value and
-	 * expiration time will be replaced with the new ones.
+	 * expiration time will be replaced with the new ones. If the value is
+	 * empty, the cache key will be deleted.
 	 *
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
@@ -146,13 +147,18 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	 */
 	public function set($id,$value,$expire=0,$dependency=null)
 	{
-		$data=array($value,$dependency);
-		return $this->setValue($this->generateUniqueKey($id),serialize($data),$expire);
+		if(empty($value) && $expire === 0)
+			$this->delete($id);
+		else
+		{
+			$data=array($value,$dependency);
+			return $this->setValue($this->generateUniqueKey($id),serialize($data),$expire);
+		}
 	}
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
-	 * Nothing will be done if the cache already contains the key.
+	 * Nothing will be done if the cache already contains the key or if value is empty.
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
@@ -161,6 +167,8 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	 */
 	public function add($id,$value,$expire=0,$dependency=null)
 	{
+		if(empty($value) && $expire === 0)
+			return false;
 		$data=array($value,$dependency);
 		return $this->addValue($this->generateUniqueKey($id),serialize($data),$expire);
 	}

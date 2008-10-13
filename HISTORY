@@ -1,5 +1,6 @@
 Version 3.1.3 To Be Released
 ============================
+ENH: Ticket#848 - TCache "set" and "add" with empty values (Carl)
 ENH: Ticket#756 - TDateFormat & TNumberFormat - allow settings default text when Value isn't set. (Carl)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
