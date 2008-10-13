@@ -1277,8 +1277,13 @@ demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveHyperLink.page -text
 demos/quickstart/protected/pages/ActiveControls/ActivePager.page -text
 demos/quickstart/protected/pages/ActiveControls/AutoComplete.page -text
+demos/quickstart/protected/pages/ActiveControls/DragDrop.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product1.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product2.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/trash.png -text svneol=unset#image/png
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.page -text
@@ -2519,6 +2524,7 @@ framework/Web/Javascripts/source/packages.php -text
 framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/activedatepicker.js -text
 framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text
+framework/Web/Javascripts/source/prado/activecontrols/dragdrop.js -text
 framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js -text
 framework/Web/Javascripts/source/prado/activecontrols/json.js -text
 framework/Web/Javascripts/source/prado/activeratings/blocks.css -text

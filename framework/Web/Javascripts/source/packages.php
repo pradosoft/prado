@@ -47,7 +47,8 @@ $packages = array(
 	),
 
 	'dragdrop'=>array(
-		SCRIPTACULOUS_DIR.'/dragdrop.js'
+		SCRIPTACULOUS_DIR.'/dragdrop.js',
+		'prado/activecontrols/dragdrop.js'
 	),
 
 	'slider'=>array(
@@ -78,7 +79,7 @@ $dependencies = array(
 		'datepicker'	=> array('prado', 'datepicker'),
 		'colorpicker'	=> array('prado', 'colorpicker'),
 		'ajax'			=> array('prado', 'effects', 'ajax'),
-		'dragdrop'		=> array('prado', 'effects', 'dragdrop'),
+		'dragdrop'		=> array('prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'		=> array('prado', 'slider'),
 		'keyboard'		=> array('prado', 'keyboard'),
 		'tabpanel'		=> array('prado', 'tabpanel'),
