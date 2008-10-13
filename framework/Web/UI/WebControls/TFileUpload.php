@@ -59,6 +59,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	 */
 	private $_errorCode=UPLOAD_ERR_NO_FILE;
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * @return string tag name of the file upload control
@@ -255,6 +256,24 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	{
 		return $this->getFileName();
 	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
+
 }
 
 ?>

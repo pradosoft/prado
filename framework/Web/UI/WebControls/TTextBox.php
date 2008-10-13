@@ -67,6 +67,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	private $_safeText;
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * @return string tag name of the textbox
@@ -241,6 +242,23 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	public function getValidationPropertyValue()
 	{
 		return $this->getText();
+	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

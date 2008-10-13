@@ -269,8 +269,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			{
 				$class = preg_replace ('/ '.preg_quote($cssClass).'/', '',$control->getCssClass());
 				if(!$this->getIsValid())
+				{
 					$class .= ' '.$cssClass;
-				$control->setCssClass($class);
+					$control->setCssClass($class);
+				} elseif ($control->getIsValid())
+					$control->setCssClass($class);
 			}
 		}
 	}
@@ -504,6 +507,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				}
 				else
 				{
+					$target->setIsValid(false);
 					$this->setIsValid(false);
 					$this->onValidationError();
 				}

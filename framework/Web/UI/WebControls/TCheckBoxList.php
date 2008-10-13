@@ -53,6 +53,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	private $_isEnabled;
 	private $_changedEventRaised=false;
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * Constructor.
@@ -426,6 +427,23 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	public function getValidationPropertyValue()
 	{
 		return $this->getSelectedValue();
+	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

@@ -38,6 +38,7 @@ ENH: Ticket#848 - TCache "set" and "add" with empty values (Carl)
 ENH: Ticket#756 - TDateFormat & TNumberFormat - allow settings default text when Value isn't set. (Carl)
 ENH: Ticket#822 - Not receiving emails from TEmailLogRoute (Carl)
 ENH: Ticket#913 - PRADO Copyright notice in HTML source (Carl)
+BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
 
 Version 3.1.2 April 21, 2008
 ============================
