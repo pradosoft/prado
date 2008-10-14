@@ -1,5 +1,6 @@
 Version 3.1.3 To Be Released
 ============================
+BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
 BUG: Ticket#841 - Strange output from THttpResponse (Christophe)
@@ -9,6 +10,7 @@ BUG: Ticket#845 - TCaptchaValidator with TCaptcha.CaseSensitive=false JS Error (
 BUG: Ticket#849 - TDatePicker selecting current date problem (Christophe)
 BUG: Ticket#851 - TPropertyAccess doesn't get properties right if an object has a __call() method (Simon Lehmann, Knut)
 BUG: Ticket#855 - TActiveRecord: Make db-connection serializable in __sleep() function (Knut)
+BUG: Ticket#856 - Assets PRADO_CHMOD constant missing in several places (Carl)
 BUG: Ticket#859 - errorhandler error (stever)
 BUG: Ticket#860 - Prado::localize() bug (japplegame)
 BUG: Ticket#870 - Callback with redirect breaks lifecycle of page (stever)
@@ -18,8 +20,9 @@ BUG: Ticket#897 - TSimpleDateFormatter: If no YearPattern is set it should defau
 BUG: Ticket#899 - TSqlCriteria: SQL-statements with limit and offset doesn't work (Knut)
 BUG: Ticket#904 - TDbConnection: Add emulate prepares workaround for boolean compares (Knut)
 BUG: Ticket#908 - TDbCache::init / Exception (Knut)
-ENH: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
-ENH: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
+BUG: Ticket#938 - TPageStateFormatter EnableStateEncryption causes massive page state (Michael)
+BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dy
+CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
 ENH: Workaround for slow meta data retrieval in MySQL<5.1.21 (Michael)
 ENH: Ticket#823 - PromptText/PromptValue only populated if there is data (Knut)
 ENH: Ticket#876 - Assign empty string to CssUrl on TTabPanel to avoid loading extra css (GoDZilla, Knut)
@@ -29,16 +32,15 @@ ENH: Ticket#896 - TTheme - enhance for subclassing (Knut)
 ENH: Ticket#898 - Minor optimization: Use (int) over intval() (Knut)
 ENH: Ticket#901 - Using TDbDataReader directly as a DataSource of TDataBoundControl's like TDataGrid (Knut)
 ENH: Ticket#911 - prado-cli: Better error message if database connection fails when generating Active Record skeletons (Knut)
-CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
-NEW: Ticket#935 - Add TDatePicker (Brad, Christophe)
-NEW: Ticket#853 - Add Drag and drop components (Christophe)
 ENH: Ticket#809 - "LIMIT 1" for ActiveRecord find() and findBy() (Carl)
-BUG: Ticket#856 - Assets PRADO_CHMOD constant missing in several places (Carl)
 ENH: Ticket#848 - TCache "set" and "add" with empty values (Carl)
 ENH: Ticket#756 - TDateFormat & TNumberFormat - allow settings default text when Value isn't set. (Carl)
 ENH: Ticket#822 - Not receiving emails from TEmailLogRoute (Carl)
 ENH: Ticket#913 - PRADO Copyright notice in HTML source (Carl)
-BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
+NEW: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
+NEW: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
+NEW: Ticket#935 - Add TDatePicker (Brad, Christophe)
+NEW: Ticket#853 - Add Drag and drop components (Christophe)
 
 Version 3.1.2 April 21, 2008
 ============================

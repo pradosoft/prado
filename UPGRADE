@@ -21,6 +21,8 @@ Upgrading from v3.1.2
   Since the 3.X branch of TinyMCE has a different API than 2.X, you should 
   upgrade your Customs Plugins if you use any.
   See http://wiki.moxiecode.com/index.php/TinyMCE:Migration_guide for more information.
+- If you use EnableStateEncryption, the PageState of your current user sessions
+  will no longer be valid, since we optimized the encryption/compression logic.
 
 
 Upgrading from v3.1.1
