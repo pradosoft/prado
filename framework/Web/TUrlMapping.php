@@ -76,7 +76,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
 	 */
-	private $_patterns=array();
+	protected $_patterns=array();
 	/**
 	 * @var TUrlMappingPattern matched pattern.
 	 */
@@ -92,7 +92,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var array rules for constructing URLs
 	 */
-	private $_constructRules=array();
+	protected $_constructRules=array();
 
 	private $_urlPrefix='';
 

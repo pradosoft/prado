@@ -23,6 +23,7 @@ BUG: Ticket#908 - TDbCache::init / Exception (Knut)
 BUG: Ticket#938 - TPageStateFormatter EnableStateEncryption causes massive page state (Michael)
 BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dy
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
+CHG: Ticket#917 - TUrlMapping - change members to protected (Michael)
 CHG: Ticket#919 - TUserManager loadUserData function (Michael)
 ENH: Workaround for slow meta data retrieval in MySQL<5.1.21 (Michael)
 ENH: Ticket#823 - PromptText/PromptValue only populated if there is data (Knut)
