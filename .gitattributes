@@ -3103,6 +3103,8 @@ tests/FunctionalTests/tickets/protected/pages/Ticket897.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket897.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket900.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket900.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket922.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket922.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text
@@ -3171,6 +3173,7 @@ tests/FunctionalTests/tickets/tests/Ticket876TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket886TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket897TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket900TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket922TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text
 tests/FunctionalTests/validators/index.php -text

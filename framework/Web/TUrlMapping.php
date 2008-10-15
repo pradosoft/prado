@@ -617,7 +617,7 @@ class TUrlMappingPattern extends TComponent
 		foreach($getItems as $key=>$value)
 		{
 			if($encodeGetItems)
-				$value=urlencode($value);
+				$value=rawurlencode($value);
 			if($this->_parameters->contains($key))
 				$replace['{'.$key.'}']=$value;
 			else
@@ -637,12 +637,12 @@ class TUrlMappingPattern extends TComponent
 				{
 					if(is_array($value))
 					{
-						$name=urlencode($name.'[]');
+						$name=rawurlencode($name.'[]');
 						foreach($value as $v)
-							$url2.=$amp.$name.'='.urlencode($v);
+							$url2.=$amp.$name.'='.rawurlencode($v);
 					}
 					else
-						$url2.=$amp.urlencode($name).'='.urlencode($value);
+						$url2.=$amp.rawurlencode($name).'='.rawurlencode($value);
 				}
 			}
 			else

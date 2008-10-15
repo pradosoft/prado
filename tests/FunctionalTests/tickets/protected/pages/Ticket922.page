@@ -1,0 +1,12 @@
+<com:TContent ID="Content">
+
+<h1>Problem with TUrlMapping and urlencoding</h1>
+
+Enter a string with spaces that will be used as URL parameter
+<com:TTextBox ID="Text" />
+<com:TButton Text="Perform redirect" OnClick="processString" />
+
+<br />
+Decoded String:
+<com:TLabel ID="Result" />
+</com:TContent>

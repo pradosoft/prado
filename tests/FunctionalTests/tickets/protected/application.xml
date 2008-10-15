@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application id="TicketTests" Mode="Debug">
 <modules>
-	<module id="friendly-url" class="System.Web.TUrlMapping">
+	<module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="True">
 		<url ServiceID="testService" ServiceParameter="ticket653" pattern="/ticket653/?" />
+		<url ServiceParameter="Ticket922" pattern="/ticket922/{text}" parameters.text=".*" />
 	</module>
 	<module id="request" class="THttpRequest" UrlManager="friendly-url"/>
 </modules>

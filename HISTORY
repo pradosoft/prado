@@ -20,6 +20,7 @@ BUG: Ticket#897 - TSimpleDateFormatter: If no YearPattern is set it should defau
 BUG: Ticket#899 - TSqlCriteria: SQL-statements with limit and offset doesn't work (Knut)
 BUG: Ticket#904 - TDbConnection: Add emulate prepares workaround for boolean compares (Knut)
 BUG: Ticket#908 - TDbCache::init / Exception (Knut)
+BUG: Ticket#922 - Problem with TUrlMapping and urlencoding (Michael)
 BUG: Ticket#938 - TPageStateFormatter EnableStateEncryption causes massive page state (Michael)
 BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dy
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
