@@ -13,6 +13,7 @@ BUG: Ticket#855 - TActiveRecord: Make db-connection serializable in __sleep() fu
 BUG: Ticket#856 - Assets PRADO_CHMOD constant missing in several places (Carl)
 BUG: Ticket#859 - errorhandler error (stever)
 BUG: Ticket#860 - Prado::localize() bug (japplegame)
+BUG: Ticket#865 - TActiveLabels always get an id attribute (Michael)
 BUG: Ticket#870 - Callback with redirect breaks lifecycle of page (stever)
 BUG: Ticket#872 - use PATH_SEPARATOR in phpunit.php (fragmaster b)
 BUG: Ticket#886 - TSimpleDateFormatter: One month offset in time stamp with date pattern "yyyy" (Knut)
