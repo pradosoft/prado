@@ -124,4 +124,7 @@ A matching pattern is one whose <tt>ServiceID</tt> and <tt>ServiceParameter</tt>
 By default, <tt>TUrlMapping</tt> will construct URLs prefixed with the currently requesting PHP script path, such as <tt><b>/path/to/index.php</b>/article/3</tt>. Users may change this behavior by explicitly specifying the URL prefix through its <tt>UrlPrefix</tt> property. For example, if the Web server configuration treats <tt>index.php</tt> as the default script, we can set <tt>UrlPrefix</tt> as <tt>/path/to</tt> and the constructed URL will look like <tt>/path/to/article/3</tt>.
 </p>
 
+<div class="note"><b class="tip">Note:</b> If you use <tt>constructUrl()</tt> with string parameters that contain slashes ("/") they will get encoded to %2F. By default most Apache installations give a "404 Not found" if a URL contains a %2F. You can add <tt>AllowEncodedSlashes On</tt> to your <tt>VirtualHost</tt> configuration to resolve this. (Available since Apache 2.0.46).
+</div>
+
 <div class="last-modified">$Id$</div></com:TContent>
