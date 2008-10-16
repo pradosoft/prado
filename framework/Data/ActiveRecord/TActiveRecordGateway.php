@@ -72,7 +72,7 @@ class TActiveRecordGateway extends TComponent
 		} 
 		elseif ($class->hasMethod(self::TABLE_METHOD))
 		{
-			$value = call_user_func(array(get_class($record),self::TABLE_METHOD));
+			$value = $record->{self::TABLE_METHOD}();
 			if(empty($value))
 				throw new TActiveRecordException('ar_invalid_tablename_method',
 					get_class($record),self::TABLE_METHOD);

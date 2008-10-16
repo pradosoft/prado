@@ -129,11 +129,11 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * }
  * </code>
  *
- * Since v3.1.3 you can also define a static method that returns the table name.
+ * Since v3.1.3 you can also define a method that returns the table name.
  * <code>
  * class UserRecord extends TActiveRecord
  * {
- *     public static function table() 
+ *     public function table() 
  *     {
  *          return 'users';
  *     }
