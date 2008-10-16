@@ -23,6 +23,9 @@ Upgrading from v3.1.2
   See http://wiki.moxiecode.com/index.php/TinyMCE:Migration_guide for more information.
 - If you use EnableStateEncryption, the PageState of your current user sessions
   will no longer be valid, since we optimized the encryption/compression logic.
+- You can now use # and $ characters in your SQL statements with SQLMap by
+  escaping them as ## and $$. That induces that you can't have consecutive 
+  parameters like #param1##param2# or $param1$$param2$ in your statements anymore.
 
 
 Upgrading from v3.1.1
