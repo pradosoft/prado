@@ -3105,6 +3105,7 @@ tests/FunctionalTests/tickets/protected/pages/Ticket900.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket900.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket922.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket922.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket925.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text
