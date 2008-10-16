@@ -23,7 +23,7 @@ BUG: Ticket#904 - TDbConnection: Add emulate prepares workaround for boolean com
 BUG: Ticket#908 - TDbCache::init / Exception (Knut)
 BUG: Ticket#922 - Problem with TUrlMapping and urlencoding (Michael)
 BUG: Ticket#938 - TPageStateFormatter EnableStateEncryption causes massive page state (Michael)
-BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dy
+BUG: Ticket#942 - MultiLine TInplaceTextBox (Christophe)
 CHG: Ticket#844 - Upgraded TinyMCE to 3.1.0.1 (Christophe)
 CHG: Ticket#917 - TUrlMapping - change members to protected (Michael)
 CHG: Ticket#919 - TUserManager loadUserData function (Michael)

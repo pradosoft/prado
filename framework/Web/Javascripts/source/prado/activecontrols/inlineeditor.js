@@ -188,7 +188,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 			if(this.options.AutoHide)
 				this.showLabel();
 		}
-		else if (Event.keyCode(e) == Event.KEY_RETURN)
+		else if (Event.keyCode(e) == Event.KEY_RETURN && this.options.TextMode != 'MultiLine')
 			Event.stop(e);
 	},
 
