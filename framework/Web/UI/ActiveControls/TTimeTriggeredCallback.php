@@ -49,6 +49,10 @@ class TTimeTriggeredCallback extends TCallback
 		if($interval <= 0)
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
 		$this->setViewState('Interval', $interval, 1);
+		if ($this->getActiveControl()->canUpdateClientSide()){
+			$client = $this->getPage()->getCallbackClient();
+			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setInterval', array($this, $interval));
+		}
 	}
 
 	/**
@@ -56,10 +60,8 @@ class TTimeTriggeredCallback extends TCallback
 	 */
 	public function startTimer()
 	{
-		$id = $this->getClientID();
-		$code = "Prado.WebUI.TTimeTriggeredCallback.start('{$id}');";
-		$cs = $this->getPage()->getClientScript();
-		$cs->registerEndScript("{$id}:start", $code);
+		$client = $this->getPage()->getCallbackClient();
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.start', array($this));
 	}
 
 	/**
@@ -67,10 +69,8 @@ class TTimeTriggeredCallback extends TCallback
 	 */
 	public function stopTimer()
 	{
-		$id = $this->getClientID();
-		$code = "Prado.WebUI.TTimeTriggeredCallback.stop('{$id}');";
-		$cs = $this->getPage()->getClientScript();
-		$cs->registerEndScript("{$id}:stop", $code);
+		$client = $this->getPage()->getCallbackClient();
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.stop', array($this));
 	}
 
 	/**
@@ -110,8 +110,12 @@ class TTimeTriggeredCallback extends TCallback
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getTriggerOptions());
-		if($this->getStartTimerOnLoad())
-			$this->startTimer();
+		if($this->getStartTimerOnLoad()){
+			$id = $this->getClientID();
+			$code = "Prado.WebUI.TTimeTriggeredCallback.start('{$id}');";
+			$cs = $this->getPage()->getClientScript();
+			$cs->registerEndScript("{$id}:start", $code);
+		}
 	}
 
 	/**
