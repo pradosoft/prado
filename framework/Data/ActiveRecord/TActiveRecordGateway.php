@@ -31,6 +31,10 @@ class TActiveRecordGateway extends TComponent
 	 * Constant name for specifying optional table name in TActiveRecord.
 	 */
 	const TABLE_CONST='TABLE';
+	/**
+	 * Method name for returning optional table name in in TActiveRecord
+	 */
+	const TABLE_METHOD='table';
 
 	/**
 	 * Record gateway constructor.
@@ -64,6 +68,14 @@ class TActiveRecordGateway extends TComponent
 			if(empty($value))
 				throw new TActiveRecordException('ar_invalid_tablename_property',
 					get_class($record),self::TABLE_CONST);
+			return $value;
+		} 
+		elseif ($class->hasMethod(self::TABLE_METHOD))
+		{
+			$value = call_user_func(array(get_class($record),self::TABLE_METHOD));
+			if(empty($value))
+				throw new TActiveRecordException('ar_invalid_tablename_method',
+					get_class($record),self::TABLE_METHOD);
 			return $value;
 		}
 		else

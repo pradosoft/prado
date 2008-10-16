@@ -79,7 +79,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  *         'email_address'=>'email',
  *     );
  *     public $username;
- *     pulbic $email;
+ *     public $email;
  * }
  * </code>
  * In the above, the 'users' table consists of 'user_id' and 'email_address' columns,
@@ -129,6 +129,18 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * }
  * </code>
  *
+ * Since v3.1.3 you can also define a static method that returns the table name.
+ * <code>
+ * class UserRecord extends TActiveRecord
+ * {
+ *     public static function table() 
+ *     {
+ *          return 'users';
+ *     }
+ *
+ * }
+ * </code>
+ * 
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord

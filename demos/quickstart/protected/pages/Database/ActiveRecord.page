@@ -129,6 +129,19 @@ class UserRecord extends TActiveRecord
 You may specify qualified table names. E.g. for MySQL, <tt>TABLE = "`database1`.`table1`"</tt>.
 </div>
 
+<div class="note"><b class="note">Note:</b>
+Since version <b>3.1.3</b> you can also use a static method to define the table name. 
+This allows you to dynamically specify which table should be used by the ActiveRecord.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TeamRecord extends TActiveRecord
+{
+    public static function table() {
+        return 'Teams';
+    }
+}
+</com:TTextHighlighter>
+</div>
+
 <p class="block-content" id="ar_as_component">
     Since <tt>TActiveRecord</tt> extends <tt>TComponent</tt>, setter and
     getter methods can be defined to allow control over how variables
