@@ -163,7 +163,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	</li>
 	
 	<li>
-	<a href="?page=ActiveControls.DrapDrop">TDropContainer & TDraggable</a> represents drag and drop containers. 
+	<a href="?page=ActiveControls.DragDrop">TDropContainer & TDraggable</a> represents drag and drop containers. 
 		The former will make its child controls "draggable" while the latter will raise a callback when a draggable
 		control is dropped on it.
 	</li>
