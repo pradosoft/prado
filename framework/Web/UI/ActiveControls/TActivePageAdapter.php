@@ -367,4 +367,3 @@ class TInvalidCallbackException extends TException
 {
 }
 
-?>

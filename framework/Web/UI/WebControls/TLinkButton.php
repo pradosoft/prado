@@ -332,4 +332,3 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 	}
 }
 
-?>

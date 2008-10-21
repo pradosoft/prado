@@ -45,4 +45,3 @@ class TSqliteTableInfo extends TDbTableInfo
 	}
 }
 
-?>

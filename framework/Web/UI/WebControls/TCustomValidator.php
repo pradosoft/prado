@@ -191,4 +191,3 @@ class TServerValidateEventParameter extends TEventParameter
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 }
-?>

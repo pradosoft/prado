@@ -131,4 +131,3 @@ class TAPCCache extends TCache
 	}
 }
 
-?>

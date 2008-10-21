@@ -438,4 +438,3 @@ class TAutoCompleteTemplate extends TComponent implements ITemplate
 	}
 }
 
-?>

@@ -54,4 +54,3 @@ abstract class TModule extends TApplicationComponent implements IModule
 	}
 }
 
-?>

@@ -389,4 +389,3 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 }
 
-?>

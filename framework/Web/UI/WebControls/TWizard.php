@@ -2153,4 +2153,3 @@ class TWizardStepType extends TEnumerable
 	const Finish='Finish';
 }
 
-?>

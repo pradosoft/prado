@@ -1022,4 +1022,3 @@ class TActiveRecordChangeEventParameter extends TEventParameter
 	}
 }
 
-?>

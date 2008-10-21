@@ -444,4 +444,3 @@ class TPagedMapIterator implements Iterator
 	}
 }
 
-?>

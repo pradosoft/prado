@@ -891,4 +891,3 @@ class TTableGridLines extends TEnumerable
 	const Both='Both';
 }
 
-?>

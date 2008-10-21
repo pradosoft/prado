@@ -725,4 +725,3 @@ class TValidationDataType extends TEnumerable
 	const String='String';
 }
 
-?>

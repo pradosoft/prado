@@ -190,4 +190,3 @@ abstract class TSqlMapTypeHandler extends TComponent
 	public abstract function createNewInstance($row=null);
 }
 
-?>

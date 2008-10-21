@@ -835,4 +835,3 @@ class THotSpotMode extends TEnumerable
 	const Inactive='Inactive';
 }
 
-?>

@@ -318,4 +318,3 @@ class TRadioButton extends TCheckBox
 	}
 }
 
-?>

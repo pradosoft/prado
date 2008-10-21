@@ -60,4 +60,3 @@ class TExpression extends TControl
 	}
 }
 
-?>

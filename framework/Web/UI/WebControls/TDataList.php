@@ -1764,4 +1764,3 @@ class TDataListItemCollection extends TList
 	}
 }
 
-?>

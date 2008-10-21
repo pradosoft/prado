@@ -316,4 +316,3 @@ class TFont extends TComponent
 			$writer->addStyleAttribute('font-family',$this->_name);
 	}
 }
-?>

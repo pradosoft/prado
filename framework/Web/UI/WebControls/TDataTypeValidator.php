@@ -139,4 +139,3 @@ class TDataTypeValidator extends TBaseValidator
 	}
 }
 
-?>

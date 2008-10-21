@@ -1552,4 +1552,3 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	}
 
 }
-?>

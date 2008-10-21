@@ -225,4 +225,3 @@ class TSqlMapApplicationCache implements ICache
 	}
 }
 
-?>

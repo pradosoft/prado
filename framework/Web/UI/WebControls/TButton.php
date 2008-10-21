@@ -366,4 +366,3 @@ class TButtonType extends TEnumerable
 	const Button='Button';
 }
 
-?>

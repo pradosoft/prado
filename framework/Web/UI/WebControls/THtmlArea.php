@@ -473,4 +473,3 @@ class THtmlArea extends TTextBox
 	}
 }
 
-?>

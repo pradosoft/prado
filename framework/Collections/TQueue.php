@@ -261,4 +261,3 @@ class TQueueIterator implements Iterator
 	}
 }
 
-?>

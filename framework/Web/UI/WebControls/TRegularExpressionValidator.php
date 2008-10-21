@@ -124,4 +124,3 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 }
 
-?>

@@ -1064,4 +1064,3 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	}
 }
 
-?>

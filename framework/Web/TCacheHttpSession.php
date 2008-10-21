@@ -148,4 +148,3 @@ class TCacheHttpSession extends THttpSession
 	}
 }
 
-?>

@@ -121,4 +121,3 @@ abstract class TDbMetaData extends TComponent
 	}
 }
 
-?>

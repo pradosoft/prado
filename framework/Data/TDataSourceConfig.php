@@ -154,4 +154,3 @@ class TDataSourceConfig extends TModule
 	}
 }
 
-?>

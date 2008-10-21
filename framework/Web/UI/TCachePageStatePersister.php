@@ -199,4 +199,3 @@ class TCachePageStatePersister extends TComponent implements IPageStatePersister
 	}
 }
 
-?>

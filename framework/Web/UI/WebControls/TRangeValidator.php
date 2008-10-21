@@ -358,4 +358,3 @@ class TRangeValidationDataType extends TValidationDataType
 {
 	const StringLength='StringLength';
 }
-?>

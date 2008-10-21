@@ -136,4 +136,3 @@ class TRequiredFieldValidator extends TBaseValidator
 	}
 }
 
-?>

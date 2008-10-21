@@ -116,4 +116,3 @@ class TApplicationComponent extends TComponent
 	}
 }
 
-?>

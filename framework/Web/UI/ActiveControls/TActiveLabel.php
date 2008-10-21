@@ -88,4 +88,3 @@ class TActiveLabel extends TLabel implements IActiveControl
 	}
 }
 
-?>

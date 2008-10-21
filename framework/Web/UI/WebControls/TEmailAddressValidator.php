@@ -95,4 +95,3 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	}
 }
 
-?>

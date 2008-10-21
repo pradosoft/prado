@@ -630,4 +630,3 @@ class CultureInfo
 	}
 }
 
-?>

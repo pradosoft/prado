@@ -187,4 +187,3 @@ class THyperLink extends TWebControl implements IDataRenderer
 	}
 }
 
-?>

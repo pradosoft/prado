@@ -664,4 +664,3 @@ class TUrlMappingPattern extends TComponent
 	}
 }
 
-?>

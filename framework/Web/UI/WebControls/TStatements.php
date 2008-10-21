@@ -61,4 +61,3 @@ class TStatements extends TControl
 	}
 }
 
-?>

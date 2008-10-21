@@ -70,4 +70,3 @@ class TMysqlTableColumn extends TDbTableColumn
 	}
 }
 
-?>

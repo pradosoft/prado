@@ -636,4 +636,3 @@ class TTextBoxAutoCompleteType extends TEnumerable
 	const Search='Search';
 }
 
-?>

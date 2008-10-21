@@ -1023,4 +1023,3 @@ class TRepeaterItemCollection extends TList
 	}
 }
 
-?>

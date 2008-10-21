@@ -88,4 +88,3 @@ class TI18NControl extends TControl
 	}
 }
 
-?>

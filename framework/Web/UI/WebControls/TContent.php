@@ -45,4 +45,3 @@ class TContent extends TControl implements INamingContainer
 	}
 }
 
-?>

@@ -276,4 +276,3 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 
 }
 
-?>

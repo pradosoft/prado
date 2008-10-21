@@ -88,4 +88,3 @@ $dependencies = array(
 
 return array($packages, $dependencies);
 
-?>

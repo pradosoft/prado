@@ -738,4 +738,3 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 }
 
-?>

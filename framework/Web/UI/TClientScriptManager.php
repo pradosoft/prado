@@ -720,4 +720,3 @@ abstract class TClientSideOptions extends TComponent
 	}
 }
 
-?>

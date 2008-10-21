@@ -274,4 +274,3 @@ class TInlineFrameScrollBars extends TEnumerable
 	const Auto='Auto';
 	const Both='Both';
 }
-?>

@@ -116,4 +116,3 @@ class TReadOnlyDataSource extends TDataSourceControl
 	}
 }
 
-?>

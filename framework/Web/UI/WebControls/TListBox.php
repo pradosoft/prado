@@ -260,4 +260,3 @@ class TListSelectionMode extends TEnumerable
 	const Multiple='Multiple';
 }
 
-?>

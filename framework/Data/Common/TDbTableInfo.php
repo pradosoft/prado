@@ -156,4 +156,3 @@ class TDbTableInfo extends TComponent
 	}
 }
 
-?>

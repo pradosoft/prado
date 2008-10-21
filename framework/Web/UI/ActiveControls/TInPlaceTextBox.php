@@ -269,4 +269,3 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 }
-?>

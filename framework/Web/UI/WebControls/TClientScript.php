@@ -129,4 +129,3 @@ class TClientScript extends TControl
 	}
 }
 
-?>

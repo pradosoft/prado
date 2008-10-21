@@ -106,4 +106,3 @@ class TCachingStatement implements IMappedStatement
 	}
 }
 
-?>

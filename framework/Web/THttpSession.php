@@ -708,4 +708,3 @@ class THttpSessionCookieMode extends TEnumerable
 	const Only='Only';
 }
 
-?>

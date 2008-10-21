@@ -247,4 +247,3 @@ abstract class TActiveRecordRelation
 	}
 }
 
-?>

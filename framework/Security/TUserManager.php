@@ -320,4 +320,3 @@ class TUserManagerPasswordMode extends TEnumerable
 	const SHA1='SHA1';
 }
 
-?>

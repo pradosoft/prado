@@ -220,4 +220,3 @@ class TUser extends TComponent implements IUser
 	}
 }
 
-?>

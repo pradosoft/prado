@@ -923,4 +923,3 @@ class TDatePickerMode extends TEnumerable
 	const ImageButton='ImageButton';
 }
 
-?>

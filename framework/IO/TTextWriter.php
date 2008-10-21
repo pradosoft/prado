@@ -57,4 +57,3 @@ class TTextWriter extends TComponent implements ITextWriter
 	}
 }
 
-?>

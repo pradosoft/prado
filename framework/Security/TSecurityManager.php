@@ -279,4 +279,3 @@ class TSecurityManagerValidationMode extends TEnumerable
 	const SHA1='SHA1';
 }
 
-?>

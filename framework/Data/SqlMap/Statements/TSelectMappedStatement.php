@@ -34,4 +34,3 @@ class TSelectMappedStatement extends TMappedStatement
 
 }
 
-?>

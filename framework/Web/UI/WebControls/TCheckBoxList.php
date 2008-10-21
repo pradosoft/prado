@@ -472,4 +472,3 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	
 }
 
-?>

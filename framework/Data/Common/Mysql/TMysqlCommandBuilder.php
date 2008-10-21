@@ -24,4 +24,3 @@ class TMysqlCommandBuilder extends TDbCommandBuilder
 {
 }
 
-?>

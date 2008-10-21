@@ -81,4 +81,3 @@ abstract class TService extends TApplicationComponent implements IService
 	}
 }
 
-?>

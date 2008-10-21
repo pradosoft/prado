@@ -99,4 +99,3 @@ class TRadioButtonList extends TCheckBoxList
 	}
 }
 
-?>

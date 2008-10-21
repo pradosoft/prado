@@ -1216,4 +1216,3 @@ class TResultSetMapItemParameter extends TComponent
 	}
 }
 
-?>

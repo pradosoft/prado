@@ -222,4 +222,3 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 	}
 }
 
-?>

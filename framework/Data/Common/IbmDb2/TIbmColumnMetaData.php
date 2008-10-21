@@ -154,4 +154,3 @@ class TIbmColumnMetaData extends TComponent
 
 }
 
-?>

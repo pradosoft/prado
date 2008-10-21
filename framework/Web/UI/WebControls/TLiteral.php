@@ -110,4 +110,3 @@ class TLiteral extends TControl implements IDataRenderer
 	}
 }
 
-?>

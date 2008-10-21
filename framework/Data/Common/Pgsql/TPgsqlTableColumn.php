@@ -47,4 +47,3 @@ class TPgsqlTableColumn extends TDbTableColumn
 	}
 }
 
-?>

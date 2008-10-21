@@ -141,4 +141,3 @@ class TConditional extends TControl
 	}
 }
 
-?>

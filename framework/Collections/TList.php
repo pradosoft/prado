@@ -427,4 +427,3 @@ class TListIterator implements Iterator
 	}
 }
 
-?>

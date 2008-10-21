@@ -220,4 +220,3 @@ class TTableCell extends TWebControl implements IDataRenderer
 	}
 }
 
-?>

@@ -188,4 +188,3 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 }
 
-?>

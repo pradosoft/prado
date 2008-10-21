@@ -49,4 +49,3 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 	}
 }
 
-?>

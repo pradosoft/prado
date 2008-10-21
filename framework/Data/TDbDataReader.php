@@ -223,4 +223,3 @@ class TDbDataReader extends TComponent implements Iterator
 	}
 }
 
-?>

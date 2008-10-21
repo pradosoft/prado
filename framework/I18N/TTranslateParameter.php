@@ -117,4 +117,3 @@ class TTranslateParameter extends TControl
 	}
 }
 
-?>

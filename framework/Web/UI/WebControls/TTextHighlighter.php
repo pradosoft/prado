@@ -198,4 +198,3 @@ class TTextHighlighterLineNumberStyle extends TEnumerable
 	const Li='Li';
 	const Table='Table';
 }
-?>

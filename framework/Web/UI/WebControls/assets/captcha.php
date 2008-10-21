@@ -221,4 +221,3 @@ function morphImage($image,$width,$height)
 	}
 }
 
-?>

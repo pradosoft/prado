@@ -206,4 +206,3 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	}
 }
 
-?>

@@ -582,4 +582,3 @@ class TOutputCacheCalculateKeyEventParameter extends TEventParameter
 	}
 }
 
-?>

@@ -143,4 +143,3 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	}
 }
 
-?>

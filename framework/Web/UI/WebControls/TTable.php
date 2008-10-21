@@ -408,4 +408,3 @@ class TTableCaptionAlign extends TEnumerable
 	const Right='Right';
 }
 
-?>

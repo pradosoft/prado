@@ -565,4 +565,3 @@ class TButtonColumnType extends TEnumerable
 	const ImageButton='ImageButton';
 }
 
-?>

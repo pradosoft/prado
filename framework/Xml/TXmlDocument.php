@@ -547,4 +547,3 @@ class TXmlElementList extends TList
 	}
 }
 
-?>

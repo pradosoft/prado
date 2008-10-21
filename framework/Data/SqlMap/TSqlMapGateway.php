@@ -259,4 +259,3 @@ class TSqlMapGateway extends TComponent
 	}
 }
 
-?>

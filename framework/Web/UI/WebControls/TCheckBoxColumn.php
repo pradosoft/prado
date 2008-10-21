@@ -121,4 +121,3 @@ class TCheckBoxColumn extends TDataGridColumn
 	}
 }
 
-?>

@@ -230,4 +230,3 @@ class TSubMap extends TComponent
 	}
 }
 
-?>

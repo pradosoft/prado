@@ -670,4 +670,3 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 }
 
-?>

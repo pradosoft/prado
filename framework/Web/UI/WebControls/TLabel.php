@@ -152,4 +152,3 @@ class TLabel extends TWebControl implements IDataRenderer
 	}
 }
 
-?>

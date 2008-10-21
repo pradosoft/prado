@@ -215,4 +215,3 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 }
 
-?>

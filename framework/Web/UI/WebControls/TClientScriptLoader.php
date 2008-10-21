@@ -168,4 +168,3 @@ class TClientScriptLoader extends TWebControl
 	}
 }
 
-?>

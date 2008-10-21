@@ -350,4 +350,3 @@ class TMapIterator implements Iterator
 		return $this->_key!==false;
 	}
 }
-?>

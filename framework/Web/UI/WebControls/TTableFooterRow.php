@@ -45,4 +45,3 @@ class TTableFooterRow extends TTableRow
 	}
 }
 
-?>

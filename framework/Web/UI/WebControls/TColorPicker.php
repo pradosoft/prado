@@ -270,4 +270,3 @@ class TColorPickerClientSide extends TClientSideOptions
 	}
 }
 
-?>

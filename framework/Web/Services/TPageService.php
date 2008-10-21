@@ -723,4 +723,3 @@ class TPageConfiguration extends TComponent
 	}
 }
 
-?>

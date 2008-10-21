@@ -239,4 +239,3 @@ class TActiveCustomValidatorClientSide extends TCallbackClientSide
 		return is_null($changes) ? true : $changes;
 	}
 }
-?>

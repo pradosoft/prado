@@ -560,4 +560,3 @@ class TMapCollectionDiff extends TViewStateDiff
 	}
 }
 
-?>

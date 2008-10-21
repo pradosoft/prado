@@ -146,4 +146,3 @@ class TDropDownList extends TListControl implements IPostBackDataHandler, IValid
 	    $this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 }
-?>
