@@ -69,7 +69,7 @@ class TActiveRecordGateway extends TComponent
 				throw new TActiveRecordException('ar_invalid_tablename_property',
 					get_class($record),self::TABLE_CONST);
 			return $value;
-		} 
+		}
 		elseif ($class->hasMethod(self::TABLE_METHOD))
 		{
 			$value = $record->{self::TABLE_METHOD}();
@@ -306,7 +306,7 @@ class TActiveRecordGateway extends TComponent
 			if($column->getIsExcluded())
 				continue;
 			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value===null && !$column->hasSequence())
+			if(!$column->getAllowNull() && $value===null && !$column->hasSequence() && !$column->getDefaultValue())
 			{
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null', get_class($record),
