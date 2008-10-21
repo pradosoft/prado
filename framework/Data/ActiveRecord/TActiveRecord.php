@@ -133,14 +133,14 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * <code>
  * class UserRecord extends TActiveRecord
  * {
- *     public function table() 
+ *     public function table()
  *     {
  *          return 'users';
  *     }
  *
  * }
  * </code>
- * 
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -330,6 +330,14 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 * @return TDbTableInfo the meta information of the table associated with this AR class.
+	 */
+	public function getRecordTableInfo()
+	{
+		return $this->getRecordGateway()->getRecordTableInfo($this);
+	}
+
+	/**
 	 * Compare two records using their primary key values (all column values if
 	 * table does not defined primary keys). The default uses simple == for
 	 * comparison of their values. Set $strict=true for identity comparison (===).
@@ -341,7 +349,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		if($record===null || get_class($this)!==get_class($record))
 			return false;
-		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($this);
+		$tableInfo = $this->getRecordTableInfo();
 		$pks = $tableInfo->getPrimaryKeys();
 		$properties = count($pks) > 0 ? $pks : $tableInfo->getColumns()->getKeys();
 		$equals=true;
