@@ -46,9 +46,9 @@ ENH: Ticket#925 - TTimeTriggeredCallback update interval during callback (Brad, 
 NEW: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
 NEW: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
 NEW: Ticket#790 - Added TActiveFileUpload (Bradley, Christophe)
-NEW: Ticket#935 - Add TDatePicker (Bradley, Christophe)
+NEW: Ticket#935 - Added TActiveDatePicker (Bradley, Christophe)
 NEW: Ticket#857 - Added Authentication expiration support to TAuthManager (Michael)
-NEW: Ticket#853 - Add Drag and drop components (Christophe)
+NEW: Ticket#853 - Added Drag and drop components (Christophe)
 NEW: Ticket#891 - Added method that returns table name to TActiveRecord (Michael)
 
 Version 3.1.2 April 21, 2008
