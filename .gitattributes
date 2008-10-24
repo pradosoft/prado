@@ -2527,6 +2527,11 @@ framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/dragdrop.js -text
 framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js -text
 framework/Web/Javascripts/source/prado/activecontrols/json.js -text
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadBlank.html -text
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadComplete.png -text svneol=unset#image/png
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadError.png -text svneol=unset#image/png
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadIndicator.gif -text
+framework/Web/Javascripts/source/prado/activefileupload/activefileupload.js -text
 framework/Web/Javascripts/source/prado/activeratings/blocks.css -text
 framework/Web/Javascripts/source/prado/activeratings/blocks.png -text
 framework/Web/Javascripts/source/prado/activeratings/blocks_blank.gif -text

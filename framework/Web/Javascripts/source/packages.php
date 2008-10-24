@@ -67,23 +67,28 @@ $packages = array(
 		'prado/activecontrols/activedatepicker.js'
 	),
 	
+	'activefileupload' => array(
+		'prado/activefileupload/activefileupload.js'
+	),
+	
 );
 
 
 //package names and their dependencies
 $dependencies = array(
-		'prado'			=> array('prado'),
-		'effects'		=> array('prado', 'effects'),
-		'validator'		=> array('prado', 'validator'),
-		'logger'		=> array('prado', 'logger'),
-		'datepicker'	=> array('prado', 'datepicker'),
-		'colorpicker'	=> array('prado', 'colorpicker'),
-		'ajax'			=> array('prado', 'effects', 'ajax'),
-		'dragdrop'		=> array('prado', 'effects', 'ajax', 'dragdrop'),
-		'slider'		=> array('prado', 'slider'),
-		'keyboard'		=> array('prado', 'keyboard'),
-		'tabpanel'		=> array('prado', 'tabpanel'),
-		'activedatepicker' => array ('datepicker', 'ajax', 'activedatepicker'),
+		'prado'				=> array('prado'),
+		'effects'			=> array('prado', 'effects'),
+		'validator'			=> array('prado', 'validator'),
+		'logger'			=> array('prado', 'logger'),
+		'datepicker'		=> array('prado', 'datepicker'),
+		'colorpicker'		=> array('prado', 'colorpicker'),
+		'ajax'				=> array('prado', 'effects', 'ajax'),
+		'dragdrop'			=> array('prado', 'effects', 'ajax', 'dragdrop'),
+		'slider'			=> array('prado', 'slider'),
+		'keyboard'			=> array('prado', 'keyboard'),
+		'tabpanel'			=> array('prado', 'tabpanel'),
+		'activedatepicker' 	=> array('datepicker', 'ajax', 'activedatepicker'),
+		'activefileupload' 	=> array('prado', 'ajax', 'activefileupload'),
 );
 
 return array($packages, $dependencies);

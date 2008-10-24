@@ -466,3 +466,5 @@ datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is inva
 
 response_status_reason_missing			= HTTP 1.1 need reason for extended status-codes
 response_status_reason_badchars			= For HTTP 1.1 header, the token status-reason must not contain token CR or LF
+
+activefileupload_temppath_invalid		= TActiveFileUpload TempPath path '{0}' does not exist or is not writable by Web server process.
