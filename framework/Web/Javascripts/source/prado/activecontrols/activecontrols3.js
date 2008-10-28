@@ -28,6 +28,7 @@ Prado.WebUI.TActiveImageButton = Class.extend(Prado.WebUI.TImageButton,
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 		Event.stop(event);
+		this.removeXYInput(event,options);
 	}
 });
 /**

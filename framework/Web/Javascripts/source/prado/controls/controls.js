@@ -69,12 +69,9 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	onPostBack : function(event, options)
 	{
-		if(!this.hasXYInput)
-		{
-			this.addXYInput(event,options);
-			this.hasXYInput = true;
-		}
+		this.addXYInput(event,options);
 		Prado.PostBack(event, options);
+		this.removeXYInput(event,options);
 	},
 
 	/**
@@ -111,6 +108,18 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 			y_input = INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});
 			this.element.parentNode.appendChild(y_input);
 		}
+	},
+
+	/**
+	 * Remove hidden inputs for x,y-click capturing
+	 * @param event DOM click event.
+	 * @param array image button options.
+	 */
+	removeXYInput : function(event,options)
+	{
+		id = options['EventTarget'];
+		this.element.parentNode.removeChild($(id+"_x"));
+		this.element.parentNode.removeChild($(id+"_y"));
 	}
 });
 
