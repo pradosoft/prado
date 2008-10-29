@@ -1668,6 +1668,7 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	 * @constructor initialize
 	 * @param {object} options - Additional constructor option:
 	 * @... {string} ValidationExpression - Regular expression to match against.
+	 * @... {string} PatternModifiers - Pattern modifiers: combinations of g, i, and m
 	 */
 
 	/**
@@ -1678,12 +1679,12 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	evaluateIsValid : function()
 	{
 		var value = this.getValidationValue();
-	    if (value.length <= 0)
+		if (value.length <= 0)
 	    	return true;
 
-	    var rx = new RegExp(this.options.ValidationExpression);
-	    var matches = rx.exec(value);
-	    return (matches != null && value == matches[0]);
+		var rx = new RegExp(this.options.ValidationExpression,this.options.PatternModifiers);
+		var matches = rx.exec(value);
+		return (matches != null && value == matches[0]);
 	}
 });
 

@@ -96,7 +96,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string pattern modifiers,
+	 * @param string pattern modifiers for server side validation,
 	 * see http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
 	 */
 	public function setPatternModifiers($value)
@@ -113,6 +113,23 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
+	 * @param string pattern modifiers for clientside.
+	 * (Only 'g','i' and 'm' are available.)
+	 */
+	public function setClientSidePatternModifiers($value)
+	{
+		$this->setViewState('ClientSidePatternModifiers', $value);
+	}
+
+	/**
+	 * @return string clientside pattern modifiers, no modifiers by default.
+	 */
+	public function getClientSidePatternModifiers()
+	{
+		return $this->getViewState('ClientSidePatternModifiers', '');
+	}
+
+	/**
 	 * Returns an array of javascript validator options.
 	 * @return array javascript validator options.
 	 */
@@ -120,6 +137,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	{
 		$options = parent::getClientScriptOptions();
 		$options['ValidationExpression']=$this->getRegularExpression();
+		$options['PatternModifiers']=$this->getClientSidePatternModifiers();
 		return $options;
 	}
 }
