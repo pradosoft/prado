@@ -686,7 +686,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		switch(type)
 		{
-			case "List":
+			case "SimpleList":
 				return { header : "<br />", first : "", pre : "", post : "<br />", last : ""};
 			case "SingleParagraph":
 				return { header : " ", first : "", pre : "", post : " ", last : "<br />"};

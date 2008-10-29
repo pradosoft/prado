@@ -313,4 +313,3 @@ EOS;
 		return $this->_busy;
 	}
 }
-?>

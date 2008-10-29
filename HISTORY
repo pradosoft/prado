@@ -51,6 +51,7 @@ NEW: Ticket#935 - Added TActiveDatePicker (Bradley, Christophe)
 NEW: Ticket#857 - Added Authentication expiration support to TAuthManager (Michael)
 NEW: Ticket#853 - Added Drag and drop components (Christophe)
 NEW: Ticket#891 - Added method that returns table name to TActiveRecord (Michael)
+BUG: Ticket#38 - [835] TValidationSummary, works different when it's showing Javascript Validation than Server Validation (Carl)
 
 Version 3.1.2 April 21, 2008
 ============================
