@@ -268,6 +268,8 @@ class TApplication extends TComponent
 	 * @var TApplicationMode application mode
 	 */
 	private $_mode=TApplicationMode::Debug;
+	
+	private $_pageServiceID = self::PAGE_SERVICE_ID;
 
 	/**
 	 * Constructor.
@@ -300,7 +302,7 @@ class TApplication extends TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new TMap;
-		$this->_services=array(self::PAGE_SERVICE_ID=>array('TPageService',array(),null));
+		
 		Prado::setPathOfAlias('Application',$this->_basePath);
 	}
 
@@ -483,6 +485,22 @@ class TApplication extends TComponent
 	public function setID($value)
 	{
 		$this->_id=$value;
+	}
+	
+	/**
+	 * @return string page service ID
+	 */
+	public function getPageServiceID()
+	{
+		return $this->_pageServiceID;
+	}
+
+	/**
+	 * @param string page service ID
+	 */
+	public function setPageServiceID($value)
+	{
+		$this->_pageServiceID=$value;
 	}
 
 	/**
@@ -842,8 +860,12 @@ class TApplication extends TComponent
 		if(!$withinService)
 		{
 			foreach($config->getProperties() as $name=>$value)
+			{
 				$this->setSubProperty($name,$value);
+			}
 		}
+		
+		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 
 		// load parameters
 		foreach($config->getParameters() as $id=>$parameter)
@@ -928,7 +950,7 @@ class TApplication extends TComponent
 		}
 
 		if(($serviceID=$this->getRequest()->resolveRequest(array_keys($this->_services)))===null)
-			$serviceID=self::PAGE_SERVICE_ID;
+			$serviceID=$this->getPageServiceID();
 
 		$this->startService($serviceID);
 	}
