@@ -96,6 +96,20 @@ class TLogRouter extends TModule
 	}
 
 	/**
+	 * Adds a TLogRoute instance to the log router.
+	 * 
+	 * @param TLogRoute $route 
+	 * @throws TInvalidDataTypeException if the route object is invalid
+	 */
+	public function addRoute($route)
+	{
+		if(!($route instanceof TLogRoute))
+			throw new TInvalidDataTypeException('logrouter_routetype_invalid');
+		$this->_routes[]=$route;
+		$route->init(null);
+	}
+
+	/**
 	 * @return string external configuration file. Defaults to null.
 	 */
 	public function getConfigFile()
@@ -106,7 +120,7 @@ class TLogRouter extends TModule
 	/**
 	 * @param string external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
-	 * @throws TInvalidDataValueException if the file is invalid.
+	 * @throws TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{

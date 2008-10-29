@@ -44,6 +44,7 @@ ENH: Ticket#901 - Using TDbDataReader directly as a DataSource of TDataBoundCont
 ENH: Ticket#911 - prado-cli: Better error message if database connection fails when generating Active Record skeletons (Knut)
 ENH: Ticket#913 - PRADO Copyright notice in HTML source (Carl)
 ENH: Ticket#925 - TTimeTriggeredCallback update interval during callback (Brad, Christophe)
+ENH: Ticket#941 - Add addRoute() method to TLogRouter (Michael)
 NEW: Added Prado.Validation.validateControl(id) on client side to validate a specific control (Michael)
 NEW: Added MessageSource_Database to I18N (uses TDbConnection) (Michael)
 NEW: Ticket#790 - Added TActiveFileUpload (Bradley, Christophe)
