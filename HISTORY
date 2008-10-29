@@ -55,6 +55,7 @@ NEW: Ticket#891 - Added method that returns table name to TActiveRecord (Michael
 BUG: Ticket#38 - (trac:835) TValidationSummary, works different when it's showing Javascript Validation than Server Validation (Carl)
 ENH: Ticket#32 - (trac:861) Implement ability to specify default service ID (Carl)
 ENH: Ticket#31 - (trac:867) Consider UTF MessageSource_XLIFF class file (Carl)
+ENH: Ticket#46 - TColorPicker - Output is missing alt tag (Carl)
 
 Version 3.1.2 April 21, 2008
 ============================

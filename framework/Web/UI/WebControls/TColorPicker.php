@@ -203,6 +203,7 @@ class TColorPicker extends TTextBox
 			$writer->addAttribute('style', "background-color:{$color};");
 		$writer->addAttribute('width', '20');
 		$writer->addAttribute('height', '20');
+		$writer->addAttribute('alt', '');
 		$writer->renderBeginTag('img');
 		$writer->renderEndTag();
 		$writer->renderEndTag();
