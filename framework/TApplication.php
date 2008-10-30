@@ -269,6 +269,9 @@ class TApplication extends TComponent
 	 */
 	private $_mode=TApplicationMode::Debug;
 	
+	/**
+	 * @var string Customizable page service ID
+	 */
 	private $_pageServiceID = self::PAGE_SERVICE_ID;
 
 	/**
@@ -860,9 +863,7 @@ class TApplication extends TComponent
 		if(!$withinService)
 		{
 			foreach($config->getProperties() as $name=>$value)
-			{
 				$this->setSubProperty($name,$value);
-			}
 		}
 		
 		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
