@@ -1,5 +1,5 @@
-Version 3.1.3 To Be Released
-============================
+Version 3.1.3 November 1, 2008
+==============================
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
