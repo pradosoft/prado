@@ -67,6 +67,7 @@ Prado.WebUI.TDatePicker.prototype =
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
+		this.positionMode = 'Bottom';
 
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
@@ -78,6 +79,12 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			this.trigger  = this.control;
 			var triggerEvent = this.options.TriggerEvent || "focus";
+		}
+		
+		// Popup position
+		if(this.options.PositionMode == 'Top')
+		{
+			this.positionMode = this.options.PositionMode;
 		}
 
 		Object.extend(this,options);
@@ -309,8 +316,8 @@ Prado.WebUI.TDatePicker.prototype =
 		if(this.iePopUp)
 		{
 			this.iePopUp.style.display = "block";
-			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
 			this.iePopUp.style.left = (this._calDiv.offsetLeft -1)+ "px";
+			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
 			this.iePopUp.style.width = Math.abs(this._calDiv.offsetWidth -2)+ "px";
 			this.iePopUp.style.height = (this._calDiv.offsetHeight + 1)+ "px";
 			if(cleanup) this.iePopUp.style.display = "none";
@@ -602,10 +609,17 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			var pos = this.control.positionedOffset();
 
-			pos[1] += this.getDatePickerOffsetHeight();
-
+			if(this.positionMode=='Top')
+			{
+				pos[1] = (document.body.clientHeight - pos[1]);
+				this._calDiv.style.bottom = (pos[1]-1) + "px";
+			}
+			else
+			{
+				pos[1] += this.getDatePickerOffsetHeight();
+				this._calDiv.style.top = (pos[1]-1) + "px";
+			}
 			this._calDiv.style.display = "block";
-			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.left = pos[0] + "px";
 
 			this.ieHack(false);

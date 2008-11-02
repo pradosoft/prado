@@ -59,6 +59,10 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  * In <tt>DropDownList</tt> mode, in addition to the popup date picker, three
  * drop down list (day, month and year) are presented to select the date .
  *
+ * The <b>PositionMode</b> property can be set to "Top" or "Bottom" with default
+ * as "Bottom". It specifies the position of the calendar popup, relative to the
+ * input field.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -262,6 +266,22 @@ class TDatePicker extends TTextBox
 	public function getUpToYear()
 	{
 		return $this->getViewState('UpToYear', intval(@date('Y'))+10);
+	}
+	
+	/**
+	 * @param TDatePickerPositionMode calendar UI position
+	 */
+	public function setPositionMode($value)
+	{
+	   $this->setViewState('PositionMode', TPropertyValue::ensureEnum($value, 'TDatePickerPositionMode'), TDatePickerPositionMode::Bottom);
+	}
+
+	/**
+	 * @return TDatePickerPositionMode current calendar UI position.
+	 */
+	public function getPositionMode()
+	{
+	   return $this->getViewState('PositionMode', TDatePickerPositionMode::Bottom);
 	}
 
 	/**
@@ -505,6 +525,7 @@ class TDatePicker extends TTextBox
 		$options['UpToYear'] = $this->getUpToYear();
 		if($this->getMode()!==TDatePickerMode::Basic)
 			$options['Trigger'] = $this->getDatePickerButtonID();
+		$options['PositionMode'] = $this->getPositionMode();
 
 		$options = array_merge($options, $this->getCulturalOptions());
 		if(!is_null($this->_clientScript))
@@ -923,3 +944,20 @@ class TDatePickerMode extends TEnumerable
 	const ImageButton='ImageButton';
 }
 
+/**
+ * TDatePickerPositionMode class.
+ * TDatePickerPositionMode defines the positions available for the calendar popup, relative to the corresponding input.
+ *
+ * The following enumerable values are defined:
+ * - Top: the date picker is placed above the input field
+ * - Bottom: the date picker is placed below the input field
+ *
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
+ * @package System.Web.UI.WebControls
+ * @since 3.1.4
+ */
+class TDatePickerPositionMode extends TEnumerable
+{
+	const Top='Top';
+	const Bottom='Bottom';
+}
