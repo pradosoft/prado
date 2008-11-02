@@ -66,7 +66,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.1.3a';
+		return '3.1.4a';
 	}
 
 	/**
@@ -114,7 +114,7 @@ class PradoBase
 			$url='http://www.pradosoft.com/images/'.$logoName.'.gif';
 		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
-	
+
 	public static function metaGenerator()
 	{
 		return 'PRADO - http://www.pradosoft.com/';
@@ -579,7 +579,7 @@ class PradoBase
 
 		if ($catalogue===null)
 			$catalogue=isset($config['catalogue'])?$config['catalogue']:'messages';
-			
+
 		Translation::init($catalogue);
 
 		//globalization charset
