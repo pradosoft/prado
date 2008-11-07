@@ -106,7 +106,8 @@ class TPropertyAccess
 					$object = $object->{$getter}();
 				else if(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
-				return false;
+				else
+					return false;
 			}
 			else
 				return false;
