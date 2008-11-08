@@ -1,0 +1,17 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList Rating Test Case</h1>
+	<com:TActiveRatingList ID="RatingList" Rating="5"
+		OnSelectedIndexChanged="ratingChanged">
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average" />
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+	<com:TActiveLabel ID="Status" Text="Rating: 5" />
+	<br />
+	<com:TActiveButton ID="SetRating" Text="Set Rating=3"
+		OnClick="setRating" />
+</com:TForm>

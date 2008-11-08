@@ -3,21 +3,10 @@
 <style>
 	.more td
 	{
+		background-position: 10px 10px;
 		border: 1px solid #eee;
 		width: 40px;
 		height: 40px;
-	}
-	.more td.rating
-	{
-		background-position: 10px 10px;
-	}
-	.more td.rating_selected
-	{
-		background-position: 10px -90px;
-	}
-	.more td.rating_hover
-	{
-		background-position: 10px -290px;
 	}
 </style>
 
