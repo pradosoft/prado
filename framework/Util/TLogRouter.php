@@ -124,7 +124,7 @@ class TLogRouter extends TModule
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,self::LOG_FILE_EXT))===null)
+		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
 			throw new TConfigurationException('logrouter_configfile_invalid',$value);
 	}
 
