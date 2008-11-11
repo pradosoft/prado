@@ -97,7 +97,7 @@ class TActiveControlAdapter extends TControlAdapter
 			$data = $this->getPage()->getPostDataLoaders();
 			if(count($data) > 0)
 			{
-				$options = TJavascript::encode($data,false);
+				$options = TJavaScript::encode($data,false);
 				$script = "Prado.CallbackRequest.addPostLoaders({$options});";
 				$cs->registerEndScript($key, $script);
 			}

@@ -328,7 +328,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		{
 			$string = strtr($string,array('\t'=>"\t",'\n'=>"\n",'\r'=>"\r"));
 			$token = preg_split('//', $string, -1, PREG_SPLIT_NO_EMPTY);
-			$options['tokens'] = TJavascript::encode($token,false);
+			$options['tokens'] = TJavaScript::encode($token,false);
 		}
 		if($this->getAutoPostBack())
 		{

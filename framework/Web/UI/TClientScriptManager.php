@@ -233,7 +233,7 @@ class TClientScriptManager extends TApplicationComponent
 		$class = new TReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
-		$optionString = TJavascript::encode($options);
+		$optionString = TJavaScript::encode($options);
 		$this->registerPradoScriptInternal('ajax');
 		$id = $callbackHandler->getUniqueID();
 		return "new Prado.CallbackRequest('{$id}',{$optionString})";
@@ -680,8 +680,8 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function setFunction($name, $code)
 	{
-		if(!TJavascript::isFunction($code))
-			$code = TJavascript::quoteFunction($this->ensureFunction($code));
+		if(!TJavaScript::isFunction($code))
+			$code = TJavaScript::quoteFunction($this->ensureFunction($code));
 		$this->setOption($name, $code);
 	}
 
