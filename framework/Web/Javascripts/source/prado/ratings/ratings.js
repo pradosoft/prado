@@ -200,6 +200,6 @@ Prado.WebUI.TActiveRatingList = Prado.WebUI.TRatingList.extend(
 		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)
 			Event.stop(ev);
-	},
+	}
 	
 });
