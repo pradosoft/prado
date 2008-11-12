@@ -5,6 +5,7 @@ BUG: Issue#61 - TLogRouter throws exception when using external config file (Mic
 BUG: Issue#62 - Some mistyping: TJavascript or TJavaScript? (Carl)
 ENH: Issue#36 - Refactored TRatingList/TActiveRatingList, and added some docs (Bradley)
 ENH: Issue#52 - Upgraded to TinyMCE 3.2.1
+NEW: Issue#51 - Additional template tag (Carl)
 
 Version 3.1.3 November 1, 2008
 ==============================

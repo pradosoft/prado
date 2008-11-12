@@ -174,10 +174,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
 	 *	'<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>'  - directives
-	 *	'<%[%#~\\$=\\[](.*?)%>'  - expressions
+	 *	'<%[%#&~\/\\$=\\[](.*?)%>'  - expressions
 	 *  '<prop:([\w\.]+)((?:\s*[\w\.]+=\'.*?\'|\s*[\w\.]+=".*?"|\s*[\w\.]+=<%.*?%>)*)\s*\/>' - group subproperty tags
 	 */
-	const REGEX_RULES='/<!--.*?--!>|<!---.*?--->|<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\\$=\\[](.*?)%>|<prop:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
+	const REGEX_RULES='/<!--.*?--!>|<!---.*?--->|<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\/\\$=\\[](.*?)%>|<prop:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
@@ -661,6 +661,8 @@ class TTemplate extends TApplicationComponent implements ITemplate
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->getApplication()->getParameters()->itemAt('$literal')"));
 					else if($str[2]==='~')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"));
+					else if($str[2]==='/')
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"dirname(\$this->getApplication()->getRequest()->getApplicationUrl()).'/$literal'"));
 					else if($str[2]==='[')
 					{
 						$literal=strtr(trim(substr($literal,0,strlen($literal)-1)),array("'"=>"\'","\\"=>"\\\\"));
