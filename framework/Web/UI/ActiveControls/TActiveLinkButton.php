@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active control adapter.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
+
+/**
  * TActiveLinkButton is the active control counter part to TLinkButton.
  *
  * When a TActiveLinkButton is clicked, rather than a normal post back request a
