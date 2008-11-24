@@ -264,7 +264,8 @@ class TUrlMapping extends TUrlManager
 					if(is_string($key))
 						$params[$key]=$value;
 				}
-				$params[$pattern->getServiceID()]=$pattern->getServiceParameter();
+				if (!$pattern->getIsWildCardPattern())
+				    $params[$pattern->getServiceID()]=$pattern->getServiceParameter();
 				return $params;
 			}
 		}
@@ -299,12 +300,25 @@ class TUrlMapping extends TUrlManager
 	 		if(!(is_array($getItems) || ($getItems instanceof Traversable)))
 	 			$getItems=array();
 			$key=$serviceID.':'.$serviceParam;
+			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
+			    $serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
 			if(isset($this->_constructRules[$key]))
 			{
 				foreach($this->_constructRules[$key] as $rule)
 				{
 					if($rule->supportCustomUrl($getItems))
 						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+				}
+			} 
+			elseif(isset($this->_constructRules[$wildCardKey]))
+			{
+				foreach($this->_constructRules[$wildCardKey] as $rule)
+				{
+					if($rule->supportCustomUrl($getItems))
+					{
+						$getItems['*']= $pos ? substr($serviceParam,$pos+1) : $serviceParam;
+						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+					}
 				}
 			}
 		}
@@ -400,6 +414,8 @@ class TUrlMappingPattern extends TComponent
 
 	private $_caseSensitive=true;
 
+	private $_isWildCardPattern=false;
+
 	/**
 	 * Constructor.
 	 * @param TUrlManager the URL manager instance
@@ -428,6 +444,8 @@ class TUrlMappingPattern extends TComponent
 	{
 		if($this->_serviceParameter===null)
 			throw new TConfigurationException('urlmappingpattern_serviceparameter_required', $this->getPattern());
+		if(strpos($this->_serviceParameter,'*')!==false) 
+		    $this->_isWildCardPattern=true;
 	}
 
 	/**
@@ -443,6 +461,11 @@ class TUrlMappingPattern extends TComponent
 		{
 			$params[]='{'.$key.'}';
 			$values[]='(?P<'.$key.'>'.$value.')';
+		}
+		if ($this->getIsWildCardPattern()) {
+		    $params[]='{*}';
+		    // service parameter must not contain '=' and '/'
+		    $values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
 		}
 		$params[]='/';
 		$values[]='\\/';
@@ -585,6 +608,14 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
+	 * @return boolean whether this pattern is a wildcard pattern
+	 * @since 3.1.4
+	 */
+	public function getIsWildCardPattern() {
+	    return $this->_isWildCardPattern;
+	}
+
+	/**
 	 * @param array list of GET items to be put in the constructed URL
 	 * @return boolean whether this pattern IS the one for constructing the URL with the specified GET items.
 	 * @since 3.1.1
@@ -618,7 +649,7 @@ class TUrlMappingPattern extends TComponent
 		{
 			if($encodeGetItems)
 				$value=rawurlencode($value);
-			if($this->_parameters->contains($key))
+			if($this->_parameters->contains($key) || $key==='*' && $this->getIsWildCardPattern())
 				$replace['{'.$key.'}']=$value;
 			else
 				$extra[$key]=$value;
