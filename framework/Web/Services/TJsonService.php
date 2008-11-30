@@ -92,7 +92,7 @@ class TJsonService extends TService
 				throw new TConfigurationException('jsonservice_class_required',$id);
 		}
 		else
-			throw new THttpException(404,'jsonservice_feed_unknown',$id);
+			throw new THttpException(404,'jsonservice_provider_unknown',$id);
 	}
 
 	/**
