@@ -577,7 +577,7 @@ class TApplication extends TComponent
 	public function setRuntimePath($value)
 	{
 		$this->_runtimePath=$value;
-		if($cacheConfig)
+		if($this->_cacheFile)
 			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
