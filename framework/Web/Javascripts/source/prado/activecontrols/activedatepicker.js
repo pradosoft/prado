@@ -11,6 +11,7 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
+		this.positionMode = 'Bottom';
 
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
@@ -22,6 +23,12 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		{
 			this.trigger  = this.control;
 			var triggerEvent = this.options.TriggerEvent || "focus";
+		}
+		
+		// Popup position
+		if(this.options.PositionMode == 'Top')
+		{
+			this.positionMode = this.options.PositionMode;
 		}
 
 		Object.extend(this,options);

@@ -64,6 +64,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  * input field.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.0

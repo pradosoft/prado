@@ -609,20 +609,11 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			var pos = this.control.positionedOffset();
 
-			if(this.positionMode=='Top')
-			{
-				pos[1] = (document.body.clientHeight - pos[1]);
-				this._calDiv.style.bottom = (pos[1]-1) + "px";
-			}
-			else
-			{
-				pos[1] += this.getDatePickerOffsetHeight();
-				this._calDiv.style.top = (pos[1]-1) + "px";
-			}
+			pos[1] += this.getDatePickerOffsetHeight();
+			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.display = "block";
 			this._calDiv.style.left = pos[0] + "px";
 
-			this.ieHack(false);
 			this.documentClickEvent = this.hideOnClick.bindEvent(this);
 			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
 			Event.observe(document.body, "click", this.documentClickEvent);
@@ -634,6 +625,14 @@ Prado.WebUI.TDatePicker.prototype =
 			}
 			Event.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
+			
+			if(this.positionMode=='Top')
+			{
+				this._calDiv.style.top = ((pos[1]-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
+				if(Prado.Browser().ie)
+					this.iePopup = this._calDiv.style.top;					
+			}
+			this.ieHack(false);
 		}
 	},
 
