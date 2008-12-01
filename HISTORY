@@ -8,7 +8,7 @@ ENH: Issue#36 - Refactored TRatingList/TActiveRatingList, and added some docs (B
 ENH: Issue#52 - Upgraded to TinyMCE 3.2.1
 ENH: Issue#72 - Add wildcard support to TUrlMapping (friendly-urls) (Michael)
 ENH: Issue#77 - TJsonService missing exception messages (Carl)
-ENH: Issue#29 -	Ability to specify position of popup TDatePicker (Carl)
+ENH: Issue#29 -	Ability to specify position of popup TDatePicker/TActiveDatePicker (Carl)
 NEW: Issue#51 - Additional template tag (Carl)
 
 Version 3.1.3 November 1, 2008
