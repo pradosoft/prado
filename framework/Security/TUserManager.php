@@ -83,25 +83,72 @@ class TUserManager extends TModule implements IUserManager
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param TXmlElement module configuration
+	 * @param mixed module configuration
 	 */
 	public function init($config)
 	{
-		$this->loadUserData($config);
+		$isPhp = $this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP;
+		if($isPhp)
+			$this->loadUserDataFromPhp($config);
+		else
+			$this->loadUserDataFromXml($config);
+		
 		if($this->_userFile!==null)
 		{
-			$dom=new TXmlDocument;
-			$dom->loadFromFile($this->_userFile);
-			$this->loadUserData($dom);
+			if($isPhp)
+			{
+				$this->loadUserDataFromPhp($config);
+			}
+			else
+			{
+				$dom=new TXmlDocument;
+				$dom->loadFromFile($this->_userFile);
+				$this->loadUserDataFromXml($dom);
+			}
 		}
 		$this->_initialized=true;
+	}
+
+	private function loadUserDataFromPhp($config)
+	{
+		if(isset($config['users']) && is_array($config['users']))
+		{
+			foreach($config['users'] as $user)
+			{
+				$name = trim(strtolower(isset($user['name'])?$user['name']:''));
+				$password = isset($user['password'])?$user['password']:'';
+				$this->_users[$name] = $password;
+				$roles = isset($user['roles'])?$user['roles']:'';
+				if($roles!=='')
+				{
+					foreach(explode(',',$roles) as $role)
+					{
+						if(($role=trim($role))!=='')
+							$this->_roles[$name][]=$role;
+					}
+				}
+			}
+		}
+		if(isset($config['roles']) && is_array($config['roles']))
+		{
+			foreach($config['roles'] as $role)
+			{
+				$name = isset($role['name'])?$role['name']:'';
+				$users = isset($role['users'])?$role['users']:'';
+				foreach(explode(',',$users) as $user)
+				{
+					if(($user=trim($user))!=='')
+						$this->_roles[strtolower($user)][]=$name;
+				}
+			}
+		}
 	}
 
 	/**
 	 * Loads user/role information from an XML node.
 	 * @param TXmlElement the XML node containing the user information
 	 */
-	private function loadUserData($xmlNode)
+	private function loadUserDataFromXml($xmlNode)
 	{
 		foreach($xmlNode->getElementsByTagName('user') as $node)
 		{

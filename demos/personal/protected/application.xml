@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<application id="personal" mode="Normal">
+<application id="personal" mode="Debug">
   <paths>
     <using namespace="Application.Common.*" />
   </paths>
@@ -33,4 +33,7 @@
       </modules>
     </service>
   </services>
+  <parameters>
+	 <parameter id="siteName" value="My Personal Site" />
+  </parameters>
 </application>

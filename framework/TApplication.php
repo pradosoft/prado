@@ -127,11 +127,28 @@ class TApplication extends TComponent
 	/**
 	 * Application configuration file name
 	 */
-	const CONFIG_FILE='application.xml';
+	const CONFIG_FILE_XML='application.xml';
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT='.xml';
+	const CONFIG_FILE_EXT_XML='.xml';	
+	/**
+	 * Configuration file type, application.xml and config.xml
+	 */
+	const CONFIG_TYPE_XML = 'xml';
+	/**
+	 * Application configuration file name
+	 */
+	const CONFIG_FILE_PHP='application.php';
+	/**
+	 * File extension for external config files
+	 */
+	const CONFIG_FILE_EXT_PHP='.php';
+	/**
+	 * Configuration file type, application.php and config.php
+	 */
+	const CONFIG_TYPE_PHP = 'php';
+	
 	/**
 	 * Runtime directory name
 	 */
@@ -200,6 +217,14 @@ class TApplication extends TComponent
 	 * @var string configuration file
 	 */
 	private $_configFile;
+	/**
+	 * @var string configuration file extension
+	 */
+	private $_configFileExt;
+	/**
+	 * @var string configuration type
+	 */
+	private $_configType;
 	/**
 	 * @var string application base path
 	 */
@@ -287,11 +312,11 @@ class TApplication extends TComponent
 	 * @param boolean whether to cache application configuration. Defaults to true.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
-	public function __construct($basePath='protected',$cacheConfig=true)
+	public function __construct($basePath='protected',$cacheConfig=true, $configType=self::CONFIG_TYPE_XML)
 	{
 		// register application as a singleton
 		Prado::setApplication($this);
-
+		$this->setConfigurationType($configType);
 		$this->resolvePaths($basePath);
 
 		if($cacheConfig)
@@ -319,8 +344,8 @@ class TApplication extends TComponent
 		// determine configuration path and file
 		if(empty($basePath) || ($basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_file($basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE))
-			$configFile=$basePath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
+		if(is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
+			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
 		else if(is_file($basePath))
 		{
 			$configFile=$basePath;
@@ -539,6 +564,49 @@ class TApplication extends TComponent
 	public function setConfigurationFile($value)
 	{
 		$this->_configFile=$value;
+	}
+
+	public function getConfigurationType()
+	{
+		return $this->_configType;
+	}
+
+	public function setConfigurationType($value)
+	{
+		$this->_configType = $value;
+	}
+	
+	public function getConfigurationFileExt()
+	{
+		if($this->_configFileExt===null)
+		{
+			switch($this->_configType)
+			{
+				case TApplication::CONFIG_TYPE_PHP:
+					$this->_configFileExt = TApplication::CONFIG_FILE_EXT_PHP;
+					break;
+				default:
+					$this->_configFileExt = TApplication::CONFIG_FILE_EXT_XML;
+			}
+		}
+		return $this->_configFileExt;
+	}
+	
+	public function getConfigurationFileName()
+	{
+		static $fileName;
+		if($fileName == null)
+		{
+			switch($this->_configType)
+			{
+				case TApplication::CONFIG_TYPE_PHP:
+					$fileName = TApplication::CONFIG_FILE_PHP;
+					break;
+				default:
+					$fileName = TApplication::CONFIG_FILE_XML;
+			}
+		}
+		return $fileName;
 	}
 
 	/**
@@ -890,7 +958,7 @@ class TApplication extends TComponent
 				$condition=$this->evaluateExpression($condition);
 			if($condition)
 			{
-				if(($path=Prado::getPathOfNamespace($filePath,self::CONFIG_FILE_EXT))===null || !is_file($path))
+				if(($path=Prado::getPathOfNamespace($filePath,$this->getConfigurationFileExt()))===null || !is_file($path))
 					throw new TConfigurationException('application_includefile_invalid',$filePath);
 				$c=new TApplicationConfiguration;
 				$c->loadFromFile($path);
@@ -958,7 +1026,10 @@ class TApplication extends TComponent
 			if($configElement!==null)
 			{
 				$config=new TApplicationConfiguration;
-				$config->loadFromXml($configElement,$this->getBasePath());
+				if($this->getConfigurationType()==self::CONFIG_TYPE_PHP)
+					$config->loadFromPhp($configElement,$this->getBasePath());
+				else
+					$config->loadFromXml($configElement,$this->getBasePath());
 				$this->applyConfiguration($config,true);
 			}
 
@@ -1188,9 +1259,17 @@ class TApplicationConfiguration extends TComponent
 	 */
 	public function loadFromFile($fname)
 	{
-		$dom=new TXmlDocument;
-		$dom->loadFromFile($fname);
-		$this->loadFromXml($dom,dirname($fname));
+		if(Prado::getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		{
+			$fcontent = include $fname;
+			$this->loadFromPhp($fcontent,dirname($fname));
+		}
+		else
+		{
+			$dom=new TXmlDocument;
+			$dom->loadFromFile($fname);
+			$this->loadFromXml($dom,dirname($fname));
+		}
 	}
 
 	/**
@@ -1199,6 +1278,34 @@ class TApplicationConfiguration extends TComponent
 	public function getIsEmpty()
 	{
 		return $this->_empty;
+	}
+
+	public function loadFromPhp($config, $configPath)
+	{
+		// application properties
+		if(isset($config['application']))
+		{
+			foreach($config['application'] as $name=>$value)
+			{
+				$this->_properties[$name]=$value;
+			}
+			$this->_empty = false;
+		}	
+
+		if(isset($config['paths']) && is_array($config['paths']))
+			$this->loadPathsPhp($config['paths'],$configPath);
+
+		if(isset($config['modules']) && is_array($config['modules']))
+			$this->loadModulesPhp($config['modules'],$configPath);
+
+		if(isset($config['services']) && is_array($config['services']))
+			$this->loadServicesPhp($config['services'],$configPath);
+
+		if(isset($config['parameters']) && is_array($config['parameters']))
+			$this->loadParametersPhp($config['parameters'], $configPath);
+		
+		if(isset($config['includes']) && is_array($config['includes']))
+			$this->loadExternalXml($config['includes'],$configPath);
 	}
 
 	/**
@@ -1237,6 +1344,34 @@ class TApplicationConfiguration extends TComponent
 				default:
 					//throw new TConfigurationException('appconfig_tag_invalid',$element->getTagName());
 					break;
+			}
+		}
+	}
+
+	protected function loadPathsPhp($pathsNode, $configPath)
+	{
+		if(isset($pathsNode['aliases']) && is_array($pathsNode['aliases']))
+		{
+			foreach($pathsNode['aliases'] as $id=>$path)
+			{
+				$path=str_replace('\\','/',$path);
+				if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
+					$p=realpath($path);
+				else
+					$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
+				if($p===false || !is_dir($p))
+					throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+				if(isset($this->_aliases[$id]))
+					throw new TConfigurationException('appconfig_alias_redefined',$id);
+				$this->_aliases[$id]=$p;
+			}
+		}
+
+		if(isset($pathsNode['using']) && is_array($pathsNode['using']))
+		{
+			foreach($pathsNode['using'] as $namespace)
+			{
+				$this->_usings[] = $namespace;
 			}
 		}
 	}
@@ -1287,6 +1422,26 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	protected function loadModulesPhp($modulesNode, $configPath)
+	{
+		foreach($modulesNode as $id=>$module)
+		{
+			if(!isset($module['class']))
+				throw new TConfigurationException('appconfig_moduletype_required',$id);
+			$type = $module['class'];
+			unset($module['class']);
+			$properties = array();
+			if(isset($module['properties']))
+			{
+				$properties = $module['properties'];
+				unset($module['properties']);
+			}
+			$properties['id'] = $id;
+			$this->_modules[$id]=array($type,$properties,$module);
+			$this->_empty=false;
+		}	
+	}
+
 	/**
 	 * Loads the modules XML node.
 	 * @param TXmlElement the modules XML node
@@ -1315,6 +1470,22 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	protected function loadServicesPhp($servicesNode,$configPath)
+	{
+		foreach($servicesNode as $id => $service)
+		{
+			if(!isset($service['class']))
+				throw new TConfigurationException('appconfig_servicetype_required');
+			$type = $service['class'];
+			unset($service['class']);
+			$properties = isset($service['properties']) ? $service['properties'] : array();
+			unset($service['properties']);
+			$properties['id'] = $id;
+			$this->_services[$id] = array($type,$properties,$service);
+			$this->_empty = false;
+		}	
+	}
+
 	/**
 	 * Loads the services XML node.
 	 * @param TXmlElement the services XML node
@@ -1337,6 +1508,28 @@ class TApplicationConfiguration extends TComponent
 			}
 			else
 				throw new TConfigurationException('appconfig_services_invalid',$element->getTagName());
+		}
+	}
+
+	protected function loadParametersPhp($parametersNode,$configPath)
+	{
+		foreach($parametersNode as $id => $parameter)
+		{
+			if(is_array($parameter))
+			{
+				if(isset($parameter['class']))
+				{
+					$type = $parameter['class'];
+					unset($parameter['class']);
+					$properties = isset($service['properties']) ? $service['properties'] : array();
+					$properties['id'] = $id;
+					$this->_parameters[$id] = array($type,$properties);
+				}
+			}
+			else
+			{
+				$this->_parameters[$id] = $parameter;
+			}
 		}
 	}
 
@@ -1367,6 +1560,22 @@ class TApplicationConfiguration extends TComponent
 			}
 			else
 				throw new TConfigurationException('appconfig_parameters_invalid',$element->getTagName());
+		}
+	}
+
+	protected function loadExternalPhp($includeNode,$configPath)
+	{
+		foreach($includeNode as $include)
+		{
+			$when = isset($include['when'])?true:false;
+			if(!isset($include['file']))
+				throw new TConfigurationException('appconfig_includefile_required');
+			$filePath = $include['file'];
+			if(isset($this->_includes[$filePath]))
+				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+			else
+				$$this->_includes[$filePath]=$when;
+			$this->_empty=false;
 		}
 	}
 

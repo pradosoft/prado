@@ -8,7 +8,7 @@
 
 <div class="header">
 <h1>Your Name Here</h1>
-<h2>My Personal Site</h2>
+<h2><%$siteName%></h2>
 
 <div class="mainmenu">
 <com:MainMenu />

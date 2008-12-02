@@ -148,19 +148,35 @@ class TSoapService extends TService
 
 	/**
 	 * Loads configuration from an XML element
-	 * @param TXmlElement configuration node
+	 * @param mixed configuration node
 	 * @throws TConfigurationException if soap server id is not specified or duplicated
 	 */
-	private function loadConfig($xml)
-	{
-		foreach($xml->getElementsByTagName('soap') as $serverXML)
+	private function loadConfig($config)
+	{	
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
-			$properties=$serverXML->getAttributes();
-			if(($id=$properties->remove('id'))===null)
-				throw new TConfigurationException('soapservice_serverid_required');
-			if(isset($this->_servers[$id]))
-				throw new TConfigurationException('soapservice_serverid_duplicated',$id);
-			$this->_servers[$id]=$properties;
+			if(is_array($config))
+			{
+				foreach($config as $id => $server)
+				{
+					$properties = isset($server['properties'])?$server['properties']:array();
+					if(isset($this->_servers[$id]))
+						throw new TConfigurationException('soapservice_serverid_duplicated',$id);
+					$this->_servers[$id]=$properties;
+				}
+			}
+		}
+		else
+		{
+			foreach($config->getElementsByTagName('soap') as $serverXML)
+			{
+				$properties=$serverXML->getAttributes();
+				if(($id=$properties->remove('id'))===null)
+					throw new TConfigurationException('soapservice_serverid_required');
+				if(isset($this->_servers[$id]))
+					throw new TConfigurationException('soapservice_serverid_duplicated',$id);
+				$this->_servers[$id]=$properties;
+			}
 		}
 	}
 
@@ -221,7 +237,7 @@ class TSoapService extends TService
 	protected function createServer()
 	{
 		$properties=$this->_servers[$this->_serverID];
-		if(($serverClass=$properties->remove('class'))===null)
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP || ($serverClass=$properties->remove('class'))===null)
 			$serverClass=self::DEFAULT_SOAP_SERVER;
 		Prado::using($serverClass);
 		$className=($pos=strrpos($serverClass,'.'))!==false?substr($serverClass,$pos+1):$serverClass;

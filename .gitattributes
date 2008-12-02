@@ -695,7 +695,9 @@ buildscripts/wikibuilder/dumpHTML.php -text
 buildscripts/wikibuilder/external.png -text
 buildscripts/wikibuilder/main.css -text
 demos/address-book/index.php -text
+demos/address-book/index_php.php -text
 demos/address-book/protected/.htaccess -text
+demos/address-book/protected/application.php -text
 demos/address-book/protected/application.xml -text
 demos/address-book/protected/pages/AddressProvider.php -text
 demos/address-book/protected/pages/AddressRecord.php -text
@@ -1115,6 +1117,7 @@ demos/northwind-db/protected/pages/NorthwindCrud.page -text
 demos/northwind-db/protected/pages/NorthwindCrud.php -text
 demos/northwind-db/protected/pages/northwind.gif -text
 demos/personal/index.php -text
+demos/personal/index_php.php -text
 demos/personal/protected/.htaccess -text
 demos/personal/protected/Common/LoginPortlet.php -text
 demos/personal/protected/Common/LoginPortlet.tpl -text
@@ -1130,7 +1133,9 @@ demos/personal/protected/Pages/Register.php -text
 demos/personal/protected/Pages/Resume.page -text
 demos/personal/protected/Pages/Settings.page -text
 demos/personal/protected/Pages/UserLogin.page -text
+demos/personal/protected/Pages/config.php -text
 demos/personal/protected/Pages/config.xml -text
+demos/personal/protected/application.php -text
 demos/personal/protected/application.xml -text
 demos/personal/themes/BlueTheme/buttons.skin -text
 demos/personal/themes/BlueTheme/icon_profile.gif -text
