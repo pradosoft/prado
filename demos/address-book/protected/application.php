@@ -11,9 +11,6 @@ return array(
 			'System.Security.*',
 			'System.Data.ActiveRecord.*',
 			'System.Web.Services.*',
-		),		
-		'aliases'=>array(
-			'myapp' => '/Users/carlgmathisen/Sites/prado3/branch3.2/demos/personal/protected',
 		)
 	),
 	'modules' => array(
