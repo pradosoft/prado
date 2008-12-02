@@ -301,7 +301,7 @@ class TUrlMapping extends TUrlManager
 	 			$getItems=array();
 			$key=$serviceID.':'.$serviceParam;
 			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
-			    $serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
+				$serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
 			if(isset($this->_constructRules[$key]))
 			{
 				foreach($this->_constructRules[$key] as $rule)
@@ -647,10 +647,8 @@ class TUrlMappingPattern extends TComponent
 		// for the GET variables matching the pattern, put them in the URL path
 		foreach($getItems as $key=>$value)
 		{
-			if($encodeGetItems)
-				$value=rawurlencode($value);
 			if($this->_parameters->contains($key) || $key==='*' && $this->getIsWildCardPattern())
-				$replace['{'.$key.'}']=$value;
+				$replace['{'.$key.'}']=$encodeGetItems ? rawurlencode($value) : $value;
 			else
 				$extra[$key]=$value;
 		}
