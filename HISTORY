@@ -3,6 +3,7 @@ Version 3.1.4 To be released
 BUG: Issue#59 - TPropertyAccess::has() returns false even if the property of an object was found (Carl)
 BUG: Issue#61 - TLogRouter throws exception when using external config file (Michael)
 BUG: Issue#62 - Some mistyping: TJavascript or TJavaScript? (Carl)
+BUG: Issue#79 - Missing new operator for Exception in TSqlMapObjectCollectionTree::onChildNodesVisited() (Christophe)
 BUG: TActiveLinkButton and TActiveRadioButtonList crashes if it's the only active control imported. Added TActiveControlAdapter (Carl)
 BUG: TUrlMapping encoded extra parameters twice (Michael)
 ENH: Issue#36 - Refactored TRatingList/TActiveRatingList, and added some docs (Bradley)
