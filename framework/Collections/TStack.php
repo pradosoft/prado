@@ -260,4 +260,3 @@ class TStackIterator implements Iterator
 	}
 }
 
-?>

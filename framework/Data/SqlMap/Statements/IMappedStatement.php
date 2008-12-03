@@ -80,4 +80,3 @@ interface IMappedStatement
 	public function executeQueryForObject($connection,$parameter, $result=null);
 }
 
-?>

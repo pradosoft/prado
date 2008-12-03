@@ -204,4 +204,3 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 }
 
-?>

@@ -127,4 +127,3 @@ class TLogger extends TComponent
 	}
 }
 
-?>

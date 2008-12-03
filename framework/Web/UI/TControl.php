@@ -1997,6 +1997,14 @@ interface IValidatable
 	 * @return mixed the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue();
+	/**
+	 * @return boolean wether this control's validators validated successfully (must default to true)
+	 */
+	public function getIsValid();
+	/**
+	 * @return boolean wether this control's validators validated successfully
+	 */
+	public function setIsValid($value);
 }
 
 /**

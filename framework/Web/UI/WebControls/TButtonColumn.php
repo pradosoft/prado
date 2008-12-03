@@ -276,4 +276,3 @@ class TButtonColumn extends TDataGridColumn
 	}
 }
 
-?>

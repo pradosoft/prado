@@ -432,4 +432,3 @@ class TWebControl extends TControl implements IStyleable
 	}
 }
 
-?>

@@ -206,4 +206,3 @@ class TSqlMapPagedList extends TPagedList
 	}
 }
 
-?>

@@ -25,6 +25,13 @@ Prado::using('System.Security.IUserManager');
  * browser to a login page that is specified via the {@link setLoginPage LoginPage}.
  * To login or logout a user, call {@link login} or {@link logout}, respectively.
  *
+ * The {@link setAuthExpire AuthExpire} property can be used to define the time
+ * in seconds after which the authentication should expire. 
+ * {@link setAllowAutoLogin AllowAutoLogin} specifies if the login information
+ * should be stored in a cookie to perform automatic login. Enabling this
+ * feature will cause that {@link setAuthExpire AuthExpire} has no effect
+ * since the user will be logged in again on authentication expiration.
+ *
  * To load TAuthManager, configure it in application configuration as follows,
  * <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
  * <module id="users" class="System.Security.TUserManager" />
@@ -68,6 +75,10 @@ class TAuthManager extends TModule
 	 * @var string variable name used to store user session or cookie
 	 */
 	private $_userKey;
+	/**
+	 * @var integer authentication expiration time in seconds. Defaults to zero (no expiration)
+	 */
+	private $_authExpire=0;
 
 	/**
 	 * Initializes this module.
@@ -242,6 +253,24 @@ class TAuthManager extends TModule
 	}
 
 	/**
+	 * @return integer authentication expiration time in seconds. Defaults to zero (no expiration).
+	 * @since 3.1.3
+	 */
+	public function getAuthExpire()
+	{
+		return $this->_authExpire;
+	}
+
+	/**
+	 * @param integer authentication expiration time in seconds. Defaults to zero (no expiration).
+	 * @since 3.1.3
+	 */
+	public function setAuthExpire($value)
+	{
+		$this->_authExpire=TPropertyValue::ensureInteger($value);
+	}
+
+	/**
 	 * Performs the real authentication work.
 	 * An OnAuthenticate event will be raised if there is any handler attached to it.
 	 * If the application already has a non-null user, it will return without further authentication.
@@ -260,8 +289,12 @@ class TAuthManager extends TModule
 		$sessionInfo=$session->itemAt($this->getUserKey());
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
 
+		// check for authentication expiration
+		$isAuthExpired = $this->_authExpire>0 && !$user->getIsGuest() && 
+        ($expiretime=$session->itemAt('AuthExpireTime')) && $expiretime<time();
+
 		// try authenticating through cookie if possible
-		if($this->getAllowAutoLogin() && $user->getIsGuest())
+		if($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired))
 		{
 			$cookie=$this->getRequest()->getCookies()->itemAt($this->getUserKey());
 			if($cookie instanceof THttpCookie)
@@ -270,17 +303,37 @@ class TAuthManager extends TModule
 				{
 					$user=$user2;
 					$this->updateSessionUser($user);
+					// user is restored from cookie, auth may not expire
+					$isAuthExpired = false;
 				}
 			}
 		}
 
 		$application->setUser($user);
 
+		// handle authentication expiration or update expiration time
+		if($isAuthExpired)
+			$this->onAuthExpire($param);
+		else
+			$session->add('AuthExpireTime', time() + $this->_authExpire);
+
 		// event handler gets a chance to do further auth work
 		if($this->hasEventHandler('OnAuthenticate'))
 			$this->raiseEvent('OnAuthenticate',$this,$application);
 	}
-
+	
+	/**
+	 * Performs user logout on authentication expiration.
+	 * An 'OnAuthExpire' event will be raised if there is any handler attached to it.
+	 * @param mixed parameter to be passed to OnAuthExpire event.
+	 */
+	public function onAuthExpire($param)
+	{
+		$this->logout();
+		if($this->hasEventHandler('OnAuthExpire'))
+			$this->raiseEvent('OnAuthExpire',$this,$param);
+	}
+	
 	/**
 	 * Performs the real authorization work.
 	 * Authorization rules obtained from the application will be used to check

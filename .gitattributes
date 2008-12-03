@@ -1282,8 +1282,13 @@ demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveHyperLink.page -text
 demos/quickstart/protected/pages/ActiveControls/ActivePager.page -text
 demos/quickstart/protected/pages/ActiveControls/AutoComplete.page -text
+demos/quickstart/protected/pages/ActiveControls/DragDrop.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product1.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product2.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/trash.png -text svneol=unset#image/png
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.page -text
@@ -2522,22 +2527,26 @@ framework/Web/Javascripts/TJavaScript.php -text
 framework/Web/Javascripts/clientscripts.php -text
 framework/Web/Javascripts/source/packages.php -text
 framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js -text
+framework/Web/Javascripts/source/prado/activecontrols/activedatepicker.js -text
 framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text
+framework/Web/Javascripts/source/prado/activecontrols/dragdrop.js -text
 framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js -text
 framework/Web/Javascripts/source/prado/activecontrols/json.js -text
-framework/Web/Javascripts/source/prado/activeratings/blocks.css -text
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadBlank.html -text
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadComplete.png -text svneol=unset#image/png
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadError.png -text svneol=unset#image/png
+framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadIndicator.gif -text
+framework/Web/Javascripts/source/prado/activefileupload/activefileupload.js -text
 framework/Web/Javascripts/source/prado/activeratings/blocks.png -text
 framework/Web/Javascripts/source/prado/activeratings/blocks_blank.gif -text
 framework/Web/Javascripts/source/prado/activeratings/blocks_combined.gif -text
 framework/Web/Javascripts/source/prado/activeratings/blocks_half.gif -text
 framework/Web/Javascripts/source/prado/activeratings/blocks_selected.gif -text
-framework/Web/Javascripts/source/prado/activeratings/default.css -text
 framework/Web/Javascripts/source/prado/activeratings/default.png -text
 framework/Web/Javascripts/source/prado/activeratings/default_blank.gif -text
 framework/Web/Javascripts/source/prado/activeratings/default_combined.gif -text
 framework/Web/Javascripts/source/prado/activeratings/default_half.gif -text
 framework/Web/Javascripts/source/prado/activeratings/default_selected.gif -text
-framework/Web/Javascripts/source/prado/activeratings/ratings.js -text
 framework/Web/Javascripts/source/prado/colorpicker/background.png -text
 framework/Web/Javascripts/source/prado/colorpicker/button.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/colorpicker.js -text
@@ -2757,6 +2766,8 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlExpressionTag.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveControlWithTinyMce.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveDatePicker.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveDatePicker.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveHiddenFieldTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveImageButtonTest.page -text
@@ -2773,6 +2784,22 @@ tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonListTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRadioButtonTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListAllowInputTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListAllowInputTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListAutoPostBackTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListAutoPostBackTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListCheckBoxesTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListCheckBoxesTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListEnabledTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListEnabledTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListHoverCaptionTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListHoverCaptionTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListRatingTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListRatingTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListReadOnlyTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListReadOnlyTest.php -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListSelectedIndexTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/ActiveRatingListSelectedIndexTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/ActiveRedirectionTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/Callback.page -text
@@ -2862,6 +2889,7 @@ tests/FunctionalTests/active-controls/tests/PostLoadingTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ReplaceContentTestCase.php -text
 tests/FunctionalTests/active-controls/tests/TextBoxGroupValidationTestCase.php -text
 tests/FunctionalTests/active-controls/tests/ValueTriggerCallbackTestCase.php -text
+tests/FunctionalTests/active-controlstests/ActiveRatingListTestCase.php -text
 tests/FunctionalTests/features.php -text
 tests/FunctionalTests/features/index.php -text
 tests/FunctionalTests/features/protected/application.xml -text
@@ -3097,6 +3125,11 @@ tests/FunctionalTests/tickets/protected/pages/Ticket886.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket886.php -text
 tests/FunctionalTests/tickets/protected/pages/Ticket897.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket897.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket900.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket900.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket922.page -text
+tests/FunctionalTests/tickets/protected/pages/Ticket922.php -text
+tests/FunctionalTests/tickets/protected/pages/Ticket925.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.page -text
 tests/FunctionalTests/tickets/protected/pages/Ticket93.php -text
 tests/FunctionalTests/tickets/protected/pages/ToggleTest.page -text
@@ -3164,6 +3197,8 @@ tests/FunctionalTests/tickets/tests/Ticket823TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket876TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket886TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket897TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket900TestCase.php -text
+tests/FunctionalTests/tickets/tests/Ticket922TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket93TestCase.php -text
 tests/FunctionalTests/validators.php -text
 tests/FunctionalTests/validators/index.php -text

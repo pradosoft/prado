@@ -191,4 +191,3 @@ class TXmlTransform extends TControl {
   }
 }
 
-?>

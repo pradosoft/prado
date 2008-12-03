@@ -62,4 +62,3 @@ class TMssqlTableInfo extends TDbTableInfo
 	}
 }
 
-?>

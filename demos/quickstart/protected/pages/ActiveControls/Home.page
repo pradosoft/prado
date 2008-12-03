@@ -161,6 +161,12 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	monitors (using a timer) an attribute of an HTML element and triggers a callback request
 	when the attribute value changes.
 	</li>
+	
+	<li>
+	<a href="?page=ActiveControls.DragDrop">TDropContainer & TDraggable</a> represents drag and drop containers. 
+		The former will make its child controls "draggable" while the latter will raise a callback when a draggable
+		control is dropped on it.
+	</li>
 
 </ul>
 
@@ -311,6 +317,20 @@ if Javascript was disabled on the client's browser.</p>
 	</td>
 	<td>Yes</td><td>No</td>
   </tr>
+  
+  <tr><td>
+  	<a href="?page=ActiveControls.DragDrop">TDropContainer</a>
+  	</td>
+  	<td>Yes</td><td>No</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.DragDrop">TDraggable</a>
+  	</td>
+  	<td>No</td><td>No</td>
+  </tr>
+
+  
 </table>
 
 <h2 id="128036">Active Control Infrastructure Classes</h2>

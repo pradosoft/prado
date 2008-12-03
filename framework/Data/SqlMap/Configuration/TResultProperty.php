@@ -326,4 +326,3 @@ class TResultProperty extends TComponent
 	}
 }
 
-?>

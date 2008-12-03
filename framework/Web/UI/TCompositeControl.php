@@ -36,4 +36,3 @@ class TCompositeControl extends TControl implements INamingContainer
 	}
 }
 
-?>

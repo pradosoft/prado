@@ -67,6 +67,7 @@ Prado.WebUI.TDatePicker.prototype =
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
+		this.positionMode = 'Bottom';
 
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
@@ -78,6 +79,12 @@ Prado.WebUI.TDatePicker.prototype =
 		{
 			this.trigger  = this.control;
 			var triggerEvent = this.options.TriggerEvent || "focus";
+		}
+		
+		// Popup position
+		if(this.options.PositionMode == 'Top')
+		{
+			this.positionMode = this.options.PositionMode;
 		}
 
 		Object.extend(this,options);
@@ -309,8 +316,8 @@ Prado.WebUI.TDatePicker.prototype =
 		if(this.iePopUp)
 		{
 			this.iePopUp.style.display = "block";
-			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
 			this.iePopUp.style.left = (this._calDiv.offsetLeft -1)+ "px";
+			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
 			this.iePopUp.style.width = Math.abs(this._calDiv.offsetWidth -2)+ "px";
 			this.iePopUp.style.height = (this._calDiv.offsetHeight + 1)+ "px";
 			if(cleanup) this.iePopUp.style.display = "none";
@@ -603,12 +610,10 @@ Prado.WebUI.TDatePicker.prototype =
 			var pos = this.control.positionedOffset();
 
 			pos[1] += this.getDatePickerOffsetHeight();
-
-			this._calDiv.style.display = "block";
 			this._calDiv.style.top = (pos[1]-1) + "px";
+			this._calDiv.style.display = "block";
 			this._calDiv.style.left = pos[0] + "px";
 
-			this.ieHack(false);
 			this.documentClickEvent = this.hideOnClick.bindEvent(this);
 			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
 			Event.observe(document.body, "click", this.documentClickEvent);
@@ -620,6 +625,14 @@ Prado.WebUI.TDatePicker.prototype =
 			}
 			Event.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
+			
+			if(this.positionMode=='Top')
+			{
+				this._calDiv.style.top = ((pos[1]-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
+				if(Prado.Browser().ie)
+					this.iePopup = this._calDiv.style.top;					
+			}
+			this.ieHack(false);
 		}
 	},
 

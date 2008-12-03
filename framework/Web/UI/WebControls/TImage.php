@@ -155,4 +155,3 @@ class TImage extends TWebControl implements IDataRenderer
 	}
 }
 
-?>

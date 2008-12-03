@@ -385,8 +385,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getJsCallbackOptions()
 	{
-		return TJavascript::encode($this->getClientSideOptions());
+		return TJavaScript::encode($this->getClientSideOptions());
 	}
 }
 
-?>

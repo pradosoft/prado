@@ -88,7 +88,9 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		$value=$this->getValidationValue($this->getValidationTarget());
+		$value = '';
+		if($this->getValidationTarget()!==null)
+			$value=$this->getValidationValue($this->getValidationTarget());
 		return $this->onServerValidate($value);
 	}
 
@@ -105,9 +107,24 @@ class TCustomValidator extends TBaseValidator
 	{
 		$param=new TServerValidateEventParameter($value,true);
 		$this->raiseEvent('OnServerValidate',$this,$param);
-		return $param->getIsValid();
+		if($this->getValidationTarget()==null)
+			return true;
+		else
+			return $param->getIsValid();
 	}
-
+	
+	/**
+	 * @return TControl control to be validated. Null if no control is found.
+	 */
+	protected function getValidationTarget()
+	{
+		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
+			return $control;
+		else if(($id=$this->getControlToValidate())!=='')
+			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
+		else
+			return null;
+	}
 
 	/**
 	 * Returns an array of javascript validator options.
@@ -191,4 +208,3 @@ class TServerValidateEventParameter extends TEventParameter
 		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 }
-?>

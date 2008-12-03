@@ -178,4 +178,3 @@ CREATE TABLE bar
 );
 */
 
-?>

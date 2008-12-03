@@ -81,4 +81,3 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	}
 }
 
-?>

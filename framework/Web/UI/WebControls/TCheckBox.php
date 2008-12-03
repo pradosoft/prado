@@ -43,6 +43,7 @@
 class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, ISurroundable
 {
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * @return string tag name of the button
@@ -123,6 +124,23 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	public function getValidationPropertyValue()
 	{
 		return $this->getChecked();
+	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

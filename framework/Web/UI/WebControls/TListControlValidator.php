@@ -223,4 +223,3 @@ class TListControlValidator extends TBaseValidator
 		return $options;
 	}
 }
-?>

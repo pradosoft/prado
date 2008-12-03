@@ -162,4 +162,3 @@ class TSqlMapConfig extends TDataSourceConfig
 	}
 }
 
-?>

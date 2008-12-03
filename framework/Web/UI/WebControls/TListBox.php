@@ -39,6 +39,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
 class TListBox extends TListControl implements IPostBackDataHandler, IValidatable
 {
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
@@ -220,6 +221,23 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 	{
 		return $this->getSelectedValue();
 	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
 }
 
 
@@ -242,4 +260,3 @@ class TListSelectionMode extends TEnumerable
 	const Multiple='Multiple';
 }
 
-?>

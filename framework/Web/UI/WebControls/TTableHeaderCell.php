@@ -122,4 +122,3 @@ class TTableHeaderScope extends TEnumerable
 	const Column='Column';
 }
 
-?>

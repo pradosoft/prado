@@ -307,4 +307,3 @@ interface IScaffoldEditRenderer extends IDataRenderer
 	public function updateRecord($record);
 }
 
-?>

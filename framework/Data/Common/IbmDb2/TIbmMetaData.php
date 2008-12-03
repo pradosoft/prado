@@ -110,4 +110,3 @@ class TIbmMetaData extends TDbMetaDataCommon
 
 	
 }
-?>

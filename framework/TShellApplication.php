@@ -46,4 +46,3 @@ class TShellApplication extends TApplication
 	}
 }
 
-?>

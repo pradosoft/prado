@@ -110,4 +110,3 @@ class TIbmMetaDataInspector extends TDbMetaDataInspector
 		return new TIbmMetaData($table,$columns,$pks);
 	}
 }
-?>

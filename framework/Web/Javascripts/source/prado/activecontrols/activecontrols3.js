@@ -28,6 +28,7 @@ Prado.WebUI.TActiveImageButton = Class.extend(Prado.WebUI.TImageButton,
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
 		Event.stop(event);
+		this.removeXYInput(event,options);
 	}
 });
 /**
@@ -196,11 +197,29 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 			this.timer = null;
 		}
 	},
+	
+	resetTimer : function()
+	{
+		if(typeof(this.timer) != 'undefined')
+		{
+			clearInterval(this.timer);
+			this.timer = null;
+			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
+		}
+	},
 
 	onTimerEvent : function()
 	{
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
+	},
+	
+	setInterval : function(value)
+	{
+		if (this.options.Interval != value){
+			this.options.Interval = value;
+			this.resetTimer();
+		}
 	}
 },
 //class methods
@@ -222,6 +241,12 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 	{
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
+	},
+	
+	setInterval : function (id,value)
+	{
+		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
+			Prado.WebUI.TTimeTriggeredCallback.timers[id].setInterval(value);
 	}
 });
 

@@ -62,4 +62,3 @@ class TSafeHtml extends TControl
 	}
 }
 
-?>

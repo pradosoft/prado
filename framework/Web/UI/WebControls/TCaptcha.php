@@ -489,4 +489,3 @@ class TCaptcha extends TImage
 	}
 }
 
-?>

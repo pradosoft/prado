@@ -116,4 +116,3 @@ class TValueTriggeredCallback extends TTriggeredCallback
 		return 'Prado.WebUI.TValueTriggeredCallback';
 	}
 }
-?>

@@ -206,4 +206,3 @@ class TTableRowSection extends TEnumerable
 	const Footer='Footer';
 }
 
-?>

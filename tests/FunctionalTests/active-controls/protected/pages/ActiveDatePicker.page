@@ -1,0 +1,17 @@
+<html>
+<com:THead/>
+<body>
+<com:TForm>
+<h1>TActiveDatePicker test</h1>
+<p>
+<com:TActiveDatePicker ID="datepicker" DateFormat="MM-dd-yyyy" OnCallback="testDatePicker"/>
+<com:TActiveLabel ID="status" /><br/>
+<com:TActiveButton ID="decreaseButton" OnClick="decrease" Text="-1" OnCallback="testDatePicker"/>
+<com:TActiveButton ID="todayButton" OnClick="today" Text="Today" OnCallback="testDatePicker"/>
+<com:TActiveButton ID="increaseButton" OnClick="increase" Text="+1" OnCallback="testDatePicker"/>
+<com:TButton ID="toggleButton" OnClick="toggleMode" Text="Toggle input mode (postback)"/>
+</p>
+
+</com:TForm>
+</body>
+</html>

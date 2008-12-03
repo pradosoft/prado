@@ -233,4 +233,3 @@ class TBoundColumn extends TDataGridColumn
 	}
 }
 
-?>

@@ -119,4 +119,3 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	}
 }
 
-?>

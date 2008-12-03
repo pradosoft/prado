@@ -106,4 +106,3 @@ class Translation extends TComponent
 	}
 }
 
-?>

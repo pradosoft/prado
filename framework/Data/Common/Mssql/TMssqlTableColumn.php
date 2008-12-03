@@ -62,4 +62,3 @@ class TMssqlTableColumn extends TDbTableColumn
 	}
 }
 
-?>

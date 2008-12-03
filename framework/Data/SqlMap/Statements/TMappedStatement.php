@@ -1115,7 +1115,7 @@ class TSqlMapObjectCollectionTree
 			else if(is_array($list))
 				$list[] = $this->_entries[$node]['object'];
 			else
-				throw TSqlMapExecutionException(
+				throw new TSqlMapExecutionException(
 					'sqlmap_property_must_be_list');
 		}
 
@@ -1216,4 +1216,3 @@ class TResultSetMapItemParameter extends TComponent
 	}
 }
 
-?>

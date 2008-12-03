@@ -91,4 +91,3 @@ class TJavascriptLogger extends TWebControl
 	}
 }
 
-?>

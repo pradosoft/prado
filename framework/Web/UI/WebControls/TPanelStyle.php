@@ -276,4 +276,3 @@ class TScrollBars extends TEnumerable
 	const Vertical='Vertical';
 }
 
-?>

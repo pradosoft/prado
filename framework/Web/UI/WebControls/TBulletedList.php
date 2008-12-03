@@ -485,4 +485,3 @@ class TBulletedListDisplayMode extends TEnumerable
 	const LinkButton='LinkButton';
 }
 
-?>

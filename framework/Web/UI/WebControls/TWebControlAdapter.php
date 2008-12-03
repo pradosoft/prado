@@ -69,4 +69,3 @@ class TWebControlAdapter extends TControlAdapter
 	}
 }
 
-?>

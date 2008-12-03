@@ -155,7 +155,7 @@ class TActivePageAdapter extends TControlAdapter
 			$responseData = $response->getAdapter()->getResponseData();
 			if(!is_null($responseData))
 			{
-				$data = TJavascript::jsonEncode($responseData);
+				$data = TJavaScript::jsonEncode($responseData);
 
 				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
 				//$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
@@ -186,7 +186,7 @@ class TActivePageAdapter extends TControlAdapter
 
 		//output the actions
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
-		$actions = TJavascript::jsonEncode($executeJavascript);
+		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
 		//$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
 	}
@@ -264,7 +264,7 @@ class TActivePageAdapter extends TControlAdapter
 		{
 			$param = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
 			if(strlen($param) > 0)
-				$this->_callbackEventParameter=TJavascript::jsonDecode((string)$param);
+				$this->_callbackEventParameter=TJavaScript::jsonDecode((string)$param);
 		}
 		return $this->_callbackEventParameter;
 	}
@@ -315,7 +315,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			$response = $this->getApplication()->getResponse();
-			$trace = TJavascript::jsonEncode($this->getExceptionStackTrace($exception));
+			$trace = TJavaScript::jsonEncode($this->getExceptionStackTrace($exception));
 			$response->appendHeader('HTTP/1.0 500 Internal Error');
 			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
 		}
@@ -367,4 +367,3 @@ class TInvalidCallbackException extends TException
 {
 }
 
-?>

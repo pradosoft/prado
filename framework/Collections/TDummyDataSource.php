@@ -144,4 +144,3 @@ class TDummyDataSourceIterator implements Iterator
 	}
 }
 
-?>

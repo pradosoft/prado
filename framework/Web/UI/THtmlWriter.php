@@ -254,4 +254,3 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	}
 }
 
-?>

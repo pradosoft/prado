@@ -1,0 +1,14 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList AllowInput Test Case</h1>
+	<com:TActiveRatingList ID="RatingList" AllowInput="false"
+		OnSelectedIndexChanged="ratingChanged">
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average" />
+		<com:TListItem Text="Good" Selected="true" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+	<com:TActiveLabel ID="Status" Text="AllowInput=false" />
+</com:TForm>

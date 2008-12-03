@@ -376,4 +376,3 @@ class TView extends TControl
 	}
 }
 
-?>

@@ -170,4 +170,3 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	}
 }
 
-?>

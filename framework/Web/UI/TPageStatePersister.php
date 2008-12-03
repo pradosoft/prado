@@ -69,4 +69,3 @@ class TPageStatePersister extends TComponent implements IPageStatePersister
 	}
 }
 
-?>

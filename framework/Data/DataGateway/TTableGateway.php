@@ -474,4 +474,3 @@ class TTableGateway extends TComponent
 	}
 }
 
-?>

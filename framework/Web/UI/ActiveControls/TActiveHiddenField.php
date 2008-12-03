@@ -114,4 +114,3 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	}
 }
 
-?>

@@ -319,4 +319,3 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 }
 
-?>

@@ -254,4 +254,3 @@ class TTranslate extends TI18NControl
 	}
 }
 
-?>

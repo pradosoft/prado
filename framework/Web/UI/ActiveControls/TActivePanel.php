@@ -89,4 +89,3 @@ class TActivePanel extends TPanel implements IActiveControl
 	}
 }
 
-?>

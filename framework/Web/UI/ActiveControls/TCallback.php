@@ -99,4 +99,3 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	}
 }
 
-?>

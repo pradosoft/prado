@@ -139,4 +139,3 @@ class TUrlManager extends TModule
 	}
 }
 
-?>

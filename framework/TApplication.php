@@ -293,6 +293,11 @@ class TApplication extends TComponent
 	 * @var TApplicationMode application mode
 	 */
 	private $_mode=TApplicationMode::Debug;
+	
+	/**
+	 * @var string Customizable page service ID
+	 */
+	private $_pageServiceID = self::PAGE_SERVICE_ID;
 
 	/**
 	 * Constructor.
@@ -325,7 +330,8 @@ class TApplication extends TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new TMap;
-		$this->_services=array(self::PAGE_SERVICE_ID=>array('TPageService',array(),null));
+		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
+		
 		Prado::setPathOfAlias('Application',$this->_basePath);
 	}
 
@@ -509,6 +515,22 @@ class TApplication extends TComponent
 	{
 		$this->_id=$value;
 	}
+	
+	/**
+	 * @return string page service ID
+	 */
+	public function getPageServiceID()
+	{
+		return $this->_pageServiceID;
+	}
+
+	/**
+	 * @param string page service ID
+	 */
+	public function setPageServiceID($value)
+	{
+		$this->_pageServiceID=$value;
+	}
 
 	/**
 	 * @return string an ID that uniquely identifies this Prado application from the others
@@ -623,6 +645,10 @@ class TApplication extends TComponent
 	public function setRuntimePath($value)
 	{
 		$this->_runtimePath=$value;
+		if($this->_cacheFile)
+			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
+		// generates unique ID by hashing the runtime path
+		$this->_uniqueID=md5($this->_runtimePath);
 	}
 
 	/**
@@ -912,6 +938,9 @@ class TApplication extends TComponent
 			foreach($config->getProperties() as $name=>$value)
 				$this->setSubProperty($name,$value);
 		}
+		
+		if(empty($this->_services))
+			$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 
 		// load parameters
 		foreach($config->getParameters() as $id=>$parameter)
@@ -996,8 +1025,8 @@ class TApplication extends TComponent
 		}
 
 		if(($serviceID=$this->getRequest()->resolveRequest(array_keys($this->_services)))===null)
-			$serviceID=self::PAGE_SERVICE_ID;
-
+			$serviceID=$this->getPageServiceID();
+		
 		$this->startService($serviceID);
 	}
 
@@ -1761,4 +1790,3 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	}
 
 }
-?>

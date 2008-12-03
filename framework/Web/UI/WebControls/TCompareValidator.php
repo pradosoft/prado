@@ -263,4 +263,3 @@ class TValidationCompareOperator extends TEnumerable
 	const LessThanEqual='LessThanEqual';
 }
 
-?>

@@ -130,4 +130,3 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	}
 }
 
-?>

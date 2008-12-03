@@ -3,10 +3,8 @@ return array(
 	'authorization' => array(
 		array(
 			'action' => 'deny',
-			'properties' => array(
-				'pages' => 'Settings',
-				'users' => '?',
-			),
+			'pages' => 'Settings',
+			'users' => '?',	
 		),
 	),
 	'pages' => array(

@@ -148,7 +148,7 @@ class TUserManager extends TModule implements IUserManager
 	 * Loads user/role information from an XML node.
 	 * @param TXmlElement the XML node containing the user information
 	 */
-	private function loadUserDataFromXml($xmlNode)
+	protected function loadUserDataFromXml($xmlNode)
 	{
 		foreach($xmlNode->getElementsByTagName('user') as $node)
 		{

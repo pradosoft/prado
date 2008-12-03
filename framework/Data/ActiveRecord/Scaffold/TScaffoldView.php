@@ -141,4 +141,3 @@ class TScaffoldView extends TScaffoldBase
 	}
 }
 
-?>

@@ -39,4 +39,3 @@ class TActiveRecordConfigurationException extends TActiveRecordException
 
 }
 
-?>

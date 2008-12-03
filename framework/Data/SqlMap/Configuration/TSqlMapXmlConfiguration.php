@@ -310,6 +310,16 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	private $_FlushOnExecuteStatements=array();
 
 	/**
+	 * Regular expressions for escaping simple/inline parameter symbols
+	 */
+	const SIMPLE_MARK='$';
+	const INLINE_SYMBOL='#';
+	const ESCAPED_SIMPLE_MARK_REGEXP='/\$\$/';
+	const ESCAPED_INLINE_SYMBOL_REGEXP='/\#\#/';
+	const SIMPLE_PLACEHOLDER='`!!`';
+	const INLINE_PLACEHOLDER='`!!!`';
+
+	/**
 	 * @param TSqlMapXmlConfiguration parent xml configuration.
 	 */
 	public function __construct(TSqlMapXmlConfiguration $xmlConfig)
@@ -532,6 +542,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$scope['file'] = $this->_configFile;
 		$scope['node'] = $node;
 
+		$sqlStatement=preg_replace(self::ESCAPED_INLINE_SYMBOL_REGEXP,self::INLINE_PLACEHOLDER,$sqlStatement);
 		if($statement->parameterMap() === null)
 		{
 			// Build a Parametermap with the inline parameters.
@@ -548,6 +559,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			}
 			$sqlStatement = $sqlText['sql'];
 		}
+		$sqlStatement=preg_replace('/'.self::INLINE_PLACEHOLDER.'/',self::INLINE_SYMBOL,$sqlStatement);
 
 		$this->prepareSql($statement, $sqlStatement, $node);
 	}
@@ -562,6 +574,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function prepareSql($statement,$sqlStatement, $node)
 	{
 		$simpleDynamic = new TSimpleDynamicParser;
+		$sqlStatement=preg_replace(self::ESCAPED_SIMPLE_MARK_REGEXP,self::SIMPLE_PLACEHOLDER,$sqlStatement);
 		$dynamics = $simpleDynamic->parse($sqlStatement);
 		if(count($dynamics['parameters']) > 0)
 		{
@@ -570,6 +583,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		}
 		else
 			$sql = new TStaticSql();
+		$sqlStatement=preg_replace('/'.self::SIMPLE_PLACEHOLDER.'/',self::SIMPLE_MARK,$sqlStatement);
 		$sql->buildPreparedStatement($statement, $sqlStatement);
 		$statement->setSqlText($sql);
 	}
@@ -724,4 +738,3 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 }
 
-?>

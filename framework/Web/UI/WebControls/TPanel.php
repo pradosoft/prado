@@ -234,4 +234,3 @@ class TPanel extends TWebControl
 	}
 }
 
-?>

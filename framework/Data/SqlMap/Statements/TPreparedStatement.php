@@ -41,4 +41,3 @@ class TPreparedStatement extends TComponent
 
 }
 
-?>

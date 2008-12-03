@@ -143,4 +143,3 @@ interface IFeedContentProvider
 	public function getContentType();
 }
 
-?>

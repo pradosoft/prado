@@ -81,4 +81,3 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 	}
 }
 
-?>

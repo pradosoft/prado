@@ -263,4 +263,3 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 }
 
-?>

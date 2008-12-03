@@ -28,4 +28,3 @@ class TDataGridItemRenderer extends TItemDataRenderer
 {
 }
 
-?>

@@ -79,7 +79,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  *         'email_address'=>'email',
  *     );
  *     public $username;
- *     pulbic $email;
+ *     public $email;
  * }
  * </code>
  * In the above, the 'users' table consists of 'user_id' and 'email_address' columns,
@@ -126,6 +126,18 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  *          $this->nounce = md5(time());
  *          $this->password = md5($this->password.$this->nounce);
  *      }
+ * }
+ * </code>
+ *
+ * Since v3.1.3 you can also define a method that returns the table name.
+ * <code>
+ * class UserRecord extends TActiveRecord
+ * {
+ *     public function table()
+ *     {
+ *          return 'users';
+ *     }
+ *
  * }
  * </code>
  *
@@ -318,6 +330,14 @@ abstract class TActiveRecord extends TComponent
 	}
 
 	/**
+	 * @return TDbTableInfo the meta information of the table associated with this AR class.
+	 */
+	public function getRecordTableInfo()
+	{
+		return $this->getRecordGateway()->getRecordTableInfo($this);
+	}
+
+	/**
 	 * Compare two records using their primary key values (all column values if
 	 * table does not defined primary keys). The default uses simple == for
 	 * comparison of their values. Set $strict=true for identity comparison (===).
@@ -329,7 +349,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		if($record===null || get_class($this)!==get_class($record))
 			return false;
-		$tableInfo = $this->getRecordGateway()->getRecordTableInfo($this);
+		$tableInfo = $this->getRecordTableInfo();
 		$pks = $tableInfo->getPrimaryKeys();
 		$properties = count($pks) > 0 ? $pks : $tableInfo->getColumns()->getKeys();
 		$equals=true;
@@ -378,7 +398,7 @@ abstract class TActiveRecord extends TComponent
 	/**
 	 * @return TActiveRecordGateway record table gateway.
 	 */
-	public static function getRecordGateway()
+	public function getRecordGateway()
 	{
 		return TActiveRecordManager::getInstance()->getRecordGateway();
 	}
@@ -552,6 +572,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
+		$criteria->setLimit(1);
 		$data = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria);
 		return $this->populateObject($data);
 	}
@@ -629,6 +650,7 @@ abstract class TActiveRecord extends TComponent
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
+		$criteria->setLimit(1);
 		$data = $this->getRecordGateway()->findRecordBySql($this,$criteria);
 		return $this->populateObject($data);
 	}
@@ -1000,4 +1022,3 @@ class TActiveRecordChangeEventParameter extends TEventParameter
 	}
 }
 
-?>

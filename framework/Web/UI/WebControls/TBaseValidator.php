@@ -269,8 +269,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			{
 				$class = preg_replace ('/ '.preg_quote($cssClass).'/', '',$control->getCssClass());
 				if(!$this->getIsValid())
+				{
 					$class .= ' '.$cssClass;
-				$control->setCssClass($class);
+					$control->setCssClass($class);
+				} elseif ($control->getIsValid())
+					$control->setCssClass($class);
 			}
 		}
 	}
@@ -493,7 +496,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->setIsValid(true);
 		$this->onValidate();
 		if($this->getVisible(true) && $this->getEnabled(true))
-		{
+		{			
 			// if the target is not a disabled web control
 			if(($target=$this->getValidationTarget())!==null && !($target instanceof TWebControl && !$target->getEnabled(true)))
 			{
@@ -504,9 +507,16 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				}
 				else
 				{
+					$target->setIsValid(false);
 					$this->setIsValid(false);
 					$this->onValidationError();
 				}
+			}
+			else
+			{
+				$this->evaluateIsValid();
+				$this->setIsValid(true);
+				$this->onValidationSuccess();
 			}
 		}
 		return $this->getIsValid();
@@ -721,4 +731,3 @@ class TValidationDataType extends TEnumerable
 	const String='String';
 }
 
-?>

@@ -258,4 +258,3 @@ class TSqlMapManager extends TComponent
 	}
 }
 
-?>

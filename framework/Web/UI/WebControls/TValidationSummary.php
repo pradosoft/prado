@@ -504,4 +504,3 @@ class TValidationSummaryDisplayStyle extends TEnumerable
 	const Fixed='Fixed';
 }
 
-?>

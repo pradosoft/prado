@@ -48,4 +48,3 @@ class TRepeaterItemRenderer extends TItemDataRenderer
 	}
 }
 
-?>

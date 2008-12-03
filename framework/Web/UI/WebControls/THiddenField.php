@@ -26,6 +26,7 @@
 class THiddenField extends TControl implements IPostBackDataHandler, IValidatable, IDataRenderer
 {
 	private $_dataChanged=false;
+	private $_isValid=true;
 
 	/**
 	 * @return string tag name of the hidden field.
@@ -109,6 +110,23 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 	public function getValidationPropertyValue()
 	{
 		return $this->getValue();
+	}
+
+	/**
+	 * Returns true if this control validated successfully. 
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+	    return $this->_isValid;
+	}
+	/**
+	 * @param bool wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+	    $this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -204,4 +222,3 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 	}
 }
 
-?>

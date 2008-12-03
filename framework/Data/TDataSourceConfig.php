@@ -165,5 +165,3 @@ class TDataSourceConfig extends TModule
 			throw new TConfigurationException('datasource_dbconnection_invalid',$id);
 	}
 }
-
-?>

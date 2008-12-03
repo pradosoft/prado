@@ -136,4 +136,3 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	}
 }
 
-?>

@@ -379,4 +379,3 @@ interface IDataRenderer
 	 */
 	public function setData($value);
 }
-?>

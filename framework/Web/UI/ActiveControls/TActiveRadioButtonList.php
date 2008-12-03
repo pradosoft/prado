@@ -11,6 +11,12 @@
  */
 
 /**
+ * Load active control adapter and active radio button.
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
+Prado::using('System.Web.UI.ActiveControls.TActiveRadioButton');
+
+/**
  * TActiveRadioButtonList class.
  *
  * The active control counter part to radio button list control.

@@ -488,7 +488,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 			// Add max if it's not in the array because of step
 			if (!in_array($maxValue, $values)) $values[]=$maxValue;
 		}
-		$options['values'] = TJavascript::Encode($values,false);
+		$options['values'] = TJavaScript::Encode($values,false);
 		if($this->_clientScript!==null)
 			$options = array_merge($options,$this->_clientScript->getOptions()->toArray());
 		return $options;
@@ -572,4 +572,3 @@ class TSliderDirection extends TEnumerable
 }
 
 
-?>

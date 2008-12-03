@@ -612,4 +612,3 @@ class TSoapServer extends TApplicationComponent
 	}
 }
 
-?>

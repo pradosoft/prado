@@ -307,4 +307,3 @@ class TMemCache extends TCache
 	}
 }
 
-?>

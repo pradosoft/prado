@@ -790,4 +790,3 @@ class TPagerButtonType extends TEnumerable
 	const ImageButton='ImageButton';
 }
 
-?>

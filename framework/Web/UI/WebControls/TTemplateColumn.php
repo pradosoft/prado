@@ -254,4 +254,3 @@ class TTemplateColumn extends TDataGridColumn
 	}
 }
 
-?>

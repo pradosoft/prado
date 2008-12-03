@@ -198,4 +198,3 @@ class TResultMap extends TComponent
 	}
 }
 
-?>

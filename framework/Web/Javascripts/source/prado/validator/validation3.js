@@ -686,7 +686,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		switch(type)
 		{
-			case "List":
+			case "SimpleList":
 				return { header : "<br />", first : "", pre : "", post : "<br />", last : ""};
 			case "SingleParagraph":
 				return { header : " ", first : "", pre : "", post : " ", last : "<br />"};
@@ -1668,6 +1668,7 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	 * @constructor initialize
 	 * @param {object} options - Additional constructor option:
 	 * @... {string} ValidationExpression - Regular expression to match against.
+	 * @... {string} PatternModifiers - Pattern modifiers: combinations of g, i, and m
 	 */
 
 	/**
@@ -1678,12 +1679,12 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	evaluateIsValid : function()
 	{
 		var value = this.getValidationValue();
-	    if (value.length <= 0)
+		if (value.length <= 0)
 	    	return true;
 
-	    var rx = new RegExp(this.options.ValidationExpression);
-	    var matches = rx.exec(value);
-	    return (matches != null && value == matches[0]);
+		var rx = new RegExp(this.options.ValidationExpression,this.options.PatternModifiers);
+		var matches = rx.exec(value);
+		return (matches != null && value == matches[0]);
 	}
 });
 
@@ -1847,6 +1848,8 @@ Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	{
 		var a = this.getValidationValue();
 		var h = 0;
+		if (this.options.CaseSensitive==false)
+			a = a.toUpperCase();
 		for(var i = a.length-1; i >= 0; --i)
 			h += a.charCodeAt(i);
 		return h == this.options.TokenHash;

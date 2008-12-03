@@ -170,4 +170,3 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	}
 }
 
-?>

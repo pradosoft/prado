@@ -186,4 +186,3 @@ class TKeyboard extends TWebControl
 	}
 }
 
-?>

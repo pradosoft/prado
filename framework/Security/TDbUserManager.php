@@ -318,4 +318,3 @@ abstract class TDbUser extends TUser
 	}
 }
 
-?>

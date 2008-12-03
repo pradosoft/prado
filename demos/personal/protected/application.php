@@ -5,7 +5,7 @@ return array(
 		'mode' => 'Debug',
 	),
 	'paths' => array(
-		'using'=>array('Application.common.*'),
+		'using'=>array('Application.Common.*'),
 	),
 	'modules' => array(	
 	),

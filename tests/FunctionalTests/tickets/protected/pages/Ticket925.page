@@ -1,0 +1,11 @@
+<com:TContent ID="Content">
+	<com:TTimeTriggeredCallback id="timer1" Interval="2" OnCallback="timer1callback"/>
+	<com:TTimeTriggeredCallback id="timer2" Interval="1" OnCallback="timer2callback" StartTimerOnLoad="true"/>
+	Timer 1 : <com:TActiveLabel id="timer1result"/><br/>
+	Timer 2 : <com:TActiveLabel id="timer2result"/><br/>
+	<com:TActiveButton OnClick="startTimer1" Text="Start Timer1"/>
+	<com:TActiveButton OnClick="stopTimer1" Text="Stop Timer1"/>
+	<com:TActiveButton OnClick="startTimer2" Text="Start Timer2"/>
+	<com:TActiveButton OnClick="stopTimer2" Text="Stop Timer2"/>
+	<com:TActiveButton OnClick="changeIntervalTimer1" Text="Change Interval of Timer1 to 1 sec"/>
+</com:TContent>

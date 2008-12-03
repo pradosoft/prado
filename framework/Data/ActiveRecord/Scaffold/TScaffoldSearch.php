@@ -148,4 +148,3 @@ class TScaffoldSearch extends TScaffoldBase
 	}
 }
 
-?>

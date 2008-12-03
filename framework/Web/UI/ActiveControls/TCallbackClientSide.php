@@ -322,4 +322,3 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 }
 
-?>

@@ -374,4 +374,3 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		return $data;
 	}
 }
-?>

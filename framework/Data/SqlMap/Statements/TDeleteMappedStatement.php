@@ -22,4 +22,3 @@ class TDeleteMappedStatement extends TUpdateMappedStatement
 {
 }
 
-?>

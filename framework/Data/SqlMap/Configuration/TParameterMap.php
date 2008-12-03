@@ -205,4 +205,3 @@ class TParameterMap extends TComponent
 		return $value;
 	}
 }
-?>

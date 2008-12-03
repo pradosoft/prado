@@ -307,4 +307,3 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	}
 }
 
-?>

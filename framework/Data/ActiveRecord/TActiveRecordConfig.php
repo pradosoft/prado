@@ -105,4 +105,3 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 }
 
-?>

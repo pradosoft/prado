@@ -1,0 +1,16 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList AutoPostBack Test Case</h1>
+	<com:TActiveRatingList ID="RatingList" AutoPostback="false"
+		OnSelectedIndexChanged="ratingChanged">
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" Selected="true" />
+		<com:TListItem Text="Average" />
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+	<com:TActiveLabel ID="Status" Text="AutoPostback=false" />
+	<br />
+	<com:TActiveButton ID="Submit" Text="Submit" />
+</com:TForm>

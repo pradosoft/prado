@@ -169,7 +169,10 @@ class TClientScriptManager extends TApplicationComponent
 		$scriptLoaderPath = $path.'/'.basename(self::SCRIPT_LOADER);
 		$scriptLoaderSrc = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_LOADER;
 		if(!is_file($scriptLoaderPath))
+		{
 			copy($scriptLoaderSrc, $scriptLoaderPath);
+			chmod($scriptLoaderPath, PRADO_CHMOD);
+		}
 		$url .= '/'.basename(self::SCRIPT_LOADER).'?js='.implode(',', $packages);
 		if($debug!==false && $this->getApplication()->getMode()===TApplicationMode::Debug)
 		{
@@ -230,7 +233,7 @@ class TClientScriptManager extends TApplicationComponent
 		$class = new TReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
-		$optionString = TJavascript::encode($options);
+		$optionString = TJavaScript::encode($options);
 		$this->registerPradoScriptInternal('ajax');
 		$id = $callbackHandler->getUniqueID();
 		return "new Prado.CallbackRequest('{$id}',{$optionString})";
@@ -677,8 +680,8 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function setFunction($name, $code)
 	{
-		if(!TJavascript::isFunction($code))
-			$code = TJavascript::quoteFunction($this->ensureFunction($code));
+		if(!TJavaScript::isFunction($code))
+			$code = TJavaScript::quoteFunction($this->ensureFunction($code));
 		$this->setOption($name, $code);
 	}
 
@@ -717,4 +720,3 @@ abstract class TClientSideOptions extends TComponent
 	}
 }
 
-?>

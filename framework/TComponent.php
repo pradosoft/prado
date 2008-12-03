@@ -839,4 +839,3 @@ class TComponentReflection extends TComponent
 	}
 }
 
-?>

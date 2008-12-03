@@ -197,4 +197,3 @@ class TDbTableColumn extends TComponent
 	}
 }
 
-?>

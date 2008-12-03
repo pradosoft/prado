@@ -56,4 +56,3 @@ interface IUserManager
 	public function validateUser($username,$password);
 }
 
-?>

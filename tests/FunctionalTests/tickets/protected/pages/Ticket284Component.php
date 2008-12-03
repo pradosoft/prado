@@ -2,6 +2,7 @@
 
 class Ticket284Component extends TTemplateControl implements IValidatable
 {
+	private $_isValid;
  	public function onPreRender($param)
  	{
 		if (!$this->ShowHours && $this->ShowMinutes)
@@ -90,5 +91,13 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 			return $this->TimeStamp;
 		}
 	}
+        public function getIsValid()
+        {
+            return $this->_isValid;
+        }
+        public function setIsValid($value)
+        {
+            $this->_isValid=TPropertyValue::ensureBoolean($value);
+        }
 }
 ?>

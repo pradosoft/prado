@@ -574,4 +574,3 @@ class THttpResponse extends TModule implements ITextWriter
 	}
 }
 
-?>

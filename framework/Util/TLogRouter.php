@@ -96,6 +96,20 @@ class TLogRouter extends TModule
 	}
 
 	/**
+	 * Adds a TLogRoute instance to the log router.
+	 * 
+	 * @param TLogRoute $route 
+	 * @throws TInvalidDataTypeException if the route object is invalid
+	 */
+	public function addRoute($route)
+	{
+		if(!($route instanceof TLogRoute))
+			throw new TInvalidDataTypeException('logrouter_routetype_invalid');
+		$this->_routes[]=$route;
+		$route->init(null);
+	}
+
+	/**
 	 * @return string external configuration file. Defaults to null.
 	 */
 	public function getConfigFile()
@@ -106,11 +120,11 @@ class TLogRouter extends TModule
 	/**
 	 * @param string external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
-	 * @throws TInvalidDataValueException if the file is invalid.
+	 * @throws TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,self::LOG_FILE_EXT))===null)
+		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
 			throw new TConfigurationException('logrouter_configfile_invalid',$value);
 	}
 
@@ -509,8 +523,9 @@ class TEmailLogRoute extends TLogRoute
 		foreach($logs as $log)
 			$message.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]);
 		$message=wordwrap($message,70);
+		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach($this->_emails as $email)
-			mail($email,$this->getSubject(),$message,"From:{$this->_from}\r\n");
+			mail($email,$this->getSubject(),$message,"From:{$this->_from}\r\n{$returnPath}");
 
 	}
 

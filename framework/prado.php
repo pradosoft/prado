@@ -56,4 +56,3 @@ require_once(dirname(__FILE__).'/TApplication.php');
  */
 require_once(dirname(__FILE__).'/TShellApplication.php');
 
-?>

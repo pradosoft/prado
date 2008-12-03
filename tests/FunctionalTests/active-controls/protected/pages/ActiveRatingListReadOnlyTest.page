@@ -1,0 +1,17 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList ReadOnly Test Case</h1>
+	<com:TActiveRatingList ID="RatingList" ReadOnly="true"
+		OnSelectedIndexChanged="ratingChanged">
+		<com:TListItem Text="Poor" Selected="true" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average" />
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+	<com:TActiveLabel ID="Status" Text="ReadOnly=true" />
+	<br />
+	<com:TActiveButton ID="Writable" Text="Writable" OnClick="writable" />
+	<com:TActiveButton ID="ReadOnly" Text="ReadOnly" OnClick="readOnly" />
+</com:TForm>

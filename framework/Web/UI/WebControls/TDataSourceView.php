@@ -204,4 +204,3 @@ class TReadOnlyDataSourceView extends TDataSourceView
 	}
 }
 
-?>

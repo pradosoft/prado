@@ -1,0 +1,14 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList Hover Caption Test Case</h1>
+	<com:TActiveRatingList ID="RatingList" CaptionID="Status"
+		OnSelectedIndexChanged="ratingChanged" Rating="3.5">
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average" />
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+	<com:TActiveLabel ID="Status" Text="CaptionID='Status'" />
+</com:TForm>

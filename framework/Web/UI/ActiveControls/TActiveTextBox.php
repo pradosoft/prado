@@ -123,4 +123,3 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	}
 }
 
-?>

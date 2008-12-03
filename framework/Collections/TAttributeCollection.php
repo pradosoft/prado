@@ -170,4 +170,3 @@ class TAttributeCollection extends TMap
 	}
 }
 
-?>

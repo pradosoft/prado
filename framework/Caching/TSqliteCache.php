@@ -221,4 +221,3 @@ class TSqliteCache extends TCache
 	}
 }
 
-?>

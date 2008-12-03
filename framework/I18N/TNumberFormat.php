@@ -56,6 +56,9 @@ Prado::using('System.I18N.TI18NControl');
   *   The default is 'USD' if the Currency property is not specified.
   * - <b>Pattern</b>, string,
   *   <br>Gets or sets the custom number formatting pattern.
+  * - <b>DefaultText</b>, string,
+  * <br>Gets or sets the default text. If Value is not set, DefaultText will be
+  * shown instead of the default currency Value/Pattern.
   *
   * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
   * @version v1.0, last update on Sat Dec 11 17:49:56 EST 2004
@@ -105,6 +108,23 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 		$this->setViewState('Value',$value,'');
 	}
 
+	/**
+	 * Get the default text value for this control.
+	 * @return string default text value
+	 */
+	public function getDefaultText()
+	{
+		return $this->getViewState('DefaultText','');
+	}
+	
+	/**
+	 * Set the default text value for this control.
+	 * @param string default text value
+	 */
+	public function setDefaultText($value)
+	{
+		$this->setViewState('DefaultText',$value,'');
+	}
 
 	/**
 	 * Get the numberic value for this control.
@@ -193,6 +213,11 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 	 */
 	protected function getFormattedValue()
 	{
+		$value = $this->getValue();
+		$defaultText = $this->getDefaultText();
+		if(empty($value) && !empty($defaultText))
+			return $this->getDefaultText();
+
 		$app = $this->getApplication()->getGlobalization();
 		//initialized the default class wide formatter
 		if(is_null(self::$formatter))

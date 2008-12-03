@@ -1,0 +1,12 @@
+<com:THead />
+<com:TForm ID="form1">
+	<h1>TActiveRatingList Check Boxes Test Case</h1>
+	<com:TActiveRatingList ID="RatingList">
+		<com:TListItem Text="Poor" />
+		<com:TListItem Text="Fair" />
+		<com:TListItem Text="Average" Selected="true" />
+		<com:TListItem Text="Good" />
+		<com:TListItem Text="Excellent" />
+		<com:TListItem Text="Super" />
+	</com:TActiveRatingList>
+</com:TForm>

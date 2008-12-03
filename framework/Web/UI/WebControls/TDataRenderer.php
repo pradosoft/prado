@@ -50,4 +50,3 @@ abstract class TDataRenderer extends TTemplateControl implements IDataRenderer
 	}
 }
 
-?>

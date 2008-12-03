@@ -417,4 +417,3 @@ class THttpException extends TSystemException
 	}
 }
 
-?>

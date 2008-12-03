@@ -1234,10 +1234,10 @@ class TPageStateFormatter
 			$str=$sm->hashData(Prado::serialize($data));
 		else
 			$str=Prado::serialize($data);
-		if($page->getEnableStateEncryption())
-			$str=$sm->encrypt($str);
 		if(extension_loaded('zlib'))
 			$str=gzcompress($str);
+		if($page->getEnableStateEncryption())
+			$str=$sm->encrypt($str);
 		return base64_encode($str);
 	}
 
@@ -1251,13 +1251,13 @@ class TPageStateFormatter
 		$str=base64_decode($data);
 		if($str==='')
 			return null;
-		if(extension_loaded('zlib'))
-			$str=@gzuncompress($str);
 		if($str!==false)
 		{
 			$sm=$page->getApplication()->getSecurityManager();
 			if($page->getEnableStateEncryption())
 				$str=$sm->decrypt($str);
+			if(extension_loaded('zlib'))
+				$str=@gzuncompress($str);
 			if($page->getEnableStateValidation())
 			{
 				if(($str=$sm->validateData($str))!==false)
