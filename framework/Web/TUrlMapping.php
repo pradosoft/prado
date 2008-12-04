@@ -265,7 +265,7 @@ class TUrlMapping extends TUrlManager
 						$params[$key]=$value;
 				}
 				if (!$pattern->getIsWildCardPattern())
-				    $params[$pattern->getServiceID()]=$pattern->getServiceParameter();
+					$params[$pattern->getServiceID()]=$pattern->getServiceParameter();
 				return $params;
 			}
 		}
@@ -380,6 +380,42 @@ class TUrlMapping extends TUrlManager
  * The {@link setServiceParameter ServiceParameter} and {@link setServiceID ServiceID}
  * (the default ID is 'page') set the service parameter and service id respectively.
  *
+ * Since 3.1.4 you can also use simplyfied wildcard patterns to match multiple
+ * ServiceParameters with a single rule. The pattern must contain the placeholder 
+ * {*} for the ServiceParameter. For example
+ *
+ * <url ServiceParameter="adminpages.*" pattern="admin/{*}" />
+ *
+ * This rule will match an URL like <tt>http://example.com/index.php/admin/edituser</tt>
+ * and resolve it to the page Application.pages.admin.edituser. The wildcard matching
+ * is non-recursive. That means you have to add a rule for every subdirectory you
+ * want to access pages in: 
+ *
+ * <url ServiceParameter="adminpages.users.*" pattern="useradmin/{*}" />
+ *
+ * It is still possible to define an explicit rule for a page in the wildcard path.
+ * This rule has to preceed the wildcard rule.
+ *
+ * You can also use parameters with wildcard patterns. The parameters are then 
+ * available with every matching page:
+ *
+ * <url ServiceParameter="adminpages.*" pattern="admin/{*}/{id}" parameters.id="\d+" />
+ *
+ * To enable automatic parameter encoding in a path format fro wildcard patterns you can set 
+ * {@setUrlFormat UrlFormat} to 'Path': 
+ *
+ * <url ServiceParameter="adminpages.*" pattern="admin/{*}" UrlFormat="Path" />
+ *
+ * This will create and parse URLs of the form 
+ * <tt>.../index.php/admin/listuser/param1/value1/param2/value2</tt>.
+ *
+ * Use {@setUrlParamSeparator} to define another separator character between parameter
+ * name and value. Parameter/value pairs are always separated by a '/'.
+ *
+ * <url ServiceParameter="adminpages.*" pattern="admin/{*}" UrlFormat="Path" UrlParamSeparator="-" />
+ *
+ * <tt>.../index.php/admin/listuser/param1-value1/param2-value2</tt>.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web
@@ -415,6 +451,10 @@ class TUrlMappingPattern extends TComponent
 	private $_caseSensitive=true;
 
 	private $_isWildCardPattern=false;
+
+	private $_urlFormat=THttpRequestUrlFormat::Get;
+
+	private $_separator='/';
 
 	/**
 	 * Constructor.
@@ -470,7 +510,11 @@ class TUrlMappingPattern extends TComponent
 		$params[]='/';
 		$values[]='\\/';
 		$regexp=str_replace($params,$values,trim($this->getPattern(),'/').'/');
-		$regexp='/^'.$regexp.'$/u';
+		if ($this->_urlFormat===THttpRequestUrlFormat::Get)
+		    $regexp='/^'.$regexp.'$/u';
+		else 
+		    $regexp='/^'.$regexp.'(?P<urlparams>.*)$/u';
+
 		if(!$this->getCaseSensitive())
 			$regexp.='i';
 		return $regexp;
@@ -585,6 +629,27 @@ class TUrlMappingPattern extends TComponent
 			preg_match($pattern,$request->getPathInfo(),$matches);
 		else
 			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/').'/',$matches);
+
+		if (isset($matches['urlparams']))
+		{
+			$params=explode('/',$matches['urlparams']);
+			if ($this->_separator==='/') 
+			{
+				while($key=array_shift($params))
+					$matches2[$key]=($value=array_shift($params)) ? $value : '';
+			} 
+			else 
+			{
+				array_pop($params);
+				foreach($params as $param)
+				{
+					list($key,$value)=explode($this->_separator,$param,2);
+					$matches[$key]=$value;
+				}
+			}
+			unset($matches['urlparams']);
+		}
+
 		return $matches;
 	}
 
@@ -612,7 +677,51 @@ class TUrlMappingPattern extends TComponent
 	 * @since 3.1.4
 	 */
 	public function getIsWildCardPattern() {
-	    return $this->_isWildCardPattern;
+		return $this->_isWildCardPattern;
+	}
+
+	/**
+	 * @return THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
+	 */
+	public function getUrlFormat()
+	{
+		return $this->_urlFormat;
+	}
+
+	/**
+	 * Sets the format of URLs constructed and interpreted by this pattern.
+	 * A Get URL format is like index.php?name1=value1&name2=value2
+	 * while a Path URL format is like index.php/name1/value1/name2/value.
+	 * The separating character between name and value can be configured with 
+	 * {@link setUrlParamSeparator} and defaults to '/'.
+	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
+	 * are parsed.
+	 * @param THttpRequestUrlFormat the format of URLs.
+	 * @param since 3.1.4
+	 */
+	public function setUrlFormat($value)
+	{
+		$this->_urlFormat=TPropertyValue::ensureEnum($value,'THttpRequestUrlFormat');
+	}
+
+	/**
+	 * @return string separator used to separate GET variable name and value when URL format is Path. Defaults to slash '/'.
+	 */
+	public function getUrlParamSeparator()
+	{
+		return $this->_separator;
+	}
+
+	/**
+	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @throws TInvalidDataValueException if the separator is not a single character
+	 */
+	public function setUrlParamSeparator($value)
+	{
+		if(strlen($value)===1)
+			$this->_separator=$value;
+		else
+			throw new TInvalidDataValueException('httprequest_separator_invalid');
 	}
 
 	/**
@@ -658,6 +767,12 @@ class TUrlMappingPattern extends TComponent
 		// for the rest of the GET variables, put them in the query string
 		if(count($extra)>0)
 		{
+			if ($this->_urlFormat===THttpRequestUrlFormat::Path && $this->getIsWildCardPattern()) {
+				foreach ($extra as $name=>$value)
+					$url.='/'.$name.$this->_separator.($encodeGetItems?rawurlencode($value):$value);
+				return $url;
+			}
+
 			$url2='';
 			$amp=$encodeAmpersand?'&amp;':'&';
 			if($encodeGetItems)
