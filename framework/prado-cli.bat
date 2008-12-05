@@ -19,10 +19,10 @@ goto init
 
 if "%PHP_COMMAND%" == "" goto no_phpcommand
 
-IF EXIST ".\framework\prado-cli.php" (
-  %PHP_COMMAND% -d html_errors=off -d open_basedir= -q ".\framwork\prado-cli.php" %1 %2 %3 %4 %5 %6 %7 %8 %9
+IF EXIST ".\prado-cli.php" (
+  %PHP_COMMAND% -d html_errors=off -d open_basedir= -q ".\prado-cli.php" %1 %2 %3 %4 %5 %6 %7 %8 %9
 ) ELSE (
-  %PHP_COMMAND% -d html_errors=off -d open_basedir= -q "%PRADO_DIR%\framework\prado-cli.php" %1 %2 %3 %4 %5 %6 %7 %8 %9
+  %PHP_COMMAND% -d html_errors=off -d open_basedir= -q "%PRADO_DIR%\prado-cli.php" %1 %2 %3 %4 %5 %6 %7 %8 %9
 )
 goto cleanup
 

@@ -2740,12 +2740,12 @@ framework/Xml/TXmlDocument.php -text
 framework/interfaces.php -text
 framework/powered.gif -text
 framework/powered2.gif -text
+framework/prado-cli -text
+framework/prado-cli.bat -text
 framework/prado.php -text
 /index.html -text
 /phing -text
 /phing.bat -text
-/prado-cli -text
-/prado-cli.bat -text
 requirements/index.php -text
 requirements/messages-bg.txt -text
 requirements/messages-id.txt -text
