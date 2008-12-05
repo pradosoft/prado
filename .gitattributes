@@ -2740,7 +2740,6 @@ framework/Xml/TXmlDocument.php -text
 framework/interfaces.php -text
 framework/powered.gif -text
 framework/powered2.gif -text
-framework/prado-cli -text
 framework/prado.php -text
 /index.html -text
 /phing -text
