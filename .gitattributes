@@ -1854,6 +1854,7 @@ demos/sqlmap/protected/.htaccess -text
 demos/sqlmap/protected/APP_CODE/Person.php -text
 demos/sqlmap/protected/App_Data/person.xml -text
 demos/sqlmap/protected/App_Data/test.db -text
+demos/sqlmap/protected/application.php -text
 demos/sqlmap/protected/application.xml -text
 demos/sqlmap/protected/pages/Manual/BigPicture.page -text
 demos/sqlmap/protected/pages/Manual/BuildingTSqlMapper.page -text
