@@ -992,6 +992,7 @@ demos/blog-tutorial/themes/PradoSoft/mantissample.jpg -text
 demos/blog-tutorial/themes/PradoSoft/pradologo.gif -text
 demos/blog-tutorial/themes/PradoSoft/style.css -text
 demos/blog/index.php -text
+demos/blog/index_php.php -text
 demos/blog/protected/.htaccess -text
 demos/blog/protected/Common/BlogDataModule.php -text
 demos/blog/protected/Common/BlogErrorHandler.php -text
@@ -1002,6 +1003,7 @@ demos/blog/protected/Common/BlogUserManager.php -text
 demos/blog/protected/Common/XListMenu.php -text
 demos/blog/protected/Common/messages.txt -text
 demos/blog/protected/Common/schema.sql -text
+demos/blog/protected/Data/Settings.php -text
 demos/blog/protected/Data/Settings.xml -text
 demos/blog/protected/Layouts/MainLayout.php -text
 demos/blog/protected/Layouts/MainLayout.tpl -text
@@ -1013,6 +1015,7 @@ demos/blog/protected/Pages/Admin/PostMan.page -text
 demos/blog/protected/Pages/Admin/PostMan.php -text
 demos/blog/protected/Pages/Admin/UserMan.page -text
 demos/blog/protected/Pages/Admin/UserMan.php -text
+demos/blog/protected/Pages/Admin/config.php -text
 demos/blog/protected/Pages/Admin/config.xml -text
 demos/blog/protected/Pages/ErrorReport.page -text
 demos/blog/protected/Pages/ErrorReport.php -text
@@ -1030,6 +1033,7 @@ demos/blog/protected/Pages/Posts/NewPost.page -text
 demos/blog/protected/Pages/Posts/NewPost.php -text
 demos/blog/protected/Pages/Posts/ViewPost.page -text
 demos/blog/protected/Pages/Posts/ViewPost.php -text
+demos/blog/protected/Pages/Posts/config.php -text
 demos/blog/protected/Pages/Posts/config.xml -text
 demos/blog/protected/Pages/SearchPost.page -text
 demos/blog/protected/Pages/SearchPost.php -text
@@ -1053,22 +1057,26 @@ demos/blog/protected/Portlets/LoginPortlet.tpl -text
 demos/blog/protected/Portlets/Portlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.php -text
 demos/blog/protected/Portlets/SearchPortlet.tpl -text
+demos/blog/protected/application.php -text
 demos/blog/protected/application.xml -text
 demos/blog/themes/Fall/style.css -text
 demos/blog/themes/Spring/style.css -text
 demos/blog/themes/Summer/style.css -text
 demos/blog/themes/Winter/style.css -text
 demos/chat/index.php -text
+demos/chat/index_php.php -text
 demos/chat/protected/.htaccess -text
 demos/chat/protected/App_Code/ChatBufferRecord.php -text
 demos/chat/protected/App_Code/ChatUserManager.php -text
 demos/chat/protected/App_Code/ChatUserRecord.php -text
 demos/chat/protected/App_Code/chat.db -text
+demos/chat/protected/application.php -text
 demos/chat/protected/application.xml -text
 demos/chat/protected/pages/Home.page -text
 demos/chat/protected/pages/Home.php -text
 demos/chat/protected/pages/Login.page -text
 demos/chat/protected/pages/Login.php -text
+demos/chat/protected/pages/config.php -text
 demos/chat/protected/pages/config.xml -text
 demos/chat/protected/pages/send.gif -text
 demos/chat/protected/pages/send.png -text
@@ -1098,7 +1106,9 @@ demos/helloworld/protected/.htaccess -text
 demos/helloworld/protected/pages/Home.page -text
 demos/helloworld/protected/pages/Home.php -text
 demos/northwind-db/index.php -text
+demos/northwind-db/index_php.php -text
 demos/northwind-db/protected/.htaccess -text
+demos/northwind-db/protected/application.php -text
 demos/northwind-db/protected/application.xml -text
 demos/northwind-db/protected/data/Northwind.db -text
 demos/northwind-db/protected/database/Category.php -text
@@ -1839,6 +1849,7 @@ demos/soap/protected/pages/Home.page -text
 demos/soap/protected/pages/Home.php -text
 demos/soap/protected/webservices/SimpleService.php -text
 demos/sqlmap/index.php -text
+demos/sqlmap/index_php.php -text
 demos/sqlmap/protected/.htaccess -text
 demos/sqlmap/protected/APP_CODE/Person.php -text
 demos/sqlmap/protected/App_Data/person.xml -text
@@ -1877,6 +1888,7 @@ demos/sqlmap/protected/pages/Manual/Tutorial/example1.png -text
 demos/sqlmap/protected/pages/Manual/Tutorial/grid1.png -text
 demos/sqlmap/protected/pages/Manual/Tutorial/grid2.png -text
 demos/sqlmap/protected/pages/Manual/WorkingWithDataMaps.page -text
+demos/sqlmap/protected/pages/Manual/config.php -text
 demos/sqlmap/protected/pages/Manual/config.xml -text
 demos/sqlmap/protected/pages/Manual/diagram.png -text
 demos/sqlmap/protected/pages/Sample/Home.page -text
@@ -1885,6 +1897,7 @@ demos/sqlmap/protected/pages/Sample/crud1.php -text
 demos/sqlmap/protected/pages/Sample/crud2.page -text
 demos/sqlmap/protected/pages/Sample/crud2.php -text
 demos/time-tracker/index.php -text
+demos/time-tracker/index_php.php -text
 demos/time-tracker/protected/.htaccess -text
 demos/time-tracker/protected/App_Code/Dao/BaseDao.php -text
 demos/time-tracker/protected/App_Code/Dao/CategoryDao.php -text
@@ -1919,6 +1932,7 @@ demos/time-tracker/protected/App_Data/SQLite/users.xml -text
 demos/time-tracker/protected/App_Data/TimeTrackerUserTypeHandler.php -text
 demos/time-tracker/protected/App_Data/mysql4-sqlmap.xml -text
 demos/time-tracker/protected/App_Data/sqlite-sqlmap.xml -text
+demos/time-tracker/protected/application.php -text
 demos/time-tracker/protected/application.xml -text
 demos/time-tracker/protected/pages/TimeTracker/CategoryDataList.php -text
 demos/time-tracker/protected/pages/TimeTracker/CategoryDataList.tpl -text
@@ -1946,6 +1960,7 @@ demos/time-tracker/protected/pages/TimeTracker/UserCreate.page -text
 demos/time-tracker/protected/pages/TimeTracker/UserCreate.php -text
 demos/time-tracker/protected/pages/TimeTracker/UserList.page -text
 demos/time-tracker/protected/pages/TimeTracker/UserList.php -text
+demos/time-tracker/protected/pages/TimeTracker/config.php -text
 demos/time-tracker/protected/pages/TimeTracker/config.xml -text
 demos/time-tracker/protected/pages/Welcome.page -text
 demos/time-tracker/tests/functional.php -text

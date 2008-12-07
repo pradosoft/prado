@@ -30,12 +30,16 @@
  *     </service>
  *   </services>
  * </code>
- *
- * The above example specifies a single SOAP provider named "stockquote"
- * whose class is "MyStockQuote". A SOAP client can then obtain the WSDL for
- * this provider via the following URL:
+ * PHP configuration style:
  * <code>
- *   http://hostname/path/to/index.php?soap=stockquote.wsdl
+ *  'services' => array(
+ *    'soap' => array(
+ *     'class' => 'System.Web.Services.TSoapService'
+ *     'properties' => array(
+ *       'provider' => 'MyStockQuote'
+ *	   )
+ *    )
+ *  )
  * </code>
  *
  * The WSDL for the provider class "MyStockQuote" is generated based on special
@@ -79,13 +83,13 @@
  *
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @package System.Web.Services
  * @since 3.1
  */
 class TSoapService extends TService
 {
 	const DEFAULT_SOAP_SERVER='TSoapServer';
-	const CONFIG_FILE_EXT='.xml';
 	private $_servers=array();
 	private $_configFile=null;
 	private $_wsdlRequest=false;
@@ -195,7 +199,7 @@ class TSoapService extends TService
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
+		if(($this->_configFile=Prado::getPathOfNamespace($value,Prado::getApplication()->getConfigurationFileExt()))===null)
 			throw new TConfigurationException('soapservice_configfile_invalid',$value);
 	}
 
@@ -237,7 +241,12 @@ class TSoapService extends TService
 	protected function createServer()
 	{
 		$properties=$this->_servers[$this->_serverID];
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP || ($serverClass=$properties->remove('class'))===null)
+		$serverClass=null;
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP && isset($config['class']))
+			$serverClass=$config['class'];
+		else if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML)
+			$serverClass=$properties->remove('class');
+		if($serverClass===null)
 			$serverClass=self::DEFAULT_SOAP_SERVER;
 		Prado::using($serverClass);
 		$className=($pos=strrpos($serverClass,'.'))!==false?substr($serverClass,$pos+1):$serverClass;

@@ -6,10 +6,10 @@
   </paths>
   <!-- modules configured and loaded for all services -->
   <modules>
-    <!-- Remove this comment mark to enable PATH url format
-    <module id="request" class="THttpRequest" UrlFormat="Path" />
-    -->
-    <module id="cache" class="System.Caching.TSqliteCache" />
+
+    <module id="request" class="THttpRequest" UrlFormat="Path" UrlManager="friendly-url" />
+    
+    <!--<module id="cache" class="System.Caching.TSqliteCache" />-->
     <module class="Application.Common.BlogErrorHandler" />
     <module id="log" class="System.Util.TLogRouter">
       <route class="TFileLogRoute" Categories="BlogApplication" />
@@ -17,7 +17,7 @@
     <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
 
     <!-- use TUrlMapping to map URL patterns to particular requests -->
-    <module id="friendly-url" class="System.Web.TUrlMapping">
+    <module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="true">
       <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
       <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
       <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />

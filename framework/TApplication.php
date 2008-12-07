@@ -148,7 +148,6 @@ class TApplication extends TComponent
 	 * Configuration file type, application.php and config.php
 	 */
 	const CONFIG_TYPE_PHP = 'php';
-	
 	/**
 	 * Runtime directory name
 	 */
@@ -588,16 +587,25 @@ class TApplication extends TComponent
 		$this->_configFile=$value;
 	}
 
+	/**
+	 * @return string the application configuration file (absolute path)
+	 */
 	public function getConfigurationType()
 	{
 		return $this->_configType;
 	}
 
+ 	/**
+ 	 * @param string the application configuration type. 'xml' and 'php' are valid values
+	 */
 	public function setConfigurationType($value)
 	{
 		$this->_configType = $value;
 	}
 	
+	/**
+	 * @return string the applictaion configuration type. default is 'xml'
+	 */
 	public function getConfigurationFileExt()
 	{
 		if($this->_configFileExt===null)
@@ -614,6 +622,9 @@ class TApplication extends TComponent
 		return $this->_configFileExt;
 	}
 	
+	/**
+	 * @return string the default configuration file name
+	 */
 	public function getConfigurationFileName()
 	{
 		static $fileName;
@@ -1242,6 +1253,7 @@ class TApplicationMode extends TEnumerable
  * This class is used internally by TApplication to parse and represent application configuration.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @version $Id$
  * @package System
  * @since 3.0
@@ -1309,6 +1321,11 @@ class TApplicationConfiguration extends TComponent
 		return $this->_empty;
 	}
 
+	/**
+	 * Parses the application configuration given in terms of a PHP array.
+	 * @param array the PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	public function loadFromPhp($config, $configPath)
 	{
 		// application properties
@@ -1377,6 +1394,11 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	/**
+	 * Loads the paths PHP array
+	 * @param array the paths PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	protected function loadPathsPhp($pathsNode, $configPath)
 	{
 		if(isset($pathsNode['aliases']) && is_array($pathsNode['aliases']))
@@ -1451,6 +1473,11 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	/**
+	 * Loads the modules PHP array.
+	 * @param array the modules PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	protected function loadModulesPhp($modulesNode, $configPath)
 	{
 		foreach($modulesNode as $id=>$module)
@@ -1499,6 +1526,11 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	/**
+	 * Loads the services PHP array.
+	 * @param array the services PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	protected function loadServicesPhp($servicesNode,$configPath)
 	{
 		foreach($servicesNode as $id => $service)
@@ -1506,7 +1538,6 @@ class TApplicationConfiguration extends TComponent
 			if(!isset($service['class']))
 				throw new TConfigurationException('appconfig_servicetype_required');
 			$type = $service['class'];
-			unset($service['class']);
 			$properties = isset($service['properties']) ? $service['properties'] : array();
 			unset($service['properties']);
 			$properties['id'] = $id;
@@ -1540,6 +1571,11 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	/**
+	 * Loads the parameters PHP array.
+	 * @param array the parameters PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	protected function loadParametersPhp($parametersNode,$configPath)
 	{
 		foreach($parametersNode as $id => $parameter)
@@ -1592,6 +1628,11 @@ class TApplicationConfiguration extends TComponent
 		}
 	}
 
+	/**
+	 * Loads the external PHP array.
+	 * @param array the application PHP array
+	 * @param string the context path (for specifying relative paths)
+	 */
 	protected function loadExternalPhp($includeNode,$configPath)
 	{
 		foreach($includeNode as $include)

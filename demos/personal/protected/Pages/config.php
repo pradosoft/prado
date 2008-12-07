@@ -4,7 +4,7 @@ return array(
 		array(
 			'action' => 'deny',
 			'pages' => 'Settings',
-			'users' => '?',	
+			'users' => '?',
 		),
 	),
 	'pages' => array(

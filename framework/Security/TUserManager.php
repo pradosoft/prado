@@ -29,6 +29,26 @@ Prado::using('System.Security.TUser');
  * </module>
  * </code>
  *
+ * PHP configuration style:
+ * <code>
+ * array(
+ *   'users' => array(
+ *      'class' => 'System.Security.TUserManager',
+ *      'properties' => array(
+ *         'PasswordMode' => 'Clear',
+ *       ),
+ *       'users' => array(
+ *          array('name'=>'Joe','password'=>'demo'),
+ *          array('name'=>'John','password'=>'demo'),
+ *       ),
+ *       'roles' => array(
+ *          array('name'=>'Administrator','users'=>'John'),
+ *          array('name'=>'Writer','users'=>'Joe,John'),
+ *       ),
+ *    ),
+ * )
+ * </code>
+ *
  * In addition, user information can also be loaded from an external file
  * specified by {@link setUserFile UserFile} property. Note, the property
  * only accepts a file path in namespace format. The user file format is
@@ -43,6 +63,7 @@ Prado::using('System.Security.TUser');
  * how users are authenticated and authorized in a Prado application.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl Mathisen <carl@kamikazemedia.no>
  * @version $Id$
  * @package System.Security
  * @since 3.0
@@ -87,17 +108,13 @@ class TUserManager extends TModule implements IUserManager
 	 */
 	public function init($config)
 	{
-		$isPhp = $this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP;
-		if($isPhp)
-			$this->loadUserDataFromPhp($config);
-		else
-			$this->loadUserDataFromXml($config);
-		
+		$this->loadUserData($config);	
 		if($this->_userFile!==null)
 		{
-			if($isPhp)
+			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 			{
-				$this->loadUserDataFromPhp($config);
+				$userFile = include $this->_userFile;
+				$this->loadUserDataFromPhp($userFile);
 			}
 			else
 			{
@@ -108,7 +125,23 @@ class TUserManager extends TModule implements IUserManager
 		}
 		$this->_initialized=true;
 	}
+	
+	/*
+	 * Loads user/role information
+	 * @param mixed the variable containing the user information
+	 */
+	private function loadUserData($config)
+	{
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			$this->loadUserDataFromPhp($config);
+		else
+			$this->loadUserDataFromXml($config);
+	}
 
+	/**
+	 * Loads user/role information from an php array.
+	 * @param array the array containing the user information
+	 */
 	private function loadUserDataFromPhp($config)
 	{
 		if(isset($config['users']) && is_array($config['users']))

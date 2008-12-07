@@ -69,6 +69,7 @@ Prado::using('System.Web.UI.TThemeManager');
  * accessing to any resources.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @version $Id$
  * @package System.Web.Services
  * @since 3.0
@@ -274,7 +275,12 @@ class TPageService extends TService
 			{
 				$pageConfig=new TPageConfiguration($pagePath);
 				if($config!==null)
-					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+				{
+					if($application->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+						$pageConfig->loadPageConfigurationFromPhp($config,$application->getBasePath(),'');
+					else
+						$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+				}
 				$pageConfig->loadFromFiles($this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}
@@ -721,6 +727,7 @@ class TPageConfiguration extends TComponent
 					$rules[]=new TAuthorizationRule($action,$users,$roles,$verb,$ips);
 				}
 			}
+			$this->_rules=array_merge($rules,$this->_rules);
 		}
 		// pages
 		if(isset($config['pages']) && is_array($config['pages']))
@@ -747,7 +754,6 @@ class TPageConfiguration extends TComponent
 				if($matching)
 					$this->_properties=array_merge($this->_properties,$properties);
 			}
-			$this->_rules=array_merge($rules,$this->_rules);
 		}
 		
 		// external configurations
