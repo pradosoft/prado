@@ -6,6 +6,7 @@ BUG: Issue#62 - Some mistyping: TJavascript or TJavaScript? (Carl)
 BUG: Issue#79 - Missing new operator for Exception in TSqlMapObjectCollectionTree::onChildNodesVisited() (Christophe)
 BUG: TActiveLinkButton and TActiveRadioButtonList crashes if it's the only active control imported. Added TActiveControlAdapter (Carl)
 BUG: TUrlMapping encoded extra parameters twice (Michael)
+CHG: Removal of generator meta tag in THead
 ENH: Issue#36 - Refactored TRatingList/TActiveRatingList, and added some docs (Bradley)
 ENH: Issue#52 - Upgraded to TinyMCE 3.2.1
 ENH: Issue#72 - Add wildcard support to TUrlMapping (friendly-urls) (Michael)

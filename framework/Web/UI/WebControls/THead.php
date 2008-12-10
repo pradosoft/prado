@@ -29,13 +29,6 @@
  *   <com:TMetaTag Name="keywords" Content="Prado" />
  * </com:THead>
  * </code>
- * 
- * A MetaTag for "generator" is added by default if you haven't specified your own generator meta tag. You can override
- * the property by adding the following code to your template:
- * <com:THead>
- *   <com:TMetaTag Name="generator" Content="Custom name" />
- * </com:THead>
- * </code>
  *
  * Note, {@link TPage} has a property {@link TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most once THead
@@ -162,23 +155,13 @@ class THead extends TControl
 		if(($icon=$this->getShortcutIcon())!=='')
 			$writer->write('<link rel="shortcut icon" href="'.$icon."\" />\n");
 
-		$generatorAdded = false;
 		if(($metaTags=$this->getMetaTags())!==null)
 		{
 			foreach($metaTags as $metaTag)
 			{
-				if(strtolower($metaTag->getName()) == 'generator')
-					$generatorAdded = true;
 				$metaTag->render($writer);
 				$writer->writeLine();
 			}
-		}
-		if(!$generatorAdded)
-		{
-			$metaTag = new TMetaTag();
-			$metaTag->setName('generator');
-			$metaTag->setContent(Prado::metaGenerator());
-			$metaTag->render($writer);
 		}
 		$cs=$page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);

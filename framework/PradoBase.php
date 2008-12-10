@@ -115,11 +115,6 @@ class PradoBase
 		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
-	public static function metaGenerator()
-	{
-		return 'PRADO - http://www.pradosoft.com/';
-	}
-
 	/**
 	 * PHP error handler.
 	 * This method should be registered as PHP error handler using
