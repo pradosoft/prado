@@ -487,8 +487,6 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 			$this->clearSelection();
 			if($index>=0 && $index<$this->_items->getCount())
 				$this->_items->itemAt($index)->setSelected(true);
-			else if($index!==-1)
-				throw new TInvalidDataValueException('listcontrol_selectedindex_invalid',get_class($this),$index);
 		}
 		$this->_cachedSelectedIndex=$index;
 		if($this->getAdapter() instanceof IListControlAdapter)
@@ -601,7 +599,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 		    	$item->setSelected(true);
 	    	}
 	    	else
-	    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
+				$this->clearSelection();
     	}
     	$this->_cachedSelectedValue=$value;
 		if($this->getAdapter() instanceof IListControlAdapter)
@@ -643,8 +641,6 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 				{
 					if(isset($lookup["$value"]))
 						$lookup["$value"]->setSelected(true);
-			    	else
-			    		throw new TInvalidDataValueException('listcontrol_selectedvalue_invalid',get_class($this),$value);
 				}
 			}
 			$this->_cachedSelectedValues=$values;
