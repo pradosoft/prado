@@ -172,6 +172,7 @@ EOS;
 	 */
 	public function onPreRender($param){
 		parent::onPreRender($param);
+		$this->getPage()->getClientScript()->registerPradoScript('effects');
 		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 	}
 	
