@@ -305,6 +305,7 @@ class TApplication extends TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new TMap;
+		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 		
 		Prado::setPathOfAlias('Application',$this->_basePath);
 	}
@@ -866,7 +867,8 @@ class TApplication extends TComponent
 				$this->setSubProperty($name,$value);
 		}
 		
-		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
+		if(empty($this->_services))
+			$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 
 		// load parameters
 		foreach($config->getParameters() as $id=>$parameter)
@@ -952,7 +954,7 @@ class TApplication extends TComponent
 
 		if(($serviceID=$this->getRequest()->resolveRequest(array_keys($this->_services)))===null)
 			$serviceID=$this->getPageServiceID();
-
+		
 		$this->startService($serviceID);
 	}
 
