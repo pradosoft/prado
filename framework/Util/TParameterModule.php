@@ -40,19 +40,23 @@
  * tag, the former takes precedence.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @version $Id$
  * @package System.Util
  * @since 3.0
  */
 class TParameterModule extends TModule
 {
+	/**
+	 * @deprecated since 3.2
+	 */
 	const PARAM_FILE_EXT='.xml';
 	private $_initialized=false;
 	private $_paramFile=null;
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param TXmlElement content enclosed within the module tag
+	 * @param mixed content enclosed within the module tag
 	 */
 	public function init($config)
 	{
@@ -89,7 +93,7 @@ class TParameterModule extends TModule
 
 	/**
 	 * Loads parameters into application.
-	 * @param TXmlElement XML representation of the parameters
+	 * @param mixed XML of PHP representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
