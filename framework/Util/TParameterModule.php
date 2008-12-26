@@ -46,16 +46,13 @@
  */
 class TParameterModule extends TModule
 {
-	/**
-	 * @deprecated since 3.2
-	 */
 	const PARAM_FILE_EXT='.xml';
 	private $_initialized=false;
 	private $_paramFile=null;
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param mixed content enclosed within the module tag
+	 * @param TXmlElement content enclosed within the module tag
 	 */
 	public function init($config)
 	{
@@ -63,25 +60,22 @@ class TParameterModule extends TModule
 		if($this->_paramFile!==null)
 		{
 			$configFile = null;
-			if(($cache=$this->getApplication()->getCache())!==null)
+			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML && ($cache=$this->getApplication()->getCache())!==null)
 			{
 				$cacheKey='TParameterModule:'.$this->_paramFile;
 				if(($dom=$cache->get($cacheKey))===false)
 				{
-					if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-						$configFile = include $this->_paramFile;
-					else
-					{
-						$configFile=new TXmlDocument;
-						$configFile->loadFromFile($this->_paramFile);
-					}
-					$cache->set($cacheKey,$configFile,0,new TFileCacheDependency($this->_paramFile));
+					$dom=new TXmlDocument;
+					$dom->loadFromFile($this->_paramFile);
+					$cache->set($cacheKey,$dom,0,new TFileCacheDependency($this->_paramFile));
 				}
 			}
 			else
 			{
 				if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+				{
 					$configFile = include $this->_paramFile;
+				}
 				else
 				{
 					$configFile=new TXmlDocument;
@@ -95,7 +89,7 @@ class TParameterModule extends TModule
 
 	/**
 	 * Loads parameters into application.
-	 * @param mixed XML or PHP representation of the parameters
+	 * @param TXmlElement XML representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
@@ -134,7 +128,7 @@ class TParameterModule extends TModule
 					$parameters[$id]=array($type,$properties->toArray());
 			}
 		}
-		
+
 		$appParams=$this->getApplication()->getParameters();
 		foreach($parameters as $id=>$parameter)
 		{
