@@ -67,11 +67,11 @@ class TParameterModule extends TModule
 			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML && ($cache=$this->getApplication()->getCache())!==null)
 			{
 				$cacheKey='TParameterModule:'.$this->_paramFile;
-				if(($dom=$cache->get($cacheKey))===false)
+				if(($configFile=$cache->get($cacheKey))===false)
 				{
-					$dom=new TXmlDocument;
-					$dom->loadFromFile($this->_paramFile);
-					$cache->set($cacheKey,$dom,0,new TFileCacheDependency($this->_paramFile));
+					$cacheFile=new TXmlDocument;
+					$cacheFile->loadFromFile($this->_paramFile);
+					$cache->set($cacheKey,$cacheFile,0,new TFileCacheDependency($this->_paramFile));
 				}
 			}
 			else
