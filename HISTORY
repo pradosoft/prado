@@ -1,5 +1,6 @@
 Version 3.1.4 To be released
 ==============================
+BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)
 BUG: Issue#59 - TPropertyAccess::has() returns false even if the property of an object was found (Carl)
 BUG: Issue#61 - TLogRouter throws exception when using external config file (Michael)
 BUG: Issue#62 - Some mistyping: TJavascript or TJavaScript? (Carl)

@@ -114,7 +114,7 @@ class TPageService extends TService
 	/**
 	 * @var array list of initial page property values
 	 */
-	private $_properties;
+	private $_properties=array();
 	/**
 	 * @var boolean whether service is initialized
 	 */
@@ -167,7 +167,7 @@ class TPageService extends TService
 	protected function applyConfiguration($config)
 	{
 		// initial page properties (to be set when page runs)
-		$this->_properties=$config->getProperties();
+		$this->_properties=array_merge($this->_properties, $config->getProperties());
 		$this->getApplication()->getAuthorizationRules()->mergeWith($config->getRules());
 		$pagePath=$this->getRequestedPagePath();
 		// external configurations
