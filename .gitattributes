@@ -2532,16 +2532,6 @@ framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadComplete
 framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadError.png -text svneol=unset#image/png
 framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadIndicator.gif -text
 framework/Web/Javascripts/source/prado/activefileupload/activefileupload.js -text
-framework/Web/Javascripts/source/prado/activeratings/blocks.png -text
-framework/Web/Javascripts/source/prado/activeratings/blocks_blank.gif -text
-framework/Web/Javascripts/source/prado/activeratings/blocks_combined.gif -text
-framework/Web/Javascripts/source/prado/activeratings/blocks_half.gif -text
-framework/Web/Javascripts/source/prado/activeratings/blocks_selected.gif -text
-framework/Web/Javascripts/source/prado/activeratings/default.png -text
-framework/Web/Javascripts/source/prado/activeratings/default_blank.gif -text
-framework/Web/Javascripts/source/prado/activeratings/default_combined.gif -text
-framework/Web/Javascripts/source/prado/activeratings/default_half.gif -text
-framework/Web/Javascripts/source/prado/activeratings/default_selected.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/background.png -text
 framework/Web/Javascripts/source/prado/colorpicker/button.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/colorpicker.js -text

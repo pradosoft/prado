@@ -42,8 +42,7 @@ $packages = array(
 		'prado/activecontrols/json.js',
 		'prado/activecontrols/ajax3.js',
 		'prado/activecontrols/activecontrols3.js',
-		'prado/activecontrols/inlineeditor.js',
-		'prado/activeratings/ratings.js'
+		'prado/activecontrols/inlineeditor.js'
 	),
 
 	'dragdrop'=>array(
