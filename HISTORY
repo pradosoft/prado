@@ -16,6 +16,7 @@ ENH: Issue#77 - TJsonService missing exception messages (Carl)
 ENH: Issue#29 -	Ability to specify position of popup TDatePicker/TActiveDatePicker (Carl)
 ENH: Issue#75 - TApplication::setRuntimePath() to update uniqueID and cacheFile (Carl)
 ENH: Issue#64 - Don't throw exception on wrong value for TListcontrols (Carl)
+ENH: Issue#65 - Improvement of TActiveRecord::populateObjects() (Christophe)
 NEW: Issue#51 - Additional template tag (Carl)
 
 Version 3.1.3 November 1, 2008

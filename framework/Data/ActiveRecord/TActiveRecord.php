@@ -527,9 +527,8 @@ abstract class TActiveRecord extends TComponent
 	protected function populateObjects($reader)
 	{
 		$result=array();
-		$class = get_class($this);
 		foreach($reader as $data)
-			$result[] = self::createRecord($class, $data);
+			$result[] = $this->populateObject($data);
 		return $result;
 	}
 
