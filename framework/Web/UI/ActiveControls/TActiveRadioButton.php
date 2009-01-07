@@ -120,12 +120,15 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
+	 * 
 	 */
 	protected function renderInputTag($writer,$clientID,$onclick)
 	{
 		parent::renderInputTag($writer,$clientID,$onclick);
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+		if ($this->getAutoPostBack())
+			$this->getActiveControl()->registerCallbackClientScript(
+				$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**

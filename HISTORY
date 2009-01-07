@@ -9,6 +9,7 @@ BUG: TActiveLinkButton and TActiveRadioButtonList crashes if it's the only activ
 BUG: TUrlMapping encoded extra parameters twice (Michael)
 BUG: Issue#89 - TActiveFileUpload doesn't work (Carl)
 CHG: Removal of generator meta tag in THead
+ENH: TActiveCheckBox, TActiveRadioButton, TActiveDropDownList, TActiveListBox won't raise callback if AutoPostBack is false (Christophe)
 ENH: Issue#36 - Refactored TRatingList/TActiveRatingList, and added some docs (Bradley)
 ENH: Issue#52 - Upgraded to TinyMCE 3.2.1
 ENH: Issue#72 - Add wildcard support to TUrlMapping (friendly-urls) (Michael)

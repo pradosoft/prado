@@ -105,8 +105,9 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+		if ($this->getAutoPostBack())
+			$this->getActiveControl()->registerCallbackClientScript(
+				$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
