@@ -66,7 +66,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.1.4a';
+		return '3.1.4';
 	}
 
 	/**

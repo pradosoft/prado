@@ -1,4 +1,4 @@
-Version 3.1.4 To be released
+Version 3.1.4 January 11, 2009
 ==============================
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)
 BUG: Issue#59 - TPropertyAccess::has() returns false even if the property of an object was found (Carl)
