@@ -630,6 +630,9 @@ class TUrlMappingPattern extends TComponent
 		else
 			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/').'/',$matches);
 
+		if($this->getIsWildCardPattern() && isset($matches[$this->_serviceID]))
+			$matches[$this->_serviceID]=str_replace('*',$matches[$this->_serviceID],$this->_serviceParameter);
+
 		if (isset($matches['urlparams']))
 		{
 			$params=explode('/',$matches['urlparams']);

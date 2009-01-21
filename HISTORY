@@ -1,3 +1,7 @@
+Version 3.1.5 (to be released)
+==============================
+BUG: URL wildcard patterns didn't work with subfolders
+
 Version 3.1.4 January 11, 2009
 ==============================
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)
