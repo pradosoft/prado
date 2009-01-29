@@ -267,7 +267,7 @@ class TDbConnection extends TComponent
 	 */
 	public function getCharset ()
 	{
-		return $this>_charset;
+		return $this->_charset;
 	}
 	
 	/**

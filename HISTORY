@@ -1,6 +1,7 @@
 Version 3.1.5 (to be released)
 ==============================
 BUG: URL wildcard patterns didn't work with subfolders
+BUG: Issue~107 - typo in TDbConnection::getCharset() (Christophe)
 
 Version 3.1.4 January 11, 2009
 ==============================
