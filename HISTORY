@@ -1,7 +1,8 @@
 Version 3.1.5 (to be released)
 ==============================
 BUG: URL wildcard patterns didn't work with subfolders
-BUG: Issue~107 - typo in TDbConnection::getCharset() (Christophe)
+BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
+ENH: Added caching of message files to TException (Michael)
 
 Version 3.1.4 January 11, 2009
 ==============================

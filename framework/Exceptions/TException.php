@@ -35,6 +35,7 @@
 class TException extends Exception
 {
 	private $_errorCode='';
+	static $_messageCache=array();
 
 	/**
 	 * Constructor.
@@ -64,16 +65,20 @@ class TException extends Exception
 	protected function translateErrorMessage($key)
 	{
 		$msgFile=$this->getErrorMessageFile();
-		if(($entries=@file($msgFile))!==false)
+
+		// Cache messages
+		if (!isset(self::$_messageCache[$msgFile])) 
 		{
-			foreach($entries as $entry)
+			if(($entries=@file($msgFile))!==false)
 			{
-				@list($code,$message)=explode('=',$entry,2);
-				if(trim($code)===$key)
-					return trim($message);
+				foreach($entries as $entry)
+				{
+					@list($code,$message)=explode('=',$entry,2);
+					self::$_messageCache[$msgFile][trim($code)]=trim($message);
+				}
 			}
 		}
-		return $key;
+		return isset(self::$_messageCache[$msgFile][$key]) ? self::$_messageCache[$msgFile][$key] : $key;
 	}
 
 	/**
