@@ -545,6 +545,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		 * @var {element} messages
 		 */
 		this.messages = $(options.ID);
+		Prado.Registry.set(options.ID, this);
 		if(this.messages)
 		{
 			/**
@@ -831,6 +832,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		 * @var {element} message
 		 */
 		this.message = $(options.ID);
+		Prado.Registry.set(options.ID, this);
 		if(this.control && this.message)
 		{
 			this.group = options.ValidationGroup;

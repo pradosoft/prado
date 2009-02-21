@@ -297,6 +297,8 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		if(options['ShowColorPicker'])
 			Event.observe(this.button, "click", this._buttonOnClick);
 		Event.observe(this.input, "change", this.updatePicker.bind(this));
+		
+		Prado.Registry.set(options.ID, this);
 	},
 
 	updatePicker : function(e)

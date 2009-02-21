@@ -15,6 +15,7 @@ Object.extend(Prado.WebUI.DropContainer.prototype,
 		});
 		
 		Droppables.add (options.ID, this.options);
+		Prado.Registry.set(options.ID, this);
 	},
 	
 	onDrop: function(dragElement, dropElement)

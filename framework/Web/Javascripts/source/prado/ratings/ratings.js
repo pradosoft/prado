@@ -14,6 +14,7 @@ Prado.WebUI.TRatingList = Base.extend(
 
 		Prado.WebUI.TRatingList.register(this);
 		this._init();
+		Prado.Registry.set(options.ListID, this);
 		this.selectedIndex = options.SelectedIndex;
 		this.rating = options.Rating;
 		this.readOnly = options.ReadOnly

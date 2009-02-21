@@ -54,6 +54,7 @@ Prado.WebUI.TActiveCheckBoxList = Base.extend(
 {
 	constructor : function(options)
 	{
+		Prado.Registry.set(options.ListID, this);
 		for(var i = 0; i<options.ItemCount; i++)
 		{
 			var checkBoxOptions = Object.extend(
@@ -180,6 +181,7 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 	{
 		this.options = Object.extend({ Interval : 1	}, options || {});
 		Prado.WebUI.TTimeTriggeredCallback.register(this);
+		Prado.Registry.set(options.ID, this);
 	},
 
 	startTimer : function()
@@ -255,6 +257,7 @@ Prado.WebUI.ActiveListControl = Base.extend(
 	constructor : function(options)
 	{
 		this.element = $(options.ID);
+		Prado.Registry.set(options.ID, this);
 		if(this.element)
 		{
 			this.options = options;
@@ -329,6 +332,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 		var element = $(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
+		Prado.Registry.set(options.ID, this);
 		this.startObserving();
 	},
 

@@ -68,6 +68,8 @@ Prado.WebUI.TDatePicker.prototype =
 		this.minimalDaysInFirstWeek	= 4;
 		this.selectedDate = this.newDate();
 		this.positionMode = 'Bottom';
+		
+		Prado.Registry.set(options.ID, this);
 
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)

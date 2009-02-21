@@ -5,6 +5,7 @@ Prado.WebUI.TKeyboard.prototype =
 	{
 		this.element = $(options.ID);
 		this.onInit(options);
+		Prado.Registry.set(options.ID, this);
 	},
 
 	onInit : function(options)

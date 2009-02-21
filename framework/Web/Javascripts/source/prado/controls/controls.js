@@ -9,6 +9,7 @@ Prado.WebUI.PostBackControl.prototype =
 		this._elementOnClick = null, //capture the element's onclick function
 
 		this.element = $(options.ID);
+		Prado.Registry.set(options.ID, this);
 		if(this.element)
 		{
 			if(this.onInit)
@@ -270,6 +271,7 @@ Prado.WebUI.TCheckBoxList = Base.extend(
 {
 	constructor : function(options)
 	{
+		Prado.Registry.set(options.ListID, this);
 		for(var i = 0; i<options.ItemCount; i++)
 		{
 			var checkBoxOptions = Object.extend(
@@ -286,6 +288,7 @@ Prado.WebUI.TRadioButtonList = Base.extend(
 {
 	constructor : function(options)
 	{
+		Prado.Registry.set(options.ListID, this);
 		for(var i = 0; i<options.ItemCount; i++)
 		{
 			var radioButtonOptions = Object.extend(

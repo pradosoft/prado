@@ -13,6 +13,8 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		this.complete = $(options.completeID);
 		this.error = $(options.errorID);
 		
+		Prado.Registry.set(options.inputID, this);
+		
 		// set up events
 		Event.observe(this.input,"change",this.fileChanged.bind(this));
 	},

@@ -9,6 +9,12 @@ var Prado =
 	 * @var Version
 	 */
 	Version: '3.1',
+	
+	/**
+	 * Registry for Prado components
+	 * @var Registry
+	 */
+	Registry: $H(),
 
 	/**
 	 * Returns browser information. 
