@@ -383,6 +383,12 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * Redirect the browser to another URL and exists the current application.
 	 * This method is used internally. Please use {@link redirect} instead.
+	 *
+	 * @since 3.1.5
+	 * You can set the set {@link setStatusCode StatusCode} to a value between 300 and 399 before
+	 * calling this function to change the type of redirection.
+	 * If not specified, StatusCode will be 302 (Found) by default
+	 * 
 	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
@@ -392,7 +398,12 @@ class THttpResponse extends TModule implements ITextWriter
 			$this->getApplication()->onEndRequest();
 		if($url[0]==='/')
 			$url=$this->getRequest()->getBaseUrl().$url;
-		header('Location: '.str_replace('&amp;','&',$url));
+		if ($this->_status >= 300 && $this->_status < 400)
+			// The status code has been modified to a valid redirection status, send it
+			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
+		else
+			header('Location: '.str_replace('&amp;','&',$url));
+		
 		exit();
 	}
 

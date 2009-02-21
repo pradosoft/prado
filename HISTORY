@@ -1,11 +1,10 @@
 Version 3.1.5 (to be released)
-==============================
 BUG: URL wildcard patterns didn't work with subfolders
+BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
 ENH: Added caching of message files to TException (Michael)
 
 Version 3.1.4 January 11, 2009
-==============================
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)
 BUG: Issue#59 - TPropertyAccess::has() returns false even if the property of an object was found (Carl)
 BUG: Issue#61 - TLogRouter throws exception when using external config file (Michael)
@@ -27,7 +26,6 @@ ENH: Issue#65 - Improvement of TActiveRecord::populateObjects() (Christophe)
 NEW: Issue#51 - Additional template tag (Carl)
 
 Version 3.1.3 November 1, 2008
-==============================
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
@@ -88,7 +86,6 @@ NEW: Ticket#853 - Added Drag and drop components (Christophe)
 NEW: Ticket#891 - Added method that returns table name to TActiveRecord (Michael)
 
 Version 3.1.2 April 21, 2008
-============================
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Christophe)
 BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dynamically isn't possible (Michael)
 BUG: Ticket#636 - I18N catalogue problem (Christophe)
@@ -147,7 +144,6 @@ NEW: Ticket#729 - Added TActivePager (Christophe)
 NEW: Ticket#791 - Added TFirebugLogRoute (Christophe)
 
 Version 3.1.1 October 1, 2007
-=============================
 BUG: Ticket#340 - Callbacks and Firebug compatibility problem (Christophe)
 BUG: Ticket#533 - HttpRequest::getBrowser() throws an error if browsercap.ini is invalid (Carl)
 BUG: Ticket#592 - TRadioButton with UniqueGroupName always return false to getChecked (Christophe)
@@ -191,7 +187,6 @@ NEW: Added Indonesian translation to QuickStart, requirements and error messages
 NEW: Added French translation to the blog tutorial (Eric Marchetti)
 
 Version 3.1.0 July 2, 2007
-==========================
 BUG: Ticket#621 - TWizardNavigationButtonStyle could not be found (Qiang)
 BUG: Ticket#627 - Logout did not set correct status to the user object (Qiang)
 BUG: Ticket#650 - Fixed TMysqlMetaData bug about SHOW FULL TABLES (Qiang)
@@ -220,7 +215,6 @@ ENH: Added TPageService.DefaultPageUrl property (Qiang)
 NEW: TActiveHiddenField (Carl)
 
 Version 3.1.0 RC May 14, 2007
-=============================
 BUG: Ticket#525 - SQLMap->queryForList error with offset/limit parameters (Wei)
 BUG: Ticket#547 - SQLMap problem with PDO::DBLIB (Wei)
 BUG: Ticket#578 - ActiveControls broken by presence of THtmlArea in the .page (Wei)
@@ -250,7 +244,6 @@ NEW: New demos including "address-book", "blog-tutorial", "northwind-db", "chat"
 
 
 Version 3.1.0 beta April 9, 2007
-================================
 BUG: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 BUG: Ticket#492 - TDataGridPagerStyle not found error (Qiang)
 BUG: Ticket#500 - URL encode in callback (Wei)
@@ -304,7 +297,6 @@ NEW: TActiveRecord Scaffold support (Wei)
 NEW: TClientScriptLoader combines and loads javascript libraries (Wei)
 
 Version 3.1.0 alpha January 15, 2007
-====================================
 BUG: Ticket#188 - Postback js caused controls not inheritable (Qiang)
 ENH: Ticket#99 - TXmlTransform control (Knut)
 ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
@@ -326,7 +318,6 @@ NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
 NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
 Version 3.0.7 April 2, 2007
-===========================
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
@@ -340,7 +331,6 @@ ENH: Upgraded javascript library Scriptaculous to version 1.7.0 (Wei)
 ENH: Upgraded TinyMCE editor to version 2.1 (Wei)
 
 Version 3.0.6 December 4, 2006
-==============================
 BUG: Ticket#400 - TJavascriptLogger incompatible with Firefox 2.0 RC1 (Wei)
 BUG: Ticket#442 - TPageService getBasePath in namespace form (Qiang)
 BUG: Ticket#443 - Template comment tag messed up with HTML comment tag (Qiang)
@@ -367,7 +357,6 @@ NEW: TUrlManager (Qiang)
 
 
 Version 3.0.5 October 23, 2006
-==============================
 BUG: Ticket#409 - Multiple page services will mess up page caching (Qiang)
 BUG: Ticket#417 - SelectedIndex in template incorrect caused by bug in TList (Qiang)
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
@@ -383,7 +372,6 @@ NEW: TLiteralColumn (Qiang)
 NEW: TUrlMapping (Wei)
 
 Version 3.0.4 September 4, 2006
-===============================
 BUG: Fixed a bug that would prevent from using <prop:> tag in skins (Qiang)
 BUG: Fixed a typo in TControl::setCustomData() (Qiang)
 ENH: Ticket#336 - Speed up TSqliteCache with LIMIT SQL clause (Qiang)
@@ -409,7 +397,6 @@ NEW: Added TEnumerable and all needed enumerable types (Qiang)
 
 
 Version 3.0.3 August 6, 2006
-============================
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)
 BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
 BUG: Ticket#271 - Page method setFocus doesn't work (Wei)
@@ -443,7 +430,6 @@ NEW: Added TStyleSheet (Wei)
 
 
 Version 3.0.2 July 2, 2006
-==========================
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
 BUG: Ticket#191 - Duplicated postbacks occur when using TButton with validators (Qiang)
 BUG: Ticket#207 - Validators ClientSide.OnError triggered twice (Wei)
@@ -475,7 +461,6 @@ NEW: Added Dreamweaver taglib extension (Stanislav, Qiang)
 NEW: Prado Command line script to create a new project, see framework/prado-cli.php (Wei)
 
 Version 3.0.1 June 4, 2006
-==========================
 BUG: Ticket#28 - OnClick does not work with Safari/KHTML (Wei)
 BUG: Ticket#37 - Changes of config files do not trigger cache update (Qiang)
 BUG: Ticket#44 - THtmlArea (tiny_mce) not working on some systems (Qiang)
@@ -509,7 +494,6 @@ NEW: TMarkdown (Wei)
 NEW: Blog demo (Qiang)
 
 Version 3.0.0 May 1, 2006
-=========================
 BUG: Ticket#68  - 2 TButtons with THtmlArea causes second button to fail to function (Wei)
 BUG: Ticket#70  - Javascript for TDataTypeValidator added (Wei)
 BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client validator fails (Wei)
@@ -543,7 +527,6 @@ NEW: TClientScript (Wei)
 
 
 Version 3.0RC2 April 16, 2006
-=============================
 BUG: Ticket#54 - recursive reverse() definition (Wei)
 BUG: Ticket#93 - ValidationGroup not working in TImageMap for js validator (Wei)
 BUG: Ticket#97 - Invalid return type value for TSimpleDateFormatter::parse (Wei)
@@ -560,7 +543,6 @@ ENH: Added Raw layout to TDataList (Qiang)
 ENH: Added TRepeater.DataKeys and TRepeater.DataKeyField (Qiang)
 
 Version 3.0RC1 April 5, 2006
-============================
 BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
 BUG: Ticket#87 - Typo in IDbConnection (Qiang)
 BUG: Ticket#88 - Unclosed HTML tag in TDatePicker and TColorPicker (Qiang)
@@ -591,7 +573,6 @@ NEW: TParameterModule (Qiang)
 NEW: TPropelLogRoute (Jason)
 
 Version 3.0b March 6, 2006
-==========================
 BUG: fixed many
 CHG: event names must be prefixed with 'On' (Qiang)
 CHG: values of properties whose name ends with 'Template' are parsed directly by template parser (Qiang)
@@ -603,5 +584,4 @@ NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider, TCreoleProvider (We
 NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter, TPagedList, TAttributeCollection (Qiang)
 
 Version 3.0a January 18, 2006
-=============================
 Starting, main feaures ready (Qiang)
