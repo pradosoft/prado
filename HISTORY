@@ -3,8 +3,10 @@ BUG: URL wildcard patterns didn't work with subfolders
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
+ENH: Issue#106 - TJavaScript::jsonEncode and TJavaScript::jsonDecode should use built-in PHP functions (Christophe)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
 ENH: Added caching of message files to TException (Michael)
+ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
 
 Version 3.1.4 January 11, 2009
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)

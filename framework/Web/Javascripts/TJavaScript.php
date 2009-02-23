@@ -210,6 +210,14 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value)
 	{
+		if (function_exists('json_encode'))
+		{
+			if (is_string($value) && 
+				($g=Prado::getApplication()->getGlobalization(false))!==null && 
+				strtoupper($enc=$g->getCharset())!='UTF-8')
+				$value=iconv($enc, 'UTF-8', $value);
+			return json_encode($value);
+		}
 		if(self::$_json === null)
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->encode($value);
@@ -223,6 +231,8 @@ class TJavaScript
 	 */
 	public static function jsonDecode($value)
 	{
+		if (function_exists('json_decode'))
+			return json_decode($value);
 		if(self::$_json === null)
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->decode($value);
