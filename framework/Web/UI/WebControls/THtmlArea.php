@@ -334,7 +334,7 @@ class THtmlArea extends TTextBox
 			$options['languages'] = $this->getLanguageSuffix($this->getCulture());
 			$options['disk_cache'] = true;
 			$options['debug'] = false;
-			$js = TJavaScript::encode($options);
+			$js = TJavaScript::encode($options,true,true);
 			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
 			$scripts->registerBeginScript($key, $script);
 		}
@@ -353,7 +353,7 @@ class THtmlArea extends TTextBox
 	protected function registerEditorClientScript($writer)
 	{
 		$scripts = $this->getPage()->getClientScript();
-		$options = TJavaScript::encode($this->getEditorOptions());
+		$options = TJavaScript::encode($this->getEditorOptions(),true,true); // Force encoding of empty strings
 		$script = "if(typeof(tinyMCE)!='undefined'){ tinyMCE.init($options); }";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}

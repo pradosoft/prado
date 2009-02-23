@@ -130,9 +130,11 @@ class TJavaScript
 	 *
 	 * @param mixed PHP variable to be encoded
 	 * @param boolean whether the output is a map or a list.
+	 * @since 3.1.5
+	 * @param boolean wether to encode empty strings too. Default to false for BC.
 	 * @return string the encoded string
 	 */
-	public static function encode($value,$toMap=true)
+	public static function encode($value,$toMap=true,$encodeEmptyStrings=false)
 	{
 		if(is_string($value))
 		{
@@ -158,11 +160,11 @@ class TJavaScript
 			{
 				foreach($value as $k=>$v)
 				{
-					if($v!=='')
+					if($v!=='' || $encodeEmptyStrings)
 					{
 						if($results!=='')
 							$results.=',';
-						$results.="'$k':".self::encode($v,$toMap);
+						$results.="'$k':".self::encode($v,$toMap,$encodeEmptyStrings);
 					}
 				}
 				return '{'.$results.'}';
@@ -171,11 +173,11 @@ class TJavaScript
 			{
 				foreach($value as $v)
 				{
-					if($v!=='')
+					if($v!=='' || $encodeEmptyStrings)
 					{
 						if($results!=='')
 							$results.=',';
-						$results.=self::encode($v,$toMap);
+						$results.=self::encode($v,$toMap, $encodeEmptyStrings);
 					}
 				}
 				return '['.$results.']';

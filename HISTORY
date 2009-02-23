@@ -1,5 +1,6 @@
 Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
+BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
