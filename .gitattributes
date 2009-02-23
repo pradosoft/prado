@@ -2566,6 +2566,16 @@ framework/Web/Javascripts/source/prado/ratings/ratings.js -text
 framework/Web/Javascripts/source/prado/ratings/stars1.png -text
 framework/Web/Javascripts/source/prado/scriptaculous-adapter.js -text
 framework/Web/Javascripts/source/prado/validator/validation3.js -text
+framework/Web/Javascripts/source/prototype-1.6.0.3/prototype.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/CHANGELOG -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/MIT-LICENSE -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/builder.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/controls.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/dragdrop.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/effects.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/scriptaculous.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/slider.js -text
+framework/Web/Javascripts/source/scriptaculous-1.8.2/sound.js -text
 framework/Web/Services/TFeedService.php -text
 framework/Web/Services/TJsonService.php -text
 framework/Web/Services/TPageService.php -text

@@ -3,8 +3,8 @@
 //$Id$
 
 // To make future upgrades easier
-if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.6.0.2');
-if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.8.1');
+if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.6.0.3');
+if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.8.2');
 
 //package names and its contents (files relative to the current directory)
 $packages = array(
