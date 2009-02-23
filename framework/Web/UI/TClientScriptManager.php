@@ -76,7 +76,12 @@ class TClientScriptManager extends TApplicationComponent
 	 * @var array
 	 */
 	private static $_pradoScripts;
-
+	/**
+	 * Client-side javascript library packages, loads from SCRIPT_PATH.'/packages.php';
+	 * @var array
+	 */
+	 private static $_pradoPackages;
+	 
 	/**
 	 * Constructor.
 	 * @param TPage page that owns this client script manager
@@ -120,6 +125,7 @@ class TClientScriptManager extends TApplicationComponent
 				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH.'/packages.php';
 				list($packages,$deps)= include($packageFile);
 				self::$_pradoScripts = $deps;
+				self::$_pradoPackages = $packages;
 			}
 
 			if(isset(self::$_pradoScripts[$name]))
@@ -147,9 +153,30 @@ class TClientScriptManager extends TApplicationComponent
 	{
 		if(($packages=array_keys($this->_registeredPradoScripts))!==array())
 		{
-			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-			$url = $this->registerJavascriptPackages($base, $packages);
-			$writer->write(TJavaScript::renderScriptFile($url));
+			if (Prado::getApplication()->getMode()!==TApplicationMode::Debug)
+			{
+				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+				$url = $this->registerJavascriptPackages($base, $packages);
+				$writer->write(TJavaScript::renderScriptFile($url));
+			}
+			else
+			{
+				// In debug mode, we add 1 <script> line by file
+				$baseUrl=$this->getPradoScriptAssetUrl();
+				$packagesUrl=array();
+				foreach ($packages as $p)
+				{
+					foreach (self::$_pradoScripts[$p] as $dep)
+					{
+						foreach (self::$_pradoPackages[$dep] as $script)
+						{
+							if (!in_array($url=$baseUrl.'/'.$script,$packagesUrl))
+								$packagesUrl[]=$url;
+						}
+					}
+				}
+				$writer->write(TJavaScript::renderScriptFiles($packagesUrl));
+			}
 		}
 	}
 
