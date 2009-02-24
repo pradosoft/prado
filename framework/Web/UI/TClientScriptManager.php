@@ -162,7 +162,8 @@ class TClientScriptManager extends TApplicationComponent
 			else
 			{
 				// In debug mode, we add 1 <script> line by file
-				$baseUrl=$this->getPradoScriptAssetUrl();
+				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+				list($path,$baseUrl)=$this->getPackagePathUrl($base);
 				$packagesUrl=array();
 				foreach ($packages as $p)
 				{
