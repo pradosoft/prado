@@ -148,7 +148,7 @@ class TDataSourceConfig extends TModule
 		if($conn instanceof TDbConnection)
 			return $conn;
 		else if($conn instanceof TDataSourceConfig)
-			return $conn->_conn;
+			return $conn->getDbConnection();
 		else
 			throw new TConfigurationException('datasource_dbconnection_invalid',$id);
 	}
