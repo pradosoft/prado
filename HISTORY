@@ -4,6 +4,8 @@ BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a pro
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
 BUG: Issue#127 - TDataSourceConfig::findConnectionByID try to access private var (Cristophe)
+BUG: Issue#129 - TDbLogRoute::init don't close the sql command (Christophe)
+Bug: Issue#130 - TDbLogRoute::processLogs wrong values binding (Christophe)
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
 ENH: Added caching of message files to TException (Michael)

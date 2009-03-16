@@ -764,7 +764,7 @@ class TDbLogRoute extends TLogRoute
 		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0';
 		try
 		{
-			$db->createCommand($sql)->execute();
+			$db->createCommand($sql)->query()->close();
 		}
 		catch(Exception $e)
 		{
@@ -788,10 +788,10 @@ class TDbLogRoute extends TLogRoute
 		$command=$this->getDbConnection()->createCommand($sql);
 		foreach($logs as $log)
 		{
-			$command->bindValue(':level',$log[0]);
-			$command->bindValue(':category',$log[1]);
-			$command->bindValue(':logtime',$log[2]);
-			$command->bindValue(':message',$log[3]);
+			$command->bindValue(':message',$log[0]);
+			$command->bindValue(':level',$log[1]);
+			$command->bindValue(':category',$log[2]);
+			$command->bindValue(':logtime',$log[3]);
 			$command->execute();
 		}
 	}
