@@ -436,7 +436,11 @@ class THtmlArea extends TTextBox
 			$option = explode(":",$bits,2);
 
 			if(count($option) == 2)
-				$options[trim($option[0])] = trim(preg_replace('/\'|"/','',  $option[1]));
+			{
+				$value=trim(preg_replace('/\'|"/','',  $option[1]));
+				if (($s=strtolower($value))==='false' || $s==='true') $value=(boolean)$s;
+				$options[trim($option[0])] = $value;
+			}
 		}
 		return $options;
 	}

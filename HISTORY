@@ -4,6 +4,7 @@ BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a pro
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#99 - TActiveRecord::save(): confusion with order of keys in table/index (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
+BUG: Issue#126 - THtmlArea: boolean options output as strings (Christophe)
 BUG: Issue#127 - TDataSourceConfig::findConnectionByID try to access private var (Cristophe)
 BUG: Issue#129 - TDbLogRoute::init don't close the sql command (Christophe)
 Bug: Issue#130 - TDbLogRoute::processLogs wrong values binding (Christophe)
