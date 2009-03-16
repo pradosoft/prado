@@ -276,7 +276,7 @@ class TDataGatewayCommand extends TComponent
 		{
 			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
 			$criteria[] = $column.' = :'.$key;
-			$bindings[$key] = $values[$i++];
+			$bindings[$key] = isset($values[$key])?$values[$key]:$values[$i++];
 		}
 		return array(implode(' AND ', $criteria), $bindings);
 	}

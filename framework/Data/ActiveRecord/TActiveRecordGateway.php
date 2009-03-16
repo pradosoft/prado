@@ -349,7 +349,7 @@ class TActiveRecordGateway extends TComponent
 					$tableInfo->getTableFullName(), $name);
 			}
 			if($column->getIsPrimaryKey())
-				$primary[] = $value;
+				$primary[$name] = $value;
 			else
 				$values[$name] = $value;
 		}

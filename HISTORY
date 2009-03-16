@@ -2,6 +2,7 @@ Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
+BUG: Issue#99 - TActiveRecord::save(): confusion with order of keys in table/index (Christophe)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
 BUG: Issue#127 - TDataSourceConfig::findConnectionByID try to access private var (Cristophe)
 BUG: Issue#129 - TDbLogRoute::init don't close the sql command (Christophe)
