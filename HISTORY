@@ -1,5 +1,6 @@
 Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
+BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#108 - clientscripts.php: prepending set_time_limit(0) call with an "@" to suppress PHP warning in safe mode (Yves)
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)

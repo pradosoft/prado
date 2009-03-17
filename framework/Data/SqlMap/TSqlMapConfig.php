@@ -147,6 +147,9 @@ class TSqlMapConfig extends TDataSourceConfig
 				$this->cacheSqlMapManager($manager);
 			}
 		}
+		else {
+			$manager->setDbConnection($this->getDbConnection());
+		}
 		return $manager->getSqlmapGateway();
 	}
 
