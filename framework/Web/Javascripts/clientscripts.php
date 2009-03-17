@@ -47,7 +47,7 @@
  */
 
 //run script for as long as needed
-set_time_limit(0);
+@set_time_limit(0);
 
 //set error_reporting directive 
 @error_reporting(E_ERROR | E_WARNING | E_PARSE);
