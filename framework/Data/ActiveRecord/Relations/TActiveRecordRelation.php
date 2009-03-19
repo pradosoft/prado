@@ -84,7 +84,7 @@ abstract class TActiveRecordRelation
 				$obj->collectForeignObjects($results);
 		}
 		else if($results instanceof TActiveRecordRelation)
-			array_push($stack,$this); //call it later
+			$stack[] = $this; //call it later
 		return $results;
 	}
 

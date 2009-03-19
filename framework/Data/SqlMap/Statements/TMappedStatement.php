@@ -869,7 +869,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			$postSelect->setMethod(self::QUERY_FOR_OBJECT);
 
 		if(!$property->getLazyLoad())
-			array_push($this->_selectQueque, $postSelect);
+			$this->_selectQueque[] = $postSelect;
 	}
 
 	/**

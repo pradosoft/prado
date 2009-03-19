@@ -508,9 +508,9 @@ class TJSON
                         }
                     }
 
-                    array_push($stk, array('what'  => self::JSON_SLICE,
+                     $stk[] = array('what'  => self::JSON_SLICE,
                                            'where' => 0,
-                                           'delim' => false));
+                                           'delim' => false);
 
                     $chrs = substr($str, 1, -1);
                     $chrs = $this->reduce_string($chrs);
@@ -538,12 +538,12 @@ class TJSON
                             // found a comma that is not inside a string, array, etc.,
                             // OR we've reached the end of the character list
                             $slice = substr($chrs, $top['where'], ($c - $top['where']));
-                            array_push($stk, array('what' => self::JSON_SLICE, 'where' => ($c + 1), 'delim' => false));
+                            $stk[] = array('what' => self::JSON_SLICE, 'where' => ($c + 1), 'delim' => false);
                             //print("Found split at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
 
                             if (reset($stk) == self::JSON_IN_ARR) {
                                 // we are in an array, so just push an element onto the stack
-                                array_push($arr, $this->decode($slice));
+                                $arr[] = $this->decode($slice);
 
                             } elseif (reset($stk) == self::JSON_IN_OBJ) {
                                 // we are in an object, so figure
@@ -576,7 +576,7 @@ class TJSON
 
                         } elseif ((($chrs{$c} == '"') || ($chrs{$c} == "'")) && ($top['what'] != self::JSON_IN_STR)) {
                             // found a quote, and we are not inside a string
-                            array_push($stk, array('what' => self::JSON_IN_STR, 'where' => $c, 'delim' => $chrs{$c}));
+                            $stk = array('what' => self::JSON_IN_STR, 'where' => $c, 'delim' => $chrs{$c});
                             //print("Found start of string at {$c}\n");
 
                         } elseif (($chrs{$c} == $top['delim']) &&
@@ -590,7 +590,7 @@ class TJSON
                         } elseif (($chrs{$c} == '[') &&
                                  in_array($top['what'], array(self::JSON_SLICE, self::JSON_IN_ARR, self::JSON_IN_OBJ))) {
                             // found a left-bracket, and we are in an array, object, or slice
-                            array_push($stk, array('what' => self::JSON_IN_ARR, 'where' => $c, 'delim' => false));
+                            $stk = array('what' => self::JSON_IN_ARR, 'where' => $c, 'delim' => false);
                             //print("Found start of array at {$c}\n");
 
                         } elseif (($chrs{$c} == ']') && ($top['what'] == self::JSON_IN_ARR)) {
@@ -601,7 +601,7 @@ class TJSON
                         } elseif (($chrs{$c} == '{') &&
                                  in_array($top['what'], array(self::JSON_SLICE, self::JSON_IN_ARR, self::JSON_IN_OBJ))) {
                             // found a left-brace, and we are in an array, object, or slice
-                            array_push($stk, array('what' => self::JSON_IN_OBJ, 'where' => $c, 'delim' => false));
+                            $stk = array('what' => self::JSON_IN_OBJ, 'where' => $c, 'delim' => false);
                             //print("Found start of object at {$c}\n");
 
                         } elseif (($chrs{$c} == '}') && ($top['what'] == self::JSON_IN_OBJ)) {
@@ -612,7 +612,7 @@ class TJSON
                         } elseif (($substr_chrs_c_2 == '/*') &&
                                  in_array($top['what'], array(self::JSON_SLICE, self::JSON_IN_ARR, self::JSON_IN_OBJ))) {
                             // found a comment start, and we are in an array, object, or slice
-                            array_push($stk, array('what' => self::JSON_IN_CMT, 'where' => $c, 'delim' => false));
+                            $stk = array('what' => self::JSON_IN_CMT, 'where' => $c, 'delim' => false);
                             $c++;
                             //print("Found start of comment at {$c}\n");
 

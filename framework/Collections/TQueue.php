@@ -141,7 +141,7 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 	public function enqueue($item)
 	{
 		++$this->_c;
-		array_push($this->_d,$item);
+		$this->_d[] = $item;
 	}
 
 	/**

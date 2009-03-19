@@ -608,7 +608,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					$tpl[$c++]=array($container,$type,$attributes);
 					if($str[strlen($str)-2]!=='/')  // open tag
 					{
-						array_push($stack,$type);
+						$stack[] = $type;
 						$container=$c-1;
 					}
 				}
@@ -695,7 +695,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 					else  // regular property
 					{
 						$prop=strtolower($match[3][0]);
-						array_push($stack,'@'.$prop);
+						$stack[] = '@'.$prop;
 						if(!$expectPropEnd)
 						{
 							if($matchStart>$textStart)

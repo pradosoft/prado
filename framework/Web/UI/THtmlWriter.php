@@ -232,12 +232,12 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		if(isset(self::$_simpleTags[$tagName]))
 		{
 			$str.=' />';
-			array_push($this->_openTags,'');
+			$this->_openTags[] = '';
 		}
 		else
 		{
 			$str.='>';
-			array_push($this->_openTags,$tagName);
+			$this->_openTags[] = $tagName;
 		}
 		$this->_writer->write($str);
 		$this->_attributes=array();
