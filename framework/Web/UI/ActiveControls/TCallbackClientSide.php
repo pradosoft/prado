@@ -247,7 +247,7 @@ class TCallbackClientSide extends TClientSideOptions
 	public function getHasPriority()
 	{
 		$option =  $this->getOption('HasPriority');
-		return is_null($option) ? true : $option;
+		return ($option===null) ? true : $option;
 	}
 
 	/**
@@ -284,7 +284,7 @@ class TCallbackClientSide extends TClientSideOptions
 	public function getEnablePageStateUpdate()
 	{
 		$option = $this->getOption('EnablePageStateUpdate');
-		return is_null($option) ? true : $option;
+		return ($option===null) ? true : $option;
 	}
 
 	/**

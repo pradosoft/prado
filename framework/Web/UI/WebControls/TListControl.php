@@ -913,7 +913,7 @@ class TListItemCollection extends TList
 	protected function createNewListItem($text=null)
 	{
 		$item =  new TListItem;
-		if(!is_null($text))
+		if($text!==null)
 			$item->setText($text);
 		return $item;
 	}

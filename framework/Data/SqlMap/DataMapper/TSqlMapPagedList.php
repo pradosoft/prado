@@ -178,7 +178,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsNextPageAvailable()
 	{
-		return !is_null($this->_nextPageList);
+		return $this->_nextPageList!==null;
 	}
 
 	/**
@@ -186,7 +186,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsPreviousPageAvailable()
 	{
-		return !is_null($this->_prevPageList);
+		return $this->_prevPageList!==null;
 	}
 
 	/**
@@ -194,7 +194,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsLastPage()
 	{
-		return is_null($this->_nextPageList) || $this->_nextPageList->getCount() < 1;
+		return ($this->_nextPageList===null) || $this->_nextPageList->getCount() < 1;
 	}
 
 	/**

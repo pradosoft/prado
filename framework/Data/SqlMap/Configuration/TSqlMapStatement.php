@@ -275,7 +275,7 @@ class TSqlMapStatement extends TComponent
 	protected function createInstanceOf($registry,$type,$row=null)
 	{
 		$handler = $registry->getTypeHandler($type);
-		if(!is_null($handler))
+		if($handler!==null)
 			return $handler->createNewInstance($row);
 		else
 			return $registry->createInstanceOf($type);

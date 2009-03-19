@@ -145,7 +145,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function getHasAdapter()
 	{
-		return !is_null($this->_adapter);
+		return $this->_adapter!==null;
 	}
 
 	/**

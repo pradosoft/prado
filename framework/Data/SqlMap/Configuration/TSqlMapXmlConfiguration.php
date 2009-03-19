@@ -255,7 +255,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 								$resultMap, $this->_configFile, $entry->getID());
 				}
 			}
-			if(!is_null($entry->getDiscriminator()))
+			if($entry->getDiscriminator()!==null)
 				$entry->getDiscriminator()->initialize($this->_manager);
 		}
 	}
@@ -434,7 +434,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 		foreach($node->xpath('subMap') as $subMapNode)
 		{
-			if(is_null($discriminator))
+			if($discriminator===null)
 				throw new TSqlMapConfigurationException(
 					'sqlmap_undefined_discriminator', $node, $this->_configFile,$subMapNode);
 			$subMap = new TSubMap;
@@ -442,7 +442,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			$discriminator->addSubMap($subMap);
 		}
 
-		if(!is_null($discriminator))
+		if($discriminator!==null)
 			$resultMap->setDiscriminator($discriminator);
 
 		return $resultMap;

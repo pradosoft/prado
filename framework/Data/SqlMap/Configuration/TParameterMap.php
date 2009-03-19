@@ -140,12 +140,12 @@ class TParameterMap extends TComponent
 	{
 		$value = $this->getObjectValue($parameterValue,$property);
 
-		if(!is_null($handler=$this->createTypeHandler($property, $registry)))
+		if(($handler=$this->createTypeHandler($property, $registry))!==null)
 			$value = $handler->getParameter($value);
 
 		$value = $this->nullifyDefaultValue($property,$value);
 
-		if(!is_null($type = $property->getType()))
+		if(($type = $property->getType())!==null)
 			$value = $registry->convertToType($type, $value);
 
 		return $value;
@@ -197,7 +197,7 @@ class TParameterMap extends TComponent
 	 */
 	protected function nullifyDefaultValue($property,$value)
 	{
-		if(!is_null($nullValue = $property->getNullValue()))
+		if(($nullValue = $property->getNullValue())!==null)
 		{
 			if($nullValue === $value)
 				$value = null;

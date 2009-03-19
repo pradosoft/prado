@@ -261,7 +261,7 @@ class TValidationSummary extends TWebControl
 		$options['ValidationGroup'] =  $this->getValidationGroup();
 		$options['Display'] = $this->getDisplay();
 
-		if(!is_null($this->_clientSide))
+		if($this->_clientSide!==null)
 			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
 
 		return $options;
@@ -273,7 +273,7 @@ class TValidationSummary extends TWebControl
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientSide))
+		if($this->_clientSide===null)
 			$this->_clientSide = $this->createClientScript();
 		return $this->_clientSide;
 	}

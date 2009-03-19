@@ -210,7 +210,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientSide))
+		if($this->_clientSide===null)
 			$this->_clientSide = $this->createClientSide();
 		return $this->_clientSide;
 	}
@@ -680,7 +680,7 @@ class TValidatorClientSide extends TClientSideOptions
 	public function getObserveChanges()
 	{
 		$changes = $this->getOption('ObserveChanges');
-		return is_null($changes) ? true : $changes;
+		return ($changes===null) ? true : $changes;
 	}
 }
 

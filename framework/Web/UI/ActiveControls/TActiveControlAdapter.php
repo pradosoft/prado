@@ -64,7 +64,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	protected function setBaseControlClass($type)
 	{
-		if(is_null($type))
+		if($type===null)
 		{
 			if($this->getControl() instanceof ICallbackEventHandler)
 				$this->_activeControlType = 'TBaseActiveCallbackControl';
@@ -117,7 +117,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function getBaseActiveControl()
 	{
-		if(is_null($this->_baseActiveControl))
+		if($this->_baseActiveControl===null)
 		{
 			$type = $this->_activeControlType;
 			$this->_baseActiveControl = new $type($this->getControl());
@@ -161,7 +161,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function saveState()
 	{
-		if(!is_null($this->_stateTracker)
+		if(($this->_stateTracker!==null)
 			&& $this->getControl()->getActiveControl()->canUpdateClientSide())
 		{
 			$this->_stateTracker->respondToChanges();
@@ -353,7 +353,7 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateStyle($style)
 	{
-		if(!is_null($style['CssClass']))
+		if($style['CssClass']!==null)
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
 		if(count($style['Style']) > 0)
 			$this->client()->setStyle($this->_control, $style['Style']);
@@ -487,9 +487,9 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	protected function getCssClassDiff()
 	{
-		if(is_null($this->_old))
+		if($this->_old===null)
 		{
-			return !is_null($this->_new) && $this->_new->hasCssClass()
+			return ($this->_new!==null) && $this->_new->hasCssClass()
 						? $this->_new->getCssClass() : null;
 		}
 		else
@@ -515,13 +515,13 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if(is_null($this->_new))
+		if($this->_new===null)
 			return $this->_null;
 		else
 		{
 			$css = $this->getCssClassDiff();
 			$style = $this->getStyleDiff();
-			if(!is_null($css) || !is_null($style))
+			if(($css!==null) || ($style!==null))
 				return array('CssClass' => $css, 'Style' => $style);
 			else
 				$this->_null;
@@ -546,9 +546,9 @@ class TMapCollectionDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if(is_null($this->_old))
+		if($this->_old===null)
 		{
-			return !is_null($this->_new) ? $this->_new->toArray() : $this->_null;
+			return ($this->_new!==null) ? $this->_new->toArray() : $this->_null;
 		}
 		else
 		{

@@ -236,6 +236,6 @@ class TActiveCustomValidatorClientSide extends TCallbackClientSide
 	public function getObserveChanges()
 	{
 		$changes = $this->getOption('ObserveChanges');
-		return is_null($changes) ? true : $changes;
+		return ($changes===null) ? true : $changes;
 	}
 }

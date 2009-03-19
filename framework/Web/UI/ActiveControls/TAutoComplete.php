@@ -235,7 +235,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	public function getResultPanel()
 	{
-		if(is_null($this->_resultPanel))
+		if($this->_resultPanel===null)
 			$this->_resultPanel = $this->createResultPanel();
 		return $this->_resultPanel;
 	}
@@ -256,7 +256,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	public function getSuggestions()
 	{
-		if(is_null($this->_repeater))
+		if($this->_repeater===null)
 			$this->_repeater = $this->createRepeater();
 		return $this->_repeater;
 	}

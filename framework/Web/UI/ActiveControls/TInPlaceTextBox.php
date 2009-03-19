@@ -124,7 +124,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	protected function getExternalControlID()
 	{
 		$extID = $this->getEditTriggerControlID();
-		if(is_null($extID)) return '';
+		if($extID===null) return '';
 		if(($control = $this->findControl($extID))!==null)
 			return $control->getClientID();
 		return $extID;

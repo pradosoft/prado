@@ -236,7 +236,7 @@ class TTranslate extends TI18NControl
 		$app = $this->getApplication()->getGlobalization();
 
 		//no translation handler provided
-		if(is_null($config = $app->getTranslationConfiguration()))
+		if(($config = $app->getTranslationConfiguration())===null)
 			return strtr($text, $subs);
 
 		$catalogue = $this->getCatalogue();

@@ -451,10 +451,10 @@ class THtmlArea extends TTextBox
 	protected function getLanguageSuffix($culture)
 	{
 		$app = $this->getApplication()->getGlobalization();
-		if(empty($culture) && !is_null($app))
+		if(empty($culture) && ($app!==null))
 			$culture = $app->getCulture();
 		$variants = array();
-		if(!is_null($app))
+		if($app!==null)
 			$variants = $app->getCultureVariants($culture);
 
 		foreach($variants as $variant)

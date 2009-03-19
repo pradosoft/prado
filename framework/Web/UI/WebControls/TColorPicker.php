@@ -112,7 +112,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientSide))
+		if($this->_clientSide===null)
 			$this->_clientSide = $this->createClientSide();
 		return $this->_clientSide;
 	}

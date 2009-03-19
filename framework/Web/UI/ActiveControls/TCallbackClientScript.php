@@ -104,7 +104,7 @@ class TCallbackClientScript extends TApplicationComponent
 	{
 		$method = TPropertyValue::ensureEnum($method,
 				'Value', 'Index', 'Clear', 'Indices', 'Values', 'All', 'Invert');
-		$type = is_null($type) ? $this->getSelectionControlType($control) : $type;
+		$type = ($type===null) ? $this->getSelectionControlType($control) : $type;
 		$total = $this->getSelectionControlIsListType($control) ? $control->getItemCount() : 1;
 		$this->callClientFunction('Prado.Element.select',
 				array($control, $type.$method, $value, $total));

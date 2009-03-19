@@ -366,7 +366,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getClientSide()
 	{
-		if(is_null($this->_clientScript))
+		if($this->_clientScript===null)
 			$this->_clientScript = $this->createClientScript();
 		return $this->_clientScript;
 	}
@@ -529,7 +529,7 @@ class TDatePicker extends TTextBox
 		$options['PositionMode'] = $this->getPositionMode();
 
 		$options = array_merge($options, $this->getCulturalOptions());
-		if(!is_null($this->_clientScript))
+		if($this->_clientScript!==null)
 			$options = array_merge($options,
 				$this->_clientScript->getOptions()->toArray());
 		return $options;
@@ -610,7 +610,7 @@ class TDatePicker extends TTextBox
 	{
 		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
 						$this->getDateFormat());
-		return !is_null($formatter->getDayPattern());
+		return ($formatter->getDayPattern()!==null);
 	}
 
 	/**

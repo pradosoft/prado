@@ -231,7 +231,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$connection->setActive(true);
 		$reader = $sql->query();
 		//$reader = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
-		if(!is_null($delegate))
+		if($delegate!==null)
 		{
 			foreach($reader as $row)
 			{
@@ -304,14 +304,14 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		//$recordSet = $this->executeSQLQuery($connection, $sql);
 		$connection->setActive(true);
 		$reader = $command->query();
-		if(!is_null($delegate))
+		if($delegate!==null)
 		{
 			//while($row = $recordSet->fetchRow())
 			foreach($reader as $row)
 			{
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
-				$value = is_null($valueProperty) ? $obj :
+				$value = ($valueProperty===null) ? $obj :
 							TPropertyAccess::get($obj, $valueProperty);
 				$param = new TResultSetMapItemParameter($key, $value, $parameter, $map);
 				$this->raiseRowDelegate($delegate, $param);
@@ -324,7 +324,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			{
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
-				$map[$key] = is_null($valueProperty) ? $obj :
+				$map[$key] = ($valueProperty===null) ? $obj :
 								TPropertyAccess::get($obj, $valueProperty);
 			}
 		}
@@ -426,7 +426,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 //		var_dump($command,$parameter);
 		$result = $command->execute();
 
-		if(is_null($generatedKey))
+		if($generatedKey===null)
 			$generatedKey = $this->getPostGeneratedSelectKey($connection, $parameter);
 
 		$this->executePostSelect($connection);
@@ -445,7 +445,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		if($this->_statement instanceof TSqlMapInsert)
 		{
 			$selectKey = $this->_statement->getSelectKey();
-			if(!is_null($selectKey) && !$selectKey->getIsAfter())
+			if(($selectKey!==null) && !$selectKey->getIsAfter())
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 		}
 	}
@@ -461,7 +461,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		if($this->_statement instanceof TSqlMapInsert)
 		{
 			$selectKey = $this->_statement->getSelectKey();
-			if(!is_null($selectKey) && $selectKey->getIsAfter())
+			if(($selectKey!==null) && $selectKey->getIsAfter())
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 		}
 	}
@@ -575,7 +575,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	protected function fillResultClass($resultClass, $row, $resultObject)
 	{
-		if(is_null($resultObject))
+		if($resultObject===null)
 		{
 			$registry = $this->getManager()->getTypeHandlers();
 			$resultObject = $this->_statement->createInstanceOfResultClass($registry,$row);
@@ -643,7 +643,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$registry = $this->getManager()->getTypeHandlers();
 		$resultMap = $resultMap->resolveSubMap($registry,$row);
 
-		if(is_null($resultObject))
+		if($resultObject===null)
 			$resultObject = $resultMap->createInstanceOfResult($registry);
 
 		if(is_object($resultObject))
@@ -734,10 +734,10 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	protected function fillDefaultResultMap($resultMap, $row, $resultObject)
 	{
-		if(is_null($resultObject))
+		if($resultObject===null)
 			$resultObject='';
 
-		if(!is_null($resultMap))
+		if($resultMap!==null)
 			$result = $this->fillArrayResultMap($resultMap, $row, $resultObject);
 		else
 			$result = $row;
@@ -762,8 +762,8 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$registry=$this->getManager()->getTypeHandlers();
 		foreach($resultMap->getColumns() as $column)
 		{
-			if(is_null($column->getType())
-				&& !is_null($resultObject) && !is_object($resultObject))
+			if(($column->getType()===null)
+				&& ($resultObject!==null) && !is_object($resultObject))
 			$column->setType(gettype($resultObject));
 			$result[$column->getProperty()] = $column->getPropertyValue($registry,$row);
 		}
@@ -800,7 +800,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		{
 			$resultObject = $property->getPropertyValue($registry,$row);
 		}
-		else if(strlen($select) == 0 && is_null($nested))
+		else if(strlen($select) == 0 && ($nested===null))
 		{
 			$value = $property->getPropertyValue($registry,$row);
 
@@ -810,7 +810,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			else
 				$resultObject = $value;
 		}
-		else if(!is_null($nested))
+		else if($nested!==null)
 		{
 			if($property->instanceOfListType($resultObject) || $property->instanceOfArrayType($resultObject))
 			{
@@ -995,8 +995,8 @@ class TSqlMapObjectCollectionTree
 	 */
 	public function add($parent, $node, $object='')
 	{
-		if(isset($this->_entries[$parent]) && !is_null($this->_entries[$parent])
-			&& isset($this->_entries[$node]) && !is_null($this->_entries[$node]))
+		if(isset($this->_entries[$parent]) && ($this->_entries[$parent]!==null)
+			&& isset($this->_entries[$node]) && ($this->_entries[$node]!==null))
 		{
 			$this->_entries[$node] = $object;
 			return;

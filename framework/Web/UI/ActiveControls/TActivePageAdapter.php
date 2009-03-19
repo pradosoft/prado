@@ -153,7 +153,7 @@ class TActivePageAdapter extends TControlAdapter
 		if($response->getHasAdapter())
 		{
 			$responseData = $response->getAdapter()->getResponseData();
-			if(!is_null($responseData))
+			if($responseData!==null)
 			{
 				$data = TJavaScript::jsonEncode($responseData);
 
@@ -284,7 +284,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackClientHandler()
 	{
-		if(is_null($this->_callbackClient))
+		if($this->_callbackClient===null)
 			$this->_callbackClient = new TCallbackClientScript;
 		return $this->_callbackClient;
 	}

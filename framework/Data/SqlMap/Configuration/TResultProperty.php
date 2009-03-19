@@ -242,7 +242,7 @@ class TResultProperty extends TComponent
 			$value = $this->getTypedValue($registry,$row[$index]);
 		else if(isset($row[$name]))
 			$value = $this->getTypedValue($registry,$row[$name]);
-		if(is_null($value) && !is_null($this->getNullValue()))
+		if(($value===null) && ($this->getNullValue()!==null))
 			$value = $this->getTypedValue($registry,$this->getNullValue());
 		return $value;
 	}
@@ -302,7 +302,7 @@ class TResultProperty extends TComponent
 	 */
 	public function instanceOfListType($target)
 	{
-		if(is_null($this->getType()))
+		if($this->getType()===null)
 			return  TPropertyAccess::get($target,$this->getProperty()) instanceof TList;
 		return $this->getPropertyValueType() == self::LIST_TYPE;
 	}
@@ -315,7 +315,7 @@ class TResultProperty extends TComponent
 	 */
 	public function instanceOfArrayType($target)
 	{
-		if(is_null($this->getType()))
+		if($this->getType()===null)
 		{
 			$prop = TPropertyAccess::get($target,$this->getProperty());
 			if(is_object($prop))

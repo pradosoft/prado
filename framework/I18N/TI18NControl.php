@@ -49,11 +49,11 @@ class TI18NControl extends TControl
 
 		//fall back to globalization charset
 		if(empty($charset))
-			$charset = is_null($app) ? '' : $app->getCharset();
+			$charset = ($app===null) ? '' : $app->getCharset();
 
 		//fall back to default charset
 		if(empty($charset))
-			$charset = (is_null($app)) ? 'UTF-8' : $app->getDefaultCharset();
+			$charset = ($app===null) ? 'UTF-8' : $app->getDefaultCharset();
 
 		return $charset;
 	}

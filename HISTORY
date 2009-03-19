@@ -14,6 +14,7 @@ CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mod
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
+ENH: replace is_null() function calls with native native language constuct (Yves)
 
 Version 3.1.4 January 11, 2009
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)

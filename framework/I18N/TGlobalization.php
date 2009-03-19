@@ -225,7 +225,7 @@ class TGlobalization extends TModule
 	 */
 	public function getCultureVariants($culture=null)
 	{
-		if(is_null($culture)) $culture = $this->getCulture();
+		if($culture===null) $culture = $this->getCulture();
 		$variants = explode('_', $culture);
 		$result = array();
 		for(; count($variants) > 0; array_pop($variants))

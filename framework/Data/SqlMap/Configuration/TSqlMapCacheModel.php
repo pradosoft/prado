@@ -79,7 +79,7 @@ class TSqlMapCacheModel extends TComponent
 	 */
 	public function initialize($cache=null)
 	{
-		if(is_null($cache))
+		if($cache===null)
 			$this->_cache= Prado::createComponent($this->getImplementationClass());
 		else
 			$this->_cache=$cache;
@@ -127,7 +127,7 @@ class TSqlMapCacheModel extends TComponent
 		//if flush ?
 		$value = $this->_cache->get($key);
 		$this->_requests++;
-		if(!is_null($value))
+		if($value!==null)
 			$this->_hits++;
 		return $value;
 	}
@@ -141,7 +141,7 @@ class TSqlMapCacheModel extends TComponent
 		if($key instanceof TSqlMapCacheKey)
 			$key = $key->getHash();
 
-		if(!is_null($value))
+		if($value!==null)
 			$this->_cache->set($key, $value);
 	}
 

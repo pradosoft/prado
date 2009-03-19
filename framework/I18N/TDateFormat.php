@@ -119,7 +119,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 
 		//no presets found, use the string as the pattern
 		//and let the DateFormat handle it.
-		if(is_null($pattern))
+		if($pattern===null)
 			$pattern = $string;
 		if (!is_array($pattern) && strlen($pattern) == 0)
 			$pattern = null;
@@ -226,7 +226,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter
-		if(is_null(self::$formatter))
+		if(self::$formatter===null)
 			self::$formatter = new DateFormat($app->getCulture());
 
 		$culture = $this->getCulture();

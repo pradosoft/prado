@@ -87,7 +87,7 @@ class MessageSource_MySQL extends MessageSource
 	{
 		/*static $conn;
 
-		if(!is_null($conn))
+		if($conn!==null)
 			return $conn;
 		*/
 		$dsninfo = $this->dns;

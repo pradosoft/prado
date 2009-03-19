@@ -63,7 +63,7 @@ class TStyle extends TComponent
 	 */
 	public function __clone()
 	{
-		if(!is_null($this->_font))
+		if($this->_font!==null)
 			$this->_font = clone($this->_font);
 	}
 
@@ -157,7 +157,7 @@ class TStyle extends TComponent
 	 */
 	public function hasCssClass()
 	{
-		return !is_null($this->_class);
+		return ($this->_class!==null);
 	}
 
 	/**

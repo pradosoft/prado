@@ -220,7 +220,7 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 
 		$app = $this->getApplication()->getGlobalization();
 		//initialized the default class wide formatter
-		if(is_null(self::$formatter))
+		if(self::$formatter===null)
 			self::$formatter = new NumberFormat($app->getCulture());
 
 		$pattern = strlen($this->getPattern()) > 0

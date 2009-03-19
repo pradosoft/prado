@@ -162,7 +162,7 @@ class TResultMap extends TComponent
 		$handler = $registry->getTypeHandler($this->getClass());
 		try
 		{
-			if(!is_null($handler))
+			if($handler!==null)
 				return $handler->createNewInstance();
 			else
 				return $registry->createInstanceOf($this->getClass());
@@ -184,12 +184,12 @@ class TResultMap extends TComponent
 	public function resolveSubMap($registry,$row)
 	{
 		$subMap = $this;
-		if(!is_null($disc = $this->getDiscriminator()))
+		if(($disc = $this->getDiscriminator())!==null)
 		{
 			$value = $disc->getMapping()->getPropertyValue($registry,$row);
 			$subMap = $disc->getSubMap((string)$value);
 
-			if(is_null($subMap))
+			if($subMap===null)
 				$subMap = $this;
 			else if($subMap !== $this)
 				$subMap = $subMap->resolveSubMap($registry,$row);

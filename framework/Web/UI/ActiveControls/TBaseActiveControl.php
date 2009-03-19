@@ -58,8 +58,8 @@ class TBaseActiveControl extends TComponent
 	 */
 	protected function setOption($name,$value,$default=null)
 	{
-		$value = is_null($value) ? $default : $value;
-		if(!is_null($value))
+		$value = ($value===null) ? $default : $value;
+		if($value!==null)
 			$this->_options->add($name,$value);
 	}
 
@@ -73,7 +73,7 @@ class TBaseActiveControl extends TComponent
 	protected function getOption($name,$default=null)
 	{
 		$item = $this->_options->itemAt($name);
-		return is_null($item) ? $default : $item;
+		return ($item===null) ? $default : $item;
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getClientSide()
 	{
-		if(is_null($client = $this->getOption('ClientSide')))
+		if(($client = $this->getOption('ClientSide'))===null)
 		{
 			$client = $this->createClientSide();
 			$this->setOption('ClientSide', $client);
@@ -182,7 +182,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setClientSide($client)
 	{
-		if(is_null($this->getOption('ClientSide')))
+		if( $this->getOption('ClientSide')===null)
 			$this->setOption('ClientSide', $client);
 		else
 			throw new TConfigurationException(

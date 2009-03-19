@@ -131,7 +131,7 @@ class TDataSourceConfig extends TModule
 	 */
 	public function setConnectionClass($value)
 	{
-		if(!is_null($this->_conn))
+		if($this->_conn!==null)
 			throw new TConfigurationException('datasource_dbconnection_exists', $value);
 		$this->_connClass=$value;
 	}
