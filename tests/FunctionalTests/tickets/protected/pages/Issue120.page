@@ -1,0 +1,13 @@
+<com:TContent ID="Content">
+	<h1>TActiveDropDownList PromptValue Test</h1>
+
+	<com:TActiveDropDownList id="ddl1" PromptValue="PromptValue" PromptText="PromptText">
+		<com:TListItem Value="value 1" Text="item 1" />
+		<com:TListItem Value="value 2" Text="item 2" />
+		<com:TListItem Value="value 3" Text="item 3" />
+		<com:TListItem Value="value 4" Text="item 4" />
+	</com:TActiveDropDownList>
+	
+	<com:TActiveButton id="btn1" OnCallback="buttonClickCallback" />
+
+</com:TContent>

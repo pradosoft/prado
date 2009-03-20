@@ -177,6 +177,18 @@ class TCallbackClientScript extends TApplicationComponent
 	public function setListItems($control, $items)
 	{
 		$options = array();
+		if($control instanceof TListControl)
+		{
+			$promptText		= $control->getPromptText();
+			$promptValue	= $control->getPromptValue();
+			
+			if($promptValue==='')
+				$promptValue = $promptText;
+	
+			if($promptValue!=='')
+				$options[] = array($promptText, $promptValue);
+		}
+		
 		foreach($items as $item)
 		{
 			if($item->getHasAttributes())
