@@ -632,14 +632,14 @@ class TBrowserLogRoute extends TLogRoute
 	protected function renderHeader()
 	{
 		$string = <<<EOD
-<table cellspacing="0" cellpadding="2" border="0" width="100%">
+<table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
 	<tr>
-		<th style="background-color: black; color:white;" colspan="11">
+		<th style="background-color: black; color:white;" colspan="5">
 			Application Log
 		</th>
-	</tr><tr style="background-color: #ccc;">
-	    <th>&nbsp;</th>
-		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
+	</tr><tr style="background-color: #ccc; color:black">
+	    <th style="width: 15px">&nbsp;</th>
+		<th style="width: auto">Category</th><th style="width: auto">Message</th><th style="width: 120px">Time Spent (s)</th><th style="width: 150px">Cumulated Time Spent (s)</th>
 	</tr>
 EOD;
 		return $string;
@@ -654,7 +654,7 @@ EOD;
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$msg = THttpUtility::htmlEncode($msg);
 		$string = <<<EOD
-	<tr style="background-color: {$bgcolor};">
+	<tr style="background-color: {$bgcolor}; color:#000">
 		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
 		<td>{$log[2]}</td>
 		<td>{$msg}</td>
@@ -682,11 +682,11 @@ EOD;
 
 	protected function renderFooter()
 	{
-		$string = "<tr><td colspan=\"11\" style=\"text-align:center; border-top: 1px solid #ccc; padding:0.2em;\">";
+		$string = "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
 		foreach(self::$_levelValues as $name => $level)
 		{
-			$string .= "<span style=\"color:white;background-color:".$this->getColorLevel($level);
-			$string .= ";margin: 0.5em;\">".strtoupper($name)."</span>";
+			$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
+			$string .= ";margin: 0.5em; padding:0.01em;\">".strtoupper($name)."</span>";
 		}
 		$string .= "</td></tr></table>";
 		return $string;
