@@ -25,9 +25,15 @@ class TPreparedCommand
 {
 	public function create(TSqlMapManager $manager, $connection, $statement, $parameterObject,$skip=null,$max=null)
 	{
-		$prepared = $statement->getSQLText()->getPreparedStatement($parameterObject);
+		$sqlText = $statement->getSQLText();
+
+		$prepared = $sqlText->getPreparedStatement($parameterObject);
 		$connection->setActive(true);
 		$sql = $prepared->getPreparedSql();
+
+		if($sqlText instanceof TSimpleDynamicSql)
+			$sql = $sqlText->replaceDynamicParameter($sql, $parameterObject);
+
 		if($max!==null || $skip!==null)
 		{
 			$builder = TDbMetaData::getInstance($connection)->createCommandBuilder();
@@ -35,6 +41,7 @@ class TPreparedCommand
 		}
 		$command = $connection->createCommand($sql);
 		$this->applyParameterMap($manager, $command, $prepared, $statement, $parameterObject);
+
 		return $command;
 	}
 

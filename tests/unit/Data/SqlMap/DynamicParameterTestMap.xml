@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="DynamicParameterTestMap">
+	<select id="SelectStaticSql1" resultClass="string">
+	<![CDATA[
+		SELECT `teststring` FROM `dynamicparametertest1` WHERE `testname`="staticsql"
+	]]>
+	</select>
+
+	<select id="SelectStaticSql2" resultClass="string">
+	<![CDATA[
+		SELECT `teststring` FROM `dynamicparametertest2` WHERE `testname`="staticsql"
+	]]>
+	</select>
+	
+	<select id="SelectDynamicTable" parameterClass="string" resultClass="string">
+	<![CDATA[
+		SELECT `teststring` FROM `$value$` WHERE `testname`="dynamictable"
+	]]>
+	</select>
+
+	<select id="SelectDynamicComplex" parameterClass="array" resultClass="string">
+	<![CDATA[
+		SELECT CONCAT("##", `teststring`, "$$") FROM `$tablename$` WHERE `testname`=#testname, dbType=varchar#
+	]]>
+	</select>
+	
+	<select id="SelectNoDynamic" parameterClass="string" resultClass="string">
+	<![CDATA[
+		SELECT `teststring` FROM `dynamicparametertest1` WHERE `testname`=#value, dbType=varchar#
+	]]>
+	</select>
+
+</sqlMap>

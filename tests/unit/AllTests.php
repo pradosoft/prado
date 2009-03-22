@@ -16,6 +16,8 @@ require_once 'Security/AllTests.php';
 require_once 'Caching/AllTests.php';
 require_once 'Util/AllTests.php';
 require_once 'Data/DataGateway/AllTests.php';
+require_once 'Data/SqlMap/AllTests.php';
+
 
 require_once 'TComponentTest.php';
 
@@ -23,10 +25,10 @@ class AllTests {
   public static function main() {
     PHPUnit_TextUI_TestRunner::run(self::suite());
   }
-  
+
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('PRADO PHP Framework');
-    
+
 	$suite->addTest(Xml_AllTests::suite());
 	$suite->addTest(IO_AllTests::suite());
 	$suite->addTest(Collections_AllTests::suite());
@@ -38,7 +40,8 @@ class AllTests {
 	$suite->addTest(Caching_AllTests::suite());
 	$suite->addTest(Util_AllTests::suite());
 	$suite->addTest(Data_DataGateway_AllTests::suite());
-	
+	$suite->addTest(Data_SqlMap_AllTests::suite());
+
 	$suite->addTestSuite('TComponentTest');
 
     return $suite;

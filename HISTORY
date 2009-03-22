@@ -1,5 +1,6 @@
 Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
+BUG: Issue#88 - SQLMap $Param$ re-evaluation bug (Yves)
 BUG: Issue#120 - TActiveDropDownList PromptText and PromptValue got lost during callback and data rebind (Yves)
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#108 - clientscripts.php: prepending set_time_limit(0) call with an "@" to suppress PHP warning in safe mode (Yves)
@@ -17,7 +18,7 @@ ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
 ENH: replace is_null() function calls with native language constuct (Yves)
 ENH: replace array_push() function calls with native language constuct if make sense (Yves)
-ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avoid bad render behavior in table-layout:fixed environment, explicit set text color to increase readability
+ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avoid bad render behavior in table-layout:fixed environment, explicit set text color to increase readability (Yves)
 
 Version 3.1.4 January 11, 2009
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)

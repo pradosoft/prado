@@ -27,23 +27,15 @@ class TSimpleDynamicSql extends TStaticSql
 		$this->_mappings = $mappings;
 	}
 
-	public function getPreparedStatement($parameter=null)
+	public function replaceDynamicParameter($sql, $parameter)
 	{
-		$statement = parent::getPreparedStatement($parameter);
-		if($parameter !== null)
-			$this->mapDynamicParameter($statement, $parameter);
-		return $statement;
-	}
-
-	protected function mapDynamicParameter($statement, $parameter)
-	{
-		$sql = $statement->getPreparedSql();
 		foreach($this->_mappings as $property)
 		{
 			$value = TPropertyAccess::get($parameter, $property);
 			$sql = preg_replace('/'.TSimpleDynamicParser::DYNAMIC_TOKEN.'/', $value, $sql, 1);
 		}
-		$statement->setPreparedSql($sql);
+
+		return $sql;
 	}
 }
 
