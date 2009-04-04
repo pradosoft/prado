@@ -246,15 +246,15 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Override parent implementation to update the control CSS Class before 
-	 * the validated control is rendered 
+	 * Override parent implementation to update the control CSS Class before
+	 * the validated control is rendered
 	 */
 	public function onPreRender ($param)
 	{
 		parent::onPreRender($param);
 		$this->updateControlCssClass();
 	}
-	
+
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.
@@ -464,7 +464,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * @throws TConfigurationException if {@link getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
 	 */
-	protected function getValidationTarget()
+	public function getValidationTarget()
 	{
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
@@ -496,7 +496,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->setIsValid(true);
 		$this->onValidate();
 		if($this->getVisible(true) && $this->getEnabled(true))
-		{			
+		{
 			// if the target is not a disabled web control
 			if(($target=$this->getValidationTarget())!==null && !($target instanceof TWebControl && !$target->getEnabled(true)))
 			{

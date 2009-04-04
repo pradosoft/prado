@@ -112,11 +112,11 @@ class TCustomValidator extends TBaseValidator
 		else
 			return $param->getIsValid();
 	}
-	
+
 	/**
 	 * @return TControl control to be validated. Null if no control is found.
 	 */
-	protected function getValidationTarget()
+	public function getValidationTarget()
 	{
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
