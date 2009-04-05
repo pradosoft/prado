@@ -1,5 +1,6 @@
 Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
+BUG/ENH: TSqlMapCacheModel now consider <flushInterval> tag as described in doc (sqlmap.pdf) - valid attributes are duration in sec or seconds, minutes, hours, days (Yves)
 BUG: Issue#88 - SQLMap $Param$ re-evaluation bug (Yves)
 BUG: Issue#120 - TActiveDropDownList PromptText and PromptValue got lost during callback and data rebind (Yves)
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)

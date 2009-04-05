@@ -697,10 +697,46 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		}
 		$cache = Prado::createComponent($cacheModel->getImplementationClass());
 		$this->setObjectPropFromNode($cache,$node,$properties);
+		$this->loadFlushInterval($cacheModel,$node);
+
 		$cacheModel->initialize($cache);
 		$this->_manager->addCacheModel($cacheModel);
 		foreach($node->xpath('flushOnExecute') as $flush)
 			$this->loadFlushOnCache($cacheModel,$node,$flush);
+	}
+
+	/**
+	 * Load the flush interval
+	 * @param TSqlMapCacheModel cache model
+	 * @param SimpleXmlElement cache node
+	 */
+	protected function loadFlushInterval($cacheModel, $node)
+	{
+		$flushInterval = $node->xpath('flushInterval');
+		if($flushInterval === null || count($flushInterval) === 0) return;
+		$duration = 0;
+		foreach($flushInterval[0]->attributes() as $name=>$value)
+		{
+			switch(strToLower($name))
+			{
+				case 'seconds':
+					$duration += (integer)$value;
+				break;
+				case 'minutes':
+					$duration += 60 * (integer)$value;
+				break;
+				case 'hours':
+					$duration += 3600 * (integer)$value;
+				break;
+				case 'days':
+					$duration += 86400 * (integer)$value;
+				break;
+				case 'duration':
+					$duration = (integer)$value;
+				break 2; // switch, foreach
+			}
+		}
+		$cacheModel->setFlushInterval($duration);
 	}
 
 	/**

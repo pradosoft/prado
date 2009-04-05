@@ -38,8 +38,9 @@ class TSqlMapCacheModel extends TComponent
 	private $_hits = 0;
 	private $_requests = 0;
 	private $_id;
-	private $_implementation='basic';
+	private $_implementation=TSqlMapCacheTypes::Basic;
 	private $_properties = array();
+	private $_flushInterval = 0;
 
 	/**
 	 * @return string unique cache model identifier.
@@ -71,6 +72,23 @@ class TSqlMapCacheModel extends TComponent
 	public function setImplementation($value)
 	{
 		$this->_implementation = TPropertyValue::ensureEnum($value,'TSqlMapCacheTypes');
+	}
+
+	/**
+	 * integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param int cache size.
+	 */
+	public function setFlushInterval($value)
+	{
+		$this->_flushInterval=TPropertyValue::ensureInteger($value);
+	}
+
+	/**
+	 * @return int cache duration.
+	 */
+	public function getFlushInterval()
+	{
+		return $this->_flushInterval;
 	}
 
 	/**
@@ -142,7 +160,7 @@ class TSqlMapCacheModel extends TComponent
 			$key = $key->getHash();
 
 		if($value!==null)
-			$this->_cache->set($key, $value);
+			$this->_cache->set($key, $value, $this->_flushInterval);
 	}
 
 	/**
