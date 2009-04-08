@@ -14,6 +14,10 @@ class ActiveDatePicker extends TPage  {
 		$this->status->Text = $this->datepicker->getText();
 	}
 
+	public function testDatePicker2($sender, $param){
+		$this->status2->Text = $this->datepicker2->getText();
+	}
+	
 	public function today ($sender, $param)
 	{
 		$this->datepicker->setTimestamp(time());

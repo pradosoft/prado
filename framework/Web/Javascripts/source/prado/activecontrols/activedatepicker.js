@@ -33,7 +33,8 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 
 		Object.extend(this,options);
 
-		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+		if (this.options.ShowCalendar)
+			Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
 		
 		// Listen to change event 
 		if(this.options.InputMode == "TextBox")

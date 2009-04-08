@@ -11,6 +11,14 @@
 <com:TActiveButton ID="increaseButton" OnClick="increase" Text="+1" OnCallback="testDatePicker"/>
 <com:TButton ID="toggleButton" OnClick="toggleMode" Text="Toggle input mode (postback)"/>
 </p>
+<p>
+ShowCalendar=false
+</p>
+<p>
+<com:TActiveDatePicker ID="datepicker2" DateFormat="MM-dd-yyyy" OnCallback="testDatePicker2" InputMode="DropDownList" ShowCalendar="false"/>
+<com:TActiveLabel ID="status2" /><br/>
+</p>
+
 
 </com:TForm>
 </body>
