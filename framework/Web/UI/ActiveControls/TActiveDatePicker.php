@@ -109,22 +109,20 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 */
 	protected function registerCalendarClientScript()
 	{
-	//	if($this->getShowCalendar())
-	//	{
-			$cs = $this->getPage()->getClientScript();
-			$cs->registerPradoScript("activedatepicker");
+	
+		$cs = $this->getPage()->getClientScript();
+		$cs->registerPradoScript("activedatepicker");
 
-			if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
-			{
-				$spacer = $this->getAssetUrl('spacer.gif');
-				$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
-				$cs->registerEndScript('TDatePicker.spacer', $code);
-			}
+		if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
+		{
+			$spacer = $this->getAssetUrl('spacer.gif');
+			$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
+			$cs->registerEndScript('TDatePicker.spacer', $code);
+		}
 
-			$options = TJavaScript::encode($this->getDatePickerOptions());
-			$code = "new Prado.WebUI.TActiveDatePicker($options);";
-			$cs->registerEndScript("prado:".$this->getClientID(), $code);
-	//	}
+		$options = TJavaScript::encode($this->getDatePickerOptions());
+		$code = "new Prado.WebUI.TActiveDatePicker($options);";
+		$cs->registerEndScript("prado:".$this->getClientID(), $code);
 	}
 }
 ?>
