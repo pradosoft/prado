@@ -133,7 +133,30 @@ EOS;
 	 * default "Application.runtime.*"
 	 */
 	public function setTempPath($value){
-		$this->setViewState('TempNamespace',$value,'Application.runtime.*');
+		$this->setViewState('TempPath',$value,'Application.runtime.*');
+	}
+	
+	/**
+	 * @return boolean a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
+	 * Note: When set to false, you will need to trigger the callback yourself.
+	 */
+	public function getAutoPostBack(){
+		return $this->getViewState('AutoPostBack', true);
+	}
+	
+	/**
+	 * @param boolean a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
+	 * Note: When set to false, you will need to trigger the callback yourself.
+	 */
+	public function setAutoPostBack($value){
+		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),true);
+	}
+	
+	/**
+	 * @return string A chuck of javascript that will need to be called if {{@link getAutoPostBack AutoPostBack} is set to false}
+	 */	
+	public function getCallbackJavascript(){
+		return "Prado.WebUI.TActiveFileUpload.fileChanged(\"{$this->getClientID()}\")";
 	}
 	
 	/**
@@ -267,6 +290,7 @@ EOS;
 		$options['indicatorID'] = $this->_busy->getClientID();
 		$options['completeID'] = $this->_success->getClientID();
 		$options['errorID'] = $this->_error->getClientID();
+		$options['autoPostBack'] = $this->getAutoPostBack();
 		return $options;
 	}
 

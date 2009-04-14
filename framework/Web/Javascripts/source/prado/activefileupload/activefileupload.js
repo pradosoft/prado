@@ -16,10 +16,12 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		Prado.Registry.set(options.inputID, this);
 		
 		// set up events
-		Event.observe(this.input,"change",this.fileChanged.bind(this));
+		if (options.autoPostBack){
+			Event.observe(this.input,"change",this.fileChanged.bind(this));
+		}
 	},
 	
-	fileChanged:function(){
+	fileChanged : function(){
 		// show the upload indicator, and hide the complete and error indicators (if they areSn't already).
 		this.flag.value = '1';
 		this.complete.style.display = 'none';
@@ -33,7 +35,7 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		this.form.target = this.oldtargetID;
 	},
 	
-	finishUpload:function(options){
+	finishUpload : function(options){
 		// hide the display indicator.
 		this.flag.value = '';
 		this.indicator.style.display = 'none';
@@ -58,8 +60,12 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		Prado.WebUI.TActiveFileUpload.controls[control.options.ID] = control;
 	},
 	
-	onFileUpload: function(options)
+	onFileUpload : function(options)
 	{
 		Prado.WebUI.TActiveFileUpload.controls[options.clientID].finishUpload(options);
+	},
+	
+	fileChanged : function(controlID){
+		Prado.WebUI.TActiveFileUpload.controls[controlID].fileChanged();
 	}
 });

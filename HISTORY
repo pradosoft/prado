@@ -16,6 +16,7 @@ BUG: Issue#130 - TDbLogRoute::processLogs wrong values binding (Christophe)
 BUG: Issue#136 - TActiveDatePicker don't callback when ShowCalendar is false (Christophe)
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
+ENH: Issue#135 - Add AutoPostBack property to TActiveFileUpload (Bradley)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
 ENH: replace is_null() function calls with native language constuct (Yves)
