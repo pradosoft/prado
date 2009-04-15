@@ -97,8 +97,8 @@ class TLogRouter extends TModule
 
 	/**
 	 * Adds a TLogRoute instance to the log router.
-	 * 
-	 * @param TLogRoute $route 
+	 *
+	 * @param TLogRoute $route
 	 * @throws TInvalidDataTypeException if the route object is invalid
 	 */
 	public function addRoute($route)
@@ -798,16 +798,23 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Creates the DB table for storing log messages.
+	 * @todo create sequence for PostgreSQL
 	 */
 	protected function createDbTable()
 	{
+		$db = $this->getDbConnection();
+		$driver=$db->getDriverName();
+		$autoidAttributes = '';
+		if($driver==='mysql')
+			$autoidAttributes = 'AUTO_INCREMENT';
+
 		$sql='CREATE TABLE '.$this->_logTable.' (
-			log_id INTEGER NOT NULL PRIMARY KEY,
+			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
 			level INTEGER,
 			category VARCHAR(128),
 			logtime VARCHAR(20),
 			message VARCHAR(255))';
-		$this->getDbConnection()->createCommand($sql)->execute();
+		$db->createCommand($sql)->execute();
 	}
 
 	/**
