@@ -75,8 +75,7 @@ class TSqlMapCacheModel extends TComponent
 	}
 
 	/**
-	 * integer the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param int cache size.
+	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 */
 	public function setFlushInterval($value)
 	{
@@ -84,7 +83,7 @@ class TSqlMapCacheModel extends TComponent
 	}
 
 	/**
-	 * @return int cache duration.
+	 * @return integer cache duration.
 	 */
 	public function getFlushInterval()
 	{
