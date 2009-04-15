@@ -18,6 +18,7 @@ BUG: Issue#136 - TActiveDatePicker don't callback when ShowCalendar is false (Ch
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
 ENH: Issue#135 - Add AutoPostBack property to TActiveFileUpload (Bradley)
+ENH: Issue#117 - TValidationSummary: new display mode "HeaderOnly" that only render value of HeaderText property (Yves)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
 ENH: replace is_null() function calls with native language constuct (Yves)

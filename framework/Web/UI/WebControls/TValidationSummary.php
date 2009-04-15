@@ -324,6 +324,9 @@ class TValidationSummary extends TWebControl
 				case TValidationSummaryDisplayMode::BulletList:
 					$this->renderBulletList($writer);
 					break;
+				case TValidationSummaryDisplayMode::HeaderOnly:
+					$this->renderHeaderOnly($writer);
+					break;
 			}
 		}
 	}
@@ -381,6 +384,15 @@ class TValidationSummary extends TWebControl
 			$content .= "</ul>\n";
 		}
 		$writer->write($content);
+	}
+
+	/**
+	 * Render the validation summary header text only.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	protected function renderHeaderOnly($writer)
+	{
+		$writer->write($this->getHeaderText());
 	}
 }
 
@@ -468,6 +480,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
  * - SimpleList: the error messages are displayed as a list without any decorations.
  * - SingleParagraph: the error messages are concatenated together into a paragraph.
  * - BulletList: the error messages are displayed as a bulleted list.
+ * - HeaderOnly: only the HeaderText will be display.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
@@ -479,6 +492,7 @@ class TValidationSummaryDisplayMode extends TEnumerable
 	const SimpleList='SimpleList';
 	const SingleParagraph='SingleParagraph';
 	const BulletList='BulletList';
+	const HeaderOnly='HeaderOnly';
 }
 
 
