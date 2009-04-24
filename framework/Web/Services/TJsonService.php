@@ -74,11 +74,11 @@ class TJsonService extends TService
 	 */
 	protected function loadJsonServices($config)
 	{
-		if($this->getApplication->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
 			if(is_array($config))
 			{
-				foreach($config as $id => $json)
+				foreach($config['json'] as $id => $json)
 					$this->_services[$id] = $json;
 			}
 		}
@@ -109,7 +109,7 @@ class TJsonService extends TService
 				if(isset($serviceConfig['class']))
 				{
 					$service=Prado::createComponent($serviceConfig['class']);
-					if($service instanceof JsonResponse)
+					if($service instanceof TJsonResponse)
 					{
 						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:array();
 						$this->createJsonResponse($service,$properties,$serviceConfig);
