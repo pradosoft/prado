@@ -161,7 +161,7 @@ class TSoapService extends TService
 		{
 			if(is_array($config))
 			{
-				foreach($config as $id => $server)
+				foreach($config['soap'] as $id => $server)
 				{
 					$properties = isset($server['properties'])?$server['properties']:array();
 					if(isset($this->_servers[$id]))
