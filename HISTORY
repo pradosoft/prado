@@ -1,5 +1,6 @@
 Version 3.1.5 (to be released)
 BUG: URL wildcard patterns didn't work with subfolders
+ENH: Issue#146 - replace deprecated(php5.3>) split with explode in TPgsqlMetaData:getPrimaryKeys(), PradoBase::getUserLanguages() (Yves)
 BUG: TDbLogRoute::createDbTable: add AUTO_INCREMENT attribute to log_id column if driver is mysql (Yves)
 BUG/ENH: TSqlMapCacheModel now consider <flushInterval> tag as described in doc (sqlmap.pdf) - valid attributes are duration in sec or seconds, minutes, hours, days (Yves)
 BUG: Issue#88 - SQLMap $Param$ re-evaluation bug (Yves)

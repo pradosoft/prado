@@ -448,7 +448,7 @@ class PradoBase
 				$languages=array();
 				foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
 				{
-					$array=split(';q=',trim($language));
+					$array=explode(';q=',trim($language));
 					$languages[trim($array[0])]=isset($array[1])?(float)$array[1]:1.0;
 				}
 				arsort($languages);
