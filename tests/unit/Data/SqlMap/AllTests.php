@@ -6,6 +6,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'DynamicParameterTest.php';
+require_once './DataMapper/AllTests.php';
 
 class Data_SqlMap_AllTests {
 
@@ -17,6 +18,7 @@ class Data_SqlMap_AllTests {
 		$suite = new PHPUnit_Framework_TestSuite('System.Data.SqlMap');
 
 		$suite->addTestSuite('DynamicParameterTest');
+		$suite -> addTest( Data_SqlMap_DataMapper_AllTests::suite() );
 
 		return $suite;
 	}

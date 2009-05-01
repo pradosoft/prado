@@ -71,6 +71,8 @@ class TPropertyAccess
 					$object = $object->{$getter}();
 				else if(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
+				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
+					$object = $object->{$prop};
 				else
 					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
 			}
@@ -105,6 +107,8 @@ class TPropertyAccess
 				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
 					$object = $object->{$getter}();
 				else if(in_array($prop, array_keys(get_object_vars($object))))
+					$object = $object->{$prop};
+				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
 					$object = $object->{$prop};
 				else
 					return false;

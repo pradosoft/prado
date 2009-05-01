@@ -1,4 +1,5 @@
 Version 3.1.5 (to be released)
+BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#88 - SQLMap $Param$ re-evaluation bug (Yves)
