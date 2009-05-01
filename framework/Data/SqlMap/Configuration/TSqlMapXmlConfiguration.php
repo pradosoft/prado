@@ -89,6 +89,9 @@ abstract class TSqlMapXmlConfigBuilder
 	 */
 	protected function loadXmlDocument($filename,TSqlMapXmlConfiguration $config)
 	{
+		if( strpos($filename, '${') !== false)
+			$filename = $config->replaceProperties($filename);
+
 		if(!is_file($filename))
 			throw new TSqlMapConfigurationException(
 				'sqlmap_unable_to_find_config', $filename);
@@ -228,6 +231,9 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		if(strlen($resource = (string)$node['resource']) > 0)
 		{
+			if( strpos($resource, '${') !== false)
+				$resource = $this->replaceProperties($resource);
+
 			$mapping = new TSqlMapXmlMappingConfiguration($this);
 			$filename = $this->getAbsoluteFilePath($this->_configFile, $resource);
 			$mapping->configure($filename);

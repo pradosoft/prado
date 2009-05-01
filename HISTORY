@@ -8,6 +8,7 @@ BUG: Issue#99 - TActiveRecord::save(): confusion with order of keys in table/ind
 BUG: Issue#108 - clientscripts.php: prepending set_time_limit(0) call with an "@" to suppress PHP warning in safe mode (Yves)
 BUG: Issue#107 - typo in TDbConnection::getCharset() (Christophe)
 BUG: Issue#120 - TActiveDropDownList PromptText and PromptValue got lost during callback and data rebind (Yves)
+BUG: Issue#122 - SqlMap: support for properties in resource filenames, fix sqlmap doc - property "name" instead of "key" (Yves)
 BUG: Issue#126 - THtmlArea: boolean options output as strings (Christophe)
 BUG: Issue#127 - TDataSourceConfig::findConnectionByID try to access private var (Cristophe)
 BUG: Issue#129 - TDbLogRoute::init don't close the sql command (Christophe)

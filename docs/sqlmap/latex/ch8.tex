@@ -166,7 +166,7 @@ elements. For example:
 <properties>
  <property resource="myProperties.config"/>
  <property resource="anotherProperties.config"/>
- <property key="host" value="ibatis.com" />
+ <property name="host" value="ibatis.com" />
 </properties>
 \end{verbatim}
 
@@ -188,11 +188,11 @@ elements. For example:
   \\
   \hline
 %
- \tt{key} &
+ \tt{name} &
   \begin{minipage}{0.7\textwidth}\vspace{2mm}
-   Defines a property key (variable) name
+   Defines a property name (variable) name
     \vspace{-3mm}\begin{verbatim}
-    key="username"
+    name="username"
     \end{verbatim}\vspace{-5mm}
   \end{minipage}
   \\
@@ -201,7 +201,7 @@ elements. For example:
  \tt{value} &
   \begin{minipage}{0.7\textwidth}\vspace{2mm}
    Defines a value that will be used by the DataMapper in place of the
-   the specified property key/variable
+   the specified property name/variable
     \vspace{-3mm}\begin{verbatim}
     value="mydbuser"
     \end{verbatim}\vspace{-5mm}
