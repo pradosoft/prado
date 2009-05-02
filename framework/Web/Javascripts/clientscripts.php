@@ -49,7 +49,7 @@
 //run script for as long as needed
 @set_time_limit(0);
 
-//set error_reporting directive 
+//set error_reporting directive
 @error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 function get_client_script_files()
@@ -292,9 +292,9 @@ function supports_gzip_encoding()
  * @package JSMin
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
- * @copyright 2007 Ryan Grove <ryan@wonko.com> (PHP port)
+ * @copyright 2008 Ryan Grove <ryan@wonko.com> (PHP port)
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 1.1.0 (2007-06-01)
+ * @version 1.1.1 (2008-03-02)
  * @link http://code.google.com/p/jsmin-php/
  */
 
@@ -308,7 +308,7 @@ class JSMin {
   protected $inputIndex  = 0;
   protected $inputLength = 0;
   protected $lookAhead   = null;
-  protected $output      = array();
+  protected $output      = '';
 
   // -- Public Static Methods --------------------------------------------------
 
@@ -329,15 +329,15 @@ class JSMin {
   protected function action($d) {
     switch($d) {
       case 1:
-        $this->output[] = $this->a;
+        $this->output .= $this->a;
 
       case 2:
         $this->a = $this->b;
 
         if ($this->a === "'" || $this->a === '"') {
           for (;;) {
-            $this->output[] = $this->a;
-            $this->a        = $this->get();
+            $this->output .= $this->a;
+            $this->a       = $this->get();
 
             if ($this->a === $this->b) {
               break;
@@ -348,8 +348,8 @@ class JSMin {
             }
 
             if ($this->a === '\\') {
-              $this->output[] = $this->a;
-              $this->a        = $this->get();
+              $this->output .= $this->a;
+              $this->a       = $this->get();
             }
           }
         }
@@ -362,25 +362,22 @@ class JSMin {
             $this->a === ':' || $this->a === '[' || $this->a === '!' ||
             $this->a === '&' || $this->a === '|' || $this->a === '?')) {
 
-          $this->output[] = $this->a;
-          $this->output[] = $this->b;
+          $this->output .= $this->a . $this->b;
 
           for (;;) {
             $this->a = $this->get();
 
             if ($this->a === '/') {
               break;
-            }
-            elseif ($this->a === '\\') {
-              $this->output[] = $this->a;
-              $this->a        = $this->get();
-            }
-            elseif (ord($this->a) <= self::ORD_LF) {
+            } elseif ($this->a === '\\') {
+              $this->output .= $this->a;
+              $this->a       = $this->get();
+            } elseif (ord($this->a) <= self::ORD_LF) {
               throw new JSMinException('Unterminated regular expression '.
                   'literal.');
             }
 
-            $this->output[] = $this->a;
+            $this->output .= $this->a;
           }
 
           $this->b = $this->next();
@@ -396,8 +393,7 @@ class JSMin {
       if ($this->inputIndex < $this->inputLength) {
         $c = $this->input[$this->inputIndex];
         $this->inputIndex += 1;
-      }
-      else {
+      } else {
         $c = null;
       }
     }
@@ -426,8 +422,7 @@ class JSMin {
         case ' ':
           if ($this->isAlphaNum($this->b)) {
             $this->action(1);
-          }
-          else {
+          } else {
             $this->action(2);
           }
           break;
@@ -496,7 +491,7 @@ class JSMin {
       }
     }
 
-    return implode('', $this->output);
+    return $this->output;
   }
 
   protected function next() {

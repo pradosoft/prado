@@ -26,6 +26,7 @@ ENH: Issue#146 - replace deprecated(php5.3>) split with explode in TPgsqlMetaDat
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
+ENH: clientscripts.php Updated to JSMin 1.1.1 - According to author 15% faster with 94% less memory usage (Yves) 
 ENH: replace is_null() function calls with native language constuct (Yves)
 ENH: replace array_push() function calls with native language constuct if make sense (Yves)
 ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avoid bad render behavior in table-layout:fixed environment, explicit set text color to increase readability (Yves)
