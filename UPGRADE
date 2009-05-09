@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.1.4
+         Upgrading Instructions for PRADO Framework v3.1.5
          =================================================
 
 !!!IMPORTANT!!!
@@ -8,6 +8,15 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v3.1.4
+---------------------
+- The structure of indices used by TDbCache has been changed by replacing
+  PRIMARY KEY on 'itemkey' with non-unique index and adding an additional index on column 'expire'.
+  Existing tables should be amended or deleted and recreated as follows: 
+  CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
+  CREATE INDEX IX_itemkey ON pradocache (itemkey)
+  CREATE INDEX IX_expire ON pradocache (expire)
 
 Upgrading from v3.1.3
 ---------------------

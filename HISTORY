@@ -23,6 +23,7 @@ ENH: Issue#115 - Registry for Prado generated clientside counterparts of servers
 ENH: Issue#117 - TValidationSummary: new display mode "HeaderOnly" that only render value of HeaderText property (Yves)
 ENH: Issue#135 - Add AutoPostBack property to TActiveFileUpload (Bradley)
 ENH: Issue#146 - replace deprecated(php5.3>) split with explode in TPgsqlMetaData:getPrimaryKeys(), PradoBase::getUserLanguages() (Yves)
+ENH: Issue#141 - TDbCache performance: modify structure of indices, new property 'FlushInterval' to control how often expired items will be removed (Yves)
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3

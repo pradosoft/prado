@@ -31,13 +31,22 @@ Prado::using('System.Data.TDbConnection');
  * The cached data is stored in a table in the specified database.
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
- * (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)
+ * <code>
+ * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
+ * CREATE INDEX IX_itemkey ON pradocache (itemkey)
+ * CREATE INDEX IX_expire ON pradocache (expire)
+ * </code>
  *
  * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
  * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
  *
+ * Important: Make sure that the indices are non-unique!
+ *
  * If you want to change the cache table name, or if you want to create the table by yourself,
  * you may set {@link setCacheTableName CacheTableName} and {@link setAutoCreateCacheTable AutoCreateCacheTableName} properties.
+ *
+ * {@link setFlushInterval FlushInterval} control how often expired items will be removed from cache.
+ * If you prefer to remove expired items manualy e.g. via cronjob you can disable automatic deletion by setting FlushInterval to '0'.
  *
  * The following basic cache operations are implemented:
  * - {@link get} : retrieve the value with a key (if any) from cache
@@ -92,6 +101,18 @@ class TDbCache extends TCache
 	 */
 	private $_cacheTable='pradocache';
 	/**
+	 * @var integer Interval expired items will be removed from cache
+	 */
+	private $_flushInterval=60;
+	/**
+	 * @var boolean
+	 */
+	private $_cacheInitialized = false;
+	/**
+	 * @var boolean
+	 */
+	private $_createCheck= false;
+	/**
 	 * @var boolean whether the cache DB table should be created automatically
 	 */
 	private $_autoCreate=true;
@@ -111,23 +132,70 @@ class TDbCache extends TCache
 
 	/**
 	 * Initializes this module.
-	 * This method is required by the IModule interface. It checks if the DbFile
-	 * property is set, and creates a SQLiteDatabase instance for it.
-	 * The database or the cache table does not exist, they will be created.
-	 * Expired values are also deleted.
+	 * This method is required by the IModule interface.
+	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
+	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
+	 *
 	 * @param TXmlElement configuration for this module, can be null
-	 * @throws TConfigurationException if sqlite extension is not installed,
-	 *         DbFile is set invalid, or any error happens during creating database or cache table.
 	 */
 	public function init($config)
 	{
+		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', array($this, 'doInitializeCache'));
+		$this -> getApplication() -> attachEventHandler('OnSaveState', array($this, 'doFlushCacheExpired'));
+		parent::init($config);
+	}
+
+	/**
+	 * Event listener for TApplication.OnSaveState
+	 * @return void
+	 * @since 3.1.5
+	 * @see flushCacheExpired
+	 */
+	public function doFlushCacheExpired()
+	{
+		$this->flushCacheExpired(false);
+	}
+
+	/**
+	 * Event listener for TApplication.OnLoadStateComplete
+	 *
+	 * @return void
+	 * @since 3.1.5
+	 * @see initializeCache
+	 */
+	public function doInitializeCache()
+	{
+		$this->initializeCache();
+	}
+
+	/**
+	 * Initialize TDbCache
+	 *
+	 * If {@link setAutoCreateCacheTable AutoCreateCacheTableName} is 'true' check existence of cache table
+	 * and create table if does not exist.
+	 *
+	 * @return void
+	 * @throws TConfigurationException if any error happens during creating database or cache table.
+	 * @since 3.1.5
+	 */
+	protected function initializeCache()
+	{
+		if($this->_cacheInitialized) return;
+
 		$db=$this->getDbConnection();
 		$db->setActive(true);
-
-		$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.time();
 		try
 		{
-			$db->createCommand($sql)->execute();
+			$key = 'TDbCache:' . $this->_cacheTable . ':created';
+			$this -> _createCheck = $this -> getApplication() -> getGlobalState($key, 0);
+
+			if($this->_autoCreate && !$this -> _createCheck) {
+				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0';
+				$db->createCommand($sql)->queryScalar();
+
+				$this -> _createCheck = true;
+				$this -> getApplication() -> setGlobalState($key, time());
+			}
 		}
 		catch(Exception $e)
 		{
@@ -142,14 +210,69 @@ class TDbCache extends TCache
 				else
 					$blob='BLOB';
 
-				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INT)";
+				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128), value $blob, expire INT)";
 				$db->createCommand($sql)->execute();
+
+				$sql='CREATE INDEX IX_itemkey ON ' . $this->_cacheTable . ' (itemkey)';
+				$db->createCommand($sql)->execute();
+
+				$sql='CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';
+				$db->createCommand($sql)->execute();
+
+				$this -> _createCheck = true;
+				$this -> getApplication() -> setGlobalState($key, time());
 			}
 			else
 				throw new TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
 		}
+		$this->_cacheInitialized = true;
+	}
 
-		parent::init($config);
+	/**
+	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
+	 * @param boolean override {@link setFlushInterval FlushInterval} and force deletion of expired items
+	 * @return void
+	 * @since 3.1.5
+	 */
+	public function flushCacheExpired($force=false)
+	{
+		$interval = $this -> getFlushInterval();
+		if(!$force && $interval === 0) return;
+
+		$key	= 'TDbCache:' . $this->_cacheTable . ':flushed';
+		$now	= time();
+		$next	= $interval + (integer)$this -> getApplication() -> getGlobalState($key, 0);
+
+		if($force || $next <= $now)
+		{
+			if(!$this->_cacheInitialized) $this->initializeCache();
+			$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.$now;
+			$this->getDbConnection()->createCommand($sql)->execute();
+			$this -> getApplication() -> setGlobalState($key, $now);
+		}
+	}
+
+	/**
+	 * @return integer Interval in sec expired items will be removed from cache. Default to 60
+	 * @since 3.1.5
+	 */
+	public function getFlushInterval()
+	{
+		return $this->_flushInterval;
+	}
+
+	/**
+	 * Sets interval expired items will be removed from cache
+	 *
+	 * To disable automatic deletion of expired items,
+	 * e.g. for external flushing via cron you can set value to '0'
+	 *
+	 * @param integer Interval in sec
+	 * @since 3.1.5
+	 */
+	public function setFlushInterval($value)
+	{
+		$this->_flushInterval = (integer) $value;
 	}
 
 	/**
@@ -284,9 +407,17 @@ class TDbCache extends TCache
 	 * Note, if {@link setAutoCreateCacheTable AutoCreateCacheTable} is false
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
-	 * (itemkey CHAR(128) PRIMARY KEY, value BLOB, expire INT)
+	 * <code>
+	 * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
+	 * CREATE INDEX IX_itemkey ON pradocache (itemkey)
+	 * CREATE INDEX IX_expire ON pradocache (expire)
+	 * </code>
+	 *
 	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
 	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
+	 *
+	 * Important: Make sure that the indices are non-unique!
+	 *
 	 * @param string the name of the DB table to store cache content
 	 * @see setAutoCreateCacheTable
 	 */
@@ -321,7 +452,8 @@ class TDbCache extends TCache
 	 */
 	protected function getValue($key)
 	{
-		$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().')';
+		if(!$this->_cacheInitialized) $this->initializeCache();
+		$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
 		return $this->_db->createCommand($sql)->queryScalar();
 	}
 
@@ -351,6 +483,7 @@ class TDbCache extends TCache
 	 */
 	protected function addValue($key,$value,$expire)
 	{
+		if(!$this->_cacheInitialized) $this->initializeCache();
 		$expire=($expire<=0)?0:time()+$expire;
 		$sql="INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		try
@@ -375,6 +508,7 @@ class TDbCache extends TCache
 	 */
 	protected function deleteValue($key)
 	{
+		if(!$this->_cacheInitialized) $this->initializeCache();
 		$command=$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
 		$command->bindValue(':key',$key,PDO::PARAM_STR);
 		$command->execute();
@@ -387,9 +521,8 @@ class TDbCache extends TCache
 	 */
 	public function flush()
 	{
+		if(!$this->_cacheInitialized) $this->initializeCache();
 		$this->_db->createCommand("DELETE FROM {$this->_cacheTable}")->execute();
 		return true;
 	}
 }
-
-?>
