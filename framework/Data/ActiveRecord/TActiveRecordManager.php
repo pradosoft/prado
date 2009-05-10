@@ -44,6 +44,14 @@ class TActiveRecordManager extends TComponent
 	private $_cache;
 
 	/**
+	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'
+	 *
+	 * @var TActiveRecordInvalidFinderResult
+	 * @since 3.1.5
+	 */
+	private $_invalidFinderResult = TActiveRecordInvalidFinderResult::Null;
+
+	/**
 	 * @return ICache application cache.
 	 */
 	public function getCache()
@@ -106,6 +114,25 @@ class TActiveRecordManager extends TComponent
 	{
 		return new TActiveRecordGateway($this);
 	}
+
+	/**
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @since 3.1.5
+	 * @see setInvalidFinderResult
+	 */
+	public function getInvalidFinderResult()
+	{
+		return $this->_invalidFinderResult;
+	}
+
+	/**
+	 * Define the way an active record finder react if an invalid magic-finder invoked
+	 * @param TActiveRecordInvalidFinderResult
+	 * @since 3.1.5
+	 * @see getInvalidFinderResult
+	 */
+	public function setInvalidFinderResult($value)
+	{
+		$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'TActiveRecordInvalidFinderResult');
+	}
 }
-
-

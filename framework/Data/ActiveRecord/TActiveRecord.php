@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecord and TActiveRecordEventParameter class file.
+ * TActiveRecord, TActiveRecordEventParameter, TActiveRecordInvalidFinderResult class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
@@ -188,6 +188,15 @@ abstract class TActiveRecord extends TComponent
 	 * @var TDbConnection database connection object.
 	 */
 	protected $_connection; // use protected so that serialization is fine
+
+
+	/**
+	 * Defaults to 'null'
+	 *
+	 * @var TActiveRecordInvalidFinderResult
+	 * @since 3.1.5
+	 */
+	private $_invalidFinderResult = null;
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
@@ -829,13 +838,46 @@ abstract class TActiveRecord extends TComponent
 		else if($delete=strncasecmp($method,'deleteallby',11)===0)
 			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
-			return null;//throw new TActiveRecordException('ar_invalid_finder_method',$method);
+		{
+			if($this->getInvalidFinderResult() == TActiveRecordInvalidFinderResult::Exception)
+				throw new TActiveRecordException('ar_invalid_finder_method',$method);
+			else
+				return null;
+		}
 
 		$criteria = $this->getRecordGateway()->getCommand($this)->createCriteriaFromString($method, $condition, $args);
 		if($delete)
 			return $this->deleteAll($criteria);
 		else
 			return $findOne ? $this->find($criteria) : $this->findAll($criteria);
+	}
+
+	/**
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @see TActiveRecordManager::getInvalidFinderResult
+	 * @since 3.1.5
+	 */
+	public function getInvalidFinderResult()
+	{
+		if($this->_invalidFinderResult !== null)
+			return $this->_invalidFinderResult;
+
+		return self::getRecordManager()->getInvalidFinderResult();
+	}
+
+	/**
+	 * Define the way an active record finder react if an invalid magic-finder invoked
+	 *
+	 * @param TActiveRecordInvalidFinderResult|null
+	 * @see TActiveRecordManager::setInvalidFinderResult
+	 * @since 3.1.5
+	 */
+	public function setInvalidFinderResult($value)
+	{
+		if($value === null)
+			$this->_invalidFinderResult = null;
+		else
+			$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'TActiveRecordInvalidFinderResult');
 	}
 
 	/**
@@ -1021,3 +1063,25 @@ class TActiveRecordChangeEventParameter extends TEventParameter
 	}
 }
 
+/**
+ * TActiveRecordInvalidFinderResult class.
+ * TActiveRecordInvalidFinderResult defines the enumerable type for possible results
+ * if an invalid {@link TActiveRecord::__call magic-finder} invoked.
+ *
+ * The following enumerable values are defined:
+ * - Null: return null (default)
+ * - Exception: throws a TActiveRecordException
+ *
+ * @author Yves Berkholz <godzilla80@gmx.net>
+ * @version $Id$
+ * @package System.Data.ActiveRecord
+ * @see TActiveRecordManager::setInvalidFinderResult
+ * @see TActiveRecordConfig::setInvalidFinderResult
+ * @see TActiveRecord::setInvalidFinderResult
+ * @since 3.1.5
+ */
+class TActiveRecordInvalidFinderResult extends TEnumerable
+{
+	const Null = 'Null';
+	const Exception = 'Exception';
+}
