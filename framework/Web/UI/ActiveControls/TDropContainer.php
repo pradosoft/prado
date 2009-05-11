@@ -123,12 +123,8 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		// Find the control
 		// Warning, this will not work if you have a '_' in your control Id !
-		$control=$this->getPage();
-		$namingContainers=explode(TControl::CLIENT_ID_SEPARATOR, $dropControlId);
-		foreach ($namingContainers as $nc)
-		{
-			$control=$control->findControl($nc);
-		}
+		$dropControlId=str_replace(TControl::CLIENT_ID_SEPARATOR,TControl::ID_SEPARATOR,$dropControlId);
+		$control=$this->getPage()->findControl($dropControlId);
 		$this->raiseEvent('OnDrop', $this, new TDropContainerEventParameter ($control));
 		
 	}
@@ -196,7 +192,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		if ($this->_container===null)
 		{
 			$this->_container=Prado::CreateComponent('System.Web.UI.ActiveControls.TActivePanel');
-			$this->_container->setId($this->getId().'_content');
+			$this->_container->setId($this->getId(false).'_content');
 			parent::getControls()->add($this->_container);
 		}
 	}
