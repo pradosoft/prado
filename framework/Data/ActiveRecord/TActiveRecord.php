@@ -196,7 +196,7 @@ abstract class TActiveRecord extends TComponent
 	 * @var TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
 	 */
-	private $_invalidFinderResult = null;
+	protected $_invalidFinderResult = null; // use protected so that serialization is fine
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.
