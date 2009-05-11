@@ -14,6 +14,7 @@ BUG: Issue#127 - TDataSourceConfig::findConnectionByID try to access private var
 BUG: Issue#129 - TDbLogRoute::init don't close the sql command (Christophe)
 BUG: Issue#130 - TDbLogRoute::processLogs wrong values binding (Christophe)
 BUG: Issue#136 - TActiveDatePicker don't callback when ShowCalendar is false (Christophe)
+BUG: Issue#148 - Bad Oracle Support (E.Letard)
 BUG: Issue#150 - Multiple TDropContainers in same namingcontainer give error (Christophe)
 BUG: URL wildcard patterns didn't work with subfolders
 BUG: TDbLogRoute::createDbTable: add AUTO_INCREMENT attribute to log_id column if driver is mysql (Yves)

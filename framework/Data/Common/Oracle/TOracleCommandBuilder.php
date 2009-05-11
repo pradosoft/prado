@@ -86,20 +86,14 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		$niniDoSelect = strpos($sql, 'SELECT') + 6;
 		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
 
-		$niniDoWhere = strpos($sql, 'WHERE') + 5;
-
-		$WhereConstraint = substr($sql, $niniDoWhere, $nfimDoWhere - $niniDoWhere);
-
-		$WhereInSubSelect = "";
-		if (trim($WhereConstraint) !== "") {
-			$WhereInSubSelect = "WHERE " . $WhereConstraint;
-		}
+		$WhereInSubSelect="";
+		if(strpos($sql, 'WHERE')!==false)
+			$WhereInSubSelect = "WHERE " .substr($sql, strpos($sql, 'WHERE')+5, $nfimDoWhere - $niniDoWhere);
 
 		$sORDERBY = '';
 		if (stripos($sql, 'ORDER') !== false) {
 			$p = stripos($sql, 'ORDER');
-			$sORDERBY = substr($sql, $p +8, 10000);
-
+			$sORDERBY = substr($sql, $p +8);
 		}
 
 		$fields = substr($sql, 0, $nfimDoSelect);
@@ -142,23 +136,18 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 		
 		************************* */
-		$toReg = $offset + $limit -1;
+		$offset=(int)$offset;
+		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
-		if (empty ($sORDERBY)) {
-			$newSql = " SELECT $fields FROM " .
-			"(					" .
-			"		SELECT ROW_NUMBER() OVER ( ORDER BY ROWNUM ) as {$pradoNUMLIN} {$aliasedFields} " .
-			"		FROM {$fullTableName} {$fieldsALIAS}" .
-			") nn					" .
-			" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} ";
-		} else {
-			$newSql = " SELECT $fields FROM " .
-			"(					" .
-			"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) as {$pradoNUMLIN} {$aliasedFields} " .
-			"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
-			") nn					" .
-			" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} <= {$toReg} ";
-		}
+		if (empty ($sORDERBY)) 
+			$sORDERBY="ROWNUM";
+			
+		$newSql = 	" SELECT $fields FROM " .
+					"(					" .
+					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .
+					"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .
+					") nn					" .
+					" WHERE nn.{$pradoNUMLIN} >= {$offset} AND nn.{$pradoNUMLIN} < {$toReg} ";
 		//echo $newSql."\n<br>\n";
 		return $newSql;
 	}
