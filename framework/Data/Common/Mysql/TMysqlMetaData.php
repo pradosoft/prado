@@ -310,7 +310,7 @@ EOD;
 			$sql = "SHOW CREATE TABLE `{$tableName}`";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$result = $command->queryRow();
-		return $result['Create Table'];
+		return isset($result['Create Table']) ? $result['Create Table'] : (isset($result['Create View']) ? $result['Create View'] : '');
 	}
 
 	/**
