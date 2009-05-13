@@ -3,6 +3,7 @@ BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
 BUG: Issue#88 - SQLMap $Param$ re-evaluation bug (Yves)
+BUG: Issue#95 - TMysqlMetaData::getShowCreateTable() throws TPhpErrorException "[Notice] Undefined index: Create Table" if table is a view (Yves)
 BUG: Issue#96 - THttpResponse::redirect don't send status code (Christophe)
 BUG: Issue#99 - TActiveRecord::save(): confusion with order of keys in table/index (Christophe)
 BUG: Issue#108 - clientscripts.php: prepending set_time_limit(0) call with an "@" to suppress PHP warning in safe mode (Yves)
@@ -16,7 +17,7 @@ BUG: Issue#130 - TDbLogRoute::processLogs wrong values binding (Christophe)
 BUG: Issue#136 - TActiveDatePicker don't callback when ShowCalendar is false (Christophe)
 BUG: Issue#148 - Bad Oracle Support (E.Letard)
 BUG: Issue#150 - Multiple TDropContainers in same namingcontainer give error (Christophe)
-BUG: Issue#95 - TMysqlMetaData::getShowCreateTable() throws TPhpErrorException "[Notice] Undefined index: Create Table" if table is a view
+Bug: Issue#154 - Bug in TOracleMetaData.php causing SqlMap not work with Oracle database (Christophe)
 BUG: URL wildcard patterns didn't work with subfolders
 BUG: TDbLogRoute::createDbTable: add AUTO_INCREMENT attribute to log_id column if driver is mysql (Yves)
 BUG: Ensure rendering of clientID in TActivePanel (Christophe)
