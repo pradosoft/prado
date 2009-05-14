@@ -42,7 +42,7 @@ class TPgsqlTableInfo extends TDbTableInfo
 		if(($schema=$this->getSchemaName())!==null)
 			return $schema.'.'.$this->getTableName();
 		else
-			$this->getTableName();
+			return $this->getTableName();
 	}
 
 	/**

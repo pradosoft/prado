@@ -21,6 +21,7 @@ Bug: Issue#154 - Bug in TOracleMetaData.php causing SqlMap not work with Oracle 
 BUG: URL wildcard patterns didn't work with subfolders
 BUG: TDbLogRoute::createDbTable: add AUTO_INCREMENT attribute to log_id column if driver is mysql (Yves)
 BUG: Ensure rendering of clientID in TActivePanel (Christophe)
+BUG: TPgsqlTableInfo::getTableFullName() return void if no schema given
 BUG/ENH: TSqlMapCacheModel now consider <flushInterval> tag as described in doc (sqlmap.pdf) - valid attributes are duration in sec or seconds, minutes, hours, days (Yves)
 BUG/ENH: Issue#112 - TXmlDocument add support for namespaces: for backward compatibility only if SimpleXml installed (Yves)
 ENH: Issue#115 - Registry for Prado generated clientside counterparts of serverside controls (Yves Berkholz)
