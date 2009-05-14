@@ -109,14 +109,17 @@ abstract class TActiveRecordRelation
 	protected function findForeignKeys($from, $matchesRecord, $loose=false)
 	{
 		$gateway = $matchesRecord->getRecordGateway();
-		$matchingTableName = $gateway->getRecordTableInfo($matchesRecord)->getTableName();
+		$recordTableInfo = $gateway->getRecordTableInfo($matchesRecord);
+		$matchingTableName = strtolower($recordTableInfo->getTableName());
+		$matchingFullTableName = strtolower($recordTableInfo->getTableFullName());
 		$tableInfo=$from;
 		if($from instanceof TActiveRecord)
 			$tableInfo = $gateway->getRecordTableInfo($from);
 		//find first non-empty FK
 		foreach($tableInfo->getForeignKeys() as $fkeys)
 		{
-			if(strtolower($fkeys['table'])===strtolower($matchingTableName))
+			$fkTable = strtolower($fkeys['table']);
+			if($fkTable===$matchingTableName || $fkTable===$matchingFullTableName)
 			{
 				$hasFkField = !$loose && $this->getContext()->hasFkField();
 				$key = $hasFkField ? $this->getFkFields($fkeys['keys']) : $fkeys['keys'];
