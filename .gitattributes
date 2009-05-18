@@ -1992,6 +1992,11 @@ docs/sqlmap/latex/tut3.tex -text
 docs/sqlmap/sqlmap.pdf -text
 docs/sqlmap/sqlmap_tut.pdf -text
 framework/.htaccess -text
+framework/3rdParty/FirePHPCore/FirePHP.class.php eol=lf
+framework/3rdParty/FirePHPCore/FirePHP.class.php4 -text
+framework/3rdParty/FirePHPCore/LICENSE -text
+framework/3rdParty/FirePHPCore/fb.php eol=lf
+framework/3rdParty/FirePHPCore/fb.php4 -text
 framework/3rdParty/Markdown/License.text -text
 framework/3rdParty/Markdown/MarkdownParser.php -text
 framework/3rdParty/PhpShell/PHP/Shell.php -text

@@ -38,6 +38,7 @@ ENH: clientscripts.php Updated to JSMin 1.1.1 - According to author 15% faster w
 ENH: replace is_null() function calls with native language constuct (Yves)
 ENH: replace array_push() function calls with native language constuct if make sense (Yves)
 ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avoid bad render behavior in table-layout:fixed environment, explicit set text color to increase readability (Yves)
+ENH: new log route subclass for FirePHP: TFirePhpLogRoute - FirePHP is ideally suited for AJAX development where clean JSON and XML responses are required (Yves)
 ENH: TBaseValidator, TCustomValidator: change visibilty (protected => public) of getValidationTarget() (Yves)
 
 Version 3.1.4 January 11, 2009
