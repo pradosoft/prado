@@ -19,6 +19,7 @@ BUG: Issue#139 - add schema support to TActiveRecordRelation::findForeignKeys() 
 BUG: Issue#148 - Bad Oracle Support (E.Letard)
 BUG: Issue#150 - Multiple TDropContainers in same namingcontainer give error (Christophe)
 Bug: Issue#154 - Bug in TOracleMetaData.php causing SqlMap not work with Oracle database (Christophe)
+BUG: Issue#161 - SqlMap add cache dependencies if TApplicationMode Debug/Normal (Yves)
 BUG: URL wildcard patterns didn't work with subfolders
 BUG: TDbLogRoute::createDbTable: add AUTO_INCREMENT attribute to log_id column if driver is mysql (Yves)
 BUG: Ensure rendering of clientID in TActivePanel (Christophe)

@@ -49,7 +49,7 @@ class TSqlMapConfig extends TDataSourceConfig
 		$cache = $this->getApplication()->getCache();
 		if($cache !== null) {
 			$cache->delete($this->getCacheKey());
-		}	
+		}
 	}
 
 	/**
@@ -62,7 +62,10 @@ class TSqlMapConfig extends TDataSourceConfig
 		{
 			$cache = $this->getApplication()->getCache();
 			if($cache !== null) {
-				return $cache->set($this->getCacheKey(), $manager);
+				$dependencies = null;
+				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
+					$dependencies = $manager->getCacheDependencies();
+				return $cache->set($this->getCacheKey(), $manager, 0, $dependencies);
 			}
 		}
 		return false;

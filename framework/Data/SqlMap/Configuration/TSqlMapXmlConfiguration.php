@@ -349,6 +349,15 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$document = $this->loadXmlDocument($filename,$this->_xmlConfig);
 		$this->_document=$document;
 
+		static $bCacheDependencies;
+		if($bCacheDependencies === null)
+			$bCacheDependencies = Prado::getApplication()->getMode() !== TApplicationMode::Performance;
+
+		if($bCacheDependencies)
+			$this->_manager->getCacheDependencies()
+					->getDependencies()
+					->add(new TFileCacheDependency($filename));
+
 		foreach($document->xpath('//resultMap') as $node)
 			$this->loadResultMap($node);
 

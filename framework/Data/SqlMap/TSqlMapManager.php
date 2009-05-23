@@ -18,6 +18,7 @@ Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
 Prado::using('System.Data.SqlMap.Configuration.*');
 Prado::using('System.Data.SqlMap.DataMapper.*');
 Prado::using('System.Data.SqlMap.Statements.*');
+Prado::using('System.Caching.TCache');
 
 
 /**
@@ -50,6 +51,7 @@ class TSqlMapManager extends TComponent
 
 	private $_connection;
 	private $_gateway;
+	private $_cacheDependencies;
 
 	/**
 	 * Constructor, create a new SqlMap manager.
@@ -110,6 +112,18 @@ class TSqlMapManager extends TComponent
 	{
 		$config = new TSqlMapXmlConfiguration($this);
 		$config->configure($file);
+	}
+
+	/**
+	 * @return TChainedCacheDependency
+	 * @since 3.1.5
+	 */
+	public function getCacheDependencies()
+	{
+		if($this->_cacheDependencies === null)
+			$this->_cacheDependencies=new TChainedCacheDependency();
+
+		return $this->_cacheDependencies;
 	}
 
 	/**
