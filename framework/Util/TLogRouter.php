@@ -1004,6 +1004,13 @@ EOD;
  */
 class TFirePhpLogRoute extends TLogRoute
 {
+	/**
+	 * Default group label
+	 */
+	const DEFAULT_LABEL = 'System.Util.TLogRouter(TFirePhpLogRoute)';
+
+	private $_groupLabel = null;
+
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
@@ -1012,7 +1019,7 @@ class TFirePhpLogRoute extends TLogRoute
 		$firephp = FirePHP::getInstance(true);
 		$firephp -> setOptions(array('useNativeJsonEncode' => false));
 
-		$firephp -> group('System.Util.TLogRouter(TFirePhpLogRoute)', array('Collapsed' => true));
+		$firephp -> group($this->getGroupLabel(), array('Collapsed' => true));
 
 		$firephp ->log('Time,  Message');
 
@@ -1060,6 +1067,22 @@ class TFirePhpLogRoute extends TLogRoute
 		}
 		return FirePHP::LOG;
 	}
-}
 
-?>
+	/**
+	 * @return string group label. Defaults to TFirePhpLogRoute::DEFAULT_LABEL
+	 */
+	public function getGroupLabel()
+	{
+		if($this->_groupLabel===null)
+			$this->_groupLabel=self::DEFAULT_LABEL;
+		return $this->_groupLabel;
+	}
+
+	/**
+	 * @param string group label.
+	 */
+	public function setGroupLabel($value)
+	{
+		$this->_groupLabel=$value;
+	}
+}
