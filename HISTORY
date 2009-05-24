@@ -1,4 +1,4 @@
-Version 3.1.5 (to be released)
+Version 3.1.5 May 24, 2009
 BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
@@ -35,7 +35,7 @@ ENH: Issue#74 - Introduce a new property 'InvalidFinderResult' (related enum TAc
 CHG: Issue#7 - Clients Scripts are not combined anymore in Debug application mode (Christophe)
 ENH: Added caching of message files to TException (Michael)
 ENH: Updated to scriptaculous 1.8.2 & Prototype 1.6.0.3
-ENH: clientscripts.php Updated to JSMin 1.1.1 - According to author 15% faster with 94% less memory usage (Yves) 
+ENH: clientscripts.php Updated to JSMin 1.1.1 - According to author 15% faster with 94% less memory usage (Yves)
 ENH: replace is_null() function calls with native language constuct (Yves)
 ENH: replace array_push() function calls with native language constuct if make sense (Yves)
 ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avoid bad render behavior in table-layout:fixed environment, explicit set text color to increase readability (Yves)
