@@ -104,7 +104,7 @@ class TLogRouter extends TModule
 					foreach($properties as $name=>$value)
 						$route->setSubproperty($name,$value);
 					$this->_routes[]=$route;
-					$route->init($routeConfig);
+					$route->init($route);
 				}
 			}
 		}
