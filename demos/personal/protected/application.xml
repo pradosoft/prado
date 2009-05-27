@@ -33,4 +33,7 @@
       </modules>
     </service>
   </services>
+  <parameters>
+	<parameter id="siteName" value="My Personal Site" />
+  </parameters>
 </application>

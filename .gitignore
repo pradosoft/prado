@@ -1,4 +1,6 @@
+/.cache
 /.project
+/.settings
 /assets
 buildscripts/chmbuilder/assets/*
 buildscripts/chmbuilder/classes/runtime/*

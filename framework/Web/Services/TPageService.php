@@ -69,6 +69,7 @@ Prado::using('System.Web.UI.TThemeManager');
  * accessing to any resources.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @version $Id$
  * @package System.Web.Services
  * @since 3.0
@@ -78,7 +79,11 @@ class TPageService extends TService
 	/**
 	 * Configuration file name
 	 */
-	const CONFIG_FILE='config.xml';
+	const CONFIG_FILE_XML='config.xml';
+	/**
+	 * Configuration file name
+	 */
+	const CONFIG_FILE_PHP='config.php';
 	/**
 	 * Default base path
 	 */
@@ -178,7 +183,7 @@ class TPageService extends TService
 				$condition=$this->evaluateExpression($condition);
 			if($condition)
 			{
-				if(($path=Prado::getPathOfNamespace($filePath,TApplication::CONFIG_FILE_EXT))===null || !is_file($path))
+				if(($path=Prado::getPathOfNamespace($filePath,Prado::getApplication()->getConfigurationFileExt()))===null || !is_file($path))
 					throw new TConfigurationException('pageservice_includefile_invalid',$filePath);
 				$c=new TPageConfiguration($pagePath);
 				$c->loadFromFile($path,$configPagePath);
@@ -213,7 +218,12 @@ class TPageService extends TService
 		{
 			$pageConfig=new TPageConfiguration($pagePath);
 			if($config!==null)
-				$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+			{
+				if($application->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+					$pageConfig->loadPageConfigurationFromPhp($config,$application->getBasePath(),'');
+				else
+					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+			}
 			$pageConfig->loadFromFiles($this->getBasePath());
 		}
 		else
@@ -249,9 +259,12 @@ class TPageService extends TService
 				$configCached=false;
 				$paths=explode('.',$pagePath);
 				$configPath=$this->getBasePath();
+				$fileName = $this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP
+					? self::CONFIG_FILE_PHP
+					: self::CONFIG_FILE_XML;
 				foreach($paths as $path)
 				{
-					$configFile=$configPath.DIRECTORY_SEPARATOR.self::CONFIG_FILE;
+					$configFile=$configPath.DIRECTORY_SEPARATOR.$fileName;
 					$currentTimestamp[$configFile]=@filemtime($configFile);
 					$configPath.=DIRECTORY_SEPARATOR.$path;
 				}
@@ -262,7 +275,12 @@ class TPageService extends TService
 			{
 				$pageConfig=new TPageConfiguration($pagePath);
 				if($config!==null)
-					$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+				{
+					if($application->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+						$pageConfig->loadPageConfigurationFromPhp($config,$application->getBasePath(),'');
+					else
+						$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
+				}
 				$pageConfig->loadFromFiles($this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
 			}
@@ -581,16 +599,19 @@ class TPageConfiguration extends TComponent
 		$page=array_pop($paths);
 		$path=$basePath;
 		$configPagePath='';
+		$fileName = Prado::getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP
+			? TPageService::CONFIG_FILE_PHP
+			: TPageService::CONFIG_FILE_XML;
 		foreach($paths as $p)
 		{
-			$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$configPagePath);
+			$this->loadFromFile($path.DIRECTORY_SEPARATOR.$fileName,$configPagePath);
 			$path.=DIRECTORY_SEPARATOR.$p;
 			if($configPagePath==='')
 				$configPagePath=$p;
 			else
 				$configPagePath.='.'.$p;
 		}
-		$this->loadFromFile($path.DIRECTORY_SEPARATOR.TPageService::CONFIG_FILE,$configPagePath);
+		$this->loadFromFile($path.DIRECTORY_SEPARATOR.$fileName,$configPagePath);
 		$this->_rules=new TAuthorizationRuleCollection($this->_rules);
 	}
 
@@ -604,11 +625,26 @@ class TPageConfiguration extends TComponent
 		Prado::trace("Loading page configuration file $fname",'System.Web.Services.TPageService');
 		if(empty($fname) || !is_file($fname))
 			return;
-		$dom=new TXmlDocument;
-		if($dom->loadFromFile($fname))
-			$this->loadFromXml($dom,dirname($fname),$configPagePath);
+		
+		if(Prado::getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		{
+			$fcontent = include $fname;
+			$this->loadFromPhp($fcontent,dirname($fname),$configPagePath);
+		}
 		else
-			throw new TConfigurationException('pageserviceconf_file_invalid',$fname);
+		{	
+			$dom=new TXmlDocument;
+			if($dom->loadFromFile($fname))
+				$this->loadFromXml($dom,dirname($fname),$configPagePath);
+			else
+				throw new TConfigurationException('pageserviceconf_file_invalid',$fname);
+		}
+	}
+
+	public function loadFromPhp($config,$configPath,$configPagePath)
+	{
+		$this->loadApplicationConfigurationFromPhp($config,$configPath);
+		$this->loadPageConfigurationFromPhp($config,$configPath,$configPagePath);
 	}
 
 	/**
@@ -624,6 +660,13 @@ class TPageConfiguration extends TComponent
 		$this->loadApplicationConfigurationFromXml($dom,$configPath);
 		$this->loadPageConfigurationFromXml($dom,$configPath,$configPagePath);
 	}
+	
+	public function loadApplicationConfigurationFromPhp($config,$configPath)
+	{
+		$appConfig=new TApplicationConfiguration;
+		$appConfig->loadFromPhp($config,$configPath);
+		$this->_appConfigs[]=$appConfig;
+	}
 
 	/**
 	 * Loads the configuration specific for application part
@@ -635,6 +678,99 @@ class TPageConfiguration extends TComponent
 		$appConfig=new TApplicationConfiguration;
 		$appConfig->loadFromXml($dom,$configPath);
 		$this->_appConfigs[]=$appConfig;
+	}
+
+	public function loadPageConfigurationFromPhp($config, $configPath, $configPagePath)
+	{
+		// authorization
+		if(isset($config['authorization']) && is_array($config['authorization']))
+		{
+			$rules = array();
+			foreach($config['authorization'] as $authorization)
+			{
+				$patterns=isset($authorization['pages'])?$authorization['pages']:'';
+				$ruleApplies=false;
+				if(empty($patterns) || trim($patterns)==='*') // null or empty string
+					$ruleApplies=true;
+				else
+				{
+					foreach(explode(',',$patterns) as $pattern)
+					{
+						if(($pattern=trim($pattern))!=='')
+						{
+							// we know $configPagePath and $this->_pagePath
+							if($configPagePath!=='')  // prepend the pattern with ConfigPagePath
+								$pattern=$configPagePath.'.'.$pattern;
+							if(strcasecmp($pattern,$this->_pagePath)===0)
+							{
+								$ruleApplies=true;
+								break;
+							}
+							if($pattern[strlen($pattern)-1]==='*') // try wildcard matching
+							{
+								if(strncasecmp($this->_pagePath,$pattern,strlen($pattern)-1)===0)
+								{
+									$ruleApplies=true;
+									break;
+								}
+							}
+						}
+					}
+				}
+				if($ruleApplies)
+				{
+					$action = isset($authorization['action'])?$authorization['action']:'';
+					$users = isset($authorization['users'])?$authorization['users']:'';
+					$roles = isset($authorization['roles'])?$authorization['roles']:'';
+					$verb = isset($authorization['verb'])?$authorization['verb']:'';
+					$ips = isset($authorization['ips'])?$authorization['ips']:'';
+					$rules[]=new TAuthorizationRule($action,$users,$roles,$verb,$ips);
+				}
+			}
+			$this->_rules=array_merge($rules,$this->_rules);
+		}
+		// pages
+		if(isset($config['pages']) && is_array($config['pages']))
+		{
+			if(isset($config['pages']['properties']))
+			{
+				$this->_properties = array_merge($this->_properties, $config['pages']['properties']);
+				unset($config['pages']['properties']);
+			}
+			foreach($config['pages'] as $id => $page)
+			{
+				$properties = array();
+				if(isset($page['properties']))
+				{
+					$properties=$page['properties'];
+					unset($page['properties']);	
+				}
+				$matching=false;
+				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
+				if(strcasecmp($id,$this->_pagePath)===0)
+					$matching=true;
+				else if($id[strlen($id)-1]==='*') // try wildcard matching
+					$matching=strncasecmp($this->_pagePath,$id,strlen($id)-1)===0;
+				if($matching)
+					$this->_properties=array_merge($this->_properties,$properties);
+			}
+		}
+		
+		// external configurations
+		if(isset($config['includes']) && is_array($config['includes']))
+		{
+			foreach($config['includes'] as $include)
+			{
+				$when = isset($include['when'])?true:false;
+				if(!isset($include['file']))
+					throw new TConfigurationException('pageserviceconf_includefile_required');
+				$filePath = $include['file'];
+				if(isset($this->_includes[$filePath]))
+					$this->_includes[$filePath]=array($configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')');
+				else
+					$this->_includes[$filePath]=array($configPagePath,$when);
+			}
+		}
 	}
 
 	/**

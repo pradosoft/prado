@@ -62,20 +62,26 @@ class TGlobalization extends TModule
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
 	 * If you override this method, call parent::init($xml) first.
-	 * @param TXmlElement application configuration
+	 * @param mixed application configuration
 	 */
-	public function init($xml)
+	public function init($config)
 	{
 		if($this->_charset===null)
 			$this->_charset=$this->getDefaultCharset();
 		if($this->_culture===null)
 			$this->_culture=$this->getDefaultCulture();
 
-		if($xml!==null)
+		if($config!==null)
 		{
-			$translation = $xml->getElementByTagName('translation');
+			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+				$translation = isset($config['translate'])?$config['translate']:null;
+			else
+			{
+				$t = $config->getElementByTagName('translation');
+				$translation = ($t)?$t->getAttributes():null;
+			}
 			if($translation)
-				$this->setTranslationConfiguration($translation->getAttributes());
+				$this->setTranslationConfiguration($translation);
 		}
 		$this->getApplication()->setGlobalization($this);
 	}
@@ -165,9 +171,9 @@ class TGlobalization extends TModule
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
-	 * @param TMap configuration options
+	 * @param TMap|array configuration options
 	 */
-	protected function setTranslationConfiguration(TMap $config)
+	protected function setTranslationConfiguration($config)
 	{
 		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext')
 		{

@@ -30,12 +30,16 @@
  *     </service>
  *   </services>
  * </code>
- *
- * The above example specifies a single SOAP provider named "stockquote"
- * whose class is "MyStockQuote". A SOAP client can then obtain the WSDL for
- * this provider via the following URL:
+ * PHP configuration style:
  * <code>
- *   http://hostname/path/to/index.php?soap=stockquote.wsdl
+ *  'services' => array(
+ *    'soap' => array(
+ *     'class' => 'System.Web.Services.TSoapService'
+ *     'properties' => array(
+ *       'provider' => 'MyStockQuote'
+ *	   )
+ *    )
+ *  )
  * </code>
  *
  * The WSDL for the provider class "MyStockQuote" is generated based on special
@@ -79,13 +83,13 @@
  *
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @package System.Web.Services
  * @since 3.1
  */
 class TSoapService extends TService
 {
 	const DEFAULT_SOAP_SERVER='TSoapServer';
-	const CONFIG_FILE_EXT='.xml';
 	private $_servers=array();
 	private $_configFile=null;
 	private $_wsdlRequest=false;
@@ -148,19 +152,35 @@ class TSoapService extends TService
 
 	/**
 	 * Loads configuration from an XML element
-	 * @param TXmlElement configuration node
+	 * @param mixed configuration node
 	 * @throws TConfigurationException if soap server id is not specified or duplicated
 	 */
-	private function loadConfig($xml)
-	{
-		foreach($xml->getElementsByTagName('soap') as $serverXML)
+	private function loadConfig($config)
+	{	
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
-			$properties=$serverXML->getAttributes();
-			if(($id=$properties->remove('id'))===null)
-				throw new TConfigurationException('soapservice_serverid_required');
-			if(isset($this->_servers[$id]))
-				throw new TConfigurationException('soapservice_serverid_duplicated',$id);
-			$this->_servers[$id]=$properties;
+			if(is_array($config))
+			{
+				foreach($config['soap'] as $id => $server)
+				{
+					$properties = isset($server['properties'])?$server['properties']:array();
+					if(isset($this->_servers[$id]))
+						throw new TConfigurationException('soapservice_serverid_duplicated',$id);
+					$this->_servers[$id]=$properties;
+				}
+			}
+		}
+		else
+		{
+			foreach($config->getElementsByTagName('soap') as $serverXML)
+			{
+				$properties=$serverXML->getAttributes();
+				if(($id=$properties->remove('id'))===null)
+					throw new TConfigurationException('soapservice_serverid_required');
+				if(isset($this->_servers[$id]))
+					throw new TConfigurationException('soapservice_serverid_duplicated',$id);
+				$this->_servers[$id]=$properties;
+			}
 		}
 	}
 
@@ -179,7 +199,7 @@ class TSoapService extends TService
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT))===null)
+		if(($this->_configFile=Prado::getPathOfNamespace($value,Prado::getApplication()->getConfigurationFileExt()))===null)
 			throw new TConfigurationException('soapservice_configfile_invalid',$value);
 	}
 
@@ -221,7 +241,12 @@ class TSoapService extends TService
 	protected function createServer()
 	{
 		$properties=$this->_servers[$this->_serverID];
-		if(($serverClass=$properties->remove('class'))===null)
+		$serverClass=null;
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP && isset($config['class']))
+			$serverClass=$config['class'];
+		else if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML)
+			$serverClass=$properties->remove('class');
+		if($serverClass===null)
 			$serverClass=self::DEFAULT_SOAP_SERVER;
 		Prado::using($serverClass);
 		$className=($pos=strrpos($serverClass,'.'))!==false?substr($serverClass,$pos+1):$serverClass;

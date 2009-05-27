@@ -29,6 +29,26 @@ Prado::using('System.Security.TUser');
  * </module>
  * </code>
  *
+ * PHP configuration style:
+ * <code>
+ * array(
+ *   'users' => array(
+ *      'class' => 'System.Security.TUserManager',
+ *      'properties' => array(
+ *         'PasswordMode' => 'Clear',
+ *       ),
+ *       'users' => array(
+ *          array('name'=>'Joe','password'=>'demo'),
+ *          array('name'=>'John','password'=>'demo'),
+ *       ),
+ *       'roles' => array(
+ *          array('name'=>'Administrator','users'=>'John'),
+ *          array('name'=>'Writer','users'=>'Joe,John'),
+ *       ),
+ *    ),
+ * )
+ * </code>
+ *
  * In addition, user information can also be loaded from an external file
  * specified by {@link setUserFile UserFile} property. Note, the property
  * only accepts a file path in namespace format. The user file format is
@@ -43,6 +63,7 @@ Prado::using('System.Security.TUser');
  * how users are authenticated and authorized in a Prado application.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Carl Mathisen <carl@kamikazemedia.no>
  * @version $Id$
  * @package System.Security
  * @since 3.0
@@ -83,25 +104,84 @@ class TUserManager extends TModule implements IUserManager
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param TXmlElement module configuration
+	 * @param mixed module configuration
 	 */
 	public function init($config)
 	{
-		$this->loadUserData($config);
+		$this->loadUserData($config);	
 		if($this->_userFile!==null)
 		{
-			$dom=new TXmlDocument;
-			$dom->loadFromFile($this->_userFile);
-			$this->loadUserData($dom);
+			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			{
+				$userFile = include $this->_userFile;
+				$this->loadUserDataFromPhp($userFile);
+			}
+			else
+			{
+				$dom=new TXmlDocument;
+				$dom->loadFromFile($this->_userFile);
+				$this->loadUserDataFromXml($dom);
+			}
 		}
 		$this->_initialized=true;
+	}
+	
+	/*
+	 * Loads user/role information
+	 * @param mixed the variable containing the user information
+	 */
+	private function loadUserData($config)
+	{
+		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			$this->loadUserDataFromPhp($config);
+		else
+			$this->loadUserDataFromXml($config);
+	}
+
+	/**
+	 * Loads user/role information from an php array.
+	 * @param array the array containing the user information
+	 */
+	private function loadUserDataFromPhp($config)
+	{
+		if(isset($config['users']) && is_array($config['users']))
+		{
+			foreach($config['users'] as $user)
+			{
+				$name = trim(strtolower(isset($user['name'])?$user['name']:''));
+				$password = isset($user['password'])?$user['password']:'';
+				$this->_users[$name] = $password;
+				$roles = isset($user['roles'])?$user['roles']:'';
+				if($roles!=='')
+				{
+					foreach(explode(',',$roles) as $role)
+					{
+						if(($role=trim($role))!=='')
+							$this->_roles[$name][]=$role;
+					}
+				}
+			}
+		}
+		if(isset($config['roles']) && is_array($config['roles']))
+		{
+			foreach($config['roles'] as $role)
+			{
+				$name = isset($role['name'])?$role['name']:'';
+				$users = isset($role['users'])?$role['users']:'';
+				foreach(explode(',',$users) as $user)
+				{
+					if(($user=trim($user))!=='')
+						$this->_roles[strtolower($user)][]=$name;
+				}
+			}
+		}
 	}
 
 	/**
 	 * Loads user/role information from an XML node.
 	 * @param TXmlElement the XML node containing the user information
 	 */
-	protected function loadUserData($xmlNode)
+	private function loadUserDataFromXml($xmlNode)
 	{
 		foreach($xmlNode->getElementsByTagName('user') as $node)
 		{

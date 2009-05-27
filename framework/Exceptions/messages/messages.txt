@@ -24,7 +24,7 @@ map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 map_readonly							= {0} is read-only.
 
-application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
+application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.
 application_service_invalid				= Service '{0}' must implement IService interface.
@@ -114,7 +114,7 @@ pageservice_page_required				= Page Name Required
 pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
 pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
 pageservice_pageclass_invalid			= Page class {0} is invalid. It should be TPage or extend from TPage.
-pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml".
+pageservice_includefile_invalid			= Unable to find page service configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 
 pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
 pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
@@ -315,7 +315,7 @@ htmlarea_textmode_readonly				= THtmlArea.TextMode is read-only.
 htmlarea_tarfile_invalid				= THtmlArea is unable to locate the TinyMCE tar file.
 
 parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is not changeable because the module is already initialized.
-parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
+parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml' or '.php'.
 parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
 
 datagridcolumn_id_invalid				= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
@@ -401,7 +401,7 @@ dbtablegateway_invalid_table_info		= Table must be a string or an instance of TD
 directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
 cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
 
-soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml'.
+soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml' or '.php'.
 soapservice_request_invalid				= SOAP server '{0}' not found.
 soapservice_serverid_required			= <soap> element must have 'id' attribute.
 soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
