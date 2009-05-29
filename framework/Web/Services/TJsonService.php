@@ -87,7 +87,7 @@ class TJsonService extends TService
 			foreach($config->getElementsByTagName('json') as $json)
 			{
 				if(($id=$json->getAttribute('id'))!==null)
-					$this->_services[$id]=$config;
+					$this->_services[$id]=$json;
 				else
 					throw new TConfigurationException('jsonservice_id_required');
 			}
