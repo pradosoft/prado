@@ -1296,9 +1296,9 @@ demos/quickstart/protected/pages/ActiveControls/DragDrop.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/Home.page -text
-demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product1.png -text svneol=unset#image/png
-demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/product2.png -text svneol=unset#image/png
-demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/assets/trash.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/images/product1.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/images/product2.png -text svneol=unset#image/png
+demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/images/trash.png -text svneol=unset#image/png
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveButton/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveCheckBox/Home.page -text

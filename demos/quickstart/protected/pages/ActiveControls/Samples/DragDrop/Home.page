@@ -38,7 +38,7 @@
 }
 
 .trash-hover {
-	background-image: url(<%~ assets/trash.png%>);
+	background-image: url(<%~ images/trash.png%>);
 }
 
 </style>

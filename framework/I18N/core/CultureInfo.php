@@ -218,7 +218,7 @@ class CultureInfo
 	 * @param string a culture
 	 * @return boolean true if valid, false otherwise.
 	 */
-	public function validCulture($culture)
+	public static function validCulture($culture)
 	{
 		if(preg_match('/^[_\\w]+$/', $culture))
 			return is_file(self::dataDir().$culture.self::fileExt());
