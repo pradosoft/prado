@@ -20,12 +20,12 @@ class Home extends TPage
 		return array (
 			array (
 				'ProductId' => 'Product1',
-				'ProductImageUrl' => $this->publishAsset('assets/product1.png'),
+				'ProductImageUrl' => $this->publishAsset('images/product1.png'),
 				'ProductTitle' => 'Cup'
 			),
 			array (
 				'ProductId' => 'Product2',
-				'ProductImageUrl' => $this->publishAsset('assets/product2.png'),
+				'ProductImageUrl' => $this->publishAsset('images/product2.png'),
 				'ProductTitle' => 'T-Shirt'
 			)
 		);
