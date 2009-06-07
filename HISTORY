@@ -2,6 +2,7 @@ Version 3.1.6 to be released
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
 BUG: Issue#117 - Consider TValidationSummary.DisplayMode="HeaderOnly" if TValidationSummary.ShowMessageBox is set (Yves)
 BUG: Issue#164 - CultureInfo::validCulture should be declared as a static method (Christophe)
+BUG: Issue#168 - TSqlMapXmlConfiguration: CacheModel properties are not set (Yves)
 ENH: Issue#175 - TBulletedList: Introduce TBulletStyle::None (Yves)
 ENH: TAssetManager: introduce protected property "Published" to allow subclasses access (Yves)
 
