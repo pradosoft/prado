@@ -1046,6 +1046,18 @@ class TFirePhpLogRoute extends TLogRoute
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
 
+		if( headers_sent() ) {
+			echo '
+				<div style="width:100%; background-color:darkred; color:#FFF; padding:2px">
+					TFirePhpLogRoute.GroupLabel "<i>' . $this -> getGroupLabel() . '</i>" -
+					Routing to FirePHP impossible, because headers already sent!
+				</div>
+			';
+			$fallback = new TBrowserLogRoute();
+			$fallback->processLogs($logs);
+			return;
+		}
+
 		require_once Prado::getPathOfNamespace('System.3rdParty.FirePHPCore') . '/FirePHP.class.php';
 		$firephp = FirePHP::getInstance(true);
 		$firephp -> setOptions(array('useNativeJsonEncode' => false));

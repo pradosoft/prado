@@ -139,6 +139,33 @@ class TErrorHandler extends TModule
 		}
 	}
 
+
+	/**
+	 * @param string $value
+	 * @param Exception|null$exception
+	 * @return string
+	 * @since 3.1.6
+	 */
+	protected static function hideSecurityRelated($value, $exception=null)
+	{
+		$aRpl = array();
+		if($exception !== null && $exception instanceof Exception)
+		{
+			$aTrace = $exception->getTrace();
+			foreach($aTrace as $item)
+			{
+				$file = $item['file'];
+				$aRpl[dirname($file) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
+			}
+		}
+		$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
+		$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
+		$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
+		$aRpl = array_reverse($aRpl, true);
+
+		return str_replace(array_keys($aRpl), $aRpl, $value);
+	}
+
 	/**
 	 * Displays error to the client user.
 	 * THttpException and errors happened when the application is in <b>Debug</b>
@@ -154,18 +181,30 @@ class TErrorHandler extends TModule
 		$content=$this->getErrorTemplate($statusCode,$exception);
 
 		$serverAdmin=isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
-		if($this->getApplication()->getMode()===TApplicationMode::Debug)
+
+		$isDebug = $this->getApplication()->getMode()===TApplicationMode::Debug;
+
+		$errorMessage = $exception->getMessage();
+		if($isDebug)
 			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion();
 		else
+		{
 			$version='';
+			$errorMessage = self::hideSecurityRelated($errorMessage, $exception);
+		}
 		$tokens=array(
 			'%%StatusCode%%' => "$statusCode",
-			'%%ErrorMessage%%' => htmlspecialchars($exception->getMessage()),
+			'%%ErrorMessage%%' => htmlspecialchars($errorMessage),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
-		header("HTTP/1.0 $statusCode ".$exception->getMessage());
+
+		if($isDebug)
+			header("HTTP/1.0 $statusCode ".$exception->getMessage(), true, $statusCode);
+		else
+			header("HTTP/1.0 $statusCode", true, $statusCode);
+
 		echo strtr($content,$tokens);
 	}
 

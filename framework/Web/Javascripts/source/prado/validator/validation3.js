@@ -727,6 +727,9 @@ Prado.WebUI.TValidationSummary.prototype =
 	 */
 	formatMessageBox : function(messages)
 	{
+		if(this.options.DisplayMode == 'HeaderOnly' && this.options.HeaderText)
+			return this.options.HeaderText;
+		
 		var output = this.options.HeaderText ? this.options.HeaderText + "\n" : "";
 		for(var i = 0; i < messages.length; i++)
 		{

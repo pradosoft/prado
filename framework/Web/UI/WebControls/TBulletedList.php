@@ -103,6 +103,10 @@ class TBulletedList extends TListControl implements IPostBackEventHandler
 		$needStart=false;
 		switch($this->getBulletStyle())
 		{
+			case TBulletStyle::None:
+				$writer->addStyleAttribute('list-style-type','none');
+				$needStart=true;
+				break;
 			case TBulletStyle::Numbered:
 				$writer->addStyleAttribute('list-style-type','decimal');
 				$needStart=true;
@@ -452,6 +456,7 @@ class TBulletedListEventParameter extends TEventParameter
 class TBulletStyle extends TEnumerable
 {
 	const NotSet='NotSet';
+	const None='None';
 	const Numbered='Numbered';
 	const LowerAlpha='LowerAlpha';
 	const UpperAlpha='UpperAlpha';

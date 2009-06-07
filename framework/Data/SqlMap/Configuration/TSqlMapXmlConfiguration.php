@@ -712,6 +712,20 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		}
 		$cache = Prado::createComponent($cacheModel->getImplementationClass());
 		$this->setObjectPropFromNode($cache,$node,$properties);
+
+		foreach($node->xpath('property') as $propertyNode)
+		{
+			$name = $propertyNode->attributes()->name;
+			if($name===null || $name==='') continue;
+
+			$value = $propertyNode->attributes()->value;
+			if($value===null || $value==='') continue;
+
+			if( !TPropertyAccess::has($cache, $name) ) continue;
+
+			TPropertyAccess::set($cache, $name, $value);
+		}
+
 		$this->loadFlushInterval($cacheModel,$node);
 
 		$cacheModel->initialize($cache);

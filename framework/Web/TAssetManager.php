@@ -179,6 +179,24 @@ class TAssetManager extends TModule
 	}
 
 	/**
+	 * @return array List of published assets
+	 * @since 3.1.6
+	 */
+	protected function getPublished()
+	{
+		return $this->_published;
+	}
+
+	/**
+	 * @param $values List of published assets
+	 * @since 3.1.6
+	 */
+	protected function setPublished($values=array())
+	{
+		$this->_published = $values;
+	}
+
+	/**
 	 * Returns the published path of a file path.
 	 * This method does not perform any publishing. It merely tells you
 	 * if the file path is published, where it will go.
@@ -269,7 +287,7 @@ class TAssetManager extends TModule
 					if(@filemtime($dst.DIRECTORY_SEPARATOR.$file)<@filemtime($src.DIRECTORY_SEPARATOR.$file))
 					{
 						@copy($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
-						@chmod($dst.DIRECTORY_SEPARATOR.$file, PRADO_CHMOD); 
+						@chmod($dst.DIRECTORY_SEPARATOR.$file, PRADO_CHMOD);
 					}
 				}
 				else
