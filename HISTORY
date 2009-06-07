@@ -2,6 +2,7 @@ Version 3.1.6 to be released
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
 BUG: Issue#117 - Consider TValidationSummary.DisplayMode="HeaderOnly" if TValidationSummary.ShowMessageBox is set (Yves)
 BUG: Issue#164 - CultureInfo::validCulture should be declared as a static method (Christophe)
+ENH: Issue#175 - TBulletedList: Introduce TBulletStyle::None (Yves)
 
 Version 3.1.5 May 24, 2009
 BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)
