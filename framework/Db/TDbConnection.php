@@ -371,22 +371,22 @@ class TDbConnection extends TComponent
 			switch(strtolower($driver))
 			{
 				case 'pgsql':  // PostgreSQL
-					prado::using('System.db.schema.TPgsqlSchema');
+					prado::using('System.db.schema.pgsql..TPgsqlSchema');
 					return $this->_schema=new TPgsqlSchema($this);
 				case 'mysqli': // MySQL
 				case 'mysql':
-					prado::using('System.db.schema.TMysqlSchema');
+					prado::using('System.db.schema.mysql..TMysqlSchema');
 					return $this->_schema=new TMysqlSchema($this);
 				case 'sqlite': // sqlite 3
 				case 'sqlite2': // sqlite 2
-					prado::using('System.db.schema.TSqliteSchema');
+					prado::using('System.db.schema.sqlite.TSqliteSchema');
 					return $this->_schema=new TSqliteSchema($this);
 				case 'mssql': // Mssql driver on windows hosts
 				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
-					prado::using('System.db.schema.TMssqlSchema');
+					prado::using('System.db.schema.mssql.TMssqlSchema');
 					return $this->_schema=new TMssqlSchema($this);
 				case 'oci':  // Oracle driver
-					prado::using('System.db.schema.TOciSchema');
+					prado::using('System.db.schema.oci.TOciSchema');
 					return $this->_schema=new TOciSchema($this);
 				case 'ibm':
 				default:
