@@ -43,7 +43,7 @@ Prado::using('System.Web.THttpResponseAdapter');
  * or {@link TGlobalization::setCharset() TGlobalization.Charset} is set.
  *
  * Since 3.1.2, HTTP status code can be set with the {@link setStatusCode StatusCode} property.
- * 
+ *
  * Note: Some HTTP Status codes can require additional header or body information. So, if you use {@link setStatusCode StatusCode}
  * in your application, be sure to add theses informations.
  * E.g : to make an http authentication :
@@ -53,12 +53,12 @@ Prado::using('System.Web.THttpResponseAdapter');
  *     $response=$this->getResponse();
  *     $response->setStatusCode(401);
  *     $response->appendHeader('WWW-Authenticate: Basic realm="Test"');
- *  } 
+ *  }
  * </code>
- *    
+ *
  * This event handler will sent the 401 status code (Unauthorized) to the browser, with the WWW-Authenticate header field. This
  * will force the browser to ask for a username and a password.
- *  
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web
@@ -70,10 +70,10 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
 	 */
 	private static $HTTP_STATUS_CODES = array(
-		100 => 'Continue', 101 => 'Switching Protocols', 
-		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 
-		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect', 
-		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed', 
+		100 => 'Continue', 101 => 'Switching Protocols',
+		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content',
+		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect',
+		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed',
 		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported'
 	);
 
@@ -259,7 +259,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * Set the HTTP status code for the response.
 	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@link THttpRequest::getHttpProtocolVersion})
 	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
-	 * 
+	 *
 	 * @param integer HTTP status code
 	 * @param string HTTP status reason, defaults to standard HTTP reasons
 	 */
@@ -315,13 +315,17 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @param string content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param string mime type of the content.
 	 * @param array list of headers to be sent. Each array element represents a header string (e.g. 'Content-Type: text/plain').
+	 * @param boolean force download of file, even if browser able to display inline. Defaults to 'true'.
+	 * @param string force a specific file name on client side. Defaults to 'null' means auto-detect.
+	 * @param integer size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
-	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null)
+	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null,$forceDownload=true,$clientFileName=null,$fileSize=null)
 	{
 		static $defaultMimeTypes=array(
 			'css'=>'text/css',
 			'gif'=>'image/gif',
+			'png'=>'image/png',
 			'jpg'=>'image/jpeg',
 			'jpeg'=>'image/jpeg',
 			'htm'=>'text/html',
@@ -343,7 +347,15 @@ class THttpResponse extends TModule implements ITextWriter
 					$mimeType=$defaultMimeTypes[$ext];
 			}
 		}
-		$fn=basename($fileName);
+
+		if($clientFileName===null)
+			$clientFileName=basename($fileName);
+		else
+			$clientFileName=basename($clientFileName);
+
+		if($fileSize===null || $fileSize < 0)
+			$fileSize = ($content===null?filesize($fileName):strlen($content));
+
 		$this->sendHttpHeader();
 		if(is_array($headers))
 		{
@@ -357,8 +369,8 @@ class THttpResponse extends TModule implements ITextWriter
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		}
 		header("Content-type: $mimeType");
-		header('Content-Length: '.($content===null?filesize($fileName):strlen($content)));
-		header("Content-Disposition: attachment; filename=\"$fn\"");
+		header('Content-Length: '.$fileSize);
+		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		header('Content-Transfer-Encoding: binary');
 		if($content===null)
 			readfile($fileName);
@@ -388,7 +400,7 @@ class THttpResponse extends TModule implements ITextWriter
 	 * You can set the set {@link setStatusCode StatusCode} to a value between 300 and 399 before
 	 * calling this function to change the type of redirection.
 	 * If not specified, StatusCode will be 302 (Found) by default
-	 * 
+	 *
 	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
@@ -403,7 +415,7 @@ class THttpResponse extends TModule implements ITextWriter
 			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
 		else
 			header('Location: '.str_replace('&amp;','&',$url));
-		
+
 		exit();
 	}
 
@@ -440,7 +452,7 @@ class THttpResponse extends TModule implements ITextWriter
 		if($this->_bufferOutput)
 			ob_flush();
 	}
-	
+
 	/**
 	 * Send the HTTP header with the status code (defaults to 200) and status reason (defaults to OK)
 	 */

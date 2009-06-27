@@ -5,6 +5,7 @@ BUG: Issue#164 - CultureInfo::validCulture should be declared as a static method
 BUG: Issue#168 - TSqlMapXmlConfiguration: CacheModel properties are not set (Yves)
 ENH: Issue#174 - TErrorHandler: HTTP error messages contains sensitive information (Yves)
 ENH: Issue#175 - TBulletedList: Introduce TBulletStyle::None (Yves)
+ENH: Issue#176 - THttpResponse::writeFile() add additional parameters to take more influence on behavior (forceDownload, clientFileName, fileSize), add png to defaultMimeTypes (Yves)
 BUG: TCallbackErrorHandler::displayException() force HTTP status "500 Internal Server Error" to ensure TCallbackOptions.ClientSide.OnFailure is raised (Yves)
 ENH: TAssetManager: introduce protected property "Published" to allow subclasses access (Yves)
 ENH: TFirePhpLogRoute: bypass to TBrowserLogRoute if headers already sent / php.ini (output_buffering=Off, implicit_flush=On) (Yves)
