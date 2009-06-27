@@ -316,13 +316,13 @@ class TCallbackErrorHandler extends TErrorHandler
 		{
 			$response = $this->getApplication()->getResponse();
 			$trace = TJavaScript::jsonEncode($this->getExceptionStackTrace($exception));
-			$response->appendHeader('HTTP/1.0 500 Internal Error');
+			$response->setStatusCode(500, 'Internal Server Error');
 			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
 		}
 		else
 		{
 			error_log("Error happened while processing an existing error:\n".$exception->__toString());
-			header('HTTP/1.0 500 Internal Error');
+			header('HTTP/1.0 500 Internal Server Error', true, 500);
 		}
 		$this->getApplication()->getResponse()->flush();
 	}
