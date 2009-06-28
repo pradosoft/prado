@@ -9,6 +9,7 @@ ENH: Issue#176 - THttpResponse::writeFile() add additional parameters to take mo
 BUG: TCallbackErrorHandler::displayException() force HTTP status "500 Internal Server Error" to ensure TCallbackOptions.ClientSide.OnFailure is raised (Yves)
 ENH: TAssetManager: introduce protected property "Published" to allow subclasses access (Yves)
 ENH: TFirePhpLogRoute: bypass to TBrowserLogRoute if headers already sent / php.ini (output_buffering=Off, implicit_flush=On) (Yves)
+EHN: Performance optimization in PradoBase::createComponent() (Yves)
 
 Version 3.1.5 May 24, 2009
 BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)

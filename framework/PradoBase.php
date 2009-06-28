@@ -62,6 +62,11 @@ class PradoBase
 	private static $_logger=null;
 
 	/**
+	 * @var array list of class exists checks
+	 */
+	protected static $classExists = array();
+
+	/**
 	 * @return string the version of Prado framework
 	 */
 	public static function getVersion()
@@ -226,17 +231,41 @@ class PradoBase
 	 */
 	public static function createComponent($type)
 	{
-		self::using($type);
-		if(($pos=strrpos($type,'.'))!==false)
-			$type=substr($type,$pos+1);
+		if(!isset(self::$classExists[$type]))
+			self::$classExists[$type] = class_exists($type, false);
+
+		if( !isset(self::$_usings[$type]) && !self::$classExists[$type]) {
+			self::using($type);
+			self::$classExists[$type] = class_exists($type, false);
+		}
+
+		if( ($pos = strrpos($type, '.')) !== false)
+			$type = substr($type,$pos+1);
+
 		if(($n=func_num_args())>1)
 		{
-			$args=func_get_args();
-			$s='$args[1]';
-			for($i=2;$i<$n;++$i)
-				$s.=",\$args[$i]";
-			eval("\$component=new $type($s);");
-			return $component;
+			$args = func_get_args();
+			switch($n) {
+				case 2:
+					return new $type($args[1]);
+				break;
+				case 3:
+					return new $type($args[1], $args[2]);
+				break;
+				case 4:
+					return new $type($args[1], $args[2], $args[3]);
+				break;
+				case 5:
+					return new $type($args[1], $args[2], $args[3], $args[4]);
+				break;
+				default:
+					$s='$args[1]';
+					for($i=2;$i<$n;++$i)
+						$s.=",\$args[$i]";
+					eval("\$component=new $type($s);");
+					return $component;
+				break;
+			}
 		}
 		else
 			return new $type;
