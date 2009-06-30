@@ -174,22 +174,28 @@ class TDbCache extends TCache
 	 * If {@link setAutoCreateCacheTable AutoCreateCacheTableName} is 'true' check existence of cache table
 	 * and create table if does not exist.
 	 *
+	 * @param boolean Force override global state check
 	 * @return void
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
 	 * @since 3.1.5
 	 */
-	protected function initializeCache()
+	protected function initializeCache($force=false)
 	{
-		if($this->_cacheInitialized) return;
-
+		if($this->_cacheInitialized && !$force) return;
 		$db=$this->getDbConnection();
 		$db->setActive(true);
 		try
 		{
 			$key = 'TDbCache:' . $this->_cacheTable . ':created';
-			$this -> _createCheck = $this -> getApplication() -> getGlobalState($key, 0);
+			if($force)
+				$this -> _createCheck = false;
+			else
+				$this -> _createCheck = $this -> getApplication() -> getGlobalState($key, 0);
 
 			if($this->_autoCreate && !$this -> _createCheck) {
+
+				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, 'System.Caching.TDbCache');
+
 				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0';
 				$db->createCommand($sql)->queryScalar();
 
@@ -202,6 +208,8 @@ class TDbCache extends TCache
 			// DB table not exists
 			if($this->_autoCreate)
 			{
+				Prado::trace('Autocreate: ' . $this->_cacheTable, 'System.Caching.TDbCache');
+
 				$driver=$db->getDriverName();
 				if($driver==='mysql')
 					$blob='LONGBLOB';
@@ -246,6 +254,7 @@ class TDbCache extends TCache
 		if($force || $next <= $now)
 		{
 			if(!$this->_cacheInitialized) $this->initializeCache();
+			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, 'System.Caching.TDbCache');
 			$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.$now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this -> getApplication() -> setGlobalState($key, $now);
@@ -453,8 +462,16 @@ class TDbCache extends TCache
 	protected function getValue($key)
 	{
 		if(!$this->_cacheInitialized) $this->initializeCache();
-		$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
-		return $this->_db->createCommand($sql)->queryScalar();
+		try {
+			$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
+			$command=$this->_db->createCommand($sql);
+			return $command->queryScalar();
+		}
+		catch(Exception $e)
+		{
+			$this->initializeCache(true);
+			return $command->queryScalar();
+		}
 	}
 
 	/**
@@ -496,7 +513,16 @@ class TDbCache extends TCache
 		}
 		catch(Exception $e)
 		{
-			return false;
+			try
+			{
+				$this->initializeCache(true);
+				$command->execute();
+				return true;
+			}
+			catch(Exception $e)
+			{
+				return false;
+			}
 		}
 	}
 
@@ -509,10 +535,19 @@ class TDbCache extends TCache
 	protected function deleteValue($key)
 	{
 		if(!$this->_cacheInitialized) $this->initializeCache();
-		$command=$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-		$command->bindValue(':key',$key,PDO::PARAM_STR);
-		$command->execute();
-		return true;
+		try
+		{
+			$command=$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+			$command->bindValue(':key',$key,PDO::PARAM_STR);
+			$command->execute();
+			return true;
+		}
+		catch(Exception $e)
+		{
+			$this->initializeCache(true);
+			$command->execute();
+			return true;
+		}
 	}
 
 	/**
@@ -522,7 +557,24 @@ class TDbCache extends TCache
 	public function flush()
 	{
 		if(!$this->_cacheInitialized) $this->initializeCache();
-		$this->_db->createCommand("DELETE FROM {$this->_cacheTable}")->execute();
+		try
+		{
+			$command = $this->_db->createCommand("DELETE FROM {$this->_cacheTable}");
+			$command->execute();
+		}
+		catch(Exception $e)
+		{
+			try
+			{
+				$this->initializeCache(true);
+				$command->execute();
+				return true;
+			}
+			catch(Exception $e)
+			{
+				return false;
+			}
+		}
 		return true;
 	}
 }
