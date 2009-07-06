@@ -18,6 +18,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		Prado.WebUI.TInPlaceTextBox.register(this);
 		this.createEditorInput();
 		this.initializeListeners();
+
+		Prado.Registry.set(options.ID, this);
 	},
 
 	/**

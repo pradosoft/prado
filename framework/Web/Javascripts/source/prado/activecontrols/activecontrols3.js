@@ -110,6 +110,8 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 
 		if(options.AutoPostBack)
 			this.onInit(options);
+
+		Prado.Registry.set(options.ID, this);
 	},
 
 	doCallback : function(event, options)
