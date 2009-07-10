@@ -12,6 +12,7 @@ BUG: TCallbackErrorHandler::displayException() force HTTP status "500 Internal S
 ENH: TAssetManager: introduce protected property "Published" to allow subclasses access (Yves)
 ENH: TFirePhpLogRoute: bypass to TBrowserLogRoute if headers already sent / php.ini (output_buffering=Off, implicit_flush=On) (Yves)
 EHN: Performance optimization in PradoBase::createComponent() (Yves)
+EHN: Add property TPage.EnableStateCompression and related modifications in TPageStateFormatter since it is unnecessary to compress clientstate if TCachePageStatePersister/TSessionPageStatePersister is used (Yves)
 
 Version 3.1.5 May 24, 2009
 BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)
