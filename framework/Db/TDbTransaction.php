@@ -61,7 +61,7 @@ class TDbTransaction extends TComponent
 	{
 		if($this->_active && $this->_connection->getActive())
 		{
-			Prado::trace('Committing transaction','system.db.TDbTransaction');
+			Prado::trace('Committing transaction','system.Db.TDbTransaction');
 			$this->_connection->getPdoInstance()->commit();
 			$this->_active=false;
 		}
@@ -77,7 +77,7 @@ class TDbTransaction extends TComponent
 	{
 		if($this->_active && $this->_connection->getActive())
 		{
-			Prado::trace('Rolling back transaction','system.db.TDbTransaction');
+			Prado::trace('Rolling back transaction','system.Fb.TDbTransaction');
 			$this->_connection->getPdoInstance()->rollBack();
 			$this->_active=false;
 		}

@@ -228,7 +228,7 @@ class TDbConnection extends TComponent
 				throw new TDbException('TDbConnection.connectionString cannot be empty.');
 			try
 			{
-				Prado::trace('Opening DB connection','system.db.TDbConnection');
+				Prado::trace('Opening DB connection','system.Db.TDbConnection');
 				$this->_pdo=$this->createPdoInstance();
 				$this->initConnection($this->_pdo);
 				$this->_active=true;
@@ -246,7 +246,7 @@ class TDbConnection extends TComponent
 	 */
 	protected function close()
 	{
-		Prado::trace('Closing DB connection','system.db.TDbConnection');
+		Prado::trace('Closing DB connection','system.Db.TDbConnection');
 		$this->_pdo=null;
 		$this->_active=false;
 		$this->_schema=null;
@@ -267,7 +267,7 @@ class TDbConnection extends TComponent
 			$driver=strtolower(substr($this->connectionString,0,$pos));
 			if($driver==='mssql' || $driver==='dblib')
 			{
-				prado::using('System.Db.schema.mssql.TMssqlPdoAdapter');
+				prado::using('System.Db.Schema.mssql.TMssqlPdoAdapter');
 				$pdoClass='TMssqlPdoAdapter';
 			}
 		}
@@ -371,22 +371,22 @@ class TDbConnection extends TComponent
 			switch(strtolower($driver))
 			{
 				case 'pgsql':  // PostgreSQL
-					prado::using('System.db.schema.pgsql..TPgsqlSchema');
+					prado::using('System.Db.Schema.pgsql.TPgsqlSchema');
 					return $this->_schema=new TPgsqlSchema($this);
 				case 'mysqli': // MySQL
 				case 'mysql':
-					prado::using('System.db.schema.mysql..TMysqlSchema');
+					prado::using('System.Db.Schema.mysql.TMysqlSchema');
 					return $this->_schema=new TMysqlSchema($this);
 				case 'sqlite': // sqlite 3
 				case 'sqlite2': // sqlite 2
-					prado::using('System.db.schema.sqlite.TSqliteSchema');
+					prado::using('System.Db.Schema.sqlite.TSqliteSchema');
 					return $this->_schema=new TSqliteSchema($this);
 				case 'mssql': // Mssql driver on windows hosts
 				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
-					prado::using('System.db.schema.mssql.TMssqlSchema');
+					prado::using('System.Db.Schema.mssql.TMssqlSchema');
 					return $this->_schema=new TMssqlSchema($this);
 				case 'oci':  // Oracle driver
-					prado::using('System.db.schema.oci.TOciSchema');
+					prado::using('System.Db.Schema.oci.TOciSchema');
 					return $this->_schema=new TOciSchema($this);
 				case 'ibm':
 				default:
@@ -674,10 +674,10 @@ class TDbConnection extends TComponent
 	public function getStats()
 	{
 		/*$logger=Yii::getLogger();
-		$timings=$logger->getProfilingResults(null,'system.db.TDbCommand.query');
+		$timings=$logger->getProfilingResults(null,'system.Db.TDbCommand.query');
 		$count=count($timings);
 		$time=array_sum($timings);
-		$timings=$logger->getProfilingResults(null,'system.db.TDbCommand.execute');
+		$timings=$logger->getProfilingResults(null,'system.Db.TDbCommand.execute');
 		$count+=count($timings);
 		$time+=array_sum($timings);
 		return array($count,$time);*/

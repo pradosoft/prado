@@ -114,7 +114,7 @@ class TDbCommand extends TComponent
 			}
 			catch(Exception $e)
 			{
-				Prado::log('Error in preparing SQL: '.$this->getText(),TLogger::ERROR,'system.db.TDbCommand');
+				Prado::log('Error in preparing SQL: '.$this->getText(),TLogger::ERROR,'system.Db.TDbCommand');
 				throw new TDbException('TDbCommand failed to prepare the SQL statement: {0}',
 					$e->getMessage());
 			}
@@ -185,7 +185,7 @@ class TDbCommand extends TComponent
 	public function execute()
 	{
 		$params=$this->_connection->enableParamLogging && !empty($this->_params) ? '. Bind with parameter ' . implode(', ',$this->_params) : '';
-		Prado::trace('Executing SQL: '.$this->getText().$params,'system.db.TDbCommand');
+		Prado::trace('Executing SQL: '.$this->getText().$params,'system.Db.TDbCommand');
 		try
 		{
 			/*if($this->_connection->enableProfiling)
@@ -303,7 +303,7 @@ class TDbCommand extends TComponent
 	private function queryInternal($method,$mode)
 	{
 		$params=$this->_connection->enableParamLogging && !empty($this->_params) ? '. Bind with parameter ' . implode(', ',$this->_params) : '';
-		Prado::trace('Querying SQL: '.$this->getText().$params,'system.db.TDbCommand');
+		Prado::trace('Querying SQL: '.$this->getText().$params,'system.Db.TDbCommand');
 		try
 		{
 			/*if($this->_connection->enableProfiling)
@@ -313,7 +313,7 @@ class TDbCommand extends TComponent
 				$this->_statement->execute();
 			else
 				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
-
+			
 			if($method==='')
 				$result=new TDbDataReader($this);
 			else
@@ -332,7 +332,7 @@ class TDbCommand extends TComponent
 /*			if($this->_connection->enableProfiling)
 				Yii::endProfile('system.db.TDbCommand.query('.$this->getText().')','system.db.TDbCommand.query');
  */
-			Prado::log('Error in querying SQL: '.$this->getText().$params,TLogger::ERROR,'system.db.TDbCommand');
+			Prado::log('Error in querying SQL: '.$this->getText().$params,TLogger::ERROR,'system.Db.TDbCommand');
 			throw new TDbException('TDbCommand failed to execute the SQL statement: {0}',
 				$e->getMessage());
 		}
