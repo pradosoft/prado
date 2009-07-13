@@ -149,7 +149,7 @@ class TTemplateManager extends TModule
  * <prop:MainProperty SubProperty1="Value1" SubProperty2="Value2" .../>
  * - directive: directive specifies the property values for the template owner.
  * It is in the format of <%@ property name-value pairs %>;
- * - expressions: They are in the formate of <%= PHP expression %> and <%% PHP statements %>
+ * - expressions: They are in the format of <%= PHP expression %> and <%% PHP statements %>
  * - comments: There are two kinds of comments, regular HTML comments and special template comments.
  * The former is in the format of <!-- comments -->, which will be treated as text strings.
  * The latter is in the format of <!-- comments --!>, which will be stripped out.

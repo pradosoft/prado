@@ -2098,6 +2098,11 @@ framework/3rdParty/WsdlGen/WsdlGenerator.php -text
 framework/3rdParty/WsdlGen/WsdlMessage.php -text
 framework/3rdParty/WsdlGen/WsdlOperation.php -text
 framework/3rdParty/readme.html -text
+framework/Base/TBehavior.php -text
+framework/Base/TEvent.php -text
+framework/Base/TModel.php -text
+framework/Base/TModelBehavior.php -text
+framework/Base/TModelEvent.php -text
 framework/Caching/TAPCCache.php -text
 framework/Caching/TCache.php -text
 framework/Caching/TDbCache.php -text
