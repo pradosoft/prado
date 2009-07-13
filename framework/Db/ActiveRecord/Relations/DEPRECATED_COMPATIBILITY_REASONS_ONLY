@@ -1,0 +1,3 @@
+Please note that this file is used for old Prado ActiveRecord applications which use $record->withAnotherRecord - syntax.
+
+You shouln't use that syntax anymore as it's deprecated in this portation of Yii ActiveRecords.
