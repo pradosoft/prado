@@ -134,6 +134,11 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableStateEncryption=false;
 	/**
+	 * @var boolean whether page state should be compressed
+	 * @since 3.1.6
+	 */
+	private $_enableStateCompression=true;
+	/**
 	 * @var string page state persister class name
 	 */
 	private $_statePersisterClass='System.Web.UI.TPageStatePersister';
@@ -283,7 +288,7 @@ class TPage extends TTemplateControl
 		$this->setAdapter(new TActivePageAdapter($this));
 
         // Decode Callback postData from UTF-8 to current Charset
-        if (($g=$this->getApplication()->getGlobalization(false))!==null && 
+        if (($g=$this->getApplication()->getGlobalization(false))!==null &&
             strtoupper($enc=$g->getCharset())!='UTF-8')
                 foreach ($this->_postData as $k=>$v)
                     $this->_postData[$k]=iconv('UTF-8',$enc.'//IGNORE',$v);
@@ -1124,6 +1129,24 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * @return boolean whether page state should be compressed. Defaults to true.
+	 * @since 3.1.6
+	 */
+	public function getEnableStateCompression()
+	{
+		return $this->_enableStateCompression;
+	}
+
+	/**
+	 * @param boolean whether page state should be compressed.
+	 * @since 3.1.6
+	 */
+	public function setEnableStateCompression($value)
+	{
+		$this->_enableStateCompression=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
 	 * @return string the requested page path for this page
 	 */
 	public function getPagePath()
@@ -1234,7 +1257,7 @@ class TPageStateFormatter
 			$str=$sm->hashData(Prado::serialize($data));
 		else
 			$str=Prado::serialize($data);
-		if(extension_loaded('zlib'))
+		if($page->getEnableStateCompression() && extension_loaded('zlib'))
 			$str=gzcompress($str);
 		if($page->getEnableStateEncryption())
 			$str=$sm->encrypt($str);
@@ -1256,7 +1279,7 @@ class TPageStateFormatter
 			$sm=$page->getApplication()->getSecurityManager();
 			if($page->getEnableStateEncryption())
 				$str=$sm->decrypt($str);
-			if(extension_loaded('zlib'))
+			if($page->getEnableStateCompression() && extension_loaded('zlib'))
 				$str=@gzuncompress($str);
 			if($page->getEnableStateValidation())
 			{
