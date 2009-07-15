@@ -1,8 +1,8 @@
 Version 3.2 to be released
 NEW: Issue#83 - PHP configuration style (Carl)
 NEW: Port Yii's DBO (Christophe)
-NEW: Port Yii's ActiveRecords (Robin)
-NEW: Port Yii's Models and Behaviors (Robin)
+NEW: Port Yii's ActiveRecords (Daniel + Robin)
+NEW: Port Yii's Models and Behaviors (Daniel + Robin)
 
 Version 3.1.6 to be released
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
