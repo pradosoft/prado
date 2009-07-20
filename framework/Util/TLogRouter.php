@@ -604,6 +604,11 @@ class TEmailLogRoute extends TLogRoute
  */
 class TBrowserLogRoute extends TLogRoute
 {
+	/**
+	 * @var string css class for indentifying the table structure in the dom tree
+	 */
+	private $_cssClass=null;
+	
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
@@ -628,10 +633,43 @@ class TBrowserLogRoute extends TLogRoute
 		}
 		$response->write($this->renderFooter());
 	}
+	
+	/**
+	 * @param string the css class of the control
+	 */
+	public function setCssClass($value)
+	{
+		$this->_cssClass = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return string the css class of the control
+	 */
+	public function getCssClass()
+	{
+		return TPropertyValue::ensureString($this->_cssClass);
+	}
 
 	protected function renderHeader()
 	{
-		$string = <<<EOD
+		$string = '';
+		if($className=$this->getCssClass())
+		{
+			$string = <<<EOD
+<table class="$className">
+	<tr class="header">
+		<th colspan="5">
+			Application Log
+		</th>
+	</tr><tr class="description">
+	    <th>&nbsp;</th>
+		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
+	</tr>
+EOD;
+		}
+		else
+		{
+			$string = <<<EOD
 <table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
 	<tr>
 		<th style="background-color: black; color:white;" colspan="5">
@@ -642,18 +680,36 @@ class TBrowserLogRoute extends TLogRoute
 		<th style="width: auto">Category</th><th style="width: auto">Message</th><th style="width: 120px">Time Spent (s)</th><th style="width: 150px">Cumulated Time Spent (s)</th>
 	</tr>
 EOD;
+		}
 		return $string;
 	}
 
 	protected function renderMessage($log, $info)
 	{
-		$bgcolor = $info['even'] ? "#fff" : "#eee";
+		$string = '';
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$color = $this->getColorLevel($log[1]);
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$msg = THttpUtility::htmlEncode($msg);
-		$string = <<<EOD
+		if($this->getCssClass())
+		{
+			$colorCssClass = $log[1];
+			$messageCssClass = $info['even'] ? 'even' : 'odd';
+			$string = <<<EOD
+	<tr class="message level$colorCssClass $messageCssClass">
+		<td class="code">&nbsp;</td>
+		<td class="category">{$log[2]}</td>
+		<td class="message">{$msg}</td>
+		<td class="time">{$delta}</td>
+		<td class="cumulatedtime">{$total}</td>
+	</tr>
+EOD;
+		}
+		else
+		{
+			$bgcolor = $info['even'] ? "#fff" : "#eee";
+			$color = $this->getColorLevel($log[1]);
+			$string = <<<EOD
 	<tr style="background-color: {$bgcolor}; color:#000">
 		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
 		<td>{$log[2]}</td>
@@ -662,6 +718,7 @@ EOD;
 		<td style="text-align:center">{$total}</td>
 	</tr>
 EOD;
+		}
 		return $string;
 	}
 
@@ -682,13 +739,25 @@ EOD;
 
 	protected function renderFooter()
 	{
-		$string = "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
-		foreach(self::$_levelValues as $name => $level)
+		$string = '';
+		if($this->getCssClass())
 		{
-			$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
-			$string .= ";margin: 0.5em; padding:0.01em;\">".strtoupper($name)."</span>";
+			$string .= '<tr class="footer"><td colspan="5">';
+			foreach(self::$_levelValues as $name => $level)
+			{
+				$string .= '<span class="level'.$level.'">'.strtoupper($name)."</span>";
+			}
 		}
-		$string .= "</td></tr></table>";
+		else
+		{
+			$string .= "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
+			foreach(self::$_levelValues as $name => $level)
+			{
+				$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
+				$string .= ";margin: 0.5em; padding:0.01em;\">".strtoupper($name)."</span>";
+			}
+		}
+		$string .= '</td></tr></table>';
 		return $string;
 	}
 }
