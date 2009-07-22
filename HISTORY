@@ -1,4 +1,4 @@
-Version 3.1.6 to be released
+Version 3.1.6 July 22, 2009
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
 BUG: Issue#105 - Enabling/disabling TFileUpload on TPanel (Carl)
 BUG: Issue#115 - Clientside registry of serverside controls don't cover all controls: Prado.WebUI.TAutoComplete, Prado.WebUI.TInPlaceTextBox (Yves)
