@@ -254,6 +254,31 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	{
 		return false;
 	}
+	
+	/**
+	 * @param boolean whether the control is to be enabled.
+	 */
+	public function setEnabled($value)
+	{
+		parent::setEnabled($value);
+		$value = !TPropertyValue::ensureBoolean($value);
+		// if this is an active control, 
+		// and it's a callback, 
+		// and we can update clientside,
+		// then update the 'disabled' attribute of the items.
+		if(($this instanceof IActiveControl) &&
+				$this->getPage()->getIsCallBack() &&
+				$this->getActiveControl()->canUpdateClientSide())
+		{
+			$items = $this->getItems();
+			$cs = $this->getPage()->getCallbackClient();
+			$baseClientID = $this->getClientID().'_c';
+			foreach($items as $index=>$item)
+			{
+				$cs->setAttribute($baseClientID.$index, 'disabled', $value);
+			}
+		}
+	}
 
 	/**
 	 * Returns a style used for rendering items.
