@@ -232,7 +232,7 @@ class TDataGatewayCommand extends TComponent
 			throw new TDbException('dbtablegateway_missing_pk_values',
 				$this->getTableInfo()->getTableFullName());
 		}
-		if($count>1 && !is_array($values[0]))
+		if($count>1 && (!isset($values[0]) || !is_array($values[0])))
 			$values = array($values);
 		if($count > 1 && count($values[0]) !== $count)
 		{

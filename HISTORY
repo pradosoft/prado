@@ -1,4 +1,5 @@
 Version 3.1.7 To be released
+BUG: Issue#166 - E_NOTICE level error in TDataGatewayCommand (Carl)
 
 Version 3.1.6 July 22, 2009
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
