@@ -188,7 +188,7 @@ class TBoundColumn extends TDataGridColumn
 			case TListItemType::EditItem:
 				if(!$this->getReadOnly())
 				{
-					if(($classPath=$this->getItemRenderer())!=='')
+					if(($classPath=$this->getEditItemRenderer())!=='')
 					{
 						$control=Prado::createComponent($classPath);
 						if($control instanceof IItemDataRenderer)
