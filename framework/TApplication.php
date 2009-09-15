@@ -1311,7 +1311,7 @@ class TApplicationConfiguration extends TComponent
 					break;
 				}
 				default:
-					throw new TConfigurationException('appconfig_paths_invalid',$tagName);
+					throw new TConfigurationException('appconfig_paths_invalid',$element->getTagName());
 			}
 		}
 	}
