@@ -125,6 +125,23 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
   </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
+  is the active counterpart of TRepeater, which can be updated during a callback request
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
+  is the active counterpart of TDataList
+  </li>
+
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataGrid</a>
+  is the active counterpart of TDataGrid
+  </li>
+
 </ul>
 
 <h2 id="128034">Extended Active Controls</h2>

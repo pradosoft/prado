@@ -1,0 +1,27 @@
+<com:TContent ID="body">
+
+<h1>TActiveRepeater Sample 4</h1>
+
+<p>Please enter the URL of your favorite websites in the following:</p>
+<com:TActiveRepeater ID="Repeater"
+	OnItemCreated="itemCreated"
+	ItemRenderer="TTextBox"
+	/>
+
+<br/>
+
+<com:TActiveButton Text="Submit" OnClick="buttonClicked" OnCallback="redrawRepeater2"/>
+
+<br/><br/>
+
+<com:TActiveLabel id="lblResult" Text="You have entered the following URLs:"
+			Display="None" />
+<br/>
+
+<com:TActiveRepeater ID="Repeater2"
+	OnItemCreated="itemCreated"
+	ItemRenderer="THyperLink"
+	/>
+
+
+<div class="last-modified">$Id: Sample4.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>

@@ -1,0 +1,62 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 5</h1>
+<h2>Paging</h2>
+
+<div style="width:500px">
+<com:TActiveDataGrid
+	ID="DataGrid"
+	AllowPaging="true"
+	PageSize="5"
+	PagerStyle.Mode="Numeric"
+	PagerStyle.HorizontalAlign="Right"
+	Width="100%"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	OnPageIndexChanged="changePage"
+	OnPagerCreated="pagerCreated"
+	/>
+</div>
+
+<com:TActivePanel GroupingText="Pager Visibility" Width="300px">
+
+<com:TActiveCheckBoxList
+     AutoPostBack="true"
+     RepeatColumns="2"
+     OnSelectedIndexChanged="changePagerPosition" OnCallback="redrawDG">
+	<com:TListItem Text="Top" />
+	<com:TListItem Text="Bottom"  Selected="true" />
+</com:TActiveCheckBoxList>
+
+</com:TActivePanel>
+
+<com:TActivePanel GroupingText="Pager Mode" Width="300px">
+
+<com:TActivePanel GroupingText="NextPrev Pager" Width="300px">
+
+Next Page Text:
+<com:TActiveTextBox ID="NextPageText" Text="Next" /><br/>
+Prev Page Text:
+<com:TActiveTextBox ID="PrevPageText" Text="Prev" /><br/>
+<com:TActiveButton Text="Submit" OnClick="useNextPrevPager" OnCallback="redrawDG"/>
+</com:TActivePanel>
+
+<com:TActivePanel GroupingText="Numeric Pager" Width="300px">
+
+Page Button Count:
+<com:TActiveTextBox ID="PageButtonCount" Text="5" /><br/>
+<com:TActiveButton Text="Submit" OnClick="useNumericPager" OnCallback="redrawDG"/>
+</com:TActivePanel>
+
+<com:TActivePanel GroupingText="Page Size" Width="300px">
+<com:TActiveTextBox ID="PageSize" Text="5" /><br/>
+<com:TActiveButton Text="Submit" OnClick="changePageSize" OnCallback="redrawDG"/>
+</com:TActivePanel>
+
+</com:TActivePanel>
+
+<div class="last-modified">$Id: Sample5.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

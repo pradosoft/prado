@@ -3,6 +3,9 @@ NEW: Issue#83 - PHP configuration style (Carl)
 NEW: Port Yii's DBO (Christophe)
 NEW: Port Yii's ActiveRecords (Daniel + Robin)
 NEW: Port Yii's Models and Behaviors (Daniel + Robin)
+NEW: Add TActiveDataList (Marcosanobre, Robin)
+NEW: Add TActiveRepeater (LCS Team, Christophe)
+NEW: Add TActiveDatagrid (LCS Team, Christophe)
 
 Version 3.1.6 to be released
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
