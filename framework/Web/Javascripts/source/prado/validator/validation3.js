@@ -1103,7 +1103,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 * @param {optional element} control - Control to get value from (default: this.control) 
 	 * @return Control value to validate
 	 */
-	 getValidationValue : function(control)
+	 getRawValidationValue : function(control)
 	 {
 	 	if(!control)
 	 		control = this.control
@@ -1131,7 +1131,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 		case 'THtmlArea':
 	 			if(typeof tinyMCE != "undefined")
 					tinyMCE.triggerSave();
-				return this.trim($F(control));
+				return $F(control);
 			case 'TRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
@@ -1139,8 +1139,25 @@ Prado.WebUI.TBaseValidator.prototype =
 	 			if(this.isListControlType())
 	 				return this.getFirstSelectedListValue();
 	 			else
-		 			return this.trim($F(control));
+		 			return $F(control);
 	 	}
+	 },
+	
+	/**
+	 * Get a trimmed value that should be validated.
+	 * The ControlType property comes from TBaseValidator::getClientControlClass()
+	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added.
+	 * @function {mixed} ?
+	 * @param {optional element} control - Control to get value fron (default: this.control)
+	 * @return Control value to validate
+	 */
+	 getValidationValue : function(control)
+	 {
+	 	value = this.getRawValidationValue(control);
+		if(Object.isString(value))
+			return this.trim(value);
+		else
+			return value;
 	 },
 
 	/**
@@ -1685,7 +1702,7 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 	 */
 	evaluateIsValid : function()
 	{
-		var value = this.getValidationValue();
+		var value = this.getRawValidationValue();
 		if (value.length <= 0)
 	    	return true;
 
