@@ -73,6 +73,9 @@
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.
  *
+ * Automatic compression of values may be used (using zlib extension) by setting {@link getThreshold Threshold} and {@link getMinSavings MinSavings} properties.
+ * NB : MemCache server(s) must be restarted to apply settings. Require (PECL memcache >= 2.0.0).
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Caching
@@ -114,6 +117,15 @@ class TMemCache extends TCache
     private $_timeout = 360;
 
     private $_retryInterval = 15;
+	/**
+	* @var integer Controls the minimum value length before attempting to compress automatically.
+	*/
+    private $_threshold=0;
+
+	/**
+	* @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
+	*/
+    private $_minSavings=0.0;
     
     private $_status = true;
     
@@ -165,6 +177,8 @@ class TMemCache extends TCache
             if($this->_cache->addServer($this->_host,$this->_port)===false)
                 throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
         }	
+		if($this->_threshold!==0)
+            $this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);		
 		$this->_initialized=true;
 		parent::init($config);
 	}
@@ -247,6 +261,46 @@ class TMemCache extends TCache
 			$this->_port=TPropertyValue::ensureInteger($value);
 	}
 
+	/**
+	 * @return integer minimum value length before attempting to compress
+	 */
+	public function getThreshold()
+	{
+		return $this->_threshold;
+	}
+	
+	/**
+	 * @param integer minimum value length before attempting to compress
+	 * @throws TInvalidOperationException if the module is already initialized
+	 */
+	public function setThreshold($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('memcache_threshold_unchangeable');
+		else
+			$this->_threshold=TPropertyValue::ensureInteger($value);
+	}
+	
+	/**
+	 * @return float minimum amount of savings to actually store the value compressed
+	 */
+	public function getMinSavings()
+	{
+		return $this->_minSavings;
+	}
+	
+	/**
+	 * @param float minimum amount of savings to actually store the value compressed
+	 * @throws TInvalidOperationException if the module is already initialized
+	 */
+	public function setMinSavings($value)
+	{
+		if($this->_initialized)
+			throw new TInvalidOperationException('memcache_min_savings_unchangeable');
+		else
+			$this->_minSavings=TPropertyValue::ensureFloat($value);
+	}
+	
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
