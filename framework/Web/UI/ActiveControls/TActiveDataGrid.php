@@ -179,7 +179,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
  * Please refer to the original documentation of the {@link TBoundColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package LANDWEHR.ActiveControls
+ * @package System.Web.UI.ActiveControls
  * @since 3.1.4
  */
 class TActiveBoundColumn extends TBoundColumn {
@@ -258,7 +258,7 @@ class TActiveBoundColumn extends TBoundColumn {
  * Please refer to the original documentation of the {@link TEditCommandColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package LANDWEHR.ActiveControls
+ * @package System.Web.UI.ActiveControls
  * @since 3.1.4
  */
 class TActiveEditCommandColumn extends TEditCommandColumn {
@@ -300,7 +300,7 @@ class TActiveEditCommandColumn extends TEditCommandColumn {
  * Please refer to the original documentation of the {@link TButtonColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package LANDWEHR.ActiveControls
+ * @package System.Web.UI.ActiveControls
  * @since 3.1.4
  */
 class TActiveButtonColumn extends TButtonColumn {
@@ -347,7 +347,7 @@ class TActiveButtonColumn extends TButtonColumn {
  * Please refer to the original documentation of the {@link TTemplateColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package LANDWEHR.ActiveControls
+ * @package System.Web.UI.ActiveControls
  * @since 3.1.4
  */
 class TActiveTemplateColumn extends TTemplateColumn {
