@@ -2607,6 +2607,7 @@ framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/activedatepicker.js -text
 framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/dragdrop.js -text
+framework/Web/Javascripts/source/prado/activecontrols/dragdropextra.js -text
 framework/Web/Javascripts/source/prado/activecontrols/inlineeditor.js -text
 framework/Web/Javascripts/source/prado/activecontrols/json.js -text
 framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadBlank.html -text

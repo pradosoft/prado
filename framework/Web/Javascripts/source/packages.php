@@ -50,6 +50,10 @@ $packages = array(
 		'prado/activecontrols/dragdrop.js'
 	),
 
+	'dragdropextra'=>array(
+		'prado/activecontrols/dragdropextra.js',
+	),
+
 	'slider'=>array(
 		'prado/controls/slider.js'
 	),
@@ -88,6 +92,7 @@ $dependencies = array(
 		'tabpanel'			=> array('prado', 'tabpanel'),
 		'activedatepicker' 	=> array('datepicker', 'ajax', 'activedatepicker'),
 		'activefileupload' 	=> array('prado', 'ajax', 'activefileupload'),
+		'dragdropextra'		=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 );
 
 return array($packages, $dependencies);

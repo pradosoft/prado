@@ -18,8 +18,23 @@ Object.extend(Prado.WebUI.DropContainer.prototype,
 		Prado.Registry.set(options.ID, this);
 	},
 	
-	onDrop: function(dragElement, dropElement)
+	onDrop: function(dragElement, dropElement, event)
 	{
-		Prado.Callback(this.options.EventTarget, dragElement.id, null, this.options);
+		var elementId=dragElement.id.replace(/clone_/,"");
+		var req = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		req.setCallbackParameter({
+			DragElementID : elementId,
+			ScreenX : event.screenX,
+			ScreenY : event.screenY,
+			OffsetX : event.offsetX,
+			OffsetY : event.offsetY,
+			ClientX : event.clientX,
+			ClientY : event.clientY,
+			AltKey : event.altKey,
+			CtrlKey : event.ctrlKey,
+			ShiftKey : event.shiftKey
+		});
+		req.dispatch();
+
 	}
 });
