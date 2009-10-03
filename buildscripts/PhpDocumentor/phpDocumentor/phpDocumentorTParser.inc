@@ -1660,7 +1660,7 @@ class phpDocumentorTParser extends Parser
             } else
             {
                 $save = $value[$i];
-                $value[$i] = split("[\t ]",str_replace("\t",'    ',$value[$i]));
+				$value[$i] = preg_split("/[\t ]/", str_replace("\t", '    ', $value[$i]));
                 $word = trim(array_shift($value[$i]));
                 $val = join(' ',$value[$i]);
                 if (trim($word) == 'internal')
