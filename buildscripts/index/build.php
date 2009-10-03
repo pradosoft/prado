@@ -24,7 +24,7 @@ require_once ('Zend/Search/Lucene.php');
 
 //get the indexers.
 include('quickstart_index.php');
-include('API_index.php');
+include('api_index.php');
 
 if(isset($argv[1]))
 {
