@@ -1287,7 +1287,7 @@ class TPageStateFormatter
 					return Prado::unserialize($str);
 			}
 			else
-				return $str;
+				return Prado::unserialize($str);
 		}
 		return null;
 	}
