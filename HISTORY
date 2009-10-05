@@ -1,6 +1,7 @@
 Version 3.1.7 To be released
 BUG: Issue#166 - E_NOTICE level error in TDataGatewayCommand (Carl)
 BUG: Issue#157 - Enabled does not work properly on TActiveRadioButton/CheckBoxList controls (Bradley, Carl)
+BUG: Issue#189 - Page State corrupted when EnableStateValidation=False (Christophe)
 BUG: Issue#198 - "Undefined variable: tagName" after error in application configuration. (Christophe)
 BUG: Typo in TBoundColumn (Robin)
 
