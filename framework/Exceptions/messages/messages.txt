@@ -473,3 +473,9 @@ response_status_reason_missing			= HTTP 1.1 need reason for extended status-code
 response_status_reason_badchars			= For HTTP 1.1 header, the token status-reason must not contain token CR or LF
 
 activefileupload_temppath_invalid		= TActiveFileUpload TempPath path '{0}' does not exist or is not writable by Web server process.
+
+tactivetablecell_control_outoftable		= {0} '{1}' must be enclosed within a TTableRow control.
+tactivetablecell_control_notincollection = {0} '{1}' no member of the TTableCellCollection of the parent TTableRow control.
+
+tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable control.
+tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.

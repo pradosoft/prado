@@ -391,3 +391,6 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 		Prado.WebUI.TValueTriggeredCallback.timers[id].stopObserving();
 	}
 });
+
+Prado.WebUI.TActiveTableCell = Class.extend(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableRow = Class.extend(Prado.WebUI.CallbackControl);

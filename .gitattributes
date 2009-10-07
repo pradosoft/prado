@@ -2683,6 +2683,8 @@ framework/Web/UI/ActiveControls/TActivePager.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TActiveRatingList.php -text
 framework/Web/UI/ActiveControls/TActiveRepeater.php -text
+framework/Web/UI/ActiveControls/TActiveTableCell.php -text
+framework/Web/UI/ActiveControls/TActiveTableRow.php -text
 framework/Web/UI/ActiveControls/TActiveTextBox.php -text
 framework/Web/UI/ActiveControls/TAutoComplete.php -text
 framework/Web/UI/ActiveControls/TBaseActiveControl.php -text
