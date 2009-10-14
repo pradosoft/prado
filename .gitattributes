@@ -2678,6 +2678,7 @@ framework/Web/UI/ActiveControls/TActiveDataGrid.php -text
 framework/Web/UI/ActiveControls/TActiveDataList.php -text
 framework/Web/UI/ActiveControls/TActiveHiddenField.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
+framework/Web/UI/ActiveControls/TActiveMultiView.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePager.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
