@@ -608,8 +608,34 @@ class TComponent
  * @package System
  * @since 3.0
  */
-class TEnumerable
+class TEnumerable implements Iterator
 {
+	private $_enums = array();
+
+	public function __construct() {
+		$reflection = new ReflectionClass($this);
+		$this->_enums = $reflection->getConstants();
+	}
+
+	public function current() {
+		return current($this->_enums);
+	}
+
+	public function key() {
+		return key($this->_enums);
+	}
+
+	public function next() {
+		return next($this->_enums);
+	}
+
+	public function rewind() {
+		reset($this->_enums);
+	}
+
+	public function valid() {
+		return $this->current() !== false;
+	}
 }
 
 /**
