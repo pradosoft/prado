@@ -84,10 +84,37 @@ class TJavaScript
 	 */
 	public static function quoteString($js,$forUrl=false)
 	{
-		if($forUrl)
-			return strtr($js,array('%'=>'%25',"\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
-		else
-			return strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\'));
+		return self::quoteUTF8(($forUrl) ? strtr($js,array('%'=>'%25',"\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\')) : strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\')));
+	}
+
+	public static function quoteUTF8($str)
+	{
+		$entities = '';
+		$length = strlen($str);
+		$lookingFor = 1;
+		$unicode = array();
+		$values = array();
+
+		for($i=0;$i<$length;$i++) {
+			$thisValue = ord($str[$i]);
+			if($thisValue < 128)
+				$unicode[] = $thisValue;
+			else {
+				if(count($values)==0)
+					$lookingFor = ($thisValue<224) ? 2 : 3;
+				$values[] = $thisValue;
+				if(count($values)==$lookingFor) {
+					$unicode[] = ($lookingFor == 3) ? (($values[0]%16)*4096)+(($values[1]%64)*64)+($values[2]%64) : (($values[0]%32)*64)+($values[1]%64);
+					$values = array();
+					$lookingFor = 1;
+				}
+			}
+		}
+
+		foreach($unicode as $value)
+			$entities .= ($value < 128) ? chr($value) : '\u'.str_pad(dechex($value), 4, '0', STR_PAD_LEFT);
+
+		return $entities;
 	}
 
 	/**
