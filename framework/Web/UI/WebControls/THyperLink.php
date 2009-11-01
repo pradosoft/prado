@@ -84,6 +84,10 @@ class THyperLink extends TWebControl implements IDataRenderer
 	{
 		$image=Prado::createComponent('System.Web.UI.WebControls.TImage');
 		$image->setImageUrl($imageUrl);
+		if(($width=$this->getImageWidth())!=='')
+			$image->setWidth($width);
+		if(($height=$this->getImageHeight())!=='')
+			$image->setHeight($height);
 		if(($toolTip=$this->getToolTip())!=='')
 			$image->setToolTip($toolTip);
 		if(($text=$this->getText())!=='')
@@ -110,6 +114,23 @@ class THyperLink extends TWebControl implements IDataRenderer
 	}
 
 	/**
+	 * @return string height of the image in the THyperLink
+	 */
+	public function getImageHeight()
+	{
+		return $this->getViewState('ImageHeight','');
+	}
+	
+	/**
+	 * Sets the height of the image in the THyperLink
+	 * @param string height of the image in the THyperLink
+	 */
+	public function setImageHeight($value)
+	{
+		$this->setViewSTate('ImageHeight',$value,'');
+	}
+
+	/**
 	 * @return string the location of the image file for the THyperLink
 	 */
 	public function getImageUrl()
@@ -124,6 +145,23 @@ class THyperLink extends TWebControl implements IDataRenderer
 	public function setImageUrl($value)
 	{
 		$this->setViewState('ImageUrl',$value,'');
+	}
+	
+	/**
+	 * @return string width of the image in the THyperLink
+	 */
+	public function getImageWidth()
+	{
+		return $this->getViewState('ImageWidth','');
+	}
+	
+	/**
+	 * Sets the width of the image in the THyperLink
+	 * @param string width of the image
+	 */
+	public function setImageWidth($value)
+	{
+		$this->setViewState('ImageWidth',$value,'');
 	}
 
 	/**

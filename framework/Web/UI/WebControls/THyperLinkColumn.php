@@ -101,6 +101,54 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
+	 * @return string height of the image in the THyperLink
+	 */
+	public function getImageHeight()
+	{
+		return $this->getViewState('ImageHeight','');
+	}
+	
+	/**
+	 * @param string height of the image in the THyperLink
+	 */
+	public function setImageHeight($value)
+	{
+		$this->setViewState('ImageHeight',$value,'');
+	}
+
+	/**
+	 * @return string url of the image in the THyperLink
+	 */
+	public function getImageUrl()
+	{
+		return $this->getViewState('ImageUrl','');
+	}
+	
+	/**
+	 * @param string url of the image in the THyperLink
+	 */
+	public function setImageUrl($value)
+	{
+		$this->setViewState('ImageUrl',$value,'');
+	}
+	
+	/**
+	 * @return string width of the image in the THyperLink
+	 */
+	public function getImageWidth()
+	{
+		return $this->getViewState('ImageWidth','');
+	}
+	
+	/**
+	 * @param string width of the image in the THyperLink
+	 */
+	public function setImageWidth($value)
+	{
+		$this->setViewState('ImageWidth',$value,'');
+	}
+
+	/**
 	 * @return string the URL to link to when the hyperlink is clicked.
 	 */
 	public function getNavigateUrl()
@@ -179,6 +227,14 @@ class THyperLinkColumn extends TDataGridColumn
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
 			$link=new THyperLink;
+			if(($url = $this->getImageUrl())!=='')
+			{
+				$link->setImageUrl($url);
+				if(($width=$this->getImageWidth())!=='')
+					$link->setImageWidth($width);
+				if(($height=$this->getImageHeight())!=='')
+					$link->setImageHeight($height);
+			}
 			$link->setText($this->getText());
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
