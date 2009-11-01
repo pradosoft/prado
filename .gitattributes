@@ -2036,6 +2036,8 @@ docs/sqlmap/latex/tut2.tex -text
 docs/sqlmap/latex/tut3.tex -text
 docs/sqlmap/sqlmap.pdf -text
 docs/sqlmap/sqlmap_tut.pdf -text
+editors/Dreamweaver/PRADO.mxp -text
+editors/Dreamweaver/readme.txt -text
 framework/.htaccess -text
 framework/3rdParty/FirePHPCore/FirePHP.class.php eol=lf
 framework/3rdParty/FirePHPCore/FirePHP.class.php4 -text
