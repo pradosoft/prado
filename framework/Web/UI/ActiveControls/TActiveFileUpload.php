@@ -207,8 +207,27 @@ EOS;
 		parent::onPreRender($param);
 		$this->getPage()->getClientScript()->registerPradoScript('effects');
 		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
+
+		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())
+		{
+			$this->_errorCode = UPLOAD_ERR_FORM_SIZE;
+			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+			$filename = addslashes($this->getFileName());
+			echo <<<EOS
+<script language="Javascript">
+	Options = new Object();
+	Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
+	Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
+	Options.localName = '{$localName}';
+	Options.fileName = '{$fileName}';
+	Options.fileSize = '{$this->getFileSize()}';
+	Options.fileType = '{$this->getFileType()}';
+	Options.errorCode = '{$this->getErrorCode()}';
+	parent.Prado.WebUI.TactiveFileUpload.onFileUpload(Options);
+</script>
+EOS;
+		}
 	}
-	
 	
 	public function createChildControls(){
 		$this->_flag = Prado::createComponent('THiddenField');
