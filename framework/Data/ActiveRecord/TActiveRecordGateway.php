@@ -306,7 +306,7 @@ class TActiveRecordGateway extends TComponent
 			if($column->getIsExcluded())
 				continue;
 			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value===null && !$column->hasSequence() && !$column->getDefaultValue())
+			if(!$column->getAllowNull() && $value===null && !$column->hasSequence() && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
 			{
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null', get_class($record),
@@ -342,7 +342,7 @@ class TActiveRecordGateway extends TComponent
 			if($column->getIsExcluded())
 				continue;
 			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value===null)
+			if(!$column->getAllowNull() && $value===null && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
 			{
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null', get_class($record),
