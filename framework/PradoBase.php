@@ -84,7 +84,7 @@ class PradoBase
 		/**
 		 * Sets error handler to be Prado::phpErrorHandler
 		 */
-		set_error_handler(array('PradoBase','phpErrorHandler'),error_reporting());
+		set_error_handler(array('PradoBase','phpErrorHandler'));
 		/**
 		 * Sets exception handler to be Prado::exceptionHandler
 		 */
@@ -132,7 +132,7 @@ class PradoBase
 	 */
 	public static function phpErrorHandler($errno,$errstr,$errfile,$errline)
 	{
-		if(error_reporting()!=0)
+		if(error_reporting() & $errno)
 			throw new TPhpErrorException($errno,$errstr,$errfile,$errline);
 	}
 
@@ -639,5 +639,3 @@ class TReflectionClass extends ReflectionClass
 PradoBase::using('System.TComponent');
 PradoBase::using('System.Exceptions.TException');
 PradoBase::using('System.Util.TLogger');
-
-?>
