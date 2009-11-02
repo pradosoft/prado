@@ -2038,6 +2038,7 @@ docs/sqlmap/sqlmap.pdf -text
 docs/sqlmap/sqlmap_tut.pdf -text
 editors/Dreamweaver/PRADO.mxp -text
 editors/Dreamweaver/readme.txt -text
+editors/Textmate/Prado.tmbundle/Snippets/ControlProp.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TActiveButton.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TBoundColumn.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TBulletedList.tmSnippet -text
@@ -2059,7 +2060,10 @@ editors/Textmate/Prado.tmbundle/Snippets/TContentPlaceHolder.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TCustomValidator.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TDataGrid.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TDatePicker.tmSnippet -text
+editors/Textmate/Prado.tmbundle/Snippets/TDraggable.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TDropDownList.tmSnippet -text
+editors/Textmate/Prado.tmbundle/Snippets/TDropDownListColumn.tmSnippet -text
+editors/Textmate/Prado.tmbundle/Snippets/TEditCommandColumn.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TEmailAddressValidator.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TExpression.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TFileUpload.tmSnippet -text

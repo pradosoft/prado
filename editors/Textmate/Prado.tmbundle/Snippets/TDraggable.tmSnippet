@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TDraggable Handle="${1:idOrClass}" Revert="${2:false}" Ghosting="${3:false}" /&gt;$0</string>
+	<key>name</key>
+	<string>TDraggable</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TDraggable</string>
+	<key>uuid</key>
+	<string>D0891731-B0CE-4388-93C9-5B4E74F2DFD1</string>
+</dict>
+</plist>

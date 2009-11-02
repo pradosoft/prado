@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TEditCommandColumn ButtonType="${1:LinkButton}" EditText="${2:Edit}" UpdateText="${3:Update}" CancelText="${4:Cancel}" /&gt;$0</string>
+	<key>name</key>
+	<string>TEditCommandColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TEditCommandColumn</string>
+	<key>uuid</key>
+	<string>8ADE1659-40F7-46AB-A7E8-1D813734865F</string>
+</dict>
+</plist>

@@ -9,8 +9,6 @@
 	<key>deleted</key>
 	<array>
 		<string>3B4714DB-144B-4102-ACCD-A9D66B676D3C</string>
-		<string>3B4714DB-144B-4102-ACCD-A9D66B676D3C</string>
-		<string>9ED62E79-F25A-4BE1-80E9-D0474DD64BB5</string>
 		<string>9ED62E79-F25A-4BE1-80E9-D0474DD64BB5</string>
 	</array>
 	<key>description</key>
@@ -21,6 +19,8 @@
 		<array>
 			<string>24F6F96C-B3BD-41EA-852D-A1CD51F0723E</string>
 			<string>DBB5D8B9-5DD8-4573-B196-0D37A72AF60B</string>
+			<string>------------------------------------</string>
+			<string>7E08C606-3EE5-4486-AB50-9B48E27D27D5</string>
 		</array>
 		<key>submenus</key>
 		<dict>
@@ -29,6 +29,7 @@
 				<key>items</key>
 				<array>
 					<string>319D66FC-712A-4B09-A1C0-CB741ED9DD4C</string>
+					<string>D0891731-B0CE-4388-93C9-5B4E74F2DFD1</string>
 				</array>
 				<key>name</key>
 				<string>ActiveControls</string>
@@ -58,6 +59,8 @@
 					<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
 					<string>37221294-B588-4D07-9010-2DB7CDBEB6B4</string>
 					<string>803BFB83-50E8-4121-9866-A25C93979E4B</string>
+					<string>F360A174-E4F9-466C-8017-BDE954ED0098</string>
+					<string>8ADE1659-40F7-46AB-A7E8-1D813734865F</string>
 					<string>BDF614B5-430B-46AB-B558-B5E0EF97BA17</string>
 					<string>B7E6E873-309E-41E6-AD8A-29EB54781579</string>
 					<string>17BECED9-79B1-4CD6-9354-E528DA3327AC</string>
@@ -105,11 +108,13 @@
 	<string>Prado</string>
 	<key>ordering</key>
 	<array>
-		<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
 		<string>3E75ACFD-E0F4-4564-9A24-DCB08AD6324D</string>
 		<string>DDC83EED-168F-4DEB-971D-84A2CF3CB38F</string>
+		<string>F360A174-E4F9-466C-8017-BDE954ED0098</string>
 		<string>1020E025-E424-40C2-AC76-F90766397290</string>
+		<string>8ADE1659-40F7-46AB-A7E8-1D813734865F</string>
 		<string>028C538B-4B9C-4820-A284-2C8D5236FED7</string>
+		<string>D0891731-B0CE-4388-93C9-5B4E74F2DFD1</string>
 		<string>8D8D94FD-7FD7-442F-A50E-A6A29A4267AE</string>
 		<string>CBC6DC68-6819-4905-A6F8-5CDE2FB9614B</string>
 		<string>EB4E1513-2FB7-4111-9430-2606178EA859</string>
@@ -120,6 +125,7 @@
 		<string>078B43BF-6A9E-4558-B262-EABEBEF30F9B</string>
 		<string>5415E441-A4F5-489B-B4E5-359CBB0BC04D</string>
 		<string>2721E2C3-66B7-4486-BF0F-6FA7B274858D</string>
+		<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
 		<string>AC226362-749C-45C1-86A3-B58379A38A7E</string>
 		<string>BFD8CE92-59C7-47B2-9AE4-1B29ADE3CA0B</string>
 		<string>8E764E2C-244E-4A93-9C0D-5E25689D1C85</string>
