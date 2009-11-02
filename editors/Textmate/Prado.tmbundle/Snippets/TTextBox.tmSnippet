@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TTextBox ID="${1:textbox1}" /&gt;$0</string>
+	<key>name</key>
+	<string>TTextBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TTextBox</string>
+	<key>uuid</key>
+	<string>23289E12-7A1F-41A3-872C-3E867E696A49</string>
+</dict>
+</plist>

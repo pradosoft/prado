@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TRadioButtonList ID="${1:radioButtonList1}"&gt;
+	${2:&lt;com:TListItem Value="${3:value 1}" Text="${4:item 1}" /&gt;
+	&lt;com:TListItem Value="${5:value 2}" Text="${6:item 2}" /&gt;}$0
+&lt;/com:TRadioButtonList&gt;</string>
+	<key>name</key>
+	<string>TRadioButtonList</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TRadioButtonList</string>
+	<key>uuid</key>
+	<string>012C556B-6ACB-48F0-8757-CA2E60B06109</string>
+</dict>
+</plist>

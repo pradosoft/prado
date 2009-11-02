@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TLinkButton ID="${1:linkButton1}" Text="${2:Click Me}" OnClick="${3:${1}_Clicked}" /&gt;$0</string>
+	<key>name</key>
+	<string>TLinkButton</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TLinkButton</string>
+	<key>uuid</key>
+	<string>4E663D10-670D-4526-8848-0AC2666592C0</string>
+</dict>
+</plist>

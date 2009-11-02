@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TTableHeaderRow&gt;
+	${1:&lt;com:TTableHeaderCell Text="${2:header cell 1}" /&gt;
+	&lt;com:TTableHeaderCell Text="${3:header cell 2}" /&gt;}$0
+&lt;/com:TTableHeaderRow&gt;</string>
+	<key>name</key>
+	<string>TTableHeaderRow</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TTableHeaderRow</string>
+	<key>uuid</key>
+	<string>C553AAE6-C788-4B2C-A388-18312FC9828B</string>
+</dict>
+</plist>

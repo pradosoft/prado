@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TValidationSummary
+	HeaderText="${1:Validation error}"
+	Display="${2:Dynamic}" /&gt;$0</string>
+	<key>name</key>
+	<string>TValidationSummary</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValidationSummary</string>
+	<key>uuid</key>
+	<string>2E67996C-AB51-489A-A30D-D829DF17A7EF</string>
+</dict>
+</plist>

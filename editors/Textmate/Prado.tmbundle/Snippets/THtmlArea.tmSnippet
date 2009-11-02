@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:THtmlArea ID="${1:htmlArea1}" Width="${2:500px}" Height="${3:250px}" /&gt;$0</string>
+	<key>name</key>
+	<string>THtmlArea</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>THtmlArea</string>
+	<key>uuid</key>
+	<string>61E9DF58-07F3-4B99-8B58-53D3049575F3</string>
+</dict>
+</plist>

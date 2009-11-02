@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TRangeValidator
+	ControlToValidate="${1:controlIDToValidate}"
+	DataType="${2:Integer}"	
+	${3:MinValue="${4:2}"}
+	${5:MaxValue="${6:5}"}
+	ErrorMessage="${7:out of range}" /&gt;$0</string>
+	<key>name</key>
+	<string>TRangeValidator (TValidator)</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValidator</string>
+	<key>uuid</key>
+	<string>0DF11CB4-2813-4CCB-94EA-4A62E25E9EDC</string>
+</dict>
+</plist>

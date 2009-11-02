@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TWizardStep Title="${1:step 1}" StepType="${2:Step}"&gt;
+	$0
+&lt;/com:TWizardStep&gt;</string>
+	<key>name</key>
+	<string>TWizardStep</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TWizardStep</string>
+	<key>uuid</key>
+	<string>2433B69B-6986-4260-97A3-DE23072D8BC6</string>
+</dict>
+</plist>

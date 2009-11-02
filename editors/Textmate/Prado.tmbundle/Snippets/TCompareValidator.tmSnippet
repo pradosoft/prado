@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TCompareValidator
+	ControlToValidate="${1:controlIDToValidate}"
+	${2:ControlToCompare="${3:controlIDToCompareWith}"
+	DataType="${4:String}"
+	Operator="${5:Equal}"}
+	ErrorMessage="${6:value did not match}" /&gt;$0</string>
+	<key>name</key>
+	<string>TCompareValidator (TValidator)</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValidator</string>
+	<key>uuid</key>
+	<string>3586B543-C92E-4AEB-92A7-20D948EA60DF</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TListBox ID="${1:listBox1}"&gt;
+	${2:&lt;com:TListItem Value="${3:value 1}" Text="${4:item 1}" /&gt;
+	&lt;com:TListItem Value="${5:value 2}" Text="${6:item 2}" /&gt;}$0
+&lt;/com:TListBox&gt;</string>
+	<key>name</key>
+	<string>TListBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TListBox</string>
+	<key>uuid</key>
+	<string>665F3D21-16F5-40FF-8339-A9A101400D10</string>
+</dict>
+</plist>

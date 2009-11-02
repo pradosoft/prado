@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TForm ${1:ID="${2:form1}"}&gt;
+	$0
+&lt;/com:TForm&gt;</string>
+	<key>name</key>
+	<string>TForm</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TForm</string>
+	<key>uuid</key>
+	<string>5714E730-271D-436E-86DC-04AB0E71ECE0</string>
+</dict>
+</plist>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TPanel ID="${1:panel1}"&gt;
+	$0
+&lt;/com:TPanel&gt;</string>
+	<key>name</key>
+	<string>TPanel</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TPanel</string>
+	<key>uuid</key>
+	<string>7E35FA7C-E390-41BA-A8C5-C1F3B4FAE6A1</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TButton ID="${1:button1}" Text="${2:Button Text}" OnClick="${3:${1}_Clicked}" /&gt;$0</string>
+	<key>name</key>
+	<string>TButton</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TButton</string>
+	<key>uuid</key>
+	<string>94E9F86C-36D1-4D5C-808C-E379024299CD</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TInlineFrame FrameUrl="${1:http://www.google.com/}" /&gt;$0</string>
+	<key>name</key>
+	<string>TInlineFrame</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TInlineFrame</string>
+	<key>uuid</key>
+	<string>13CDBA43-EAA4-4BCD-B9AA-A990B4974496</string>
+</dict>
+</plist>

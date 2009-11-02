@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TRegularExpressionValidator
+	ControlToValidate="${1:controlIDToValidate}"
+	RegularExpression="${2:\w{5,\}}"
+	ErrorMessage="${7:mismatch}" /&gt;$0</string>
+	<key>name</key>
+	<string>TRegularExpressionValidator (TValidator)</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValidator</string>
+	<key>uuid</key>
+	<string>92266396-CC97-4F53-B1D3-4DDFD924D8C8</string>
+</dict>
+</plist>

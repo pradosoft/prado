@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:THyperLink NavigateUrl="${1:http://www.pradosoft.com/}" Text="${2:PradoSoft.com}" /&gt;$0</string>
+	<key>name</key>
+	<string>THyperLink</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>THyperLink</string>
+	<key>uuid</key>
+	<string>618046BE-DF8E-489C-A8BC-24A15CF2AD7A</string>
+</dict>
+</plist>
