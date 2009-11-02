@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TButtonColumn CommandName="${2:Button Command}" Text="${3:Text on Button}" HeaderText="${4}" /&gt;$0</string>
+	<key>name</key>
+	<string>TButtonColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TButtonColumn</string>
+	<key>uuid</key>
+	<string>77C53961-0D71-47BB-AE09-87E26F560003</string>
+</dict>
+</plist>

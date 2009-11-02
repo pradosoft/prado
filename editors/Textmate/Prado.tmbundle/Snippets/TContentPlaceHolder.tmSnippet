@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TContentPlaceHolder ID="${1:Content}" /&gt;$0</string>
+	<key>name</key>
+	<string>TContentPlaceHolder</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TContentPlaceHolder</string>
+	<key>uuid</key>
+	<string>1020E025-E424-40C2-AC76-F90766397290</string>
+</dict>
+</plist>

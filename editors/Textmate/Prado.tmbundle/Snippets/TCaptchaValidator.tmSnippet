@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TCaptchaValidator
+	CaptchaControl="${1:captchaControl}"
+	ControlToValidate="${2:controlIDToValidate}"
+	ErrorMessage="${3:You are challenged!}" /&gt;$0</string>
+	<key>name</key>
+	<string>TCaptchaValidator (TValidator)</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValidator</string>
+	<key>uuid</key>
+	<string>078B43BF-6A9E-4558-B262-EABEBEF30F9B</string>
+</dict>
+</plist>

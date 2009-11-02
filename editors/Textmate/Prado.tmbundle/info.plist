@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>contactEmailRot13</key>
+	<string>ebwneb@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Robin J. Rogge</string>
 	<key>deleted</key>
 	<array>
 		<string>3B4714DB-144B-4102-ACCD-A9D66B676D3C</string>
@@ -9,13 +13,112 @@
 		<string>9ED62E79-F25A-4BE1-80E9-D0474DD64BB5</string>
 		<string>9ED62E79-F25A-4BE1-80E9-D0474DD64BB5</string>
 	</array>
+	<key>description</key>
+	<string>Snippets and Syntaxes for the PRADO PHP Framework</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>24F6F96C-B3BD-41EA-852D-A1CD51F0723E</string>
+			<string>DBB5D8B9-5DD8-4573-B196-0D37A72AF60B</string>
+		</array>
+		<key>submenus</key>
+		<dict>
+			<key>24F6F96C-B3BD-41EA-852D-A1CD51F0723E</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>319D66FC-712A-4B09-A1C0-CB741ED9DD4C</string>
+				</array>
+				<key>name</key>
+				<string>ActiveControls</string>
+			</dict>
+			<key>DBB5D8B9-5DD8-4573-B196-0D37A72AF60B</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>110FCD3F-841C-4178-99D8-765C7D382F7D</string>
+					<string>8D8D94FD-7FD7-442F-A50E-A6A29A4267AE</string>
+					<string>94E9F86C-36D1-4D5C-808C-E379024299CD</string>
+					<string>77C53961-0D71-47BB-AE09-87E26F560003</string>
+					<string>5415E441-A4F5-489B-B4E5-359CBB0BC04D</string>
+					<string>078B43BF-6A9E-4558-B262-EABEBEF30F9B</string>
+					<string>2721E2C3-66B7-4486-BF0F-6FA7B274858D</string>
+					<string>028C538B-4B9C-4820-A284-2C8D5236FED7</string>
+					<string>76F11AC6-D441-4059-A70A-E3BB739EE515</string>
+					<string>0DE44657-21AB-4878-93E7-0FD458D8723A</string>
+					<string>CBC6DC68-6819-4905-A6F8-5CDE2FB9614B</string>
+					<string>37D57B7A-8B55-4C9D-B19B-13000A65739B</string>
+					<string>7322CD9C-1D5F-4369-9607-A0C564AD077A</string>
+					<string>3586B543-C92E-4AEB-92A7-20D948EA60DF</string>
+					<string>EB4E1513-2FB7-4111-9430-2606178EA859</string>
+					<string>CA1AE93D-D724-43B0-A3CB-9E584126FB3C</string>
+					<string>1020E025-E424-40C2-AC76-F90766397290</string>
+					<string>BF6A7ED6-28A0-4165-AA7A-F1F003161AE5</string>
+					<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
+					<string>37221294-B588-4D07-9010-2DB7CDBEB6B4</string>
+					<string>803BFB83-50E8-4121-9866-A25C93979E4B</string>
+					<string>BDF614B5-430B-46AB-B558-B5E0EF97BA17</string>
+					<string>B7E6E873-309E-41E6-AD8A-29EB54781579</string>
+					<string>17BECED9-79B1-4CD6-9354-E528DA3327AC</string>
+					<string>5714E730-271D-436E-86DC-04AB0E71ECE0</string>
+					<string>61E9DF58-07F3-4B99-8B58-53D3049575F3</string>
+					<string>618046BE-DF8E-489C-A8BC-24A15CF2AD7A</string>
+					<string>17389BC4-0AF1-4993-B829-5CDC330A6D39</string>
+					<string>8A274C79-422D-4553-B086-0B553BDABEC7</string>
+					<string>823B366A-3A40-4875-8A2E-AB901F54D443</string>
+					<string>13CDBA43-EAA4-4BCD-B9AA-A990B4974496</string>
+					<string>202F9A01-9B67-4CBD-9289-EE6A98D091D7</string>
+					<string>84F0B41A-06B1-4A61-98B7-F13D1321C3D0</string>
+					<string>4E663D10-670D-4526-8848-0AC2666592C0</string>
+					<string>665F3D21-16F5-40FF-8339-A9A101400D10</string>
+					<string>0353A694-1EE5-46E0-AC72-2F1631B441CB</string>
+					<string>AB128FBD-1C3E-4FB4-91F5-48B57DC6860F</string>
+					<string>023BD925-D6F2-4BE1-8973-8B90B3C8858E</string>
+					<string>7E35FA7C-E390-41BA-A8C5-C1F3B4FAE6A1</string>
+					<string>53AAABF9-D393-4E5B-83BD-0C4CB15DDCC1</string>
+					<string>3CFAD67E-EE9F-49F9-B606-D414E73ED8F7</string>
+					<string>AC226362-749C-45C1-86A3-B58379A38A7E</string>
+					<string>012C556B-6ACB-48F0-8757-CA2E60B06109</string>
+					<string>0DF11CB4-2813-4CCB-94EA-4A62E25E9EDC</string>
+					<string>BAC66FCD-8C23-48B9-829B-56FE20CCC8E6</string>
+					<string>92266396-CC97-4F53-B1D3-4DDFD924D8C8</string>
+					<string>754B2EF6-85D2-4A93-996F-D6D9E8A27F1E</string>
+					<string>BFD8CE92-59C7-47B2-9AE4-1B29ADE3CA0B</string>
+					<string>8E764E2C-244E-4A93-9C0D-5E25689D1C85</string>
+					<string>C553AAE6-C788-4B2C-A388-18312FC9828B</string>
+					<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+					<string>1E598B7B-B754-4C52-B819-39897FE3E07D</string>
+					<string>AD1AB937-AFCD-4656-9882-788B9C6E0D74</string>
+					<string>23289E12-7A1F-41A3-872C-3E867E696A49</string>
+					<string>2E67996C-AB51-489A-A30D-D829DF17A7EF</string>
+					<string>7AF6D08A-9FE4-46B9-8F16-2E26D45715CE</string>
+					<string>CA0CD4CC-D186-4448-8CB3-215E25951FDF</string>
+					<string>2433B69B-6986-4260-97A3-DE23072D8BC6</string>
+				</array>
+				<key>name</key>
+				<string>WebControls</string>
+			</dict>
+		</dict>
+	</dict>
 	<key>name</key>
 	<string>Prado</string>
 	<key>ordering</key>
 	<array>
+		<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
 		<string>3E75ACFD-E0F4-4564-9A24-DCB08AD6324D</string>
 		<string>DDC83EED-168F-4DEB-971D-84A2CF3CB38F</string>
+		<string>1020E025-E424-40C2-AC76-F90766397290</string>
+		<string>028C538B-4B9C-4820-A284-2C8D5236FED7</string>
+		<string>8D8D94FD-7FD7-442F-A50E-A6A29A4267AE</string>
+		<string>CBC6DC68-6819-4905-A6F8-5CDE2FB9614B</string>
+		<string>EB4E1513-2FB7-4111-9430-2606178EA859</string>
+		<string>37D57B7A-8B55-4C9D-B19B-13000A65739B</string>
+		<string>7322CD9C-1D5F-4369-9607-A0C564AD077A</string>
+		<string>77C53961-0D71-47BB-AE09-87E26F560003</string>
 		<string>94E9F86C-36D1-4D5C-808C-E379024299CD</string>
+		<string>078B43BF-6A9E-4558-B262-EABEBEF30F9B</string>
+		<string>5415E441-A4F5-489B-B4E5-359CBB0BC04D</string>
 		<string>2721E2C3-66B7-4486-BF0F-6FA7B274858D</string>
 		<string>AC226362-749C-45C1-86A3-B58379A38A7E</string>
 		<string>BFD8CE92-59C7-47B2-9AE4-1B29ADE3CA0B</string>

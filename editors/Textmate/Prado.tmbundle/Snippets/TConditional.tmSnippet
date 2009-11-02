@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TConditional Condition="${1:\$this->User->IsGuest}" &gt;
+	&lt;prop:TrueTemplate&gt;
+		$0
+	&lt;/prop:TrueTemplate&gt;
+	&lt;prop:FalseTemplate&gt;
+	&lt;/prop:FalseTemplate&gt;
+&lt;/com:TConditional&gt;</string>
+	<key>name</key>
+	<string>TConditional</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TConditional</string>
+	<key>uuid</key>
+	<string>EB4E1513-2FB7-4111-9430-2606178EA859</string>
+</dict>
+</plist>

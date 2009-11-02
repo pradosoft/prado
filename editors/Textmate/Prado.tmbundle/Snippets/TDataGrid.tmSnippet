@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TDataGrid ID="${1:grid1}" AutoGenerateColumns="${2:true}"&gt;
+	$0
+&lt;/com:TDataGrid&gt;</string>
+	<key>name</key>
+	<string>TDataGrid</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TDataGrid</string>
+	<key>uuid</key>
+	<string>D2EAFC46-26B5-40BB-A4B7-8B10C856AF3B</string>
+</dict>
+</plist>

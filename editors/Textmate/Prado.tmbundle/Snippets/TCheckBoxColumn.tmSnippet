@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TCheckBoxColumn DataField="${2:Field Name from Data Source}" HeaderText="${3:${2}}" /&gt;$0</string>
+	<key>name</key>
+	<string>TCheckBoxColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TCheckBoxColumn</string>
+	<key>uuid</key>
+	<string>028C538B-4B9C-4820-A284-2C8D5236FED7</string>
+</dict>
+</plist>
