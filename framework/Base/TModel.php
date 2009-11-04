@@ -33,7 +33,7 @@ abstract class TModel extends TComponent implements IteratorAggregate, ArrayAcce
  	 * @param string EventName
  	 * @param TEvent Event
  	 */
- 	public function raiseEvent($name, $event)
+ 	public function raiseEvent($name, $event, $param=null)
  	{
 		parent::raiseEvent($name, $event, new TEventParameter());
  	}

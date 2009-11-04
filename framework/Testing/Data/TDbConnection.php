@@ -425,12 +425,26 @@ class TDbConnection extends TComponent
 	 * @return string the properly quoted string
 	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
-	public function quoteString($str)
+	public function quoteValue($str)
 	{
 		if($this->getActive())
 			return $this->_pdo->quote($str);
 		else
 			throw new TDbException('TDbConnection is inactive and cannot perform any DB operations.');
+	}
+
+	/**
+	 *
+	 * Prado 3.1 compatibility method.
+	 *
+	 * @see {@link quoteValue}
+	 *
+	 * @param string $str
+	 * @return string
+	 */
+	public function quoteString($str)
+	{
+		return $this->quoteValue($str);
 	}
 
 	/**
