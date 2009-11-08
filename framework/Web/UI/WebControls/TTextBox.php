@@ -298,17 +298,17 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
 	}
 
-       /**
-         * Renders an additional line-break after the opening tag when it
+	/**
+	 * Renders an additional line-break after the opening tag when it
 	 * is in MultiLine text mode.
-         * @param THtmlWriter the writer used for the rendering purpose^M
-         */
-        public function renderBeginTag($writer)
-        {
+	 * @param THtmlWriter the writer used for the rendering purpose^M
+	 */
+	public function renderBeginTag($writer)
+	{
 		parent::renderBeginTag($writer);
 		if($this->getTextMode()==='MultiLine')
 			$writer->write("\n");
-        }
+	}
 
 	/**
 	 * @return TTextBoxAutoCompleteType the AutoComplete type of the textbox
