@@ -149,6 +149,22 @@ class TValidationSummary extends TWebControl
 	}
 
 	/**
+	 * @return boolean whether scroll summary into viewport or not. Defaults to true.
+	 */
+	public function getScrollToSummary()
+	{
+		return $this->getViewState('ScrollToSummary',true);
+	}
+
+	/**
+	 * @param boolean whether scroll summary into viewport or not.
+	 */
+	public function setScrollToSummary($value)
+	{
+		$this->setViewState('ScrollToSummary',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
 	 * @return boolean whether the validation summary should be anchored. Defaults to false.
 	 */
 	public function getShowAnchor()
@@ -254,6 +270,7 @@ class TValidationSummary extends TWebControl
 		if(!$this->getShowSummary())
 			$options['ShowSummary']=false;
 
+		$options['ScrollToSummary']=$this->getScrollToSummary();
 		$options['HeaderText']=$this->getHeaderText();
 		$options['DisplayMode']=$this->getDisplayMode();
 

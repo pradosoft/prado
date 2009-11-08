@@ -6,6 +6,7 @@ BUG: Issue#198 - "Undefined variable: tagName" after error in application config
 BUG: Typo in TBoundColumn (Robin)
 ENH: Add property ClientScriptManagerClass to TPageService and releated changes in TPage.getClientScript() (Yves)
 ENH: Always render clientside counterparts of validation control even if not enabled, but pass-through Enabled property, to allow Enabled/Disable of validator on callback. (Yves)
+EHN: Add property TValidationSummary.ScrollToSummary to server-side control since property exists on client-side. (Yves)
 
 Version 3.1.6 July 22, 2009
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
