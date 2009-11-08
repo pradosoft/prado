@@ -1,6 +1,7 @@
 Version 3.1.7 To be released
-BUG: Issue#166 - E_NOTICE level error in TDataGatewayCommand (Carl)
+BUG: Issue#151 - TTextBox fails to display inital line break (Yves)
 BUG: Issue#157 - Enabled does not work properly on TActiveRadioButton/CheckBoxList controls (Bradley, Carl)
+BUG: Issue#166 - E_NOTICE level error in TDataGatewayCommand (Carl)
 EHN: Issue#184 - THttpResponse doesn't support custom Content-Type headers, remove charset part of header if THttpResponse.Charset=false (Yves)
 BUG: Issue#188 - TDbCache doesn't check if db connection is active. (Yves)
 BUG: Issue#189 - Page State corrupted when EnableStateValidation=False (Christophe)
