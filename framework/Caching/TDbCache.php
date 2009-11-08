@@ -183,7 +183,6 @@ class TDbCache extends TCache
 	{
 		if($this->_cacheInitialized && !$force) return;
 		$db=$this->getDbConnection();
-		$db->setActive(true);
 		try
 		{
 			$key = 'TDbCache:' . $this->_cacheTable . ':created';
@@ -328,6 +327,8 @@ class TDbCache extends TCache
 	{
 		if($this->_db===null)
 			$this->_db=$this->createDbConnection();
+
+		$this->_db->setActive(true);
 		return $this->_db;
 	}
 
@@ -464,7 +465,7 @@ class TDbCache extends TCache
 		if(!$this->_cacheInitialized) $this->initializeCache();
 		try {
 			$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
-			$command=$this->_db->createCommand($sql);
+			$command=$this->getDbConnection()->createCommand($sql);
 			return $command->queryScalar();
 		}
 		catch(Exception $e)
@@ -505,7 +506,7 @@ class TDbCache extends TCache
 		$sql="INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
 		try
 		{
-			$command=$this->_db->createCommand($sql);
+			$command=$this->getDbConnection()->createCommand($sql);
 			$command->bindValue(':key',$key,PDO::PARAM_STR);
 			$command->bindValue(':value',$value,PDO::PARAM_LOB);
 			$command->execute();
@@ -537,7 +538,7 @@ class TDbCache extends TCache
 		if(!$this->_cacheInitialized) $this->initializeCache();
 		try
 		{
-			$command=$this->_db->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+			$command=$this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
 			$command->bindValue(':key',$key,PDO::PARAM_STR);
 			$command->execute();
 			return true;
@@ -559,7 +560,7 @@ class TDbCache extends TCache
 		if(!$this->_cacheInitialized) $this->initializeCache();
 		try
 		{
-			$command = $this->_db->createCommand("DELETE FROM {$this->_cacheTable}");
+			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable}");
 			$command->execute();
 		}
 		catch(Exception $e)
