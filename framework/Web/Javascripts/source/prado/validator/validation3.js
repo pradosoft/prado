@@ -795,7 +795,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		 * Wether the validator is enabled (default true)
 		 * @var {boolean} enabled
 		 */
-		this.enabled = true;
+		this.enabled = options.Enabled;
 		/**
 		 * Visibility state of validator(default false)
 		 * @var {boolean} visible
@@ -837,6 +837,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		 * @var {element} message
 		 */
 		this.message = $(options.ID);
+
 		Prado.Registry.set(options.ID, this);
 		if(this.control && this.message)
 		{

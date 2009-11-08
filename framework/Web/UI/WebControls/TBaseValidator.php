@@ -167,6 +167,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$options['ControlCssClass'] = $this->getControlCssClass();
 
 		$options['ControlType'] = $this->getClientControlClass($control);
+		$options['Enabled'] = $this->getEnabled(true);
 
 		//get date format from date picker target control
 		if($control instanceof TDatePicker)
@@ -241,7 +242,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$scripts->registerPradoScript('validator');
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
-		if($this->getEnableClientScript() & $this->getEnabled(true))
+		if($this->getEnableClientScript())
 			$this->registerClientScriptValidator();
 	}
 
