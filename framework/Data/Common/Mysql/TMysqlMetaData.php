@@ -110,7 +110,7 @@ class TMysqlMetaData extends TDbMetaData
 
 			//find SET/ENUM values
 			if($this->isEnumSetType($info['DbType']))
-				$info['DbTypeValues'] = preg_split('/\s*,\s*|\s+/', preg_replace('/\'|"/', '', $match[1]));
+				$info['DbTypeValues'] = preg_split("/[',]/S", $match[1], -1, PREG_SPLIT_NO_EMPTY);
 
 			//find column size, precision and scale
 			$pscale = array();
