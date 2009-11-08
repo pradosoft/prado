@@ -586,8 +586,17 @@ class TPage extends TTemplateControl
 	 */
 	public function getClientScript()
 	{
-		if(!$this->_clientScript)
-			$this->_clientScript=new TClientScriptManager($this);
+		if(!$this->_clientScript) {
+			$className = $classPath = $this->getService()->getClientScriptManagerClass();
+			Prado::using($className);
+			if(($pos=strrpos($className,'.'))!==false)
+				$className=substr($className,$pos+1);
+
+ 			if(!class_exists($className,false) || ($className!=='TClientScriptManager' && !is_subclass_of($className,'TClientScriptManager')))
+				throw new THttpException(404,'page_csmanagerclass_invalid',$classPath);
+
+			$this->_clientScript=new $className($this);
+		}
 		return $this->_clientScript;
 	}
 
