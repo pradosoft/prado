@@ -413,6 +413,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		$cs->registerEndScript("prado:$id", $code);
 		$cs->registerHiddenField($id.'_1',$this->getActiveViewIndex());
 		$page->registerRequiresPostData($this);
+		$page->registerRequiresPostData($id."_1");
 	}
 
 	/**

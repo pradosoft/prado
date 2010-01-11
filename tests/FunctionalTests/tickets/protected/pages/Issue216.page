@@ -1,0 +1,15 @@
+<com:TContent ID="Content">
+	<h1>TTabPanel doesn't preserve active tab on callback request</h1>
+
+	<com:TTabPanel id="tabpanel">
+		<com:TTabView id="tab1" Caption="Tab 1">
+			<p>This is Tab 1</p>
+		</com:TTabView>
+		<com:TTabView id="tab2" Caption="Tab 2">
+			<p>This is Tab 2</p>
+		</com:TTabView>
+	</com:TTabPanel>
+	
+	<com:TActiveButton id="btn1" OnCallback="buttonClickCallback" Text ="Click me"/>
+	<com:TActiveLabel id="result"/>
+</com:TContent>
