@@ -4,7 +4,7 @@
 <com:DocLink ClassPath="System.Web.UI.WebControls.TJavascriptLogger" />
 
 <p id="390277" class="block-content">
-<tt>TJavascriptLogger</tt> provides logging for client-side javascript. It is mainly a wrapper of the Javascript developed at <a href="http://gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
+<tt>TJavascriptLogger</tt> provides logging for client-side javascript. It is mainly a wrapper of the Javascript developed at <a href="http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
 </p>
 
 <p id="390278" class="block-content">

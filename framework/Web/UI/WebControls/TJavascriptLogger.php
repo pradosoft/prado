@@ -23,7 +23,7 @@
  *
  * To see the logger and console, press ALT-D (or CTRL-D on OS X).
  * More information on the logger can be found at
- * http://gleepglop.com/javascripts/logger/
+ * http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Id$
@@ -84,7 +84,7 @@ class TJavascriptLogger extends TWebControl
 	public function renderContents($writer)
 	{
 		$code = strtoupper($this->getToggleKey());
-		$info = '(<a href="http://gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
+		$info = '(<a href="http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
 		$link = '<a href="javascript:if(logConsole)logConsole.toggle()">toggle the javascript log console.</a>';
 		$usage = 'Press ALT-'.$code.' (Or CTRL-'.$code.' on OS X) to';
 		$writer->write("{$usage} {$link} {$info}");
