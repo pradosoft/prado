@@ -60,6 +60,13 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
+	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
 
 	/**
 	 * Gets the Css class name that this container can accept.
