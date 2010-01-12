@@ -9,6 +9,7 @@ BUG: Issue#189 - Page State corrupted when EnableStateValidation=False (Christop
 BUG: Issue#191 - Bad parsing of MySQL ENUM type column (Yves)
 BUG: Issue#198 - "Undefined variable: tagName" after error in application configuration. (Christophe)
 BUG: Issue#208 - TDbConnection.Charset not working properly (googlenew at pcforum.hu, Christophe)
+BUG: Issue#212 - Mistaken query executed by TMysqlMetaData (pbenny, Christophe)
 BUG: Issue#216 - TTabPanel doesn't preserve active tab on callback request (googlenew at pcforum.hu,Christophe)
 BUG: Typo in TBoundColumn (Robin)
 ENH: Add property ClientScriptManagerClass to TPageService and releated changes in TPage.getClientScript() (Yves)
