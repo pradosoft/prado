@@ -204,7 +204,7 @@ class TDbConnection extends TComponent
 		switch ($this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
 		{
 			case 'mysql':
-				$stmt = $this->_pdo->prepare('SET CHARACTER SET ?');
+				$stmt = $this->_pdo->prepare('SET NAMES ?');
 			break;
 			case 'pgsql':
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
