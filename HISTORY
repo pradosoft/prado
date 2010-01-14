@@ -1,5 +1,6 @@
 Version 3.1.7 To be released
 BUG: Issue#151 - TTextBox fails to display inital line break (Yves)
+BUG: Issue#153 - Bug with calls like MyActiveRedorc->withText()->withUser()->find(...) and null result (Christophe)
 BUG: Issue#157 - Enabled does not work properly on TActiveRadioButton/CheckBoxList controls (Bradley, Carl)
 BUG: Issue#166 - E_NOTICE level error in TDataGatewayCommand (Carl)
 BUG: Issue#171 - <connection> tag in SqlMap config ignored in 3.1.5 and above, introduced by solving Issue#68 (Yves)

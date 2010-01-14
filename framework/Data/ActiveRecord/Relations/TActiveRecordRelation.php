@@ -85,6 +85,8 @@ abstract class TActiveRecordRelation
 		}
 		else if($results instanceof TActiveRecordRelation)
 			$stack[] = $this; //call it later
+		else if($results === null || !$validArray)
+			$stacks=array();
 		return $results;
 	}
 
