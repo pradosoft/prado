@@ -296,6 +296,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			{
 				ini_set('session.use_cookies','1');
 				ini_set('session.use_only_cookies','1');
+				ini_set('session.use_trans_sid', 0);
 			}
 		}
 	}
@@ -366,7 +367,12 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 		if($this->_started)
 			throw new TInvalidOperationException('httpsession_transid_unchangeable');
 		else
-			ini_set('session.use_trans_sid',TPropertyValue::ensureBoolean($value)?'1':'0');
+		{
+			$value=TPropertyValue::ensureBoolean($value);
+			if ($value && $this->getCookieMode()==THttpSessionCookieMode::Only)
+					throw new TInvalidOperationException('httpsession_transid_cookieonly');
+			ini_set('session.use_trans_sid',$value?'1':'0');
+		}
 	}
 
 	/**
