@@ -1707,7 +1707,7 @@ Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidato
 		if (value.length <= 0)
 	    	return true;
 
-		var rx = new RegExp(this.options.ValidationExpression,this.options.PatternModifiers);
+		var rx = new RegExp('^'+this.options.ValidationExpression+'$',this.options.PatternModifiers);
 		var matches = rx.exec(value);
 		return (matches != null && value == matches[0]);
 	}
