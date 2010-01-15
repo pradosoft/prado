@@ -97,7 +97,7 @@ class TSqlMapCacheModel extends TComponent
 	public function initialize($cache=null)
 	{
 		if($cache===null)
-			$this->_cache= Prado::createComponent($this->getImplementationClass());
+			$this->_cache= Prado::createComponent($this->getImplementationClass(), $this);
 		else
 			$this->_cache=$cache;
 	}
