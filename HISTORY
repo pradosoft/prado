@@ -12,6 +12,7 @@ EHN: Issue#184 - THttpResponse doesn't support custom Content-Type headers, remo
 BUG: Issue#188 - TDbCache doesn't check if db connection is active. (Yves)
 BUG: Issue#189 - Page State corrupted when EnableStateValidation=False (Christophe)
 BUG: Issue#191 - Bad parsing of MySQL ENUM type column (Yves)
+BUG: Issue#192 - soap-enc:Array not a valid complex type (mosonyi at esix.hu)
 BUG: Issue#198 - "Undefined variable: tagName" after error in application configuration. (Christophe)
 BUG: Issue#200 - TShellApplication failed when no service are defined in application configuration. (Christophe)
 BUG: Issue#208 - TDbConnection.Charset not working properly (googlenew at pcforum.hu, Christophe)
