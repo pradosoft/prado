@@ -19,6 +19,7 @@ BUG: Issue#208 - TDbConnection.Charset not working properly (googlenew at pcforu
 BUG: Issue#212 - Mistaken query executed by TMysqlMetaData (pbenny, Christophe)
 BUG: Issue#216 - TTabPanel doesn't preserve active tab on callback request (googlenew at pcforum.hu,Christophe)
 BUG: Typo in TBoundColumn (Robin)
+BUG: TActiveDatePicker js error when date format does not have the 3 elements (Christophe)
 ENH: Add property ClientScriptManagerClass to TPageService and releated changes in TPage.getClientScript() (Yves)
 ENH: Always render clientside counterparts of validation control even if not enabled, but pass-through Enabled property, to allow Enabled/Disable of validator on callback. (Yves)
 EHN: Add property TValidationSummary.ScrollToSummary to server-side control since property exists on client-side. (Yves)
