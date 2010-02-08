@@ -24,6 +24,7 @@ ENH: Add property ClientScriptManagerClass to TPageService and releated changes 
 ENH: Always render clientside counterparts of validation control even if not enabled, but pass-through Enabled property, to allow Enabled/Disable of validator on callback. (Yves)
 EHN: Add property TValidationSummary.ScrollToSummary to server-side control since property exists on client-side. (Yves)
 EHN: Add property TransactionClass (defaults to System.Data.TDbTransaction) to TDbConnection and modify beginTransaction() (Yves)
+ENH: Modify TDbTableInfo::getColumnNames() to store result in private class member (Yves)
 ENH: Issue#215 - Add ClientSide property to TDropContainer (googlenew at pcforum.hu, Christophe)
 CHG: Issue#218 - Change URL of Javascript Logger (Christophe)
 
