@@ -11,6 +11,7 @@ NEW: Add TActiveTableRow (LCS Team)
 NEW: Add TActiveTableCell (LCS Team)
 ENH: Issue#173 - Add "dragdropextra" (superghosting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
 NEW: Add TActiveMultiView (LCS Team)
+NEW: Beta of master/slave senario solution (Yves)
 
 Version 3.1.6 to be released
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)

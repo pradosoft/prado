@@ -2636,6 +2636,13 @@ framework/Testing/Data/ActiveRecord/TActiveFinder.php -text
 framework/Testing/Data/ActiveRecord/TActiveRecord.php -text
 framework/Testing/Data/ActiveRecord/TActiveRecordBehavior.php -text
 framework/Testing/Data/ActiveRecord/TActiveRecordCriteria.php -text
+framework/Testing/Data/Analysis/TDbStatementAnalysis.php eol=lf
+framework/Testing/Data/Analysis/TSimpleDbStatementAnalysis.php eol=lf
+framework/Testing/Data/Distributed/MasterSlave/TMasterSlaveDataSourceConfig.php eol=lf
+framework/Testing/Data/Distributed/MasterSlave/TMasterSlaveDbConnection.php eol=lf
+framework/Testing/Data/Distributed/MasterSlave/TMasterSlaveDbTransaction.php eol=lf
+framework/Testing/Data/Distributed/TDistributedDataSourceConfig.php eol=lf
+framework/Testing/Data/Distributed/TDistributedDbConnection.php eol=lf
 framework/Testing/Data/Schema/TDbColumnSchema.php -text
 framework/Testing/Data/Schema/TDbCommandBuilder.php -text
 framework/Testing/Data/Schema/TDbCriteria.php -text
@@ -3752,6 +3759,10 @@ tests/unit/Security/TSecurityManagerTest.php -text
 tests/unit/Security/TUserManagerTest.php -text
 tests/unit/Security/TUserTest.php -text
 tests/unit/TComponentTest.php -text
+tests/unit/Testing/Data/Analysis/AllTests.php eol=lf
+tests/unit/Testing/Data/Analysis/TDbStatementAnalysisParameterTest.php eol=lf
+tests/unit/Testing/Data/Analysis/TDbStatementAnalysisTest.php eol=lf
+tests/unit/Testing/Data/Analysis/TSimpleDbStatementAnalysisTest.php eol=lf
 tests/unit/Util/AllTests.php -text
 tests/unit/Util/TDateTimeStampTest.php -text
 tests/unit/Util/TLoggerTest.php -text
