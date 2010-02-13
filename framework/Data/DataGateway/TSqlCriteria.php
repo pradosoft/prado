@@ -31,6 +31,11 @@
  */
 class TSqlCriteria extends TComponent
 {
+	/**
+	 * @var mixed
+	 * @since 3.1.7
+	 */
+	private $_select='*';
 	private $_condition;
 	private $_parameters;
 	private $_ordersBy;
@@ -56,6 +61,60 @@ class TSqlCriteria extends TComponent
 	}
 
 	/**
+	 * Gets the field list to be placed after the SELECT in the SQL. Default to '*'
+	 * @return mixed
+	 * @since 3.1.7
+	 */
+	public function getSelect()
+	{
+		return $this->_select;
+	}
+
+	/**
+	 * Sets the field list to be placed after the SELECT in the SQL.
+	 *
+	 * Different behavior depends on type of assigned value
+	 * string
+	 * 	usage without modification
+	 *
+	 * null
+	 * 	will be expanded to full list of quoted table column names (quoting depends on database)
+	 *
+	 * array
+	 * - Column names will be quoted if used as key or value of array
+	 * 	<code>
+	 * 	array('col1', 'col2', 'col2')
+	 * 	// SELECT `col1`, `col2`, `col3` FROM...
+	 * 	</code>
+	 *
+	 * - Column aliasing
+	 * <code>
+	 * array('mycol1' => 'col1', 'mycol2' => 'COUNT(*)')
+	 * // SELECT `col1` AS mycol1, COUNT(*) AS mycol2 FROM...
+	 * </code>
+	 *
+	 * - NULL and scalar values (strings will be quoted depending on database)
+	 * <code>
+	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
+	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
+	 * </code>
+	 *
+	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
+	 * <code>
+	 * array('col1' => 'NULL', '*')
+	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
+	 * </code>
+	 *
+	 * @param mixed
+	 * @since 3.1.7
+	 * @see TDbCommandBuilder::getSelectFieldList()
+	 */
+	public function setSelect($value)
+	{
+		$this->_select = $value;
+	}
+
+	/**
 	 * @return string search conditions.
 	 */
 	public function getCondition()
@@ -68,17 +127,17 @@ class TSqlCriteria extends TComponent
 	 * @param string search conditions.
 	 */
 	public function setCondition($value)
-	{		
+	{
 		if(empty($value)) {
 			return;
 		}
-		
+
 		// supporting the following SELECT-syntax:
 		// [ORDER BY {col_name | expr | position}
 		//      [ASC | DESC], ...]
 		//    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 		// See: http://dev.mysql.com/doc/refman/5.0/en/select.html
-		
+
 		if(preg_match('/ORDER\s+BY\s+(.*?)(?=LIMIT)|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
 			// condition contains ORDER BY
 			$value = str_replace($matches[0], '', $value);
@@ -88,7 +147,7 @@ class TSqlCriteria extends TComponent
 				$this->setOrdersBy($matches[2]);
 			}
 		}
-		
+
 		if(preg_match('/LIMIT\s+([\d\s,]+)/i', $value, $matches) > 0) {
 			// condition contains limit
 			$value = str_replace($matches[0], '', $value); // remove limit from query
@@ -106,7 +165,7 @@ class TSqlCriteria extends TComponent
 			$value = str_replace($matches[0], '', $value); // remove offset from query
 			$this->_offset = (int)$matches[1]; // set offset in criteria
 		}
-		
+
 		$this->_condition = trim($value);
 	}
 
@@ -222,5 +281,4 @@ class TSqlCriteria extends TComponent
 		return $str;
 	}
 }
-
 ?>

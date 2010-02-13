@@ -1,4 +1,5 @@
 Version 3.1.7 To be released
+ENH: Issue#24  - Specify needed fields on demand (Yves) 
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
 BUG: Issue#94  - DataGrid header/footer renderers unable to locate their parent grid in setData() method (Christophe)

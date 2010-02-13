@@ -148,7 +148,8 @@ class TDataGatewayCommand extends TComponent
 		$ordering = $criteria->getOrdersBy();
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
-		$command = $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset);
+		$select = $criteria->getSelect();
+		$command = $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset,$select);
 		$this->onCreateCommand($command, $criteria);
 		return $command;
 	}
