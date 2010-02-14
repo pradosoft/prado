@@ -245,7 +245,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	}
 
 	/**
-	 * Returns true if this control validated successfully. 
+	 * Returns true if this control validated successfully.
 	 * Defaults to true.
 	 * @return bool wether this control validated successfully.
 	 */
@@ -296,6 +296,18 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	{
 		if($this->getTextMode()==='MultiLine')
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
+	}
+
+	/**
+	 * Renders an additional line-break after the opening tag when it
+	 * is in MultiLine text mode.
+	 * @param THtmlWriter the writer used for the rendering purpose^M
+	 */
+	public function renderBeginTag($writer)
+	{
+		parent::renderBeginTag($writer);
+		if($this->getTextMode()==='MultiLine')
+			$writer->write("\n");
 	}
 
 	/**

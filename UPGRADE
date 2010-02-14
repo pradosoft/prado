@@ -9,6 +9,13 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.1.6
+---------------------
+- The different SQLMap cache engines (TSQLMapFifoCache, TSQLMapLRUCache, TSQLMapApplicationCache) doesn't
+take anymore the cache size in their constructor. Instead, they take the cachemodel object who instanciated them.
+It shouldn't affect existing code, except if you instanciate one of this cache directly (i.e, without a <cachemodel>
+directive in your SQLMap configuration)
+
 Upgrading from v3.1.5
 ---------------------
 

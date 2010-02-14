@@ -71,6 +71,7 @@ httpsession_autostart_unchangeable	= THttpSession.AutoStart tidak bisa diubah se
 httpsession_gcprobability_unchangeable	= THttpSession.GCProbability tidak bisa diubah setelah sesi dimulai.
 httpsession_gcprobability_invalid	= THttpSession.GCProbability harus integer antara 0 dan 100.
 httpsession_transid_unchangeable	= THttpSession.UseTransparentSessionID tidak bisa diubah setelah sesi dimulai.
+httpsession_transid_cookieonly			= THttpSession.UseTransparentSessionID cannot be set when THttpSession.CookieMode is set to Only.
 httpsession_maxlifetime_unchangeable	= THttpSession.Timeout tidak bisa diubah setelah sesi dimulai.
 
 assetmanager_basepath_invalid		= TAssetManager.BasePath '{0}' tidak benar. Pastikan ia dalam bentuk namespace dan mengarah ke direktori yang bisa ditulis oleh proses server Web.

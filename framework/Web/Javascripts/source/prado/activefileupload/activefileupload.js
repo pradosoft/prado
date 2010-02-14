@@ -46,20 +46,41 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 	},
 	
 	finishUpload : function(options){
+
+		if (this.options.targetID == options.targetID)
+         		{
+				this.finishoptions = options;
+         			var e = this;
+         			var callback =
+         			{
+         				'CallbackParameter' : options || '',
+         				'onSuccess' : function() { e.finishCallBack(true); },
+					'onFailure' : function() { e.finishCallBack(false); }
+         			};
+
+         			Object.extend(callback, this.options);
+
+         			request = new Prado.CallbackRequest(this.options.EventTarget, callback);
+         			request.dispatch();
+         		}
+		else
+			this.finishCallBack(true);
+
+	},
+
+	finishCallBack : function(success){
 		// hide the display indicator.
 		this.flag.value = '';
 		this.indicator.style.display = 'none';
-		if (this.options.targetID == options.targetID){
-			// show the complete indicator.
-			if (options.errorCode == 0){
-				this.complete.style.display = '';
-				this.input.value = '';
-			} else {
-				this.error.style.display = '';
-			}
-			Prado.Callback(this.options.EventTarget, options, null, this.options);
-		}
+       		// show the complete indicator.
+       		if ((this.finishoptions.errorCode == 0) && (success)) {
+       			this.complete.style.display = '';
+       			this.input.value = '';
+       		} else {
+       			this.error.style.display = '';
+       		}
 	}
+
 },
 {
 // class methods

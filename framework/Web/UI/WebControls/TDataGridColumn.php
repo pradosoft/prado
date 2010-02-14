@@ -418,6 +418,7 @@ abstract class TDataGridColumn extends TApplicationComponent
 		if(($classPath=$this->getHeaderRenderer())!=='')
 		{
 			$control=Prado::createComponent($classPath);
+			$cell->getControls()->add($control);
 			if($control instanceof IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
@@ -428,7 +429,6 @@ abstract class TDataGridColumn extends TApplicationComponent
 				}
 				$control->setData($text);
 			}
-			$cell->getControls()->add($control);
 		}
 		else if($this->getAllowSorting())
 		{
@@ -489,6 +489,7 @@ abstract class TDataGridColumn extends TApplicationComponent
 		if(($classPath=$this->getFooterRenderer())!=='')
 		{
 			$control=Prado::createComponent($classPath);
+			$cell->getControls()->add($control);
 			if($control instanceof IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
@@ -499,7 +500,6 @@ abstract class TDataGridColumn extends TApplicationComponent
 				}
 				$control->setData($text);
 			}
-			$cell->getControls()->add($control);
 		}
 		else if($text!=='')
 			$cell->setText($text);

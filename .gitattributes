@@ -2896,6 +2896,7 @@ framework/powered2.gif -text
 framework/prado-cli -text
 framework/prado-cli.bat -text
 framework/prado.php -text
+framework/pradolite.php -text
 /index.html -text
 /phing -text
 /phing.bat -text
@@ -3127,6 +3128,8 @@ tests/FunctionalTests/tickets/protected/messages/en/messages.xml -text
 tests/FunctionalTests/tickets/protected/pages/DActiveDropDownList2.php -text
 tests/FunctionalTests/tickets/protected/pages/Issue120.page -text
 tests/FunctionalTests/tickets/protected/pages/Issue120.php -text
+tests/FunctionalTests/tickets/protected/pages/Issue216.page -text
+tests/FunctionalTests/tickets/protected/pages/Issue216.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.php -text
 tests/FunctionalTests/tickets/protected/pages/Layout.tpl -text
 tests/FunctionalTests/tickets/protected/pages/TestHtmlArea.php -text
@@ -3301,6 +3304,7 @@ tests/FunctionalTests/tickets/protected700/pages/admin/users/config.xml -text
 tests/FunctionalTests/tickets/protected700/pages/config.xml -text
 tests/FunctionalTests/tickets/protected700/pages/content/Home.page -text
 tests/FunctionalTests/tickets/tests/Issue120TestCase.php -text
+tests/FunctionalTests/tickets/tests/Issue216TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket121TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket163TestCase.php -text
 tests/FunctionalTests/tickets/tests/Ticket169TestCase.php -text

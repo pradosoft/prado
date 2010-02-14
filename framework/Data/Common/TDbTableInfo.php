@@ -30,6 +30,12 @@ class TDbTableInfo extends TComponent
 	private $_lowercase;
 
 	/**
+	 * @var null|array
+	 * @since 3.1.7
+	 */
+	private $_names = null;
+
+	/**
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
@@ -119,10 +125,13 @@ class TDbTableInfo extends TComponent
 	 */
 	public function getColumnNames()
 	{
-		$names=array();
-		foreach($this->getColumns() as $column)
-			$names[] = $column->getColumnName();
-		return $names;
+		if($this->_names===null)
+		{
+			$this->_names=array();
+			foreach($this->getColumns() as $column)
+				$this->_names[] = $column->getColumnName();
+		}
+		return $this->_names;
 	}
 
 	/**
@@ -155,4 +164,3 @@ class TDbTableInfo extends TComponent
 		return $this->_lowercase;
 	}
 }
-

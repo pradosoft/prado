@@ -157,16 +157,158 @@ class TDbCommandBuilder extends TComponent
 	}
 
 	/**
+	 *
+	 * Different behavior depends on type of passed data
+	 * string
+	 * 	usage without modification
+	 *
+	 * null
+	 * 	will be expanded to full list of quoted table column names (quoting depends on database)
+	 *
+	 * array
+	 * - Column names will be quoted if used as key or value of array
+	 * 	<code>
+	 * 	array('col1', 'col2', 'col2')
+	 * 	// SELECT `col1`, `col2`, `col3` FROM...
+	 * 	</code>
+	 *
+	 * - Column aliasing
+	 * <code>
+	 * array('mycol1' => 'col1', 'mycol2' => 'COUNT(*)')
+	 * // SELECT `col1` AS mycol1, COUNT(*) AS mycol2 FROM...
+	 * </code>
+	 *
+	 * - NULL and scalar values (strings will be quoted depending on database)
+	 * <code>
+	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
+	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
+	 * </code>
+	 *
+	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
+	 * <code>
+	 * array('col1' => 'NULL', '*')
+	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
+	 * </code>
+	 * @param mixed $value
+	 * @return array of generated fields - use implode(', ', $selectfieldlist) to collapse field list for usage
+	 * @since 3.1.7
+	 * @todo add support for table aliasing
+	 * @todo add support for quoting of column aliasing
+	 */
+	public function getSelectFieldList($data='*') {
+		if(is_scalar($data)) {
+			$tmp = explode(',', $data);
+			$result = array();
+			foreach($tmp as $v)
+				$result[] = trim($v);
+			return $result;
+		}
+
+		$bHasWildcard = false;
+		$result = array();
+		if(is_array($data) || $data instanceof Traversable) {
+			$columns = $this->getTableInfo()->getColumns();
+			foreach($data as $key=>$value) {
+				if($key==='*' || $value==='*') {
+					$bHasWildcard = true;
+					continue;
+				}
+
+				if(strToUpper($key)==='NULL') {
+					$result[] = 'NULL';
+					continue;
+				}
+
+				if(strpos($key, '(')!==false && strpos($key, ')')!==false) {
+					$result[] = $key;
+					continue;
+				}
+
+				if(stripos($key, 'AS')!==false) {
+					$result[] = $key;
+					continue;
+				}
+
+				if(stripos($value, 'AS')!==false) {
+					$result[] = $value;
+					continue;
+				}
+
+				$v = isset($columns[$value]);
+				$k = isset($columns[$key]);
+				if(is_integer($key) && $v) {
+					$key = $value;
+					$k = $v;
+				}
+
+				if(strToUpper($value)==='NULL') {
+					if($k)
+						$result[] = 'NULL AS ' . $columns[$key]->getColumnName();
+					else
+						$result[] = 'NULL' . (is_string($key) ? (' AS ' . (string)$key) : '');
+					continue;
+				}
+
+				if(strpos($value, '(')!==false && strpos($value, ')')!==false) {
+					if($k)
+						$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
+					else
+						$result[] = $value . (is_string($key) ? (' AS ' . (string)$key) : '');
+					continue;
+				}
+
+				if($v && $key==$value) {
+					$result[] = $columns[$value]->getColumnName();
+					continue;
+				}
+
+				if($k && $value==null) {
+					$result[] = $columns[$key]->getColumnName();
+					continue;
+				}
+
+				if(is_string($key) && $v) {
+					$result[] = $columns[$value]->getColumnName() . ' AS ' . $key;
+					continue;
+				}
+
+				if(is_numeric($value) && $k) {
+					$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
+					continue;
+				}
+
+				if(is_string($value) && $k) {
+					$result[] = $this->getDbConnection()->quoteString($value) . ' AS ' . $columns[$key]->getColumnName();
+					continue;
+				}
+
+				if(!$v && !$k && is_integer($key)) {
+					$result[] = is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value);
+					continue;
+				}
+
+				$result[] = (is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value)) . ' AS ' . $key;
+			}
+		}
+
+		if($data===null || count($result) == 0 || $bHasWildcard)
+			$result = $result = array_merge($this->getTableInfo()->getColumnNames(), $result);
+
+		return $result;
+	}
+
+	/**
 	 * Appends the $where condition to the string "SELECT * FROM tableName WHERE ".
 	 * The tableName is obtained from the {@link setTableInfo TableInfo} property.
 	 * @param string query condition
 	 * @param array condition parameters.
 	 * @return TDbCommand query command.
 	 */
-	public function createFindCommand($where='1=1', $parameters=array(), $ordering=array(), $limit=-1, $offset=-1)
+	public function createFindCommand($where='1=1', $parameters=array(), $ordering=array(), $limit=-1, $offset=-1, $select='*')
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		$sql = "SELECT * FROM {$table}";
+		$fields = implode(', ', $this -> getSelectFieldList($select));
+		$sql = "SELECT {$fields} FROM {$table}";
 		if(!empty($where))
 			$sql .= " WHERE {$where}";
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
@@ -191,11 +333,7 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function createCountCommand($where='1=1', $parameters=array(),$ordering=array(), $limit=-1, $offset=-1)
 	{
-		$table = $this->getTableInfo()->getTableFullName();
-		$sql = "SELECT COUNT(*) FROM {$table}";
-		if(!empty($where))
-			$sql .= " WHERE {$where}";
-		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
+		return $this->createFindCommand($where, $parameters, $ordering, $limit, $offset, 'COUNT(*)');
 	}
 
 	/**

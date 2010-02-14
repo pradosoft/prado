@@ -148,15 +148,16 @@ class Wsdl
 			$complexType->setAttribute('name', $type);
 			if(substr($type, strlen($type) - 5, 5) == 'Array')  // if it's an array
 			{
-				$complexContent = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:complexContent');
-				$restriction = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:restriction');
-				$restriction->setAttribute('base', 'soap-enc:Array');
-				$attribute = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:attribute');
-				$attribute->setAttribute('ref', "soap-enc:arrayType");
-				$attribute->setAttribute('wsdl:arrayType', $this->getArrayTypePrefix($type) . substr($type, 0, strlen($type) - 5) . '[]');
-				$restriction->appendChild($attribute);
-				$complexContent->appendChild($restriction);
-				$complexType->appendChild($complexContent);
+				$sequence = $dom->createElement("xsd:sequence");
+
+				$singularType = substr($type, 0, strlen($type) - 5);
+				$e = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:element');
+				$e->setAttribute('name', $singularType);
+				$e->setAttribute('type', sprintf('tns:%s',$singularType));
+				$e->setAttribute('minOccurs','0');
+				$e->setAttribute('maxOccurs','unbounded');
+				$sequence->appendChild($e);
+				$complexType->appendChild($sequence);
 			}
 			else
 			{

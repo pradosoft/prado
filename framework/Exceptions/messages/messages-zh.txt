@@ -76,6 +76,7 @@ httpsession_autostart_unchangeable		= THttpSession.AutoStart无法被修改，�
 httpsession_gcprobability_unchangeable	= THttpSession.GCProbability无法被修改，因为session已经启动了。
 httpsession_gcprobability_invalid		= THttpSession.GCProbability必须是个0到100之间的整数。
 httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID无法被修改，因为session已经启动了。
+httpsession_transid_cookieonly			= THttpSession.UseTransparentSessionID cannot be set when THttpSession.CookieMode is set to Only.
 httpsession_maxlifetime_unchangeable	= THttpSession.Timeout无法被修改，因为session已经启动了。
 
 assetmanager_basepath_invalid			= TAssetManager.BasePath所指路径“{0}”非法。请确认它以命名空间方式指定，并且它所对应的文件目录可以被Web服务器进程写入。

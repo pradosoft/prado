@@ -46,9 +46,9 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 			var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			Event.observe (day, "change", this.onDateChanged.bindEvent(this));
-			Event.observe (month, "change", this.onDateChanged.bindEvent(this));
-			Event.observe (year, "change", this.onDateChanged.bindEvent(this));
+			if (day) Event.observe (day, "change", this.onDateChanged.bindEvent(this));
+			if (month) Event.observe (month, "change", this.onDateChanged.bindEvent(this));
+			if (year) Event.observe (year, "change", this.onDateChanged.bindEvent(this));
 				
 		}
 
@@ -66,9 +66,12 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		 } 
 		 else
 		 {
-		 	var day = Prado.WebUI.TDatePicker.getDayListControl(this.control).selectedIndex+1;
-			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control).selectedIndex;
-			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control).value;
+		 	var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
+			if (day) day=day.selectedIndex+1;
+			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
+			if (month) month=month.selectedIndex;
+			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
+			if (year) year=year.value;
 			date=new Date(year, month, day, 0,0,0).SimpleFormat(this.Format, this);
 		}
 		if (typeof(this.options.OnDateChanged) == "function") this.options.OnDateChanged(this, date);

@@ -105,7 +105,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	/**
 	 * @var boolean whether the session ID should be kept in cookie only
 	 */
-	private $_cookieOnly=false;
+	private $_cookieOnly=null;
 	private $_urlFormat=THttpRequestUrlFormat::Get;
 	private $_services;
 	private $_requestResolved=false;
@@ -171,8 +171,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 			$_SERVER['SERVER_PORT']=80;
 			$_SERVER['HTTP_USER_AGENT']='';
 		}
-
-		$this->_cookieOnly=(int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
 
 		// Info about server variables:
 		// PHP_SELF contains real URI (w/ path info, w/o query string)
@@ -568,6 +566,8 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
 	{
+		if ($this->_cookieOnly===null)
+				$this->_cookieOnly=(int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
 		$url=$this->_urlManager->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
 		if(defined('SID') && SID != '' && !$this->_cookieOnly)
 			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;

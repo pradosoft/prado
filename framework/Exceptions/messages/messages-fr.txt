@@ -71,6 +71,7 @@ httpsession_autostart_unchangeable		= THttpSession.AutoStart ne peut pas être m
 httpsession_gcprobability_unchangeable	= THttpSession.GCProbability ne peut pas être modifié après que la session ait démarré.
 httpsession_gcprobability_invalid		= THttpSession.GCProbability doit être un entier compris entre 0 et 100.
 httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID ne peut pas être modifié après que la session ait démarré.
+httpsession_transid_cookieonly			= THttpSession.UseTransparentSessionID ne peut pas être utilisé quand THttpSession.CookieMode est fixé à "Only".
 httpsession_maxlifetime_unchangeable	= THttpSession.Timeout ne peut pas être modifié après que la session ait démarré.
 
 assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' est invalide. Vérifier qu'il est bien au format 'namespace' et qu'il pointe bien vers un répertoire accessible en écriture par le propriétaire du processus serveur Web

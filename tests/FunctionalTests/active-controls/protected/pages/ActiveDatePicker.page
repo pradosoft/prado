@@ -18,7 +18,10 @@ ShowCalendar=false
 <com:TActiveDatePicker ID="datepicker2" DateFormat="MM-dd-yyyy" OnCallback="testDatePicker2" InputMode="DropDownList" ShowCalendar="false"/>
 <com:TActiveLabel ID="status2" /><br/>
 </p>
-
+<p>Partial Calendar</p>
+<p>
+<com:TActiveDatePicker ID="datepicker3" DateFormat="MMMM/yyyy" OnCallback="testDatePicker3" InputMode="DropDownList" ShowCalendar="true"/>
+<com:TActiveLabel ID="status3" /><br/>
 
 </com:TForm>
 </body>
