@@ -27,6 +27,7 @@ EHN: Add property TValidationSummary.ScrollToSummary to server-side control sinc
 EHN: Add property TransactionClass (defaults to System.Data.TDbTransaction) to TDbConnection and modify beginTransaction() (Yves)
 ENH: Modify TDbTableInfo::getColumnNames() to store result in private class member (Yves)
 ENH: Issue#215 - Add ClientSide property to TDropContainer (googlenew at pcforum.hu, Christophe)
+ENH: Issue#222 - Add Columns property to TInPlaceTextBox (Christophe)
 CHG: Issue#218 - Change URL of Javascript Logger (Christophe)
 
 Version 3.1.6 July 22, 2009
