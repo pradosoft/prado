@@ -43,7 +43,6 @@ PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCrea
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineUnitTest');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGen');
-PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineConvertConfig');
 
 //run it;
 PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
@@ -729,58 +728,6 @@ $props
 ?>
 EOD;
 	}
-}
-
-/**
- * Convert prado 3.1 XML configuration to new prado 3.2 PHP array configuration
- *
- * @author Christophe Boulain <Christophe Boulain@gmail.com>
- * @version $Id$
- * @since 3.2
- */
-class PradoCommandLineConvertConfig extends PradoCommandLineAction
-{
-    
-   	protected $action = 'xmltophp';
-	protected $parameters = array('xml');
-	protected $optional = array('output');
-	protected $description = 'Convert a prado xml configuration file (<xml>) to a php array. ';
-
-	public function performAction($args)
-	{
-	    $xml=realpath($args[1]);
-	    if (!is_file($xml))
-	    {
-		echo "Unable to find {$args[1]} file.\n";
-		return true;
-	    }
-	    $output=$args[2];
-	    if ($output===null)
-		$output=dirname($xml).DIRECTORY_SEPARATOR.basename($xml, 'xml')."php";
-	    if (!is_writable(realpath(dirname($output))))
-	    {
-		echo "Can't write new config file {$output}\n";
-		return true;
-	    }
-	    $config=$this->parseXML($xml);
-	    print_r($config);
-
-	    return true;
-	}
-	
-	/**
-	 * Open and parse an xml config file.
-	 * @param string $xml the filepath of xml file
-	 * @return array
-	 */
-	protected function parseXML($xml)
-	{
-	    $dom=new DOMDocument();
-	    $dom->load($xml);
-	    print_r ($dom->childNodes);
-	    return ;
-	}
-
 }
 
 //run PHP shell
