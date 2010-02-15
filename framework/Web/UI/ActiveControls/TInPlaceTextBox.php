@@ -218,9 +218,9 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['ExternalControl'] = $this->getExternalControlID();
 		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
+		$options['Columns'] = $this->getColumns();
 		if($this->getTextMode()==='MultiLine')
 		{
-			$options['Columns'] = $this->getColumns();
 			$options['Rows'] = $this->getRows();
 			$options['Wrap'] = $this->getWrap()== false ? '' : true;
 		}

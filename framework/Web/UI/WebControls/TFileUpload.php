@@ -80,6 +80,9 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('type','file');
 		$writer->addAttribute('name',$this->getUniqueID());
+		$isEnabled=$this->getEnabled(true);
+		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
+			$writer->addAttribute('disabled','disabled');
 	}
 
 	/**

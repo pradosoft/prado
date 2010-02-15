@@ -1,0 +1,20 @@
+<com:TContent ID="body">
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1>TActiveTableRow and TActiveTableCellSamples</h1>
+
+<com:TTable CssClass="sampletable">
+	<com:TActiveTableRow id="row1" CssClass="sampletable">
+		<com:TActiveTableCell id="r1c1" OnCellSelected="clickCell">Click to change cell content</com:TActiveTableCell>
+		<com:TActiveTableCell id="r1c2"OnCellSelected="clickCell">Click to change cell content</com:TActiveTableCell>
+	</com:TActiveTableRow>
+	<com:TActiveTableRow id="row2" CssClass="sampletable" OnRowSelected="clickRow">
+		<com:TActiveTableCell id="r2c1">Click to change row content</com:TActiveTableCell>
+		<com:TActiveTableCell id="r2c2">Click to change row content</com:TActiveTableCell>
+	</com:TActiveTableRow>
+
+</com:TTable>
+
+<com:TActiveLabel id="lblResult"/>
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

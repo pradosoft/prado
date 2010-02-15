@@ -85,6 +85,12 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
+  * <a href="?page=ActiveControls.ActiveTableRow">TActiveTableRow and TActiveTableCell</a>
+  represents a table row (or cell) which can be updated on callback, and can raise a callback
+  when clicked.
+  </li>
+
+  <li>
   * <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
 	represents a text input field on a Web page.
 	It can collect single-line, multi-line or password text input from users.

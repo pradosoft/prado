@@ -1,0 +1,14 @@
+<com:TForm ID="form1">
+
+	<h1 id="heading">TActiveFileUpload AutoPostBack Functional Test</h1>
+	<com:TActiveFileUpload ID='uploader' OnFileUpload="uploadComplete" AutoPostBack="false"/>
+	
+	<com:TActiveButton ID="button1" Text="Submit File"/>
+	
+	<com:TActiveButton ID="button2" Text="This won't submit the file"/>
+	
+	<com:TActiveLabel ID="label1" Text="Label 1" />
+
+	<com:TJavascriptLogger />
+
+</com:TForm>

@@ -110,6 +110,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		{
 			if(this.options.MaxLength > 0)
 				options['maxlength'] = this.options.MaxLength;
+			if(this.options.Columns > 0)
+				options['size'] = this.options.Columns;
 			this.editField = INPUT(options);
 		}
 		else

@@ -105,6 +105,11 @@ class TPageService extends TService
 	 */
 	private $_basePageClass='TPage';
 	/**
+	 * @var string clientscript manager class in namespace format
+	 * @since 3.1.7
+	 */
+	private $_clientScriptManagerClass='System.Web.UI.TClientScriptManager';
+	/**
 	 * @var string default page
 	 */
 	private $_defaultPage='Home';
@@ -424,6 +429,25 @@ class TPageService extends TService
 	public function getBasePageClass()
 	{
 		return $this->_basePageClass;
+	}
+
+	/**
+	 * Sets the clientscript manager class (in namespace format).
+	 * @param string class name
+	 * @since 3.1.7
+	 */
+	public function setClientScriptManagerClass($value)
+	{
+		$this->_clientScriptManagerClass=$value;
+	}
+
+	/**
+	 * @return string clientscript manager class in namespace format. Defaults to 'System.Web.UI.TClientScriptManager'.
+	 * @since 3.1.7
+	 */
+	public function getClientScriptManagerClass()
+	{
+		return $this->_clientScriptManagerClass;
 	}
 
 	/**

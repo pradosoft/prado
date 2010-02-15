@@ -409,3 +409,9 @@ feedservice_id_required					= TFeedService requires 'id' attribute in its feed e
 feedservice_feedtype_invalid			= The class feed '{0}' must implement IFeedContentProvider interface.
 feedservice_class_required				= TFeedService requires 'class' attribute in its feed elements.
 feedservice_feed_unknown				= Unknown feed '{0}' requested.
+
+tactivetablecell_control_outoftable		= {0} '{1}' must be enclosed within a TTableRow control.
+tactivetablecell_control_notincollection = {0} '{1}' no member of the TTableCellCollection of the parent TTableRow control.
+
+tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable control.
+tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.

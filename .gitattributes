@@ -1333,6 +1333,8 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRepeater/Sample4.
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRepeater/Sample4.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRepeater/Sample5.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRepeater/Sample5.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveTableRow/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveTableRow/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TAutoComplete/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TAutoComplete/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/config.xml -text
@@ -3012,6 +3014,8 @@ tests/FunctionalTests/active-controls/protected/pages/ReplaceContentTest.php -te
 tests/FunctionalTests/active-controls/protected/pages/Sessioned/PageStateTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/Sessioned/PageStateTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/Sessioned/config.xml -text
+tests/FunctionalTests/active-controls/protected/pages/TActiveFileUploadAutoPostBackTest.page -text
+tests/FunctionalTests/active-controls/protected/pages/TActiveFileUploadAutoPostBackTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/TInPlaceTextBoxTest.page -text
 tests/FunctionalTests/active-controls/protected/pages/TInPlaceTextBoxTest.php -text
 tests/FunctionalTests/active-controls/protected/pages/TestMasterPage.php -text
