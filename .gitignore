@@ -45,6 +45,7 @@ demos/sqlmap/protected/runtime/*
 demos/time-tracker/assets/*
 demos/time-tracker/protected/runtime/*
 framework/Web/UI/WebControls/assets/*
+framework/pradolite.php
 tests/FunctionalTests/active-controls/assets/*
 tests/FunctionalTests/active-controls/protected/runtime/*
 tests/FunctionalTests/features/assets/*
