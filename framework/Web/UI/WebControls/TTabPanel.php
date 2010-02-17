@@ -52,6 +52,7 @@
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
+ * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
 class TTabPanel extends TWebControl implements IPostBackDataHandler
@@ -507,6 +508,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
+ * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
 class TTabView extends TWebControl
@@ -660,6 +662,7 @@ class TTabView extends TWebControl
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
+ * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
 class TTabViewCollection extends TControlCollection

@@ -71,12 +71,12 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. If {@link getCausesValidation
-	 * ActiveControl.CausesValidation} is true, it will invoke the page's {@link TPage::
-	 * validate validate} method first. It will raise {@link onCallback
-	 * OnCallback} event. This method is mainly used by framework and control
-	 * developers.
+	 * Raises the callback event. This method is required by
+	 * {@link ICallbackEventHandler ICallbackEventHandler} interface. If
+	 * {@link getCausesValidation ActiveControl.CausesValidation} is true,
+	 * it will invoke the page's {@link TPage::validate validate} method first.
+	 * It will raise {@link onCallback OnCallback} event. This method is mainly
+	 * used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
 	public function raiseCallbackEvent($param)
