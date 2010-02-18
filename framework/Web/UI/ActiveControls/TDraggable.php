@@ -51,21 +51,33 @@ class TDraggable extends TPanel
 	/**
 	 * Determine if draggable element should revert to it orginal position
 	 * upon release in an non-droppable container.
-	 * @return boolean true to revert
+	 * Since 3.2, Revert property can be set to one of the value of {@link TDraggableRevertOption} enumeration.
+	 *   o 'True' or 'Revert' : The draggable will revert to it's original position
+	 *   o 'False' or 'None' : The draggable won't revert to it's original position
+	 *   o 'Failure' : The draggable will only revert if it's dropped on a non droppable area
+	 * @return TDraggableRevertOption true to revert
 	 */
 	public function getRevert()
 	{
-		return $this->getViewState('Revert', true);
+		return $this->getViewState('Revert', TDraggableRevertOptions::Revert);
 	}
 	
 	/**
 	 * Sets whether the draggable element should revert to it orginal position
 	 * upon release in an non-droppable container.
+	 * Since 3.2, Revert property can be set to one of the value of {@link TDraggableRevertOption} enumeration.
+	 *   o 'True' or 'Revert' : The draggable will revert to it's original position
+	 *   o 'False' or 'None' : The draggable won't revert to it's original position
+	 *   o 'Failure' : The draggable will only revert if it's dropped on a non droppable area
 	 * @param boolean true to revert
 	 */
 	public function setRevert($value)
 	{
-		$this->setViewState('Revert', TPropertyValue::ensureBoolean($value), true);
+		if (strcasecmp($value,'true')==0 || $value===true)
+			$value=TDraggableRevertOptions::Revert;
+		elseif (strcasecmp($value,'false')==0 || $value===false)
+			$value=TDraggableRevertOptions::None;
+		$this->setViewState('Revert', TPropertyValue::ensureEnum($value, 'TDraggableRevertOptions'), true);
 	}
 	
 	/**
@@ -163,7 +175,12 @@ class TDraggable extends TPanel
 		$options['ID'] = $this->getClientID();
 
 		if (($handle=$this->getHandle())!== null) $options['handle']=$handle;
-		$options['revert']=$this->getRevert();
+		if (($revert=$this->getRevert())===TDraggableRevertOptions::None)
+			$options['revert']=false;
+		elseif ($revert==TDraggableRevertOptions::Revert)
+			$options['revert']=true;
+		else
+			$options['revert']=strtolower($revert);
 		if (($constraint=$this->getConstraint())!==TDraggableConstraint::None) $options['constraint']=strtolower($constraint);
 		switch ($this->getGhosting()) 
 		{
@@ -192,5 +209,12 @@ class TDraggableGhostingOptions extends TEnumerable
 	const None='None';
 	const Ghosting='Ghosting';
 	const SuperGhosting='SuperGhosting';
+}
+
+class TDraggableRevertOptions extends TEnumerable
+{
+	const None='None';
+	const Revert='Revert';
+	const Failure='Failure';
 }
 ?>

@@ -12,6 +12,7 @@ NEW: Add TActiveTableCell (LCS Team)
 ENH: Issue#173 - Add "dragdropextra" (superghosting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
 NEW: Add TActiveMultiView (LCS Team)
 NEW: Beta of master/slave senario solution (Yves)
+ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 
 Version 3.1.7 To be released
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
