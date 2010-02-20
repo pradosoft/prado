@@ -32,9 +32,8 @@ class TSimpleDynamicSql extends TStaticSql
 		foreach($this->_mappings as $property)
 		{
 			$value = TPropertyAccess::get($parameter, $property);
-			$sql = preg_replace('/'.TSimpleDynamicParser::DYNAMIC_TOKEN.'/', $value, $sql, 1);
+			$sql = preg_replace('/'.TSimpleDynamicParser::DYNAMIC_TOKEN.'/', str_replace('$', '\$', $value), $sql, 1);
 		}
-
 		return $sql;
 	}
 }

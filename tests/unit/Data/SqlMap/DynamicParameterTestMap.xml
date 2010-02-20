@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <sqlMap namespace="DynamicParameterTestMap">
+
 	<select id="SelectStaticSql1" resultClass="string">
 	<![CDATA[
 		SELECT `teststring` FROM `dynamicparametertest1` WHERE `testname`="staticsql"
@@ -30,4 +31,9 @@
 	]]>
 	</select>
 
+	<select id="SelectInlineEscapeParam" parameterClass="string" resultClass="string">
+	<![CDATA[
+		SELECT $value$
+	]]>
+	</select>
 </sqlMap>
