@@ -50,7 +50,7 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 
          			Object.extend(callback, this.options);
 
-         			request = new Prado.CallbackRequest(this.options.EventTarget, callback);
+         			var request = new Prado.CallbackRequest(this.options.EventTarget, callback);
          			request.dispatch();
          		}
 		else

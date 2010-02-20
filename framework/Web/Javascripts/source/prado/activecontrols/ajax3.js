@@ -269,7 +269,7 @@ Object.extend(Prado.CallbackRequest,
 		 */
 		onException : function(request,e)
 		{
-			msg = "";
+			var msg = "";
 			$H(e).each(function(item)
 			{
 				msg += item.key+": "+item.value+"\n";
@@ -662,7 +662,7 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 					//IE will try to get elements with ID == name as well.
 					if(element.type && element.name == name)
 					{
-						value = $F(element);
+						var value = $F(element);
 						if(typeof(value) != "undefined" && value != null)
 							data[name] = value;
 					}
@@ -701,7 +701,7 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 
 	Object.extend(callback, options || {});
 
-	request = new Prado.CallbackRequest(UniqueID, callback);
+	var request = new Prado.CallbackRequest(UniqueID, callback);
 	request.dispatch();
 	return false;
 };

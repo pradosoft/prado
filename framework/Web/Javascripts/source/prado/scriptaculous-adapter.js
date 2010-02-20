@@ -96,6 +96,7 @@ Base.prototype = {
 			var _protected = ["toString", "valueOf"];
 			// if we are prototyping then include the constructor
 			if (Base._prototyping) _protected[2] = "constructor";
+			var name;
 			for (var i = 0; (name = _protected[i]); i++) {
 				if (source[name] != _prototype[name]) {
 					extend.call(this, name, source[name]);
@@ -237,7 +238,7 @@ Prado.Element =
 		var selection = Prado.Element.Selection;
 		if(typeof(selection[method]) == "function")
 		{
-			control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
+			var control = selection.isSelectable(el) ? [el] : selection.getListElements(element,total);
 			selection[method](control, value);
 		}
 	},
@@ -396,7 +397,7 @@ Prado.Element =
 	{
 		if(boundary)
 		{
-			result = Prado.Element.extractContent(this.transport.responseText, boundary);
+			var result = Prado.Element.extractContent(this.transport.responseText, boundary);
 			if(result != null)
 				content = result;
 		}
@@ -534,7 +535,7 @@ Prado.Element.Selection =
 			$A(el.options).each(function(option)
 			{
 				if(typeof(value) == "boolean")
-					options.selected = value;
+					option.selected = value;
 				else if(option.value == value)
 					option.selected = true;
 			});
@@ -549,7 +550,7 @@ Prado.Element.Selection =
 	 */
 	selectValues : function(elements, values)
 	{
-		selection = this;
+		var selection = this;
 		values.each(function(value)
 		{
 			selection.selectValue(elements,value);
@@ -625,7 +626,7 @@ Prado.Element.Selection =
 	 */
 	selectIndices : function(elements, indices)
 	{
-		selection = this;
+		var selection = this;
 		indices.each(function(index)
 		{
 			selection.selectIndex(elements,index);
@@ -654,8 +655,9 @@ Prado.Element.Selection =
 	 */
 	getListElements : function(element, total)
 	{
-		elements = new Array();
-		for(i = 0; i < total; i++)
+		var elements = new Array();
+		var el;
+		for(var i = 0; i < total; i++)
 		{
 			el = $(element+"_c"+i);
 			if(el)
@@ -693,7 +695,7 @@ Prado.Element.Selection =
 	 */
 	checkValues : function(elements, values)
 	{
-		selection = this;
+		var selection = this;
 		values.each(function(value)
 		{
 			selection.checkValue(elements, value);
@@ -723,7 +725,7 @@ Prado.Element.Selection =
 	 */
 	checkIndices : function(elements, indices)
 	{
-		selection = this;
+		var selection = this;
 		indices.each(function(index)
 		{
 			selection.checkIndex(elements, index);
@@ -1236,7 +1238,7 @@ Object.extend(Date,
 	 */
 	SimpleParse: function(value, format)
 	{
-		val=String(value);
+		var val=String(value);
 		format=String(format);
 
 		if(val.length <= 0) return null;

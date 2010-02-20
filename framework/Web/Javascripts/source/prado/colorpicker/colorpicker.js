@@ -202,7 +202,7 @@ Rico.Color.HSBtoRGB = function(hue, saturation, brightness) {
 Rico.Color.RGBtoHSB = function(r, g, b) {
 
    var hue;
-   var saturaton;
+   var saturation;
    var brightness;
 
    var cmax = (r > g) ? r : g;

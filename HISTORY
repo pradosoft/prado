@@ -31,6 +31,7 @@ ENH: Modify TDbTableInfo::getColumnNames() to store result in private class memb
 ENH: Issue#215 - Add ClientSide property to TDropContainer (googlenew at pcforum.hu, Christophe)
 ENH: Issue#222 - Add Columns property to TInPlaceTextBox (Christophe)
 CHG: Issue#218 - Change URL of Javascript Logger (Christophe)
+EHN: Clientside performance (micro)optimization: Declare local javascript variables explicit as local to avoid scope chain lookups (Yves)
 
 Version 3.1.6 July 22, 2009
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)

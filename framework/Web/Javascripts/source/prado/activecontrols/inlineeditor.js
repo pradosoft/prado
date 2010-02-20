@@ -89,8 +89,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	{
 		this.editField.disabled = true;
 		this.onLoadingText();
-		options = new Array('__InlineEditor_loadExternalText__', this.getText());
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var options = new Array('__InlineEditor_loadExternalText__', this.getText());
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
 		request.ActiveControl.onSuccess = this.onloadExternalTextSuccess.bind(this);
@@ -103,9 +103,9 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	 */
 	createTextBox : function()
 	{
-		cssClass= this.element.className || '';
-		inputName = this.options.EventTarget;
-		options = {'className' : cssClass, name : inputName, id : this.options.TextBoxID};
+		var cssClass= this.element.className || '';
+		var inputName = this.options.EventTarget;
+		var options = {'className' : cssClass, name : inputName, id : this.options.TextBoxID};
 		if(this.options.TextMode == 'SingleLine')
 		{
 			if(this.options.MaxLength > 0)
@@ -168,7 +168,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 
 	onTextBoxBlur : function(e)
 	{
-		text = this.element.innerHTML;
+		var text = this.element.innerHTML;
 		if(this.options.AutoPostBack && text != this.editField.value)
 		{
 			if(this.isEditing)
@@ -202,7 +202,7 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	 */
 	onTextChanged : function(text)
 	{
-		request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(text);
 		request.ActiveControl.onSuccess = this.onTextChangedSuccess.bind(this);
 		request.ActiveControl.onFailure = this.onTextChangedFailure.bind(this);
