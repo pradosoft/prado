@@ -85,6 +85,7 @@ var Prado =
 
 			elm.rel = "stylesheet";
 			elm.href = css_file;
+			var headArr;
 
 			if (headArr = doc.getElementsByTagName("head"))
 				headArr[0].appendChild(elm);

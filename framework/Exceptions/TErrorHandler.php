@@ -161,6 +161,7 @@ class TErrorHandler extends TModule
 		$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
 		$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
 		$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
+		if(isset($aRpl[DIRECTORY_SEPARATOR])) unset($aRpl[DIRECTORY_SEPARATOR]);
 		$aRpl = array_reverse($aRpl, true);
 
 		return str_replace(array_keys($aRpl), $aRpl, $value);

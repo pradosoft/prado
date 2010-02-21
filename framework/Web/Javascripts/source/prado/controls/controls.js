@@ -82,15 +82,15 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	addXYInput : function(event,options)
 	{
-		imagePos = this.element.cumulativeOffset();
-		clickedPos = [event.clientX, event.clientY];
-		x = clickedPos[0]-imagePos[0]+1;
-		y = clickedPos[1]-imagePos[1]+1;
+		var imagePos = this.element.cumulativeOffset();
+		var clickedPos = [event.clientX, event.clientY];
+		var x = clickedPos[0]-imagePos[0]+1;
+		var y = clickedPos[1]-imagePos[1]+1;
 		x = x < 0 ? 0 : x;
 		y = y < 0 ? 0 : y;
-		id = options['EventTarget'];
-		x_input = $(id+"_x");
-		y_input = $(id+"_y");
+		var id = options['EventTarget'];
+		var x_input = $(id+"_x");
+		var y_input = $(id+"_y");
 		if(x_input)
 		{
 			x_input.value = x;
@@ -118,7 +118,7 @@ Object.extend(Prado.WebUI.TImageButton.prototype,
 	 */
 	removeXYInput : function(event,options)
 	{
-		id = options['EventTarget'];
+		var id = options['EventTarget'];
 		this.element.parentNode.removeChild($(id+"_x"));
 		this.element.parentNode.removeChild($(id+"_y"));
 	}

@@ -46,7 +46,7 @@ class PradoVersionTask extends PropertyTask
 		else
 			return 'unknown';
 		$contents=file_get_contents($propFile);
-		if(preg_match('/\\/repos\\/prado\\/\\!svn\\/ver\\/(\d+)\\//ms',$contents,$matches)>0)
+		if(preg_match('/\\/svn\\/\\!svn\\/ver\\/(\d+)\\//ms',$contents,$matches)>0)
 			return $matches[1];
 		else
 			return 'unknown';

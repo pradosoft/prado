@@ -15,6 +15,9 @@ class DynamicParameterTest extends PHPUnit_Framework_TestCase
 		static $conn;
 		static $sqlMapManager;
 
+		if(Prado::getApplication() === null)
+			Prado::setApplication(new TApplication(dirname(__FILE__).'/app'));
+
 		if($conn === null)
 			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_system_data_sqlmap', 'prado_unitest', 'prado_system_data_sqlmap_unitest');
 
@@ -83,6 +86,22 @@ class DynamicParameterTest extends PHPUnit_Framework_TestCase
 
 		$value = $gateway->queryForObject('SelectNoDynamic', 'staticsql');
 		self::assertEquals('staticsql1', $value);
+	}
+
+	/**
+	 * Issue#209 test
+	 */
+	public function testMysqlInlineEscapeParam()
+	{
+		$mapper = $this->getMysqlSqlMapManager();
+		$gateway = $mapper->getSqlmapGateway();
+
+		$value = $gateway->queryForObject('SelectInlineEscapeParam', "'1234567*123$456789$012345' AS foobar");
+		self::assertEquals('1234567*123$456789$012345', $value);
+
+		$value = $gateway->queryForObject('SelectInlineEscapeParam', '"1234567*123$456789$012345" AS foobar');
+		self::assertEquals('1234567*123$456789$012345', $value);
+
 	}
 
 }

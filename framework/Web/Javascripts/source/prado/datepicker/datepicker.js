@@ -236,11 +236,11 @@ Prado.WebUI.TDatePicker.prototype =
 		tbody = document.createElement("tbody");
 		table.appendChild(tbody);
 
-		for(week=0; week<6; ++week) {
+		for(var week=0; week<6; ++week) {
 			tr = document.createElement("tr");
 			tbody.appendChild(tr);
 
-		for(day=0; day<7; ++day) {
+		for(var day=0; day<7; ++day) {
 				td = document.createElement("td");
 				td.className = "calendarDate";
 				text = document.createTextNode(String.fromCharCode(160));
@@ -702,7 +702,7 @@ Prado.WebUI.TDatePicker.prototype =
 			index++;
 		}
 
-	    for (i = 1; i <= monthLength; i++, index++) {
+	    for (var i = 1; i <= monthLength; i++, index++) {
 			var slot = this.dateSlot[index];
 			var slotNode = slot.data.parentNode;
 			slot.value = i;

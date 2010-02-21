@@ -103,7 +103,7 @@ class TXmlElement extends TComponent
 	 */
 	public function setValue($value)
 	{
-		$this->_value=$value;
+		$this->_value=TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TXmlElement extends TComponent
 	 */
 	public function setAttribute($name,$value)
 	{
-		$this->getAttributes()->add($name,$value);
+		$this->getAttributes()->add($name,TPropertyValue::ensureString($value));
 	}
 
 	/**

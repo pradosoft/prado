@@ -1113,11 +1113,11 @@ Prado.WebUI.TBaseValidator.prototype =
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
 	 			{
-	 				value = this.trim($F(control));
+	 				var value = this.trim($F(control));
 
 					if(this.options.DateFormat)
 	 				{
-	 					date = value.toDate(this.options.DateFormat);
+	 					var date = value.toDate(this.options.DateFormat);
 	 					return date == null ? value : date;
 	 				}
 	 				else
@@ -1154,7 +1154,7 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	 getValidationValue : function(control)
 	 {
-	 	value = this.getRawValidationValue(control);
+	 	var value = this.getRawValidationValue(control);
 		if(Object.isString(value))
 			return this.trim(value);
 		else
@@ -1168,8 +1168,8 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	getRadioButtonGroupValue : function()
 	{
-		name = this.control.name;
-		value = "";
+		var name = this.control.name;
+		var value = "";
 		$A(document.getElementsByName(name)).each(function(el)
 		{
 			if(el.checked)
@@ -1242,6 +1242,7 @@ Prado.WebUI.TBaseValidator.prototype =
 			case 'TListBox':
 				var elements = [];
 				var element = $(this.options.ControlToValidate);
+				var type;
 				if(element && (type = element.type.toLowerCase()))
 				{
 					if(type == "select-one" || type == "select-multiple")
@@ -1475,7 +1476,7 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		var clientFunction = this.options.ClientValidationFunction;
 		if(typeof(clientFunction) == "string" && clientFunction.length > 0)
 		{
-			validate = clientFunction.toFunction();
+			var validate = clientFunction.toFunction();
 			return validate(this, value);
 		}
 		return true;
@@ -1551,11 +1552,11 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		value = this.getValidationValue();
+		var value = this.getValidationValue();
 		if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
 		{
 			this.validatingValue = value;
-			request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
+			var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 			if(this.options.DateFormat && value instanceof Date) //change date to string with formatting.
 				value = value.SimpleFormat(this.options.DateFormat);
 			request.setCallbackParameter(value);
@@ -1848,7 +1849,7 @@ Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		value = this.getValidationValue();
+		var value = this.getValidationValue();
 		if(value.length <= 0)
 			return true;
 		return this.convert(this.options.DataType, value) != null;
