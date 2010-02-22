@@ -30,11 +30,11 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackClientSide');
 class TBaseActiveControl extends TComponent
 {
 	/**
-	 * @TMap map of active control options.
+	 * @var TMap map of active control options.
 	 */
 	private $_options;
 	/**
-	 * @TControl attached control.
+	 * @var TControl attached control.
 	 */
 	private $_control;
 

@@ -6,6 +6,7 @@
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id$
+ * @package System.Web.UI.ActiveControls
  */
 
 /**
@@ -38,6 +39,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id$
+ * @package System.Web.UI.ActiveControls
  */
 class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler 
 {	
@@ -124,7 +126,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	
 	/**
 	 * Raises the onDrop event. 
-	 * The dropp parameters are encapsulated into a {@link TDropContainerEventParameter}
+	 * The drop parameters are encapsulated into a {@link TDropContainerEventParameter}
 	 * 
 	 * @param object $dropControlId
 	 */
@@ -246,6 +248,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id$
+ * @package System.Web.UI.ActiveControls
  */
 class TDropContainerEventParameter extends TEventParameter
 {

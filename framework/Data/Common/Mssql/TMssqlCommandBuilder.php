@@ -72,6 +72,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * <li>
 	 * No clauses should follow the ORDER BY clause, e.g. no COMPUTE or FOR clauses.
 	 * </li>
+	 * </ul>
 	 *
 	 * @param string SQL query string.
 	 * @param integer maximum number of rows, -1 to ignore limit.

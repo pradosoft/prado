@@ -392,7 +392,7 @@ class TAutoCompleteEventParameter extends TCallbackEventParameter
 	}
 
 	/**
-	 * @int selected suggestion zero-based index, -1 if not selected.
+	 * @return int selected suggestion zero-based index, -1 if not selected.
 	 */
 	public function getSelectedIndex()
 	{

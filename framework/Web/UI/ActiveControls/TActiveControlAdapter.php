@@ -262,7 +262,7 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * @array list of viewstate and the changed data.
+	 * @return array list of viewstate and the changed data.
 	 */
 	protected function getChanges()
 	{

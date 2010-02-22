@@ -126,8 +126,8 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 
 	/**
-	 * Client script to click on an element. <b>This client-side function
-	 * is unpredictable.</b>
+	 * Client script to click on an element. <b>This client-side function is unpredictable.</b>
+	 * 
 	 * @param TControl control element or element id
 	 */
 	public function click($control)

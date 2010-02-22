@@ -63,11 +63,11 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. If {@link getCausesValidation
-	 * CausesValidation} is true, it will invoke the page's {@link TPage::
-	 * validate validate} method first. It will raise {@link onClick
-	 * OnClick} event first and then the {@link onCallback OnCallback} event.
+	 * Raises the callback event. This method is required by 
+	 * {@link ICallbackEventHandler} interface. If {@link getCausesValidation CausesValidation}
+	 * is true, it will invoke the page's {@link TPage::validate validate}
+	 * method first. It will raise {@link onClick OnClick} event first
+	 * and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
