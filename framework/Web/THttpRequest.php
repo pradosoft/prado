@@ -70,6 +70,8 @@ Prado::using('System.Web.TUrlManager');
  */
 class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
 {
+	const CGIFIX__PATH_INFO		= 1;
+	const CGIFIX__SCRIPT_NAME	= 2;
 	/**
 	 * @var TUrlManager the URL manager module
 	 */
@@ -110,6 +112,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	private $_services;
 	private $_requestResolved=false;
 	private $_enableCookieValidation=false;
+	private $_cgiFix=0;
 	/**
 	 * @var string request URL
 	 */
@@ -183,7 +186,9 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		else  // TBD: in this case, SCRIPT_NAME need to be escaped
 			$this->_requestUri=$_SERVER['SCRIPT_NAME'].(empty($_SERVER['QUERY_STRING'])?'':'?'.$_SERVER['QUERY_STRING']);
 
-		if(isset($_SERVER['PATH_INFO']))
+		if($this->_cgiFix&self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO']))
+			$this->_pathInfo=substr($_SERVER['ORIG_PATH_INFO'], strlen($_SERVER['SCRIPT_NAME']));
+		elseif(isset($_SERVER['PATH_INFO']))
 			$this->_pathInfo=$_SERVER['PATH_INFO'];
 		else if(strpos($_SERVER['PHP_SELF'],$_SERVER['SCRIPT_NAME'])===0 && $_SERVER['PHP_SELF']!==$_SERVER['SCRIPT_NAME'])
 			$this->_pathInfo=substr($_SERVER['PHP_SELF'],strlen($_SERVER['SCRIPT_NAME']));
@@ -349,7 +354,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'';
 	}
-	
+
 	/**
 	 * @return string part of that request URL after the host info (including pathinfo and query string)
 	 */
@@ -376,6 +381,9 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getApplicationUrl()
 	{
+		if($this->_cgiFix&self::CGIFIX__SCRIPT_NAME && isset($_SERVER['ORIG_SCRIPT_NAME']))
+			return $_SERVER['ORIG_SCRIPT_NAME'];
+
 		return $_SERVER['SCRIPT_NAME'];
 	}
 
@@ -495,6 +503,26 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function setEnableCookieValidation($value)
 	{
 		$this->_enableCookieValidation=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return integer whether to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME. Defaults to 0.
+	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
+	 */
+	public function getCgiFix()
+	{
+		return $this->_cgiFix;
+	}
+
+	/**
+	 * Enable this, if you're using PHP via CGI with php.ini setting "cgi.fix_pathinfo=1"
+	 * and have trouble with friendly URL feature. Enable this only if you really know what you are doing!
+	 * @param integer enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
+	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
+	 */
+	public function setCgiFix($value)
+	{
+		$this->_cgiFix=TPropertyValue::ensureInteger($value);
 	}
 
 	/**
