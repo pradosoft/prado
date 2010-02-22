@@ -7,7 +7,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System
@@ -71,7 +71,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.1.7-dev';
+		return '3.1.7';
 	}
 
 	/**

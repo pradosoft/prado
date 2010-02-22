@@ -1,4 +1,4 @@
-Version 3.1.7 To be released
+Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
