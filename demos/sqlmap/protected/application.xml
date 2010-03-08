@@ -5,6 +5,14 @@
 	<alias id="Quickstart" path="../../quickstart" />
 	<using namespace="Quickstart.protected.controls.*" />
   </paths>
+  <modules>
+	<module id="db" class="System.Data.TDataSourceConfig">
+		<database ConnectionString="sqlite:protected/App_Data/test.db"/>
+	</module>
+  	<module id="person-sample"
+  		class="System.Data.SqlMap.TSqlMapConfig" ConnectionID="db"
+  			configFile="Application.App_Data.person" />
+  </modules>
   <services>
     <service id="page" class="TPageService" DefaultPage="Manual.Overview" />
   </services>  
