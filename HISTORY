@@ -6,6 +6,7 @@ NEW: Port Yii's Models and Behaviors (Daniel + Robin)
 NEW: Add TActiveDataList (Marcosanobre, Robin)
 NEW: Add TActiveRepeater (LCS Team, Christophe)
 NEW: Add TActiveDatagrid (LCS Team, Christophe)
+BUG: Issue#232 Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 NEW: Add TActiveTableRow (LCS Team)
 NEW: Add TActiveTableCell (LCS Team)
@@ -14,7 +15,7 @@ NEW: Add TActiveMultiView (LCS Team)
 NEW: Beta of master/slave senario solution (Yves)
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 
-Version 3.1.7 To be released
+Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
