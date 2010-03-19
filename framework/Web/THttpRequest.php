@@ -319,6 +319,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @return string content type (e.g. 'application/json') or null if not specified
+	 */
+	public function getContentType()
+	{
+		return isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : null;
+	}
+
+	/**
 	 * @return boolean if the request is sent via secure channel (https)
 	 */
 	public function getIsSecureConnection()
