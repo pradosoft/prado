@@ -2676,6 +2676,7 @@ framework/Util/TDateTimeStamp.php -text
 framework/Util/TLogRouter.php -text
 framework/Util/TLogger.php -text
 framework/Util/TParameterModule.php -text
+framework/Util/TRpcClient.php -text
 framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/TJSON.php -text
@@ -2741,6 +2742,7 @@ framework/Web/Javascripts/source/scriptaculous-1.8.2/sound.js -text
 framework/Web/Services/TFeedService.php -text
 framework/Web/Services/TJsonService.php -text
 framework/Web/Services/TPageService.php -text
+framework/Web/Services/TRpcService.php -text
 framework/Web/Services/TSoapService.php -text
 framework/Web/TAssetManager.php -text
 framework/Web/TCacheHttpSession.php -text
