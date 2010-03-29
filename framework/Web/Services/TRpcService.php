@@ -276,7 +276,7 @@ abstract class TRpcProtocol
 	// abstracts
 
 	abstract public function callMethod($requestPayload);
-	abstract public function createErrorResponse($exception);
+	abstract public function createErrorResponse(TRpcException $exception);
 	abstract public function createResponseHeaders($response);
 	abstract public function encode($data);
 	abstract public function decode($data);
