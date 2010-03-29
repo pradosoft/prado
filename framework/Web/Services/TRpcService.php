@@ -63,14 +63,20 @@ class TRpcService extends TService
 
 		prado::using($_providerClass);
 
-		$_className = ($_pos = strrpos($_providerClass, '.')) !== false ? substr($_providerClass, $_pos + 1) : $_providerClass;
-		if(!is_subclass_of($_className, self::BASE_API_PROVIDER))
+		$_providerClassName = ($_pos = strrpos($_providerClass, '.')) !== false ? substr($_providerClass, $_pos + 1) : $_providerClass;
+		if(!is_subclass_of($_providerClassName, self::BASE_API_PROVIDER))
 			throw new TConfigurationException('rpcservice_apiprovider_invalid');
 
 		if(($_rpcServerClass = $_properties->remove('server')) === null)
 			$_rpcServerClass = self::BASE_RPC_SERVER;
 
-		$_apiProvider = new $_className(new $_rpcServerClass($protocolHandler));
+		prado::using($_rpcServerClass);
+
+		$_rpcServerClassName = ($_pos = strrpos($_rpcServerClass, '.')) !== false ? substr($_rpcServerClass, $_pos + 1) : $_rpcServerClass;
+		if(!is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER))
+			throw new TConfigurationException('rpcservice_rpcserver_invalid');
+
+		$_apiProvider = new $_providerClassName(new $_rpcServerClassName($protocolHandler));
 		$_apiProvider->setId($providerId);
 
 		foreach($_properties as $_key => $_value)
