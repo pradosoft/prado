@@ -2040,8 +2040,9 @@ docs/sqlmap/sqlmap.pdf -text
 docs/sqlmap/sqlmap_tut.pdf -text
 editors/Dreamweaver/PRADO.mxp -text
 editors/Dreamweaver/readme.txt -text
-editors/Notepad++/prado.xml -text
-editors/Notepad++/userDefineLang.xml -text
+editors/NotepadPlus/4.x/prado.api -text
+editors/NotepadPlus/5.x/prado.xml -text
+editors/NotepadPlus/5.x/userDefineLang.xml -text
 editors/Textmate/Prado.tmbundle/Snippets/ControlProp.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TActiveButton.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TBoundColumn.tmSnippet -text
