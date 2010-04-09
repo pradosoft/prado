@@ -801,6 +801,16 @@ class TPropertyValue
 		else
 			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enums));
 	}
+
+	/**
+	 * Converts the value to 'null' if the given value is empty
+	 * @param mixed value to be converted
+	 * @return mixed input or NULL if input is empty
+	 */
+	public static function ensureNullIfEmpty($value)
+	{
+		return empty($value) ? null : $value;
+	}
 }
 
 /**
