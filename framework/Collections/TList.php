@@ -16,7 +16,7 @@
  * TList implements an integer-indexed collection class.
  *
  * You can access, append, insert, remove an item by using
- * {@link itemAt}, {@link add}, {@link insert}, {@link remove}, and {@link removeAt}.
+ * {@link itemAt}, {@link add}, {@link insertAt}, {@link remove}, and {@link removeAt}.
  * To get the number of the items in the list, use {@link getCount}.
  * TList can also be used like a regular array as follows,
  * <code>
@@ -47,7 +47,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * number of items
 	 * @var integer
 	 */
-	private $_c=0;
+	protected $_c=0;
 	/**
 	 * @var boolean whether this list is read-only
 	 */
@@ -241,6 +241,36 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 			return -1;
 		else
 			return $index;
+	}
+
+	/**
+	 * Finds the base item.  If found, the item is inserted before it.  
+	 * @param mixed the base item which will be pushed back by the second parameter
+	 * @param mixed the item
+	 * @return object $this. null if the $baseitem is not found
+	 */
+	public function insertBefore($baseitem, $item)
+	{
+		if(($index = $this->indexOf($baseitem)) == -1) return null;
+		
+		$this->insertAt($index, $item);
+		
+		return $this;
+	}
+
+	/**
+	 * Finds the base item.  If found, the item is inserted after it.  
+	 * @param mixed the base item which comes before the second parameter when added to the list
+	 * @param mixed the item
+	 * @return object $this. null if the $baseitem is not found
+	 */
+	public function insertAfter($baseitem, $item)
+	{
+		if(($index = $this->indexOf($baseitem)) == -1) return null;
+		
+		$this->insertAt($index + 1, $item);
+		
+		return $this;
 	}
 
 	/**
