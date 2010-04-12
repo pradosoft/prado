@@ -248,6 +248,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * @param mixed the base item which will be pushed back by the second parameter
 	 * @param mixed the item
 	 * @return object $this. null if the $baseitem is not found
+	 * @since 3.2a
 	 */
 	public function insertBefore($baseitem, $item)
 	{
@@ -263,6 +264,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * @param mixed the base item which comes before the second parameter when added to the list
 	 * @param mixed the item
 	 * @return object $this. null if the $baseitem is not found
+	 * @since 3.2a
 	 */
 	public function insertAfter($baseitem, $item)
 	{
