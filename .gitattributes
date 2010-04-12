@@ -2212,6 +2212,7 @@ framework/Collections/TList.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Collections/TPagedList.php -text
+framework/Collections/TPriorityList.php -text
 framework/Collections/TQueue.php -text
 framework/Collections/TStack.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
