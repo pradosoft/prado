@@ -47,7 +47,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * number of items
 	 * @var integer
 	 */
-	protected $_c=0;
+	private $_c=0;
 	/**
 	 * @var boolean whether this list is read-only
 	 */
