@@ -14,6 +14,7 @@ ENH: Issue#173 - Add "dragdropextra" (superghosting) patch, mouse coordinates an
 NEW: Add TActiveMultiView (LCS Team)
 NEW: Beta of master/slave senario solution (Yves)
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
+BUG: Issue#246: TQueue::peek returns the top not the bottom (Christophe)
 
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 

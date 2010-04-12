@@ -57,7 +57,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testPeek() {
-		$queue = new TQueue(array(1));
+		$queue = new TQueue(array(1,2,3));
 		self::assertEquals(1, $queue->peek());
 	}
 	

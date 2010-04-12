@@ -106,7 +106,6 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 
 	/**
 	 * Returns the item at the top of the queue.
-	 * Unlike {@link pop()}, this method does not remove the item from the queue.
 	 * @return mixed item at the top of the queue
 	 * @throws TInvalidOperationException if the queue is empty
 	 */
@@ -115,7 +114,7 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 		if($this->_c===0)
 			throw new TInvalidOperationException('queue_empty');
 		else
-			return $this->_d[$this->_c-1];
+			return $this->_d[0];
 	}
 
 	/**
