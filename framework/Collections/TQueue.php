@@ -105,7 +105,8 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 	}
 
 	/**
-	 * Returns the item at the top of the queue.
+	 * Returns the first item at the front of the queue.
+	 * Unlike {@link dequeue()}, this method does not remove the item from the queue.
 	 * @return mixed item at the top of the queue
 	 * @throws TInvalidOperationException if the queue is empty
 	 */
