@@ -22,6 +22,7 @@ Prado::using('System.Web.UI.TClientScriptManager');
  * TPage class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id$
  * @package System.Web.UI
  * @since 3.0
