@@ -26,7 +26,7 @@ Prado::using('System.Web.UI.TClientScriptManager');
  * @package System.Web.UI
  * @since 3.0
  */
-class TPage extends TTemplateControl
+class TPage extends TTemplateControl implements IPageEvents
 {
 	/**
 	 * system post fields
@@ -201,30 +201,30 @@ class TPage extends TTemplateControl
 	protected function processNormalRequest($writer)
 	{
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
-		$this->onPreInit(null);
+		$this->onPreInit($this);
 
 		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
 
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
-		$this->onInitComplete(null);
+		$this->onInitComplete($this);
 
 		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
-		$this->onPreLoad(null);
+		$this->onPreLoad($this);
 		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 		$this->loadRecursive();
 		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
-		$this->onLoadComplete(null);
+		$this->onLoadComplete($this);
 
 		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
 		$this->preRenderRecursive();
 		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
-		$this->onPreRenderComplete(null);
+		$this->onPreRenderComplete($this);
 
 		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
 		$this->savePageState();
 		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
-		$this->onSaveStateComplete(null);
+		$this->onSaveStateComplete($this);
 
 		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
 		$this->renderControl($writer);
@@ -235,13 +235,13 @@ class TPage extends TTemplateControl
 	protected function processPostBackRequest($writer)
 	{
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
-		$this->onPreInit(null);
+		$this->onPreInit($this);
 
 		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
 
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
-		$this->onInitComplete(null);
+		$this->onInitComplete($this);
 
 		$this->_restPostData=new TMap;
 		Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
@@ -249,7 +249,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
 		$this->processPostData($this->_postData,true);
 		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
-		$this->onPreLoad(null);
+		$this->onPreLoad($this);
 		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 		$this->loadRecursive();
 		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
@@ -259,17 +259,17 @@ class TPage extends TTemplateControl
 		Prado::trace("Page raisePostBackEvent()",'System.Web.UI.TPage');
 		$this->raisePostBackEvent();
 		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
-		$this->onLoadComplete(null);
+		$this->onLoadComplete($this);
 
 		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
 		$this->preRenderRecursive();
 		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
-		$this->onPreRenderComplete(null);
+		$this->onPreRenderComplete($this);
 
 		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
 		$this->savePageState();
 		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
-		$this->onSaveStateComplete(null);
+		$this->onSaveStateComplete($this);
 
 		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
 		$this->renderControl($writer);
@@ -294,13 +294,13 @@ class TPage extends TTemplateControl
                     $this->_postData[$k]=iconv('UTF-8',$enc.'//IGNORE',$v);
 
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
-		$this->onPreInit(null);
+		$this->onPreInit($this);
 
 		Prado::trace("Page initRecursive()",'System.Web.UI.TPage');
 		$this->initRecursive();
 
 		Prado::trace("Page onInitComplete()",'System.Web.UI.TPage');
-		$this->onInitComplete(null);
+		$this->onInitComplete($this);
 
 		$this->_restPostData=new TMap;
 		Prado::trace("Page loadPageState()",'System.Web.UI.TPage');
@@ -308,7 +308,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page processPostData()",'System.Web.UI.TPage');
 		$this->processPostData($this->_postData,true);
 		Prado::trace("Page onPreLoad()",'System.Web.UI.TPage');
-		$this->onPreLoad(null);
+		$this->onPreLoad($this);
 		Prado::trace("Page loadRecursive()",'System.Web.UI.TPage');
 		$this->loadRecursive();
 
@@ -326,17 +326,17 @@ class TPage extends TTemplateControl
 		$this->raisePostBackEvent();
 */
 		Prado::trace("Page onLoadComplete()",'System.Web.UI.TPage');
-		$this->onLoadComplete(null);
+		$this->onLoadComplete($this);
 
 		Prado::trace("Page preRenderRecursive()",'System.Web.UI.TPage');
 		$this->preRenderRecursive();
 		Prado::trace("Page onPreRenderComplete()",'System.Web.UI.TPage');
-		$this->onPreRenderComplete(null);
+		$this->onPreRenderComplete($this);
 
 		Prado::trace("Page savePageState()",'System.Web.UI.TPage');
 		$this->savePageState();
 		Prado::trace("Page onSaveStateComplete()",'System.Web.UI.TPage');
-		$this->onSaveStateComplete(null);
+		$this->onSaveStateComplete($this);
 
 /*
 		Prado::trace("Page renderControl()",'System.Web.UI.TPage');
@@ -1198,6 +1198,64 @@ class TPage extends TTemplateControl
 			$this->_cachingStack=new TStack;
 		return $this->_cachingStack;
 	}
+}
+
+
+/**
+ * IPageEvents interface.
+ *
+ * IPageEvents interface has all the events a page uses during its life cycle.
+ *
+ * @author Brad Anderson <javalizard@gmail.com>
+ * @version $Id$
+ * @package System.Web.UI
+ * @since 3.2
+ */
+interface IPageEvents {
+	/**
+	 * Raises 'OnDataBinding' event. (inherited from TControl)
+	 */
+	public function onDataBinding($param);
+	/**
+	 * This method is invoked when the control enters 'OnInit' stage. (inherited from TControl)
+	 */
+	public function onInit($param);
+	/**
+	 * Raises OnInitComplete event.
+	 */
+	public function onInitComplete($param);
+	/**
+	 * This method is invoked when the control enters 'OnLoad' stage. (inherited from TControl)
+	 */
+	public function onLoad($param);
+	/**
+	 * Raises OnLoadComplete event.
+	 */
+	public function onLoadComplete($param);
+	/**
+	 * Raises OnPreInit event.
+	 */
+	public function onPreInit($param);
+	/**
+	 * Raises OnPreLoad event.
+	 */
+	public function onPreLoad($param);
+	/**
+	 * This method is invoked when the control enters 'OnPreRender' stage. (inherited from TControl)
+	 */
+	public function onPreRender($param);
+	/**
+	 * Raises OnPreRenderComplete event.
+	 */
+	public function onPreRenderComplete($param);
+	/**
+	 * Raises OnSaveStateComplete event.
+	 */
+	public function onSaveStateComplete($param);
+	/**
+	 * This method is invoked when the control enters 'OnUnload' stage. (inherited from TControl)
+	 */
+	public function onUnload($param);
 }
 
 /**

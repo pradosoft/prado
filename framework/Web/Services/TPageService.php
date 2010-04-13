@@ -68,13 +68,18 @@ Prado::using('System.Web.UI.TThemeManager');
  * The first matching rule will be used. The last rule always allows all users
  * accessing to any resources.
  *
+ * The TPageService replicates the {@link TPage} events through {@link IPageEvents}.
+ * When the TPage is run, the TPageService events attach to all the corresponding TPage 
+ * events.  This allows modules to handle page events.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
+ * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id$
  * @package System.Web.Services
  * @since 3.0
  */
-class TPageService extends TService
+class TPageService extends TService implements IPageEvents
 {
 	/**
 	 * Configuration file name
@@ -137,7 +142,15 @@ class TPageService extends TService
 	 * @var TTemplateManager template manager
 	 */
 	private $_templateManager=null;
-
+	/**
+	 * @var TPage is set when traversing the event onNoPage
+	 */
+	private $_foundpage = false;
+	/**
+	 * @var boolean if the onNoPage event is specifically blocked
+	 */
+	private $_blockOnNoPage = false;
+	
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
@@ -384,6 +397,35 @@ class TPageService extends TService
 	{
 		return $this->constructUrl($this->getDefaultPage());
 	}
+	
+	/**
+	 *	This event is triggered when a 404 in the normal page tree hierarchy is not found
+	 */
+	public function onNoPage($sender, $param) {
+	}
+	
+	
+	/**
+	 * @return TPage This is used by the other modules to provide their pages.  If they find one on an onNoPage event this is where it goes
+	 */
+	public function getFoundPage() { return $this->_foundpage; }
+	
+	/**
+	 * This is set when a module finds a suitable page, this is set with that found page
+	 * @param TPage the page to display
+	 */
+	public function setFoundPage($v) { $this->_foundpage = $v; }
+	
+	/**
+	 * @return TPage This is used by the other modules to provide their pages.  If they find one on an onNoPage event this is where it goes
+	 */
+	public function getBlockOnNoPageEvent() { return $this->_blockOnNoPage; }
+	
+	/**
+	 * This is set when a module finds a suitable page, this is set with that found page
+	 * @param TPage the page to display
+	 */
+	public function setBlockOnNoPageEvent($v) { $this->_blockOnNoPage = TPropertyValue::ensureBoolean($v); }
 
 	/**
 	 * @return string the root directory for storing pages. Defaults to the 'pages' directory under the application base path.
@@ -469,14 +511,19 @@ class TPageService extends TService
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
 	 */
-	protected function createPage($pagePath)
+	protected function createPage($pagePath, $doError = null)
 	{
 		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.',DIRECTORY_SEPARATOR);
 		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
 		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
 
-		if(!$hasTemplateFile && !$hasClassFile)
-			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
+		if(!$hasTemplateFile && !$hasClassFile && ($doError || $doError === null)) {
+			if(!$this->BlockOnNoPageEvent)
+				$this->raiseEvent('onNoPage', $this, $pagePath);
+			if(!$this->FoundPage)
+				throw new THttpException(404,'pageservice_page_unknown',$pagePath);
+			return $this->FoundPage;
+		}
 
 		if($hasClassFile)
 		{
@@ -513,6 +560,19 @@ class TPageService extends TService
 	{
 		foreach($properties as $name=>$value)
 			$page->setSubProperty($name,$value);
+		
+		$page->OnDataBinding[] = array($this, 'OnDataBinding');
+		$page->OnPreInit[] = array($this, 'OnPreInit');
+		$page->OnInit[] = array($this, 'OnInit');
+		$page->OnInitComplete[] = array($this, 'OnInitComplete');
+		$page->OnPreLoad[] = array($this, 'OnPreLoad');
+		$page->OnLoad[] = array($this, 'OnLoad');
+		$page->OnLoadComplete[] = array($this, 'OnLoadComplete');
+		$page->OnPreRender[] = array($this, 'OnPreRender');
+		$page->OnPreRenderComplete[] = array($this, 'OnPreRenderComplete');
+		$page->OnSaveStateComplete[] = array($this, 'OnSaveStateComplete');
+		$page->OnUnload[] = array($this, 'OnUnload');
+		
 		$page->run($this->getResponse()->createHtmlWriter());
 	}
 
@@ -528,6 +588,87 @@ class TPageService extends TService
 	{
 		return $this->getRequest()->constructUrl($this->getID(),$pagePath,$getParams,$encodeAmpersand,$encodeGetItems);
 	}
+	
+	
+	/**
+	 * Raises 'OnDataBinding' event. (inherited from TControl)
+	 */
+	public function onDataBinding($param) {
+		Prado::trace("onDataBinding",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnDataBinding',$this,$param);
+	}
+	/**
+	 * This method is invoked when the control enters 'OnInit' stage. (inherited from TControl)
+	 */
+	public function onInit($param) {
+		Prado::trace("onInit",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnInit',$this,$param);
+	}
+	/**
+	 * Raises OnInitComplete event.
+	 */
+	public function onInitComplete($param) {
+		Prado::trace("onInitComplete",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnInitComplete',$this,$param);
+	}
+	/**
+	 * This method is invoked when the control enters 'OnLoad' stage. (inherited from TControl)
+	 */
+	public function onLoad($param) {
+		Prado::trace("OnLoad",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnLoad',$this,$param);
+	}
+	/**
+	 * Raises OnLoadComplete event.
+	 */
+	public function onLoadComplete($param) {
+		Prado::trace("OnLoadComplete",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnLoadComplete',$this,$param);
+	}
+	/**
+	 * Raises OnPreInit event.
+	 */
+	public function onPreInit($param) {
+		Prado::trace("OnPreInit",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnPreInit',$this,$param);
+	}
+	/**
+	 * Raises OnPreLoad event.
+	 */
+	public function onPreLoad($param) {
+		Prado::trace("OnPreLoad",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnPreLoad',$this,$param);
+	}
+	/**
+	 * This method is invoked when the control enters 'OnPreRender' stage. (inherited from TControl)
+	 */
+	public function onPreRender($param) {
+		Prado::trace("OnPreRender",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnPreRender',$this,$param);
+	}
+	/**
+	 * Raises OnPreRenderComplete event.
+	 */
+	public function onPreRenderComplete($param) {
+		Prado::trace("OnPreRenderComplete",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnPreRenderComplete',$this,$param);
+	}
+	/**
+	 * Raises OnSaveStateComplete event.
+	 */
+	public function onSaveStateComplete($param) {
+		Prado::trace("OnSaveStateComplete",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnSaveStateComplete',$this,$param);
+	}
+	/**
+	 * This method is invoked when the control enters 'OnUnload' stage. (inherited from TControl)
+	 */
+	public function onUnload($param) {
+		Prado::trace("OnUnload",'System.Web.Services.TPageService');
+		$this->raiseEvent('OnUnload',$this,$param);
+	}
+	
+	
 }
 
 
