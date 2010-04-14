@@ -1554,7 +1554,7 @@ class TArraySorter {
  * @param string $key the $key in the child arrays to use to sort by
  */
 function vsort(&$array, $key) {
-	$vsort = new ArraySorter($key);
+	$vsort = new TArraySorter($key);
 	$vsort->vsort($array);
 	unset($vsort);
 }
@@ -1565,7 +1565,7 @@ function vsort(&$array, $key) {
  * @param string $key the $key in the child arrays to use to sort by
  */
 function avsort(&$array, $key) {
-	$uvsort = new ArraySorter($key);
+	$uvsort = new TArraySorter($key);
 	$uvsort->avsort($array);
 	unset($uvsort);
 }
@@ -1576,7 +1576,7 @@ function avsort(&$array, $key) {
  * @param string $key the $key in the child arrays to use to sort by
  */
 function vrsort(&$array, $key) {
-	$vsort = new ArraySorter($key);
+	$vsort = new TArraySorter($key);
 	$vsort->vrsort($array);
 	unset($vsort);
 }
@@ -1587,7 +1587,7 @@ function vrsort(&$array, $key) {
  * @param string $key the $key in the child arrays to use to sort by
  */
 function avrsort(&$array, $key) {
-	$vsort = new ArraySorter($key);
+	$vsort = new TArraySorter($key);
 	$vsort->avrsort($array);
 	unset($vsort);
 }
