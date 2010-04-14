@@ -3,8 +3,9 @@
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Util
@@ -24,7 +25,7 @@ Prado::using('System.Data.TDbConnection');
  * or an external configuration file specified by {@link setConfigFile ConfigFile}.
  * The format is as follows,
  * <code>
- *   <route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" />
+ *   <route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" Roles="developer,administrator,other" Active="false" />
  *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@pradosoft.com" />
  * </code>
  * PHP configuration style:
@@ -47,10 +48,20 @@ class TLogRouter extends TModule
 	 */
 	private $_routes=array();
 	/**
+	 * @var array list of routes needed to be logged before the page flush
+	 */
+	private $_preroutes=array();
+	/**
 	 * @var string external configuration file
 	 */
 	private $_configFile=null;
-
+	/**
+	 * @var boolean whether to do any routes
+	 */
+	private $_active=true;
+	
+	
+	
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
@@ -59,6 +70,8 @@ class TLogRouter extends TModule
 	 */
 	public function init($config)
 	{
+		parent::init($config);
+		
 		if($this->_configFile!==null)
 		{
  			if(is_file($this->_configFile))
@@ -79,6 +92,9 @@ class TLogRouter extends TModule
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
+
+		// This is needed for FirePhp because it outputs headers
+		$this->getApplication()->attachEventHandler('onPreFlushOutput',array($this,'collectLogsPreFlush'));
 		$this->getApplication()->attachEventHandler('OnEndRequest',array($this,'collectLogs'));
 	}
 
@@ -98,13 +114,23 @@ class TLogRouter extends TModule
 					$properties = isset($route['properties'])?$route['properties']:array();
 					if(!isset($route['class']))
 						throw new TConfigurationException('logrouter_routeclass_required');
+					if(isset($properties['disabled']) && $properties['disabled'])
+						continue;
 					$route=Prado::createComponent($route['class']);
 					if(!($route instanceof TLogRoute))
 						throw new TConfigurationException('logrouter_routetype_invalid');
-					foreach($properties as $name=>$value)
-						$route->setSubproperty($name,$value);
+					
 					$this->_routes[]=$route;
-					$route->init($route);
+					if($route instanceof IHeaderRoute)
+						$this->_preroutes[]=$route;
+					
+					try {
+						foreach($properties as $name=>$value)
+							$route->setSubproperty($name,$value);
+						$route->init($route);
+					} catch(Exception $e) {
+						$route->InitError = $e;
+					}
 				}
 			}
 		}
@@ -113,21 +139,38 @@ class TLogRouter extends TModule
 			foreach($config->getElementsByTagName('route') as $routeConfig)
 			{
 				$properties=$routeConfig->getAttributes();
+				if(($disabled=$properties->remove('disabled'))!==null)
+					continue;
 				if(($class=$properties->remove('class'))===null)
 					throw new TConfigurationException('logrouter_routeclass_required');
 				$route=Prado::createComponent($class);
 				if(!($route instanceof TLogRoute))
 					throw new TConfigurationException('logrouter_routetype_invalid');
-				foreach($properties as $name=>$value)
-					$route->setSubproperty($name,$value);
+					
 				$this->_routes[]=$route;
-				$route->init($routeConfig);
+				if($route instanceof IHeaderRoute)
+					$this->_preroutes[]=$route;
+				
+				try {
+					foreach($properties as $name=>$value)
+						$route->setSubproperty($name,$value);
+					$route->init($routeConfig);
+				} catch(Exception $e) {
+					$route->InitError = $e;
+				}
 			}
 		}
 	}
+	
+	/**
+	 * This returns the installed routes
+	 * @return array of TLogRoute
+	 */
+	public function getRoutes() { return $this->_routes; }
 
 	/**
-	 * Adds a TLogRoute instance to the log router.
+	 * Adds a TLogRoute instance to the log router.  If a log route implements {@link IHeaderRoute}
+	 * then it will get its log route data just before the page is written (b/c it needs that for the headers)
 	 * 
 	 * @param TLogRoute $route 
 	 * @throws TInvalidDataTypeException if the route object is invalid
@@ -137,7 +180,9 @@ class TLogRouter extends TModule
 		if(!($route instanceof TLogRoute))
 			throw new TInvalidDataTypeException('logrouter_routetype_invalid');
 		$this->_routes[]=$route;
-		$route->init(null);
+		if($route instanceof IHeaderRoute)
+			$this->_preroutes[]=$route;
+		$route->init($this);
 	}
 
 	/**
@@ -146,6 +191,22 @@ class TLogRouter extends TModule
 	public function getConfigFile()
 	{
 		return $this->_configFile;
+	}
+
+	/**
+	 * @return boolean whether the TLogRouter is active or not.
+	 */
+	public function getActive()
+	{
+		return $this->_active;
+	}
+
+	/**
+	 * @param boolean tells the object whether it's active or not.
+	 */
+	public function setActive($v)
+	{
+		$this->_active = TPropertyValue::ensureBoolean($v);
 	}
 
 	/**
@@ -161,15 +222,48 @@ class TLogRouter extends TModule
 
 	/**
 	 * Collects log messages from a logger.
-	 * This method is an event handler to application's EndRequest event.
+	 * This method is an event handler to the application's onPreFlush event.
+	 * Only pre flush routes get this treatment.
+	 * @param mixed event parameter
+	 */
+	public function collectLogsPreFlush($param) {
+		if(!$this->_active) return;
+		
+		$logger=Prado::getLogger();
+		foreach($this->_preroutes as $route)
+			$route->collectLogs($logger);
+	}
+
+	/**
+	 * Collects log messages from a logger.
+	 * This method is an event handler to the application's EndRequest event.
+	 * Only post flush routes get this treatment.
 	 * @param mixed event parameter
 	 */
 	public function collectLogs($param)
 	{
+		if(!$this->_active) return;
+		
 		$logger=Prado::getLogger();
 		foreach($this->_routes as $route)
-			$route->collectLogs($logger);
+			if(!in_array($route, $this->_preroutes))
+				$route->collectLogs($logger);
 	}
+}
+
+
+/**
+ * IHeaderRoute interface.
+ *
+ * This is used for registering log routers that output to the header so it can be routed before the page flush.
+ *
+ * @author Brad Anderson <javalizard@gmail.com>
+ * @version $Id$
+ * @package System.Util
+ * @since 3.0
+ */ 
+
+interface IHeaderRoute {
 }
 
 /**
@@ -221,6 +315,14 @@ abstract class TLogRoute extends TApplicationComponent
 		'fatal'=>TLogger::FATAL
 	);
 	/**
+	 * @var string the id of the route
+	 */
+	private $_id=null;
+	/**
+	 * @var string the name of the route
+	 */
+	private $_name=null;
+	/**
 	 * @var integer log level filter (bits)
 	 */
 	private $_levels=null;
@@ -228,13 +330,180 @@ abstract class TLogRoute extends TApplicationComponent
 	 * @var array log category filter
 	 */
 	private $_categories=null;
+	/**
+	 * @var array log controls filter
+	 */
+	private $_controls=null;
+	/**
+	 * @var array role filter
+	 */
+	private $_roles=null;
 
+	/**
+	 * @var int|string the reference to the hit metadata.  This is a transient property per page hit.
+	 */
+	private $_metaid=null;
+	/**
+	 * @var int the user id of the hit.  This is a transient property per page hit.
+	 */
+	private $_userid=null;
+	
+	/**
+	 * @var boolean whether this is an active route or not
+	 */
+	private $_active=true;
+	/**
+	 * $var Exception any problems on the loading of the module
+	 */
+	private $_error=null;
 	/**
 	 * Initializes the route.
 	 * @param TXmlElement configurations specified in {@link TLogRouter}.
 	 */
 	public function init($config)
 	{
+		if(is_array($config)) {
+			if(isset($config['id']))
+				$this->_id = $config['id'];
+			if(isset($config['name']))
+				$this->Name = $config['name'];
+			if(isset($config['active']))
+				$this->Active = $config['active'];
+			if(isset($config['roles']))
+				$this->Roles = $config['roles'];
+			if(isset($config['categories']))
+				$this->Categories = $config['categories'];
+			if(isset($config['levels']))
+				$this->Levels = $config['levels'];
+			if(isset($config['controls']))
+				$this->Controls = $config['controls'];
+		}
+	}
+	
+
+	/**
+	 * @return string the id of the route
+	 */
+	public function getId()
+	{
+		return $this->_id;
+	}
+
+	/**
+	 * @param The id of the route.
+	 */
+	public function setId($id)
+	{
+		$this->_id = $id;
+	}
+
+	/**
+	 * @return string the name of the route
+	 */
+	public function getName()
+	{
+		return $this->_name;
+	}
+
+	/**
+	 * @param The name of the route.
+	 */
+	public function setName($name)
+	{
+		$this->_name = $name;
+	}
+
+	/**
+	 * @return boolean true if the route is active
+	 */
+	public function getActive()
+	{
+		return $this->_active;
+	}
+
+	/**
+	 * @param boolean sets the object to active or not.
+	 */
+	public function setActive($v)
+	{
+		$this->_active = TPropertyValue::ensureBoolean($v);
+	}
+
+	/**
+	 * @return Exception this returns any errors the log route has
+	 */
+	public function getInitError()
+	{
+		return $this->_error;
+	}
+
+	/**
+	 * @param mixed this sets the errors that the log route may have
+	 */
+	public function setInitError($v)
+	{
+		$this->_error = $v;
+	}
+
+	/**
+	 * @return string this returns the meta data id associated with the route
+	 */
+	public function getMetaId()
+	{
+		return $this->_metaid;
+	}
+
+	/**
+	 * @param string this sets the meta data id associated with the route.
+	 */
+	public function setMetaId($v)
+	{
+		$this->_metaid = $v;
+	}
+
+
+	/**
+	 * @return string this returns the user id associated with the route.
+	 */
+	public function getUserId()
+	{
+		return $this->_userid;
+	}
+
+	/**
+	 * @return string this sets the user id associated with the route.
+	 */
+	public function setUserId($v)
+	{
+		$this->_userid = $v;
+	}
+
+	/**
+	 * @return array log roles filter
+	 */
+	public function getRoles()
+	{
+		return $this->_roles;
+	}
+
+	/**
+	 * @param array|string The roles that this log router is attached to.
+	 */
+	public function setRoles($roles)
+	{
+		if(is_array($roles))
+			$this->_roles=$roles;
+		else
+		{
+			$this->_roles=array();
+			$roles=strtolower($roles);
+			foreach(explode(',',$roles) as $role)
+			{
+				$role=trim($role);
+				if(!in_array($role, $this->_roles))
+					$this->_roles[] = $role;
+			}
+		}
 	}
 
 	/**
@@ -257,8 +526,10 @@ abstract class TLogRoute extends TApplicationComponent
 		else
 		{
 			$this->_levels=null;
-			$levels=strtolower($levels);
-			foreach(explode(',',$levels) as $level)
+			if(is_string($levels))
+				$levels = explode(',',strtolower($levels));
+			
+			foreach($levels as $level)
 			{
 				$level=trim($level);
 				if(isset(self::$_levelValues[$level]))
@@ -285,11 +556,38 @@ abstract class TLogRoute extends TApplicationComponent
 			$this->_categories=$categories;
 		else
 		{
-			$this->_categories=null;
+			$this->_categories=array();
 			foreach(explode(',',$categories) as $category)
 			{
 				if(($category=trim($category))!=='')
 					$this->_categories[]=$category;
+			}
+		}
+	}
+
+	/**
+	 * @return array list of controls to be looked for
+	 */
+	public function getControls()
+	{
+		return $this->_controls;
+	}
+
+	/**
+	 * @param array|string list of controls to be looked for. If the value is a string,
+	 * it is assumed to be comma-separated control client ids.
+	 */
+	public function setControls($controls)
+	{
+		if(is_array($controls))
+			$this->_controls=$controls;
+		else
+		{
+			$this->_controls=array();
+			foreach(explode(',',$controls) as $control)
+			{
+				if(($control=trim($control))!=='')
+					$this->_controls[]=$control;
 			}
 		}
 	}
@@ -320,9 +618,11 @@ abstract class TLogRoute extends TApplicationComponent
 	 * @param integer timestamp
 	 * @return string formatted message
 	 */
-	protected function formatLogMessage($message,$level,$category,$time)
+	protected function formatLogMessage($message,$level,$category,$time, $memory)
 	{
-		return @gmdate('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		if(!$this->MetaId)
+			$this->MetaId = $this->Request->UserHostAddress;
+		return '[metaid: ' .$this->MetaId.'] ' . @date('M d H:i:s',$time).' [Memory: '.$memory.'] ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
 	}
 
 	/**
@@ -331,9 +631,82 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	public function collectLogs(TLogger $logger)
 	{
-		$logs=$logger->getLogs($this->getLevels(),$this->getCategories());
+		// if not active or roles don't match, end function
+		if(!$this->_active || ($this->_roles && !array_intersect($this->_roles, $this->User->Roles))) return;
+		
+		Prado::trace('Routing Logs: '.get_class($this) . '->id='.$this->id,'System.Util.TLogRouter');
+		
+		$logs=$logger->getLogs($this->getLevels(),$this->getCategories(),$this->getControls());
 		if(!empty($logs))
 			$this->processLogs($logs);
+	}
+	
+	/**
+	 *	@return string this is the xml representation of the route
+	 */
+	public function toXml() {
+		$xml = '<route ' . $this->encodeId() . $this->encodeName() . $this->encodeClass() . $this->encodeLevels() . 
+			$this->encodeCategories() . $this->encodeRoles() . $this->encodeControls() . '/>';
+		return $xml;
+	}
+	
+	/**
+	 *	@return string this encodes the id of the route as an xml attribute
+	 */
+	protected function encodeId() {
+		return 'id="'. $this->_id .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the name of the route as an xml attribute
+	 */
+	protected function encodeName() {
+		$active = '';
+		if(!$this->_active) $active = 'active="'. ($this->_active?'true':'false') .'" ';
+		return 'name="'. $this->_name .'" ' . $active;
+	}
+	
+	/**
+	 *	@return string this encodes the class of the route as an xml attribute
+	 */
+	protected function encodeClass() {
+		return 'class="'. get_class($this) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the levels of the route as an xml attribute
+	 */
+	protected function encodeLevels() {
+		if(!$this->_levels) return '';
+		$levels = array();
+		foreach(self::$_levelNames as $level => $name)
+			if($level & $this->_levels)
+				$levels[] = strtolower($name);
+		return 'levels="'. implode(',', $levels) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the categories of the route as an xml attribute
+	 */
+	protected function encodeCategories() {
+		if(!$this->_categories) return '';
+		return 'categories="'. implode(',', $this->_categories) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the roles of the route as an xml attribute
+	 */
+	protected function encodeRoles() {
+		if(!$this->_roles) return '';
+		return 'roles="'. implode(',', $this->_roles) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the controls of the route as an xml attribute
+	 */
+	protected function encodeControls() {
+		if(!$this->_roles) return '';
+		return 'controls="'. implode(',', $this->_controls) .'" ';
 	}
 
 	/**
@@ -345,7 +718,9 @@ abstract class TLogRoute extends TApplicationComponent
 	 *   [0] => message
 	 *   [1] => level
 	 *   [2] => category
-	 *   [3] => timestamp);
+	 *   [3] => timestamp
+	 *   [4] => memory in bytes
+	 *   [5] => control);
 	 */
 	abstract protected function processLogs($logs);
 }
@@ -382,10 +757,79 @@ class TFileLogRoute extends TLogRoute
 	 */
 	private $_logPath=null;
 	/**
+	 * @var string original directory set for the log files so it can be recreated
+	 */
+	private $_logPradoPath=null;
+	/**
 	 * @var string log file name
 	 */
 	private $_logFile='prado.log';
 
+	/**
+	 * Initializes the route.
+	 * @param TXmlElement configurations specified in {@link TLogRouter}.
+	 * @throws TConfigurationException if {@link getSentFrom SentFrom} is empty and
+	 * 'sendmail_from' in php.ini is also empty.
+	 */
+	public function init($config)
+	{
+		parent::init($config);
+		
+		if(is_array($config)) {
+			if(isset($config['logfile']))
+				$this->LogFile = $config['logfile'];
+			if(isset($config['logpath']))
+				$this->LogPath = $config['logpath'];
+			if(isset($config['maxfilesize']))
+				$this->MaxFileSize = $config['maxfilesize'];
+			if(isset($config['maxfilesize']))
+				$this->MaxLogFiles = $config['maxlogfiles'];
+		}
+	}
+	
+	/**
+	 *	@return string this encodes the TFileLogRoute as a string
+	 */
+	public function toXml() {
+		$xml = '<route ' .$this->encodeId(). $this->encodeName().$this->encodeClass() . $this->encodeLevels() . 
+			$this->encodeCategories() . $this->encodeControls() . $this->encodeRoles() . $this->encodeMaxFileSize(). 
+			$this->encodeMaxLogFiles(). $this->encodeLogPath().$this->encodeLogFile().'/>';
+		return $xml;
+	}
+	
+	/**
+	 *	@return string this encodes the maxfilesize of the route as an xml attribute
+	 */
+	protected function encodeMaxFileSize() {
+		if(!$this->MaxFileSize) return '';
+		return 'maxfilesize="'. addslashes($this->MaxFileSize) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the maxlogfiles of the route as an xml attribute
+	 */
+	protected function encodeMaxLogFiles() {
+		if(!$this->MaxFileSize) return '';
+		return 'maxlogfiles="'. addslashes($this->MaxLogFiles) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the logpath of the route as an xml attribute
+	 */
+	protected function encodeLogPath() {
+		if(!$this->LogPath) return '';
+		return 'logpath="'. addslashes($this->_logPradoPath) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the logfile of the route as an xml attribute
+	 */
+	protected function encodeLogFile() {
+		if(!$this->LogFile) return '';
+		return 'logfile="'. addslashes($this->LogFile) .'" ';
+	}
+	
+	
 	/**
 	 * @return string directory storing log files. Defaults to application runtime path.
 	 */
@@ -402,6 +846,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setLogPath($value)
 	{
+		$this->_logPradoPath = $value;
 		if(($this->_logPath=Prado::getPathOfNamespace($value))===null || !is_dir($this->_logPath) || !is_writable($this->_logPath))
 			throw new TConfigurationException('filelogroute_logpath_invalid',$value);
 	}
@@ -469,7 +914,7 @@ class TFileLogRoute extends TLogRoute
 		if(@filesize($logFile)>$this->_maxFileSize*1024)
 			$this->rotateFiles();
 		foreach($logs as $log)
-			error_log($this->formatLogMessage($log[0],$log[1],$log[2],$log[3]),3,$logFile);
+			error_log($this->formatLogMessage($log[0],$log[1],$log[2],$log[3],$log[4]),3,$logFile);
 	}
 
 	/**
@@ -538,10 +983,64 @@ class TEmailLogRoute extends TLogRoute
 	 */
 	public function init($config)
 	{
+		parent::init($config);
+		
+		if(is_array($config)) {
+			if(isset($config['emails']))
+				$this->Emails = $config['emails'];
+			if(isset($config['subject']))
+				$this->Subject = $config['subject'];
+			if(isset($config['from']))
+				$this->SentFrom = $config['from'];
+		}
+		
 		if($this->_from==='')
 			$this->_from=ini_get('sendmail_from');
 		if($this->_from==='')
 			throw new TConfigurationException('emaillogroute_sentfrom_required');
+	}
+	
+	/**
+	 *	@return string this encodes the TEmailLogRoute as an xml element
+	 */
+	public function toXml() {
+		$xml = '<route ' .$this->encodeId(). $this->encodeName().$this->encodeClass() . $this->encodeLevels() . 
+			$this->encodeCategories() . $this->encodeControls() . $this->encodeRoles() . $this->encodeEmails(). 
+			$this->encodeSubject(). $this->encodeFrom().'/>';
+		return $xml;
+	}
+	
+	/**
+	 *	@return string this encodes the emails of the route as an xml attribute
+	 */
+	protected function encodeEmails() {
+		if(!$this->Emails) return '';
+		return 'emails="'. addslashes(implode(',',$this->Emails)) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the subject of the route as an xml attribute
+	 */
+	protected function encodeSubject() {
+		if($this->Subject == self::DEFAULT_SUBJECT) return '';
+		return 'subject="'. addslashes($this->Subject) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the from email of the route as an xml attribute
+	 */
+	protected function encodeFrom() {
+		return 'sentfrom="'. addslashes($this->SentFrom) .'" ';
+	}
+	
+	
+	/**
+	 *	This sends a test email with a test log message
+	 */
+	public function sendTestEmail() {
+		$this->processLogs(array(
+				array('Test Message',TLogger::DEBUG,'System.Util.TEmailLogRoute',microtime(true),memory_get_usage())
+			));
 	}
 
 	/**
@@ -552,7 +1051,7 @@ class TEmailLogRoute extends TLogRoute
 	{
 		$message='';
 		foreach($logs as $log)
-			$message.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]);
+			$message.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3],$log[4]);
 		$message=wordwrap($message,70);
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach($this->_emails as $email)
@@ -603,7 +1102,7 @@ class TEmailLogRoute extends TLogRoute
 	 */
 	public function setSubject($value)
 	{
-		$this->_subject=$value;
+		$this->_subject=$value ? $value : null;
 	}
 
 	/**
@@ -638,29 +1137,198 @@ class TBrowserLogRoute extends TLogRoute
 	/**
 	 * @var string css class for indentifying the table structure in the dom tree
 	 */
-	private $_cssClass=null;
+	private $_cssClass='log-route-browser';
 	
+
+	/**
+	 * Sends log messages to the browser.
+	 * This does quartile analysis on the logs to highlight the memory and time offenders
+	 * @param array list of log messages
+	 */
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
 		$first = $logs[0][3];
+		$mem_first = $logs[0][4];
 		$even = true;
+		$use_interquartile_top_bottom = false;
 		$response = $this->getApplication()->getResponse();
-		$response->write($this->renderHeader());
+		
+		$c = count($logs);
+		for($i=0,$n=count($logs); $i<$n; $i++) {
+			$logs[$i]['i'] = $i;
+			if($i > 1 && $i < $n-1) {
+				$logs[$i]['time_delta'] = $logs[$i+1][3] - $logs[$i][3];
+				$logs[$i]['time_total'] = $logs[$i+1][3] - $first;
+				$logs[$i]['mem_delta'] = $logs[$i+1][4] - $logs[$i][4];
+				$logs[$i]['mem_total'] = $logs[$i+1][4] - $mem_first;
+			} else {
+				$logs[$i]['time_delta'] = '?';
+				$logs[$i]['time_total'] = $logs[$i][3] - $first;
+				$logs[$i]['mem_delta'] = '?';
+				$logs[$i]['mem_total'] = $logs[$i][4] - $mem_first;
+			}
+			$logs[$i]['even'] = !($even = !$even);
+		}
+		
+		{
+			vrsort($logs, 'mem_delta');
+			$median = $logs[round($c/2)];
+			$q1 = $logs[round($c/4)];
+			$q3 = $logs[round($c*3/4)];
+			
+			$mem_delta_median = $median['mem_delta'];
+			$mem_delta_q1 = $q1['mem_delta'];
+			$mem_delta_q3 = $q3['mem_delta'];
+			$irq = $mem_delta_q1 - $mem_delta_q3;
+			
+			if($use_interquartile_top_bottom) {
+				$top = $mem_delta_q1 + $irq * 1.5;
+				$bottom = $mem_delta_q3 - $irq * 1.5;
+			} else {
+				$top = $logs[round($c*2/100)]['mem_delta'];
+				$bottom = $logs[round($c*98/100)]['mem_delta'];
+			}
+			
+			$sum_top = 0;
+			$sum_bottom = 0;
+			$top_value = $mem_delta_q1;
+			$bottom_value = $mem_delta_q3;
+			
+			$top_outliers = 0;
+			$bottom_outliers = 0;
+			for($i=0,$n=count($logs); $i<$n; $i++) {
+				$logs[$i]['mem_delta_order'] = $i;
+				$logs[$i]['top_outlier'] = false;
+				$logs[$i]['bottom_outlier'] = false;
+				if($logs[$i]['mem_delta'] > $top) {
+					$logs[$i]['top_outlier'] = true;
+					$top_outliers++;
+					$sum_top += $logs[$i]['mem_delta'];
+				}
+				if($logs[$i]['mem_delta'] < $bottom) {
+					$logs[$i]['bottom_outlier'] = true;
+					$bottom_outliers++;
+					$sum_bottom += $logs[$i]['mem_delta'];
+				}
+					
+				if($logs[$i]['mem_delta'] > $mem_delta_q1) {
+					$logs[$i]['mem_delta_quartile'] = 0;
+					if($logs[$i]['mem_delta'] > $top_value)
+						$top_value = $logs[$i]['mem_delta'];
+				} else if($logs[$i]['mem_delta'] > $mem_delta_median) {
+					$logs[$i]['mem_delta_quartile'] = 1;
+				} else if($logs[$i]['mem_delta'] > $mem_delta_q3) {
+					$logs[$i]['mem_delta_quartile'] = 2;
+				} else {
+					$logs[$i]['mem_delta_quartile'] = 3;
+					if($logs[$i]['mem_delta'] < $bottom_value)
+						$bottom_value = $logs[$i]['mem_delta'];
+				}
+			}
+			if($top_outliers)
+				$sum_top /= $top_outliers;
+			if($bottom_outliers)
+				$sum_bottom /= $bottom_outliers;
+		}
+		
+		$metrics = array(
+				'mem_outliers' => $top_outliers + $bottom_outliers, 
+				'mem_top_outliers' => $top_outliers,
+				'mem_bottom_outliers' => $bottom_outliers,
+				'mem_avg_top_outliers' => round($sum_top),
+				'mem_avg_bottom_outliers' => round($sum_bottom),
+				'mem_median' => $mem_delta_median,
+				'mem_q1' => $mem_delta_q1,
+				'mem_q3' => $mem_delta_q3,
+				'mem_top_irq' => $top,
+				'mem_bottom_irq' => $bottom,
+				'mem_top' => $top_value,
+				'mem_bottom' => $bottom_value
+			);
+			
+		{
+			vrsort($logs, 'time_delta');
+			$median = $logs[round($c/2)];
+			$q1 = $logs[round($c/4)];
+			$q3 = $logs[round($c*3/4)];
+			
+			$time_delta_median = $median['time_delta'];
+			$time_delta_q1 = $q1['time_delta'];
+			$time_delta_q3 = $q3['time_delta'];
+			$irq = $time_delta_q1 - $time_delta_q3;
+			
+			if($use_interquartile_top_bottom) {
+				$top = $time_delta_q1 + $irq * 1.5;
+				$bottom = $time_delta_q3 - $irq * 1.5;
+			} else {
+				$top = $logs[round($c*2/100)]['time_delta'];
+				$bottom = $logs[round($c*98/100)]['time_delta'];
+			}
+			
+			$sum_top = 0;
+			$sum_bottom = 0;
+			$top_value = $time_delta_q1;
+			$bottom_value = $time_delta_q3;
+			
+			$top_outliers = 0;
+			$bottom_outliers = 0;
+			for($i=0,$n=count($logs); $i<$n; $i++) {
+				$logs[$i]['time_delta_order'] = $i;
+				$logs[$i]['time_top_outlier'] = false;
+				$logs[$i]['time_bottom_outlier'] = false;
+				if($logs[$i]['time_delta'] > $top) {
+					$logs[$i]['time_top_outlier'] = true;
+					$top_outliers++;
+					$sum_top += $logs[$i]['time_delta'];
+				}
+				if($logs[$i]['time_delta'] < $bottom) {
+					$logs[$i]['time_bottom_outlier'] = true;
+					$bottom_outliers++;
+					$sum_bottom += $logs[$i]['time_delta'];
+				}
+					
+				if($logs[$i]['time_delta'] > $time_delta_q1) {
+					$logs[$i]['time_delta_quartile'] = 0;
+					if($logs[$i]['time_delta'] > $top_value)
+						$top_value = $logs[$i]['time_delta'];
+				} else if($logs[$i]['time_delta'] > $time_delta_median) {
+					$logs[$i]['time_delta_quartile'] = 1;
+				} else if($logs[$i]['time_delta'] > $time_delta_q3) {
+					$logs[$i]['time_delta_quartile'] = 2;
+				} else {
+					$logs[$i]['time_delta_quartile'] = 3;
+					if($logs[$i]['time_delta'] < $bottom_value)
+						$bottom_value = $logs[$i]['time_delta'];
+				}
+			}
+			if($top_outliers)
+				$sum_top /= $top_outliers;
+			if($bottom_outliers)
+				$sum_bottom /= $bottom_outliers;
+		}
+		$metrics += array(
+				'time_outliers' => round(($top_outliers + $bottom_outliers) * 1000, 3), 
+				'time_top_outliers' => $top_outliers,
+				'time_bottom_outliers' => $bottom_outliers,
+				'time_avg_top_outliers' => round($sum_top * 1000, 3),
+				'time_avg_bottom_outliers' => round($sum_bottom * 1000, 3),
+				'time_median' => round($time_delta_median * 1000, 3),
+				'time_q1' => round($time_delta_q1 * 1000, 3),
+				'time_q3' => round($time_delta_q3 * 1000, 3),
+				'time_top_irq' => round($top * 1000, 3),
+				'time_bottom_irq' => round($bottom * 1000, 3),
+				'time_top' => round($top_value * 1000, 3),
+				'time_bottom' => round($bottom_value * 1000, 3)
+			);
+		
+		vsort($logs, 'i');
+		//ksort($logs);
+		
+		$response->write($this->renderHeader($metrics));
 		for($i=0,$n=count($logs);$i<$n;++$i)
 		{
-			if ($i<$n-1)
-			{
-				$timing['delta'] = $logs[$i+1][3] - $logs[$i][3];
-				$timing['total'] = $logs[$i+1][3] - $first;
-			}
-			else
-			{
-				$timing['delta'] = '?';
-				$timing['total'] = $logs[$i][3] - $first;
-			}
-			$timing['even'] = !($even = !$even);
-			$response->write($this->renderMessage($logs[$i],$timing));
+			$response->write($this->renderMessage($logs[$i]));
 		}
 		$response->write($this->renderFooter());
 	}
@@ -681,7 +1349,7 @@ class TBrowserLogRoute extends TLogRoute
 		return TPropertyValue::ensureString($this->_cssClass);
 	}
 
-	protected function renderHeader()
+	protected function renderHeader($metrics)
 	{
 		$string = '';
 		if($className=$this->getCssClass())
@@ -689,64 +1357,112 @@ class TBrowserLogRoute extends TLogRoute
 			$string = <<<EOD
 <table class="$className">
 	<tr class="header">
-		<th colspan="5">
+		<th colspan="7">
 			Application Log
 		</th>
 	</tr><tr class="description">
 	    <th>&nbsp;</th>
-		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
+		<th>Category</th><th>Message</th>
+		<th>Time Spent (s)</th>
+		<th>Cumulated Time Spent (s)</th>
+		<th>&Delta; Memory</th>
+		<th>Memory</th>
 	</tr>
 EOD;
 		}
 		else
 		{
+			$top_outliers = 'unset';
+			if($metrics['mem_top_outliers'])
+				$top_outliers = 'Avg Upper Outlier: '. $metrics['mem_avg_top_outliers'] . ' &nbsp; ';
+			if($metrics['time_top_outliers'])
+				$time_top_outliers = 'Avg Upper Outlier: '. $metrics['time_avg_top_outliers'] . ' ms &nbsp; ';
 			$string = <<<EOD
 <table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
 	<tr>
-		<th style="background-color: black; color:white;" colspan="5">
+		<th style="background-color: black; color:white;" colspan="7">
 			Application Log
 		</th>
-	</tr><tr style="background-color: #ccc; color:black">
+	</tr>
+	<tr>
+		<th style="background-color: black; color:white;" colspan="7">
+			Memory Stats-   &nbsp;  &nbsp; 
+				Top Value: {$metrics['mem_top']} &nbsp; 
+				{$top_outliers} &nbsp;
+				Q1: {$metrics['mem_q1']} &nbsp; 
+				Median: {$metrics['mem_median']} &nbsp; 
+				Q3: {$metrics['mem_q3']}  &nbsp; 
+				Bottom Value: {$metrics['mem_bottom']} &nbsp; 
+		</th>
+	</tr>
+	<tr>
+		<th style="background-color: black; color:white;" colspan="7">
+			Time Stats-   &nbsp;  &nbsp; 
+				Top Value: {$metrics['time_top']} ms &nbsp; 
+				{$time_top_outliers} &nbsp;
+				Q1: {$metrics['time_q1']} ms &nbsp; 
+				Median: {$metrics['time_median']} ms &nbsp; 
+				Q3: {$metrics['time_q3']} ms  &nbsp; 
+				Bottom Value: {$metrics['time_bottom']} ms &nbsp; 
+		</th>
+	</tr>
+	<tr style="background-color: #ccc; color:black">
 	    <th style="width: 15px">&nbsp;</th>
-		<th style="width: auto">Category</th><th style="width: auto">Message</th><th style="width: 120px">Time Spent (s)</th><th style="width: 150px">Cumulated Time Spent (s)</th>
+		<th style="width: auto">Category</th>
+		<th style="width: auto">Message</th>
+		<th style="width: 120px">Time Spent (s)</th>
+		<th style="width: 150px">Cumulated Time Spent (s)</th>
+		<th style="width: 100px">&Delta; Memory</th>
+		<th style="width: 120px">Memory</th>
 	</tr>
 EOD;
 		}
 		return $string;
 	}
 
-	protected function renderMessage($log, $info)
+	protected function renderMessage($log)
 	{
 		$string = '';
-		$total = sprintf('%0.6f', $info['total']);
-		$delta = sprintf('%0.6f', $info['delta']);
+		$total = sprintf('%0.6f', $log['time_total']);
+		$delta = sprintf('%0.6f', $log['time_delta']);
+		$mem_total = $log['mem_total'];
+		$mem_delta = $log['mem_delta'];
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
 		$msg = THttpUtility::htmlEncode($msg);
 		if($this->getCssClass())
 		{
+			//$log[1] = 0xF;
+			
 			$colorCssClass = $log[1];
-			$messageCssClass = $info['even'] ? 'even' : 'odd';
+			$memcolor = $log['top_outlier'] ? 'high-memory': ($mem_delta < 0 ? 'negative-memory': '');
+			$timecolor = $log['time_top_outlier'] ? 'high-time': ($delta > 0.001 ? 'medium-time': '');
 			$string = <<<EOD
-	<tr class="message level$colorCssClass $messageCssClass">
-		<td class="code">&nbsp;</td>
+	<tr class="message">
+		<td class="code level-$colorCssClass">&nbsp;</td>
 		<td class="category">{$log[2]}</td>
 		<td class="message">{$msg}</td>
-		<td class="time">{$delta}</td>
+		<td class="time $timecolor">{$delta}</td>
 		<td class="cumulatedtime">{$total}</td>
+		<td class="mem_change $memcolor">{$mem_delta}</td>
+		<td class="mem_total">{$mem_total}</td>
 	</tr>
 EOD;
 		}
 		else
 		{
-			$bgcolor = $info['even'] ? "#fff" : "#eee";
+			$bgcolor = $log['even'] ? "#fff" : "#eee";
 			$color = $this->getColorLevel($log[1]);
+			$memcolor = $log['top_outlier'] ? '#e00': ($mem_delta < 0 ? '#080': '');
+			$timecolor = $log['time_top_outlier'] ? '#e00': ($delta > 0.001 ? '#00c': '');
 			$string = <<<EOD
 	<tr style="background-color: {$bgcolor}; color:#000">
 		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
 		<td>{$log[2]}</td>
 		<td>{$msg}</td>
-		<td style="text-align:center">{$delta}</td>
+		<td style="text-align:center; color: $timecolor">{$delta}</td>
 		<td style="text-align:center">{$total}</td>
+		<td style="text-align:center; color: $memcolor">{$mem_delta}</td>
+		<td style="text-align:center">{$mem_total}</td>
 	</tr>
 EOD;
 		}
@@ -773,15 +1489,15 @@ EOD;
 		$string = '';
 		if($this->getCssClass())
 		{
-			$string .= '<tr class="footer"><td colspan="5">';
+			$string .= '<tr class="footer"><td colspan="7" align="center">';
 			foreach(self::$_levelValues as $name => $level)
 			{
-				$string .= '<span class="level'.$level.'">'.strtoupper($name)."</span>";
+				$string .= '<span class="level-'.$level.'">'.strtoupper($name)."</span>";
 			}
 		}
 		else
 		{
-			$string .= "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
+			$string .= "<tr><td colspan=\"7\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
 			foreach(self::$_levelValues as $name => $level)
 			{
 				$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
@@ -791,6 +1507,89 @@ EOD;
 		$string .= '</td></tr></table>';
 		return $string;
 	}
+}
+
+
+
+
+/**
+ * TArraySorter class.
+ * TArraySorter allows one to easily sort an array based on the value of a specific key
+ *
+ * @author Brad Anderson <javalizard@gmail.com>
+ * @version $Id$
+ * @package System
+ * @since 3.2a
+ */
+class TArraySorter {
+	private $_v;
+	public function __construct($v) {
+		$this->_v = $v;
+	}
+	public function sort_func($a, $b) {
+		return $a[$this->_v] > $b[$this->_v];
+	}
+	public function sort_func_rev($a, $b) {
+		return $a[$this->_v] < $b[$this->_v];
+	}
+	public function avsort(&$array) {
+		uasort($array, array($this, 'sort_func'));
+	}
+	public function vsort(&$array) {
+		usort($array, array($this, 'sort_func'));
+	}
+	public function avrsort(&$array) {
+		uasort($array, array($this, 'sort_func_rev'));
+	}
+	public function vrsort(&$array) {
+		usort($array, array($this, 'sort_func_rev'));
+	}
+}
+
+
+/**
+ * This sorts an array of arrays based on a the value of a key in the child array 
+ * This sort drops all associations and reindexes the keys numerically in order
+ * @param array &$array of arrays to be sorted
+ * @param string $key the $key in the child arrays to use to sort by
+ */
+function vsort(&$array, $key) {
+	$vsort = new ArraySorter($key);
+	$vsort->vsort($array);
+	unset($vsort);
+}
+/**
+ * This sorts an array of arrays based on a the value of a key in the child array
+ * This sort keeps all associations but reorders the array
+ * @param array &$array of arrays to be sorted
+ * @param string $key the $key in the child arrays to use to sort by
+ */
+function avsort(&$array, $key) {
+	$uvsort = new ArraySorter($key);
+	$uvsort->avsort($array);
+	unset($uvsort);
+}
+/**
+ * This sorts an array of arrays based on a the value of a key in the child array in reverse order
+ * This sort drops all associations and reindexes the keys numerically in order
+ * @param array &$array of arrays to be sorted
+ * @param string $key the $key in the child arrays to use to sort by
+ */
+function vrsort(&$array, $key) {
+	$vsort = new ArraySorter($key);
+	$vsort->vrsort($array);
+	unset($vsort);
+}
+/**
+ * This sorts an array of arrays based on a the value of a key in the child array in reverse order
+ * This sort keeps all associations but reorders the array
+ * @param array &$array of arrays to be sorted
+ * @param string $key the $key in the child arrays to use to sort by
+ */
+function avrsort(&$array, $key) {
+	$vsort = new ArraySorter($key);
+	$vsort->avrsort($array);
+	unset($vsort);
 }
 
 
@@ -858,16 +1657,16 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public function init($config)
 	{
-		$db=$this->getDbConnection();
-		$db->setActive(true);
-
-		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0';
-		try
-		{
-			$db->createCommand($sql)->query()->close();
+		if(is_array($config)) {
+			if(isset($config['connectionid']))
+				$this->ConnectionID = $config['connectionid'];
+			if(isset($config['logtablename']))
+				$this->LogTableName = $config['logtablename'];
+			if(isset($config['autocreatelogtable']))
+				$this->AutoCreateLogTable = $config['autocreatelogtable'];
 		}
-		catch(Exception $e)
-		{
+		
+		if(!$this->checkForTable()) {
 			// DB table not exists
 			if($this->_autoCreate)
 				$this->createDbTable();
@@ -877,6 +1676,57 @@ class TDbLogRoute extends TLogRoute
 
 		parent::init($config);
 	}
+	
+	/**
+	 *	This checks for the existance of the log table
+	 * @return boolean true if the table exists, false if not
+	 */
+	protected function checkForTable() {
+		
+		$db=$this->getDbConnection();
+		$db->setActive(true);
+
+		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0';
+		try
+		{
+			$db->createCommand($sql)->query()->close();
+			return true;
+		} catch( Exception $e ) {
+			return false;
+		}
+	}
+	
+	
+	/**
+	 *	@return string this encodes the TDbLogRoute as xml
+	 */
+	public function toXml() {
+		$xml = '<route ' .$this->encodeId(). $this->encodeName().$this->encodeClass() . $this->encodeLevels() . 
+			$this->encodeCategories() . $this->encodeControls() . $this->encodeRoles() . $this->encodeConnectionID(). 
+			$this->encodeLogTableName(). $this->encodeAutoCreateLogTable().'/>';
+		return $xml;
+	}
+	
+	/**
+	 *	@return string this encodes the id of the database module of the route as an xml attribute
+	 */
+	protected function encodeConnectionID() {
+		return 'connectionid="'. addslashes($this->ConnectionID) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the table name of the route as an xml attribute
+	 */
+	protected function encodeLogTableName() {
+		return 'logtablename="'. addslashes($this->LogTableName) .'" ';
+	}
+	
+	/**
+	 *	@return string this encodes the auto create log table of the route as an xml attribute
+	 */
+	protected function encodeAutoCreateLogTable() {
+		return 'autocreatelogtable="'. $this->AutoCreateLogTable .'" ';
+	}
 
 	/**
 	 * Stores log messages into database.
@@ -884,15 +1734,27 @@ class TDbLogRoute extends TLogRoute
 	 */
 	protected function processLogs($logs)
 	{
-		$sql='INSERT INTO '.$this->_logTable.'(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
-		$command=$this->getDbConnection()->createCommand($sql);
-		foreach($logs as $log)
-		{
-			$command->bindValue(':message',$log[0]);
-			$command->bindValue(':level',$log[1]);
-			$command->bindValue(':category',$log[2]);
-			$command->bindValue(':logtime',$log[3]);
-			$command->execute();
+		try {
+			$sql='INSERT INTO '.$this->_logTable.'(metakey, userid, level, category, memory, logtime, message) VALUES (:metakey, :userid, :level, :category, :memory, :logtime, :message)';
+			$command=$this->getDbConnection()->createCommand($sql);
+			foreach($logs as $log)
+			{
+				$command->bindValue(':metakey',$this->MetaId);
+				$command->bindValue(':userid',$this->UserId);
+				$command->bindValue(':level',$log[1]);
+				$command->bindValue(':category',$log[2]);
+				$command->bindValue(':memory',$log[4]);
+				$command->bindValue(':logtime',$log[3]);
+				$command->bindValue(':message',$log[0]);
+				$command->execute();
+			}
+		} catch(Exception $e) {
+			// table may be deleted from when this was instantiated
+			//probable case: deleted table (aka. dumped database), and don't fail in this case
+			
+			//If the table is there, something else is up and rethrow error
+			if($this->checkForTable())
+				throw $e;
 		}
 	}
 
@@ -907,13 +1769,17 @@ class TDbLogRoute extends TLogRoute
 		$autoidAttributes = '';
 		if($driver==='mysql')
 			$autoidAttributes = 'AUTO_INCREMENT';
-
+		
+		// metakey = varchar 39 because that's the size of an IPv6 address
 		$sql='CREATE TABLE '.$this->_logTable.' (
 			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
-			level INTEGER,
+			metakey VARCHAR(39),
+			userid BIGINT,
+			level INTEGER NOT NULL,
 			category VARCHAR(128),
-			logtime VARCHAR(20),
-			message VARCHAR(255))';
+			memory INTEGER NOT NULL,
+			logtime DECIMAL(20,8) NOT NULL,
+			message VARCHAR(255), INDEX(metakey), INDEX(userid), INDEX(level), INDEX(category), INDEX(logtime))';
 		$db->createCommand($sql)->execute();
 	}
 
@@ -1028,6 +1894,7 @@ class TDbLogRoute extends TLogRoute
  */
 class TFirebugLogRoute extends TBrowserLogRoute
 {
+	
 	protected function renderHeader ()
 	{
 		$string = <<<EOD
@@ -1036,19 +1903,19 @@ class TFirebugLogRoute extends TBrowserLogRoute
 /*<![CDATA[*/
 if (typeof(console) == 'object')
 {
-	console.log ("[Cumulated Time] [Time] [Level] [Category] [Message]");
+	console.log ("[Cumulated Time] [Time] [Memory] [Level] [Category] [Message]");
 
 EOD;
 
 		return $string;
 	}
 
-	protected function renderMessage ($log, $info)
+	protected function renderMessage ($log)
 	{
 		$logfunc = $this->getFirebugLoggingFunction($log[1]);
-		$total = sprintf('%0.6f', $info['total']);
-		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0],$log[1],$log[2],''));
+		$total = sprintf('%0.6f', $log['time_total']);
+		$delta = sprintf('%0.6f', $log['time_delta']);
+		$msg = trim($this->formatLogMessage($log[0],$log[1],$log[2],'',$log[4]));
 		$msg = preg_replace('/\(line[^\)]+\)$/','',$msg); //remove line number info
 		$msg = "[{$total}] [{$delta}] ".$msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
@@ -1102,7 +1969,7 @@ EOD;
  * @package System.Util
  * @since 3.1.5
  */
-class TFirePhpLogRoute extends TLogRoute
+class TFirePhpLogRoute extends TLogRoute implements IHeaderRoute
 {
 	/**
 	 * Default group label
@@ -1111,6 +1978,72 @@ class TFirePhpLogRoute extends TLogRoute
 
 	private $_groupLabel = null;
 
+	static public function available() {
+		require_once Prado::getPathOfNamespace('System.3rdParty.FirePHPCore') . '/FirePHP.class.php';
+		$instance = FirePHP::getInstance(true);
+		$available = $instance->detectClientExtension();
+		return $available;
+	}
+
+	/**
+	 * Initializes the route.
+	 * @param TXmlElement configurations specified in {@link TLogRouter}.
+	 */
+	public function init($config)
+	{
+		parent::init($config);
+		
+		if(is_array($config)) {
+			if(isset($config['grouplabel']))
+				$this->GroupLabel = $config['grouplabel'];
+		}
+		if($this->Application->Service instanceof IPageEvents) {
+			$this->Application->Service->OnPreRenderComplete[] = array($this, 'checkHeadFlush');
+		}
+	}
+	
+	/**
+	 * Not having the head tag flush when it's done is a small price to pay to enable firephp
+	 * @param TXmlElement configurations specified in {@link TLogRouter}.
+	 */
+	public function checkHeadFlush($sender, $page) {
+		if(!$this->Active) return;
+		$heads = $page->findControlsByType('THead');
+		
+		// there should only be one but it's an array, so why not?
+		foreach($heads as $head) {
+			if($head->RenderFlush) {
+				Prado::log('Turning off head flush option for firephp', TLogger::INFO, 'System.Util.TFirePhpLogRoute');
+				$head->RenderFlush = false;
+			}
+		}
+	}
+	
+	
+	
+	
+	/**
+	 *	@return string this encodes the TFirePhpLogRoute of the route as an xml attribute
+	 */
+	public function toXml() {
+		$xml = '<route ' .$this->encodeId(). $this->encodeName().$this->encodeClass() . $this->encodeLevels() . 
+			$this->encodeCategories() . $this->encodeControls() . $this->encodeRoles() . $this->encodeGroupLabel(). '/>';
+		return $xml;
+	}
+	
+	/**
+	 *	@return string this encodes the grouplabel of the route as an xml attribute
+	 */
+	protected function encodeGroupLabel() {
+		if($this->GroupLabel == self::DEFAULT_LABEL) return '';
+		return 'grouplabel="'. addslashes($this->GroupLabel) .'" ';
+	}
+	
+
+	/**
+	 * Stores log messages into database.
+	 * @param array list of log messages
+	 */
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
@@ -1122,7 +2055,7 @@ class TFirePhpLogRoute extends TLogRoute
 					Routing to FirePHP impossible, because headers already sent!
 				</div>
 			';
-			$fallback = new TBrowserLogRoute();
+			$fallback = new TFirebugLogRoute();
 			$fallback->processLogs($logs);
 			return;
 		}
@@ -1195,6 +2128,6 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	public function setGroupLabel($value)
 	{
-		$this->_groupLabel=$value;
+		$this->_groupLabel=$value ? $value : null;
 	}
 }
