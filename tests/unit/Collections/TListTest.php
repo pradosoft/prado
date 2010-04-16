@@ -11,13 +11,14 @@ class ListItem {
 class TListTest extends PHPUnit_Framework_TestCase {
 	
 	protected $list;
-	protected $item1, $item2, $item3;
+	protected $item1, $item2, $item3, $item4;
 
   public function setUp() {
     $this->list=new TList;
     $this->item1=new ListItem;
     $this->item2=new ListItem;
     $this->item3=new ListItem;
+    $this->item4=new ListItem;
     $this->list->add($this->item1);
     $this->list->add($this->item2);
   }
@@ -27,6 +28,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
     $this->item1=null;
     $this->item2=null;
     $this->item3=null;
+    $this->item4=null;
   }
 
   public function testConstruct() {
@@ -50,14 +52,14 @@ class TListTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testAdd() {
-    $this->list->add(null);
-    $this->list->add($this->item3);
+    $this->assertEquals(2,$this->list->add(null));
+    $this->assertEquals(3,$this->list->add($this->item3));
     $this->assertEquals(4,$this->list->getCount());
     $this->assertEquals(3,$this->list->indexOf($this->item3));
   }
 
   public function testInsertAt() {
-    $this->list->insertAt(0,$this->item3);
+    $this->assertNull($this->list->insertAt(0,$this->item3));
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(2,$this->list->indexOf($this->item2));
     $this->assertEquals(0,$this->list->indexOf($this->item3));
@@ -68,6 +70,34 @@ class TListTest extends PHPUnit_Framework_TestCase {
     } catch(TInvalidDataValueException $e) {
 
     }
+  }
+
+  public function testInsertBefore() {
+    try {
+      $this->list->insertBefore($this->item4,$this->item3);
+      $this->fail('exception not raised when adding item before a non-existant base item');
+    } catch(TInvalidDataValueException $e) {
+    }
+    $this->assertEquals(2,$this->list->getCount());
+    $this->list->insertBefore($this->item1,$this->item3);
+    $this->assertEquals(3,$this->list->getCount());
+    $this->assertEquals(0,$this->list->indexOf($this->item3));
+    $this->assertEquals(1,$this->list->indexOf($this->item1));
+    $this->assertEquals(2,$this->list->indexOf($this->item2));
+  }
+
+  public function testInsertAfter() {
+    try {
+      $this->list->insertAfter($this->item4,$this->item3);
+      $this->fail('exception not raised when adding item after a non-existant base item');
+    } catch(TInvalidDataValueException $e) {
+    }
+    $this->assertEquals(2,$this->list->getCount());
+    $this->list->insertAfter($this->item2,$this->item3);
+    $this->assertEquals(3,$this->list->getCount());
+    $this->assertEquals(0,$this->list->indexOf($this->item1));
+    $this->assertEquals(1,$this->list->indexOf($this->item2));
+    $this->assertEquals(2,$this->list->indexOf($this->item3));
   }
 
 	public function testCanNotInsertWhenReadOnly() {
@@ -81,7 +111,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
 	}
 
   public function testRemove() {
-    $this->list->remove($this->item1);
+    $this->assertEquals(0,$this->list->remove($this->item1));
     $this->assertEquals(1,$this->list->getCount());
     $this->assertEquals(-1,$this->list->indexOf($this->item1));
     $this->assertEquals(0,$this->list->indexOf($this->item2));
@@ -95,7 +125,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
 
   public function testRemoveAt() {
     $this->list->add($this->item3);
-    $this->list->removeAt(1);
+    $this->assertEquals($this->item2, $this->list->removeAt(1));
     $this->assertEquals(-1,$this->list->indexOf($this->item2));
     $this->assertEquals(1,$this->list->indexOf($this->item3));
     $this->assertEquals(0,$this->list->indexOf($this->item1));
