@@ -19,20 +19,30 @@ Prado::using('System.Web.UI.WebControls.TWebControl');
  * via {@link setTagName TagName} property. Because THtmlElement extends from
  * {@link TWebControl}, it enjoys all its functionalities.
  *
+ * To change the default tag your subclass should override {@link getDefaultTag}
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
  * @since 3.1.2
  */
 class THtmlElement extends TWebControl
 {
-	private $_tagName='span';
+	/**
+	 * @var the tag of this element
+	 */
+	private $_tagName=null;
 
 	/**
 	 * @return string the tag name of this control. Defaults to 'span'.
 	 */
 	public function getTagName()
 	{
+		if($this->_tagName !== null) return $this->_tagName;
+		
+		$this->_tagName = $this->getDefaultTag();
+		
 		return $this->_tagName;
 	}
 
@@ -42,5 +52,13 @@ class THtmlElement extends TWebControl
 	public function setTagName($value)
 	{
 		$this->_tagName=$value;
+	}
+	
+	/**
+	 *	This is the default tag when no other is specified
+	 * @return string the default tag 
+	 */
+	protected function getDefaultTag() {
+		return 'span';
 	}
 }
