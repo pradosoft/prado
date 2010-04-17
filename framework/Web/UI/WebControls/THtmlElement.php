@@ -58,7 +58,7 @@ class THtmlElement extends TWebControl
 	 *	This is the default tag when no other is specified
 	 * @return string the default tag 
 	 */
-	protected function getDefaultTag() {
+	protected function getDefaultTagName() {
 		return 'span';
 	}
 }
