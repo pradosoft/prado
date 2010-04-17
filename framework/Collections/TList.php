@@ -257,7 +257,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 		
 		$this->insertAt($index, $item);
 		
-		return $this;
+		return $index;
 	}
 
 	/**
@@ -274,7 +274,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 		
 		$this->insertAt($index + 1, $item);
 		
-		return $this;
+		return $index + 1;
 	}
 
 	/**

@@ -79,7 +79,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
     } catch(TInvalidDataValueException $e) {
     }
     $this->assertEquals(2,$this->list->getCount());
-    $this->assertEquals($this->list,$this->list->insertBefore($this->item1,$this->item3));
+    $this->assertEquals(0,$this->list->insertBefore($this->item1,$this->item3));
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(0,$this->list->indexOf($this->item3));
     $this->assertEquals(1,$this->list->indexOf($this->item1));
@@ -93,7 +93,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
     } catch(TInvalidDataValueException $e) {
     }
     $this->assertEquals(2,$this->list->getCount());
-    $this->assertEquals($this->list,$this->list->insertAfter($this->item2,$this->item3));
+    $this->assertEquals(2,$this->list->insertAfter($this->item2,$this->item3));
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(0,$this->list->indexOf($this->item1));
     $this->assertEquals(1,$this->list->indexOf($this->item2));
