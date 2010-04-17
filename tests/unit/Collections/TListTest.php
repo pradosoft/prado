@@ -79,7 +79,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
     } catch(TInvalidDataValueException $e) {
     }
     $this->assertEquals(2,$this->list->getCount());
-    $this->list->insertBefore($this->item1,$this->item3);
+    $this->assertEquals($this->list,$this->list->insertBefore($this->item1,$this->item3));
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(0,$this->list->indexOf($this->item3));
     $this->assertEquals(1,$this->list->indexOf($this->item1));
@@ -93,7 +93,7 @@ class TListTest extends PHPUnit_Framework_TestCase {
     } catch(TInvalidDataValueException $e) {
     }
     $this->assertEquals(2,$this->list->getCount());
-    $this->list->insertAfter($this->item2,$this->item3);
+    $this->assertEquals($this->list,$this->list->insertAfter($this->item2,$this->item3));
     $this->assertEquals(3,$this->list->getCount());
     $this->assertEquals(0,$this->list->indexOf($this->item1));
     $this->assertEquals(1,$this->list->indexOf($this->item2));
@@ -104,10 +104,14 @@ class TListTest extends PHPUnit_Framework_TestCase {
 		$list = new TList(array(), true);
 		try {
 			$list->insertAt(1, 2);
+			self::fail('An expected TInvalidOperationException was not raised');
 		} catch(TInvalidOperationException $e) {
-			return;
 		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		try {
+			$list->insertAt(0, 2);
+			self::fail('An expected TInvalidOperationException was not raised');
+		} catch(TInvalidOperationException $e) {
+		}
 	}
 
   public function testRemove() {
