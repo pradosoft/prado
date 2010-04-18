@@ -263,7 +263,7 @@ class TWebControlDecorator extends TComponent {
 		
 		if($this->getPreTagTemplate() || $this->getPreContentsTemplate() || 
 			$this->getPostContentsTemplate() || $this->getPostTagTemplate())
-			$control->Page->onSaveStateComplete[] = array($this, 'ensureTemplateDecoration');
+			$control->getPage()->onSaveStateComplete[] = array($this, 'ensureTemplateDecoration');
 		// OnPreRenderComplete onSaveStateComplete
 	}
 	
