@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.SqlMap.Configuration
@@ -152,6 +152,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	public function __construct($manager)
 	{
+		parent::__construct();
 		$this->_manager=$manager;
 	}
 

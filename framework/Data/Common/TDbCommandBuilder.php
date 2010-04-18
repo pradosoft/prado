@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.Common
@@ -30,6 +30,7 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function __construct($connection=null, $tableInfo=null)
 	{
+		parent::__construct();
 		$this->setDbConnection($connection);
 		$this->setTableInfo($tableInfo);
 	}

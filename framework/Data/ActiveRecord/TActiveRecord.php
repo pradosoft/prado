@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -225,6 +225,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __construct($data=array(), $connection=null)
 	{
+		parent::__construct();
 		if($connection!==null)
 			$this->setDbConnection($connection);
 		$this->setupColumnMapping();
