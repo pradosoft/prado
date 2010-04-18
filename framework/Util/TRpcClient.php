@@ -65,6 +65,7 @@ class TRpcClient extends TApplicationComponent
 	 */
 	public function __construct($serverUrl, $isNotification = false)
 	{
+		parent::__construct();
 		$this->_serverUrl = $serverUrl;
 		$this->_isNotification = TPropertyValue::ensureBoolean($isNotification);
 	}

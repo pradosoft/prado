@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Xml
@@ -55,6 +55,7 @@ class TXmlElement extends TComponent
 	 */
 	public function __construct($tagName)
 	{
+		parent::__construct();
 		$this->setTagName($tagName);
 	}
 
@@ -519,6 +520,7 @@ class TXmlElementList extends TList
 	 */
 	public function __construct(TXmlElement $owner)
 	{
+		parent::__construct();
 		$this->_o=$owner;
 	}
 
