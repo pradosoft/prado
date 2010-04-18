@@ -28,7 +28,7 @@ class THeader5 extends THtmlElement {
 	/**
 	 * @return string tag name
 	 */
-	protected function getDefaultTagName()
+	public function getDefaultTagName()
 	{
 		return 'h5';
 	}

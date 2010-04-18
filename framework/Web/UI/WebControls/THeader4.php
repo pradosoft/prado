@@ -28,7 +28,7 @@ class THeader4 extends THtmlElement {
 	/**
 	 * @return string tag name
 	 */
-	protected function getDefaultTagName()
+	public function getDefaultTagName()
 	{
 		return 'h4';
 	}
