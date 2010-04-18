@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System
@@ -49,11 +49,12 @@
  * To raise an event (assuming named as 'Click') of a component, use
  * <code>
  * $component->raiseEvent('OnClick');
+ * $component->raiseEvent('OnClick', $this, $param);
  * </code>
  * To attach an event handler to an event, use one of the following ways,
  * <code>
  * $component->OnClick=$callback;  // or $component->OnClick->add($callback);
- * $$component->attachEventHandler('OnClick',$callback);
+ * $component->attachEventHandler('OnClick',$callback);
  * </code>
  * The first two ways make use of the fact that $component->OnClick refers to
  * the event handler list {@link TList} for the 'OnClick' event.
@@ -83,6 +84,14 @@ class TComponent
 	 */
 	private $_m=array();
 
+
+	/**
+	 * The Common __construct
+	 */
+	public function __construct() {
+	}
+	
+	
 	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * Do not call this method. This is a PHP magic method that we override
