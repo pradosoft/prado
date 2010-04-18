@@ -517,9 +517,10 @@ class PradoBase
 	 * Otherwise, the message is logged at INFO level.
 	 * @param string message to be logged
 	 * @param string category of the message
+	 * @param (string|TControl) control of the message
 	 * @see log, getLogger
 	 */
-	public static function trace($msg,$category='Uncategorized')
+	public static function trace($msg,$category='Uncategorized',$ctl=null)
 	{
 		if(self::$_application && self::$_application->getMode()===TApplicationMode::Performance)
 			return;
@@ -532,7 +533,7 @@ class PradoBase
 		}
 		else
 			$level=TLogger::INFO;
-		self::log($msg,$level,$category);
+		self::log($msg,$level,$category,$ctl);
 	}
 
 	/**
@@ -545,12 +546,13 @@ class PradoBase
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string category of the message
+	 * @param (string|TControl) control of the message
 	 */
-	public static function log($msg,$level=TLogger::INFO,$category='Uncategorized')
+	public static function log($msg,$level=TLogger::INFO,$category='Uncategorized',$ctl=null)
 	{
 		if(self::$_logger===null)
 			self::$_logger=new TLogger;
-		self::$_logger->log($msg,$level,$category);
+		self::$_logger->log($msg,$level,$category,$ctl);
 	}
 
 	/**

@@ -130,6 +130,8 @@ class TLogRouter extends TModule
 						$route->init($route);
 					} catch(Exception $e) {
 						$route->InitError = $e;
+						Prado::log("Log Route " . $route->Id . ' with name ' . $route->Name, 
+								TLogger::WARNING, 'System.Util.TLogRouter');
 					}
 				}
 			}
@@ -157,6 +159,8 @@ class TLogRouter extends TModule
 					$route->init($routeConfig);
 				} catch(Exception $e) {
 					$route->InitError = $e;
+					Prado::log("Log Route " . $route->Id . ' with name ' . $route->Name, 
+							TLogger::WARNING, 'System.Util.TLogRouter');
 				}
 			}
 		}
@@ -654,7 +658,7 @@ abstract class TLogRoute extends TApplicationComponent
 	 *	@return string this encodes the id of the route as an xml attribute
 	 */
 	protected function encodeId() {
-		return 'id="'. $this->_id .'" ';
+		return 'id="'. htmlentities($this->_id) .'" ';
 	}
 	
 	/**
@@ -663,7 +667,7 @@ abstract class TLogRoute extends TApplicationComponent
 	protected function encodeName() {
 		$active = '';
 		if(!$this->_active) $active = 'active="'. ($this->_active?'true':'false') .'" ';
-		return 'name="'. $this->_name .'" ' . $active;
+		return 'name="'. htmlentities($this->_name) .'" ' . $active;
 	}
 	
 	/**
@@ -682,7 +686,7 @@ abstract class TLogRoute extends TApplicationComponent
 		foreach(self::$_levelNames as $level => $name)
 			if($level & $this->_levels)
 				$levels[] = strtolower($name);
-		return 'levels="'. implode(',', $levels) .'" ';
+		return 'levels="'. htmlentities(implode(',', $levels)) .'" ';
 	}
 	
 	/**
@@ -690,7 +694,7 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	protected function encodeCategories() {
 		if(!$this->_categories) return '';
-		return 'categories="'. implode(',', $this->_categories) .'" ';
+		return 'categories="'. htmlentities(implode(',', $this->_categories)) .'" ';
 	}
 	
 	/**
@@ -698,15 +702,15 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	protected function encodeRoles() {
 		if(!$this->_roles) return '';
-		return 'roles="'. implode(',', $this->_roles) .'" ';
+		return 'roles="'. htmlentities(implode(',', $this->_roles)) .'" ';
 	}
 	
 	/**
 	 *	@return string this encodes the controls of the route as an xml attribute
 	 */
 	protected function encodeControls() {
-		if(!$this->_roles) return '';
-		return 'controls="'. implode(',', $this->_controls) .'" ';
+		if(!$this->_controls) return '';
+		return 'controls="'. htmlentities(implode(',', $this->_controls)) .'" ';
 	}
 
 	/**
@@ -1023,14 +1027,14 @@ class TEmailLogRoute extends TLogRoute
 	 */
 	protected function encodeSubject() {
 		if($this->Subject == self::DEFAULT_SUBJECT) return '';
-		return 'subject="'. addslashes($this->Subject) .'" ';
+		return 'subject="'. htmlentities(addslashes($this->Subject)) .'" ';
 	}
 	
 	/**
 	 *	@return string this encodes the from email of the route as an xml attribute
 	 */
 	protected function encodeFrom() {
-		return 'sentfrom="'. addslashes($this->SentFrom) .'" ';
+		return 'sentfrom="'. htmlentities(addslashes($this->SentFrom)) .'" ';
 	}
 	
 	
@@ -1607,11 +1611,14 @@ function avrsort(&$array, $key) {
  *	CREATE TABLE pradolog
  *  (
  *		log_id INTEGER NOT NULL PRIMARY KEY,
+ *		metakey VARCHAR(39),
+ *		userid BIGINT,
  *		level INTEGER,
  *		category VARCHAR(128),
+ *		memory INTEGER NOT NULL,
+ *		cntl VARCHAR(128) NULL,
  *		logtime VARCHAR(20),
- *		message VARCHAR(255)
- *   );
+ *		message VARCHAR(255), INDEX(metakey), INDEX(userid), INDEX(level), INDEX(category), INDEX(cntl), INDEX(logtime));
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -1735,7 +1742,10 @@ class TDbLogRoute extends TLogRoute
 	protected function processLogs($logs)
 	{
 		try {
-			$sql='INSERT INTO '.$this->_logTable.'(metakey, userid, level, category, memory, logtime, message) VALUES (:metakey, :userid, :level, :category, :memory, :logtime, :message)';
+			if(!$this->MetaId)
+				$this->MetaId = $this->Request->UserHostAddress;
+			
+			$sql='INSERT INTO '.$this->_logTable.'(metakey, userid, level, category, memory, cntl, logtime, message) VALUES (:metakey, :userid, :level, :category, :memory, :cntl, :logtime, :message)';
 			$command=$this->getDbConnection()->createCommand($sql);
 			foreach($logs as $log)
 			{
@@ -1744,6 +1754,7 @@ class TDbLogRoute extends TLogRoute
 				$command->bindValue(':level',$log[1]);
 				$command->bindValue(':category',$log[2]);
 				$command->bindValue(':memory',$log[4]);
+				$command->bindValue(':cntl',$log[5]);
 				$command->bindValue(':logtime',$log[3]);
 				$command->bindValue(':message',$log[0]);
 				$command->execute();
@@ -1778,8 +1789,9 @@ class TDbLogRoute extends TLogRoute
 			level INTEGER NOT NULL,
 			category VARCHAR(128),
 			memory INTEGER NOT NULL,
+			cntl VARCHAR(128) NULL,
 			logtime DECIMAL(20,8) NOT NULL,
-			message VARCHAR(255), INDEX(metakey), INDEX(userid), INDEX(level), INDEX(category), INDEX(logtime))';
+			message VARCHAR(255), INDEX(metakey), INDEX(userid), INDEX(level), INDEX(category), INDEX(cntl), INDEX(logtime))';
 		$db->createCommand($sql)->execute();
 	}
 
@@ -1964,6 +1976,8 @@ EOD;
  * {@link http://www.getfirebug.com/ FireBug Website}
  * {@link http://www.firephp.org/ FirePHP Website}
  *
+ * Due to the usage of headers, this log route can only supply a log until the page is sent.
+ *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @version $Id$
  * @package System.Util
@@ -2036,7 +2050,7 @@ class TFirePhpLogRoute extends TLogRoute implements IHeaderRoute
 	 */
 	protected function encodeGroupLabel() {
 		if($this->GroupLabel == self::DEFAULT_LABEL) return '';
-		return 'grouplabel="'. addslashes($this->GroupLabel) .'" ';
+		return 'grouplabel="'. htmlentities(addslashes($this->GroupLabel)) .'" ';
 	}
 	
 
