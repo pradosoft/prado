@@ -19,7 +19,7 @@ Prado::using('System.Web.UI.WebControls.TWebControl');
  * via {@link setTagName TagName} property. Because THtmlElement extends from
  * {@link TWebControl}, it enjoys all its functionalities.
  *
- * To change the default tag your subclass should override {@link getDefaultTag}
+ * To change the default tag your subclass should override {@link getDefaultTagName}
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@gmail.com>
