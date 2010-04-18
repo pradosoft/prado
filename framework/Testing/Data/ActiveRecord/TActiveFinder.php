@@ -47,6 +47,7 @@ class TActiveFinder extends TComponent
 	 */
 	public function __construct($model,$with,$criteria=null)
 	{
+		parent::__construct();
 		$this->_criteria=$criteria;
 		$this->_builder=$model->getCommandBuilder();
 		$this->_joinTree=new TJoinElement($this,$model);

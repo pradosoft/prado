@@ -35,6 +35,7 @@ class TDbExpression extends TComponent
 	 */
 	public function __construct($expression)
 	{
+		parent::__construct();
 		$this->expression=$expression;
 	}
 
