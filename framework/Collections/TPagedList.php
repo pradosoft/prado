@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Collections
@@ -386,6 +386,7 @@ class TPagedListPageChangedEventParameter extends TEventParameter
 	 */
 	public function __construct($oldPage)
 	{
+		parent::__construct();
 		$this->_oldPage=$oldPage;
 	}
 
@@ -429,6 +430,7 @@ class TPagedListFetchDataEventParameter extends TEventParameter
 	 */
 	public function __construct($pageIndex,$offset,$limit)
 	{
+		parent::__construct();
 		$this->_pageIndex=$pageIndex;
 		$this->_offset=$offset;
 		$this->_limit=$limit;

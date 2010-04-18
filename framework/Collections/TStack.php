@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Collections
@@ -52,6 +52,7 @@ class TStack extends TComponent implements IteratorAggregate,Countable
 	 */
 	public function __construct($data=null)
 	{
+		parent::__construct();
 		if($data!==null)
 			$this->copyFrom($data);
 	}
