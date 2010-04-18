@@ -229,6 +229,7 @@ class TTheme extends TApplicationComponent implements ITheme
 	 */
 	public function __construct($themePath,$themeUrl)
 	{
+		parent::__construct();
 		$this->_themeUrl=$themeUrl;
 		$this->_themePath=realpath($themePath);
 		$this->_name=basename($themePath);

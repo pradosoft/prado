@@ -22,7 +22,6 @@ Prado::using('System.Web.UI.TClientScriptManager');
  * TPage class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id$
  * @package System.Web.UI
  * @since 3.0
@@ -51,13 +50,21 @@ class TPage extends TTemplateControl implements IPageEvents
 		'PRADO_CALLBACK_PARAMETER'=>true
 	);
 	/**
-	 * @var TForm form instance
+	 * @var THtml html instance
 	 */
-	private $_form;
+	private $_html;
 	/**
 	 * @var THead head instance
 	 */
 	private $_head;
+	/**
+	 * @var TBody body instance
+	 */
+	private $_body;
+	/**
+	 * @var TForm form instance
+	 */
+	private $_form;
 	/**
 	 * @var array list of registered validators
 	 */
@@ -70,6 +77,10 @@ class TPage extends TTemplateControl implements IPageEvents
 	 * @var TTheme page theme
 	 */
 	private $_theme;
+	/**
+	 * @var collection of all the skins
+	 */
+	private $_skincontrols = array();
 	/**
 	 * @var string page title set when Head is not in page yet
 	 */
@@ -567,8 +578,11 @@ class TPage extends TTemplateControl implements IPageEvents
 	 */
 	public function applyControlSkin($control)
 	{
-		if(($theme=$this->getTheme())!==null)
+		if(($theme=$this->getTheme())!==null) {
 			$theme->applySkin($control);
+			if($control->SkinID)
+				$this->registerSkin($control);
+		}
 	}
 
 	/**
@@ -999,6 +1013,48 @@ class TPage extends TTemplateControl implements IPageEvents
 	}
 
 	/**
+	 * @return THtml, null if not available
+	 */
+	public function getHtml()
+	{
+		return $this->_html;
+	}
+
+	/**
+	 * @param THead page head
+	 * @throws TInvalidOperationException if a head already exists
+	 */
+	public function setHtml(THtml $value)
+	{
+		if($this->_html===null)
+			$this->_html = $value;
+		else
+			throw new TInvalidOperationException('page_body_duplicated');
+	}
+
+	/**
+	 * @return TBody the body on the page
+	 */
+	public function getBody()
+	{
+		return $this->_body;
+	}
+
+	/**
+	 * Registers the TBody instance on the page.
+	 * Note, a page can contain at most one TBody instance.
+	 * @param TBody the form on the page
+	 * @throws TInvalidOperationException if this method is invoked more than once.
+	 */
+	public function setBody(TBody $body)
+	{
+		if($this->_body===null)
+			$this->_body=$body;
+		else
+			throw new TInvalidOperationException('page_body_duplicated');
+	}
+
+	/**
 	 * @return THead page head, null if not available
 	 */
 	public function getHead()
@@ -1189,6 +1245,78 @@ class TPage extends TTemplateControl implements IPageEvents
 				$cache->registerAction($context,$funcName,$funcParams);
 		}
 	}
+
+	/**
+	 * Registers a controls skin id with the page.  This function links the control to its skin on the page for access.
+	 * @param TControl the object to register the skinid
+	 */
+	protected function registerSkin($control)
+	{
+		$id = $control->SkinID;
+		if(!$id) return;
+		
+		if(!is_array($this->_skincontrols))
+			$this->_skincontrols = array();
+			
+		if(!isset($this->_skincontrols[$id]))
+			$this->_skincontrols[$id] = array();
+			
+		$this->_skincontrols[$id][] = $control;
+	}
+	
+	/**
+	 *	This gets a control based on its SkinId.  If there are multiple controls with the same skin, 
+	 * you can give this method the second parameter for an index into all the controls with that
+	 * skin id.  This will return the first one if and index is not specifiec
+	 * @param string $skinid the skin to look for within the page
+	 * @param index $index the index of the skin if there are many of the same name,  defaults to 0 or the first
+	 */
+	public function getSkinControl($skinid, $index = 0)
+	{
+		if(isset($this->_skincontrols[$skinid][$index]))
+			return $this->_skincontrols[$skinid][$index];
+	}
+	
+	/**
+	 *	This gets a control based on its SkinId.  If there are multiple controls with the same skin, 
+	 * you can give this method the second parameter for an index into all the controls with that
+	 * skin id.  This will return the first one if and index is not specifiec
+	 * @param string $skinid the skin to look for within the page
+	 */
+	public function getSkinControls($skinid)
+	{
+		if(isset($this->_skincontrols[$skinid]))
+			return $this->_skincontrols[$skinid];
+	}
+	
+	/**
+	 *	Return the count of the skins with that id
+	 * @param integer $skinid the skin to look for within the page
+	 */
+	public function getSkinControlCount($skinid)
+	{
+		if(isset($this->_skincontrols[$skinid]))
+			return count($this->_skincontrols[$skinid]);
+	}
+	public function getSkinControlsByType($skinid, $type)
+	{
+		$result = array();
+		if(isset($this->_skincontrols[$skinid]))
+			foreach($this->_skincontrols[$skinid] as $ctl)
+				if($ctl instanceof $type)
+					$result[] = $ctl;
+		
+		return $result;
+	}
+	
+	public function getSkinControlByType($skinid, $type, $index = 0)
+	{
+		if(isset($this->_skincontrols[$skinid]))
+			foreach($this->_skincontrols[$skinid] as $ctl)
+				if(($ctl instanceof $type) && $index--)
+					return $ctl;
+	}
+	
 
 	/**
 	 * @return TStack stack of {@link TOutputCache} objects

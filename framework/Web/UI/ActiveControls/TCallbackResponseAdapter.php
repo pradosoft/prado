@@ -126,6 +126,7 @@ class TCallbackResponseWriter extends TTextWriter
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->_boundary = sprintf('%x',crc32(microtime()));
 	}
 

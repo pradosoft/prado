@@ -88,6 +88,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function __construct(TPage $owner)
 	{
+		parent::__construct();
 		$this->_page=$owner;
 	}
 
@@ -695,6 +696,7 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->_options = Prado::createComponent('System.Collections.TMap');
 	}
 

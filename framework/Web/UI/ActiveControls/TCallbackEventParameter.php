@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -48,6 +48,7 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function __construct($response, $parameter)
 	{
+		parent::__construct();
 		$this->_response = $response;
 		$this->_parameter = $parameter;
 	}
