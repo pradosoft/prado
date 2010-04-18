@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -54,6 +54,8 @@ class TStyle extends TComponent
 	 */
 	public function __construct($style=null)
 	{
+		parent::__construct();
+		
 		if($style!==null)
 			$this->copyFrom($style);
 	}

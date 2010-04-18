@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -103,6 +103,8 @@ class TReadOnlyDataSource extends TDataSourceControl
 	{
 		if(!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof Traversable))
 			throw new TInvalidDataTypeException('readonlydatasource_datasource_invalid');
+		
+		parent::__construct();
 		$this->_dataSource=$dataSource;
 		$this->_dataMember=$dataMember;
 	}

@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -802,6 +802,7 @@ class TRepeaterItemEventParameter extends TEventParameter
 	 */
 	public function __construct($item)
 	{
+		parent::__construct();
 		$this->_item=$item;
 	}
 

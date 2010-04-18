@@ -726,6 +726,8 @@ class TPagerPageChangedEventParameter extends TEventParameter
 	 */
 	public function __construct($source,$newPageIndex)
 	{
+		parent::__construct();
+		
 		$this->_source=$source;
 		$this->_newIndex=$newPageIndex;
 	}
