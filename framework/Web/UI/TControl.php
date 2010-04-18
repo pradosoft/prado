@@ -2318,6 +2318,7 @@ class TCommandEventParameter extends TEventParameter
 	 */
 	public function __construct($name='',$parameter='')
 	{
+		parent::__construct();
 		$this->_name=$name;
 		$this->_param=$parameter;
 	}
