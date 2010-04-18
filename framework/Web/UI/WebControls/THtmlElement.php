@@ -51,7 +51,7 @@ class THtmlElement extends TWebControl
 	 */
 	public function setTagName($value)
 	{
-		$this->_tagName=$value;
+		$this->_tagName=TPropertyValue::ensureString($value);
 	}
 	
 	/**
