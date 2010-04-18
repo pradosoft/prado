@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.Services
@@ -143,13 +143,9 @@ class TPageService extends TService implements IPageEvents
 	 */
 	private $_templateManager=null;
 	/**
-	 * @var TPage is set when traversing the event onNoPage
+	 * @var boolean if the onPageNotFound event is specifically blocked
 	 */
-	private $_foundpage = false;
-	/**
-	 * @var boolean if the onNoPage event is specifically blocked
-	 */
-	private $_blockOnNoPage = false;
+	private $_blockOnPageNotFound = false;
 	
 	/**
 	 * Initializes the service.
@@ -399,33 +395,27 @@ class TPageService extends TService implements IPageEvents
 	}
 	
 	/**
-	 *	This event is triggered when a 404 in the normal page tree hierarchy is not found
+	 *	This event is triggered when a 404 in the normal page tree hierarchy is generated
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
-	public function onNoPage($sender, $param) {
+	public function onPageNotFound($sender, $param) {
 	}
 	
+	/**
+	 * @return boolean whether the onPageNotFound event is blocked
+	 */
+	public function getBlockOnPageNotFoundEvent() { return $this->_blockOnPageNotFound; }
 	
 	/**
-	 * @return TPage This is used by the other modules to provide their pages.  If they find one on an onNoPage event this is where it goes
+	 * For security reasons, you may want to turn off the onPageNotFound event.  For instance, 
+	 * if your website has a "maintenence mode" where the website is offline and want to ensure
+	 * that modules cannot use this event and provide content when they shouldn't be.
+	 * @param boolean whether the onPageNotFound event is blocked
 	 */
-	public function getFoundPage() { return $this->_foundpage; }
-	
-	/**
-	 * This is set when a module finds a suitable page, this is set with that found page
-	 * @param TPage the page to display
-	 */
-	public function setFoundPage($v) { $this->_foundpage = $v; }
-	
-	/**
-	 * @return TPage This is used by the other modules to provide their pages.  If they find one on an onNoPage event this is where it goes
-	 */
-	public function getBlockOnNoPageEvent() { return $this->_blockOnNoPage; }
-	
-	/**
-	 * This is set when a module finds a suitable page, this is set with that found page
-	 * @param TPage the page to display
-	 */
-	public function setBlockOnNoPageEvent($v) { $this->_blockOnNoPage = TPropertyValue::ensureBoolean($v); }
+	public function setBlockOnPageNotFoundEvent($v) {
+		$this->_blockOnPageNotFound = TPropertyValue::ensureBoolean($v);
+	}
 
 	/**
 	 * @return string the root directory for storing pages. Defaults to the 'pages' directory under the application base path.
@@ -507,22 +497,24 @@ class TPageService extends TService implements IPageEvents
 	/**
 	 * Creates a page instance based on requested page path.
 	 * @param string requested page path
+	 * @param (boolean|null) can specify if this is allowed to call onPageNotFound if no page is found; defaults to true.
 	 * @return TPage the requested page instance
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
 	 */
-	protected function createPage($pagePath, $doError = null)
+	protected function createPage($pagePath, $doOnPageNotFound = true)
 	{
 		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.',DIRECTORY_SEPARATOR);
 		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
 		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
 
-		if(!$hasTemplateFile && !$hasClassFile && ($doError || $doError === null)) {
-			if(!$this->BlockOnNoPageEvent)
-				$this->raiseEvent('onNoPage', $this, $pagePath);
-			if(!$this->FoundPage)
+		if(!$hasTemplateFile && !$hasClassFile) {
+			$param = TPageNotFoundEventParameter($pagePath);
+			if(!$this->BlockOnPageNotFoundEvent && $doOnPageNotFound)
+				$this->raiseEvent('onPageNotFound', $this, $param);
+			if(!$param->FoundPage)
 				throw new THttpException(404,'pageservice_page_unknown',$pagePath);
-			return $this->FoundPage;
+			return $param->FoundPage;
 		}
 
 		if($hasClassFile)
@@ -667,8 +659,51 @@ class TPageService extends TService implements IPageEvents
 		Prado::trace("OnUnload",'System.Web.Services.TPageService');
 		$this->raiseEvent('OnUnload',$this,$param);
 	}
+}
+
+
+
+/**
+ * TPageNotFoundEventParameter class.
+ * TPageNotFoundEventParameter is the parameter sent when no page is found and the code is allowed to call the onPageNotFound.
+ *
+ * @author Brad Anderson <javalizard@gmail.com>
+ * @version $Id$
+ * @package System.Web.Services
+ * @since 3.2a
+ */
+class TPageNotFoundEventParameter extends TEventParameter {
 	
+	private $_foundpage;
+	private $_path;
 	
+	/**
+	 * Holds the parameters for the Class Behavior Events
+	 *	@param string $class this is the class to get the behavior
+	 *	@param string $name the name of the behavior
+	 *	@param object $behavior this is the behavior to implement the class behavior
+	 */
+	public function __construct($path) {
+		parent::__construct();
+		$this->_path = $class;
+	}
+	
+	/**
+	 * This is the path of the page to be found
+	 * @return string the page path to find
+	 */
+	public function getPath() { return $this->_path; }
+	
+	/**
+	 * the found TPage, if found
+	 * @return string the name to get the behavior
+	 */
+	public function getFoundPage() { return $this->_foundpage; }
+	
+	/**
+	 * This sets the found page
+	 */
+	public function setFoundPage($value) { $this->_foundpage = $value; }
 }
 
 
@@ -713,6 +748,7 @@ class TPageConfiguration extends TComponent
 	 */
 	public function __construct($pagePath)
 	{
+		parent::__construct();
 		$this->_pagePath=$pagePath;
 	}
 
