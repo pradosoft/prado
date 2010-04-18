@@ -490,6 +490,7 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function __construct(TUrlManager $manager)
 	{
+		parent::__construct();
 		$this->_manager=$manager;
 		$this->_parameters=new TAttributeCollection;
 		$this->_parameters->setCaseSensitive(true);

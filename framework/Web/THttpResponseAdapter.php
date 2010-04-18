@@ -34,6 +34,7 @@ class THttpResponseAdapter extends TApplicationComponent
 	 */
 	public function __construct($response)
 	{
+		parent::__construct();
 		$this->_response=$response;
 	}
 

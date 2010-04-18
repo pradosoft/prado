@@ -165,6 +165,7 @@ class TRpcServer extends TModule
 	 */
 	public function __construct(TRpcProtocol $protocolHandler)
 	{
+		parent::__construct();
 		$this->handler = $protocolHandler;
 	}
 	
@@ -245,6 +246,7 @@ abstract class TRpcApiProvider extends TModule
 
 	public function __construct(TRpcServer $rpcServer)
 	{
+		parent::__construct();
 		$this->rpcServer = $rpcServer;
 
 		foreach($this->registerMethods() as $_methodName => $_methodDetails)

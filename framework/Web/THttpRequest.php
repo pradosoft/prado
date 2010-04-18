@@ -844,6 +844,7 @@ class THttpCookieCollection extends TList
 	public function __construct($owner=null)
 	{
 		$this->_o=$owner;
+		parent::__construct();
 	}
 
 	/**
