@@ -41,7 +41,7 @@ class THtmlElement extends TWebControl
 	{
 		if($this->_tagName !== null) return $this->_tagName;
 		
-		$this->_tagName = $this->getDefaultTag();
+		$this->_tagName = $this->getDefaultTagName();
 		
 		return $this->_tagName;
 	}

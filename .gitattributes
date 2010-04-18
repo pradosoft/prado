@@ -2833,6 +2833,12 @@ framework/Web/UI/WebControls/TExpression.php -text
 framework/Web/UI/WebControls/TFileUpload.php -text
 framework/Web/UI/WebControls/TFont.php -text
 framework/Web/UI/WebControls/THead.php -text
+framework/Web/UI/WebControls/THeader1.php -text
+framework/Web/UI/WebControls/THeader2.php -text
+framework/Web/UI/WebControls/THeader3.php -text
+framework/Web/UI/WebControls/THeader4.php -text
+framework/Web/UI/WebControls/THeader5.php -text
+framework/Web/UI/WebControls/THeader6.php -text
 framework/Web/UI/WebControls/THiddenField.php -text
 framework/Web/UI/WebControls/THtmlArea.php -text
 framework/Web/UI/WebControls/THtmlElement.php -text
