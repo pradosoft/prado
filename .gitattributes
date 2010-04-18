@@ -2893,6 +2893,7 @@ framework/Web/UI/WebControls/TTextProcessor.php -text
 framework/Web/UI/WebControls/TValidationSummary.php -text
 framework/Web/UI/WebControls/TWebControl.php -text
 framework/Web/UI/WebControls/TWebControlAdapter.php -text
+framework/Web/UI/WebControls/TWebControlDecorator.php -text
 framework/Web/UI/WebControls/TWizard.php -text
 framework/Web/UI/WebControls/TWizardNavigationButtonStyle.php -text
 framework/Web/UI/WebControls/TXmlTransform.php -text
