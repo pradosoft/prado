@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * TWebControlDecorator class file.
  *
@@ -46,6 +46,8 @@
  * * TWebControl CloseTag Rendered
  * * PostTagText
  * * PostTagTemplate
+ *
+ * By setting the 
  * 
  * To move controls around please see the {@link TMigrate} control.  You may use {@link TMigrate} 
  * in your Decorator templates to move controls in your MasterTemplate around using your theme 
@@ -65,9 +67,20 @@ class TWebControlDecorator extends TComponent {
 	private $_internalonly;
 	
 	/**
+	 * @var boolean tells if the decoration uses state in its templates.  If there are no templates
+	 * in the instance of the decoration this variable is unused. 
+	 */
+	private $_usestate = false;
+	
+	/**
 	 * @var TWebControl the control to decorate
 	 */
 	private $_control;
+	
+	/**
+	 * @var TComponent or TControl to tell the decorator where to place the outer controls
+	 */
+	private $_outercontrol;
 	
 	/**
 	 * @var boolean This tells if the Templates have been 
@@ -122,6 +135,23 @@ class TWebControlDecorator extends TComponent {
 		
 		$this->_control = $control;
 		$this->_internalonly = $onlyinternal;
+	}
+	
+	/**
+	 * @return boolean if the templates in this decoration need state.  This defaults to false
+	 */
+	public function getUseState()
+	{
+		return $this->_usestate;
+	}
+	
+	/**
+	 * @param boolean $value true to tell the decoration that the templates need state and should be 
+	 * placed in a control step before the state is saved.
+	 */
+	public function setUseState($value)
+	{
+		$this->_usestate = TPropertyValue::ensureBoolean($value);
 	}
 	
 	/**
@@ -257,49 +287,69 @@ class TWebControlDecorator extends TComponent {
 	 * This call attaches the ensureTemplateDecoration to the TPage onSaveStateComplete so 
 	 * these controls don't have page states.  This is as close to not influencing the page as possible.
 	 */
-	public function instantiate() {
-		
-		$this->_addedTemplateDecoration = false;
-		
+	public function instantiate($outercontrol = null) {
 		if($this->getPreTagTemplate() || $this->getPreContentsTemplate() || 
-			$this->getPostContentsTemplate() || $this->getPostTagTemplate())
-			$control->getPage()->onSaveStateComplete[] = array($this, 'ensureTemplateDecoration');
-		// OnPreRenderComplete onSaveStateComplete
+			$this->getPostContentsTemplate() || $this->getPostTagTemplate()) {
+			
+			$this->_outercontrol = $outercontrol;
+			if($this->getUseState())
+				$this->ensureTemplateDecoration();
+			else
+				$this->_control->getPage()->onSaveStateComplete[] = array($this, 'ensureTemplateDecoration');
+		}
 	}
 	
 	
 	/**
-	 *	This method places the templates around the open and close tag
+	 *	This method places the templates around the open and close tag.  This takes a parameter which is
+	 * to specify the control to get the outer template decoration.  If no outer control is specified
+	 * @param TComponent this indicates the component or control to get the outer tag elements, just in case it's 
+	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
+	 * control
 	 * @return boolean returns true if the template decorations have been added
 	 */
-	public function ensureTemplateDecoration() {
+	public function ensureTemplateDecoration($sender=null, $param=null) {
+	
 		$control = $this->_control;
-		if($this->_addedTemplateDecoration || !$control->Parent) return $this->_addedTemplateDecoration;
+		$outercontrol = $this->_outercontrol;
+		if($outercontrol === null)
+			$outercontrol = $control;
+			
+		if($this->_addedTemplateDecoration)
+			return $this->_addedTemplateDecoration;
 		
 		$this->_addedTemplateDecoration = true;
 		
-		if($this->getPreTagTemplate()) {
-			$pretag = Prado::createComponent('TCompositeControl');
-			$this->getPreTagTemplate()->instantiateIn($pretag);
-			$control->getParent()->getControls()->insertBefore($control, $pretag);
-		}
-		
-		if($this->getPreContentsTemplate()) {
+		if($this->getPreContentsTemplate())
+		{
 			$precontents = Prado::createComponent('TCompositeControl');
 			$this->getPreContentsTemplate()->instantiateIn($precontents);
 			$control->getControls()->insertAt(0, $precontents);
 		}
 		
-		if($this->getPostContentsTemplate()) {
+		if($this->getPostContentsTemplate())
+		{
 			$postcontents = Prado::createComponent('TCompositeControl');
 			$this->getPostContentsTemplate()->instantiateIn($postcontents);
 			$control->getControls()->add($postcontents);
 		}
 		
-		if($this->getPostTagTemplate()) {
+		if(!$outercontrol->getParent())
+			return $this->_addedTemplateDecoration;
+		
+		
+		if($this->getPreTagTemplate())
+		{
+			$pretag = Prado::createComponent('TCompositeControl');
+			$this->getPreTagTemplate()->instantiateIn($pretag);
+			$outercontrol->getParent()->getControls()->insertBefore($outercontrol, $pretag);
+		}
+		
+		if($this->getPostTagTemplate())
+		{
 			$posttag = Prado::createComponent('TCompositeControl');
 			$this->getPostTagTemplate()->instantiateIn($posttag);
-			$control->getParent()->getControls()->insertAfter($control, $posttag);
+			$outercontrol->getParent()->getControls()->insertAfter($outercontrol, $posttag);
 		}
 		return true;
 	}
