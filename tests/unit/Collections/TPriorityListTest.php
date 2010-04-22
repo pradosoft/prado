@@ -39,9 +39,9 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase {
     $this->pitem4=new PriorityListItem;
     $this->pitem5=new PriorityListItem;
     $this->plist->add($this->pitem1);
+    $this->plist->add($this->pitem3, 100);
     $this->plist->add($this->pitem2);
-    $this->plist->insertAtPriority($this->pfirst, -10000000);
-    $this->plist->insertAtPriority($this->pitem3, 100);
+    $this->plist->add($this->pfirst, -10000000);
     // 4 and 5 are not inserted
     // ending setup: pfirst @ -10000000[0], pitem1 @ 10[0], pitem2 @ 10[1], pitem3 @ 100[0]
   }
@@ -298,7 +298,7 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(-10000000,$list2->priorityOf($this->pfirst));
     $this->assertEquals(100,$list2->priorityOf($this->pitem3));
     $this->assertEquals(-10000000,$list2->priorityAt(0));
-    $this->assertEquals($this->plist->DefaultPriority,$list2->priorityAt(2));
+    $this->assertEquals($list2->DefaultPriority,$list2->priorityAt(2));
     $this->assertEquals(100,$list2->priorityAt(3));
   }
 
@@ -309,17 +309,19 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase {
 
   public function testAddPriorities() {
     $this->assertEquals(3,$this->plist->add(null));
-    $this->assertEquals(4,$this->plist->add($this->item3));
-    $this->assertEquals(4,$this->plist->getCount());
-    $this->assertEquals(3,$this->plist->indexOf($this->item3));
+    $this->assertEquals(4,$this->plist->add($this->pitem4));
+    $this->assertEquals(6,$this->plist->getCount());
+    $this->assertEquals(4,$this->plist->indexOf($this->pitem4));
+    $this->assertEquals($this->plist->DefaultPriority,$this->plist->priorityAt(4));
+    $this->assertEquals(100,$this->plist->priorityAt(5));
   }
 
   public function testInsertAtPriorities() {
-    $this->assertNull($this->plist->insertAt(0,$this->item3));
-    $this->assertEquals(3,$this->plist->getCount());
-    $this->assertEquals(2,$this->plist->indexOf($this->item2));
-    $this->assertEquals(0,$this->plist->indexOf($this->item3));
-    $this->assertEquals(1,$this->plist->indexOf($this->item1));
+    $this->assertNull($this->plist->insertAt(0,$this->pitem3));
+    $this->assertEquals(5,$this->plist->getCount());
+    $this->assertEquals(3,$this->plist->indexOf($this->pitem2));
+    $this->assertEquals(0,$this->plist->indexOf($this->pitem3));
+    $this->assertEquals(1,$this->plist->indexOf($this->pitem1));
     try {
       $this->plist->insertAt(4,$this->item3);
       $this->fail('exception not raised when adding item at an out-of-range index');
@@ -367,10 +369,11 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase {
 	}
 
   public function testRemovePriorities() {
-    $this->assertEquals(0,$this->plist->remove($this->item1));
-    $this->assertEquals(1,$this->plist->getCount());
-    $this->assertEquals(-1,$this->plist->indexOf($this->item1));
-    $this->assertEquals(0,$this->plist->indexOf($this->item2));
+    $this->assertEquals(1,$this->plist->remove($this->pitem1));
+    $this->assertEquals(3,$this->plist->getCount());
+    $this->assertEquals(-1,$this->plist->indexOf($this->pitem1));
+    $this->assertEquals(1,$this->plist->indexOf($this->pitem2));
+    $this->assertEquals(2,$this->plist->indexOf($this->pitem3));
     try {
       $this->plist->remove($this->item1);
       $this->fail('exception not raised when removing nonexisting item');
