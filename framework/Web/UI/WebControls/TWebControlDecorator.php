@@ -47,7 +47,7 @@
  * * PostTagText
  * * PostTagTemplate
  *
- * By setting the 
+ * (more documentation forthcoming as internal class R&D continues) 
  * 
  * To move controls around please see the {@link TMigrate} control.  You may use {@link TMigrate} 
  * in your Decorator templates to move controls in your MasterTemplate around using your theme 
@@ -78,7 +78,7 @@ class TWebControlDecorator extends TComponent {
 	private $_control;
 	
 	/**
-	 * @var TComponent or TControl to tell the decorator where to place the outer controls
+	 * @var TControl to tell the decorator where to place the outer controls
 	 */
 	private $_outercontrol;
 	
