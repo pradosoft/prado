@@ -509,7 +509,7 @@ class TPageService extends TService implements IPageEvents
 		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
 
 		if(!$hasTemplateFile && !$hasClassFile) {
-			$param = TPageNotFoundEventParameter($pagePath);
+			$param = new TPageNotFoundEventParameter($pagePath);
 			if(!$this->BlockOnPageNotFoundEvent && $doOnPageNotFound)
 				$this->raiseEvent('onPageNotFound', $this, $param);
 			if(!$param->FoundPage)
