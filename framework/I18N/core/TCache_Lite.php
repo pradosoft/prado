@@ -534,14 +534,18 @@ class TCache_Lite
         	// because the filesize can be cached by PHP itself...
             clearstatcache();
             $length = @filesize($this->_file);
-            $mqr = get_magic_quotes_runtime();
-            set_magic_quotes_runtime(0);
+			if(version_compare(PHP_VERSION, '5.3.0', 'lt'))
+			{
+	            $mqr = get_magic_quotes_runtime();
+    	        set_magic_quotes_runtime(0);
+			}
             if ($this->_readControl) {
                 $hashControl = @fread($fp, 32);
                 $length = $length - 32;
             }
             $data = @fread($fp, $length);
-            set_magic_quotes_runtime($mqr);
+			if(isset($mqr))
+	            set_magic_quotes_runtime($mqr);
             if ($this->_fileLocking) @flock($fp, LOCK_UN);
             @fclose($fp);
             if ($this->_readControl) {
