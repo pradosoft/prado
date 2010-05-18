@@ -357,7 +357,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'';
 	}
-	
+
 	/**
 	 * @return string part of that request URL after the host info (including pathinfo and query string)
 	 */
@@ -367,13 +367,16 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @param boolean whether to use HTTPS instead of HTTP even if the current request is sent via HTTP
+	 * @param boolean|null whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
+	 * 						null - keep current schema
+	 * 						true - force https
+	 * 						false - force http
 	 * @return string schema and hostname of the requested URL
 	 */
-	public function getBaseUrl($forceSecureConnection=false)
+	public function getBaseUrl($forceSecureConnection=null)
 	{
 		$url=$this->getUrl();
-		$scheme=($forceSecureConnection)?"https":$url->getScheme();
+		$scheme=($forceSecureConnection)?"https": (($forceSecureConnection === null)?$url->getScheme():'http');
 		$host=$url->getHost();
 		if (($port=$url->getPort())) $host.=':'.$port;
 		return $scheme.'://'.$host;
@@ -388,10 +391,13 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @param boolean whether to use HTTPS instead of HTTP even if the current request is sent via HTTP
+	 * @param boolean|null whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
+	 * 						null - keep current schema
+	 * 						true - force https
+	 * 						false - force http
 	 * @return string entry script URL (w/ host part)
 	 */
-	public function getAbsoluteApplicationUrl($forceSecureConnection=false)
+	public function getAbsoluteApplicationUrl($forceSecureConnection=null)
 	{
 		return $this->getBaseUrl($forceSecureConnection) . $this->getApplicationUrl();
 	}

@@ -9,6 +9,15 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.1.7
+---------------------
+- behavior of THttpRequest::getBaseUrl() and THttpRequest::getAbsoluteApplicationUrl() changed:
+	null - keep current schema
+	true - force https
+	false - force http
+  relevance, only if invoking methods with explicit "false"
+
+
 Upgrading from v3.1.6
 ---------------------
 - The different SQLMap cache engines (TSQLMapFifoCache, TSQLMapLRUCache, TSQLMapApplicationCache) doesn't

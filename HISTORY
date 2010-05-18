@@ -15,6 +15,7 @@ NEW: Add TActiveMultiView (LCS Team)
 NEW: Beta of master/slave senario solution (Yves)
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 BUG: Issue#246: TQueue::peek returns the top not the bottom (Christophe)
+CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
 
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
