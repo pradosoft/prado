@@ -350,6 +350,10 @@ class TJsonRpcProtocol extends TRpcProtocol
 		{
 			return $this->createErrorResponse($e);
 		}
+		catch(THttpException $e)
+		{
+			throw $e;
+		}
 		catch(Exception $e)
 		{
 			prado::log();
@@ -467,6 +471,10 @@ class TXmlRpcProtocol extends TRpcProtocol
 		catch(TRpcException $e)
 		{
 			return $this->createErrorResponse($e);
+		}
+		catch(THttpException $e)
+		{
+			throw $e;
 		}
 		catch(Exception $e)
 		{
