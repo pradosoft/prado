@@ -356,8 +356,6 @@ class TJsonRpcProtocol extends TRpcProtocol
 		}
 		catch(Exception $e)
 		{
-			prado::log();
-
 			return $this->createErrorResponse(new TRpcException('An internal error occured'));
 		}
 	}
