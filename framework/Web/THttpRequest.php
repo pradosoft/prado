@@ -319,11 +319,18 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * @return string content type (e.g. 'application/json') or null if not specified
+	 * @param boolean $mimetypeOnly whether to return only the mimetype (default: true)
+	 * @return string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
 	 */
-	public function getContentType()
+	public function getContentType($mimetypeOnly = true)
 	{
-		return isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : null;
+		if(!isset($_SERVER['CONTENT_TYPE']))
+			return null;
+
+		if($mimetypeOnly === true && ($_pos = strpos(';', $_SERVER['CONTENT_TYPE'])) !== false)
+			return substr($_SERVER['CONTENT_TYPE'], 0, $_pos);
+
+		return $_SERVER['CONTENT_TYPE'];
 	}
 
 	/**
