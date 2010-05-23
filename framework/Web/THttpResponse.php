@@ -511,11 +511,12 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * Sends a header.
 	 * @param string header
+	 * @param boolean whether the header should replace a previous similar header, or add a second header of the same type
 	 */
-	public function appendHeader($value)
+	public function appendHeader($value, $replace=true)
 	{
 		Prado::trace("Sending header '$value'",'System.Web.THttpResponse');
-		header($value);
+		header($value, $replace);
 	}
 
 	/**

@@ -17,6 +17,7 @@ ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 BUG: Issue#246: TQueue::peek returns the top not the bottom (Christophe)
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
 EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define wether to use http or https on pattern level (Yves)
+EHN: Add second parameter to THttpResponse::appendHeader whether the header should replace a previous similar header, or add a second header of the same type (Yves)
 
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
