@@ -247,7 +247,8 @@ class TJsonRpcClient extends TRpcClient
 			return true;
 
 		// decode response
-		$_response = json_decode($_response, true);
+		if(($_response = json_decode($_response, true)) === null)
+			throw new TRpcClientResponseException('Empty response received');
 
 		// handle error response
 		if(!is_null($_response['error']))
@@ -324,7 +325,8 @@ class TXmlRpcClient extends TRpcClient
 			return true;
 	
 		// decode response
-		$_response = xmlrpc_decode($_response);
+		if(($_response = xmlrpc_decode($_response)) === null)
+			throw new TRpcClientResponseException('Empty response received');
 
 		// handle error response
 		if(xmlrpc_is_fault($_response))
