@@ -112,6 +112,9 @@ class TRpcClient extends TApplicationComponent
 		if(($_response = file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false)
 			throw new TRpcClientRequestException('RPC request failed');
 
+		if(substr($http_response_header[0], -6) != '200 OK')
+			throw new TRpcClientResponseException('Server did not respond with HTTP error code 200 ("'.$http_response_header[0].'")');
+
 		return $_response;
 	}
 
