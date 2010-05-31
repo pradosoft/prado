@@ -109,7 +109,7 @@ class TRpcClient extends TApplicationComponent
 	 */
 	protected function performRequest($serverUrl, $payload, $mimeType)
 	{
-		if(($_response = file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false)
+		if(($_response = @file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false)
 			throw new TRpcClientRequestException('RPC request failed');
 
 		if(substr($http_response_header[0], -6) != '200 OK')
