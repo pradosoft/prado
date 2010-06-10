@@ -111,7 +111,7 @@ class TCachePageStatePersister extends TComponent implements IPageStatePersister
 				$cache=Prado::getApplication()->getCache();
 			if($cache===null || !($cache instanceof ICache))
 			{
-				if($this->_cacheModule!=='')
+				if($this->_cacheModuleID!=='')
 					throw new TConfigurationException('cachepagestatepersister_cachemoduleid_invalid',$this->_cacheModuleID);
 				else
 					throw new TConfigurationException('cachepagestatepersister_cache_required');

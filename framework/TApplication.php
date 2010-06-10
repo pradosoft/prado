@@ -1676,7 +1676,7 @@ class TApplicationConfiguration extends TComponent
 					if(!isset($parameter['value'])) {
 						$this->_parameters[$id]=array('type'=>1, 'value' => $parameter, 'final' => $final);
 					} else {
-						$this->_parameters[$id]=array('type'=>2, 'value' => $value, 'final' => $final);
+						$this->_parameters[$id]=array('type'=>2, 'value' => $parameter['value'], 'final' => $final);
 					}
 				}
 			}
