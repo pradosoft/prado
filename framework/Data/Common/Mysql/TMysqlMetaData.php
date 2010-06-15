@@ -263,7 +263,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getForeignConstraints($schemaName, $tableName)
 	{
-		$andSchema = $schemaName !== null ? 'AND TABLE_SCHEMA = :schema' : '';
+		$andSchema = $schemaName !== null ? 'AND TABLE_SCHEMA LIKE :schema' : '';
 		$sql = <<<EOD
 			SELECT
 				CONSTRAINT_NAME as con,
@@ -275,7 +275,7 @@ class TMysqlMetaData extends TDbMetaData
 				 `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE`
 			WHERE
 				REFERENCED_TABLE_NAME IS NOT NULL
-				AND TABLE_NAME = :table
+				AND TABLE_NAME LIKE :table
 				$andSchema
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
