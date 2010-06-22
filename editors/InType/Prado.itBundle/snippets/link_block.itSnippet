@@ -1,0 +1,8 @@
+{
+    title: 'Hyper Link (block)'
+    tab_trigger: 'link'
+    scope: 'text.html.prado'
+    content: '<com:THyperLink${1: ID="${2:link}"} NavigateUrl="${3:url}">
+	$0
+</com:THyperLink>'
+}

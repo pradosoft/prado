@@ -1,0 +1,6 @@
+{
+    title: 'Label'
+    tab_trigger: 'label'
+    scope: 'text.html.prado'
+    content: '<com:TLabel${1: ID="${label}"} Text="${3:label}"/>'
+}

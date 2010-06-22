@@ -1,0 +1,11 @@
+{
+    title: 'Output Cache'
+    tab_trigger: 'cache'
+    scope: 'text.html.prado'
+    content: '<com:TOutputCache${1: ID="${2:cache}"}${3:
+	Duration="${4:60}"}${5: 
+	VaryByParam="${6:param}"}${7:
+	OnCheckDependency="${8:$2_CheckDependency}"}>
+	$0
+</com:TOutputCache>'
+}

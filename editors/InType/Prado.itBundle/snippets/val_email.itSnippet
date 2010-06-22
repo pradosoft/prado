@@ -1,0 +1,9 @@
+{
+    title: 'Email Address Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TEmailAddressValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	ErrorMessage="${4:error}"${5:
+	Display="${6:Dynamic}"}/>$0'
+}

@@ -1,0 +1,9 @@
+{
+    title: 'Required Field Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TRequiredFieldValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	ErrorMessage="${7:error}"${8:
+	Display="${9:Dynamic}"}/>$0'
+}

@@ -1,0 +1,8 @@
+{
+    title: 'Separator'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:SeparatorTemplate>
+	$0
+</prop:SeparatorTemplate>'
+}

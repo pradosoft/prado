@@ -1,0 +1,158 @@
+{
+	menu: 
+	[
+		{ item: "bundle.Prado.language.prado" }
+		------------------------------------
+		{
+			title: 'Web Controls'
+			menu: 
+			[
+				{ item: "bundle.Prado.snippet.form" }
+				{ item: "bundle.Prado.snippet.head" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.button" }
+				{ item: "bundle.Prado.snippet.button_image" }
+				{ item: "bundle.Prado.snippet.button_link" }
+				{ item: "bundle.Prado.snippet.check" }
+				{ item: "bundle.Prado.snippet.radio" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.text" }
+				{ item: "bundle.Prado.snippet.text_html" }
+				{ item: "bundle.Prado.snippet.text_multiline" }
+				{ item: "bundle.Prado.snippet.pass" }
+				{ item: "bundle.Prado.snippet.key" }
+				{ item: "bundle.Prado.snippet.captcha" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.link" }
+				{ item: "bundle.Prado.snippet.link_image" }
+				{ item: "bundle.Prado.snippet.link_block" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.date" }
+				{ item: "bundle.Prado.snippet.color" }
+				{ item: "bundle.Prado.snippet.image" }
+				{ item: "bundle.Prado.snippet.label_text" }
+				{ item: "bundle.Prado.snippet.label" }
+				{ item: "bundle.Prado.snippet.upload" }
+				{ item: "bundle.Prado.snippet.hidden" }
+			]
+		}
+		{
+			title: 'Panels/Content'
+			menu:
+			[
+				{
+					title: 'Template Props'
+					menu:
+					[
+						{ item: "bundle.Prado.snippet.tpl" }
+						{ item: "bundle.Prado.snippet.tpl_alt" }
+						{ item: "bundle.Prado.snippet.tpl_header" }
+						{ item: "bundle.Prado.snippet.tpl_footer" }
+						{ item: "bundle.Prado.snippet.tpl_empty" }
+						------------------------------------
+						{ item: "bundle.Prado.snippet.tpl_start" }
+						{ item: "bundle.Prado.snippet.tpl_step" }
+						{ item: "bundle.Prado.snippet.tpl_finish" }
+						{ item: "bundle.Prado.snippet.tpl_side" }	
+						------------------------------------
+						{ item: "bundle.Prado.snippet.tpl_sep" }	
+						{ item: "bundle.Prado.snippet.tpl_edit" }	
+						{ item: "bundle.Prado.snippet.tpl_select" }	
+					]
+				}
+				------------------------------------
+				{ item: "bundle.Prado.snippet.content" }
+				{ item: "bundle.Prado.snippet.holder_content" }
+				{ item: "bundle.Prado.snippet.holder" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.multi" }
+				{ item: "bundle.Prado.snippet.view" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.wizard" }
+				{ item: "bundle.Prado.snippet.step" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.panel" }
+				{ item: "bundle.Prado.snippet.panel_tab" }
+				{ item: "bundle.Prado.snippet.tab" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.cache" }
+			]
+		}
+		{
+			title: 'Javascript'
+			menu:
+			[
+				{ item: "bundle.Prado.snippet.js" }
+				{ item: "bundle.Prado.snippet.js_url" }
+				{ item: "bundle.Prado.snippet.js_prado" }
+				{ item: "bundle.Prado.snippet.js_loader" }
+				{ item: "bundle.Prado.snippet.js_loader" }
+				{ item: "bundle.Prado.snippet.jslog" }
+			]
+		}
+		{
+			title: 'Validators'
+			menu: 
+			[
+				{ item: "bundle.Prado.snippet.val_captcha" }
+				{ item: "bundle.Prado.snippet.val_compare1" }
+				{ item: "bundle.Prado.snippet.val_compare2" }
+				{ item: "bundle.Prado.snippet.val_custom" }
+				{ item: "bundle.Prado.snippet.val_data_type" }
+				{ item: "bundle.Prado.snippet.val_email" }
+				{ item: "bundle.Prado.snippet.val_list" }
+				{ item: "bundle.Prado.snippet.val_range" }
+				{ item: "bundle.Prado.snippet.val_regexp" }
+				{ item: "bundle.Prado.snippet.val_required" }
+			]
+		}
+		{
+			title: 'List Controls'
+			menu: 
+			[
+				{ item: "bundle.Prado.snippet.list" }
+				{ item: "bundle.Prado.snippet.list.txt" }
+				{ item: "bundle.Prado.snippet.list_bullet" }
+				{ item: "bundle.Prado.snippet.list_check" }
+				{ item: "bundle.Prado.snippet.list_dropdown" }
+				{ item: "bundle.Prado.snippet.list_radio" }
+				{ item: "bundle.Prado.snippet.item" }
+			]
+		}
+		{
+			title: 'Data Controls'
+			menu:
+			[
+				{ item: "bundle.Prado.snippet.repeater" }
+				{ item: "bundle.Prado.snippet.datalist" }
+				{ item: "bundle.Prado.snippet.grid" }
+				{ item: "bundle.Prado.snippet.pager" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.col_tpl" }
+				{ item: "bundle.Prado.snippet.col_bound" }
+				{ item: "bundle.Prado.snippet.col_button" }
+				{ item: "bundle.Prado.snippet.col_checkbox" }
+				{ item: "bundle.Prado.snippet.col_dropdown" }
+				{ item: "bundle.Prado.snippet.col_dropdown2" }
+				{ item: "bundle.Prado.snippet.col_edit" }
+				{ item: "bundle.Prado.snippet.col_link" }
+				{ item: "bundle.Prado.snippet.col_literal" }
+			]
+		}
+		{
+			title: 'Expressions'
+			menu:
+			[
+				{ item: "bundle.Prado.snippet.exp_eq" }
+				{ item: "bundle.Prado.snippet.exp_asset" }
+				{ item: "bundle.Prado.snippet.exp_param" }
+				{ item: "bundle.Prado.snippet.exp_bind" }
+				{ item: "bundle.Prado.snippet.exp_localize" }
+				{ item: "bundle.Prado.snippet.exp_directive" }
+				{ item: "bundle.Prado.snippet.exp_code" }
+				------------------------------------
+				{ item: "bundle.Prado.snippet.comment" }
+			]
+		}
+	]
+}

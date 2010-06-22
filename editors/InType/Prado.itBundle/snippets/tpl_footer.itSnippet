@@ -1,0 +1,8 @@
+{
+    title: 'Footer'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:FooterTemplate>
+	$0
+</prop:FooterTemplate>'
+}

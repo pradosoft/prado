@@ -1,0 +1,8 @@
+{
+    title: 'Head'
+    tab_trigger: 'head'
+    scope: 'text.html.prado'
+    content: '<com:THead${1: Title="${2:title}"}>
+	$0
+</com:THead>'
+}

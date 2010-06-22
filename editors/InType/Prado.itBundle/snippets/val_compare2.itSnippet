@@ -1,0 +1,12 @@
+{
+    title: 'Compare Validator (control)'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TCompareValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	ControlToCompare="${4:anotherControl}"
+	DataType="${5:Integer}"
+	Operator="${6:Equal}"
+	ErrorMessage="${7:error}"${8:
+	Display="${9:Dynamic}"}/>$0'
+}

@@ -1,0 +1,6 @@
+{
+    title: 'Virtual Keyboard'
+    tab_trigger: 'key'
+    scope: 'text.html.prado'
+    content: '<com:TKeyboard ForControl="${1:controlID}"/>$0'
+}

@@ -1,0 +1,10 @@
+{
+    title: 'Repeater'
+    tab_trigger: 'repeater'
+    scope: 'text.html.prado'
+    content: '<com:TRepeater ID="${1:repeater}">
+	${2:<prop:ItemTemplate>
+		$0
+	</prop:ItemTemplate>}
+</com:TRepeater>'
+}

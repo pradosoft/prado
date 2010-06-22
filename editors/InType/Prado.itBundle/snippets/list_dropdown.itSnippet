@@ -1,0 +1,8 @@
+{
+    title: 'Drop Down List'
+    tab_trigger: 'list'
+    scope: 'text.html.prado'
+    content: '<com:TDropDownList${1: ID="${2:dropdown}"}>
+	$0
+</com:TDropDownList>'
+}

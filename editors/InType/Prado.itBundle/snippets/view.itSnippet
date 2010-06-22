@@ -1,0 +1,8 @@
+{
+    title: 'View Panel'
+    tab_trigger: 'view'
+    scope: 'text.html.prado'
+    content: '<com:TView ID="${1:view}">
+	$0	
+</com:TView>'
+}

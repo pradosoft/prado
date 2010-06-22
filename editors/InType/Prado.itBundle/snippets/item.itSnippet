@@ -1,0 +1,6 @@
+{
+    title: 'List Item'
+    tab_trigger: 'item'
+    scope: 'text.html.prado'
+    content: '<com:TListItem Value="${1:value}"${2: Text="${3:text}"}/>'
+}

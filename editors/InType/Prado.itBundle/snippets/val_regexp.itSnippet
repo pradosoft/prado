@@ -1,0 +1,10 @@
+{
+    title: 'Regular Expression Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TRegularExpressionValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	RegularExpression="${4:[\w\d]{4,6\}}"
+	ErrorMessage="${5:error}"${6:
+	Display="${7:Dynamic}"}/>$0'
+}

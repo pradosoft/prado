@@ -1,0 +1,10 @@
+{
+    title: 'HyperLink Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:THyperLinkColumn${1: ID="${2:column}"}
+	DataTextField="${3:text field}"${4:
+	DataTextFormatString="${5:format}"}
+	DataNavigateUrlField="${6:url field}"${7:
+	DataNavigateUrlFormatString="${8:format}"}/>$0'
+}

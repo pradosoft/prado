@@ -1,0 +1,8 @@
+{
+    title: 'Script (block)'
+    tab_trigger: 'js'
+    scope: 'text.html.prado'
+    content: '<com:TClientScript${1: ID="${2:script}"}>
+	$0
+</com:TClientScript>'
+}

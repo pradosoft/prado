@@ -1,0 +1,8 @@
+{
+    title: 'Wizard Step'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:StepNavigationTemplate>
+	$0
+</prop:StepNavigationTemplate>'
+}

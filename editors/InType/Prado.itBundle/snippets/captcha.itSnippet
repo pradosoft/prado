@@ -1,0 +1,6 @@
+{
+    title: 'CAPTCHA'
+    tab_trigger: 'captcha'
+    scope: 'text.html.prado'
+    content: '<com:TCaptcha${1: ID="${2:captcha}"}${3: TokenImageTheme ="${4:24}"}/>$0'
+}

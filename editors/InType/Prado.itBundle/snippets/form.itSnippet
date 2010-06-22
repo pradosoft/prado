@@ -1,0 +1,8 @@
+{
+    title: 'Form'
+    tab_trigger: 'form'
+    scope: 'text.html.prado'
+    content: '<com:TForm${1: ID="${2:form}"}>
+	$0
+</com:TForm>'
+}

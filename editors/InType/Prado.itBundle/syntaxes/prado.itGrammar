@@ -1,0 +1,588 @@
+{
+	file_types: ['page', 'tpl', 'skin']
+	key_equivalent: 'Ctrl+Alt+Shift+P'
+	title: 'Prado'
+	folding_start_marker  : 
+		/
+			(<(?i:head|body|table|thead|tbody|tfoot|tr|div|select|fieldset|style|script|ul|ol|form|dl)\b.*?>
+			|<!--(?!.*--\s*>)
+			|\{\{?(if|foreach|capture|literal|foreach|php|section|strip)
+			|\{\s*($|\?>\s*$|\/\/|\/\*(.*\*\/\s*$|(?!.*?\*\/)))
+			|<com:(TRepeater|TDataGrid|TPanel|TControl|TPlaceHolder|TContent)\b.*?>
+			)
+		/x
+	folding_stop_marker   : 
+		/
+			(<\/(?i:head|body|table|thead|tbody|tfoot|tr|div|select|fieldset|style|script|ul|ol|form|dl)>
+			|^(?!.*?<!--).*?--\s*>
+			|\{\{?\/(if|foreach|capture|literal|foreach|php|section|strip)
+			|^[^{]*\}
+			|<\/com:(TRepeater|TDataGrid|TPanel|TControl|TPlaceHolder|TContent)>
+			)
+		/x
+	patterns: 
+	[
+		/** PRADO ClientScript component, embedded js **/
+		{
+			begin: /(?:^\s+)?<(com:TClientScript)\b(?![^>]*\/>)/
+			begin_captures: 
+			{
+				1: { name: 'entity.prado.control-name' }
+			}
+			end: /<(\/com:TClientScript)>(?:\s*\n)?/
+			end_captures :
+			{
+				1: { name: 'entity.prado.control-name' }
+			}
+			name: 'source.css.embedded.html'
+			patterns: 
+			[
+				{ include: '#prado-attibutes' }
+ 				{
+					begin: />/
+					end: /(?=<\/com:TClientScript)/
+					patterns: 
+					[
+						{ include: '#embedded-code' }
+ 						{ include: 'source.js' }
+ 					]
+				}
+ 			]
+		}
+		/** PRADO Components and properties **/
+		{
+			begin: /(<\/?)(com:[\w.]+)/
+			begin_captures: 
+			{
+				1: { name: 'entity.prado.tag' }
+				2: { name: 'entity.prado.control-name' }
+			}
+			end: /(?!%)(\/?>)/
+			end_captures:
+			{
+				1: { name: 'entity.prado.tag' }
+			}
+			name: 'source.prado.tag'
+			patterns: [ { include: '#prado-attibutes' } ]
+		}
+		{
+			begin: /(<\/?)(prop:[\w.]+)/
+			begin_captures: 
+			{
+				1: { name: 'storage.prado.tag' }
+				2: { name: 'storage.prado.property-name' }
+			}
+			end: /(?!%)(\/?>)/
+			end_captures:
+			{
+				1: { name: 'storage.prado.tag' }
+			}
+			name: 'source.prado.property'
+			patterns: [ { include: '#prado-attibutes' } ]
+		}
+		{
+			begin: /<!---/
+			end: /--->/
+			name: 'comment.block.prado'
+		}
+		{
+			include: '#expressions'
+		}
+		
+		/** copied from html.itGrammar **/
+	
+ 		/******************************************************/
+		/*           meta.tag.preprocessor.xml.html           */
+		/******************************************************/
+		{
+			begin     : /<\?(xml)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.xml.html'
+				}
+			}
+			end       : /\?>/
+			name      : 'meta.tag.preprocessor.xml.html'
+			patterns  : [
+				{
+					include  : '#tag-generic-attribute'
+				}
+ 				{
+					include  : '#string-double-quoted'
+				}
+ 				{
+					include  : '#string-single-quoted'
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*                 comment.block.html                 */
+		/******************************************************/
+		{
+			begin     : /<!--/
+			end       : /--\s*>/
+			name      : 'comment.block.html'
+			patterns : [ { include: '#expressions' }]
+		}
+ 		/******************************************************/
+		/*                 meta.tag.sgml.html                 */
+		/******************************************************/
+		{
+			begin     : /<!/
+			end       : />/
+			name      : 'meta.tag.sgml.html'
+			patterns  : [
+				/******************************************************/
+				/*             meta.tag.sgml.doctype.html             */
+				/******************************************************/
+				{
+					begin     : /(DOCTYPE)/
+					captures  : {
+						1  : {
+							name  : 'entity.name.tag.doctype.html'
+						}
+					}
+					end       : /(?=>)/
+					name      : 'meta.tag.sgml.doctype.html'
+					patterns  : [
+						/******************************************************/
+						/*  string.quoted.double.doctype.identifiers-and-DTD  */
+						/******************************************************/
+						{
+							match  : /"[^">]*"/
+							name   : 'string.quoted.double.doctype.identifiers-and-DTDs.html'
+						}
+ 					]
+				}
+ 				/******************************************************/
+				/*          constant.other.inline-data.html           */
+				/******************************************************/
+				{
+					begin  : /\[CDATA\[/
+					end    : /]](?=>)/
+					name   : 'constant.other.inline-data.html'
+				}
+ 				/******************************************************/
+				/*     invalid.illegal.bad-comments-or-CDATA.html     */
+				/******************************************************/
+				{
+					match  : /(\s*)(?!--|>)\S(\s*)/
+					name   : 'invalid.illegal.bad-comments-or-CDATA.html'
+				}
+ 			]
+		}	
+ 		/******************************************************/
+		/*              source.css.embedded.html              */
+		/******************************************************/
+		{
+			begin     : /(?:^\s+)?<((?i:style))\b(?![^>]*\/>)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.style.html'
+				}
+			}
+			end       : /<\/((?i:style))>(?:\s*\n)?/
+			name      : 'source.css.embedded.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 				{
+					begin     : />/
+					end       : /(?=<\/(?i:style))/
+					patterns  : [
+						{
+							include  : '#embedded-code'
+						}
+ 						{
+							include  : 'source.css'
+						}
+ 					]
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*              source.js.embedded.html               */
+		/******************************************************/
+		{
+			begin     : /(?:^\s+)?<((?i:script))\b(?![^>]*\/>)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.script.html'
+				}
+			}
+			end       : /(?<=<\/(script|SCRIPT))>(?:\s*\n)?/
+			name      : 'source.js.embedded.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 				{
+					begin     : /(?<!<\/(?:script|SCRIPT))>/
+					end       : /<\/((?i:script))/
+					patterns  : [
+						/******************************************************/
+						/*            comment.line.double-slash.js            */
+						/******************************************************/
+						{
+							match  : /\/\/.*?((?=<\/script)|$\n?)/
+							name   : 'comment.line.double-slash.js'
+						}
+ 						/******************************************************/
+						/*                  comment.block.js                  */
+						/******************************************************/
+						{
+							begin  : /\/\*/
+							end    : /\*\/|(?=<\/script)/
+							name   : 'comment.block.js'
+						}
+						{
+							include  : '#embedded-code'
+						}
+ 						{
+							include  : 'source.js'
+						}
+ 					]
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*            meta.tag.structure.any.html             */
+		/******************************************************/
+		{
+			begin     : /<\/?((?i:body|head|html)\b)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.structure.any.html'
+				}
+			}
+			end       : />/
+			name      : 'meta.tag.structure.any.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*              meta.tag.block.any.html               */
+		/******************************************************/
+		{
+			begin     : /<\/?((?i:address|blockquote|dd|div|dl|dt|fieldset|form|frame|frameset|h1|h2|h3|h4|h5|h6|iframe|noframes|object|ol|p|ul|applet|center|dir|hr|menu|pre)\b)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.block.any.html'
+				}
+			}
+			end       : />/
+			name      : 'meta.tag.block.any.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*              meta.tag.inline.any.html              */
+		/******************************************************/
+		{
+			begin     : /<\/?((?i:a|abbr|acronym|area|b|base|basefont|bdo|big|br|button|caption|cite|code|col|colgroup|del|dfn|em|font|head|html|i|img|input|ins|isindex|kbd|label|legend|li|link|map|meta|noscript|optgroup|option|param|q|s|samp|script|select|small|span|strike|strong|style|sub|sup|table|tbody|td|textarea|tfoot|th|thead|title|tr|tt|u|var)\b)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.inline.any.html'
+				}
+			}
+			end       : />/
+			name      : 'meta.tag.inline.any.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 			]
+		}
+ 		/******************************************************/
+		/*                meta.tag.other.html                 */
+		/******************************************************/
+		{
+			begin     : /<\/?([a-zA-Z0-9:]+)/
+			captures  : {
+				1  : {
+					name  : 'entity.name.tag.other.html'
+				}
+			}
+			end       : />/
+			name      : 'meta.tag.other.html'
+			patterns  : [
+				{
+					include  : '#tag-stuff'
+				}
+ 			]
+		}
+ 		{
+			include  : '#entities'
+		}
+ 		/******************************************************/
+		/*          invalid.illegal.incomplete.html           */
+		/******************************************************/
+		{
+			match  : /<>/
+			name   : 'invalid.illegal.incomplete.html'
+		}
+ 		/******************************************************/
+		/*       invalid.illegal.bad-angle-bracket.html       */
+		/******************************************************/
+		{
+			match  : /<(?=\W)|>/
+			name   : 'invalid.illegal.bad-angle-bracket.html'
+		}
+	]
+	repository: 
+	{
+		embedded-code: 
+		{
+			patterns:  [ { include: '#expressions' } ]
+		}
+		expressions: 
+		{
+			patterns: 
+			[
+				{
+					begin: /<%[%=]/
+					end: /%>/
+					name: 'constant.prado.php-expression'
+					patterns: [ { include: 'source.php' } ]
+				}
+				{
+					begin: /<%#/
+					end: /%>/
+					name: 'constant.prado.data-bind'
+					patterns: [ { include: 'source.php' } ]
+				}
+				{
+					begin: /(<%\$)/
+					begin_captures: 
+					{ 
+						1: { name: 'constant.prado.parameter' }
+					}
+					end: /(%>)/
+					end_captures:
+					{
+						1: { name: 'constant.prado.parameter' }
+					}
+					name : 'storage.prado.parameter'
+					patterns:
+					[
+						{
+							match: /.*\S+(?=\s*%>)/
+							name: 'markup.bold.prado.parameter'
+						}
+					]
+				}
+				{
+					begin: /(<%~)\s*/
+					begin_captures: 
+					{ 
+						1: { name: 'constant.prado.asset' }
+					}
+					end: /\s*(%>)/					
+					end_captures:
+					{
+						1: { name: 'constant.prado.asset' }
+					}
+					name : 'storage.prado.asset'
+					patterns:
+					[
+						{
+							match: /.*\S+(?=\s*%>)/
+							name: 'markup.underline.prado.asset'
+						}
+					]
+				}
+				{
+					begin: /(<%\[)\s*/
+					begin_captures: 
+					{ 
+						1: { name: 'constant.prado.localization' }
+					}
+					end: /\s*(\]%>)/
+					end_captures: 
+					{ 
+						1: { name: 'constant.prado.localization' }
+					}
+					name: 'string.prado.localization'					
+					patterns:
+					[
+						{
+							match: /.*\S+(?=\s*\]%>)/
+							name: 'markup.italic.prado.localization'
+						}
+					]
+				}
+				{
+					begin: /<%@/
+					end: /%>/
+					name: 'constant.prado.directive'
+					patterns: [ { include: '#prado-attibutes' } ]
+				}
+ 			]
+		}
+		prado-controls:
+		{
+			patterns:
+			[
+				{
+					begin: /<com:TWizard/
+					end: /<\/com:TWizard>/
+					name: 'meta.prado.wizard'
+				}
+			]
+		}
+		entities               : {
+			patterns  : [
+				/******************************************************/
+				/*           constant.character.entity.html           */
+				/******************************************************/
+				{
+					match  : /&([a-zA-Z0-9]+|#[0-9]+|#x[0-9a-fA-F]+);/
+					name   : 'constant.character.entity.html'
+				}
+ 				/******************************************************/
+				/*         invalid.illegal.bad-ampersand.html         */
+				/******************************************************/
+				{
+					match  : /&/
+					name   : 'invalid.illegal.bad-ampersand.html'
+				}
+ 			]
+		}
+		string-double-quoted: 
+		{
+			begin: /"/
+			end: /"/
+			name: 'string.quoted.double.html'
+			patterns: [ { include: '#embedded-code' } ]
+		}
+		string-single-quoted: 
+		{
+			begin: /'/
+			end: /'/
+			name: 'string.quoted.single.html'
+			patterns: [ { include: '#embedded-code' } ]
+		}
+		event-attribute: 
+		{
+			begin: /\b((?i)on[\w.]+)\b\s*=/
+			captures: 
+			{
+				1:  { name: 'storage.prado.event-attribute' }
+			}
+			end: /(?<='|")/
+			name: 'meta.prado.event-attribute'
+			patterns: [ { include: '#attribute-value' } ]
+		}
+
+		prado-attribute: 
+		{
+			begin: /([\w.]+)\s*=/
+			captures: 
+			{
+				1:  { name: 'storage.prado.attribute-name' }
+			}
+			end: /(?<='|")/
+			name: 'meta.prado.attribute'
+			patterns: [ { include: '#attribute-value' } ]
+		}
+		attribute-value:
+		{
+			patterns:
+			[
+				{ include  : '#string-double-quoted' }
+				{ include  : '#string-single-quoted' }
+				{ include: '#embedded-code' }
+			]
+		}
+		prado-attibutes: 
+		{
+			patterns: 
+			[
+				{ include: '#event-attribute' }
+				{ include: '#prado-attribute' }
+ 				{ include: '#embedded-code' }
+ 			]
+		}
+		
+		/** copied from html.itGrammar **/
+	
+		tag-generic-attribute  : {
+			match  : /\b([a-zA-Z\-:]+)/
+			name   : 'entity.other.attribute-name.html'
+		}
+		tag-id-attribute       : {
+			begin     : /\b(id)\b\s*=/
+			captures  : {
+				1  : {
+					name  : 'entity.other.attribute-name.id.html'
+				}
+			}
+			end       : /(?<='|")/
+			name      : 'meta.attribute-with-value.id.html'
+			patterns  : [
+				/******************************************************/
+				/*             string.quoted.double.html              */
+				/******************************************************/
+				{
+					begin         : /"/
+					content_name  : 'meta.toc-list.id.html'
+					end           : /"/
+					name          : 'string.quoted.double.html'
+					patterns      : [
+						{
+							include  : '#embedded-code'
+						}
+ 						{
+							include  : '#entities'
+						}
+ 					]
+				}
+ 				/******************************************************/
+				/*             string.quoted.single.html              */
+				/******************************************************/
+				{
+					begin         : /'/
+					content_name  : 'meta.toc-list.id.html'
+					end           : /'/
+					name          : 'string.quoted.single.html'
+					patterns      : [
+						{
+							include  : '#embedded-code'
+						}
+ 						{
+							include  : '#entities'
+						}
+ 					]
+				}
+ 			]
+		}
+		tag-stuff              : 
+		{
+			patterns  : [
+				{
+					include  : '#tag-id-attribute'
+				}
+ 				{
+					include  : '#tag-generic-attribute'
+				}
+ 				{
+					include  : '#string-double-quoted'
+				}
+ 				{
+					include  : '#string-single-quoted'
+				}
+ 				{
+					include  : '#embedded-code'
+				}
+ 			]
+		}
+	}
+	scope_name: 'text.html.prado'
+}

@@ -1,0 +1,8 @@
+{
+    title: 'Content'
+    tab_trigger: 'content'
+    scope: 'text.html.prado'
+    content: '<com:TContent ID="${1:content}">
+	$0
+</com:TContent>'
+}

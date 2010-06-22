@@ -1,0 +1,8 @@
+{
+    title: 'Literal Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TLiteralColumn${1: ID="${2:column}"}
+	DataField="${3:text field}"${4:
+	DataFormatString="${5:format}"}/>$0'
+}

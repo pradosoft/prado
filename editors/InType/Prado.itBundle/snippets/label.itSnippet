@@ -1,0 +1,6 @@
+{
+    title: 'Label (control)'
+    tab_trigger: 'label'
+    scope: 'text.html.prado'
+    content: '<com:TLabel Text="${1:label}"${2: ForControl="${3:controlID}"}/>'
+}

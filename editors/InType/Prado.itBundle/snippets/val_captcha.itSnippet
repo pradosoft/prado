@@ -1,0 +1,10 @@
+{
+    title: 'Captcha Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TCaptchaValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	CaptchaControl="${4:anotherControl}"
+	ErrorMessage="${7:error}"${8:
+	Display="${9:Dynamic}"}/>$0'
+}

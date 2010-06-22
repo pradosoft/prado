@@ -1,0 +1,6 @@
+{
+    title: 'Edit Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TEditCommandColumn${1: ButtonType="${2:PushButton}"/>$0'
+}

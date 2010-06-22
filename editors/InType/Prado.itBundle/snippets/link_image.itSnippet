@@ -1,0 +1,9 @@
+{
+    title: 'Hyper Link (image)'
+    tab_trigger: 'link'
+    scope: 'text.html.prado'
+    content: '<com:THyperLink${1: ID="${2:link}"}
+	NavigateUrl="${3:url}"
+	ImageUrl="${4:image}"
+	Text="${5:$4}"/>$0'
+}

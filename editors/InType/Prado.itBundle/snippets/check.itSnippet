@@ -1,0 +1,6 @@
+{
+    title: 'CheckBox'
+    tab_trigger: 'check'
+    scope: 'text.html.prado'
+    content: '<com:TCheckBox${1: ID="${2:check}"}${3: Text="${4:text}"}/>$0'
+}

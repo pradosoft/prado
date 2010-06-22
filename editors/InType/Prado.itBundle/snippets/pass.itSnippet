@@ -1,0 +1,6 @@
+{
+    title: 'Password TextBox'
+    tab_trigger: 'pass'
+    scope: 'text.html.prado'
+    content: '<com:TTextBox${1: ID="${2:text}"} TextMode="Password"/>$0'
+}

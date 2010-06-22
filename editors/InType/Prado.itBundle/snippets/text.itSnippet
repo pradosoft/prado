@@ -1,0 +1,6 @@
+{
+    title: 'TextBox'
+    tab_trigger: 'text'
+    scope: 'text.html.prado'
+    content: '<com:TTextBox${1: ID="${2:text}"}${3: Text="${4:text}"}/>$0'
+}

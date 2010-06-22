@@ -1,0 +1,9 @@
+{
+    title: 'Pager'
+    tab_trigger: 'pager'
+    scope: 'text.html.prado'
+    content: '<com:TPager${1: ID="${2:pager}"}
+	ControlToPaginate="${3:controlID}"
+	OnPageIndexChanged="${4:$2_IndexChanged}"${5:
+	Mode="${6:Numeric}"}/>$0'
+}

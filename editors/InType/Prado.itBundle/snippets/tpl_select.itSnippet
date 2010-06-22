@@ -1,0 +1,8 @@
+{
+    title: 'Selected'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:SelectedItemTemplate>
+	$0
+</prop:SelectedItemTemplate>'
+}

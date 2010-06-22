@@ -1,0 +1,8 @@
+{
+    title: 'Tab'
+    tab_trigger: 'tab'
+    scope: 'text.html.prado'
+    content: '<com:TTabView Caption="${1:tab}">
+	$0
+</com:TTabView>'
+}

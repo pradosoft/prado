@@ -1,0 +1,6 @@
+{
+    title: 'RadioButton'
+    tab_trigger: 'radio'
+    scope: 'text.html.prado'
+    content: '<com:TRadioButton${1: ID="${2:radio}"} GroupName="${3:group}"${4: Text="${5:text}"}/>$0'
+}

@@ -1,0 +1,8 @@
+{
+    title: 'Empty'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:EmptyTemplate>
+	$0
+</prop:EmptyTemplate>'
+}

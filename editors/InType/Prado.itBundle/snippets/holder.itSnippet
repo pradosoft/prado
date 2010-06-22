@@ -1,0 +1,6 @@
+{
+    title: 'Place Holder'
+    tab_trigger: 'holder'
+    scope: 'text.html.prado'
+    content: '<com:TPlaceHolder ID="${1:holder}" />$0'
+}

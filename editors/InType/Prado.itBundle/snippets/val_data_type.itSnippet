@@ -1,0 +1,10 @@
+{
+    title: 'Data Type Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TDataTypeValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	DataType="${4:Integer}"
+	ErrorMessage="${5:error}"${6:
+	Display="${7:Dynamic}"}/>$0'
+}

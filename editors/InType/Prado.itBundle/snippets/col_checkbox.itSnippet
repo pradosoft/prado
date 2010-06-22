@@ -1,0 +1,8 @@
+{
+    title: 'CheckBox Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TCheckBoxColumn${1: ID="${2:column}"}
+	HeaderText="${3:$2 header}"
+	DataField="${4:field}"/>$0'
+}

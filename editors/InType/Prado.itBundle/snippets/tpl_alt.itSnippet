@@ -1,0 +1,8 @@
+{
+    title: 'Alt Item Template'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:AlternatingItemTemplate>
+	$0
+</prop:AlternatingItemTemplate>'
+}

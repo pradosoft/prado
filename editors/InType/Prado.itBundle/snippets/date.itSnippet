@@ -1,0 +1,9 @@
+{
+    title: 'Date Picker'
+    tab_trigger: 'date'
+    scope: 'text.html.prado'
+    content: '<com:TDatePicker${1: ID="${2:date}"}
+	DateFormat="${3:yyyy-MM-dd}"${4:
+	Mode="${5:ImageButton}"}${6:
+	InputMode="${7:DropDownList}"}/>$0'
+}

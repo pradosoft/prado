@@ -1,0 +1,6 @@
+{
+    title: 'Script (url)'
+    tab_trigger: 'js'
+    scope: 'text.html.prado'
+    content: '<com:TClientScript ScriptUrl="${1:url}" />$0'
+}

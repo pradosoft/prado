@@ -1,0 +1,16 @@
+{
+    title: 'Wizard'
+    tab_trigger: 'wizard'
+    scope: 'text.html.prado'
+    content: '<com:TWizard ID="${1:wizard}">
+	<com:TWizardStep Title="${2:step 1}" StepType="${3:Start}">
+	<!-- content in $2 -->
+	</com:TWizardStep>
+	<com:TWizardStep Title="${4:step 2}" StepType="${3:Step}">
+	<!-- content in $4 -->
+	</com:TWizardStep>
+	<com:TWizardStep Title="${5:finish}" StepType="${6:Finish}">
+	<!-- content in $5 -->
+	</com:TWizardStep>$0
+</com:TWizard>'
+}

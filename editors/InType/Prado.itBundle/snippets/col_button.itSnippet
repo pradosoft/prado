@@ -1,0 +1,9 @@
+{
+    title: 'Button Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TButtonColumn${1: ID="${2:column}"}
+	HeaderText="${3:$2 header}"
+	DataTextField="${4:field}"${5:
+	CommandName="${6:command}"/>$0'
+}

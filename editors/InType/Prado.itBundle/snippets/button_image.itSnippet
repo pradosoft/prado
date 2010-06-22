@@ -1,0 +1,9 @@
+{
+    title: 'Image Button'
+    tab_trigger: 'button'
+    scope: 'text.html.prado'
+    content: '<com:TImageButton${1: ID="${2:button}"}
+	ImageUrl="${3:image}"${4:
+	Text="${5:button}"}
+	OnClick="${6:$2_Clicked}"/>$0'
+}

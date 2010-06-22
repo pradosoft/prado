@@ -1,0 +1,12 @@
+{
+    title: 'Range Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TRangeValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	DataType="${4:Integer}"${5:
+	MinValue="${6:0}"}${7:
+	MaxValue="${8:10}"}
+	ErrorMessage="${9:error}"${10:
+	Display="${11:Dynamic}"}/>$0'
+}

@@ -1,0 +1,363 @@
+{
+	title     : 'Wei'
+	settings  : [
+		{
+			settings  : {
+				background      : '#0C1021'
+				caret           : '#FFFFFFA6'
+				foreground      : '#F8F8F8'
+				invisibles      : '#FFFFFF40'
+				line_highlight  : '#FFFFFF0F'
+				active_margin	: '#7F90AA'
+				passive_margin	: '#202C4A'
+				selection       : '#253B76'
+				area_background	: '#070A14'
+				area_borders	: '#070A14'
+			}
+		}
+		/******************************************************/
+		/*                      Comment                       */
+		/******************************************************/
+		{
+			title     : 'Comment'
+			scope     : 'comment'
+			settings  : {
+				font_style  : 'italic'
+				foreground  : '#99EE22'
+			}
+		}
+		/******************************************************/
+		/*                      Constant                      */
+		/******************************************************/
+		{
+			title     : 'Constant'
+			scope     : 'constant'
+			settings  : {
+				font_style  : ''
+				foreground  : '#8AEFF4'
+			}
+		}
+		/******************************************************/
+		/*                       Entity                       */
+		/******************************************************/
+		{
+			title     : 'Entity'
+			scope     : 'entity'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FF7700'
+			}
+		}
+		/******************************************************/
+		/*                      Keyword                       */
+		/******************************************************/
+		{
+			title     : 'Keyword'
+			scope     : 'keyword'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FBDE2D'
+			}
+		}
+		/******************************************************/
+		/*                      Storage                       */
+		/******************************************************/
+		{
+			title     : 'Storage'
+			scope     : 'storage'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FBDE2D'
+			}
+		}
+		/******************************************************/
+		/*                       String                       */
+		/******************************************************/
+		{
+			title     : 'String'
+			scope     : 'string, meta.verbatim'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FF77FF'
+			}
+		}
+		/******************************************************/
+		/*                      Support                       */
+		/******************************************************/
+		{
+			title     : 'Support'
+			scope     : 'support'
+			settings  : {
+				font_style  : ''
+				foreground  : '#8DA6CE'
+			}
+		}
+		/******************************************************/
+		/*                      Variable                      */
+		/******************************************************/
+		{
+			title     : 'Variable'
+			scope     : 'variable'
+			settings  : {
+				font_style  : ''
+			}
+		}
+		/******************************************************/
+		/*               Invalid – Deprecated               */
+		/******************************************************/
+		{
+			title     : 'Invalid – Deprecated'
+			scope     : 'invalid.deprecated'
+			settings  : {
+				font_style  : 'italic'
+				foreground  : '#AB2A1D'
+			}
+		}
+		/******************************************************/
+		/*                Invalid – Illegal                 */
+		/******************************************************/
+		{
+			title     : 'Invalid – Illegal'
+			scope     : 'invalid.illegal'
+			settings  : {
+				background  : '#9D1E15'
+				foreground  : '#F8F8F8'
+			}
+		}
+		/******************************************************/
+		/*                     Superclass                     */
+		/******************************************************/
+		{
+			title     : 'Superclass'
+			scope     : 'entity.other.inherited-class'
+			settings  : {
+				font_style  : 'italic'
+				foreground  : '#FF6400'
+			}
+		}
+		/******************************************************/
+		/*                String interpolation                */
+		/******************************************************/
+		{
+			title     : 'String interpolation'
+			scope     : 'string constant.other.placeholder'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FF6400'
+			}
+		}
+		/******************************************************/
+		/*               meta.function-call.py                */
+		/******************************************************/
+		{
+			title     : 'meta.function-call.py'
+			scope     : 'meta.function-call.py'
+			settings  : {
+				font_style  : ''
+				foreground  : '#BECDE6'
+			}
+		}
+		/******************************************************/
+		/*                      meta.tag                      */
+		/******************************************************/
+		{
+			title     : 'meta.tag'
+			scope     : 'meta.tag, meta.tag entity'
+			settings  : {
+				foreground  : '#7F90AA'
+			}
+		}
+		/******************************************************/
+		/*                entity.name.section                 */
+		/******************************************************/
+		{
+			title     : 'entity.name.section'
+			scope     : 'entity.name.section'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FFFFFF'
+			}
+		}
+		/******************************************************/
+		/*                   OCaml variant                    */
+		/******************************************************/
+		{
+			title     : 'OCaml variant'
+			scope     : 'keyword.type.variant'
+			settings  : {
+				foreground  : '#D5E0F3'
+			}
+		}
+		/******************************************************/
+		/*                   OCaml operator                   */
+		/******************************************************/
+		{
+			title     : 'OCaml operator'
+			scope     : 'source.ocaml keyword.operator.symbol'
+			settings  : {
+				foreground  : '#F8F8F8'
+			}
+		}
+		/******************************************************/
+		/*                OCaml infix operator                */
+		/******************************************************/
+		{
+			title     : 'OCaml infix operator'
+			scope     : 'source.ocaml keyword.operator.symbol.infix'
+			settings  : {
+				font_style  : ''
+				foreground  : '#8DA6CE'
+			}
+		}
+		/******************************************************/
+		/*               OCaml prefix operator                */
+		/******************************************************/
+		{
+			title     : 'OCaml prefix operator'
+			scope     : 'source.ocaml keyword.operator.symbol.prefix'
+			settings  : {
+				font_style  : ''
+				foreground  : '#8DA6CE'
+			}
+		}
+		/******************************************************/
+		/*              OCaml f-p infix operator              */
+		/******************************************************/
+		{
+			title     : 'OCaml f-p infix operator'
+			scope     : 'source.ocaml keyword.operator.symbol.infix.floating-point'
+			settings  : {
+				font_style  : 'underline'
+			}
+		}
+		/******************************************************/
+		/*             OCaml f-p prefix operator              */
+		/******************************************************/
+		{
+			title     : 'OCaml f-p prefix operator'
+			scope     : 'source.ocaml keyword.operator.symbol.prefix.floating-point'
+			settings  : {
+				font_style  : 'underline'
+			}
+		}
+		/******************************************************/
+		/*                 OCaml f-p constant                 */
+		/******************************************************/
+		{
+			title     : 'OCaml f-p constant'
+			scope     : 'source.ocaml constant.numeric.floating-point'
+			settings  : {
+				font_style  : 'underline'
+			}
+		}
+		/******************************************************/
+		/*                 LaTeX environment                  */
+		/******************************************************/
+		{
+			title     : 'LaTeX environment'
+			scope     : 'text.tex.latex meta.function.environment'
+			settings  : {
+				background  : '#FFFFFF08'
+			}
+		}
+		/******************************************************/
+		/*             LaTeX environment (nested)             */
+		/******************************************************/
+		{
+			title     : 'LaTeX environment (nested)'
+			scope     : 'text.tex.latex meta.function.environment meta.function.environment'
+			settings  : {
+				background  : '#7A96FA08'
+			}
+		}
+		/******************************************************/
+		/*                   Latex support                    */
+		/******************************************************/
+		{
+			title     : 'Latex support'
+			scope     : 'text.tex.latex support.function'
+			settings  : {
+				font_style  : ''
+				foreground  : '#FBDE2D'
+			}
+		}
+		/******************************************************/
+		/*               PList unquoted string                */
+		/******************************************************/
+		{
+			title     : 'PList unquoted string'
+			scope     : 'source.plist string.unquoted, source.plist keyword.operator'
+			settings  : {
+				foreground  : '#FFFFFF'
+			}
+		}
+
+		/******************************************************/
+		/*                  Markup: Heading                   */
+		/******************************************************/
+		{
+			title     : 'Markup: Heading'
+			scope     : 'markup.heading'
+			settings  : {
+				font_style  : 'bold'
+				foreground  : '#FBDE2D'
+			}
+		}
+		/******************************************************/
+		/*                   Markup: Quote                    */
+		/******************************************************/
+		{
+			title     : 'Markup: Quote'
+			scope     : 'markup.quote'
+			settings  : {
+				font_style  : 'italic'
+				foreground  : '#FBDE2D'
+			}
+		}
+		/******************************************************/
+		/*                    Markup: List                    */
+		/******************************************************/
+		{
+			title     : 'Markup: List'
+			scope     : 'markup.list'
+			settings  : {
+				foreground  : '#61CE3C'
+			}
+		}
+
+		/******************************************************/
+		/*                    Markup: Bold                    */
+		/******************************************************/
+		{
+			title     : 'Markup: Bold'
+			scope     : 'markup.bold'
+			settings  : {
+				font_style  : 'bold'
+			}
+		}
+
+		/******************************************************/
+		/*                    Markup: Italic                  */
+		/******************************************************/
+		{
+			title     : 'Markup: Italic'
+			scope     : 'markup.italic'
+			settings  : {
+				font_style  : 'italic'
+			}
+		}
+
+		/******************************************************/
+		/*                    Markup: Underline               */
+		/******************************************************/
+		{
+			title     : 'Markup: Underline'
+			scope     : 'markup.underline'
+			settings  : {
+				font_style  : 'underline'
+			}
+		}		
+
+	]
+	uuid      : 'A2C6BAA7-90D0-4147-BBF5-96B0CD92D109'
+}

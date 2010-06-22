@@ -1,0 +1,8 @@
+{
+    title: 'Radio Button List'
+    tab_trigger: 'list'
+    scope: 'text.html.prado'
+    content: '<com:TRadioButtonList${1: ID="${2:radiolist}"}>
+	$0
+</com:TRadioButtonList>'
+}

@@ -1,0 +1,6 @@
+{
+    title: 'Hidden'
+    tab_trigger: 'hidden'
+    scope: 'text.html.prado'
+    content: '<com:THiddenField${1: ID="${2:hidden}"}/>$0'
+}

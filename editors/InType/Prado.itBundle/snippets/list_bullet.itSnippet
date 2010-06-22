@@ -1,0 +1,8 @@
+{
+    title: 'Bullet List'
+    tab_trigger: 'list'
+    scope: 'text.html.prado'
+    content: '<com:TBulletedList${1: ID="${2:bullet}"}${3: DisplayMode="${4:HyperLink}"}>
+	$0
+</com:TBulletedList>'
+}

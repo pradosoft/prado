@@ -1,0 +1,8 @@
+{
+    title: 'Script Loader'
+    tab_trigger: 'js'
+    scope: 'text.html.prado'
+    content: '<com:TClientScriptLoader
+	PackagePath="${1:mylib}"${2: 
+	PackageScripts="${3:package}"}/>$0'
+}

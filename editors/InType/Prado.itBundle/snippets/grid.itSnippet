@@ -1,0 +1,17 @@
+{
+    title: 'Data Grid'
+    tab_trigger: 'grid'
+    scope: 'text.html.prado'
+    content: '<com:TDataGrid ID="${1:datalist}"${2:
+	DataKeyField="${3:id}"}
+	AutoGenerateColumns="${4:false}"
+	AllowSorting="${5:false}"
+	AllowPaging="${6:false}"
+	OnItemCreated="${7:$1_OnItemCreated}"
+	OnEditCommand="${8:$1_OnEdit}"
+	OnCancelCommand="${9:$1_OnCancel}"
+	OnUpdateCommand="${10:$1_OnUpdate}"
+	OnDeleteCommand="${11:$1_OnDelete}">
+	$0
+</com:TDataGrid>'
+}

@@ -1,0 +1,8 @@
+{
+    title: 'Wizard Step'
+    tab_trigger: 'step'
+    scope: 'text.html.prado'
+    content: '<com:TWizardStep Title="${1:step}" StepType="${2:Start}">
+	$0
+</com:TWizardStep>'
+}

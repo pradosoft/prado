@@ -1,0 +1,8 @@
+{
+    title: 'Wizard Start'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:StartNavigationTemplate>
+	$0
+</prop:StartNavigationTemplate>'
+}

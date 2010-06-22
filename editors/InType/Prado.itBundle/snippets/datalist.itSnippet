@@ -1,0 +1,16 @@
+{
+    title: 'Data List'
+    tab_trigger: 'datalist'
+    scope: 'text.html.prado'
+    content: '<com:TDataList ID="${1:datalist}"${2:
+	DataKeyField="${3:id}"}${4:
+	OnEditCommand="${5:$1_OnEdit}"}${6:
+	OnCancelCommand="${7:$1_OnCancel}"}${8:
+	OnUpdateCommand="${9:$1_OnUpdate}"}${10:
+	OnDeleteCommand="${11:$1_OnDelete}"}${12:
+	OnSelectedIndexChanged="${13:$1_OnSelect}"}>
+	${14:<prop:ItemTemplate>
+		$0
+	</prop:ItemTemplate>}
+</com:TDataList>'
+}

@@ -1,0 +1,11 @@
+{
+    title: 'Template Column'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TTemplateColumn${1: ID="${2:column}"}>
+	<prop:HeaderTemplate>${3:$2 header}</prop:HeaderTemplate>
+	<prop:ItemTemplate>
+		${4:<!-- content for column $2 -->}
+	</prop:ItemTemplate>
+</com:TTemplateColumn>'
+}

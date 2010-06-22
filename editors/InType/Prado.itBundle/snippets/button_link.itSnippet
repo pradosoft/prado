@@ -1,0 +1,8 @@
+{
+    title: 'Link Button'
+    tab_trigger: 'button'
+    scope: 'text.html.prado'
+    content: '<com:TLinkButton${1: ID="${2:button}"}
+	Text="${3:link button}"
+	OnClick="${4:$2_Clicked}"/>$0'
+}

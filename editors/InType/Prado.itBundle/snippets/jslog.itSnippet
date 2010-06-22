@@ -1,0 +1,6 @@
+{
+    title: 'Javascript Logger'
+    tab_trigger: 'jslog'
+    scope: 'text.html.prado'
+    content: '<com:TJavascriptLogger${1: ToggleKey="${2:j}"}/>$0'
+}

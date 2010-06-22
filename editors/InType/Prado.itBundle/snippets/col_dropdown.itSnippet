@@ -1,0 +1,12 @@
+{
+    title: 'DropDown Column (source)'
+    tab_trigger: 'col'
+    scope: 'text.html.prado'
+    content: '<com:TDropDownListColumn${1: ID="${2:column}"}
+	HeaderText="${3:$2 header}"
+	DataTextField="${4:text field}"
+	DataValueField="${6:value field}"
+	ListDataSource="${7:source field}"
+	ListTextField="${8:list text field}"
+	ListValueField="${9:list value field}"/>$0'
+}

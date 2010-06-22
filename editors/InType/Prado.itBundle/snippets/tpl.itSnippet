@@ -1,0 +1,8 @@
+{
+    title: 'Template Property'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:${1:Item}Template>
+	$0
+</prop:$1Template>'
+}

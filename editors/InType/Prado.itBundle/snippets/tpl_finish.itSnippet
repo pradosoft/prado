@@ -1,0 +1,8 @@
+{
+    title: 'Wizard Finish'
+    tab_trigger: 'tpl'
+    scope: 'text.html.prado'
+    content: '<prop:FinishNavigationTemplate>
+	$0
+</prop:FinishNavigationTemplate>'
+}

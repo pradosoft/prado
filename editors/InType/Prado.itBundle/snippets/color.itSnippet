@@ -1,0 +1,6 @@
+{
+    title: 'Color Picker'
+    tab_trigger: 'color'
+    scope: 'text.html.prado'
+    content: '<com:TColorPicker${1: ID="${2:color}"}${3: Mode="${4:Full}"}/>$0'
+}

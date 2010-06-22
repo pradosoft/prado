@@ -1,0 +1,6 @@
+{
+    title: 'File Upload'
+    tab_trigger: 'upload'
+    scope: 'text.html.prado'
+    content: '<com:TFileUpload${1: ID="${2:file}"} OnFileUpload="${3:$2_OnFileUploaded}"/>$0'
+}

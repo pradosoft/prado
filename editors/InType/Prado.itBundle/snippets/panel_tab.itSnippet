@@ -1,0 +1,10 @@
+{
+    title: 'Tab Panel'
+    tab_trigger: 'panel'
+    scope: 'text.html.prado'
+    content: '<com:TTabPanel${1: ID="${2:panel}"}${3: ActiveViewIndex="${4:0}"}>
+	<com:TTabView Caption="${5:tab}">
+		<!-- content for $5 -->
+	</com:TTabView>$0
+</com:TTabPanel>'
+}

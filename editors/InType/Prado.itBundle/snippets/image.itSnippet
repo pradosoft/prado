@@ -1,0 +1,8 @@
+{
+    title: 'Image'
+    tab_trigger: 'image'
+    scope: 'text.html.prado'
+    content: '<com:TImage${1: ID="${2:image}"}
+	ImageUrl="${1:image}" 
+	AlternateText="${2:text}"/>$0'
+}

@@ -1,0 +1,11 @@
+{
+    title: 'Custom Validator'
+    tab_trigger: 'val'
+    scope: 'text.html.prado'
+    content: '<com:TCustomValidator${1: ID="${2:val}"}
+	ControlToValidate="${3:controlID}"
+	OnServerValidate="${4:Validate_$2}"${5:
+	ClientValidationFunction="${6:validate_$2}"}
+	ErrorMessage="${7:error}"${8:
+	Display="${9:Dynamic}"}/>$0'
+}
