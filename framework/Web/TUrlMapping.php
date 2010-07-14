@@ -674,7 +674,7 @@ class TUrlMappingPattern extends TComponent
 			if ($this->_separator==='/')
 			{
 				while($key=array_shift($params))
-					$matches2[$key]=($value=array_shift($params)) ? $value : '';
+					$matches[$key]=($value=array_shift($params)) ? $value : '';
 			}
 			else
 			{
