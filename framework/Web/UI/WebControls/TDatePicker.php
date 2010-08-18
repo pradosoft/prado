@@ -487,7 +487,7 @@ class TDatePicker extends TTextBox
 		if(isset($values[$key.'$day']))
 			$day = intval($values[$key.'$day']);
 		else
-			$day = 1;
+			$day = $date['mday'];
 
 		if(isset($values[$key.'$month']))
 			$month = intval($values[$key.'$month']) + 1;
