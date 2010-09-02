@@ -197,6 +197,7 @@ class TBoundColumn extends TDataGridColumn
 							$control->setItemType($item->getItemType());
 						}
 						$cell->getControls()->add($control);
+						$cell->registerObject('EditControl',$control);
 					}
 					else
 					{
@@ -206,7 +207,20 @@ class TBoundColumn extends TDataGridColumn
 					}
 				}
 				else
-					$control=$cell;
+				{
+					if(($classPath=$this->getItemRenderer())!=='')
+					{
+						$control=Prado::createComponent($classPath);
+						if($control instanceof IItemDataRenderer)
+						{
+							$control->setItemIndex($item->getItemIndex());
+							$control->setItemType($item->getItemType());
+						}
+						$cell->getControls()->add($control);
+					}
+					else
+						$control=$cell;
+				}
 				$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 				break;
 			default:
