@@ -345,10 +345,10 @@ class PradoBase
 	{
 		if(self::CLASS_FILE_EXT === $ext || empty($ext))
 		{
-			if($_useBuffer && isset(self::$_usings[$namespace]))
+			if(isset(self::$_usings[$namespace]))
 				return self::$_usings[$namespace];
 
-			if($_useBuffer && isset(self::$_aliases[$namespace]))
+			if(isset(self::$_aliases[$namespace]))
 				return self::$_aliases[$namespace];
 		}
 
