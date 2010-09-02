@@ -341,21 +341,24 @@ class PradoBase
 	 * @param string extension to be appended if the namespace refers to a file
 	 * @return string file path corresponding to the namespace, null if namespace is invalid
 	 */
-	public static function getPathOfNamespace($namespace,$ext='')
+	public static function getPathOfNamespace($namespace, $ext='')
 	{
-		if(isset(self::$_usings[$namespace]))
-			return self::$_usings[$namespace];
-		else if(isset(self::$_aliases[$namespace]))
-			return self::$_aliases[$namespace];
-		else
+		if(self::CLASS_FILE_EXT === $ext || empty($ext))
 		{
-			$segs=explode('.',$namespace);
-			$alias=array_shift($segs);
-			if(($file=array_pop($segs))!==null && ($root=self::getPathOfAlias($alias))!==null)
-				return rtrim($root.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR ,$segs),'/\\').(($file==='*')?'':DIRECTORY_SEPARATOR.$file.$ext);
-			else
-				return null;
+			if($_useBuffer && isset(self::$_usings[$namespace]))
+				return self::$_usings[$namespace];
+
+			if($_useBuffer && isset(self::$_aliases[$namespace]))
+				return self::$_aliases[$namespace];
 		}
+
+		$segs = explode('.',$namespace);
+		$alias = array_shift($segs);
+
+		if(null !== ($file = array_pop($segs)) && null !== ($root = self::getPathOfAlias($alias)))
+			return rtrim($root.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR ,$segs),'/\\').(($file === '*') ? '' : DIRECTORY_SEPARATOR.$file.$ext);
+
+		return null;
 	}
 
 	/**
