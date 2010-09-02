@@ -301,7 +301,8 @@ class TSimpleDateFormatter
 			}
 		}
 		if ($i_val != $this->length($value))
-			throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
+			return null;
+			//throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
 		if(!$defaultToCurrentTime && ($month === null || $day === null || $year === null))
 			return null;
 		else
