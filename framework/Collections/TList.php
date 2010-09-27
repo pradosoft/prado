@@ -175,13 +175,18 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function remove($item)
 	{
-		if(($index=$this->indexOf($item))>=0)
+		if(!$this->_r)
 		{
-			$this->removeAt($index);
-			return $index;
+			if(($index=$this->indexOf($item))>=0)
+			{
+				$this->removeAt($index);
+				return $index;
+			}
+			else
+				throw new TInvalidDataValueException('list_item_inexistent');
 		}
 		else
-			throw new TInvalidDataValueException('list_item_inexistent');
+			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -253,12 +258,17 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function insertBefore($baseitem, $item)
 	{
-		if(($index = $this->indexOf($baseitem)) == -1)
-			throw new TInvalidDataValueException('list_item_inexistent');
-		
-		$this->insertAt($index, $item);
-		
-		return $index;
+		if(!$this->_r)
+		{
+			if(($index = $this->indexOf($baseitem)) == -1)
+				throw new TInvalidDataValueException('list_item_inexistent');
+			
+			$this->insertAt($index, $item);
+			
+			return $index;
+		}
+		else
+			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -270,12 +280,17 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function insertAfter($baseitem, $item)
 	{
-		if(($index = $this->indexOf($baseitem)) == -1)
-			throw new TInvalidDataValueException('list_item_inexistent');
-		
-		$this->insertAt($index + 1, $item);
-		
-		return $index + 1;
+		if(!$this->_r)
+		{
+			if(($index = $this->indexOf($baseitem)) == -1)
+				throw new TInvalidDataValueException('list_item_inexistent');
+			
+			$this->insertAt($index + 1, $item);
+			
+			return $index + 1;
+		}
+		else
+			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
