@@ -131,6 +131,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
 	 * @return integer the zero-based index at which the item is added
+	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function add($item)
 	{
@@ -172,6 +173,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * @param mixed the item to be removed.
 	 * @return integer the index at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
+	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function remove($item)
 	{
@@ -221,6 +223,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Removes all items in the list.
+	 * @throws TInvalidOperationException if the list is read-only
 	 */
 	public function clear()
 	{
@@ -254,6 +257,8 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * @param mixed the base item which will be pushed back by the second parameter
 	 * @param mixed the item
 	 * @return int the index where the item is inserted
+	 * @throws TInvalidDataValueException if the base item is not within this list
+	 * @throws TInvalidOperationException if the list is read-only
 	 * @since 3.2a
 	 */
 	public function insertBefore($baseitem, $item)
@@ -276,6 +281,8 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 * @param mixed the base item which comes before the second parameter when added to the list
 	 * @param mixed the item
 	 * @return int the index where the item is inserted
+	 * @throws TInvalidDataValueException if the base item is not within this list
+	 * @throws TInvalidOperationException if the list is read-only
 	 * @since 3.2a
 	 */
 	public function insertAfter($baseitem, $item)
