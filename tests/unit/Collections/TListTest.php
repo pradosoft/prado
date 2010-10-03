@@ -51,6 +51,16 @@ class TListTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(2,$this->list->Count);
 	}
 	
+	public function testItemAt() {
+		$this->assertTrue($this->list->itemAt(0) === $this->item1);
+		$this->assertTrue($this->list->itemAt(1) === $this->item2);
+		try {
+			$this->list->itemAt(2);
+			$this->fail('exception not raised when adding item at an out-of-range index');
+		} catch(TInvalidDataValueException $e) {
+		}
+	}
+	
 	public function testAdd() {
 		$this->assertEquals(2,$this->list->add(null));
 		$this->assertEquals(3,$this->list->add($this->item3));
