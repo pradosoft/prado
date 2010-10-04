@@ -319,10 +319,8 @@ class TPriorityList extends TList
 				else
 					$cc+=count($items);
 			
-			if($index === false) {
+			if($index === false && isset($this->_d[$priority])) {
 				$c = count($this->_d[$priority]);
-				if(!$c && $this->_c)	// no items at this priority, but there exist items in this list
-					$this->_o = false;
 				$c += $cc;
 				$this->_d[$priority][]=$item;
 			} else if(isset($this->_d[$priority])) {
@@ -338,10 +336,8 @@ class TPriorityList extends TList
 				array_splice($this->_fd,$c,0,array($item));
 		} else {
 			$c = null;
-			if($index === false) {
+			if($index === false && isset($this->_d[$priority])) {
 				$cc = count($this->_d[$priority]);
-				if(!$cc && $this->_c)
-					$this->_o = false;
 				$this->_d[$priority][]=$item;
 			} else if(isset($this->_d[$priority])) {
 				$cc = $index;
