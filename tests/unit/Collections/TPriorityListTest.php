@@ -583,6 +583,32 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase
 		
 		$this->assertEquals(2, $plist->remove($this->pitem2));
 		$this->assertEquals(1, $plist->getPriorityCount());
+		
+		$plist = new TPriorityList($this->plist);
+		
+		try {
+			$plist->remove($this->pitem5);
+			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
+		}
+		catch (TInvalidDataValueException $v) {
+		}
+		
+		try {
+			$plist->remove($this->pitem3, null);
+			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
+		}
+		catch (TInvalidDataValueException $v) {
+		}
+		
+		try {
+			$plist->remove($this->pitem1, 100);
+			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
+		}
+		catch (TInvalidDataValueException $v) {
+		}
+		
+		$plist->insertBefore($this->pitem3, $this->pitem4);
+		$this->assertEquals(4, $plist->remove($this->pitem3, 100));
 	}
 	
 	public function testRemoveAtTPriorityList()
@@ -599,44 +625,6 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase
 		}
 		catch (TInvalidDataValueException $e) {
 		}
-	}
-	
-	public function testRemoveFromPriorityTPriorityList()
-	{
-		$plist = new TPriorityList($this->plist);
-		
-		try {
-			$plist->removeFromPriority($this->pitem5);
-			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
-		}
-		catch (TInvalidDataValueException $v) {
-		}
-		
-		try {
-			$plist->removeFromPriority($this->pitem3);
-			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
-		}
-		catch (TInvalidDataValueException $v) {
-		}
-		
-		try {
-			$plist->removeFromPriority($this->pitem3, null);
-			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
-		}
-		catch (TInvalidDataValueException $v) {
-		}
-		
-		try {
-			$plist->removeFromPriority($this->pitem1, 100);
-			$this->fail('Exception not raised: TInvalidDataValueException: The item cannot be found in the list');
-		}
-		catch (TInvalidDataValueException $v) {
-		}
-		
-		$plist->insertBefore($this->pitem3, $this->pitem4);
-		$this->assertEquals(1, $plist->removeFromPriority($this->pitem3, 100));
-		
-		
 	}
 	
 	public function testItemAtIndexPriorityTPriorityList()

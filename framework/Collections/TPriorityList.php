@@ -368,18 +368,28 @@ class TPriorityList extends TList
 	 * Removes an item from the priority list.
 	 * The list will search for the item.  The first matching item found will be removed from the list.
 	 * @param mixed item the item to be removed.
+	 * @param numeric priority of item to remove. without this parameter it defaults to false.
+	 * A value of false means any priority. null will be filled in with the default priority.
 	 * @return integer index within the flattened list at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 */
-	public function remove($item)
+	public function remove($item,$priority=false)
 	{
 		if($this->getReadOnly())
 			throw new TInvalidOperationException('list_readonly',get_class($this));
 		
-		if(($priority=$this->priorityOf($item, true))!==false)
+		if(($p=$this->priorityOf($item, true))!==false)
 		{
-			$this->removeAtIndexInPriority($priority[1], $priority[0]);
-			return $priority[2];
+			if($priority !== false) {
+				if($priority === null)
+					$priority = $this->getDefaultPriority();
+				$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+				
+				if($p[0] != $priority)
+					throw new TInvalidDataValueException('list_item_inexistent');
+			}
+			$this->removeAtIndexInPriority($p[1], $p[0]);
+			return $p[2];
 		}
 		else
 			throw new TInvalidDataValueException('list_item_inexistent');
