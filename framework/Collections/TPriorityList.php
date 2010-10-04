@@ -413,30 +413,6 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * Removes an item from a specific priority. The list will first search for the item 
-	 * at the priority. The first item found will be removed from the priority.
-	 * @param mixed item to be removed.
-	 * @param numeric priority 
-	 * @return integer the index within the priority at which the item is being removed
-	 * @throws TInvalidDataValueException If the item does not exist
-	 */
-	public function removeFromPriority($item, $priority=null)
-	{
-		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
-			
-		if($priority===null)
-			$priority = $this->getDefaultPriority();
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
-		
-		if(isset($this->_d[$priority]) && ($index=array_search($item,$this->_d[$priority],true))!==false) {
-			$this->removeAtIndexInPriority($index, $priority);
-			return $index;
-		}
-		throw new TInvalidDataValueException('list_item_inexistent');
-	}
-
-	/**
 	 * Removes the item at a specific index within a priority.  Override 
 	 * and call this method to insert your own functionality.
 	 * @param integer index of item to remove within the priority.
