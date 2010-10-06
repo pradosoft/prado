@@ -185,7 +185,10 @@ class TParameterMap extends TComponent
 		{
 			throw new TSqlMapException(
 				'sqlmap_unable_to_get_property_for_parameter',
-					$this->getID(), $property->getProperty(), get_class($object));
+				$this->getID(),
+				$property->getProperty(),
+				(is_object($object) ? get_class($object) : gettype($object))
+			);
 		}
 	}
 
