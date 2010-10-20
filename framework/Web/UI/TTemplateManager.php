@@ -891,15 +891,19 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			else
 				return array(self::CONFIG_EXPRESSION,ltrim($expr,'.'));
 		}
-		else if(preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>)\\s*/msS',$value,$matches) && $matches[0]===$value)
+		else if(preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>|<%\/.*?%>)\\s*/msS',$value,$matches) && $matches[0]===$value)
 		{
 			$value=$matches[1];
-			if($value[2]==='~') // a URL
+			if($value[2]==='~')
 				return array(self::CONFIG_ASSET,trim(substr($value,3,strlen($value)-5)));
-			else if($value[2]==='[')
+			elseif($value[2]==='[')
 				return array(self::CONFIG_LOCALIZATION,trim(substr($value,3,strlen($value)-6)));
-			else if($value[2]==='$')
+			elseif($value[2]==='$')
 				return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
+			elseif($value[2]==='/') {
+				$literal = trim(substr($value,3,strlen($value)-5));
+				return array(self::CONFIG_EXPRESSION,"dirname(\$this->getApplication()->getRequest()->getApplicationUrl()).'/$literal'");
+			}
 		}
 		else
 			return $value;
