@@ -2885,6 +2885,7 @@ framework/Web/UI/TPage.php -text
 framework/Web/UI/TPageStatePersister.php -text
 framework/Web/UI/TSessionPageStatePersister.php -text
 framework/Web/UI/TTemplateControl.php -text
+framework/Web/UI/TTemplateControlInheritable.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
 framework/Web/UI/WebControls/TBaseDataList.php -text
