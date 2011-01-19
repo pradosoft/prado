@@ -292,13 +292,11 @@ class TDbConnection extends TComponent
 			switch (($driver=$pdo->getAttribute(PDO::ATTR_DRIVER_NAME)))
 			{
 				case 'mysql':
-					$stmt = $pdo->prepare('SET CHARACTER SET ?');
+				case 'sqlite':
+					$stmt = $pdo->prepare('SET NAMES ?');
 				break;
 				case 'pgsql':
 					$stmt = $pdo->prepare('SET client_encoding TO ?');
-				break;
-				case 'sqlite':
-					$stmt = $pdo->prepare ('SET NAMES ?');
 				break;
 				default:
 					throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
