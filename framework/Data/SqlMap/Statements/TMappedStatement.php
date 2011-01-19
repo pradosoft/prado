@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.SqlMap.Statements
@@ -116,6 +116,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	public function __construct(TSqlMapManager $sqlMap, TSqlMapStatement $statement)
 	{
+		parent::__construct();
 		$this->_manager = $sqlMap;
 		$this->_statement = $statement;
 		$this->_command = new TPreparedCommand();

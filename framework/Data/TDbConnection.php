@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data
@@ -119,6 +119,7 @@ class TDbConnection extends TComponent
 	 */
 	public function __construct($dsn='',$username='',$password='', $charset='')
 	{
+		parent::__construct();
 		$this->_dsn=$dsn;
 		$this->_username=$username;
 		$this->_password=$password;
@@ -221,6 +222,11 @@ class TDbConnection extends TComponent
 			case 'pgsql':
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 			break;
+			case 'sqlite':
+				$stmt = $pdo->prepare ('SET NAMES ?');
+			break;
+			default:
+				throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 		}
 		$stmt->execute(array($this->_charset));
 	}

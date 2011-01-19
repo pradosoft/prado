@@ -202,9 +202,9 @@ class TErrorHandler extends TModule
 		);
 
 		if($isDebug)
-			header("HTTP/1.0 $statusCode ".$exception->getMessage(), true, $statusCode);
+			header("HTTP/1.0 $statusCode ".$exception->getMessage(), true, TPropertyValue::ensureInteger($statusCode));
 		else
-			header("HTTP/1.0 $statusCode", true, $statusCode);
+			header("HTTP/1.0 $statusCode", true, TPropertyValue::ensureInteger($statusCode));
 
 		echo strtr($content,$tokens);
 	}

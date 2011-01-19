@@ -53,9 +53,9 @@ class TMssqlMetaData extends TDbMetaData
                      AND t.table_name = :table
 EOD;
 		if($schemaName!==null)
-			$sql .= ' AND t.schema_name = :schema';
+			$sql .= ' AND t.table_schema = :schema';
 		if($catalogName!==null)
-			$sql .= ' AND t.catalog_name = :catalog';
+			$sql .= ' AND t.table_catalog = :catalog';
 
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);

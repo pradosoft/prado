@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.ActiveRecord
@@ -42,6 +42,7 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function __construct(TActiveRecordManager $manager)
 	{
+		parent::__construct();
 		$this->_manager=$manager;
 	}
 
@@ -306,7 +307,7 @@ class TActiveRecordGateway extends TComponent
 			if($column->getIsExcluded())
 				continue;
 			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value===null && !$column->hasSequence() && !$column->getDefaultValue())
+			if(!$column->getAllowNull() && $value===null && !$column->hasSequence() && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
 			{
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null', get_class($record),
@@ -342,7 +343,7 @@ class TActiveRecordGateway extends TComponent
 			if($column->getIsExcluded())
 				continue;
 			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value===null)
+			if(!$column->getAllowNull() && $value===null && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
 			{
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null', get_class($record),

@@ -58,13 +58,13 @@ class TDataSourceConfig extends TModule
 	 */
 	public function init($xml)
 	{
-		if($prop=$xml->getElementByTagName('database'))
-		{
-			$db=$this->getDbConnection();
-			foreach($prop->getAttributes() as $name=>$value)
-				$db->setSubproperty($name,$value);
+			if($prop=$xml->getElementByTagName('database'))
+			{
+				$db=$this->getDbConnection();
+				foreach($prop->getAttributes() as $name=>$value)
+					$db->setSubproperty($name,$value);
+			}
 		}
-	}
 
 	/**
 	 * The module ID of another TDataSourceConfig. The {@link getDbConnection DbConnection}
@@ -153,4 +153,3 @@ class TDataSourceConfig extends TModule
 			throw new TConfigurationException('datasource_dbconnection_invalid',$id);
 	}
 }
-

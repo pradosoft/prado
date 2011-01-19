@@ -366,6 +366,7 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_unsupported_driver_charset	= Le pilote de base de données '{0}' ne supporte pas la modification du jeu de caractères.
 
 dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
 dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
@@ -409,3 +410,9 @@ feedservice_id_required					= TFeedService requires 'id' attribute in its feed e
 feedservice_feedtype_invalid			= The class feed '{0}' must implement IFeedContentProvider interface.
 feedservice_class_required				= TFeedService requires 'class' attribute in its feed elements.
 feedservice_feed_unknown				= Unknown feed '{0}' requested.
+
+tactivetablecell_control_outoftable		= {0} '{1}' must be enclosed within a TTableRow control.
+tactivetablecell_control_notincollection = {0} '{1}' no member of the TTableCellCollection of the parent TTableRow control.
+
+tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable control.
+tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.

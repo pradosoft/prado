@@ -163,7 +163,7 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':schema',$schemaName);
 		//$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar()) === 'VIEW';
+		return intval($command->queryScalar() === 'VIEW');
 	}
 
 	/**

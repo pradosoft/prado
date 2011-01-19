@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data
@@ -47,6 +47,7 @@ class TDbDataReader extends TComponent implements Iterator
 	 */
 	public function __construct(TDbCommand $command)
 	{
+		parent::__construct();
 		$this->_statement=$command->getPdoStatement();
 		$this->_statement->setFetchMode(PDO::FETCH_ASSOC);
 	}

@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.SqlMap.Configuration
@@ -43,6 +43,7 @@ class TParameterMap extends TComponent
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->_properties = new TList;
 		$this->_propertyMap = new TMap;
 	}
@@ -184,7 +185,10 @@ class TParameterMap extends TComponent
 		{
 			throw new TSqlMapException(
 				'sqlmap_unable_to_get_property_for_parameter',
-					$this->getID(), $property->getProperty(), get_class($object));
+				$this->getID(),
+				$property->getProperty(),
+				(is_object($object) ? get_class($object) : gettype($object))
+			);
 		}
 	}
 
