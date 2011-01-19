@@ -289,7 +289,7 @@ class TDbConnection extends TComponent
 			$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,true);
 		if($this->charset!==null)
 		{
-			switch ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
+			switch (($driver=$pdo->getAttribute(PDO::ATTR_DRIVER_NAME)))
 			{
 				case 'mysql':
 					$stmt = $pdo->prepare('SET CHARACTER SET ?');
@@ -300,6 +300,8 @@ class TDbConnection extends TComponent
 				case 'sqlite':
 					$stmt = $pdo->prepare ('SET NAMES ?');
 				break;
+				default:
+					throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 			}
 			$stmt->execute(array($this->charset));
 		}

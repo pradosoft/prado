@@ -222,6 +222,11 @@ class TDbConnection extends TComponent
 			case 'pgsql':
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 			break;
+			case 'sqlite':
+				$stmt = $pdo->prepare ('SET NAMES ?');
+			break;
+			default:
+				throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 		}
 		$stmt->execute(array($this->_charset));
 	}

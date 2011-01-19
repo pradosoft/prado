@@ -10,6 +10,7 @@
  */
 
 prado::using('System.Testing.Data.Schema.TDbSchema');
+prado::using('System.Testing.Data.Schema.mssql.*');
 
 /**
  * TMssqlSchema is the class for retrieving metadata information from a MS SQL Server database.
@@ -286,7 +287,7 @@ SELECT TABLE_NAME, TABLE_SCHEMA FROM [INFORMATION_SCHEMA].[TABLES]
 WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA=:schema
 EOD;
 		$command=$this->getDbConnection()->createCommand($sql);
-		$command->bindParam(":schema", $schema);
+		$command->bindParameter(":schema", $schema);
 		$rows=$command->queryAll();
 		$names=array();
 		foreach ($rows as $row)

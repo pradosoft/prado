@@ -366,6 +366,7 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_unsupported_driver_charset	= Le pilote de base de données '{0}' ne supporte pas la modification du jeu de caractères.
 
 dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
 dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}

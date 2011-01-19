@@ -372,6 +372,7 @@ tactivecustomvalidator_clientfunction_unsupported = {0} does not support client 
 
 dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
 dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
 
 dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
 dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
