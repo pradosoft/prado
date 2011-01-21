@@ -544,10 +544,27 @@ class THttpResponse extends TModule implements ITextWriter
 		if($request->getEnableCookieValidation())
 		{
 			$value=$this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
-			setcookie($cookie->getName(),$value,$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+			setcookie(
+				$cookie->getName(),
+				$value,
+				$cookie->getExpire(),
+				$cookie->getPath(),
+				$cookie->getDomain(),
+				$cookie->getSecure(),
+				$cookie->getHttpOnly()
+			);
 		}
-		else
-			setcookie($cookie->getName(),$cookie->getValue(),$cookie->getExpire(),$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+		else {
+			setcookie(
+				$cookie->getName(),
+				$cookie->getValue(),
+				$cookie->getExpire(),
+				$cookie->getPath(),
+				$cookie->getDomain(),
+				$cookie->getSecure(),
+				$cookie->getHttpOnly()
+			);
+		}
 	}
 
 	/**
@@ -557,7 +574,15 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function removeCookie($cookie)
 	{
-		setcookie($cookie->getName(),null,0,$cookie->getPath(),$cookie->getDomain(),$cookie->getSecure());
+		setcookie(
+			$cookie->getName(),
+			null,
+			0,
+			$cookie->getPath(),
+			$cookie->getDomain(),
+			$cookie->getSecure(),
+			$cookie->getHttpOnly()
+		);
 	}
 
 	/**
