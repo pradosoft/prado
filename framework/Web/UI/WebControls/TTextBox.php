@@ -122,25 +122,6 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 				$writer->addAttribute('type','text');
 				if(($text=$this->getText())!=='')
 					$writer->addAttribute('value',$text);
-				if(($act=$this->getAutoCompleteType())!=='None')
-				{
-					if($act==='Disabled')
-						$writer->addAttribute('autocomplete','off');
-					else if($act==='Search')
-						$writer->addAttribute('vcard_name','search');
-					else if($act==='HomeCountryRegion')
-						$writer->addAttribute('vcard_name','HomeCountry');
-					else if($act==='BusinessCountryRegion')
-						$writer->addAttribute('vcard_name','BusinessCountry');
-					else
-					{
-						if(strpos($act,'Business')===0)
-							$act='Business'.'.'.substr($act,8);
-						else if(strpos($act,'Home')===0)
-							$act='Home'.'.'.substr($act,4);
-						$writer->addAttribute('vcard_name','vCard.'.$act);
-					}
-				}
 			}
 			else
 			{
@@ -148,6 +129,27 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 					$writer->addAttribute('value',$text);
 				$writer->addAttribute('type','password');
 			}
+
+			if(($act=$this->getAutoCompleteType())!=='None')
+			{
+				if($act==='Disabled')
+					$writer->addAttribute('autocomplete','off');
+				else if($act==='Search')
+					$writer->addAttribute('vcard_name','search');
+				else if($act==='HomeCountryRegion')
+					$writer->addAttribute('vcard_name','HomeCountry');
+				else if($act==='BusinessCountryRegion')
+					$writer->addAttribute('vcard_name','BusinessCountry');
+				else
+				{
+					if(strpos($act,'Business')===0)
+						$act='Business'.'.'.substr($act,8);
+					else if(strpos($act,'Home')===0)
+						$act='Home'.'.'.substr($act,4);
+					$writer->addAttribute('vcard_name','vCard.'.$act);
+				}
+			}
+
 			if(($cols=$this->getColumns())>0)
 				$writer->addAttribute('size',"$cols");
 			if(($maxLength=$this->getMaxLength())>0)
