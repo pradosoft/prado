@@ -159,6 +159,21 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			$this->_started=false;
 		}
 	}
+	
+	/**
+	 * Update the current session id with a newly generated one
+	 *
+	 * @param boolean $deleteOld Whether to delete the old associated session or not.
+	 * @return string old session id
+	 * @link http://php.net/manual/en/function.session-regenerate-id.php
+	 */
+	public function regenerate($deleteOld=false)
+	{
+		$old = $this->getID();
+		session_regenerate_id($deleteOld);
+		$this->setID(session_id());
+		return $old;
+	}
 
 	/**
 	 * @return boolean whether the session has started
