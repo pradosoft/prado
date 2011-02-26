@@ -80,8 +80,8 @@ class TClientScriptManager extends TApplicationComponent
 	 * Client-side javascript library packages, loads from SCRIPT_PATH.'/packages.php';
 	 * @var array
 	 */
-	 private static $_pradoPackages;
-	 
+	private static $_pradoPackages;
+
 	/**
 	 * Constructor.
 	 * @param TPage page that owns this client script manager
@@ -259,7 +259,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options=null)
 	{
 		$options = !is_array($options) ? array() : $options;
-		$class = new TReflectionClass($callbackHandler);
+		$class = new ReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
 		$optionString = TJavaScript::encode($options);
@@ -370,7 +370,7 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Registers a CSS file to be rendered in the page head
 	 *
-	 * The CSS files in themes are registered in {@link OnPreRenderComplete onPreRenderComplete} if you want to override 
+	 * The CSS files in themes are registered in {@link OnPreRenderComplete onPreRenderComplete} if you want to override
 	 * CSS styles in themes you need to register it after this event is completed.
 	 *
 	 * Example:

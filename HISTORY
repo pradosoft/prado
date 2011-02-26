@@ -19,6 +19,7 @@ CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsolu
 EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define wether to use http or https on pattern level (Yves)
 EHN: Add second parameter to THttpResponse::appendHeader whether the header should replace a previous similar header, or add a second header of the same type (Yves)
 ENH: Add THttpSession::regenerate() to update the current session id with a newly generated one (Yves)
+CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yves)
 
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 

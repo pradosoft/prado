@@ -420,7 +420,7 @@ class PradoBase
 			if(isset($t['file']))
 				echo basename($t['file']) . ':' . $t['line'];
 			else
-			   echo '<PHP inner-code>';
+				 echo '<PHP inner-code>';
 			echo ' -- ';
 			if(isset($t['class']))
 				echo $t['class'] . $t['type'];
@@ -625,18 +625,6 @@ class PradoBase
 	}
 }
 
-/**
- * TReflectionClass class.
- * This class was originally written to cope with the incompatibility between different PHP versions.
- * It is equivalent to ReflectionClass for PHP version >= 5.1.0
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
- * @package System
- * @since 3.0
- */
-class TReflectionClass extends ReflectionClass
-{
-}
 
 /**
  * Includes the classes essential for PradoBase class

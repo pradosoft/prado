@@ -90,8 +90,8 @@ class TComponent
 	 */
 	public function __construct() {
 	}
-	
-	
+
+
 	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * Do not call this method. This is a PHP magic method that we override
@@ -365,7 +365,7 @@ class TComponent
 						$method=substr($handler,$pos+1);
 						if(method_exists($object,$method))
 							$object->$method($sender,$param);
-							
+
 						else
 							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,$handler);
 					}
@@ -466,7 +466,7 @@ class TComponent
 	public function addParsedObject($object)
 	{
 	}
-	
+
 	/**
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
@@ -893,7 +893,7 @@ class TComponentReflection extends TComponent
 
 	private function reflect()
 	{
-		$class=new TReflectionClass($this->_className);
+		$class=new ReflectionClass($this->_className);
 		$properties=array();
 		$events=array();
 		$methods=array();

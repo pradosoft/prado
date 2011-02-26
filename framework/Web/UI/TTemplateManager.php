@@ -170,7 +170,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 {
 	/**
 	 *  '<!--.*?--!>' - template comments
-     *  '<!--.*?-->'  - HTML comments
+		 *  '<!--.*?-->'  - HTML comments
 	 *	'<\/?com:([\w\.]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.]+)\s*>'  - property tags
 	 *	'<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>'  - directives
@@ -583,7 +583,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		$n=preg_match_all(self::REGEX_RULES,$input,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
 		$expectPropEnd=false;
 		$textStart=0;
-        $stack=array();
+				$stack=array();
 		$container=-1;
 		$matchEnd=0;
 		$c=0;
@@ -916,7 +916,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			$className=substr($type,$pos+1);
 		else
 			$className=$type;
-		$class=new TReflectionClass($className);
+		$class=new ReflectionClass($className);
 		if(is_subclass_of($className,'TControl') || $className==='TControl')
 		{
 			foreach($attributes as $name=>$att)
