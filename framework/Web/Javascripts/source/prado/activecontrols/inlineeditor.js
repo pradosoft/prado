@@ -30,6 +30,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.onclickListener = this.enterEditMode.bindAsEventListener(this);
 	    Event.observe(this.element, 'click', this.onclickListener);
 	    if (this.options.ExternalControl)
+	        // Issue 181
+	        $(this.options.ExternalControl).stopObserving('click', this.onclickListener);
 			Event.observe($(this.options.ExternalControl), 'click', this.onclickListener);
 	},
 
@@ -127,7 +129,10 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 
 		this.editField.style.display="none";
 		this.element.parentNode.insertBefore(this.editField,this.element)
-
+        
+        // Issue 181
+        $(this.editField).stopObserving();
+        
 		//handle return key within single line textbox
 		if(this.options.TextMode == 'SingleLine')
 		{

@@ -6,12 +6,15 @@ Prado.WebUI.PostBackControl.prototype =
 {
 	initialize : function(options)
 	{
+	
 		this._elementOnClick = null, //capture the element's onclick function
 
 		this.element = $(options.ID);
 		Prado.Registry.set(options.ID, this);
 		if(this.element)
 		{
+			// Issue 181
+		    this.element.stopObserving();
 			if(this.onInit)
 				this.onInit(options);
 		}
@@ -196,6 +199,8 @@ Prado.WebUI.DefaultButton.prototype =
 {
 	initialize : function(options)
 	{
+        // Issue 181
+		$(options['Panel']).stopObserving();
 		this.options = options;
 		this._event = this.triggerEvent.bindEvent(this);
 		Event.observe(options['Panel'], 'keydown', this._event);

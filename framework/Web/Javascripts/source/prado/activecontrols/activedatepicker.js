@@ -13,6 +13,10 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		this.selectedDate = this.newDate();
 		this.positionMode = 'Bottom';
 
+
+        // Issue 181
+        $(this.control).stopObserving();
+        
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
@@ -24,6 +28,9 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 			this.trigger  = this.control;
 			var triggerEvent = this.options.TriggerEvent || "focus";
 		}
+		
+		// Issue 181
+        $(this.trigger).stopObserving();
 		
 		// Popup position
 		if(this.options.PositionMode == 'Top')
