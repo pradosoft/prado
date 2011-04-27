@@ -1585,11 +1585,15 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		this.updateValidationDisplay();
 		this.manager.updateSummary(this.group);
 		// Redispatch initial request if any
-		if (this.invoker instanceof Prado.CallbackRequest)
-		{
-			this.invoker.dispatch();
+		if(this.isValid) {
+			if(this.invoker instanceof Prado.CallbackRequest) {
+				this.invoker.dispatch();
+			} else {
+				$('PRADO_POSTBACK_TARGET').value = this.invoker.id;
+				$('PRADO_POSTBACK_PARAMETER').value = null;
+				$(this.options.FormID).submit();
+			}
 		}
-
 	},
 
 	/**
