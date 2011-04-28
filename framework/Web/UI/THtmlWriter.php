@@ -185,7 +185,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	 */
 	public function flush()
 	{
-		$this->_writer->flush();
+		return $this->_writer->flush();
 	}
 
 	/**
