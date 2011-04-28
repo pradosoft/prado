@@ -219,13 +219,18 @@ function get_javascript_code($minify=false)
 
 /**
  * Prints headers to serve javascript
+ *
+ * @param string $filePath (default: NULL)
  */
-function print_headers()
+function print_headers($filePath = false)
 {
 	$expiresOffset = is_debug_mode() ? -10000 : 3600 * 24 * 10; //no cache
 	header("Content-type: text/javascript");
 	header("Vary: Accept-Encoding");  // Handle proxies
 	header("Expires: " . @gmdate("D, d M Y H:i:s", @time() + $expiresOffset) . " GMT");
+	if(null !== $filePath && is_file($filePath)) {
+		header("Last-Modified: " . @gmdate("D, d M Y H:i:s", filectime($filePath)) . " GMT");
+	}
 	if(($enc = supports_gzip_encoding()) !== null)
 		header("Content-Encoding: " . $enc);
 }
@@ -561,10 +566,8 @@ if(count(get_script_requests()) > 0)
 		{
 			if(!is_file($filename))
 				save_javascript(get_javascript_code(true), $filename);
-			print_headers();
+			print_headers($filename);
 			echo get_saved_javascript($filename);
 		}
 	}
 }
-
-?>
