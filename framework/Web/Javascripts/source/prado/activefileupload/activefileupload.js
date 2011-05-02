@@ -38,7 +38,7 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		// set the form to submit in the iframe, submit it, and then reset it.
 		this.oldtargetID = this.form.target;
 		this.oldFormAction = this.form.action;
-		this.form.action += '?TActiveFileUpload_InputId='+this.options.inputID+'&TActiveFileUpload_TargetId='+this.options.targetID;
+		this.form.action += (this.form.action.indexOf('?')>0 ? '&' : '?')+'TActiveFileUpload_InputId='+this.options.inputID+'&TActiveFileUpload_TargetId='+this.options.targetID;
 		this.form.target = this.options.targetID;
 		this.form.submit();
 		this.form.action = this.oldFormAction;
