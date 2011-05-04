@@ -23,7 +23,7 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		this.element.stopObserving();
 		this.track.stopObserving();
 		this.handle.stopObserving();
-		this.progress.stopObserving();
+		if (this.progress) this.progress.stopObserving();
 		this.hiddenField.stopObserving();
 		
 		// Will be used to align the handle onto the track, if necessary
