@@ -478,14 +478,14 @@ class TOutputCache extends TControl implements INamingContainer
 			$writer->write($this->_contents);
 		else if($this->_cacheAvailable)
 		{
-			$textWriter=new TTextWriter;
-
+			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+			
 			$stack=$this->getPage()->getCachingStack();
 			$stack->push($this);
-			parent::render(new THtmlWriter($textWriter));
+			parent::render($htmlWriter);
 			$stack->pop();
 
-			$content=$textWriter->flush();
+			$content=$htmlWriter->flush();
 			$data=array($content,$this->_state,$this->_actions,time());
 			$this->_cache->set($this->getCacheKey(),$data,$this->getDuration(),$this->getCacheDependency());
 			$writer->write($content);

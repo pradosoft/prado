@@ -169,10 +169,10 @@ class TXmlTransform extends TControl {
    */
   public function render($writer) {
     if(($document=$this->getSourceXmlDocument()) === null) {
-      $textWriter = new TTextWriter();
-      parent::render(new THtmlWriter($textWriter));
+	  $htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+	  parent::render($htmlWriter);
       $document = new DOMDocument();
-      $document->loadXML($textWriter->flush());
+      $document->loadXML($htmlWriter->flush());
     }
     $stylesheet = $this->getTransformXmlDocument();
 

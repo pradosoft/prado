@@ -45,9 +45,9 @@ class TSafeHtml extends TControl
 	 */
 	public function render($writer)
 	{
-		$textWriter=new TTextWriter;
-		parent::render(new THtmlWriter($textWriter));
-		$writer->write($this->parseSafeHtml($textWriter->flush()));
+		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+		parent::render($htmlWriter);
+		$writer->write($this->parseSafeHtml($htmlWriter->flush()));
 	}
 
 	/**

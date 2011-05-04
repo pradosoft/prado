@@ -201,8 +201,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function render($writer)
 	{
-		$textWriter=new TTextWriter;
-		$htmlWriter=new THtmlWriter($textWriter);
+		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 		$subs = array();
 		foreach($this->getParameters() as $key => $value)
 			$subs['{'.$key.'}'] = $value;
@@ -213,12 +212,12 @@ class TTranslate extends TI18NControl
 			elseif($control instanceof TControl)
 				$control->render($htmlWriter);
 			elseif(is_string($control))
-				$textWriter->write($control);
+				$htmlWriter->write($control);
 		}
 
 		$text = $this->getText();
 		if(strlen($text)==0)
-			$text = $textWriter->flush();
+			$text = $htmlWriter->flush();
 		if($this->getTrim())
 			$text = trim($text);
 

@@ -75,9 +75,9 @@ abstract class TTextProcessor extends TWebControl
 	{
 		if(($text=$this->getText())==='' && $this->getHasControls())
 		{
-			$textWriter=new TTextWriter;
-			parent::renderContents(new THtmlWriter($textWriter));
-			$text=$textWriter->flush();
+			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+			parent::renderContents($htmlWriter);
+			$text=$htmlWriter->flush();
 		}
 		if($text!=='')
 			$writer->write($this->processText($text));
