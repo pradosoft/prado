@@ -222,7 +222,7 @@ function get_javascript_code($minify=false)
  *
  * @param string $filePath (default: NULL)
  */
-function print_headers($filePath = false)
+function print_headers($filePath = null)
 {
 	$expiresOffset = is_debug_mode() ? -10000 : 3600 * 24 * 10; //no cache
 	header("Content-type: text/javascript");
