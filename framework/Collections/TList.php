@@ -91,7 +91,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function getIterator()
 	{
-		return new TListIterator($this->_d);
+		return new ArrayIterator( $this->_d );
 	}
 
 	/**
@@ -403,7 +403,8 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
  *
  * TListIterator is used by TList. It allows TList to return a new iterator
  * for traversing the items in the list.
- *
+ * 
+ * @deprecated Issue 264 : ArrayIterator should be used instead 
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Collections

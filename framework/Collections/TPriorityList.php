@@ -169,7 +169,7 @@ class TPriorityList extends TList
 	 */
 	public function getIterator()
 	{
-		return new TPriorityListIterator($this->flattenPriorities());
+		return new ArrayIterator( $this->flattenPriorities() );
 	}
 	
 	/**
@@ -708,7 +708,8 @@ class TPriorityList extends TList
  *
  * TPriorityListIterator is used by TPriorityList. It allows TPriorityList to return a new iterator
  * for traversing the items in the priority list.
- *
+ * 
+ * @deprecated Issue 264 : ArrayIterator should be used instead  
  * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id: TPriorityList.php 2541 2010-10-03 15:05:13Z javalizard $
  * @package System.Collections
