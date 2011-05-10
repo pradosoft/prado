@@ -216,7 +216,6 @@ Prado.WebUI.DefaultButton.prototype =
 			if(defaultButton)
 			{
 				this.triggered = true;
-				$('PRADO_POSTBACK_TARGET').value = this.options.EventTarget;
 				Event.fireEvent(defaultButton, this.options['Event']);
 				Event.stop(ev);
 			}
