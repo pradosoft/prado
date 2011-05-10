@@ -44,7 +44,6 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
-		$this->setButtonType(TButtonType::Button);
 	}
 
 	/**
