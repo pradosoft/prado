@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <application id="Time-Tracker" Mode="Debug">
-
-  <!-- configure to use Quickstart theme directory -->
   <paths>
-	<alias id="Quickstart" path="../../quickstart" />
-	<using namespace="Quickstart.protected.controls.*" />
 	<using namespace="System.Data.*" />
 	<using namespace="System.Security.*" />
 	<using namespace="Application.App_Code.*" />

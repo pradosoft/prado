@@ -5,9 +5,6 @@ return array(
 		'Mode'=>'Debug'
 	),
 	'paths' => array(
-		'aliases' => array(
-			'Quickstart' => '../../quickstart',
-		),
 		'using' => array(
 			'System.Data.*',
 			'System.Security.*',
