@@ -12,7 +12,7 @@ class Ticket897TestCase extends SeleniumTestCase
 		$this->select($base.'Date_day', 22);
 		
 		$this->clickAndWait($base.'SendButton');
-		$this->assertTextPresent('2008-10-22');
+		$this->assertTextPresent(date('Y').'-10-22');
 	}
 }
 

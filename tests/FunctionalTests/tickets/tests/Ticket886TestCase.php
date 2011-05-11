@@ -8,7 +8,7 @@ class Ticket886TestCase extends SeleniumTestCase
 		$this->assertTitle("Verifying Ticket 886");
 		$base = 'ctl0_Content_';
 		$this->clickAndWait($base.'SendButton');
-		$this->assertTextPresent('2008-01-01');
+		$this->assertTextPresent(date('Y').'-01-01');
 	}
 }
 

@@ -5,7 +5,7 @@ class Ticket703TestCase extends SeleniumTestCase
 	{
 		$base = 'ctl0_Content_';
 		$this->open('tickets/index.php?page=Ticket703.Ticket703');
-		$this->assertTitle("Verifying Ticket 703.703");
+		$this->assertTitle("Verifying Ticket703.Ticket703 703.703");
 		// Start with an empty log
 		$this->click($base.'ctl2');
 		// Wait for callback to be lanched
