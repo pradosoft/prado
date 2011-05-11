@@ -100,9 +100,9 @@ class ActiveDatePickerTestCase extends SeleniumTestCase
 		$this->verifySelected("datepicker2_month", date('m', $dateToCheck));
 		$this->verifySelected("datepicker2_day", date('d', $dateToCheck));
 		$this->verifySelected("datepicker2_year", date('Y', $dateToCheck));
-		$this->select("datepicker2_year", 2005);
+		$this->select("datepicker2_year", date('Y')+1);
 		$this->pause(800);
-		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), 2005);
+		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
 		$this->verifyText("status2", date('m-d-Y', $dateToCheck));
 
 
@@ -110,9 +110,9 @@ class ActiveDatePickerTestCase extends SeleniumTestCase
 		$dateToCheck=time();
 		$this->verifySelected("datepicker3_month", date('F', $dateToCheck));
 		$this->verifySelected("datepicker3_year", date('Y', $dateToCheck));
-		$this->select("datepicker3_year", 2005);
+		$this->select("datepicker3_year", date('Y')+1);
 		$this->pause(800);
-		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), 2005);
+		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
 		$this->verifyText("status3", date('m/Y', $dateToCheck));
 	}
 }
