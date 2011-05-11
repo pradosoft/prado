@@ -1155,10 +1155,22 @@ Prado.WebUI.TBaseValidator.prototype =
 	 getValidationValue : function(control)
 	 {
 	 	var value = this.getRawValidationValue(control);
-		if(Object.isString(value))
-			return this.trim(value);
-		else
-			return value;
+		if(!control)
+			control = this.control
+		switch(this.options.ControlType)
+		{
+			case 'TDatePicker':
+				return value;
+			case 'THtmlArea':
+				return this.trim(value);
+			case 'TRadioButton':
+				return value;
+			default:
+				if(this.isListControlType())
+					return value;
+				else
+					return this.trim(value);
+		}
 	 },
 
 	/**
