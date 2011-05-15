@@ -10,7 +10,7 @@ class Ticket439TestCase extends SeleniumTestCase
 		$this->click("{$base}button1");
 		$this->waitForPageToLoad(3000);
 		$this->pause(800);
-		$this->assertTitle("Verifying Ticket Home");
+		$this->assertTitle("Verifying Home");
 	}
 }
 ?>
