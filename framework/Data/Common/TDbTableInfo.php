@@ -41,7 +41,6 @@ class TDbTableInfo extends TComponent
 	 */
 	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
 	{
-		parent::__construct();
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
 		$this->_foreignKeys=$foreign;

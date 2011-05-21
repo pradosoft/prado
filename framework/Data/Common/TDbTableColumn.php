@@ -30,7 +30,6 @@ class TDbTableColumn extends TComponent
 	 */
 	public function __construct($columnInfo)
 	{
-		parent::__construct();
 		$this->_info=$columnInfo;
 	}
 

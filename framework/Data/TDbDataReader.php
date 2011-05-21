@@ -47,7 +47,6 @@ class TDbDataReader extends TComponent implements Iterator
 	 */
 	public function __construct(TDbCommand $command)
 	{
-		parent::__construct();
 		$this->_statement=$command->getPdoStatement();
 		$this->_statement->setFetchMode(PDO::FETCH_ASSOC);
 	}

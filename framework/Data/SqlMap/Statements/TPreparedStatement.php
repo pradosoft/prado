@@ -26,7 +26,6 @@ class TPreparedStatement extends TComponent
 
 	public function __construct()
 	{
-		parent::__construct();
 		$this->_parameterNames=new TList;
 		$this->_parameterValues=new TMap;
 	}

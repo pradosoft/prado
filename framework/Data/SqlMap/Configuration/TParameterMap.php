@@ -43,7 +43,6 @@ class TParameterMap extends TComponent
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->_properties = new TList;
 		$this->_propertyMap = new TMap;
 	}

@@ -49,7 +49,6 @@ class TDbCommand extends TComponent
 	 */
 	public function __construct(TDbConnection $connection,$text)
 	{
-		parent::__construct();
 		$this->_connection=$connection;
 		$this->setText($text);
 	}

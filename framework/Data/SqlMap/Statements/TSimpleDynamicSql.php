@@ -24,7 +24,6 @@ class TSimpleDynamicSql extends TStaticSql
 
 	public function __construct($mappings)
 	{
-		parent::__construct();
 		$this->_mappings = $mappings;
 	}
 

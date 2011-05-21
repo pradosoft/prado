@@ -42,7 +42,6 @@ class TActiveRecordGateway extends TComponent
 	 */
 	public function __construct(TActiveRecordManager $manager)
 	{
-		parent::__construct();
 		$this->_manager=$manager;
 	}
 

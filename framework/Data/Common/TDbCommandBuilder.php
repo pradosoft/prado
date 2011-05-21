@@ -30,7 +30,6 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function __construct($connection=null, $tableInfo=null)
 	{
-		parent::__construct();
 		$this->setDbConnection($connection);
 		$this->setTableInfo($tableInfo);
 	}

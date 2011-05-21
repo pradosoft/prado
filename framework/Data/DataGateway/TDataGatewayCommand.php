@@ -43,7 +43,6 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function __construct($builder)
 	{
-		parent::__construct();
 		$this->_builder = $builder;
 	}
 
@@ -470,7 +469,6 @@ class TDataGatewayEventParameter extends TEventParameter
 
 	public function __construct($command,$criteria)
 	{
-		parent::__construct();
 		$this->_command=$command;
 		$this->_criteria=$criteria;
 	}

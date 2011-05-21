@@ -225,7 +225,6 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __construct($data=array(), $connection=null)
 	{
-		parent::__construct();
 		if($connection!==null)
 			$this->setDbConnection($connection);
 		$this->setupColumnMapping();

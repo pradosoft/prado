@@ -60,7 +60,6 @@ class TSqlMapManager extends TComponent
 	 */
 	public function __construct($connection=null)
 	{
-		parent::__construct();
 		$this->_connection=$connection;
 
 		$this->_mappedStatements=new TMap;

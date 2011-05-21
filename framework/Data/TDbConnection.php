@@ -119,7 +119,6 @@ class TDbConnection extends TComponent
 	 */
 	public function __construct($dsn='',$username='',$password='', $charset='')
 	{
-		parent::__construct();
 		$this->_dsn=$dsn;
 		$this->_username=$username;
 		$this->_password=$password;

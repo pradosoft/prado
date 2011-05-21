@@ -116,7 +116,6 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	public function __construct(TSqlMapManager $sqlMap, TSqlMapStatement $statement)
 	{
-		parent::__construct();
 		$this->_manager = $sqlMap;
 		$this->_statement = $statement;
 		$this->_command = new TPreparedCommand();

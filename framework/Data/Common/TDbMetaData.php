@@ -31,7 +31,6 @@ abstract class TDbMetaData extends TComponent
 	 */
 	public function __construct($conn)
 	{
-		parent::__construct();
 		$this->_connection=$conn;
 	}
 

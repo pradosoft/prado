@@ -51,7 +51,6 @@ class TResultMap extends TComponent
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->_columns=new TMap;
 	}
 

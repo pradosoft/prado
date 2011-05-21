@@ -36,7 +36,6 @@ class TSqlMapGateway extends TComponent
 
 	public function __construct($manager)
 	{
-		parent::__construct();
 		$this->_manager=$manager;
 	}
 

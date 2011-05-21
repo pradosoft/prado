@@ -57,7 +57,6 @@ class TResultProperty extends TComponent
 	 */
 	public function __construct($resultMap=null)
 	{
-		parent::__construct();
 		if($resultMap instanceof TResultMap)
 			$this->_hostResultMapID = $resultMap->getID();
 	}
