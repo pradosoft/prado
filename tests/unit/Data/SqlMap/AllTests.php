@@ -6,7 +6,7 @@ if(!defined('PHPUnit_MAIN_METHOD')) {
 }
 
 require_once 'DynamicParameterTest.php';
-require_once './DataMapper/AllTests.php';
+require_once 'DataMapper/AllTests.php';
 
 class Data_SqlMap_AllTests {
 

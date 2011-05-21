@@ -68,7 +68,7 @@ class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($s->get4DigitYear(10), 2010, "Err 2-digit 2010");
 		$this->assertEquals($s->get4DigitYear(20), 2020, "Err 2-digit 2020");
 		$this->assertEquals($s->get4DigitYear(30), 2030, "Err 2-digit 2030");
-		$this->assertEquals($s->get4DigitYear(40), 1940, "Err 2-digit 1940");
+		$this->assertEquals($s->get4DigitYear(40), 2040, "Err 2-digit 2040");
 		$this->assertEquals($s->get4DigitYear(50), 1950, "Err 2-digit 1950");
 		$this->assertEquals($s->get4DigitYear(90), 1990, "Err 2-digit 1990");
 	}
