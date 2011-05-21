@@ -1,3 +1,28 @@
+Version 3.1.8 May ??, 2011
+BUG: Issue#226 - TTimerControl fires immediately (rojaro)
+BUG: Issue#229 - Typo in TCachePageStatePersister.php (Christophe)
+BUG: Issue#232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe) 
+BUG: Issue#236 - Bug in getIsView() in TOracleMetaData (rojaro)
+BUG: Issue#239 - set_magic_quotes_runtime is deprecate since php 5.3.0 and will be removed in 6.0 (rojaro)
+BUG: Issue#246 - TQueue::peek returns the top not the bottom (Christophe)
+BUG: Issue#268 - String comparison with "=" does not work in Mysql 5.1 (rojaro)
+BUG: Issue#273 - Typo in TURLMapping->getPatternMatches UrlFormat="Path" (rojaro)
+BUG: Issue#276 - TListItemCollection never existed caused by Warning "PradoBase::include_once(TListItemCollection.php)" (rojaro)
+BUG: Issue#277 - Inconsistence in setting 'day' value in TDatePicker (rojaro)
+BUG: Issue#278 - Typo in file TActiveRecordRelation (rojaro)
+BUG: Issue#285 - getPathOfNamespace returns cached namespace and ignores ext (rojaro)
+BUG: Issue#286 - TBoundColumn->initializeCell bugs (rojaro)
+BUG: Issue#287 - Inconsistent behavior in TSimpleDateFormatter->parse() (rojaro)
+BUG: Issue#288 - Fixed two bugs in the Translation->init() method (rojaro)
+BUG: Issue#294 - Better handling of missing array parameters in SQLMap (rojaro)
+BUG: Issue#296 - URL tag not being parsed in component attributes (rojaro)
+BUG: Issue#300 - Minor error in TErrorHandler.php (rojaro)
+
+
+
+ENH: Security manager: removed the zero byte right trim from the decryption routine and also made some cosmetic changes (rojaro) 
+ENH: Upgraded the phpunit ini file to work with PHPUnit 3.3 3.4 and 3.5. There are conditionals for 3.3 and 3.4. No more Framework file includes are needed with 3.5. (javalizard)
+
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)

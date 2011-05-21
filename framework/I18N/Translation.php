@@ -10,7 +10,7 @@
  * @package System.I18N
  */
 
- /**
+/**
  * Get the MessageFormat class.
  */
 Prado::using('System.I18N.core.MessageFormat');
@@ -52,7 +52,7 @@ class Translation extends TComponent
 
 			$source->setCulture($app->getCulture());
 
-			if($config['cache'])
+			if(TPropertyValue::ensureBoolean($config['cache']))
 				$source->setCache(new MessageCache($config['cache']));
 
 			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
@@ -63,7 +63,7 @@ class Translation extends TComponent
 
 			//save the message on end request
 			// Do it only once !
-			if (!$saveEventHandlerAttached)
+			if(!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave']))
 			{
 				Prado::getApplication()->attachEventHandler(
 				'OnEndRequest', array('Translation', 'saveMessages'));
@@ -105,4 +105,3 @@ class Translation extends TComponent
 		}
 	}
 }
-

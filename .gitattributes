@@ -2086,6 +2086,7 @@ framework/Caching/TXCache.php -text
 framework/Collections/TAttributeCollection.php -text
 framework/Collections/TDummyDataSource.php -text
 framework/Collections/TList.php -text
+framework/Collections/TListItemCollection.php -text
 framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Collections/TPagedList.php -text

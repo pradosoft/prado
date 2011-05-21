@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSecurityManager class file
  *
@@ -41,12 +42,13 @@
  */
 class TSecurityManager extends TModule
 {
-	const STATE_VALIDATION_KEY='prado:securitymanager:validationkey';
-	const STATE_ENCRYPTION_KEY='prado:securitymanager:encryptionkey';
-	private $_validationKey=null;
-	private $_encryptionKey=null;
-	private $_validation=TSecurityManagerValidationMode::SHA1;
-	private $_encryption='3DES';
+	const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
+	const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';
+
+	private $_validationKey = null;
+	private $_encryptionKey = null;
+	private $_validation = TSecurityManagerValidationMode::SHA1;
+	private $_encryption = '3DES';
 
 	/**
 	 * Initializes the module.
@@ -72,12 +74,10 @@ class TSecurityManager extends TModule
 	 */
 	public function getValidationKey()
 	{
-		if($this->_validationKey===null)
-		{
-			if(($this->_validationKey=$this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))===null)
-			{
-				$this->_validationKey=$this->generateRandomKey();
-				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY,$this->_validationKey,null);
+		if(null === $this->_validationKey) {
+			if(null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
+				$this->_validationKey = $this->generateRandomKey();
+				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY, $this->_validationKey, null);
 			}
 		}
 		return $this->_validationKey;
@@ -89,10 +89,10 @@ class TSecurityManager extends TModule
 	 */
 	public function setValidationKey($value)
 	{
-		if($value!=='')
-			$this->_validationKey=$value;
-		else
+		if('' === $value)
 			throw new TInvalidDataValueException('securitymanager_validationkey_invalid');
+
+		$this->_validationKey = $value;
 	}
 
 	/**
@@ -101,12 +101,10 @@ class TSecurityManager extends TModule
 	 */
 	public function getEncryptionKey()
 	{
-		if($this->_encryptionKey===null)
-		{
-			if(($this->_encryptionKey=$this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))===null)
-			{
-				$this->_encryptionKey=$this->generateRandomKey();
-				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY,$this->_encryptionKey,null);
+		if(null === $this->_encryptionKey) {
+			if(null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
+				$this->_encryptionKey = $this->generateRandomKey();
+				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null);
 			}
 		}
 		return $this->_encryptionKey;
@@ -118,10 +116,10 @@ class TSecurityManager extends TModule
 	 */
 	public function setEncryptionKey($value)
 	{
-		if($value!=='')
-			$this->_encryptionKey=$value;
-		else
+		if('' === $value)
 			throw new TInvalidDataValueException('securitymanager_encryptionkey_invalid');
+
+		$this->_encryptionKey = $value;
 	}
 
 	/**
@@ -137,7 +135,7 @@ class TSecurityManager extends TModule
 	 */
 	public function setValidation($value)
 	{
-		$this->_validation=TPropertyValue::ensureEnum($value,'TSecurityManagerValidationMode');
+		$this->_validation = TPropertyValue::ensureEnum($value, 'TSecurityManagerValidationMode');
 	}
 
 	/**
@@ -164,20 +162,18 @@ class TSecurityManager extends TModule
 	 */
 	public function encrypt($data)
 	{
-		if(function_exists('mcrypt_encrypt'))
-		{
-			$module=mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
-			$key=substr(md5($this->getEncryptionKey()),0,mcrypt_enc_get_key_size($module));
-			srand();
-			$iv=mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
-			mcrypt_generic_init($module,$key,$iv);
-			$encrypted=$iv.mcrypt_generic($module,$data);
-			mcrypt_generic_deinit($module);
-			mcrypt_module_close($module);
-			return $encrypted;
-		}
-		else
+		if(!function_exists('mcrypt_encrypt'))
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
+
+		$module = mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
+		srand();
+		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
+		mcrypt_generic_init($module, $key, $iv);
+		$encrypted = $iv.mcrypt_generic($module, $data);
+		mcrypt_generic_deinit($module);
+		mcrypt_module_close($module);
+		return $encrypted;
 	}
 
 	/**
@@ -188,20 +184,18 @@ class TSecurityManager extends TModule
 	 */
 	public function decrypt($data)
 	{
-		if(function_exists('mcrypt_decrypt'))
-		{
-			$module=mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
-			$key=substr(md5($this->getEncryptionKey()),0,mcrypt_enc_get_key_size($module));
-			$ivSize=mcrypt_enc_get_iv_size($module);
-			$iv=substr($data,0,$ivSize);
-			mcrypt_generic_init($module,$key,$iv);
-			$decrypted=mdecrypt_generic($module,substr($data,$ivSize));
-			mcrypt_generic_deinit($module);
-			mcrypt_module_close($module);
-			return rtrim($decrypted,"\0");
-		}
-		else
+		if(!function_exists('mcrypt_decrypt'))
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
+		
+		$module = mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
+		$ivSize = mcrypt_enc_get_iv_size($module);
+		$iv = substr($data, 0, $ivSize);
+		mcrypt_generic_init($module, $key, $iv);
+		$decrypted = mdecrypt_generic($module, substr($data, $ivSize));
+		mcrypt_generic_deinit($module);
+		mcrypt_module_close($module);
+		return $decrypted;
 	}
 
 	/**
@@ -211,7 +205,7 @@ class TSecurityManager extends TModule
 	 */
 	public function hashData($data)
 	{
-		$hmac=$this->computeHMAC($data);
+		$hmac = $this->computeHMAC($data);
 		return $hmac.$data;
 	}
 
@@ -224,15 +218,13 @@ class TSecurityManager extends TModule
 	 */
 	public function validateData($data)
 	{
-		$len=$this->_validation==='SHA1'?40:32;
-		if(strlen($data)>=$len)
-		{
-			$hmac=substr($data,0,$len);
-			$data2=substr($data,$len);
-			return $hmac===$this->computeHMAC($data2)?$data2:false;
-		}
-		else
+		$len = 'SHA1' === $this->_validation ? 40 : 32;
+		if(strlen($data) < $len)
 			return false;
+
+		$hmac = substr($data, 0, $len);
+		$data2 = substr($data, $len);
+		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
 	}
 
 	/**
@@ -242,22 +234,18 @@ class TSecurityManager extends TModule
 	 */
 	protected function computeHMAC($data)
 	{
-		if($this->_validation==='SHA1')
-		{
-			$pack='H40';
-			$func='sha1';
+		if('SHA1' === $this->_validation) {
+			$pack = 'H40';
+			$func = 'sha1';
+		} else {
+			$pack = 'H32';
+			$func = 'md5';
 		}
-		else
-		{
-			$pack='H32';
-			$func='md5';
-		}
-		$key=$this->getValidationKey();
-		$key=str_pad($func($key), 64, chr(0));
+		$key = $this->getValidationKey();
+		$key = str_pad($func($key), 64, chr(0));
 		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
 	}
 }
-
 
 /**
  * TSecurityManagerValidationMode class.
@@ -275,7 +263,6 @@ class TSecurityManager extends TModule
  */
 class TSecurityManagerValidationMode extends TEnumerable
 {
-	const MD5='MD5';
-	const SHA1='SHA1';
+	const MD5 = 'MD5';
+	const SHA1 = 'SHA1';
 }
-

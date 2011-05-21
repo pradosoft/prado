@@ -188,7 +188,6 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 
 	startTimer : function()
 	{
-		setTimeout(this.onTimerEvent.bind(this), 100);
 		if(typeof(this.timer) == 'undefined' || this.timer == null)
 			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
 	},
