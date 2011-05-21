@@ -96,7 +96,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 
  	public function testGetIterator() {
 		$stack = new TStack(array(1, 2));
-		self::assertType('TStackIterator', $stack->getIterator());
+		self::assertType('ArrayIterator', $stack->getIterator());
 		$n = 0;
 		$found = 0;
 		foreach($stack as $index => $item) {
