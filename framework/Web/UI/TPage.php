@@ -84,23 +84,23 @@ class TPage extends TTemplateControl
 	/**
 	 * @var TMap data post back by user
 	 */
-	private $_postData;
+	protected $_postData;
 	/**
 	 * @var TMap postback data that is not handled during first invocation of LoadPostData.
 	 */
-	private $_restPostData;
+	protected $_restPostData;
 	/**
 	 * @var array list of controls whose data have been changed due to the postback
 	 */
-	private $_controlsPostDataChanged=array();
+	protected $_controlsPostDataChanged=array();
 	/**
 	 * @var array list of controls that need to load post data in the current request
 	 */
-	private $_controlsRequiringPostData=array();
+	protected $_controlsRequiringPostData=array();
 	/**
 	 * @var array list of controls that need to load post data in the next postback
 	 */
-	private $_controlsRegisteredForPostData=array();
+	protected $_controlsRegisteredForPostData=array();
 	/**
 	 * @var TControl control that needs to raise postback event
 	 */
@@ -112,11 +112,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var boolean whether the form has been rendered
 	 */
-	private $_formRendered=false;
+	protected $_formRendered=false;
 	/**
 	 * @var boolean whether the current rendering is within a form
 	 */
-	private $_inFormRender=false;
+	protected $_inFormRender=false;
 	/**
 	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
@@ -157,11 +157,11 @@ class TPage extends TTemplateControl
 	/**
 	 * @var array post data loader IDs.
 	 */
-	private $_postDataLoaders=array();
+	protected $_postDataLoaders=array();
 	/**
 	 * @var boolean true if loading post data.
 	 */
-	private $_isLoadingPostData=false;
+	protected $_isLoadingPostData=false;
 	/**
 	 * @var boolean whether client supports javascript
 	 */
@@ -914,7 +914,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Raises OnPostDataChangedEvent for controls whose data have been changed due to the postback.
 	 */
-	private function raiseChangedEvents()
+	protected function raiseChangedEvents()
 	{
 		foreach($this->_controlsPostDataChanged as $control)
 			$control->raisePostDataChangedEvent();
@@ -923,7 +923,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Raises PostBack event.
 	 */
-	private function raisePostBackEvent()
+	protected function raisePostBackEvent()
 	{
 		if(($postBackHandler=$this->getPostBackEventTarget())===null)
 			$this->validate();

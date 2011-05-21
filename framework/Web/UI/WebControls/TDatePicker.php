@@ -803,7 +803,9 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
-		$writer->renderBeginTag('img');
+		$writer->addAttribute('type', 'image');
+		$writer->addAttribute('onclick', 'return false;');
+		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
 

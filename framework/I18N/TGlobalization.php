@@ -149,7 +149,9 @@ class TGlobalization extends TModule
 	 */
 	public function getTranslationConfiguration()
 	{
-		return $this->_translation;
+		return ($this->getDefaultCulture() == $this->getCulture())
+			? null
+			: $this->_translation;
 	}
 
 	/**

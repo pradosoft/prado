@@ -151,7 +151,7 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 	 */
 	public function getIterator()
 	{
-		return new TQueueIterator($this->_d);
+		return new ArrayIterator( $this->_d );
 	}
 
 	/**

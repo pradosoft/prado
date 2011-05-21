@@ -14,38 +14,51 @@ Prado.WebUI.TTabPanel.prototype =
 		this.hiddenField = $(options.ID+'_1');
 		this.activeCssClass = options.ActiveCssClass;
 		this.normalCssClass = options.NormalCssClass;
-		var length = options.Views.length;
-		for(var i = 0; i<length; i++)
+		var i = 0;
+		for(var index in options.Views)
 		{
-			var item = options.Views[i];
-			var element = $(item+'_0');
-			if (element)
+			var element = $(index+'_0');
+			if (options.Views[index])
 			{
-				Event.observe(element, "click", this.elementClicked.bindEvent(this,item));
+				Event.observe(element, "click", this.elementClicked.bindEvent(this,index));
 			}
+			if(element)
+			{
+				if(this.hiddenField.value == i)
+				{
+					element.className=this.activeCssClass;
+					$(index).show();
+				}
+				else
+				{
+					element.className=this.normalCssClass;
+					$(index).hide();
+				}
+			}
+			i++;
 		}
 	},
 
 	elementClicked : function(event,viewID)
 	{
-		var length = this.views.length;
-		for(var i = 0; i<length; i++)
+		var i = 0;
+		for(var index in this.views)
 		{
-			var item = this.views[i];
-			if ($(item))
+			if ($(index))
 			{
-				if(item == viewID)
+				if(index == viewID)
 				{
-					$(item+'_0').className=this.activeCssClass;
-					$(item).show();
+					$(index+'_0').className=this.activeCssClass;
+					$(index).show();
 					this.hiddenField.value=i;
 				}
 				else
 				{
-					$(item+'_0').className=this.normalCssClass;
-					$(item).hide();
+					$(index+'_0').className=this.normalCssClass;
+					$(index).hide();
 				}
 			}
+			i++;
 		}
 	}
 };

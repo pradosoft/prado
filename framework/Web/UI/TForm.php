@@ -73,9 +73,9 @@ class TForm extends TControl
 	{
 		$page=$this->getPage();
 		$page->beginFormRender($writer);
-		$textWriter=new TTextWriter;
-		$this->renderChildren(new THtmlWriter($textWriter));
-		$content=$textWriter->flush();
+		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+		$this->renderChildren( $htmlWriter );
+		$content = $htmlWriter->flush();
 		$page->endFormRender($writer);
 
 		$this->addAttributesToRender($writer);

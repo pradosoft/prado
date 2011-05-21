@@ -80,7 +80,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 	 */
 	public function getIterator()
 	{
-		return new TMapIterator($this->_d);
+		return new ArrayIterator( $this->_d );
 	}
 
 	/**
@@ -272,6 +272,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
  * TMapIterator is used by TMap. It allows TMap to return a new iterator
  * for traversing the items in the map.
  *
+ * @deprecated Issue 264 : ArrayIterator should be used instead 
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Collections

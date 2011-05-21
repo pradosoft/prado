@@ -18,7 +18,7 @@
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
-class TCachingStatement implements IMappedStatement
+class TCachingStatement extends TComponent implements IMappedStatement
 {
 	private $_mappedStatement;
 

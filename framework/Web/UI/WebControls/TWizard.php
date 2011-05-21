@@ -954,6 +954,8 @@ class TWizard extends TWebControl implements INamingContainer
 			if($buttonStyle!==null)
 				$style->mergeWith($buttonStyle);
 			$style->apply($button);
+			if($activeStepType===TWizardStepType::Start)
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 		}
 
 		// apply styles to finish navigation buttons
@@ -977,6 +979,8 @@ class TWizard extends TWebControl implements INamingContainer
 			if($buttonStyle!==null)
 				$style->mergeWith($buttonStyle);
 			$style->apply($button);
+			if($activeStepType===TWizardStepType::Finish)
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 		}
 
 		// apply styles to step navigation buttons
@@ -1000,6 +1004,8 @@ class TWizard extends TWebControl implements INamingContainer
 			if($buttonStyle!==null)
 				$style->mergeWith($buttonStyle);
 			$style->apply($button);
+			if($activeStepType===TWizardStepType::Step)
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 		}
 	}
 

@@ -21,7 +21,7 @@ class SoapTestCase extends UnitTestCase
 	{
 		$result = $this->getClient()->getContacts();
 		$this->assertEqual(count($result), 1);
-		$obj = $result[0];
+		$obj = $result->Contact;
 		$this->assertEqual($obj->name, "me");
 		$this->assertEqual($obj->id, 1);
 		$this->assertEqual($obj->address->street, "sesamstreet");

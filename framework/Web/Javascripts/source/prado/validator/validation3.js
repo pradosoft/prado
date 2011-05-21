@@ -1155,10 +1155,22 @@ Prado.WebUI.TBaseValidator.prototype =
 	 getValidationValue : function(control)
 	 {
 	 	var value = this.getRawValidationValue(control);
-		if(Object.isString(value))
-			return this.trim(value);
-		else
-			return value;
+		if(!control)
+			control = this.control
+		switch(this.options.ControlType)
+		{
+			case 'TDatePicker':
+				return value;
+			case 'THtmlArea':
+				return this.trim(value);
+			case 'TRadioButton':
+				return value;
+			default:
+				if(this.isListControlType())
+					return value;
+				else
+					return this.trim(value);
+		}
 	 },
 
 	/**
@@ -1585,11 +1597,15 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		this.updateValidationDisplay();
 		this.manager.updateSummary(this.group);
 		// Redispatch initial request if any
-		if (this.invoker instanceof Prado.CallbackRequest)
-		{
-			this.invoker.dispatch();
+		if(this.isValid) {
+			if(this.invoker instanceof Prado.CallbackRequest) {
+				this.invoker.dispatch();
+			} else {
+				$('PRADO_POSTBACK_TARGET').value = this.invoker.id;
+				$('PRADO_POSTBACK_PARAMETER').value = null;
+				$(this.options.FormID).submit();
+			}
 		}
-
 	},
 
 	/**

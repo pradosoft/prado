@@ -964,6 +964,10 @@ class THttpCookie extends TComponent
 	 * @var boolean whether cookie should be sent via secure connection
 	 */
 	private $_secure=false;
+	/**
+	 * @var boolean if true the cookie value will be unavailable to JavaScript
+	 */
+	private $_httpOnly=false;
 
 	/**
 	 * Constructor.
@@ -1006,6 +1010,22 @@ class THttpCookie extends TComponent
 	public function setExpire($value)
 	{
 		$this->_expire=TPropertyValue::ensureInteger($value);
+	}
+
+	/**
+	 * @return boolean if true the cookie value will be unavailable to JavaScript
+	 */
+	public function getHttpOnly()
+	{
+		return $this->_httpOnly;
+	}
+
+	/**
+	 * @param boolean $value if true the cookie value will be unavailable to JavaScript
+	 */
+	public function setHttpOnly($value)
+	{
+		$this->_httpOnly = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
