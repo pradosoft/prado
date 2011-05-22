@@ -6,19 +6,19 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
-<h2>Version 3.1.3</h2>
+<h2 id="8001">Version 3.1.3</h2>
 <ul>
 <li>Added <a href="?page=ActiveControls.DragDrop">Drag and drop controls</a></li>
 <li>Added TActiveDatePicker control</li>
 </ul>
 
-<h2>Version 3.1.2</h2>
+<h2 id="8002">Version 3.1.2</h2>
 <ul>
 <li>Added a new active control <a href="?page=ActiveControls.ActivePager">TActivePager</a> that allows to paginate a databound control with an ajax callback.</li>
 <li>Added TFirebugLogRoute to send logs to the Firebug console</li>
 </ul>
 
-<h2>Version 3.1.1</h2>
+<h2 id="8003">Version 3.1.1</h2>
 <ul>
 <li>Added a new control <a href="?page=Controls.TabPanel">TTabPanel</a> that displays tabbed views.</li>
 <li>Added a new control <a href="?page=Controls.Keyboard">TKeyboard</a> that displays a virtual keyboard for text input.</li>

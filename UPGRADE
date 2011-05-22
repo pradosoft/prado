@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.1.7
+         Upgrading Instructions for PRADO Framework v3.1.8
          =================================================
 
 !!!IMPORTANT!!!
@@ -8,6 +8,12 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v3.1.7
+---------------------
+- tinyMCE has been updated to support Internet Explorer 9; a lot of new languages and plugins are now supported,
+but some of the old ones changed their name. If you have problems in getting THtmlArea localized with your language,
+check if the language code for your locale has changed and update it.
 
 Upgrading from v3.1.6
 ---------------------
