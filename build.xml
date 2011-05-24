@@ -352,9 +352,9 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
       </fileset>
     </delete>
     <exec command="${php} build.php" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} quickstart.tex -interaction=nonstopmode -max-print-line=120" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} quickstart.tex -interaction=nonstopmode -max-print-line=120" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} quickstart.tex -interaction=nonstopmode -max-print-line=120" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
     <move file="buildscripts/texbuilder/quickstart/quickstart.pdf" todir="${build.doc.dir}"/>
 
 	<echo>Building API manuals...</echo>

@@ -78,10 +78,10 @@ The <tt>marker</tt> value is used to surround any untranslated text.
 
 Each translation message is wrapped within a <tt>trans-unit</tt> tag, where <tt>source</tt> is the original message, and <tt>target</tt> is the translated message. Editors such as <a href="http://www.heartsome.net/EN/xlfedit.html">Heartsome XLIFF Translation Editor</a> can help in editing these XML files.
 
-<h2>Using a Database for translation</h2>
+<h2 id="166008">Using a Database for translation</h2>
 
 <com:SinceVersion Version="3.1.3" />
-<p>Since version 3.1.3 the messages can also be stored in a database using the connection id from an existing <tt>TDataSourceConfig</tt>. You have to create two tables in your database: <tt>catalogue</tt> and <tt>trans_unit</tt>. The catalogue table needs an entry for each catalogue you want to use. Example schemas for different databases can be found in the framework's <tt>I18N/schema</tt> directory. To configure translation with a database use:</>
+<p id="830016" class="block-content">Since version 3.1.3 the messages can also be stored in a database using the connection id from an existing <tt>TDataSourceConfig</tt>. You have to create two tables in your database: <tt>catalogue</tt> and <tt>trans_unit</tt>. The catalogue table needs an entry for each catalogue you want to use. Example schemas for different databases can be found in the framework's <tt>I18N/schema</tt> directory. To configure translation with a database use:</>
 
 <com:TTextHighlighter Language="xml" CssClass="source block-content">
 <module id="db1" class="System.Data.TDataSourceConfig">
@@ -97,7 +97,7 @@ Each translation message is wrapped within a <tt>trans-unit</tt> tag, where <tt>
 </module>
 </com:TTextHighlighter>
 
-<p>The translation messages will be stored in the <tt>trans_unit</tt> table. Add your translation in the <tt>target</tt> field of that table. You should make sure that you are working on the right catalogue by comparing the message's <tt>cat_id</tt> with that from the catalogue table.</p>
+<p id="830017" class="block-content">The translation messages will be stored in the <tt>trans_unit</tt> table. Add your translation in the <tt>target</tt> field of that table. You should make sure that you are working on the right catalogue by comparing the message's <tt>cat_id</tt> with that from the catalogue table.</p>
 
 <h2 id="6206">Setting and Changing Culture</h2>
 <p id="790633" class="block-content">Once globalization is enabled, you can access the globalization settings, such as, <tt>Culture</tt>, <tt>Charset</tt>, etc, using </p>

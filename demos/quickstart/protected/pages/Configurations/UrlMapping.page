@@ -133,9 +133,9 @@ parameters with these patterns if a lot of pages share common parameters.</p>
 </ul>
 </p>
 
-<p>As above, put more specific rules before more common rules as the first matching rule will be used.</p>
+<p id="250001" class="block-content">As above, put more specific rules before more common rules as the first matching rule will be used.</p>
 
-<p>To make configuration of friendly URLs for multiple pages even easier, you can also use <tt>UrlFormat="Path"</tt> 
+<p id="250002" class="block-content">To make configuration of friendly URLs for multiple pages even easier, you can also use <tt>UrlFormat="Path"</tt> 
 in combination with wildcard patterns. In fact, this feature only is available in combination with wildcard rules:</P>
 
 <com:TTextHighlighter Language="xml" CssClass="source block-content">
@@ -160,7 +160,7 @@ Since version 3.1.1, <tt>TUrlMapping</tt> starts to support constructing customi
 
 <p id="230234" class="block-content">
 A matching pattern is one whose <tt>ServiceID</tt> and <tt>ServiceParameter</tt> properties are the same as those passed to <tt>constructUrl()</tt> and whose named parameters are found in the GET variables. For example, <tt>constructUrl('Posts.ListPost',array('cat'=>2))</tt> will use the third pattern in the above example.
-<p>
+<p id="250003" class="block-content">
 
 <p id="230235" class="block-content">
 By default, <tt>TUrlMapping</tt> will construct URLs prefixed with the currently requesting PHP script path, such as <tt><b>/path/to/index.php</b>/article/3</tt>. Users may change this behavior by explicitly specifying the URL prefix through its <tt>UrlPrefix</tt> property. For example, if the Web server configuration treats <tt>index.php</tt> as the default script, we can set <tt>UrlPrefix</tt> as <tt>/path/to</tt> and the constructed URL will look like <tt>/path/to/article/3</tt>.

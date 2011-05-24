@@ -50,16 +50,16 @@
         <li>Fetch relationships (related foreign objects) such as "has many", "has one", "belongs to" and "many to many" via association table.</li>
         <li>Lazy loading of relationships.</li>
     </ul>
-<h2>Design Implications</h2>
-<p>
+<h2 id="144005">Design Implications</h2>
+<p id="720009" class="block-content">
 Prado's implementation of Active Record does not maintain referential identity. Each object obtained using
 Active Record is a copy of the data in the database. For example, If you ask for
 a particular customer and get back a <tt>Customer</tt> object, the next time you ask for
 that customer you get back another instance of a <tt>Customer</tt> object. This implies that a strict
 comparison (i.e., using <tt>===</tt>) will return false, while loose comparison (i.e., using <tt>==</tt>) will
 return true if the object values are equal by loose comparison.
-<p>
-<p>
+<p id="720010" class="block-content">
+<p id="720011" class="block-content">
 This is design implication related to the following question.
 <i>"Do you think of the customer as an object, of which there's only one,
 or do you think of the objects you operate on as <b>copies</b> of the database?"</i>
@@ -876,8 +876,8 @@ class Category extends TActiveRecord
 }
 </com:TTextHighlighter>
 
-<h3>Query Criteria for Related Objects</h3>
-<p>
+<h3 id="144007">Query Criteria for Related Objects</h3>
+<p id="720012" class="block-content">
 In the above, we show that an Active Record object can reference to its related objects by
 declaring a static class member $RELATIONS which specifies a list of relations. Each relation
 is specified as an array consisting of three elements: relation type, related AR class name,
@@ -1147,14 +1147,14 @@ arrays. E.g. <tt>$player->skills[] = new SkillRecord()</tt>. If <tt>array</tt> w
 will be thrown.
 </p>
 
-<h2>Column Mapping</h2>
-<p>
+<h2 id="144006">Column Mapping</h2>
+<p id="720013" class="block-content">
 Since v3.1.1, Active Record starts to support column mapping. Column mapping allows developers
 to address columns in Active Record using a more consistent naming convention. In particular,
 using column mapping, one can access a column using whatever name he likes, rather than limited by
 the name defined in the database schema.
 </p>
-<p>
+<p id="720014" class="block-content">
 To use column mapping, declare a static array named <tt>COLUMN_MAPPING</tt> in the Active Record class.
 The keys of the array are column names (called <i>physical column names</i>) as defined in the database
 schema, while the values are corresponding property names (called <i>logical column names</i>) defined
@@ -1181,7 +1181,7 @@ class UserRecord extends TActiveRecord
 	//....
 }
 </com:TTextHighlighter>
-<p>
+<p id="720015" class="block-content">
 With the above column mapping, we can address <tt>first_name</tt> using <tt>$userRecord->firstName</tt>
 instead of <tt>$userRecord->first_name</tt>. This helps separation of logic and model.
 </p>
