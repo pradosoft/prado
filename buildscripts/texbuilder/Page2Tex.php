@@ -210,8 +210,11 @@ class Page2Tex
 		$html = preg_replace_callback('/<!--\s*tabular:([^-]*)-->\s*<table[^>]*>((.|\n)*?)<\/table>/',
 						array($this, 'tabular'), $html);
 
-		$html = preg_replace('/<!--(.*)-->/', '', $html);
+		$html = preg_replace('/<!--((.|\n)*?)-->/', '', $html);
 		$html = preg_replace('/<div class="last-modified">((.|\n)*?)<\/div>/', '', $html);
+
+		//useless divs
+		$html = preg_replace('/<div [^>]*">((.|\n)*?)<\/div>/', '$1', $html);
 
 		//since
 		$html = preg_replace('/<com:SinceVersion[^>]+>/', '', $html);

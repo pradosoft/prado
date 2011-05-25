@@ -10,6 +10,8 @@
  * @package System.Web.UI.ActiveControls
  */
 
+Prado::using('System.Web.UI.ActiveControls.TTriggeredCallback');
+
 /**
  * TValueTriggeredCallback Class
  *

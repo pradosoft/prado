@@ -36,7 +36,7 @@ If both <tt>ActiveViewIndex</tt> and <tt>ActiveViewID</tt> are set, the latter t
 To use TTabPanel, write a template like following:
 </p>
 
-<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code-530117">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_530117">
  &lt;com:TTabPanel>
    &lt;com:TTabView Caption="View 1">
      content for view 1

@@ -260,21 +260,21 @@ class parserTutorialInlineTag extends parserLinkInlineTag
         {
             if (strpos(trim($this->value),' '))
             {
-                $v = split(' ',trim($this->value));
+				$v = explode(' ', trim($this->value));
                 $value = $c->getTutorialLink($v[0]);
                 array_shift($v);
                 $descrip = join($v,' ');
             } else $value = $c->getTutorialLink($this->value);
         } else
         {
-            $vals = split(',',$this->value);
+			$vals = explode(',',$this->value);
             $descrip = array();
             foreach($vals as $val)
             {
                 $val = trim($val);
                 if (strpos($val,' '))
                 {
-                    $v = split(' ',$val);
+                    $v = explode(' ',$val);
                     $value[] = $c->getTutorialLink($v[0]);
                     array_shift($v);
                     $descrip[] = join($v,' ');

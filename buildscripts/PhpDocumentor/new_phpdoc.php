@@ -75,7 +75,7 @@ if (!empty($_REQUEST['altuserdir'])) $configdir = $_REQUEST['altuserdir'];
                        <?php
         include_once('HTML_TreeMenu-1.1.2/TreeMenu.php');
         set_time_limit(0);    // six minute timeout
-        ini_set("memory_limit","256M");
+        ini_set("memory_limit","1024M");
         /**
          * Directory Node
          * @package HTML_TreeMenu
