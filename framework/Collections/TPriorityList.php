@@ -214,7 +214,7 @@ class TPriorityList extends TList
 	 * {@link offsetGet} calls this method.
 	 * @param integer the index of the item to get
 	 * @return mixed the element at the offset
-	 * @error TInvalidDataValueException Issued when the index is invalid
+	 * @throws TInvalidDataValueException Issued when the index is invalid
 	 */
 	public function itemAt($index)
 	{

@@ -7,7 +7,6 @@
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
  * @version $Id$
- * @package System.Web.UI.ActiveControls
  */
 
 /**
@@ -28,7 +27,6 @@
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
  * @version $Id$
- * @package System.Web.UI.ActiveControls
  */
 class TDraggable extends TPanel 
 {
@@ -199,6 +197,13 @@ class TDraggable extends TPanel
 	
 }
 
+/**
+ * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id$
+ */
 class TDraggableConstraint extends TEnumerable
 {
 	const None='None';
@@ -206,6 +211,13 @@ class TDraggableConstraint extends TEnumerable
 	const Vertical='Vertical';
 }
 
+/**
+ * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id$
+ */
 class TDraggableGhostingOptions extends TEnumerable
 {
 	const None='None';
@@ -213,6 +225,13 @@ class TDraggableGhostingOptions extends TEnumerable
 	const SuperGhosting='SuperGhosting';
 }
 
+/**
+ * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id$
+ */
 class TDraggableRevertOptions extends TEnumerable
 {
 	const None='None';

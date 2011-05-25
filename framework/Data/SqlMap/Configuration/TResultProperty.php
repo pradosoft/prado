@@ -139,7 +139,7 @@ class TResultProperty extends TComponent
 	}
 
 	/**
-	 * @parma string ID of another <resultMap> used to fill the property.
+	 * @param string ID of another <resultMap> used to fill the property.
 	 */
 	public function setResultMapping($value)
 	{

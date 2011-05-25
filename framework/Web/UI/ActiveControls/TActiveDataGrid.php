@@ -180,7 +180,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.1.4
+ * @since 3.2
  */
 class TActiveBoundColumn extends TBoundColumn {
 	protected function initializeHeaderCell($cell,$columnIndex) {
@@ -259,7 +259,7 @@ class TActiveBoundColumn extends TBoundColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.1.4
+ * @since 3.2
  */
 class TActiveEditCommandColumn extends TEditCommandColumn {
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup) {
@@ -301,7 +301,7 @@ class TActiveEditCommandColumn extends TEditCommandColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.1.4
+ * @since 3.2
  */
 class TActiveButtonColumn extends TButtonColumn {
 	public function initializeCell($cell,$columnIndex,$itemType) {
@@ -348,7 +348,7 @@ class TActiveButtonColumn extends TButtonColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.1.4
+ * @since 3.2
  */
 class TActiveTemplateColumn extends TTemplateColumn {
 	protected function initializeHeaderCell($cell,$columnIndex) {
@@ -405,6 +405,20 @@ class TActiveTemplateColumn extends TTemplateColumn {
 	}
 }
 
+/**
+ * TActiveHyperLinkColumn class
+ *
+ * TActiveHyperLinkColumn contains a hyperlink for each item in the column.
+ *
+ * This is the active counterpart to the {@link THyperLinkColumn} control. For that purpose,
+ * if sorting is allowed, the header links/buttons are replaced by active controls.
+ *
+ * Please refer to the original documentation of the {@link THyperLinkColumn} for usage.
+ *
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2
+ */
 class TActiveHyperLinkColumn extends THyperLinkColumn
 {
 
@@ -471,9 +485,23 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
 	}
 }
 
+/**
+ * TActiveCheckBoxColumn class
+ *
+ * TActiveCheckBoxColumn represents a checkbox column that is bound to a field in a data source.
+ *
+ * This is the active counterpart to the {@link TCheckBoxColumn} control. For that purpose,
+ * if sorting is allowed, the header links/buttons are replaced by active controls.
+ *
+ * Please refer to the original documentation of the {@link TCheckBoxColumn} for usage.
+ *
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2
+ */
 class TActiveCheckBoxColumn extends TCheckBoxColumn
 {
-		/**
+	/**
 	 * Initializes the specified cell to its initial values.
 	 * This method overrides the parent implementation.
 	 * It creates a checkbox inside the cell.
@@ -563,6 +591,20 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	}
 }
 
+/**
+ * TActiveDropDownListColumn class
+ *
+ * TActiveDropDownListColumn represents a column that is bound to a field in a data source.
+ *
+ * This is the active counterpart to the {@link TDropDownListColumn} control. For that purpose,
+ * if sorting is allowed, the header links/buttons are replaced by active controls.
+ *
+ * Please refer to the original documentation of the {@link TDropDownListColumn} for usage.
+ *
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2
+ */
 class TActiveDropDownListColumn extends TDropDownListColumn
 {
 	protected function initializeHeaderCell($cell,$columnIndex)

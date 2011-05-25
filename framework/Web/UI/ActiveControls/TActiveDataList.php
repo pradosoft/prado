@@ -1,5 +1,15 @@
 <?php
 /**
+ * TActiveDataList class file
+ * 
+ * @author Marcos Aurelio Nobre <marconobre@gmail.com>
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id: TActiveDataList.php 2706 2009-09-24 14:42:30Z rojaro $
+ */
+
+/**
  * TActiveDataList class
  *
  * TActiveDataList represents a data bound and updatable grid control which is the

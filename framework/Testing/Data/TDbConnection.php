@@ -438,7 +438,7 @@ class TDbConnection extends TComponent
 	 *
 	 * Prado 3.1 compatibility method.
 	 *
-	 * @see {@link quoteValue}
+	 * @see quoteValue
 	 *
 	 * @param string $str
 	 * @return string

@@ -7,6 +7,7 @@
  * @license http://www.pradosoft.com/license/
  * @version $Id: TRpcClient.php 137 2010-03-27 22:13:36Z rrogge $
  * @since 3.2
+ * @package System.Util
  */
 
 /**
@@ -280,7 +281,7 @@ class TJsonRpcClient extends TRpcClient
 	 * @param string url of the rpc server
 	 * @param boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
-	public static function create($serverUrl, $isNotification = false)
+	public static function create($type, $serverUrl, $isNotification = false)
 	{
 		return new self($serverUrl, $isNotification);
 	}
@@ -351,7 +352,7 @@ class TXmlRpcClient extends TRpcClient
 	 * @param string url of the rpc server
 	 * @param boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
-	public static function create($serverUrl, $isNotification = false)
+	public static function create($type, $serverUrl, $isNotification = false)
 	{
 		return new self($serverUrl, $isNotification);
 	}

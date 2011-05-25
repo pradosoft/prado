@@ -31,7 +31,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * 
  * Events:
  * 
- * <b>{@link OnDrop OnDrop} : raised when a TDraggable control is dropped. The dropped control id is encapsulated in the event parameter,
+ * <b>{@link OnDrop OnDrop}</b> : raised when a TDraggable control is dropped. The dropped control id is encapsulated in the event parameter,
  * as well as mouse coordinates and key modifiers status
  *
  * 

@@ -400,7 +400,7 @@ class TWebControl extends TControl implements IStyleable
 	
 
 	/**
-	 * @difficulty if your subclass overrides the onPreRender method be sure to call 
+	 * If your subclass overrides the onPreRender method be sure to call 
 	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
 	 * among other things.
 	 * @param TEventParameter event parameter to be passed to the event handlers
