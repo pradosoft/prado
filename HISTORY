@@ -1,4 +1,4 @@
-Version 3.1.8 May ??, 2011
+Version 3.1.8 May 29, 2011
 
 BUG: Issue#16  - [684] TDatePicker problems (rojaro)
 BUG: Issue#18  - [909] findAllBySql with non-column ORDER BY (rojaro)
@@ -42,6 +42,11 @@ ENH: Upgraded the phpunit ini file to work with PHPUnit 3.3 3.4 and 3.5. There a
 ENH: Issue#264 - Prado wasting CPU by using ArrayAccess and IteratorAggregate interfaces (uacaman)
 ENH: Issue#199/272 - Updated prototype to 1.7 scriptaculous to 1.9.0 and dropped json.js for json2.js. Adds IE9 support (ctrlaltca)
 ENH: Updated tinyMCE to latest version (3.4.2). The package size grew up a bit (from 3.7 to 5.5 mb) since the new version is bigger in sizea and adds support for a lot of new localizations. Adds IE9 support (ctrlaltca)
+NEW: Added TActiveDataGrid control
+NEW: Added TActiveDataList control
+NEW: Added TTemplateControlInheritable control
+NEW: Added InType Bundle
+NEW: Added TActiveMultiView control
 
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
