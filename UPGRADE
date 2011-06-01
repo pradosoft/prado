@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.1.8
+         Upgrading Instructions for PRADO Framework v3.1.9
          =================================================
 
 !!!IMPORTANT!!!
@@ -9,18 +9,33 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.1.8
+---------------------
+- An new "TranslateDefaultCulture" option has been added to TGlobalization that lets you choose if Prado
+  have to translate the default culture (default up to 3.1.7) or not (changed in 3.1.8). This option is
+  enabled by default, in fact restoring the pre-3.1.8 behaviour of translating also the default culture.
+  You want this option to be enabled if:
+  - you write pseudo translation tags in your code like <%[page_title_welcome]%> and need Prado to insert
+    the proper translation for every language (i.e. the base text is not written in a real language);
+  - your default culture is different from the culture used in your project (eg. your DefaultCulture is
+    "fr", but text in your pages is written in english to ensure other team members will understand it);
+  You want this option to be disabled if:
+  - you write code in your DefaultCulture language like <%[Welcome to my website]%>. For users viewing
+    your pages in that same Culture, Prado won't even try to translate these strings. Translation will
+    occur normally for every other culture.
+
 Upgrading from v3.1.7
 ---------------------
 - tinyMCE has been updated to support Internet Explorer 9; a lot of new languages and plugins are now supported,
-but some of the old ones changed their name. If you have problems in getting THtmlArea localized with your language,
-check if the language code for your locale has changed and update it.
+  but some of the old ones changed their name. If you have problems in getting THtmlArea localized with your language,
+  check if the language code for your locale has changed and update it.
 
 Upgrading from v3.1.6
 ---------------------
 - The different SQLMap cache engines (TSQLMapFifoCache, TSQLMapLRUCache, TSQLMapApplicationCache) doesn't
-take anymore the cache size in their constructor. Instead, they take the cachemodel object who instanciated them.
-It shouldn't affect existing code, except if you instanciate one of this cache directly (i.e, without a <cachemodel>
-directive in your SQLMap configuration)
+  take anymore the cache size in their constructor. Instead, they take the cachemodel object who instanciated them.
+  It shouldn't affect existing code, except if you instanciate one of this cache directly (i.e, without a <cachemodel>
+  directive in your SQLMap configuration)
 
 Upgrading from v3.1.5
 ---------------------

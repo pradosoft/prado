@@ -1,3 +1,9 @@
+Version 3.1.9 Xxx XX, 201X
+
+BUG: Issue#311 - TDataList : FooterStyle not used (ctrlaltca)
+BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
+BUG: Issue#327 - TDbCache with PostgreSQL throw a TDbException (ctrlaltca)
+
 Version 3.1.8 May 29, 2011
 
 BUG: Issue#16  - [684] TDatePicker problems (rojaro)
