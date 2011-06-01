@@ -195,7 +195,7 @@ class TDbCache extends TCache
 
 				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, 'System.Caching.TDbCache');
 
-				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0';
+				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
 
 				$this -> _createCheck = true;

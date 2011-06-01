@@ -830,7 +830,7 @@ class TDbLogRoute extends TLogRoute
 		$db=$this->getDbConnection();
 		$db->setActive(true);
 
-		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0';
+		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0=1';
 		try
 		{
 			$db->createCommand($sql)->query()->close();
