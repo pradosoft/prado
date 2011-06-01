@@ -1321,7 +1321,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		if($this->_footer!==null && $this->_footer instanceof IStyleable)
 		{
 			if($footerStyle=$this->getViewState('FooterStyle',null))
-				$this->_footer->getStyle()->mergeWith($headerStyle);
+				$this->_footer->getStyle()->mergeWith($footerStyle);
 		}
 
 		$selectedIndex=$this->getSelectedItemIndex();
