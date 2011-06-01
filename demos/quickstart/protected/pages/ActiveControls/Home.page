@@ -84,7 +84,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   represents a radiobutton on a Web page.
   It is mainly used in a group from which users make a choice. It can
   be used to perform a callback request.
