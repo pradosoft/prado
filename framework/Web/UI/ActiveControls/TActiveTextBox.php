@@ -21,7 +21,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * TActiveTextBox allows the {@link setText Text} property of the textbox to
  * be changed during callback. When {@link setAutoPostBack AutoPostBack} property
  * is true, changes to the textbox contents will perform a callback request causing
- * {@link onTextChanged OnTextChange} to be fired first followed by {@link onCallback OnCallback}
+ * {@link onTextChanged OnTextChanged} to be fired first followed by {@link onCallback OnCallback}
  * event.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
