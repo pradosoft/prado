@@ -60,8 +60,8 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
-	represents a hyperlink that can perform a callback request.
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+  represents a hyperlink that can perform a callback request.
   </li>
 
   <li>
