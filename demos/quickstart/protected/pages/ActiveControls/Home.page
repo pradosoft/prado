@@ -71,7 +71,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
   represents a container for other controls on a Web page. In HTML,
   it is displayed as a &lt;div&gt; element. The panel's contents
   can be replaced during a callback request.

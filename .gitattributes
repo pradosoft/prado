@@ -1281,6 +1281,7 @@ demos/quickstart/protected/pages/ActiveControls/ActiveLabel.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveLinkButton.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveMultiView.page -text
 demos/quickstart/protected/pages/ActiveControls/ActivePager.page -text
+demos/quickstart/protected/pages/ActiveControls/ActivePanel.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveRadioButton.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveTextBox.page -text
 demos/quickstart/protected/pages/ActiveControls/AutoComplete.page -text
@@ -1315,6 +1316,8 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveLinkButton/Home.p
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveMultiView/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveMultiView/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActivePager/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActivePanel/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActivePanel/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRadioButton/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveRadioButton/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveTextBox/Home.page -text
