@@ -56,6 +56,10 @@ class TGlobalization extends TModule
 	 */
 	private $_translation;
 
+	/**
+	 * @var boolean whether we should translate the default culture
+	 */
+	private $_translateDefaultCulture=true;
 
 	/**
 	 * Initialize the Culture and Charset for this application.
@@ -84,6 +88,22 @@ class TGlobalization extends TModule
 				$this->setTranslationConfiguration($translation);
 		}
 		$this->getApplication()->setGlobalization($this);
+	}
+
+	/**
+	 * @return string default culture
+	 */
+	public function getTranslateDefaultCulture()
+	{
+		return $this->_translateDefaultCulture;
+	}
+
+	/**
+	 * @param bool default culture, e.g. <tt>en_US</tt> for American English
+	 */
+	public function setTranslateDefaultCulture($value)
+	{
+		$this->_translateDefaultCulture = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -155,7 +175,7 @@ class TGlobalization extends TModule
 	 */
 	public function getTranslationConfiguration()
 	{
-		return ($this->getDefaultCulture() == $this->getCulture())
+		return (!$this->_translateDefaultCulture && ($this->getDefaultCulture() == $this->getCulture()))
 			? null
 			: $this->_translation;
 	}
