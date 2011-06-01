@@ -3,6 +3,11 @@ Version 3.1.9 Xxx XX, 201X
 BUG: Issue#311 - TDataList : FooterStyle not used (ctrlaltca)
 BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
 BUG: Issue#327 - TDbCache with PostgreSQL throw a TDbException (ctrlaltca)
+NEW: Added TTemplateControlInheritable control
+NEW: Added TActiveDataGrid control
+NEW: Added TActiveDataList control
+NEW: Added TActiveMultiView control
+NEW: Added TActiveRepeater control
 
 Version 3.1.8 May 29, 2011
 

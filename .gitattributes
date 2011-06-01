@@ -2594,12 +2594,18 @@ framework/Web/TUrlMapping.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text
+framework/Web/UI/ActiveControls/TActiveDataGrid.php -text
+framework/Web/UI/ActiveControls/TActiveDataList.php -text
 framework/Web/UI/ActiveControls/TActiveHiddenField.php -text
 framework/Web/UI/ActiveControls/TActiveLabel.php -text
+framework/Web/UI/ActiveControls/TActiveMultiView.php -text
 framework/Web/UI/ActiveControls/TActivePageAdapter.php -text
 framework/Web/UI/ActiveControls/TActivePager.php -text
 framework/Web/UI/ActiveControls/TActivePanel.php -text
 framework/Web/UI/ActiveControls/TActiveRatingList.php -text
+framework/Web/UI/ActiveControls/TActiveRepeater.php -text
+framework/Web/UI/ActiveControls/TActiveTableCell.php -text
+framework/Web/UI/ActiveControls/TActiveTableRow.php -text
 framework/Web/UI/ActiveControls/TActiveTextBox.php -text
 framework/Web/UI/ActiveControls/TAutoComplete.php -text
 framework/Web/UI/ActiveControls/TBaseActiveControl.php -text
@@ -2623,6 +2629,7 @@ framework/Web/UI/TPage.php -text
 framework/Web/UI/TPageStatePersister.php -text
 framework/Web/UI/TSessionPageStatePersister.php -text
 framework/Web/UI/TTemplateControl.php -text
+framework/Web/UI/TTemplateControlInheritable.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
 framework/Web/UI/WebControls/TBaseDataList.php -text

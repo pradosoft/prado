@@ -65,6 +65,12 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
+  * <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView</a>
+    represents a container for a group of TView controls, each of which is container for other controls.
+    At any time, at most one TView is visible. It's the active counterpart of TMultiView.
+  </li>
+
+  <li>
   * <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
   represents a container for other controls on a Web page. In HTML,
   it is displayed as a &lt;div&gt; element. The panel's contents
@@ -103,7 +109,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   <li>
   * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   displays a list of checkboxes on a Web page and each checkbox
-  	can trigger a callback request.
+  can trigger a callback request.
   </li>
 
   <li>
@@ -124,6 +130,27 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   is similar to TActiveCheckBoxList in every aspect except that each
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
+  </li>
+</ul>
+
+<h2>Active Data Controls</h2>
+<ul id="u2" class="block-content">
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
+  is used to display or modify a list of data items. It is the
+  active counterpart to the original TDataList control.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid</a>
+  displays data in a tabular format with rows and columns. It is the
+  active counterpart to the original TDataGrid control.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
+  displays its content defined in templates repeatedly based on the given data.
+  It is the active counterpart to the original TRepeater control.
   </li>
 </ul>
 
