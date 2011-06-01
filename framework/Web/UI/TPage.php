@@ -470,7 +470,7 @@ class TPage extends TTemplateControl implements IPageEvents
 	{
 		if(!$this->_validators)
 			$this->_validators=new TList;
-		if($validationGroup===null)
+		if(empty($validationGroup) === true)
 			return $this->_validators;
 		else
 		{

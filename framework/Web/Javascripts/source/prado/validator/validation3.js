@@ -480,7 +480,7 @@ Prado.ValidationManager.prototype =
 		this.summaries.each(function(summary)
 		{
 			var inGroup = group && summary.group == group;
-			var noGroup = !group && !summary.group;
+			var noGroup = !group || !summary.group;
 			if(inGroup || noGroup)
 				summary.updateSummary(validators, refresh);
 			else
