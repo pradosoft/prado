@@ -1471,6 +1471,7 @@ demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCheckBoxList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TClientSideValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TClientSideValidator/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TColorPicker/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TCompareValidator/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TConditional/Home.page -text
