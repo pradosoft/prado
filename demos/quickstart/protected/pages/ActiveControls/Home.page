@@ -65,9 +65,9 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView</a>
-    represents a container for a group of TView controls, each of which is container for other controls.
-    At any time, at most one TView is visible. It's the active counterpart of TMultiView.
+  <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView</a>
+  represents a container for a group of TView controls, each of which is container for other controls.
+  At any time, at most one TView is visible. It's the active counterpart of TMultiView.
   </li>
 
   <li>
