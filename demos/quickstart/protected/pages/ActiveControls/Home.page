@@ -43,29 +43,35 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
   represents an image on a Web page.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+  <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
   represents a click button that has an image as the background.
   It is can be used to trigger a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
-	represents a label on a Web page.
-	The label can be customized via various CSS attributes.
+  <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+  represents a label on a Web page.
+  The label can be customized via various CSS attributes.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
-	represents a hyperlink that can perform a callback request.
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+  represents a hyperlink that can perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView</a>
+  represents a container for a group of TView controls, each of which is container for other controls.
+  At any time, at most one TView is visible. It's the active counterpart of TMultiView.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
   represents a container for other controls on a Web page. In HTML,
   it is displayed as a &lt;div&gt; element. The panel's contents
   can be replaced during a callback request.
@@ -78,23 +84,17 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   represents a radiobutton on a Web page.
   It is mainly used in a group from which users make a choice. It can
   be used to perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveTableRow">TActiveTableRow and TActiveTableCell</a>
-  represents a table row (or cell) which can be updated on callback, and can raise a callback
-  when clicked.
-  </li>
-
-  <li>
-  * <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
-	represents a text input field on a Web page.
-	It can collect single-line, multi-line or password text input from users.
-	It can be used to perform a callback request.
+  <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+  represents a text input field on a Web page.
+  It can collect single-line, multi-line or password text input from users.
+  It can be used to perform a callback request.
   </li>
 
   <li>
@@ -109,7 +109,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   <li>
   * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   displays a list of checkboxes on a Web page and each checkbox
-  	can trigger a callback request.
+  can trigger a callback request.
   </li>
 
   <li>
@@ -131,23 +131,27 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
   </li>
+</ul>
+
+<h2 id="134001">Active Data Controls</h2>
+<ul id="u2" class="block-content">
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
+  is used to display or modify a list of data items. It is the
+  active counterpart to the original TDataList control.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid</a>
+  displays data in a tabular format with rows and columns. It is the
+  active counterpart to the original TDataGrid control.
+  </li>
 
   <li>
   * <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
-  is the active counterpart of TRepeater, which can be updated during a callback request
+  displays its content defined in templates repeatedly based on the given data.
+  It is the active counterpart to the original TRepeater control.
   </li>
-
-  <li>
-  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
-  is the active counterpart of TDataList
-  </li>
-
-
-  <li>
-  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataGrid</a>
-  is the active counterpart of TDataGrid
-  </li>
-
 </ul>
 
 <h2 id="128034">Extended Active Controls</h2>

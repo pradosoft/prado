@@ -56,7 +56,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *
  * The <b>InputMode</b> property can be set to "TextBox" or "DropDownList" with
  * default as "TextBox".
- * In <tt>DropDownList</tt> mode, in addition to the popup date picker, three
+ * In <b>DropDownList</b> mode, in addition to the popup date picker, three
  * drop down list (day, month and year) are presented to select the date .
  *
  * The <b>PositionMode</b> property can be set to "Top" or "Bottom" with default

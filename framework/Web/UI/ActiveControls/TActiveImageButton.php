@@ -13,7 +13,7 @@
 /**
  * TActiveImageButton class.
  *
- * TActiveImageButton is the active control counter part to TLinkButton.
+ * TActiveImageButton is the active control counter part to TImageButton.
  * When a TActiveImageButton is clicked, rather than a normal post back request a
  * callback request is initiated.
  *
