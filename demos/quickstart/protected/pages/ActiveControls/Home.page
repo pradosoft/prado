@@ -48,7 +48,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+  <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
   represents a click button that has an image as the background.
   It is can be used to trigger a callback request.
   </li>
