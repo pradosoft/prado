@@ -14,7 +14,7 @@
  * TCallbackEventParameter class.
  *
  * The TCallbackEventParameter provides the parameter passed during the callback
- * requestion in the {@link getCallbackParameter CallbackParameter} property. The
+ * request in the {@link getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
  * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.

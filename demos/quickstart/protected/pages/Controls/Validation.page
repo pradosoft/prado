@@ -34,6 +34,8 @@ Validators share a common set of properties, which are defined in the base class
 <h1 id="116008">Prado Validation Controls</h1>
 <a name="TRequiredFieldValidator"></a>
 <h2 id="4902">TRequiredFieldValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" />
+
 <p id="560340" class="block-content">
 TRequiredFieldValidator ensures that the user enters some data in the specified input field. By default, TRequiredFieldValidator will check if the user input is empty or not. The validation fails if the input is empty. By setting <tt>InitialValue</tt>, the validator can check if the user input is different from <tt>InitialValue</tt>. If not, the validation fails.
 </p>
@@ -41,6 +43,8 @@ TRequiredFieldValidator ensures that the user enters some data in the specified 
 
 <a name="TRegularExpressionValidator"></a>
 <h2 id="4903">TRegularExpressionValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRegularExpressionValidator" />
+
 <p id="560341" class="block-content">
 TRegularExpressionValidator verifies the user input against a regular pattern. The validation fails if the input does not match the pattern. The regular expression can be specified by the <tt>RegularExpression</tt> property. Some commonly used regular expressions include:
 </p>
@@ -65,6 +69,8 @@ Note, TRegularExpressionValidator only checks for nonempty user input. Use a TRe
 <com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
 
 <h2 id="TEmailAddressValidator">TEmailAddressValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TEmailAddressValidator" />
+
 <p id="560344" class="block-content">
 TEmailAddressValidator verifies that the user input is a valid email address. The validator uses a regular expression to check if the input is in a valid email address format. If <tt>CheckMXRecord</tt> is true, the validator will also check whether the MX record indicated by the email address is valid, provided <tt>checkdnsrr()</tt> is available in the installed PHP.
 </p>
@@ -75,6 +81,8 @@ Note, if the input being validated is empty, TEmailAddressValidator will not do 
 
 <a name="TCompareValidator"></a>
 <h2 id="4904">TCompareValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCompareValidator" />
+
 <p id="560346" class="block-content">
 TCompareValidator compares the user input with a constant value specified by <tt>ValueToCompare</tt>, or another user input specified by <tt>ControlToCompare</tt>. The <tt>Operator</tt> property specifies how to compare the values, which includes <tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt> and <tt>LessThanEqual</tt>. Before comparison, the values being compared will be converted to the type specified by <tt>DataType</tt> listed as follows,
 </p>
@@ -94,6 +102,8 @@ Note, if the input being validated is empty, TEmailAddressValidator will not do 
 
 <a name="TDataTypeValidator"></a>
 <h2 id="4905">TDataTypeValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDataTypeValidator" />
+
 <p id="560349" class="block-content">
 TDataTypeValidator verifies if the input data is of specific type indicated by <tt>DataType</tt>. The data types that can be checked against are the same as those in TCompareValidator.
 </p>
@@ -106,6 +116,8 @@ TDataTypeValidator verifies if the input data is of specific type indicated by <
 
 <a name="TRangeValidator"></a>
 <h2 id="4906">TRangeValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRangeValidator" />
+
 <p id="560351" class="block-content">
 TRangeValidator verifies whether an input value is within a specified range. TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>DataType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The data types that can be checked against are the same as those in TCompareValidator.
 </p>
@@ -124,6 +136,8 @@ are compared as strictly less than the <tt>MaxValue</tt> and/or strictly greater
 
 <a name="TCustomValidator"></a>
 <h2 id="4907">TCustomValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCustomValidator" />
+
 <p id="560353" class="block-content">
 TCustomValidator performs user-defined validation (either server-side or client-side or both) on an input control.
 </p>
@@ -148,6 +162,8 @@ function ValidationFunctionName(sender, parameter)
 
 <a name="TValidationSummary"></a>
 <h2 id="4908">TValidationSummary</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TValidationSummary" />
+
 <p id="560356" class="block-content">
 TValidationSummary displays a summary of validation errors inline on a Web page, in a message box, or both.
 </p>

@@ -110,7 +110,10 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveCustomValidator.page',
 	'ActiveControls/ActiveDataList.page',
 	'ActiveControls/ActiveDataGrid.page',
+	'ActiveControls/ActiveDatePicker.page',
 	'ActiveControls/ActiveDropDownList.page',
+	'ActiveControls/ActiveFileUpload.page',
+	'ActiveControls/ActiveHiddenField.page',
 	'ActiveControls/ActiveHyperLink.page',
 	'ActiveControls/ActiveImage.page',
 	'ActiveControls/ActiveImageButton.page',
@@ -125,10 +128,16 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveRepeater.page',
 	'ActiveControls/ActiveTextBox.page',
 	'ActiveControls/AutoComplete.page',
+	'ActiveControls/Callback.page',
 	'ActiveControls/CallbackClientScript.page',
 	'ActiveControls/CallbackClientSide.page',
+	'ActiveControls/CallbackEventParameter.page',
 	'ActiveControls/CallbackOptions.page',
-	'ActiveControls/DragDrop.page');
+	'ActiveControls/DragDrop.page'
+	'ActiveControls/EventTriggeredCallback.page',
+	'ActiveControls/InPlaceTextBox.page',
+	'ActiveControls/TimeTriggeredCallback.page',
+	'ActiveControls/ValueTriggeredCallback.page');
 
 $pages['Active Control Overview'] = array(
 		'ActiveControls/Home.page',

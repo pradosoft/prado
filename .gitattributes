@@ -1277,7 +1277,10 @@ demos/quickstart/protected/pages/ActiveControls/ActiveCheckBoxList.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveCustomValidator.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveDataGrid.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveDataList.page -text
+demos/quickstart/protected/pages/ActiveControls/ActiveDatePicker.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveDropDownList.page -text
+demos/quickstart/protected/pages/ActiveControls/ActiveFileUpload.page -text
+demos/quickstart/protected/pages/ActiveControls/ActiveHiddenField.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveHyperLink.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveImage.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveImageButton.page -text
@@ -1295,10 +1298,12 @@ demos/quickstart/protected/pages/ActiveControls/AutoComplete.page -text
 demos/quickstart/protected/pages/ActiveControls/Callback.page -text
 demos/quickstart/protected/pages/ActiveControls/CallbackClientScript.page -text
 demos/quickstart/protected/pages/ActiveControls/CallbackClientSide.page -text
+demos/quickstart/protected/pages/ActiveControls/CallbackEventParameter.page -text
 demos/quickstart/protected/pages/ActiveControls/CallbackOptions.page -text
 demos/quickstart/protected/pages/ActiveControls/DragDrop.page -text
 demos/quickstart/protected/pages/ActiveControls/EventTriggeredCallback.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/InPlaceTextBox.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/DragDrop/images/product1.png -text svneol=unset#image/png
@@ -1324,8 +1329,12 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDataGrid/Sample5.
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDataGrid/Sample5.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDataList/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDataList/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDatePicker/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDatePicker/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDropDownList/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveDropDownList/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveFileUpload/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TActiveFileUpload/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveHyperLink/hello_world.gif -text
@@ -1368,6 +1377,8 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackOptions/Home.pa
 demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackOptions/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TEventTriggeredCallback/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TEventTriggeredCallback/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TInPlaceTextBox/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TInPlaceTextBox/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TTimeTriggeredCallback/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TTimeTriggeredCallback/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TValueTriggeredCallback/Home.page -text

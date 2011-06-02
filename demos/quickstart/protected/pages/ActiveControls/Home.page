@@ -17,8 +17,6 @@ of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.
 TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Currency Converter</a> tutorial for a more in depth example.
 </p>
 
-<p id="640425" class="block-content">* the tutorial for this control is not completed yet.</p>
-
 <h2 id="128032">Standard Active Controls</h2>
 <ul id="u1" class="block-content">
   <li>
@@ -35,6 +33,22 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   <li>
   <a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
   validates a particular control using a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveDatePicker">TActiveDatePicker</a>
+  adds a date picker that permits the suer to choose a date.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveFileUpload">TActiveFileUpload</a>
+  displays a file upload field on a page and uses an iframe to permit handling of the
+  file upload in a callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveHiddenField">TActiveHiddenField</a>
+  displays a hidden input field that can be changed upon callback.
   </li>
 
   <li>
@@ -88,6 +102,11 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   represents a radiobutton on a Web page.
   It is mainly used in a group from which users make a choice. It can
   be used to perform a callback request.
+  </li>
+
+  <li>
+  <a href="">TActiveRatingList</a>
+  is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
   </li>
 
   <li>
@@ -169,7 +188,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
 	represents a label that can be edited by clicked.
 	</li>
 
@@ -185,9 +204,9 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	</li>
 	
 	<li>
-	<a href="?page=ActiveControls.DragDrop">TDropContainer & TDraggable</a> represents drag and drop containers. 
-		The former will make its child controls "draggable" while the latter will raise a callback when a draggable
-		control is dropped on it.
+	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> represents drag and drop containers. 
+	The former will make its child controls "draggable" while the latter will raise a callback when a draggable
+	control is dropped on it.
 	</li>
 
 </ul>
@@ -430,6 +449,11 @@ A Prado user can use them to customize active controls behaviour and interact di
 	<li>
 	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
 	is used to specify client-side callback request options and client-side event handlers.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackEventParameter">TCallbackEventParameter</a>
+	provides the parameter passed during the callback request.
 	</li>
 
 	<li>
