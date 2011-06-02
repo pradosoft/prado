@@ -22,7 +22,7 @@ Prado::using('System.Web.UI.ActiveControls.TTriggeredCallback');
  *
  * A {@link setDecayRate DecayRate} can be set to increase the polling
  * interval linearly if no changes are observed. Once a change is
- * observe, the polling interval is reset to the original value.
+ * observed, the polling interval is reset to the original value.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
