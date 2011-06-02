@@ -97,11 +97,6 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   It can be used to perform a callback request.
   </li>
 
-  <li>
-  * <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
-  	callback options such as <tt>OnLoading</tt> client-side event handlers.
-  </li>
-
 </ul>
 
 <h2 id="128033">Active List Controls</h2>
@@ -387,14 +382,19 @@ realize the active controls.</p>
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	<a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
 	methods to manipulate the client-side HTML elements, also includes methods
 	to invoke javascript Effects on HTML elements.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
-	common client-side callback request options, and client-side event handlers.
+	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	is used to specify client-side callback request options and client-side event handlers.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	allows a common set of callback client-side options to be attached to one or more active controls.
 	</li>
 
 	<li>

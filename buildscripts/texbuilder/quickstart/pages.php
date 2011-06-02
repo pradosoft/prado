@@ -125,6 +125,9 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveRepeater.page',
 	'ActiveControls/ActiveTextBox.page',
 	'ActiveControls/AutoComplete.page',
+	'ActiveControls/CallbackClientScript.page',
+	'ActiveControls/CallbackClientSide.page',
+	'ActiveControls/CallbackOptions.page',
 	'ActiveControls/DragDrop.page');
 
 $pages['Active Control Overview'] = array(

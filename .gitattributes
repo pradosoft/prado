@@ -1292,6 +1292,9 @@ demos/quickstart/protected/pages/ActiveControls/ActiveRadioButtonList.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveRepeater.page -text
 demos/quickstart/protected/pages/ActiveControls/ActiveTextBox.page -text
 demos/quickstart/protected/pages/ActiveControls/AutoComplete.page -text
+demos/quickstart/protected/pages/ActiveControls/CallbackClientScript.page -text
+demos/quickstart/protected/pages/ActiveControls/CallbackClientSide.page -text
+demos/quickstart/protected/pages/ActiveControls/CallbackOptions.page -text
 demos/quickstart/protected/pages/ActiveControls/DragDrop.page -text
 demos/quickstart/protected/pages/ActiveControls/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Introduction.page -text
@@ -1353,6 +1356,12 @@ demos/quickstart/protected/pages/ActiveControls/Samples/TActiveTextBox/Home.page
 demos/quickstart/protected/pages/ActiveControls/Samples/TActiveTextBox/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TAutoComplete/Home.page -text
 demos/quickstart/protected/pages/ActiveControls/Samples/TAutoComplete/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackClientScript/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackClientScript/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackClientSide/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackClientSide/Home.php -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackOptions/Home.page -text
+demos/quickstart/protected/pages/ActiveControls/Samples/TCallbackOptions/Home.php -text
 demos/quickstart/protected/pages/ActiveControls/Samples/config.xml -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.png -text
 demos/quickstart/protected/pages/ActiveControls/TActiveButtonClass.vsd -text
