@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TActiveLabel</h1>
+<h1 id="160021">TActiveLabel</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveLabel" />
 
 <p class="block-content">

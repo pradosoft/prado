@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TConditional</h1>
+<h1 id="64008">TConditional</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TConditional" />
 
 <p class="block-content">
@@ -17,13 +17,13 @@ you set <tt>Condition</tt> in template only and the expression should not refer 
 objects that are available on or after the <tt>onInit</tt> lifecycle.
 </p>
 
-<p>
+<p id="320010" class="block-content">
 <tt>TConditional</tt> is very light. It instantiates either <tt>TrueTemplate</tt>
 <tt>FalseTemplate</tt>, but never both. And the condition is evaluated only once.
 A typical usage of TConditional is shown as following:
 </p>
 
-<com:TTextHighlighter Language="prado" CssClass="source">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_320112">
 &lt;com:TConditional Condition="$this->User->IsGuest">
 	&lt;prop:TrueTemplate>
 		<a href="path/to/login">Login</a>

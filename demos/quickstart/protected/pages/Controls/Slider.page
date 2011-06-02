@@ -9,7 +9,7 @@ which define the range of possible value, and a <em>handle</em> which can slide 
 a value in the range. The track can be either Horizontal or Vertical, depending of the <tt>Direction</tt>
 property. By default, it's horizontal.
 </p>
-<p>
+<p id="570015" class="block-content">
 The range boundaries are defined by <tt> MinValue</tt> and <tt>MaxValue</tt> properties. 
 The default range is from 0 to 100. 
 The <tt>StepSize</tt> property can be used to define the <em>step</em> between 2 values inside the range.
@@ -17,13 +17,13 @@ Notice that this step will be recomputed if there is more than 200 values betwee
 You can also provide the allowed values by setting the <tt>Values</tt> array.
 </p>
 
-<p>
+<p id="570016" class="block-content">
 The handle sub-properties can be accessed by <tt>Handle</tt> property. You can also provide your own control
 for the handle, using <tt>HandleClass</tt> property. Note that this class must be a subclass of 
 <tt>TSliderHandle</tt>
 </p>
 
-<p>
+<p id="570017" class="block-content">
 The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the 
 <tt>CssUrl</tt> property.
 The css class for TSlider can be set by the <tt>CssClass</tt> property. Defaults values are <b>'hslider'</b> for
@@ -33,15 +33,15 @@ draw a red block as a cursor. <b>'handle-image'</b> css class is also provided f
 as the handle.
 </p>
 
-<p>
+<p id="570018" class="block-content">
 If <tt>AutoPostBack</tt> property is true, postback is performed as soon as the value changed.
 </p>
 
-<p>
+<p id="570019" class="block-content">
 TSlider raises the <tt>onValueChanged</tt> event when the value of the slider has changed during postback.
 </p>
 
-<p>
+<p id="570020" class="block-content">
 You can also attach ClientSide javascript events handler to the slider :
 <ul>
 <li><tt>ClientSide.onSlide</tt> is called when the handle is slided on the track. You can get the current value in the <b>value</b>

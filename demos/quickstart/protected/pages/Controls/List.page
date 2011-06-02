@@ -49,12 +49,14 @@ $listbox->dataBind();
 </ul>
 
 <h2 id="4802">TListBox</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TListBox" />
 <p id="550331" class="block-content">
 <tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
 </p>
 <com:RunBar PagePath="Controls.Samples.TListBox.Home" />
 
 <h2 id="4803">TDropDownList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDropDownList" />
 <p id="550332" class="block-content">
 <tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones.
 </p>
@@ -64,6 +66,7 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 <com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
 
 <h2 id="4804">TCheckBoxList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCheckBoxList" />
 <p id="550333" class="block-content">
 <tt>TCheckBoxList</tt> displays a list of checkboxes on a Web page. The alignment of the text besides each checkbox can be specified <tt>TextAlign</tt>. The layout of the checkboxes can be controlled by the following properties:
 </p>
@@ -76,12 +79,14 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 <com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
 
 <h2 id="4805">TRadioButtonList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRadioButtonList" />
 <p id="550334" class="block-content">
 <tt>TRadioButtonList</tt> is similar to <tt>TCheckBoxList</tt> in every aspect except that each <tt>TRadioButtonList</tt> displays a group of radiobuttons. Only one of the radiobuttions can be selected (<tt>TCheckBoxList</tt> allows multiple selections.)
 </p>
 <com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
 
 <h2 id="4806">TBulletedList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TBulletedList" />
 <p id="550335" class="block-content">
 <tt>TBulletedList</tt> displays items in a bullet format on a Web page. The style of the bullets can be specified by <tt>BulletStyle</tt>. When the style is <tt>CustomImage</tt>, the bullets are displayed as images, which is specified by <tt>BulletImageUrl</tt>.
 </p>
@@ -95,5 +100,12 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 </ul>
 
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
+
+<h2 id="128001">TRatingList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRatingList" />
+
+<p class="block-content">
+This is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
+</p>
 
 <div class="last-modified">$Id$</div></com:TContent>

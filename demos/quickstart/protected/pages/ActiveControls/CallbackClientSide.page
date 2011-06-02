@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TCallbackClientSide</h1>
+<h1 id="184032">TCallbackClientSide</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientSide" />
 
 <p class="block-content">
@@ -25,7 +25,7 @@ The following example demonstrates the toggling of a "loading" indicator when th
 &lt;/com:TActiveButton&gt;
 </com:TTextHighlighter>
 
-<h3>Events</h3>
+<h3 id="184033">Events</h3>
 
 <p class="block-content">
 The following client side events are executing in order if the callback
@@ -58,7 +58,7 @@ response is returned. A successful request/response will raise
 OnSuccess event otherwise OnFailure will be raised.
 </p>
 
-<h3>Properties</h3>
+<h3 id="184034">Properties</h3>
 
 <p class="block-content">
 The following properties can be used to change the way the callback request is performed.

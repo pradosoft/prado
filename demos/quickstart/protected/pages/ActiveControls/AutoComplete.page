@@ -1,10 +1,10 @@
 <com:TContent ID="body">
 <!-- $Id$ -->
-<h1>TAutoComplete</h1>
+<h1 id="180030">TAutoComplete</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TAutoComplete" />
 
 <p class="block-content">
-<tt>TAutoComplete</tt> is an extended <tt>ActiveTextBox</tt> that provides a list of suggestions on the current partial word typed in the textbox. The suggestions are requested using callbacks. The <tt>Frequency</tt> and <tt>MinChars</tt> properties sets the delay and minimum number of characters typed, respectively, before requesting for sugggestions. An embedded <tt>TRepeater</tt> is used to Display the list of suggestions. It can be accessed and styled through the <tt>Suggestions</tt> property and its sub-properties.<p>
+<tt>TAutoComplete</tt> is an extended <tt>ActiveTextBox</tt> that provides a list of suggestions on the current partial word typed in the textbox. The suggestions are requested using callbacks. The <tt>Frequency</tt> and <tt>MinChars</tt> properties sets the delay and minimum number of characters typed, respectively, before requesting for sugggestions. An embedded <tt>TRepeater</tt> is used to Display the list of suggestions. It can be accessed and styled through the <tt>Suggestions</tt> property and its sub-properties.<p id="900022" class="block-content">
 
 <p class="block-content">
 On each request for suggestions, the <tt>OnSuggestion</tt> event will be raised. The event handler receives the entered token that can be used to build the list of suggestions and to dataBind() it to the <tt>Suggestions</tt> repeater.</p>

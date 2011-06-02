@@ -18,10 +18,10 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 /**
  * TCallback component class.
  *
- * The TCallback provides a basic callback handler that can be invoke from the
+ * The TCallback provides a basic callback handler that can be invoked from the
  * client side by running the javascript code obtained from the
  * {@link TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property.
- * The event {@link onCallback OnCallback} is raise when a callback is requested made.
+ * The event {@link onCallback OnCallback} is raised when a callback is requested made.
  *
  * Example usage:
  * <code>

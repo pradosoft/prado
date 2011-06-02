@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TActiveImageButton</h1>
+<h1 id="158020">TActiveImageButton</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveImageButton" />
 
 <p class="block-content">

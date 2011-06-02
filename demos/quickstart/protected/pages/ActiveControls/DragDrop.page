@@ -1,6 +1,6 @@
 <com:TContent ID="body">
 <!-- $Id$ -->
-<h1>TDropContainer</h1>
+<h1 id="188035">TDropContainer</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TDropContainer" />
 
 <p class="block-content"><tt>TDropContainer</tt> represent an area where 
@@ -12,7 +12,7 @@ the <tt>OnDropk</tt> event.
 </p>
 
 
-<h1>TDraggable</h1>
+<h1 id="188036">TDraggable</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TDraggable" />
 
 <p class="block-content"><tt>TDraggable</tt> will make its child controls 'draggable'.
