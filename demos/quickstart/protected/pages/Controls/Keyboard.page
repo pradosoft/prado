@@ -11,7 +11,7 @@ an associated text box. It helps to reduce the keyboard recording hacking.
 <p id="460011" class="block-content">
 To use TKeyboard, write a template like following:
 </p>
-<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code-460120">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_460120">
 &lt;com:TTextBox ID="PasswordInput" />
 &lt;com:TKeyboard ForControl="PasswordInput" />
 </com:TTextHighlighter>

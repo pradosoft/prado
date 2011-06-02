@@ -101,7 +101,7 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
-<h2>TRatingList</h2>
+<h2 id="130001">TRatingList</h2>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TRatingList" />
 
 <p class="block-content">

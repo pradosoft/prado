@@ -23,7 +23,7 @@ objects that are available on or after the <tt>onInit</tt> lifecycle.
 A typical usage of TConditional is shown as following:
 </p>
 
-<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code-320112">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_320112">
 &lt;com:TConditional Condition="$this->User->IsGuest">
 	&lt;prop:TrueTemplate>
 		<a href="path/to/login">Login</a>

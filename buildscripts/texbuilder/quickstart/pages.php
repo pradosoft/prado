@@ -133,7 +133,7 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/CallbackClientSide.page',
 	'ActiveControls/CallbackEventParameter.page',
 	'ActiveControls/CallbackOptions.page',
-	'ActiveControls/DragDrop.page'
+	'ActiveControls/DragDrop.page',
 	'ActiveControls/EventTriggeredCallback.page',
 	'ActiveControls/InPlaceTextBox.page',
 	'ActiveControls/TimeTriggeredCallback.page',

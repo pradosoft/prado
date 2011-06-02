@@ -30,7 +30,7 @@ Upon postback, user input can be validated by calling the method <tt>TCaptcha.va
 <p id="280007" class="block-content">
 The following template shows a typical use of the <tt>TCaptcha</tt> control:
 </p>
-<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code-280105">
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_280105">
 &lt;com:TCaptcha ID="Captcha" />
 &lt;com:TTextBox ID="Input" />
 &lt;com:TCaptchaValidator CaptchaControl="Captcha"
