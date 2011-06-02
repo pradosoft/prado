@@ -107,26 +107,26 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 <h2 id="128033">Active List Controls</h2>
 <ul id="u2" class="block-content">
   <li>
-  * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   displays a list of checkboxes on a Web page and each checkbox
   can trigger a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
   displays a dropdown list box that allows users to select a
   single option from a few prespecified ones. It can be used
   to perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
   displays a list box that allows single or multiple selection. It can be used
   to perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
   is similar to TActiveCheckBoxList in every aspect except that each
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
