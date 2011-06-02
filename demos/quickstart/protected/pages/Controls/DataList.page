@@ -1,6 +1,8 @@
 <com:TContent ID="body" >
 
 <h1 id="5101">TDataList</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDataList" />
+
 <p id="580362" class="block-content">
 TDataList represents a data bound and updatable list control. Like <tt>TRepeater</tt>, TDataList displays its content repeatedly based on the data fetched from <tt>DataSource</tt>. The repeated contents in TDataList are called items, which are controls and can be accessed through <tt>Items</tt>. When <tt>dataBind()</tt> is invoked, TDataList creates an item for each row of data and binds the data row to the item. Optionally, a TDataList can have a header, a footer and/or separators between items.
 </p>

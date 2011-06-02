@@ -107,6 +107,8 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveButton.page',
 	'ActiveControls/ActiveCheckBox.page',
 	'ActiveControls/ActiveCustomValidator.page',
+	'ActiveControls/ActiveDataList.page',
+	'ActiveControls/ActiveDataGrid.page',
 	'ActiveControls/ActiveHyperLink.page',
 	'ActiveControls/ActiveImage.page',
 	'ActiveControls/ActiveImageButton.page',
@@ -116,6 +118,7 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActivePager.page',
 	'ActiveControls/ActivePanel.page',
 	'ActiveControls/ActiveRadioButton.page',
+	'ActiveControls/ActiveRepeater.page',
 	'ActiveControls/ActiveTextBox.page',
 	'ActiveControls/AutoComplete.page',
 	'ActiveControls/DragDrop.page');

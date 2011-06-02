@@ -37,8 +37,13 @@ Prado::using('System.Web.UI.WebControls.TCheckBoxColumn');
  *
  * There are also active datagrid columns to work with the TActiveDataGrid, which are
  * - {@link TActiveBoundColumn}, the active counterpart to {@link TBoundColumn}.
+ * - {@link TActiveLiteralColumn}, the active counterpart to {@link TLiteralColumn}.
+ * - {@link TActiveCheckBoxColumn}, the active counterpart to {@link TCheckBoxColumn}.
+ * - {@link TActiveDropDownListColumn}, the active counterpart to {@link TDropDownListColumn}.
+ * - {@link TActiveHyperLinkColumn}, the active counterpart to {@link THyperLinkColumn}.
  * - {@link TActiveEditCommandColumn}, the active counterpart to {@link TEditCommandColumn}.
  * - {@link TActiveButtonColumn}, the active counterpart to {@link TButtonColumn}.
+ * - {@link TActiveTemplateColumn}, the active counterpart to {@link TTemplateColumn}.
  *
  * Please refer to the original documentation of the regular counterparts for usage.
  *
