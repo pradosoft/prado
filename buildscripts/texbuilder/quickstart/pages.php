@@ -30,18 +30,14 @@ $pages['Tutorial: Addressbook'] = array(
 	'Tutorial/AddressBook.page'
 	);
 
-$pages['Tutorial: Addressbook'] = array(
-	'Tutorial/AddressBook.page'
-	);
-
 $pages['Fundamentals'] = array(
 	'Fundamentals/Architecture.page',
-    'Fundamentals/Components.page',
-    'Fundamentals/Controls.page',
-    'Fundamentals/Pages.page',
-    'Fundamentals/Modules.page',
-    'Fundamentals/Services.page',
-    'Fundamentals/Applications.page'
+	'Fundamentals/Components.page',
+	'Fundamentals/Controls.page',
+	'Fundamentals/Pages.page',
+	'Fundamentals/Modules.page',
+	'Fundamentals/Services.page',
+	'Fundamentals/Applications.page'
 	);
 
 $pages['Configurations'] = array(
@@ -55,9 +51,13 @@ $pages['Configurations'] = array(
 	);
 
 $pages['Control Reference : Standard Controls'] = array(
+	'Controls/Standard.page',
 	'Controls/Button.page',
+	'Controls/Captcha.page',
 	'Controls/CheckBox.page',
 	'Controls/ClientScript.page',
+	'Controls/ClientScriptLoader.page',
+	'Controls/Conditional.page',
 	'Controls/ColorPicker.page',
 	'Controls/DatePicker.page',
 	'Controls/Expression.page',
@@ -71,6 +71,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Image.page',
 	'Controls/InlineFrame.page',
 	'Controls/JavascriptLogger.page',
+	'Controls/Keyboard.page',
 	'Controls/Label.page',
 	'Controls/LinkButton.page',
 	'Controls/Literal.page',
@@ -81,9 +82,10 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/PlaceHolder.page',
 	'Controls/RadioButton.page',
 	'Controls/SafeHtml.page',
+	'Controls/Slider.page',
 	'Controls/Statements.page',
-	'Controls/TabPanel.page',
 	'Controls/Table.page',
+	'Controls/TabPanel.page',
 	'Controls/TextBox.page',
 	'Controls/TextHighlighter.page',
 	'Controls/Wizard.page');
@@ -103,7 +105,22 @@ $pages['Control Reference : Data Controls'] = array(
 $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveButton.page',
 	'ActiveControls/ActiveCheckBox.page',
-	'ActiveControls/ActiveCustomValidator.page');
+	'ActiveControls/ActiveCustomValidator.page',
+	'ActiveControls/ActiveDataList.page',
+	'ActiveControls/ActiveDataGrid.page',
+	'ActiveControls/ActiveHyperLink.page',
+	'ActiveControls/ActiveImage.page',
+	'ActiveControls/ActiveImageButton.page',
+	'ActiveControls/ActiveLabel.page',
+	'ActiveControls/ActiveLinkButton.page',
+	'ActiveControls/ActiveMultiView.page',
+	'ActiveControls/ActivePager.page',
+	'ActiveControls/ActivePanel.page',
+	'ActiveControls/ActiveRadioButton.page',
+	'ActiveControls/ActiveRepeater.page',
+	'ActiveControls/ActiveTextBox.page',
+	'ActiveControls/AutoComplete.page',
+	'ActiveControls/DragDrop.page');
 
 $pages['Active Control Overview'] = array(
 		'ActiveControls/Home.page',

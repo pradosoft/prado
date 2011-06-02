@@ -136,19 +136,19 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 <h2 id="134001">Active Data Controls</h2>
 <ul id="u2" class="block-content">
   <li>
-  * <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
+  <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
   is used to display or modify a list of data items. It is the
   active counterpart to the original TDataList control.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid</a>
+  <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid</a>
   displays data in a tabular format with rows and columns. It is the
   active counterpart to the original TDataGrid control.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
+  <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
   displays its content defined in templates repeatedly based on the given data.
   It is the active counterpart to the original TRepeater control.
   </li>

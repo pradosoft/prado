@@ -67,7 +67,7 @@ class Sample2 extends TPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		if(!$this->IsPostBack)
+		if(!$this->IsPostBack && !$this->IsCallBack)
 		{
 			$this->DataGrid->DataSource=$this->Data;
 			$this->DataGrid->dataBind();
@@ -80,11 +80,6 @@ class Sample2 extends TPage
 			$column->Visible=$sender->Items[$index]->Selected;
 		$this->DataGrid->DataSource=$this->Data;
 		$this->DataGrid->dataBind();
-	}
-
-	public function redraw($sender,$param)
-	{
-		$this->DataGrid->render($param->NewWriter);
 	}
 }
 

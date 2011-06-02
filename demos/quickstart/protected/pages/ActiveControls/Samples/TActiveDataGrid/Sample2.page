@@ -14,18 +14,18 @@
 	ItemStyle.Font.Italic="true"
 	AlternatingItemStyle.BackColor="#E6ECFF">
 
-	<com:THyperLinkColumn
+	<com:TActiveHyperLinkColumn
 		HeaderText="Book Title"
 		DataTextField="title"
 		DataNavigateUrlField="ISBN"
 		DataNavigateUrlFormatString="http://www.amazon.com/gp/product/%s"
 		Target="_blank"
 		/>
-	<com:TBoundColumn
+	<com:TActiveBoundColumn
 		HeaderText="Publisher"
 		DataField="publisher"
 		/>
-	<com:TBoundColumn
+	<com:TActiveBoundColumn
 		ItemStyle.HorizontalAlign="Right"
 		ItemStyle.Wrap="false"
 		ItemStyle.Font.Italic="false"
@@ -34,25 +34,24 @@
 		DataField="price"
 		DataFormatString="$%.2f"
 		/>
-	<com:TCheckBoxColumn
+	<com:TActiveCheckBoxColumn
 		HeaderText="In-stock"
 		HeaderStyle.Wrap="false"
 		DataField="instock"
 		/>
-	<com:TTemplateColumn>
+	<com:TActiveTemplateColumn>
 		<prop:HeaderTemplate>Rating</prop:HeaderTemplate>
 		<prop:ItemTemplate>
 		<img src="images/star<%#$this->Parent->DataItem['rating']%>.gif" alt="" />
 		</prop:ItemTemplate>
-	</com:TTemplateColumn>
+	</com:TActiveTemplateColumn>
 </com:TActiveDataGrid>
 
 <com:TPanel GroupingText="Column Visibility" Width="200px">
 
 <com:TActiveCheckBoxList
      AutoPostBack="true"
-     OnSelectedIndexChanged="toggleColumnVisibility"
-	 OnCallback="redraw">
+     OnSelectedIndexChanged="toggleColumnVisibility">
     <com:TListItem Text="Book Title" Selected="true" />
     <com:TListItem Text="Publisher" Selected="true" />
     <com:TListItem Text="Price" Selected="true" />
@@ -62,4 +61,4 @@
 
 </com:TPanel>
 
-<div class="last-modified">$Id: Sample2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+<div class="last-modified">$Id: Sample2.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -11,7 +11,7 @@ class Sample4 extends Sample2
 		return $data ;
 	}
 
-	public function sorTActiveDataGrid($sender,$param)
+	public function sortDataGrid($sender,$param)
 	{
 		$this->DataGrid->DataSource=$this->sortData($this->Data,$param->SortExpression);
 		$this->DataGrid->dataBind();

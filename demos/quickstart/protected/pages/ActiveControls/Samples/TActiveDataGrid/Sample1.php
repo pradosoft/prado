@@ -27,14 +27,10 @@ class Sample1 extends TPage
 		);
 	}
 
-	public function onLoad($param)
+	public function buttonClicked($sender, $param)
 	{
-		parent::onLoad($param);
-		if(!$this->IsPostBack)
-		{
-			$this->DataGrid->DataSource=$this->Data;
-			$this->DataGrid->dataBind();
-		}
+		$this->DataGrid->DataSource=$this->Data;
+		$this->DataGrid->dataBind();
 	}
 }
 

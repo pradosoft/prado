@@ -1,6 +1,6 @@
 <?php
 
-class Sample3 extends TPage
+class Home extends TPage
 {
 	protected function getProducts()
 	{
@@ -31,7 +31,7 @@ class Sample3 extends TPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		if(!$this->IsPostBack && ! $this->IsCallBack)
+		if(!$this->IsPostBack)
 		{
 			$this->Repeater->DataSource=$this->Products;
 			$this->Repeater->dataBind();
@@ -73,11 +73,6 @@ class Sample3 extends TPage
 			$this->Repeater2->DataSource=$data;
 			$this->Repeater2->dataBind();
 		}
-	}
-
-	public function renderRepeater2 ($sender, $param)
-	{
-		$this->Repeater2->render($param->getNewWriter());
 	}
 }
 

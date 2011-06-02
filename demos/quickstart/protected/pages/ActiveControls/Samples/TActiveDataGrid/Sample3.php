@@ -125,7 +125,7 @@ class Sample3 extends TPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		if(!$this->IsPostBack)
+		if(!$this->IsPostBack && !$this->IsCallBack)
 		{
 			$this->DataGrid->DataSource=$this->Data;
 			$this->DataGrid->dataBind();

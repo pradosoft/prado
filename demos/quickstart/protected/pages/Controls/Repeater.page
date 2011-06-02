@@ -1,6 +1,7 @@
 <com:TContent ID="body" >
 
 <h1 id="5301">TRepeater</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRepeater" />
 
 <p id="600400" class="block-content">
 TRepeater displays its content repeatedly based on the data fetched from <tt>DataSource</tt>. The repeated contents in TRepeater are called <i>items</i> which are controls accessible through <tt>Items</tt> property. When <tt>dataBind()</tt> is invoked, TRepeater creates an item for each row of data and binds the data row to the item. Optionally, a repeater can have a header, a footer and/or separators between items.

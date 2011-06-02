@@ -1,6 +1,6 @@
 <com:TContent ID="body">
 
-<h1>TActiveRepeater Sample 3</h1>
+<h1>TActiveRepeater Sample</h1>
 
 <p>
 The following example allows users to modify the existing tabular data using a <tt>TActiveRepeater</tt>. Two validators are used in the repeater to ensure the validity of user inputs. One is to ensure product names are not empty, the other ensures product prices are valid numeric format. After clicking on the <tt>save</tt> button, the input data is displayed in a table at the bottom of the page.
@@ -13,40 +13,28 @@ The following example allows users to modify the existing tabular data using a <
   <th>Price</th>
   <th>Imported</th>
 </tr>
-<com:TRepeater ID="Repeater" OnItemDataBound="repeaterDataBound">
+<com:TActiveRepeater ID="Repeater" OnItemDataBound="repeaterDataBound">
 <prop:ItemTemplate>
 <tr>
   <td>
-  <com:TActiveTextBox
+  <com:TTextBox
        ID="ProductName"
-       Text=<%#$this->Data['name']%>
-	  AutoPostBack="true"
-	   OnTextChanged="Page.saveInput"
-	   OnCallback="Page.renderRepeater2"/>
+       Text=<%#$this->Data['name']%> />
   </td>
   <td>
-  <com:TActiveDropDownList
-       ID="ProductCategory"
-	   AutoPostBack="true"
-	   OnSelectedIndexChanged="Page.saveInput"
-	   OnCallback="Page.renderRepeater2"/>
+  <com:TDropDownList
+       ID="ProductCategory" />
   </td>
   <td>
-  <com:TActiveTextBox
+  <com:TTextBox
        ID="ProductPrice"
        Columns="7"
-       Text=<%#$this->Data['price']%>
-	   AutoPostBack="true"
-	   OnTextChanged="Page.saveInput"
-	   OnCallback="Page.renderRepeater2"/>
+       Text=<%#$this->Data['price']%> />
   </td>
   <td>
-  <com:TActiveCheckBox
+  <com:TCheckBox
        ID="ProductImported"
-       Checked=<%#$this->Data['imported']%>
-	   AutoPostBack="true"
-	   OnCheckedChanged="Page.saveInput"
-	   OnCallback="Page.renderRepeater2"/>
+       Checked=<%#$this->Data['imported']%> />
   <com:TRequiredFieldValidator
        ControlToValidate="ProductName"
        ErrorMessage="Product name cannot be empty."
@@ -59,15 +47,15 @@ The following example allows users to modify the existing tabular data using a <
   </td>
 </tr>
 </prop:ItemTemplate>
-</com:TRepeater>
+</com:TActiveRepeater>
 </table>
 
 <div>
-<com:TActiveButton Text="Save" OnClick="saveInput" OnCallback="renderRepeater2"/>
+<com:TActiveButton Text="Save" OnClick="saveInput"/>
 </div>
 
 <com:TSafeHtml>
-<com:TActiveRepeater ID="Repeater2" EnableViewState="false" >
+<com:TActiveRepeater ID="Repeater2" EnableViewState="false">
 
 <prop:HeaderTemplate>
 <table cellpadding="2">

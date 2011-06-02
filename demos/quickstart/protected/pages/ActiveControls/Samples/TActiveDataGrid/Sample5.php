@@ -4,6 +4,17 @@ Prado::using('Application.pages.ActiveControls.Samples.TActiveDataGrid.Sample1')
 
 class Sample5 extends Sample1
 {
+
+	public function onLoad($param)
+	{
+		parent::onLoad($param);
+		if(!$this->IsPostback && ! $this->IsCallback)
+		{
+			$this->DataGrid->DataSource=$this->Data;
+			$this->DataGrid->dataBind();
+		}
+	}
+
 	public function changePage($sender,$param)
 	{
 		$this->DataGrid->CurrentPageIndex=$param->NewPageIndex;
@@ -62,11 +73,6 @@ class Sample5 extends Sample1
 		$this->DataGrid->CurrentPageIndex=0;
 		$this->DataGrid->DataSource=$this->Data;
 		$this->DataGrid->dataBind();
-	}
-
-	public function redrawDG ($sender, $param)
-	{
-		$this->DataGrid->render($param->newWriter);
 	}
 }
 
