@@ -22,6 +22,9 @@
  * - <b>onLoaded</b>* executed when callback request begins.
  * - <b>onInteractive</b> executed when callback request is in progress.
  * - <b>onComplete</b>executed when callback response returns.
+ * - <b>onSuccess</b> executed when callback request returns and is successful.
+ * - <b>onFailure</b> executed when callback request returns and fails.
+ * - <b>onException</b> raised when callback request fails due to request/response errors.
  *
  * * Note that theses 2 events are not fired correctly by Opera. To make
  *   them work in this browser, Prado will fire them just after onPreDispatch.
@@ -29,14 +32,10 @@
  * In a general way, onUninitialized, onLoading, onLoaded and onInteractive events 
  * are not implemented consistently in all browsers.When cross browser compatibility is
  * needed, it is best to avoid use them
- * 
+ *
  * The OnSuccess and OnFailure events are raised when the
  * response is returned. A successful request/response will raise
  * OnSuccess event otherwise OnFailure will be raised.
- *
- * - <b>onSuccess</b> executed when callback request returns and is successful.
- * - <b>onFailure</b> executed when callback request returns and fails.
- * - <b>onException</b> raised when callback request fails due to request/response errors.
  *
  * - <b>PostState</b> true to collect the form inputs and post them during callback, default is true.
  * - <b>RequestTimeOut</b> The request timeout in milliseconds.
@@ -44,7 +43,7 @@
  *   immediately and will abort existing prioritized requests. It does not affect
  *   callbacks that are not prioritized.
  * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
- *   viewstate update. This will automatically set HasPrority to true when enabled.
+ *   viewstate update. This will automatically set HasPriority to true when enabled.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @version $Id$

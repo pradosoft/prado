@@ -105,21 +105,28 @@ $pages['Control Reference : Data Controls'] = array(
 $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActiveButton.page',
 	'ActiveControls/ActiveCheckBox.page',
+	'ActiveControls/ActiveCheckBoxList.page',
 	'ActiveControls/ActiveCustomValidator.page',
 	'ActiveControls/ActiveDataList.page',
 	'ActiveControls/ActiveDataGrid.page',
+	'ActiveControls/ActiveDropDownList.page',
 	'ActiveControls/ActiveHyperLink.page',
 	'ActiveControls/ActiveImage.page',
 	'ActiveControls/ActiveImageButton.page',
 	'ActiveControls/ActiveLabel.page',
 	'ActiveControls/ActiveLinkButton.page',
+	'ActiveControls/ActiveListBox.page',
 	'ActiveControls/ActiveMultiView.page',
 	'ActiveControls/ActivePager.page',
 	'ActiveControls/ActivePanel.page',
 	'ActiveControls/ActiveRadioButton.page',
+	'ActiveControls/ActiveRadioButtonList.page',
 	'ActiveControls/ActiveRepeater.page',
 	'ActiveControls/ActiveTextBox.page',
 	'ActiveControls/AutoComplete.page',
+	'ActiveControls/CallbackClientScript.page',
+	'ActiveControls/CallbackClientSide.page',
+	'ActiveControls/CallbackOptions.page',
 	'ActiveControls/DragDrop.page');
 
 $pages['Active Control Overview'] = array(

@@ -97,36 +97,31 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   It can be used to perform a callback request.
   </li>
 
-  <li>
-  * <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
-  	callback options such as <tt>OnLoading</tt> client-side event handlers.
-  </li>
-
 </ul>
 
 <h2 id="128033">Active List Controls</h2>
 <ul id="u2" class="block-content">
   <li>
-  * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   displays a list of checkboxes on a Web page and each checkbox
   can trigger a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
   displays a dropdown list box that allows users to select a
   single option from a few prespecified ones. It can be used
   to perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
   displays a list box that allows single or multiple selection. It can be used
   to perform a callback request.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
   is similar to TActiveCheckBoxList in every aspect except that each
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
@@ -387,14 +382,19 @@ realize the active controls.</p>
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	<a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
 	methods to manipulate the client-side HTML elements, also includes methods
 	to invoke javascript Effects on HTML elements.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
-	common client-side callback request options, and client-side event handlers.
+	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	is used to specify client-side callback request options and client-side event handlers.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	allows a common set of callback client-side options to be attached to one or more active controls.
 	</li>
 
 	<li>
