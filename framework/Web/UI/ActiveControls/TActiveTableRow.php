@@ -48,7 +48,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
  * @version $Id$
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiveControl
 {
@@ -231,7 +231,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveTableRowEventParameter extends TCallbackEventParameter
 {
