@@ -1,8 +1,9 @@
-Version 3.1.9 Xxx XX, 201X
-
+Version 3.1.9 June 3, 2011
+BUG: Issue#280 - Documentation has been updated
 BUG: Issue#311 - TDataList : FooterStyle not used (ctrlaltca)
 BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
 BUG: Issue#327 - TDbCache with PostgreSQL throw a TDbException (ctrlaltca)
+NEW: added documentation and samples to the quickstart tutorial to include the active controls (ctrlaltca)
 NEW: Added TTemplateControlInheritable control
 NEW: Added TActiveDataGrid control
 NEW: Added TActiveDataList control
@@ -10,7 +11,6 @@ NEW: Added TActiveMultiView control
 NEW: Added TActiveRepeater control
 
 Version 3.1.8 May 29, 2011
-
 BUG: Issue#16  - [684] TDatePicker problems (rojaro)
 BUG: Issue#18  - [909] findAllBySql with non-column ORDER BY (rojaro)
 BUG: Issue 58  - TWizard defaults to wrong button (ctrlaltca)
