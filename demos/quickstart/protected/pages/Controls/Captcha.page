@@ -40,4 +40,4 @@ The following template shows a typical use of the <tt>TCaptcha</tt> control:
 
 <com:RunBar PagePath="Controls.Samples.TCaptcha.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

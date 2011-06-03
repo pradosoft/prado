@@ -45,4 +45,4 @@ Opera 9 Preview 1       OK(1)           OK(1)
 
 <com:RunBar PagePath="Controls.Samples.THtmlArea.Home" />
 
-<div class="last-modified">$Id: HtmlArea.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

@@ -15,4 +15,4 @@ observed, the polling interval is reset to the original value.
 
 <com:RunBar PagePath="ActiveControls.Samples.TValueTriggeredCallback.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

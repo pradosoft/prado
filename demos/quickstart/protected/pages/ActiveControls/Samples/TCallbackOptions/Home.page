@@ -74,4 +74,4 @@ The same TCallbackOptions can be shared among different controls, even of differ
 
 <com:TJavascriptLogger />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

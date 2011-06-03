@@ -26,4 +26,4 @@ Penampilan keyboard juga bisa diubah dengan menetapkan file CSS terkustomisasi m
 
 <com:RunBar PagePath="Controls.Samples.TKeyboard.Home" />
 
-<div class="last-modified">$Id: Keyboard.page 2159 2007-08-27 21:23:33Z xue $</div></com:TContent>
+</com:TContent>

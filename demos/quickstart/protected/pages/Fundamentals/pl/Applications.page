@@ -55,4 +55,4 @@ Cykle życia aplikacji mogą zostać przedstawione następująco:
 </p>
 <img src="<%~applifecycles.gif%>" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

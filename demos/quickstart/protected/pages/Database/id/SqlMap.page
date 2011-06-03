@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id $ -->
 
 <h1 id="140062">Pemeta Data</h1>
 <com:SinceVersion Version="3.1a" />
@@ -208,4 +207,4 @@ $user->save(); //simpan menggunakan Rekaman Aktif
     <a href="http://ibatis.apache.org">http://ibatis.apache.org</a>.</li>
 </ul>
 
-<div class="last-modified">$Id: SqlMap.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>
+</com:TContent>

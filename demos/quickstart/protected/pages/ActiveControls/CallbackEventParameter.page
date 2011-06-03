@@ -23,4 +23,4 @@ The response data (i.e., passing results back to the client-side
 callback handler function) can be set using <tt>ResponseData</tt> property.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

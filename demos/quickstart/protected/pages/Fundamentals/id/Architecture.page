@@ -10,4 +10,4 @@ PRADO adalah kerangka kerja presentasi utama, meskipun tidak dibatasi demikian. 
 Ketika aplikasi PRADO memproses permintaan halaman, diagram obyek statisnya dapat dilihat sebagai berikut,
 </p>
 <img src="<%~objectdiagram.gif%>" />
-<div class="last-modified">$Id: Architecture.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

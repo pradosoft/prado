@@ -394,4 +394,4 @@ clearButton.onclick = function()
 <p id="820725" class="block-content">
     That way we create a brand new function that calls our helper method within the helper object's context.
 </p>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

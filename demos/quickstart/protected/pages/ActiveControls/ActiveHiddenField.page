@@ -9,4 +9,4 @@ It displays a hidden input field on a Web page. The value of the input field can
 on callback via the <tt>Value</tt> property.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

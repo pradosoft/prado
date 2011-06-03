@@ -110,4 +110,4 @@ Harap berhati-hati, untuk kemudahan, aplikasi ini tidak melakukan validasi input
 </p>
 <com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
 
-<div class="last-modified">$Id: DataList.page 1687 2007-02-09 21:34:53Z xue $</div></com:TContent>
+</com:TContent>

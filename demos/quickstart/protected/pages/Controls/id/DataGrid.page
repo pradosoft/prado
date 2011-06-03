@@ -182,4 +182,4 @@ class ImageColumn extends TDataGridColumn {
 Dalam <tt>initializeCell()</tt>, jangan lupa untuk memanggil implementasi leluhur, karena ia menginisialisasi sel dalam item dari tipe <tt>Header</tt> dan <tt>Footer</tt>.
 </p>
 
-<div class="last-modified">$Id: DataGrid.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

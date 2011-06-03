@@ -96,4 +96,4 @@ Sejak v3.1.1, <tt>TDropDownList</tt> mulai mendukung teks pertanyaan (seperti 'P
 
 <com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
 
-<div class="last-modified">$Id: List.page 2256 2007-09-28 02:04:47Z xue $</div></com:TContent>
+</com:TContent>

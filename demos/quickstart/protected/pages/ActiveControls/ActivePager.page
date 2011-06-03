@@ -38,4 +38,4 @@ Additionnaly, <tt>TActivePager</tt> raises <tt>OnCallback</tt> after the <tt>OnP
 
 <com:RunBar PagePath="ActiveControls.Samples.TActivePager.Home" />
 
-<div class="last-modified">$Id: Pager.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

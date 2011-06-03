@@ -47,4 +47,4 @@ When <tt>TPageService</tt> is requested, it also loads modules specific for page
 Custom modules and core modules are all configurable via <a href="?page=Configurations.Overview">configurations</a>.
 </p>
 
-<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

@@ -49,4 +49,4 @@ Then, share this set of options to one or more active controls; each control wil
 
 <com:RunBar PagePath="ActiveControls.Samples.TCallbackOptions.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

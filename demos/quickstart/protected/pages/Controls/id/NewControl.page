@@ -149,4 +149,4 @@ Jika kontrol ingin bisa mengambil data post, seperti <tt>TTextBox</tt>, ia harus
 <p id="660449" class="block-content">
 Jika kontrol ingin mendapatkan data dari beberapa sumber data eksternal, ia harus memperluas <tt>TDataBoundControl</tt>. <tt>TDataBoundControl</tt> mengimplementasikan properti dasar yang diperlukan untuk mempopulasi data melalui databinding. Kenyataanya, kontrol seperti <tt>TListControl</tt>, <tt>TRepeater</tt> adalah <tt>TDataGrid</tt> semua berasal darinya.
 </p>
-<div class="last-modified">$Id: NewControl.page 1741 2007-03-05 16:05:43Z xue $</div></com:TContent>
+</com:TContent>

@@ -13,4 +13,4 @@ the client-side "for" attribute on the label.
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveLabel.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

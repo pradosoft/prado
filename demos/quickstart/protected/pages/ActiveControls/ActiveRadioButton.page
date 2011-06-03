@@ -16,5 +16,4 @@ The <tt>GroupName</tt> property may <b>NOT</b> be changed during callback becaus
 </p>
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveRadioButton.Home" />
-
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

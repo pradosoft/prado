@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id$ -->
 <h1 id="128031">Active Controls (AJAX enabled Controls)</h1>
 <p id="640423" class="block-content">See the <a href="?page=ActiveControls.Introduction">Introduction</a>
 for a quick overview of the concept behind active controls (AJAX enabled controls).
@@ -462,4 +461,4 @@ A Prado user can use them to customize active controls behaviour and interact di
 	</li>
 </ul>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

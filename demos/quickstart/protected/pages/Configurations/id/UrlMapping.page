@@ -103,4 +103,4 @@ Pola yang sama adalah propreti <tt>ServiceID</tt> dan <tt>ServiceParameter</tt> 
 Standarnya <tt>TUrlMapping</tt> akan membentuk URL yang diawali dengan yang saat ini meminta path naskah PHP, seperti <tt><b>/path/to/index.php</b>/article/3</tt>. Para pengguna dapat mengubah perilaku ini dengan menetapkan prefiks URL secara spesifik melalui properti <tt>UrlPrefix</tt>-nya. Sebagai contoh, jika konfigurasi server Web memperlakukan <tt>index.php</tt> sebagai naskah standar, kita bisa menyetel <tt>UrlPrefix</tt> sebagai <tt>/path/to</tt> dan URL yang dibentuk akan terlihat seperti <tt>/path/to/article/3</tt>.
 </p>
 
-<div class="last-modified">$Id: UrlMapping.page 2118 2007-08-11 14:30:07Z xue $</div></com:TContent>
+</com:TContent>

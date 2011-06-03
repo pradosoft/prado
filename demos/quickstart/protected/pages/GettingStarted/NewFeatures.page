@@ -44,5 +44,4 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Added TDbUserManager and TDbUser to simplify <a href="?page=Advanced.Auth">authentication and authorization</a> with user accounts stored in a database.</li>
 </ul>
 
-<div class="last-modified">$Id$</div>
 </com:TContent>

@@ -132,4 +132,4 @@ Because of the above new features, when dealing with the <tt>Attributes</tt> pro
 <p id="710548" class="block-content">
 which adds an attribute named <tt>onclick</tt> to the <tt>TButton</tt> control.
 </p>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

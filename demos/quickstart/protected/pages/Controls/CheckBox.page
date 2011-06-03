@@ -11,4 +11,4 @@ To determine whether the check box is checked, test the <tt>Checked</tt> propert
 </p>
 <com:RunBar PagePath="Controls.Samples.TCheckBox.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

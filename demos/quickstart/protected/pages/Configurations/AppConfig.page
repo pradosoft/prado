@@ -56,4 +56,4 @@ An external configuration file has the same format as described above. Although 
 By default without explicit configuration, a PRADO application will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

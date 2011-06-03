@@ -43,4 +43,4 @@ Output cache bisa diulang. Cache terluar mengambil lebih dulu di atas cache terd
 Standarnya, <tt>TOutputCache</tt> hanya efektif untuk permintaan halaman non-postback dan saat modul cache dihidupkan. Jangan mencoba untuk mengalamatkan kontrol anak pada <tt>TOutputCache</tt> saat konten yang di-cache saat ini sedang dipakai. Gunakan properti <tt>ContentCached</tt> untuk menentukan apakah konten di-cache atau tidak.
 </p>
 
-<div class="last-modified">$Id: OutputCache.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

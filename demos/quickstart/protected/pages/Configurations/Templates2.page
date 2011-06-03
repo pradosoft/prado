@@ -110,4 +110,4 @@ URL tags are used to insert the relative web url path to the Prado application i
 If your Prado application is deployed on http://localhost/pradoapp/, the tag above will produce "/pradoapp/image.jpg". This tag will help you to use the correct file path even with UrlFormat set to Path, or if you are using url mappings.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

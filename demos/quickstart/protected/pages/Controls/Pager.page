@@ -35,4 +35,4 @@ These user interfaces may be further customized by configuring the following pro
 
 <com:RunBar PagePath="Controls.Samples.TPager.Sample1" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

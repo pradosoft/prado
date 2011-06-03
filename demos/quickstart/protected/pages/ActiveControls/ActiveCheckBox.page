@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 <h1 id="124029">TActiveCheckBox</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCheckBox" />
 
@@ -20,4 +19,4 @@
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBox.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -54,4 +54,4 @@ Oleh karena itu, gunakan kontrol master jika konten umum harus dikaitkan dengan 
 Performansinya, template eksternal lebih ringan daripada master seperti berisi kontrol sendiri yang berparisipasi dalam masa hidup halaman, karena pembentuk hanya dipakai saat template sedang diuraikan.
 </p>
 
-<div class="last-modified">$Id: MasterContent.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

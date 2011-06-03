@@ -12,4 +12,4 @@ The default action of the event on the client-side can be prevented when
 
 <com:RunBar PagePath="ActiveControls.Samples.TEventTriggeredCallback.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

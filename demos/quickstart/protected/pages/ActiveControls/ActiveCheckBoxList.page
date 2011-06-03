@@ -29,4 +29,4 @@ Please refer to the original documentation of <a href="?page=Controls.List">TChe
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBoxList.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

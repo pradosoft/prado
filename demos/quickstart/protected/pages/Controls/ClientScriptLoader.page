@@ -118,6 +118,5 @@ in the assets directory until they are deleted.
 The <tt>EnableGzip</tt> property (default is true) enables the
 published javascripts to be served as zipped if the browser and php server allows it.
 </p>
-<div class="last-modified">$Id: ClientScript.page 1650 2007-01-24 06:55:32Z wei $</div>
 
 </com:TContent>

@@ -28,4 +28,4 @@ Logger.debug('debug information');
 To toggle the visibility of the logger and console on the browser window, press ALT-D (or CTRL-D on OS X).
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

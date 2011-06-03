@@ -31,4 +31,4 @@ also be changed by specifying <tt>KeyboardCssClass</tt>
 
 <com:RunBar PagePath="Controls.Samples.TKeyboard.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

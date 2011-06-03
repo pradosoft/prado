@@ -85,4 +85,4 @@ Catatan, dalam <tt>SpecialPage</tt> di atas akan menggunakan <tt>MyPersister2</t
 Teknik cache server terbukti sangat efektif meningkatkan performansi aplikasi PRADO. Sebagai contoh, kita telah mengamati bahwa dengan menggunakan Zend Optimizer, RPS (request per second) dari aplikasi PRADO bisa meningkat lebih dari sepuluh kali. Tentunya, ini merupakan harga dari output yang stabil, sementara teknik cache PRADO selalu memastikan kebenaran output.
 </p>
 
-<div class="last-modified">$Id: Performance.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>
+</com:TContent>

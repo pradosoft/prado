@@ -88,4 +88,4 @@ class TestComp extends TControl
 </com:TTextHighlighter>
 
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

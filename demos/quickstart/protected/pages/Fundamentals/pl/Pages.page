@@ -22,4 +22,4 @@ Cykl życia strony odwołuje się do stanów przejściowych strony, gdy jest ona
 <img src="<%~lifecycles.gif %>" />
 </p>
 
-<div class="last-modified">$Id: Pages.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

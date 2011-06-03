@@ -100,4 +100,4 @@ External templates will be inserted at the places where the include tags occur i
 Note, nested template inclusion is not supported, i.e., you cannot have include tags in an external template.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

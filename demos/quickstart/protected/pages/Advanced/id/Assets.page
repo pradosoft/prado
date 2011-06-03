@@ -66,4 +66,4 @@ Dalam contoh di atas, pemanggilan <tt>$this->getAsset('up.gif')</tt> akan menerb
 <p id="740586" class="block-content">
 Untuk meredistribusi <tt>ToggleButton</tt>, cukup paketkan bersama file kelas dan file gambar. Para pengguna <tt>ToggleButton</tt> cuma perlu untuk mengurai file, dan mereka bisa menggunakannya secara langsung tanpa mencemaskan mengenai ke mana meng-copy file gambar itu.
 </p>
-<div class="last-modified">$Id: Assets.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $ -->
 <h1 id="122026">TActiveButton</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" />
 
@@ -75,4 +74,4 @@ membuat permintaan callback.
 Nilai properti <tt>ClientSide.OnLoading</tt> berisi pernyataan javascript yang menggunakan librari "effects" untuk menampilkan tag span "Loading...". Hal yang mirip, nilai properti <tt>ClientSide.OnComplete</tt> berisi pernyataan javascript yang menyembunyikan tag span "Loading...".
 Lihat <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> untuk rincian lebih jelas pada detil properti sisi-klien.
 </p>
-<div class="last-modified">$Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $</div></com:TContent>
+</com:TContent>

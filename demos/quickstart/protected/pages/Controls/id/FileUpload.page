@@ -24,4 +24,4 @@ Jika upload file tidak berhasil, properti <tt>ErrorCode</tt> memberikan kode kes
 
 <com:RunBar PagePath="Controls.Samples.TFileUpload.Home" />
 
-<div class="last-modified">$Id: FileUpload.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

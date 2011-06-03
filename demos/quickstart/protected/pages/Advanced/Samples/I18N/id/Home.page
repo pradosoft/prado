@@ -158,4 +158,4 @@ Saat ini kultur Anda adalah <%= $this->Page->CurrentCulture %>.
 	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
 </com:TTranslate>
 
-<div class="last-modified">$Id: Home.id.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

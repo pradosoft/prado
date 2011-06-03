@@ -26,4 +26,4 @@ Twoja instalacja PRADO jest zakończona i możesz zacząć zabawę z aplikacjami
 Jeśli spotkasz się z jakimkolwiek problemem w aplikacjach demo, proszę użyj skryptu sprawdzającego wymagania do korzystania z PRADO dostępnego poprzez <tt>http://adres-serwera/prado/requirements/index.php</tt>, aby najpierw sprawdzić czy Twoja konfiguracja serwera spełnia wszystkie warunki wymagane przez PRADO.
 </p>
 </div>
-<div class="last-modified">$Id: Installation.page 170, 2007-02-17 14:58:00Z aztech $</div></com:TContent>
+</com:TContent>

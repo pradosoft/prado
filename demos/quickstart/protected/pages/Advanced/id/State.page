@@ -51,4 +51,4 @@ $caption = $application->getGlobalState('Caption');
 PRADO melapisi manajemen sesi tradisional dalam modul <tt>THttpSession</tt>. Modul dapat diakses dari dalam setiap komponen dengan menggunakan <tt>$this->Session</tt>, di mana <tt>$this</tt> merujuk ke obyek komponen.
 </p>
 
-<div class="last-modified">$Id: State.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

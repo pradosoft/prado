@@ -12,4 +12,4 @@ Please choose a file to upload:
 
 <com:TActiveLabel ID="Result" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

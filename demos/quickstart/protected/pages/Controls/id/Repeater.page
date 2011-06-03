@@ -108,4 +108,4 @@ Lebih sering, seseorang perlu mengkustomisasi tata letak item pengulang. Contoh 
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample5" />
 
 
-<div class="last-modified">$Id: Repeater.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>
+</com:TContent>

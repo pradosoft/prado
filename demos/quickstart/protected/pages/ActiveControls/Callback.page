@@ -31,4 +31,4 @@ Example usage:
 
 <com:RunBar PagePath="ActiveControls.Samples.TCallback.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

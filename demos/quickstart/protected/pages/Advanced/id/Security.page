@@ -76,4 +76,4 @@ $cookie=new THttpCookie($name,$value);
 $this->Response->Cookies[]=$cookie;
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id: Security.page 1741 2007-03-05 16:05:43Z xue $</div></com:TContent>
+</com:TContent>

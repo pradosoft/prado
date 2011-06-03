@@ -37,4 +37,4 @@ Be aware, since <tt>TStatements</tt> allows execution of arbitrary PHP code, in 
 
 <com:RunBar PagePath="Controls.Samples.TStatements.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

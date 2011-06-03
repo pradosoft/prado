@@ -48,4 +48,4 @@ $this->setControlState('Name',$value,$defaultValue);
 di mana <tt>$this</tt> merujuk ke turunan kontrol, <tt>Name</tt> merujuk ke kunci yang mengidentifikasi nilai pasti, <tt>$defaultValue</tt> adalah opsional. Ketika mengambil nilai dari viewstate atau controlstate, jika kunci terkait tidak ada, nilai standar akan diberikan.
 </p>
 
-<div class="last-modified">$Id: Controls.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

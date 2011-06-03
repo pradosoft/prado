@@ -236,4 +236,4 @@ validator so that its javascript code are produced no matter what (otherwise, th
 <com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

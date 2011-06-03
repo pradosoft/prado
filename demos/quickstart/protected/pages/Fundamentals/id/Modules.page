@@ -47,4 +47,4 @@ Ketika <tt>TPageService</tt> diminta, ia juga mengambil modul tertentu untuk lay
 Modul kustom dan modul inti semuanya dapat dikonfigurasi melalui <a href="?page=Configurations.Overview">konfigurasi</a>.
 </p>
 
-<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

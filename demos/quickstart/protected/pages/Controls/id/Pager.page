@@ -35,4 +35,4 @@ Antarmuka pengguna ini selanjutnya dapat dikustomisasi dengan mengkonfigurasi pr
 
 <com:RunBar PagePath="Controls.Samples.TPager.Sample1" />
 
-<div class="last-modified">$Id: Pager.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

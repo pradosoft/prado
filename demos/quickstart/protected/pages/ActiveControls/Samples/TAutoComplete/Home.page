@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 
 <style type="text/css">
 <!--
@@ -54,4 +53,4 @@ Autocompleter with multiple selection:
 
 <com:TJavascriptLogger />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

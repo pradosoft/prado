@@ -89,6 +89,5 @@ Lebih lanjut, pasca proses (komentar dihapus dan di-zip) disimpan dalam direktor
 <p class="block-content">
 Properti <tt>EnableGzip</tt> (standarnya true) membolehkan javascripts yang dipublikasikan untuk dilayani sebagai zipped jika browser dan server php mengijinkannya.
 </p>
-<div class="last-modified">$Id: ClientScript.page 1650 2007-01-24 06:55:32Z wei $</div>
 
 </com:TContent>

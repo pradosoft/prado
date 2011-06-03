@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id$ -->
 <h1 id="144022">Active Record Scaffold Views</h1>
 <com:SinceVersion Version="3.1b" />
 <p id="720048" class="block-content"><a href="?page=Database.ActiveRecord">Active Record</a> classes can be used together with 
@@ -148,5 +147,4 @@ and the <tt>SearchParameters</tt> property corresponds to
     &lt;/prop:ListView.List.ItemTemplate&gt;
 &lt;/com:TScaffoldView/&gt;
 </com:TTextHighlighter>
-
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

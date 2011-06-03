@@ -74,4 +74,4 @@ Again, if the preferred language is not found, PRADO will try to use <tt>excepti
 <b class="tip">CAUTION:</b> When saving a template file, please make sure the file is saved using UTF-8 encoding. On Windows, you may use <tt>Notepad.exe</tt> to accomplish such saving.
 </div>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

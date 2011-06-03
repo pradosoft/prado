@@ -12,4 +12,4 @@ is true, changes to the textbox contents will perform a callback request causing
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.TActiveTextBox.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

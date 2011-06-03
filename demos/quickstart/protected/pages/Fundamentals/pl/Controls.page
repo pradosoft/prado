@@ -48,4 +48,4 @@ $this->setControlState('Nazwa',$wartosc,$wartoscDomyslna);
 gdzie <tt>$this</tt> odnosi się do instancji kontrolki, <tt>Nazwa</tt> odnosi się to klucza identyfikującego zachowaną wartość, <tt>$wartoscDomyslna</tt> jest opcjonalna. Kiedy przywracamy wartości z stanu widoku lub stanu kontrolki, jeśli podany klucz nie istnieje, wartość domyślna jest zwracana.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

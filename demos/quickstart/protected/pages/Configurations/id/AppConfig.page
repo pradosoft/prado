@@ -56,4 +56,4 @@ File konfigurasi eksternal mempunyai format yang sama seperti dijelaskan di atas
 Standarnya tanpa konfigurasi eksplisit, aplikasi PRADO akan mengambil beberapa modul inti, seperti <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, dll. Ia juga akan menyediakan <tt>TPageService</tt> sebagai layanan standar. Konfigurasi dan penggunaan modul serta layanan ini tercakup dalam seksi individual pada  tutorial ini. Catatan, jika aplikasi Anda mengambil setelan standar untuk modul dan layanan ini, Anda tidak perlu menyediakan konfigurasi aplikasi. Akan tetapi, jika modul atau layanan ini tidak mencukupi, atau Anda ingin menghubah perilakunya dengan mengkonfigurasi nilai propertinya, Anda memerlukan konfigurasi aplikasi.
 </p>
 
-<div class="last-modified">$Id: AppConfig.page 1695 2007-02-13 14:16:09Z xue $</div></com:TContent>
+</com:TContent>

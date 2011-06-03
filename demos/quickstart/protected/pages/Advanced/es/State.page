@@ -51,4 +51,4 @@ $caption = $application->getGlobalState('Caption');
 PRADO encapsulates the traditional session management in <tt>THttpSession</tt> module. The module can be accessed from within any component by using <tt>$this->Session</tt>, where <tt>$this</tt> refers to the component object.
 </p>
 
-<div class="last-modified">$Id: State.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

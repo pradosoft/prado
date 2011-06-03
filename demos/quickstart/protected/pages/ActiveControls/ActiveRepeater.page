@@ -19,6 +19,4 @@ Please refer to the original documentation of <a href="?page=Controls.Repeater">
 </p>
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveRepeater.Home" />
-
-
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

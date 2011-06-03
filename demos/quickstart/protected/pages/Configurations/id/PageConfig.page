@@ -44,4 +44,4 @@ Spesifikasi lengkap dari konfigurasi halaman dapat ditemukan dalam file <a href=
 Sejak versi 3.1.1, atribut <tt>id</tt> dalam elemen &lt;page&gt; bisa berupa path halaman relatif yang mengarah ke halaman di dalam subdirektori pada direktori yang berisi konfigurasi halaman. Sebagai contoh, <tt>id="admin.Home"</tt> merujuk ke halaman <tt>Home</tt> di bawah direktori <tt>admin</tt>. Atribut <tt>id</tt> juga bisa berisi wildcard '*' untuk menemukan seluruh halaman di bawah direktori yang ditetapkan. Sebagai contoh, <tt>id="admin.*"</tt> merujuk ke seluruh halaman di bawah direktori <tt>admin</tt> dan subdirektorinya. Peningkatan ini membolehkan para pengembang untuk memusatkan konfigurasi halamannya (misalnya menyimpan semua inisialisasi semua halaman  dalam konfigurasi aplikasi atau konfigurasi akar halaman.)
 </p>
 
-<div class="last-modified">$Id: PageConfig.page 2214 2007-09-11 13:01:29Z xue $</div></com:TContent>
+</com:TContent>

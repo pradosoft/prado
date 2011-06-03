@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 <h1 id="188035">TDropContainer</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TDropContainer" />
 
@@ -23,4 +22,4 @@ the <tt>OnDropk</tt> event.
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.DragDrop.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

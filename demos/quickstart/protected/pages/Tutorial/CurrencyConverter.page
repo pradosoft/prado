@@ -405,4 +405,4 @@ Prado::using('System.Web.UI.ActiveControls.*');
 		<img src=<%~ example2.png %> class="figure" />
 		This completes introduction tutorial to the Prado web application framework.
 	</p>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

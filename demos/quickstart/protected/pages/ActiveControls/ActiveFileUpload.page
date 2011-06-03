@@ -30,4 +30,4 @@ or a red x if there was an error.
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveFileUpload.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

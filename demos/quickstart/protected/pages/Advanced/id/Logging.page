@@ -58,4 +58,4 @@ Kategori pesan adalah hirarkis. Kategori yang namanya awalan dari yang lain dise
 Dengan ketentuan, pesan yang dicatat dalam kode inti PRADO dikategorikan berdasarkan namespace dari kelas terkait. Sebagai contoh, pesan yang dicatat dalam <tt>TPage</tt> akan menjadi kategori <tt>System.Web.UI.TPage</tt>.
 </p>
 
-<div class="last-modified">$Id: Logging.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

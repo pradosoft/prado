@@ -26,4 +26,4 @@
 	Nie znaleziono żadnych rezultatów dla frazy  "<%= htmlentities($this->Page->search->Text) %>".
 	</com:TPanel>
 </div>
-<div class="last-modified">$Id: Search.page 1859 2007-04-10 21:27:01Z xue $</div></com:TContent>
+</com:TContent>

@@ -21,4 +21,4 @@ The following samples show <tt>TInlineFrame</tt> with different property setting
 </p>
 <com:RunBar PagePath="Controls.Samples.TInlineFrame.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

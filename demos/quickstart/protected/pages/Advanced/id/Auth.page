@@ -167,4 +167,4 @@ public function saveUserToCookie($cookie)
 }
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id: Auth.page 2245 2007-09-26 13:22:02Z xue $</div></com:TContent>
+</com:TContent>

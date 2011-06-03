@@ -167,4 +167,4 @@ public function saveUserToCookie($cookie)
 }
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

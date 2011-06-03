@@ -96,4 +96,4 @@ Tag lokalisasi mewakili teks yang dilokalisasi. Formatnya adalah sebagai berikut
 di mana <tt>string</tt> akan diterjemahkan ke bahasa berbeda tergantung pada preferensi bahasa pengguna-akhir. Tag lokalisasi sebenarnya adalah jalan pintas ke fungsi panggil <tt>Prado::localize(string)</tt>.
 </p>
 
-<div class="last-modified">$Id: Templates2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

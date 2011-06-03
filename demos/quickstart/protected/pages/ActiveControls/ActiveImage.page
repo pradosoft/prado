@@ -13,4 +13,4 @@ and <tt>DescriptionUrl</tt> to be updated during a callback request.
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.TActiveImage.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -169,4 +169,4 @@ By default, <tt>TUrlMapping</tt> will construct URLs prefixed with the currently
 <div class="note"><b class="tip">Note:</b> If you use <tt>constructUrl()</tt> with string parameters that contain slashes ("/") they will get encoded to %2F. By default most Apache installations give a "404 Not found" if a URL contains a %2F. You can add <tt>AllowEncodedSlashes On</tt> to your <tt>VirtualHost</tt> configuration to resolve this. (Available since Apache 2.0.46).
 </div>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

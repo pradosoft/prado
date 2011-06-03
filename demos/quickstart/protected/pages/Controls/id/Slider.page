@@ -47,4 +47,4 @@ Anda juga bisa melampirkan pengendali event javascript ClientSide ke slider :
 
 <com:RunBar PagePath="Controls.Samples.TSlider.Home" />
 
-<div class="last-modified">$Id: Slider.page 2200 2007-09-04 08:56:24Z tof $</div></com:TContent>
+</com:TContent>

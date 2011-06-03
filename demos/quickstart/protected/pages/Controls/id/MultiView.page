@@ -40,4 +40,4 @@ Setelah postback, jika indeks tampilan aktif diubah, <tt>TMultiView</tt> akan me
 
 <com:RunBar PagePath="Controls.Samples.TMultiView.Home" />
 
-<div class="last-modified">$Id: MultiView.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

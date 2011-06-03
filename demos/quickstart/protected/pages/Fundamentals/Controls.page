@@ -48,4 +48,4 @@ $this->setControlState('Name',$value,$defaultValue);
 where <tt>$this</tt> refers to the control instance, <tt>Name</tt> refers to a key identifying the persistent value, <tt>$defaultValue</tt> is optional. When retrieving values from viewstate or controlstate, if the corresponding key does not exist, the default value will be returned.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -26,4 +26,4 @@ Your installation of PRADO is done and you can start to play with the demo appli
 If you encounter any problems with the demo applications, please use the PRADO requirement checker script, accessible via <tt>http://web-server-address/prado/requirements/index.php</tt>, to check first if your server configuration fulfills the conditions required by PRADO.
 </p>
 </div>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

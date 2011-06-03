@@ -100,4 +100,4 @@ Choose page:
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
 <com:TJavascriptLogger/>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id $ -->
 <h1 id="136039">Data Access Objects (DAO)</h1>
 <com:SinceVersion Version="3.1a" />
 <p id="680461" class="block-content">
@@ -161,4 +160,4 @@ while($dataReader->read()!==false)
 }
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -331,4 +331,4 @@ clearButton.onclick = function()
 <p id="820725" class="block-content">
     Cara itu kita membuat fungsi baru yang memanggil metode penolong di dalam konteks obyek penolong.
 </p>
-<div class="last-modified">$Id: Scripts.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

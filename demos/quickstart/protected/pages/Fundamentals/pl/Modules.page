@@ -47,4 +47,4 @@ Kiedy wystąpi żądanie <tt>TPageService</tt> ładowane są także określone m
 Dodatkowe moduły oraz moduły źródłowe są konfigurowalne poprzez <a href="?page=Configurations.Overview">konfigurację</a>.
 </p>
 
-<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

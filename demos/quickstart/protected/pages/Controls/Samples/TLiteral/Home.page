@@ -10,4 +10,4 @@
 <com:TLiteral Text="This is a piece of encoded <a>text</a>." Encode="true"/>
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

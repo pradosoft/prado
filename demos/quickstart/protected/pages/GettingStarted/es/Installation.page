@@ -26,4 +26,4 @@ Su instalacion de PRADO esta lista y usted puede comenzar a probarlo con las apl
 Si encuentra algun problema con las aplicaciones demostrativa de PRADO, utilice por favor el script de chequeo de requerimientos que viene con PRADO , accesible desde <tt>http://web-server-address/prado/requirements/index.php</tt>, para comprobar primeramente si la configuracion de su server cumple con las condiciones requeridas por PRADO.
 </p>
 </div>
-<div class="last-modified">$Id: Installation.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

@@ -20,4 +20,4 @@ Please refer to the original documentation of <a href="?page=Controls.DataList">
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveDataList.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

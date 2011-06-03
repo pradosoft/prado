@@ -37,4 +37,4 @@ Harap berhati-hati, karena <tt>TStatements</tt> membolehkan eksekusi kode PHP be
 
 <com:RunBar PagePath="Controls.Samples.TStatements.Home" />
 
-<div class="last-modified">$Id: Statements.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

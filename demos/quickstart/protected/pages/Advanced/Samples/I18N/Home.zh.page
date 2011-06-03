@@ -153,4 +153,4 @@ PRADO提供了gettext，XML，SQLite以及MySQL等手段用于存放消息的各
 	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
 </com:TTranslate>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

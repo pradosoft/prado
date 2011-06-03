@@ -39,4 +39,4 @@ Ketergantungan dari setiap librari secara otomatis dipecahkan. Yakni, menetapkan
 <h2 id="2204">Menyertakan Blok Kode Javascript Kustom</h2>
 <p id="260243" class="block-content"> Setiap konten di dalam tag kontrol <tt>TClientScript</tt> akan dianggap sebagai kode Javascript dan akan disajikan di mana ia dideklarasikan.</p>
 
-<div class="last-modified">$Id: ClientScript.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>
+</com:TContent>

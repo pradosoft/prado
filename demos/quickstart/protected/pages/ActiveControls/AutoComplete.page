@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 <h1 id="180030">TAutoComplete</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TAutoComplete" />
 
@@ -15,4 +14,4 @@ When a suggestion is selected the <tt>OnSuggestionSelected</tt> event is raised,
 
 <com:RunBar PagePath="ActiveControls.Samples.TAutoComplete.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

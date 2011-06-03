@@ -25,4 +25,4 @@ Please refer to the original documentation of <a href="?page=Controls.List">TLis
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveListBox.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

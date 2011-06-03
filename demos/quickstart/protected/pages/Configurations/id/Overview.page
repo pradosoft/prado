@@ -7,4 +7,4 @@ PRADO menggunakan konfigurasi untuk merekat komponen bersama ke dalam halaman da
 Konfigurasi aplikasi dan halaman adalah opsional jika nilai standar yang dipakai. Template sebagian besar digunakan oleh halaman dan kontrol template. Ini juga opsional.
 </p>
 
-<div class="last-modified">$Id: Overview.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

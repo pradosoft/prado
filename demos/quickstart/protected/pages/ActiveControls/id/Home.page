@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
 <h1 id="128031">Kontrol Aktif (kontrol AJAX-dihidupkan)</h1>
 <p id="640423" class="block-content">Lihat <a href="?page=ActiveControls.Introduction">Pengenalan</a>
 untuk tinjauan cepat terhadap konsep di belakang kontrol aktif (kontrol AJAX-dihidupkan).
@@ -43,50 +42,50 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
   mewakili gambar pada halaman Web.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+  <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
   mewakili tombol klik yang mempunyai gambar sebagai latar belakangnya.
   Ia bisa dipakai untuk memicu permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+  <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
 	mewakili label pada halam Web.
 	Label dapat dikustomisasi melalui berbagai atribut CSS.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
 	mewakili hiperlink yang bisa melalukan permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
   mewakili penampung untuk kontrol lain pada halaman Web. Dalam HTML,
   ia ditampilkan sebagai elemen &lt;div&gt;. Kontrol pabel dapat
   diganti selama permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
   mewakili tombol radio pada halaman Web.
   Dipakai terutama dalam sebuah grup di mana pengguna bisa memilih. Ini
   dapat digunakan untuk melakukan permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+  <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
 	mewakili field input teks pada halaman Web.
 	Ia bisa mengoleksi satu-baris, multi-baris atau input teks sandi dari pengguna.
 	Ia bisa dipakai untuk melakukan permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+  <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
   	opsi callback seperti pengendali event sisi-klien <tt>OnLoading</tt>.
   </li>
 
@@ -95,26 +94,26 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
 <h2 id="128033">Kontrol List Aktif</h2>
 <ul id="u2" class="block-content">
   <li>
-  * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
   menampilkan daftar kotak centang pada halaman Web dan setiap kotak centang
   	dapat memicu permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
   menampilkan kotak daftar dropdown yang membolehkan para pengguna untuk memilih
   satu opsi dari beberapa yang telah ditetapkan. Dapat dipakai untuk melakukan
   permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
   menampilkan kotak daftar yang membolehkan satu pilihan atau multipel. Dapat
   dipakai untuk melakukan permintaan callback.
   </li>
 
   <li>
-  * <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
   mirip dengan TActiveCheckBoxList dalam setiap aspek kecuali bahwa setiap
   TActiveRadioButtonList menampilkan sebuah grup tombol radio. Setiap tombol radio
   dapat melakukan permintaan callback.
@@ -126,22 +125,22 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
 
 <ul id="u3" class="block-content">
 	<li>
-	* <a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
 	memperluas TActiveTextBox untuk menawarkan saran pelengkapan teks.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.Callback">TCallback</a>
+	<a href="?page=ActiveControls.Callback">TCallback</a>
 	kontrol generik yang dapat melakukan permintaan callback.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
+	<a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
 	memicu permintaan callback berdasarkan event DOM HTML.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
 	mewakili label yang dapat diedit dengen mengklik.
 	</li>
 
@@ -309,40 +308,40 @@ TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial
 <p id="640427" class="block-content">Kelas berikut menyediakan kelas infrastruktur dasar yang diperlukan guna merealisasikan kontrol aktif.</p>
 <ul id="u4" class="block-content">
 	<li>
-	* <a href="?page=ActiveControls.ActiveControlAdapter">TActiveControlAdapter</a>
+	<a href="?page=ActiveControls.ActiveControlAdapter">TActiveControlAdapter</a>
 	melacak nilai viewstate dari kontrol dan memutakhirkan perbedaan pada atribut elemen HTML sisi-klien.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.ActiveListControlAdapter">TActiveListControlAdapter</a>
+	<a href="?page=ActiveControls.ActiveListControlAdapter">TActiveListControlAdapter</a>
 	membolehkan kontrol list yang diadaptasi untuk mengubah pilihan pada sisi-klien selama permintaan callback.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.ActivePageAdapter">TActivePageAdapter</a>
+	<a href="?page=ActiveControls.ActivePageAdapter">TActivePageAdapter</a>
 	memroses masa-hidup halaman untuk permintaan callback.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.BaseActiveControl">TBaseActiveControl</a>
+	<a href="?page=ActiveControls.BaseActiveControl">TBaseActiveControl</a>
 	metode dan opsi kontrol aktif umum.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	<a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
 	metode untuk memanipulasi elemen HTML sisi-klien, juga termasuk metode untuk memanggil Efek javascript pada elemen HTML.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
 	opsi permintaan callback sisi-klien, dan pengendali event sisi-klien.
 	</li>
 
 	<li>
-	* <a href="?page=ActiveControls.CallbackResponseAdapter">TCallbackResponseAdapter</a>
+	<a href="?page=ActiveControls.CallbackResponseAdapter">TCallbackResponseAdapter</a>
 	respon HTTP untuk permintaan callback.
 	</li>
 
 </ul>
 
-<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

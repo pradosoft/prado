@@ -85,4 +85,4 @@ Note, in the above the <tt>SpecialPage</tt> will use <tt>MyPersister2</tt> as it
 Server caching techniques are proven to be very effective in improving the performance of PRADO applications. For example, we have observed that by using Zend Optimizer, the RPS (request per second) of a PRADO application can be increased by more than ten times. Of course, this is at the cost of stale output, while PRADO's caching techniques always ensure the correctness of the output.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

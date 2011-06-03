@@ -31,4 +31,4 @@ http://hostname/index.php?page=Users.Register
 where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.
 </p>
 
-<div class="last-modified">$Id: Services.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

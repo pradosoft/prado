@@ -39,4 +39,4 @@ Without a <tt>THead</tt> on the page, stylesheets and javascripts in the current
 theme will not be rendered.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

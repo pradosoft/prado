@@ -12,4 +12,4 @@ tak by deweloper był bardziej produktywny. Następujące drzewko klas pokazuje 
 Kiedy PRADO przetwarza żądanie strony, jego diagram obiektów statycznych wygląda następująco.
 </p>
 <img src="<%~objectdiagram.gif%>" />
-<div class="last-modified">$Id: Architecture.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

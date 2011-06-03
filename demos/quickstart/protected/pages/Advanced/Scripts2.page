@@ -250,4 +250,4 @@ $$(this.list + " li").each(function(item)
 }.bind(this));
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

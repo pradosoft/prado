@@ -76,4 +76,4 @@ The following properties can be used to change the way the callback request is p
 
 <com:RunBar PagePath="ActiveControls.Samples.TCallbackClientSide.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

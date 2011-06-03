@@ -213,4 +213,4 @@ Contoh berikut memperlihatkan penggunaan event validator sisi-klien dan sisi ser
 <com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
 </p>
 
-<div class="last-modified">$Id: Validation.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>
+</com:TContent>

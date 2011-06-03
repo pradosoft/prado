@@ -111,4 +111,4 @@ More often, one needs to customize the layout of repeater items. The sample abov
 <com:RunBar PagePath="Controls.Samples.TRepeater.Sample5" />
 
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

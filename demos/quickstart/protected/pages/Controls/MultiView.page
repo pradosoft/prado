@@ -40,4 +40,4 @@ The <a href="?page=Fundamentals.Samples.Hangman.Home">Hangman game</a> is a typi
 
 <com:RunBar PagePath="Controls.Samples.TMultiView.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

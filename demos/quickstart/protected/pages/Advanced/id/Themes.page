@@ -57,4 +57,4 @@ Membuat sebuah tema melibatkan pembuatan direktori tema dan penulisan file skin 
 <p id="760605" class="block-content">
 Seperti sudah disebutan di atas, Anda dapat menyimpan beberapa skin dalam satu file skin, atau memisahkannya ke dalam beberapa file. Strategi yang umum digunakan adalah bahwa setiap file skin hanya berisi skin untuk satu tipe kontrol. Sebagai contoh, <tt>Button.skin</tt> akan berisi skin hanya untuk tipe kontrol <tt>TButton</tt>.
 </p>
-<div class="last-modified">$Id: Themes.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

@@ -347,4 +347,4 @@ Prado::using('System.Web.UI.ActiveControls.*');
 		<img src=<%~ example2.png %> class="figure" />
 		Tutorial pengenalan lengkap terhadap kerangka kerja aplikasi web Prado.
 	</p>
-<div class="last-modified">$Id: CurrencyConverter.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>
+</com:TContent>

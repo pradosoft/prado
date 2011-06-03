@@ -30,4 +30,4 @@ PRADO のインストールは、PRADO をダウンロードし解凍するこ�
 もしデモアプリケーションが動作しない等の問題が発生しましたら、サーバー構成がPRADO必要条件を満たしているかどうかを確認する事ができるスクリプト <tt>http://web-server-address/prado/requirements/index.php</tt> が用意されていますので、確認してください。
 </p>
 </div>
-<div class="last-modified">$Id: Installation.page * 2007-06-03 17:01:00Z Shinya.K $</div></com:TContent>
+</com:TContent>

@@ -54,4 +54,4 @@ TextBox for third parameter: <com:TTextBox ID="txt1" text="value 3"/>
 
 </table>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id $ -->
 <h1 id="138046">Rekord Aktywny (ang. Active Record)</h1>
 <com:SinceVersion Version="3.1a" />
 <p id="690478" class="block-content">Rekordy Aktywne są obiektami, które opakowują wiersz w bazie danych lub widoku,
@@ -1142,4 +1141,4 @@ instead of <tt>$userRecord->first_name</tt>. This helps separation of logic and 
 
 </ul>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 <h1 id="122026">TActiveButton</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" />
 
@@ -91,4 +90,4 @@ value contains the javascript statement that hides the "Loading..." span tag.
 See <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> for
 further details on client-side property details.
 </p>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

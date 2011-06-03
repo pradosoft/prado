@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
 <h1>TActiveTableRow and TActiveTableCellSamples</h1>
 
 <com:TTable CssClass="sampletable">
@@ -17,4 +16,4 @@
 <com:TActiveLabel id="lblResult"/>
 <com:TJavascriptLogger />
 
-<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

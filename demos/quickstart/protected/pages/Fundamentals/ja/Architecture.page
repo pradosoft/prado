@@ -12,4 +12,4 @@ PRADO は主にプレゼンテーションを操作するためのフレーム�
 PRADO アプリケーションがページ要求処理を行う際、以下のオブジェクトダイアグラムで動作します。
 </p>
 <img src="<%~objectdiagram.gif%>" />
-<div class="last-modified">$Id: Architecture.page * 2007-06-04 01:39:00Z Shinya.K $</div></com:TContent>
+</com:TContent>

@@ -32,4 +32,4 @@ and <tt>CancelButtonText</tt> properties.</p>
 
 <com:RunBar PagePath="Controls.Samples.TColorPicker.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

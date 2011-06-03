@@ -80,4 +80,4 @@ The following example enables the paging functionality of the datagrid shown in 
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample5" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

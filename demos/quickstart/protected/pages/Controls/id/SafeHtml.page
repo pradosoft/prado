@@ -22,4 +22,4 @@ Untuk menggunakan <tt>TSafeHtml</tt>, cukup kurung konten untuk diamankan dalam 
 
 <com:RunBar PagePath="Controls.Samples.TSafeHtml.Home" />
 
-<div class="last-modified">$Id: SafeHtml.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

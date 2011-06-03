@@ -26,4 +26,4 @@ Votre installation de PRADO est terminée et vous pouvez commencer à utiliser l
 Si vous rencontrez un problème avec les applications de démonstration, merci d'utiliser le script de vérification des pré-requis de PRADO, accessible à l'adresse <tt>http://web-server-address/prado/requirements/index.php</tt>, afin de vérifier que votre configuration réponds bien aux exigences de PRADO.
 </p>
 </div>
-<div class="last-modified">$Id: Installation.page 1650 2007-02-18 06:55:32Z mickymax $</div></com:TContent>
+</com:TContent>

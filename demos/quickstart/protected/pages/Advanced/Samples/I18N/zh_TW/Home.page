@@ -152,4 +152,4 @@
 	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
 </com:TTranslate>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

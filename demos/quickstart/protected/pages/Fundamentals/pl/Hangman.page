@@ -13,4 +13,4 @@ Ciąg dalszy nastąpi...
 </p>
 <com:RunBar PagePath="Fundamentals.Samples.Hangman.Home" />
 
-<div class="last-modified">$Id: Hangman.page 2342 2007-12-17 01:32:32Z aztech $</div></com:TContent>
+</com:TContent>

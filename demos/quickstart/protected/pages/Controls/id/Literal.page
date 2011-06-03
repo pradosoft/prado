@@ -22,4 +22,4 @@ Harap berhati-hati jika <tt>Encode</tt> adalah false, pastikan <tt>Text</tt> tid
 
 <com:RunBar PagePath="Controls.Samples.TLiteral.Home" />
 
-<div class="last-modified">$Id: Literal.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

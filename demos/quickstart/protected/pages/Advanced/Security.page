@@ -76,4 +76,4 @@ $cookie=new THttpCookie($name,$value);
 $this->Response->Cookies[]=$cookie;
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $ -->
 <h1 id="144022">Tampilan Scaffold Rekaman Aktif</h1>
 <com:SinceVersion Version="3.1b" />
 <p id="720048" class="block-content">Kelas <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> dapat digunakan dengan 
@@ -128,4 +127,4 @@ dan properti <tt>SearchParameters</tt> berkaitan dengan properti
 &lt;/com:TScaffoldView/&gt;
 </com:TTextHighlighter>
 
-<div class="last-modified">$Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>
+</com:TContent>

@@ -13,4 +13,4 @@ Clicking on button can trigger form validation, if <tt>CausesValidation</tt> is 
 
 TODO: custom attributes
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

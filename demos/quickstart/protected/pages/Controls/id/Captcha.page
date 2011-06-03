@@ -40,4 +40,4 @@ Template berikut memperlihatkan penggunaan umum dari kontrol <tt>TCaptcha</tt>:
 
 <com:RunBar PagePath="Controls.Samples.TCaptcha.Home" />
 
-<div class="last-modified">$Id: Captcha.page 2175 2007-08-29 19:57:50Z xue $</div></com:TContent>
+</com:TContent>

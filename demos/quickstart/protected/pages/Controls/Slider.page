@@ -52,4 +52,4 @@ javascript variable. You can use this event to update on client side a label wit
 
 <com:RunBar PagePath="Controls.Samples.TSlider.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

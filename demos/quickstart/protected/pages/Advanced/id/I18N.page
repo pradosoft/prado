@@ -333,4 +333,4 @@ Dalam contoh berikut, string "{greeting}" dan "{name}" masing-masing akan digant
 String yang dipilih untuk tampilan tergantung pada properti <tt>Value</tt>. <tt>Value</tt> dievaluiasi untuk setiap set-nya sampai <tt>Value</tt> ditemukan milik set tertentu.</p>
 
 
-<div class="last-modified">$Id: I18N.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

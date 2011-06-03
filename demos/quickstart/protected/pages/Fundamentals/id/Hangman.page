@@ -11,4 +11,4 @@ Untuk dilanjutkan...
 </p>
 <com:RunBar PagePath="Fundamentals.Samples.Hangman.Home" />
 
-<div class="last-modified">$Id: Hangman.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

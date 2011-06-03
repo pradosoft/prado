@@ -10,4 +10,4 @@
 <tt>THiddenField</tt> memunculkan event <tt>OnValueChanged</tt> jika nilainya diubah selama postback.
 </p>
 
-<div class="last-modified">$Id: HiddenField.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

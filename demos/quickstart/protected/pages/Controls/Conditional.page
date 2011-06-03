@@ -36,4 +36,4 @@ A typical usage of TConditional is shown as following:
 
 <com:RunBar PagePath="Controls.Samples.TConditional.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

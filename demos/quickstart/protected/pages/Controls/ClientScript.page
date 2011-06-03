@@ -53,4 +53,4 @@ automatically, that is, the file will be copied to the assets directory if neces
 <p id="260243" class="block-content"> Any content within the <tt>TClientScript</tt> control tag will be considered as
 	Javascript code and will be rendered where it is declared.</p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

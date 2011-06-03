@@ -1,5 +1,4 @@
 <com:TContent ID="body" >
-<!-- $Id $ -->
 <h1 id="138046">Rekaman Aktif</h1>
 <com:SinceVersion Version="3.1a" />
 <p id="690478" class="block-content">Rekaman Aktif adalah obyek yang melapisi baris dalam tabel atau view database,
@@ -998,4 +997,4 @@ daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika de
 
 </ul>
 
-<div class="last-modified">$Id: ActiveRecord.page 2323 2007-10-21 20:52:05Z xue $</div></com:TContent>
+</com:TContent>

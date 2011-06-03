@@ -57,4 +57,4 @@ Creating a theme involves creating the theme directory and writing skin files (a
 <p id="760605" class="block-content">
 As aforementioned, you can put several skins within a single skin file, or split them into several files. A commonly used strategy is that each skin file only contains skins for one type of controls. For example, <tt>Button.skin</tt> would contain skins only for the <tt>TButton</tt> control type.
 </p>
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

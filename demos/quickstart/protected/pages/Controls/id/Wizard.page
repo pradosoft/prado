@@ -97,4 +97,4 @@ Langkah bimbingan juga dapat diberi template. Dengan menggunakan <tt>TTemplatedW
 </p>
 <com:RunBar PagePath="Controls.Samples.TWizard.Sample5" />
 
-<div class="last-modified">$Id: Wizard.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

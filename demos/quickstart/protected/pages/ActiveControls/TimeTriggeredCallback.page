@@ -13,4 +13,4 @@ The timer can be started by calling <tt>startTimer()</tt> and stopped using
 
 <com:RunBar PagePath="ActiveControls.Samples.TTimeTriggeredCallback.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

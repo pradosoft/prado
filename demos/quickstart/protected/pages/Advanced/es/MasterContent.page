@@ -54,4 +54,4 @@ Therefore, use master control if the common content has to be associated with so
 Performancewise, external template is lighter than master as the latter is a self-contained control participating the page lifecycles, while the former is used only when the template is being parsed.
 </p>
 
-<div class="last-modified">$Id: MasterContent.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>
+</com:TContent>

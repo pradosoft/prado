@@ -21,4 +21,4 @@ anyway since they are placed inside the active panel.
 </td></tr>
 </table>
 <com:TJavascriptLogger />
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

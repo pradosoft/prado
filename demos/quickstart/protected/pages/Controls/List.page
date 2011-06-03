@@ -108,4 +108,4 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 This is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
 </p>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

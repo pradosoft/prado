@@ -14,4 +14,4 @@ The<tt>OnCallback</tt> event is raised during a callback request and it is raise
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.TActiveImageButton.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

@@ -30,6 +30,4 @@ Poniższa strona podsumowuje główne możliwości, które zostały wprowadzone 
 <li>Rozszerzono część kontrolek danych o "odtwóców" (ang. <i>renderers</i>). "Odtwórcy" umożliwiają ponowne używanie szablonów pozycji (ang. <i>item templates</i>), które powszechnie można znaleźć w <tt>TRepeater</tt>, <tt>TDataList</tt> i <tt>TDataGrid</tt>, przez co czynią konfigurację tych kontrolek bardziej przejrzystą. Aby uzyskać więcej szczegółów o "odtwórcach" zobacz zaktualizowany przewodnik <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> oraz <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
 <li>Dodano usługę umożliwiającą <a href="?page=Configurations.AppConfig">inkludowanie zewnętrznej konfiguracji serwera</a>. Rozszerzono składnię szablonów ułatwiającą <a href="?page=Configurations.Templates1">konfigurację subwłaściwości</a> (ang. <i>subproperties</i>).</li>
 </ul>
-
-<div class="last-modified">$Id: NewFeatures.page 2342 2007-12-17 01:20:20Z aztech $</div>
 </com:TContent>

@@ -16,4 +16,4 @@ will update the link text upon callback response completion.
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveLinkButton.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

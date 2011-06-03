@@ -13,4 +13,4 @@ Please refer to the documentation of <tt>TDatePicker</tt> for further usage info
 
 <com:RunBar PagePath="ActiveControls.Samples.TActiveDatePicker.Home" />
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

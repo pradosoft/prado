@@ -46,4 +46,4 @@ Total <%# $this->Parent->ItemCount %> products.
 
 </com:TDataList>
 
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

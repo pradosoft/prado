@@ -1,5 +1,4 @@
 <com:TContent ID="body">
-<!-- $Id$ -->
 <h1>TActiveButton Samples (AJAX)</h1>
 
 <table class="sampletable">
@@ -45,5 +44,4 @@ A button causing validation with <tt>OnCallback</tt>:
 </table>
 
 <com:TJavascriptLogger />
-
-<div class="last-modified">$Id$</div></com:TContent>
+</com:TContent>

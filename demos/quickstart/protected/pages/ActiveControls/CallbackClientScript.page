@@ -27,4 +27,4 @@ $this->getPage()->getCallbackClient()->hide($myTextBox);
 
 <com:RunBar PagePath="ActiveControls.Samples.TCallbackClientScript.Home" />
 
-<div class="last-modified">$Id: CallbackClientSide.page -1   $</div></com:TContent>
+</com:TContent>
