@@ -21,11 +21,68 @@ EHN: Add second parameter to THttpResponse::appendHeader whether the header shou
 ENH: Add THttpSession::regenerate() to update the current session id with a newly generated one (Yves)
 CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yves)
 
+Version 3.1.9 June 3, 2011
+BUG: Issue#280 - Documentation has been updated
+BUG: Issue#311 - TDataList : FooterStyle not used (ctrlaltca)
+BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
+BUG: Issue#327 - TDbCache with PostgreSQL throw a TDbException (ctrlaltca)
+NEW: added documentation and samples to the quickstart tutorial to include the active controls (ctrlaltca)
+NEW: Added TTemplateControlInheritable control
+NEW: Added TActiveDataGrid control
+NEW: Added TActiveDataList control
+NEW: Added TActiveMultiView control
+NEW: Added TActiveRepeater control
+
+Version 3.1.8 May 29, 2011
+BUG: Issue#16  - [684] TDatePicker problems (rojaro)
+BUG: Issue#18  - [909] findAllBySql with non-column ORDER BY (rojaro)
+BUG: Issue 58  - TWizard defaults to wrong button (ctrlaltca)
+BUG: Issue#103 - TActiveCustomValidator CallBack problem (rojaro)
+BUG: Issue#133 - Problem with localazing text with entities (rojaro)
+BUG: Issue#134 - XLIFF files have hardcoded source language (rojaro)
+BUG: Issue#181 - Prado client-side flawed - aka Multiple client-side (JS) object instances created for the same single DOM control (uacaman)
+BUG: Issue#226 - TTimerControl fires immediately (rojaro)
+BUG: Issue#227 - Clientscript.php return last-modified date header for scripts (rojaro)
+BUG: Issue#229 - Typo in TCachePageStatePersister.php (Christophe)
+BUG: Issue#230 - TCachingStatement property access not working (rojaro)
+BUG: Issue#232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe) 
+BUG: Issue#233 - THtmlWriter flush() doesn't result the contents of the output buffer (rojaro)
+BUG: Issue#234 - Unable to override default HTML writer / pointless THttpResponse::HtmlWriterType (uacaman)
+BUG: Issue#236 - Bug in getIsView() in TOracleMetaData (rojaro)
+BUG: Issue#239 - set_magic_quotes_runtime is deprecate since php 5.3.0 and will be removed in 6.0 (rojaro)
+BUG: Issue#246 - TQueue::peek returns the top not the bottom (Christophe)
+BUG: Issue#261 - TRequiredFieldValidator attached to TCheckBox client side implementation broken in 3.1.7 (ctrlaltca)
+BUG: Issue#268 - String comparison with "=" does not work in Mysql 5.1 (rojaro)
+BUG: Issue#270 - TPage private attribute _restPostData does not allow one to extends TPage (uacaman)
+BUG: Issue#273 - Typo in TURLMapping->getPatternMatches UrlFormat="Path" (rojaro)
+BUG: Issue#276 - TListItemCollection never existed caused by Warning "PradoBase::include_once(TListItemCollection.php)" (rojaro)
+BUG: Issue#277 - Inconsistence in setting 'day' value in TDatePicker (rojaro)
+BUG: Issue#278 - Typo in file TActiveRecordRelation (rojaro)
+BUG: Issue#281 - THtmlArea bad mapping Japanese language (ctrlaltca)
+BUG: Issue#285 - getPathOfNamespace returns cached namespace and ignores ext (rojaro)
+BUG: Issue#286 - TBoundColumn->initializeCell bugs (rojaro)
+BUG: Issue#287 - Inconsistent behavior in TSimpleDateFormatter->parse() (rojaro)
+BUG: Issue#288 - Fixed two bugs in the Translation->init() method (rojaro)
+BUG: Issue#294 - Better handling of missing array parameters in SQLMap (rojaro)
+BUG: Issue#296 - URL tag not being parsed in component attributes (rojaro)
+BUG: Issue#300 - Minor error in TErrorHandler.php (rojaro)
+BUG: Issue#301 - TActiveFileUpload problems (rojaro)
+BUG: Issue#304 - Possible security issue in cookies (rojaro)
+BUG: Issue#305 - Password type TTextBox does not support AutoCompleteType (rojaro)
+BUG: Issue#319 - When TPanel's DefaultButton property is set to a TActiveButton it inhibits TButton's postbacks (ctrlaltca)
+BUG: Issue#324 - TTabPanel doesn't render properly upon postback if a TTabView's visible property = false (ctrlaltca)
+ENH: Security manager: removed the zero byte right trim from the decryption routine and also made some cosmetic changes (rojaro) 
+ENH: Upgraded the phpunit ini file to work with PHPUnit 3.3 3.4 and 3.5. There are conditionals for 3.3 and 3.4. No more Framework file includes are needed with 3.5. (javalizard)
+ENH: Issue#264 - Prado wasting CPU by using ArrayAccess and IteratorAggregate interfaces (uacaman)
+ENH: Issue#199/272 - Updated prototype to 1.7 scriptaculous to 1.9.0 and dropped json.js for json2.js. Adds IE9 support (ctrlaltca)
+ENH: Updated tinyMCE to latest version (3.4.2). The package size grew up a bit (from 3.7 to 5.5 mb) since the new version is bigger in sizea and adds support for a lot of new localizations. Adds IE9 support (ctrlaltca)
+
 Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves) 
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
 BUG: Issue#94  - DataGrid header/footer renderers unable to locate their parent grid in setData() method (Christophe)
+BUG: Issue#113/195 - THttpRequest -> getPathInfo doesn't work on servers when cgi.fix_pathinfo=1 (Yves)
 BUG: Issue#151 - TTextBox fails to display inital line break (Yves)
 BUG: Issue#153 - Bug with calls like MyActiveRedorc->withText()->withUser()->find(...) and null result (Christophe)
 BUG: Issue#157 - Enabled does not work properly on TActiveRadioButton/CheckBoxList controls (Bradley, Carl)
