@@ -1,0 +1,55 @@
+<com:TContent ID="body" >
+
+<h1>TAccordion</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TAccordion" />
+
+<p class="block-content">
+<tt>TAccordion</tt> displays an accordion control. Users can click on the view headers to switch among different accordion views. Each accordion view is an independent panel that can contain arbitrary content.
+</p>
+
+<p class="block-content">
+A <tt>TAccordion</tt> control consists of one or several <tt>TAccordionView</tt> controls representing the possible accordion views. At any time, only one accordion view is visible (active), which is specified by any of the following properties:
+</p>
+
+<ul>
+<li><tt>ActiveViewIndex</tt> - the zero-based integer index of the view in the view collection.</li>
+<li><tt>ActiveViewID</tt> - the text ID of the visible view.</li>
+<li><tt>ActiveView</tt> - the visible view instance.</li>
+</ul>
+
+<p class="block-content">
+If both <tt>ActiveViewIndex</tt> and <tt>ActiveViewID</tt> are set, the latter takes precedence.
+</p>
+
+<p class="block-content">
+<tt>TAccordion</tt> uses CSS to specify the appearance of the accordion headers and panels. By default, an embedded CSS file will be published which contains the default CSS for <tt>TAccordion</tt>. You may also use your own CSS file by specifying the <tt>CssUrl</tt> property. The following properties specify the CSS classes used for elements in a <tt>TAccordion</tt>:
+</p>
+
+<ul>
+<li><tt>CssClass</tt> - the CSS class name for the outer-most div element (defaults to 'accordion');</li>
+<li><tt>HeaderCssClass</tt> - the CSS class name for nonactive accordion div elements (defaults to 'accordion-header');</li>
+<li><tt>ActiveHeaderCssClass</tt> - the CSS class name for the active accordion div element (defaults to 'accordion-header-active');</li>
+<li><tt>ViewCssClass</tt> - the CSS class for the div element enclosing view content (defaults to 'accordion-view');</li>
+</ul>
+
+<p class="block-content">
+To use TAccordion, write a template like following:
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" >
+ &lt;com:TAccordion>
+   &lt;com:TAccordionView Caption="View 1">
+     content for view 1
+   &lt;/com:TAccordionView>
+   &lt;com:TAccordionView Caption="View 2">
+     content for view 2
+   &lt;/com:TAccordionView>
+   &lt;com:TAccordionView Caption="View 3">
+     content for view 3
+   &lt;/com:TAccordionView>
+ &lt;/com:TAccordion>
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TAccordion.Home" />
+
+</com:TContent>

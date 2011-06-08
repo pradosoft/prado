@@ -4,6 +4,10 @@
 <p id="260001" class="block-content">* the tutorial for this control is not completed yet.</p>
 <ul id="u1" class="block-content">
   <li>
+  <a href="?page=Controls.Accordion">TAccordion</a> displays an accordion consisting of multiple views. At any time, only one view is visible.
+  </li>
+
+  <li>
   <a href="?page=Controls.Button">TButton</a> represents a click button on a Web page. It is mainly used to trigger page postback.
   </li>
 

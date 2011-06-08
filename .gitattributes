@@ -1519,6 +1519,7 @@ demos/quickstart/protected/pages/Configurations/id/Templates2.page -text
 demos/quickstart/protected/pages/Configurations/id/Templates3.page -text
 demos/quickstart/protected/pages/Configurations/id/UrlMapping.page -text
 demos/quickstart/protected/pages/Construction.page -text
+demos/quickstart/protected/pages/Controls/Accordion.page -text
 demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/Captcha.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text
@@ -1564,6 +1565,8 @@ demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/LabeledTextBox2/LabeledTextBox.php -text
 demos/quickstart/protected/pages/Controls/Samples/ResetValidation/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/ResetValidation/Home.php -text
+demos/quickstart/protected/pages/Controls/Samples/TAccordion/Home.page -text
+demos/quickstart/protected/pages/Controls/Samples/TAccordion/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.page -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/Home.php -text
 demos/quickstart/protected/pages/Controls/Samples/TBulletedList/bullet.gif -text
@@ -2865,6 +2868,7 @@ framework/Web/Javascripts/source/prado/colorpicker/slider.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/spacer.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_black.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_white.gif -text
+framework/Web/Javascripts/source/prado/controls/accordion.js -text
 framework/Web/Javascripts/source/prado/controls/controls.js -text
 framework/Web/Javascripts/source/prado/controls/keyboard.js -text
 framework/Web/Javascripts/source/prado/controls/slider.js -text
@@ -2954,6 +2958,7 @@ framework/Web/UI/TTemplateControl.php -text
 framework/Web/UI/TTemplateControlInheritable.php -text
 framework/Web/UI/TTemplateManager.php -text
 framework/Web/UI/TThemeManager.php -text
+framework/Web/UI/WebControls/TAccordion.php -text
 framework/Web/UI/WebControls/TBaseDataList.php -text
 framework/Web/UI/WebControls/TBaseValidator.php -text
 framework/Web/UI/WebControls/TBoundColumn.php -text
@@ -3060,6 +3065,7 @@ framework/Web/UI/WebControls/TXmlTransform.php -text
 framework/Web/UI/WebControls/assets/TSlider/TSlider.css -text
 framework/Web/UI/WebControls/assets/TSlider/TSliderHandleHorizontal.png -text
 framework/Web/UI/WebControls/assets/TSlider/TSliderHandleVertical.png -text
+framework/Web/UI/WebControls/assets/accordion.css -text
 framework/Web/UI/WebControls/assets/captcha.php -text
 framework/Web/UI/WebControls/assets/keyboard.css -text
 framework/Web/UI/WebControls/assets/tabpanel.css -text

@@ -73,7 +73,11 @@ $packages = array(
 	'activefileupload' => array(
 		'prado/activefileupload/activefileupload.js'
 	),
-	
+
+	'accordion'=>array(
+		'prado/controls/accordion.js'
+	),
+
 );
 
 
@@ -83,16 +87,17 @@ $dependencies = array(
 		'effects'			=> array('prado', 'effects'),
 		'validator'			=> array('prado', 'validator'),
 		'logger'			=> array('prado', 'logger'),
-		'datepicker'		=> array('prado', 'datepicker'),
-		'colorpicker'		=> array('prado', 'colorpicker'),
+		'datepicker'			=> array('prado', 'datepicker'),
+		'colorpicker'			=> array('prado', 'colorpicker'),
 		'ajax'				=> array('prado', 'effects', 'ajax'),
 		'dragdrop'			=> array('prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prado', 'slider'),
 		'keyboard'			=> array('prado', 'keyboard'),
 		'tabpanel'			=> array('prado', 'tabpanel'),
-		'activedatepicker' 	=> array('datepicker', 'ajax', 'activedatepicker'),
-		'activefileupload' 	=> array('prado', 'ajax', 'activefileupload'),
-		'dragdropextra'		=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
+		'activedatepicker'		=> array('datepicker', 'ajax', 'activedatepicker'),
+		'activefileupload'		=> array('prado', 'ajax', 'activefileupload'),
+		'dragdropextra'			=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
+		'accordion'			=> array('prado', 'effects', 'accordion'),
 );
 
 return array($packages, $dependencies);

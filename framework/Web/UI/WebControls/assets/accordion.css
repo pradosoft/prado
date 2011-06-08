@@ -1,0 +1,26 @@
+
+div.accordion {
+	position: relative;
+}
+
+div.accordion-header {
+	padding: 3px; 
+	z-index: 10; position: relative; 
+	cursor: pointer;
+}
+
+div.accordion-header {
+	background-color: #5577aa;
+	color: white; font-weight: bold;
+	border: 1px solid;
+}
+
+div.accordion-header-active {
+	background-color: #334477;
+}
+
+div.accordion-view {
+	overflow: auto;
+	padding-left: 3px; padding-right: 3px;
+	margin-bottom: 2px;
+}
