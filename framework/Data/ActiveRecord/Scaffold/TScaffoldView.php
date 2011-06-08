@@ -113,8 +113,8 @@ class TScaffoldView extends TScaffoldBase
 	{
 		$this->getListView()->setVisible(false);
 		$this->getEditView()->setVisible(true);
-		$this->getAddButton()->setVisible(false);
-		$this->getSearchControl()->setVisible(false);
+		$this->_panForNewButton->setVisible(false);
+		$this->_panForSearch->setVisible(false);
 		$this->getEditView()->getCancelButton()->setVisible(true);
 		$this->getEditView()->getClearButton()->setVisible(false);
 	}
@@ -126,8 +126,8 @@ class TScaffoldView extends TScaffoldBase
 	{
 		$this->getListView()->setVisible(true);
 		$this->getEditView()->setVisible(false);
-		$this->getAddButton()->setVisible(true);
-		$this->getSearchControl()->setVisible(true);
+		$this->_panForNewButton->setVisible(true);
+		$this->_panForSearch->setVisible(true);
 	}
 
 	/**
