@@ -7,7 +7,7 @@
 When a <tt>TDraggable</tt> is dropped,  a
 callback request is initiated. The <tt>OnCallback</tt> event is raised
 during a callback request and it is raised <strong>after</strong>
-the <tt>OnDropk</tt> event.
+the <tt>OnDrop</tt> event.
 </p>
 
 
@@ -18,7 +18,7 @@ the <tt>OnDropk</tt> event.
 When a <tt>TDraggable</tt> is dropped,  a
 callback request is initiated. The <tt>OnCallback</tt> event is raised
 during a callback request and it is raised <strong>after</strong>
-the <tt>OnDropk</tt> event.
+the <tt>OnDrop</tt> event.
 </p>
 <com:RunBar PagePath="ActiveControls.Samples.DragDrop.Home" />
 
