@@ -7,7 +7,7 @@
  * @copyright Copyright &copy; 2005-2010 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Web.UI
+ * @package System.Web.UI.WebControls
  */
 
 /**
