@@ -176,6 +176,8 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	const CMD_PAGE='Page';
 	const CMD_PAGE_NEXT='Next';
 	const CMD_PAGE_PREV='Previous';
+	const CMD_PAGE_FIRST='First';
+	const CMD_PAGE_LAST='Last';
 
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
@@ -736,6 +738,10 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 					$pageIndex=$this->getCurrentPageIndex()+1;
 				else if(strcasecmp($p,self::CMD_PAGE_PREV)===0)
 					$pageIndex=$this->getCurrentPageIndex()-1;
+				else if(strcasecmp($p,self::CMD_PAGE_FIRST)===0)
+					$pageIndex=0;
+				else if(strcasecmp($p,self::CMD_PAGE_LAST)===0)
+					$pageIndex=$this->getPageCount()-1;
 				else
 					$pageIndex=TPropertyValue::ensureInteger($p)-1;
 				$this->onPageIndexChanged(new TDataGridPageChangedEventParameter($sender,$pageIndex));
@@ -1264,11 +1270,25 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$currentPageIndex=$this->getCurrentPageIndex();
 		if($currentPageIndex===0)
 		{
+			if(($text=$style->getFirstPageText())!=='')
+			{
+				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$controls->add($label);
+				$controls->add("\n");
+			}
+
 			$label=$this->createPagerButton($buttonType,false,$style->getPrevPageText(),'','');
 			$controls->add($label);
 		}
 		else
 		{
+			if(($text=$style->getFirstPageText())!=='')
+			{
+				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+				$controls->add($button);
+				$controls->add("\n");
+			}
+
 			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,self::CMD_PAGE_PREV);
 			$controls->add($button);
 		}
@@ -1277,11 +1297,23 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$label=$this->createPagerButton($buttonType,false,$style->getNextPageText(),'','');
 			$controls->add($label);
+			if(($text=$style->getLastPageText())!=='')
+			{
+				$controls->add("\n");
+				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$controls->add($label);
+			}
 		}
 		else
 		{
 			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,self::CMD_PAGE_NEXT);
 			$controls->add($button);
+			if(($text=$style->getLastPageText())!=='')
+			{
+				$controls->add("\n");
+				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$controls->add($button);
+			}
 		}
 	}
 
@@ -1314,6 +1346,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 
 		if($startPageIndex>1)
 		{
+			if(($text=$style->getFirstPageText())!=='')
+			{
+				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+				$controls->add($button);
+				$controls->add("\n");
+			}
 			$prevPageIndex=$startPageIndex-1;
 			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,"$prevPageIndex");
 			$controls->add($button);
@@ -1342,6 +1380,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$nextPageIndex=$endPageIndex+1;
 			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,"$nextPageIndex");
 			$controls->add($button);
+			if(($text=$style->getLastPageText())!=='')
+			{
+				$controls->add("\n");
+				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$controls->add($button);
+			}
 		}
 	}
 

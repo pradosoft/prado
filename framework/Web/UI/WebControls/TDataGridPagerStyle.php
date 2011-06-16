@@ -27,6 +27,8 @@ class TDataGridPagerStyle extends TPanelStyle
 	private $_mode=null;
 	private $_nextText=null;
 	private $_prevText=null;
+	private $_firstText=null;
+	private $_lastText=null;
 	private $_buttonCount=null;
 	private $_position=null;
 	private $_visible=null;
@@ -89,11 +91,43 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param string text for the next page button.
+	 * @param string text for the previous page button.
 	 */
 	public function setPrevPageText($value)
 	{
 		$this->_prevText=$value;
+	}
+
+	/**
+	 * @return string text for the first page button. Defaults to '<<'.
+	 */
+	public function getFirstPageText()
+	{
+		return $this->_firstText===null?'<<':$this->_firstText;
+	}
+
+	/**
+	 * @param string text for the first page button.
+	 */
+	public function setFirstPageText($value)
+	{
+		$this->_firstText=$value;
+	}
+
+	/**
+	 * @return string text for the last page button. Defaults to '>>'.
+	 */
+	public function getLastPageText()
+	{
+		return $this->_lastText===null?'>>':$this->_lastText;
+	}
+
+	/**
+	 * @param string text for the last page button.
+	 */
+	public function setLastPageText($value)
+	{
+		$this->_lastText=$value;
 	}
 
 	/**
