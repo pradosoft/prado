@@ -108,7 +108,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _write($id,$data)
 	{
-		return $this->_cache->set($this->calculateKey($id),$data);
+		return $this->_cache->set($this->calculateKey($id),$data,$this->getTimeout());
 	}
 
 	/**
