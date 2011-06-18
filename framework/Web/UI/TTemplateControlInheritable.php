@@ -110,7 +110,7 @@ class TTemplateControlInheritable extends TTemplateControl
 		}
 
 		return ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName(get_parent_class($this)))
-			? $this->_template->getIsSourceTemplate()
+			? $_template->getIsSourceTemplate()
 			: false;
 	}
 }
