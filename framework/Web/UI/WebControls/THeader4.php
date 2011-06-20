@@ -4,7 +4,7 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2011 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THeader4.php 2590 2008-12-10 11:34:24Z carlgmathisen $
  * @package System.Web.UI.WebControls

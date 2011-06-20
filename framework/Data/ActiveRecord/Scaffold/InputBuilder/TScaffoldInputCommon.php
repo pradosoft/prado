@@ -3,7 +3,7 @@
  * TScaffoldInputCommon class file.
  *
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2011 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Data.ActiveReecord.Scaffold.InputBuilder
  */

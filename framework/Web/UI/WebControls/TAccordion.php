@@ -4,7 +4,7 @@
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2008 PradoSoft
+ * @copyright Copyright &copy; 2005-2011 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
  * @package System.Web.UI.WebControls
