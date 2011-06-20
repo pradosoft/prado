@@ -549,8 +549,7 @@ class THttpResponse extends TModule implements ITextWriter
 				$cookie->getExpire(),
 				$cookie->getPath(),
 				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
+				$cookie->getSecure()
 			);
 		}
 		else {
@@ -560,8 +559,7 @@ class THttpResponse extends TModule implements ITextWriter
 				$cookie->getExpire(),
 				$cookie->getPath(),
 				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
+				$cookie->getSecure()
 			);
 		}
 	}
@@ -579,8 +577,7 @@ class THttpResponse extends TModule implements ITextWriter
 			0,
 			$cookie->getPath(),
 			$cookie->getDomain(),
-			$cookie->getSecure(),
-			$cookie->getHttpOnly()
+			$cookie->getSecure()
 		);
 	}
 
