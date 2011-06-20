@@ -108,7 +108,7 @@ class TDbCommandBuilder extends TComponent
 		foreach($ordering as $name => $direction)
 		{
 			$direction = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
-			if(strpos($name, '(') && strpos($name, ')')) {
+			if(false !== strpos($name, '(') && false !== strpos($name, ')')) {
 				// key is a function (bad practice, but we need to handle it)
 				$key = $name;
 			} else {
@@ -505,5 +505,3 @@ class TDbCommandBuilder extends TComponent
 		return false;
 	}
 }
-
-?>

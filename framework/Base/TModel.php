@@ -11,12 +11,12 @@
 Prado::using('System.Base.TModelEvent');
 
 /**
- * CModel is the base class providing the common features needed by data model objects.
+ * TModel is the base class providing the common features needed by data model objects.
  *
- * CModel defines the basic framework for data models that need to be validated.
+ * TModel defines the basic framework for data models that need to be validated.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CModel.php 1093 2009-06-05 13:09:17Z qiang.xue $
+ * @version $Id: TModel.php 1093 2009-06-05 13:09:17Z qiang.xue $
  * @package system.base
  * @since 1.0
  */

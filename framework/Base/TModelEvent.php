@@ -1,6 +1,6 @@
 <?php
 /**
- * CModelEvent class file.
+ * TModelEvent class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
@@ -11,12 +11,12 @@
 Prado::using('System.Base.TEvent');
 
 /**
- * CModelEvent class.
+ * TModelEvent class.
  *
- * CModelEvent represents the event parameters needed by events raised by a model.
+ * TModelEvent represents the event parameters needed by events raised by a model.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CModelEvent.php 1093 2009-06-05 13:09:17Z qiang.xue $
+ * @version $Id: TModelEvent.php 1093 2009-06-05 13:09:17Z qiang.xue $
  * @package system.base
  * @since 1.0
  */
@@ -24,7 +24,7 @@ class TModelEvent extends TEvent
 {
 	/**
 	 * @var boolean whether the model is valid. Defaults to true.
-	 * If this is set false, {@link CModel::validate()} will return false and quit the current validation process.
+	 * If this is set false, {@link TModel::validate()} will return false and quit the current validation process.
 	 */
 	public $isValid=true;
 }

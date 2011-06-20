@@ -1,6 +1,6 @@
 <?php
 /**
- * CEvent is the base class for all event classes.
+ * TEvent is the base class for all event classes.
  *
  * It encapsulates the parameters associated with an event.
  * The {@link sender} property describes who raises the event.
@@ -9,7 +9,7 @@
  * that are not invoked yet will not be invoked anymore.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CComponent.php 978 2009-05-06 03:36:09Z qiang.xue $
+ * @version $Id: TEvent.php 978 2009-05-06 03:36:09Z qiang.xue $
  * @package system.base
  * @since 1.0
  */

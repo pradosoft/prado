@@ -1,6 +1,6 @@
 <?php
 /**
- * CBehavior class file.
+ * TBehavior class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
@@ -9,7 +9,7 @@
  */
 
 /**
- * CBehavior is a convenient base class for behavior classes.
+ * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id: CBehavior.php 564 2009-01-21 22:07:10Z qiang.xue $
  * @package system.base
@@ -38,7 +38,7 @@ class TBehavior extends TComponent implements IBehavior
 	 * The default implementation will set the {@link owner} property
 	 * and attach event handlers as declared in {@link events}.
 	 * Make sure you call the parent implementation if you override this method.
-	 * @param CComponent the component that this behavior is to be attached to.
+	 * @param TComponent the component that this behavior is to be attached to.
 	 */
 	public function attach($owner)
 	{
@@ -52,7 +52,7 @@ class TBehavior extends TComponent implements IBehavior
 	 * The default implementation will unset the {@link owner} property
 	 * and detach event handlers declared in {@link events}.
 	 * Make sure you call the parent implementation if you override this method.
-	 * @param CComponent the component that this behavior is to be detached from.
+	 * @param TComponent the component that this behavior is to be detached from.
 	 */
 	public function detach($owner)
 	{
@@ -101,12 +101,12 @@ interface IBehavior
 {
 	/**
 	 * Attaches the behavior object to the component.
-	 * @param CComponent the component that this behavior is to be attached to.
+	 * @param TComponent the component that this behavior is to be attached to.
 	 */
 	public function attach($component);
 	/**
 	 * Detaches the behavior object from the component.
-	 * @param CComponent the component that this behavior is to be detached from.
+	 * @param TComponent the component that this behavior is to be detached from.
 	 */
 	public function detach($component);
 	/**
