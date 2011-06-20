@@ -31,7 +31,6 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function __construct($schema)
 	{
-		parent::__construct();
 		$this->_schema=$schema;
 		$this->_connection=$schema->getDbConnection();
 	}

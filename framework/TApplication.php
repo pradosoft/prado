@@ -219,10 +219,6 @@ class TApplication extends TComponent
 	 */
 	private $_parameters;
 	/**
-	 * @var TMap list of final application parameters
-	 */
-	private $_parametersfinal;
-	/**
 	 * @var string configuration file
 	 */
 	private $_configFile;
@@ -324,7 +320,6 @@ class TApplication extends TComponent
 	 *        will be looked for. If found, the file is considered as the application
 	 *        configuration file.
 	 * @param boolean whether to cache application configuration. Defaults to true.
-	 * @param string The type of configuration te app should have. Defaults to {@link CONFIG_TYPE_XML}.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath='protected',$cacheConfig=true, $configType=self::CONFIG_TYPE_XML)
@@ -340,12 +335,9 @@ class TApplication extends TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new TMap;
-		$this->_parametersfinal=new TMap;
 		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 		
 		Prado::setPathOfAlias('Application',$this->_basePath);
-		
-		parent::__construct();
 	}
 
 	/**
@@ -990,8 +982,20 @@ class TApplication extends TComponent
 		
 		if(empty($this->_services))
 			$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
-		
-		$this->mergeParameters($config->getParameters());
+
+		// load parameters
+		foreach($config->getParameters() as $id=>$parameter)
+		{
+			if(is_array($parameter))
+			{
+				$component=Prado::createComponent($parameter[0]);
+				foreach($parameter[1] as $name=>$value)
+					$component->setSubProperty($name,$value);
+				$this->_parameters->add($id,$component);
+			}
+			else
+				$this->_parameters->add($id,$parameter);
+		}
 
 		// load and init modules specified in app config
 		$modules=array();
@@ -1032,47 +1036,6 @@ class TApplication extends TComponent
 			}
 		}
 	}
-	
-	/**
-	 * This will merge the parameters into the application
-	 * The parameter looks like this:
-	 * <code>
-	 *		$params = array(
-	 *				// type = 0 is a class
-	 *				'paramname1' => array('type'=>0, 'class' => $type, 'properties' => $properties->toArray(), 
-	 *							'final' => $final, 'value' => $element),
-	 *				// type != 0 is a parameter with a value
-	 *				'paramname1' => array('type'=>1, 'value' => $element, 'final' => $final),
-	 *				'paramname2' => array('type'=>2, 'value' => $value, 'final' => $final)
-	 * 		);
-	 * </code>
-	 * @param array $parameters the parameters to merge into application
-	 */
-	public function mergeParameters($parameters) {
-		// load parameters
-		foreach($parameters as $id=>$parameter)
-		{
-			if(isset($this->_parametersfinal[$id]))
-				continue;
-			
-			if(!$parameter['type'])
-			{
-				$component=Prado::createComponent($parameter['class']);
-				foreach($parameter['properties'] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				if($component instanceof IModule && isset($parameter['value']))
-					$component->init($parameter['value']);
-				$this->_parameters->add($id,$component);
-			}
-			else
-				$this->_parameters->add($id,$parameter['value']);
-			
-			// If this parameter is final, and not set yet, set it
-			if($parameter['final'] && !isset($this->_parametersfinal[$id]))
-				$this->_parametersfinal->add($id, $parameter['value']);
-		}
-	}
-	
 
 	/**
 	 * Loads configuration and initializes application.
@@ -1098,7 +1061,7 @@ class TApplication extends TComponent
 			}
 			else
 				$config=Prado::unserialize(file_get_contents($this->_cacheFile));
-			
+
 			$this->applyConfiguration($config,false);
 		}
 
@@ -1664,20 +1627,13 @@ class TApplicationConfiguration extends TComponent
 		{
 			if(is_array($parameter))
 			{
-				$final = TPropertyValue::ensureBoolean($parameter['final']);
-				unset($parameter['final']);
 				if(isset($parameter['class']))
 				{
-					$properties = isset($parameter['properties']) ? $parameter['properties'] : array();
+					$type = $parameter['class'];
+					unset($parameter['class']);
+					$properties = isset($service['properties']) ? $service['properties'] : array();
 					$properties['id'] = $id;
-					$this->_parameters[$id] = array('type'=>0, 'class' => $parameter['class'], 'properties' => $properties, 
-								'final' => $final, 'value' => $parameter);
-				} else {
-					if(!isset($parameter['value'])) {
-						$this->_parameters[$id]=array('type'=>1, 'value' => $parameter, 'final' => $final);
-					} else {
-						$this->_parameters[$id]=array('type'=>2, 'value' => $parameter['value'], 'final' => $final);
-					}
+					$this->_parameters[$id] = array($type,$properties);
 				}
 			}
 			else
@@ -1701,18 +1657,15 @@ class TApplicationConfiguration extends TComponent
 				$properties=$element->getAttributes();
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('appconfig_parameterid_required');
-				$final = TPropertyValue::ensureBoolean($properties->remove('final'));
 				if(($type=$properties->remove('class'))===null)
 				{
 					if(($value=$properties->remove('value'))===null)
-						$this->_parameters[$id]=array('type'=>1, 'value' => $element, 'final' => $final);
+						$this->_parameters[$id]=$element;
 					else
-						$this->_parameters[$id]=array('type'=>2, 'value' => $value, 'final' => $final);
+						$this->_parameters[$id]=$value;
 				}
-				else {
-					$this->_parameters[$id]=array('type'=>0, 'class' => $type, 'properties' => $properties->toArray(), 
-								'final' => $final, 'value' => $element);
-				}
+				else
+					$this->_parameters[$id]=array($type,$properties->toArray());
 				$this->_empty=false;
 			}
 			else

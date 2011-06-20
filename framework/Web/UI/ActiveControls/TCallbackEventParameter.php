@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -14,7 +14,7 @@
  * TCallbackEventParameter class.
  *
  * The TCallbackEventParameter provides the parameter passed during the callback
- * requestion in the {@link getCallbackParameter CallbackParameter} property. The
+ * request in the {@link getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
  * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
@@ -48,7 +48,6 @@ class TCallbackEventParameter extends TEventParameter
 	 */
 	public function __construct($response, $parameter)
 	{
-		parent::__construct();
 		$this->_response = $response;
 		$this->_parameter = $parameter;
 	}

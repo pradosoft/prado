@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System
@@ -49,7 +49,6 @@
  * To raise an event (assuming named as 'Click') of a component, use
  * <code>
  * $component->raiseEvent('OnClick');
- * $component->raiseEvent('OnClick', $this, $param);
  * </code>
  * To attach an event handler to an event, use one of the following ways,
  * <code>
@@ -83,14 +82,6 @@ class TComponent
 	 * @var array models (ported from Yii)
 	 */
 	private $_m=array();
-
-
-	/**
-	 * The Common __construct
-	 */
-	public function __construct() {
-	}
-
 
 	/**
 	 * Returns a property value or an event handler list by property or event name.

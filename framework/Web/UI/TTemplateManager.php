@@ -239,7 +239,6 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	 */
 	public function __construct($template,$contextPath,$tplFile=null,$startingLine=0,$sourceTemplate=true)
 	{
-		parent::__construct();
 		$this->_sourceTemplate=$sourceTemplate;
 		$this->_contextPath=$contextPath;
 		$this->_tplFile=$tplFile;

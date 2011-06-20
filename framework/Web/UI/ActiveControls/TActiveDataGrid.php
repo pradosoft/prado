@@ -49,7 +49,7 @@ Prado::using('System.Web.UI.WebControls.TCheckBoxColumn');
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable {
 /**
@@ -185,7 +185,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveBoundColumn extends TBoundColumn {
 	protected function initializeHeaderCell($cell,$columnIndex) {
@@ -264,7 +264,7 @@ class TActiveBoundColumn extends TBoundColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveEditCommandColumn extends TEditCommandColumn {
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup) {
@@ -306,7 +306,7 @@ class TActiveEditCommandColumn extends TEditCommandColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveButtonColumn extends TButtonColumn {
 	public function initializeCell($cell,$columnIndex,$itemType) {
@@ -353,7 +353,7 @@ class TActiveButtonColumn extends TButtonColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveTemplateColumn extends TTemplateColumn {
 	protected function initializeHeaderCell($cell,$columnIndex) {
@@ -422,7 +422,7 @@ class TActiveTemplateColumn extends TTemplateColumn {
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveHyperLinkColumn extends THyperLinkColumn
 {
@@ -502,7 +502,7 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveCheckBoxColumn extends TCheckBoxColumn
 {
@@ -608,7 +608,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
- * @since 3.2
+ * @since 3.1.9
  */
 class TActiveDropDownListColumn extends TDropDownListColumn
 {
@@ -696,7 +696,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @package System.Web.UI.ActiveControls
- * @since 3.2.0a
+ * @since 3.1.9
  */
 class TActiveLiteralColumn extends TLiteralColumn {
 	protected function initializeHeaderCell($cell,$columnIndex) {

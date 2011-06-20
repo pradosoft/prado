@@ -87,8 +87,6 @@ abstract class TDataSourceView extends TComponent
 
 	public function __construct(IDataSource $owner,$viewName)
 	{
-		parent::__construct();
-		
 		$this->_owner=$owner;
 		$this->_name=$viewName;
 	}

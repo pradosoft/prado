@@ -238,4 +238,3 @@ class TDraggableRevertOptions extends TEnumerable
 	const Revert='Revert';
 	const Failure='Failure';
 }
-?>

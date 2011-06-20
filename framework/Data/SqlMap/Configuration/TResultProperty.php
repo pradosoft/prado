@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.SqlMap.Configuration
@@ -57,7 +57,6 @@ class TResultProperty extends TComponent
 	 */
 	public function __construct($resultMap=null)
 	{
-		parent::__construct();
 		if($resultMap instanceof TResultMap)
 			$this->_hostResultMapID = $resultMap->getID();
 	}

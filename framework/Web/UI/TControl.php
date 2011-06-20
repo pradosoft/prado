@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI
@@ -172,17 +172,12 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 * @var array a collection of rare control data
 	 */
 	private $_rf=array();
-	/**
-	 * @var number this is how many times the control was told not to render
-	 */
-	private $_renderblockcount=0;
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 	}
 
 	/**
@@ -239,21 +234,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	public function getParent()
 	{
 		return $this->_parent;
-	}
-
-	/**
-	 * @return TControl the parent of this control of type
-	 */
-	public function getParentOfType($type,$strict=false)
-	{
-		$control = $this->Parent;
-		do {
-			if(is_object($control) && (get_class($control)===$type || (!$strict && ($control instanceof $type))))
-				return $control;
-			$control = $control->Parent;
-		} while($control);
-		
-		return null;
 	}
 
 	/**
@@ -315,32 +295,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			$this->_tplControl=$this->_parent->getTemplateControl();
 		return $this->_tplControl;
 	}
-
-	/**
-	 * This adds a block to the rendering of the control
-	 */
-	public function addRenderBlock()
-	{
-		++$this->_renderblockcount;
-	}
-
-	/**
-	 * @return boolean true if the rendering is currently blocked
-	 */
-	public function getIsRenderBlocked()
-	{
-		return $this->_renderblockcount > 0;
-	}
-
-	/**
-	 * removes a block.  This also has an interesting effect of forcing the render if called in the reverse
-	 * of the typical order.  eg.  removeRenderBlock(); ...... addRenderBlock();
-	 */
-	public function removeRenderBlock()
-	{
-		--$this->_renderblockcount;
-	}
-	
 
 	/**
 	 * @return TTemplateControl the control whose template is loaded from
@@ -488,13 +442,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			throw new TInvalidOperationException('control_skinid_unchangeable',get_class($this));
 		else
 			$this->_rf[self::RF_SKIN_ID]=$value;
-	}
-
-	/**
-	 * @return boolean whether the skin has been applied or is past the phase of skin application
-	 */
-	public function getIsSkinApplied() {
-		return ($this->_flags & self::IS_SKIN_APPLIED) || $this->_stage>self::CS_CHILD_INITIALIZED;
 	}
 
 	/**
@@ -1617,8 +1564,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		if($this->getHasControls())
 		{
-			if($this->IsRenderBlocked) return;
-			
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
 				if(is_string($control))
@@ -2318,7 +2263,6 @@ class TCommandEventParameter extends TEventParameter
 	 */
 	public function __construct($name='',$parameter='')
 	{
-		parent::__construct();
 		$this->_name=$name;
 		$this->_param=$parameter;
 	}

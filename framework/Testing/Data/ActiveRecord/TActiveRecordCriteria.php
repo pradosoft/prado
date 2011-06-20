@@ -16,7 +16,6 @@ class TSqlCriteria extends TDbCriteria
 
 	public function __construct($condition=null, $parameters=array())
 	{
-		parent::__construct();
 		if(!is_array($parameters) && func_num_args() > 1)
 			$parameters = array_slice(func_get_args(), 1);
 

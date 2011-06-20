@@ -31,9 +31,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->setAdapter(new TActiveListControlAdapter($this));
 		$this->setAutoPostBack(true);
+		parent::__construct();
 	}
 
 	/**

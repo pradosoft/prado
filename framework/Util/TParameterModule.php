@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Util
@@ -24,7 +24,6 @@
  * <parameters>
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
- *   <parameter id="param3" value="cannot be changed" final="true" />
  * </parameters>
  * </code>
  *
@@ -34,18 +33,11 @@
  * <module class="System.Util.TParameterModule">
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
- *   <parameter id="param3" value="cannot be changed" final="true" />
  * </module>
  * </code>
  *
- * Setting the final attribute to true will cause that parameter to be unchangable
- * by any future mergeParameters.
- *
  * If a parameter is defined both in the external file and within the module
  * tag, the former takes precedence.
- *
- * the application parameters are processed first before the modules parameters 
- * are processed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
@@ -101,7 +93,7 @@ class TParameterModule extends TModule
 
 	/**
 	 * Loads parameters into application.
-	 * @param mixed XML or PHP representation of the parameters
+	 * @param mixed XML of PHP representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
@@ -111,23 +103,10 @@ class TParameterModule extends TModule
 		{
 			foreach($config as $id => $parameter)
 			{
-				if(is_array($parameter))
+				if(is_array($parameter) && isset($parameter['class']))
 				{
-					$final = TPropertyValue::ensureBoolean($parameter['final']);
-					unset($parameter['final']);
-					if(isset($parameter['class']))
-					{
-						$properties = isset($parameter['properties']) ? $parameter['properties'] : array();
-						$properties['id'] = $id;
-						$parameters[$id] = array('type'=>0, 'class' => $parameter['class'], 'properties' => $properties, 
-									'final' => $final, 'value' => $parameter);
-					} else {
-						if(!isset($parameter['value'])) {
-							$parameters[$id]=array('type'=>1, 'value' => $parameter, 'final' => $final);
-						} else {
-							$parameters[$id]=array('type'=>2, 'value' => $value, 'final' => $final);
-						}
-					}
+					$properties = isset($parameter['properties'])?$parameter['properties']:array();
+					$parameters[$id]=array($parameter['class'],$properties);
 				}
 				else
 				{
@@ -142,22 +121,31 @@ class TParameterModule extends TModule
 				$properties=$node->getAttributes();
 				if(($id=$properties->remove('id'))===null)
 					throw new TConfigurationException('parametermodule_parameterid_required');
-				$final = TPropertyValue::ensureBoolean($properties->remove('final'));
 				if(($type=$properties->remove('class'))===null)
 				{
 					if(($value=$properties->remove('value'))===null)
-						$parameters[$id]=array('type'=>1, 'value' => $node, 'final' => $final);
+						$parameters[$id]=$node;
 					else
-						$parameters[$id]=array('type'=>2, 'value' => $value, 'final' => $final);
+						$parameters[$id]=$value;
 				}
-				else {
-					$parameters[$id]=array('type'=>0, 'class' => $type, 'properties' => $properties->toArray(), 
-								'final' => $final, 'value' => $node);
-				}
+				else
+					$parameters[$id]=array($type,$properties->toArray());
 			}
 		}
-		
-		$this->getApplication()->mergeParameters($parameters);
+
+		$appParams=$this->getApplication()->getParameters();
+		foreach($parameters as $id=>$parameter)
+		{
+			if(is_array($parameter))
+			{
+				$component=Prado::createComponent($parameter[0]);
+				foreach($parameter[1] as $name=>$value)
+					$component->setSubProperty($name,$value);
+				$appParams->add($id,$component);
+			}
+			else
+				$appParams->add($id,$parameter);
+		}
 	}
 
 	/**

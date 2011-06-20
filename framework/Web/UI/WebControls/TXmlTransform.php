@@ -5,7 +5,7 @@
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI.WebControls
  */
@@ -49,7 +49,6 @@ class TXmlTransform extends TControl {
     if(!class_exists('XSLTProcessor', false)) {
       throw new TConfigurationException('xmltransform_xslextension_required');
     }
-	parent::__construct();
   }
 
   /**

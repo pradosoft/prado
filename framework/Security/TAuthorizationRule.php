@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Security
@@ -74,7 +74,6 @@ class TAuthorizationRule extends TComponent
 	 */
 	public function __construct($action,$users,$roles,$verb='',$ipRules='')
 	{
-		parent::__construct();
 		$action=strtolower(trim($action));
 		if($action==='allow' || $action==='deny')
 			$this->_action=$action;

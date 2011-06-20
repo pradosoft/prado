@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Collections
@@ -36,7 +36,6 @@ class TDummyDataSource extends TComponent implements IteratorAggregate, Countabl
 	 */
 	public function __construct($count)
 	{
-		parent::__construct();
 		$this->_count=$count;
 	}
 

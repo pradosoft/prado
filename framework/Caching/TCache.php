@@ -347,7 +347,6 @@ class TFileCacheDependency extends TCacheDependency
 	 */
 	public function __construct($fileName)
 	{
-		parent::__construct();
 		$this->setFileName($fileName);
 	}
 
@@ -419,7 +418,6 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function __construct($directory)
 	{
-		parent::__construct();
 		$this->setDirectory($directory);
 	}
 
@@ -574,7 +572,6 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 */
 	public function __construct($name)
 	{
-		parent::__construct();
 		$this->setStateName($name);
 	}
 

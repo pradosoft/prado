@@ -9,7 +9,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -1689,7 +1689,6 @@ class TDataGridItemEventParameter extends TEventParameter
 	 */
 	public function __construct(TDataGridItem $item)
 	{
-		parent::__construct();
 		$this->_item=$item;
 	}
 
@@ -1728,7 +1727,6 @@ class TDataGridPagerEventParameter extends TEventParameter
 	 */
 	public function __construct(TDataGridPager $pager)
 	{
-		parent::__construct();
 		$this->_pager=$pager;
 	}
 
@@ -1830,7 +1828,6 @@ class TDataGridSortCommandEventParameter extends TEventParameter
 	 */
 	public function __construct($source,TDataGridCommandEventParameter $param)
 	{
-		parent::__construct();
 		$this->_source=$source;
 		$this->_sortExpression=$param->getCommandParameter();
 	}
@@ -1885,7 +1882,6 @@ class TDataGridPageChangedEventParameter extends TEventParameter
 	 */
 	public function __construct($source,$newPageIndex)
 	{
-		parent::__construct();
 		$this->_source=$source;
 		$this->_newIndex=$newPageIndex;
 	}
@@ -1950,7 +1946,6 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	 */
 	public function __construct($itemIndex,$dataSourceIndex,$itemType)
 	{
-		parent::__construct();
 		$this->_itemIndex=$itemIndex;
 		$this->_dataSourceIndex=$dataSourceIndex;
 		$this->setItemType($itemType);
@@ -2070,7 +2065,6 @@ class TDataGridPager extends TPanel implements INamingContainer
 	 */
 	public function __construct($dataGrid)
 	{
-		parent::__construct();
 		$this->_dataGrid=$dataGrid;
 	}
 
@@ -2162,7 +2156,6 @@ class TDataGridColumnCollection extends TList
 	 */
 	public function __construct(TDataGrid $owner)
 	{
-		parent::__construct();
 		$this->_o=$owner;
 	}
 

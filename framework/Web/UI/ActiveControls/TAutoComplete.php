@@ -425,7 +425,6 @@ class TAutoCompleteTemplate extends TComponent implements ITemplate
 
 	public function __construct($template)
 	{
-		parent::__construct();
 		$this->_template = $template;
 	}
 	/**

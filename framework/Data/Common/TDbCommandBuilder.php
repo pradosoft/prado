@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.Common
@@ -30,7 +30,6 @@ class TDbCommandBuilder extends TComponent
 	 */
 	public function __construct($connection=null, $tableInfo=null)
 	{
-		parent::__construct();
 		$this->setDbConnection($connection);
 		$this->setTableInfo($tableInfo);
 	}
@@ -109,7 +108,7 @@ class TDbCommandBuilder extends TComponent
 		foreach($ordering as $name => $direction)
 		{
 			$direction = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
-			if(false !== strpos($name, '(') && false !== strpos($name, ')')) {
+			if(strpos($name, '(') && strpos($name, ')')) {
 				// key is a function (bad practice, but we need to handle it)
 				$key = $name;
 			} else {
@@ -506,3 +505,5 @@ class TDbCommandBuilder extends TComponent
 		return false;
 	}
 }
+
+?>

@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data.Common
@@ -41,7 +41,6 @@ class TDbTableInfo extends TComponent
 	 */
 	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
 	{
-		parent::__construct();
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
 		$this->_foreignKeys=$foreign;

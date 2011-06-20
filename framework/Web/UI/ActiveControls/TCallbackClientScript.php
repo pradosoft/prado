@@ -44,7 +44,6 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->_actions = new TList;
 	}
 

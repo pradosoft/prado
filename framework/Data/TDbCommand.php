@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Data
@@ -49,7 +49,6 @@ class TDbCommand extends TComponent
 	 */
 	public function __construct(TDbConnection $connection,$text)
 	{
-		parent::__construct();
 		$this->_connection=$connection;
 		$this->setText($text);
 	}

@@ -101,7 +101,6 @@ class TSoapService extends TService
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->setID('soap');
 	}
 

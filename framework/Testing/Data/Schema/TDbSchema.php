@@ -38,7 +38,6 @@ abstract class TDbSchema extends TComponent
 	 */
 	public function __construct($conn)
 	{
-		parent::__construct();
 		$conn->setActive(true);
 		$this->_connection=$conn;
 		foreach($conn->schemaCachingExclude as $name)

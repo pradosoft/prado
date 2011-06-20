@@ -10,8 +10,7 @@
  * @package System.Web.UI.ActiveControls
  */
 
-prado::using('System.Web.UI.ActiveControls.TCallback');
-
+Prado::using('System.Web.UI.ActiveControls.TCallback');
 /**
  * TTriggeredCallback abstract Class
  *

@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Security
@@ -52,7 +52,6 @@ class TUser extends TComponent implements IUser
 	 */
 	public function __construct(IUserManager $manager)
 	{
-		parent::__construct();
 		$this->_state=array();
 		$this->_manager=$manager;
 		$this->setName($manager->getGuestName());

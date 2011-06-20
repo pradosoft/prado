@@ -68,8 +68,7 @@ abstract class TActiveRecord extends TModel
 	{
 		if($scenario===null) // internally used by populateRecord() and model()
 			return;
-		
-		parent::__construct();
+
 		$this->setScenario($scenario);
 		$this->setIsNewRecord(true);
 		$this->_attributes=$this->getMetaData()->attributeDefaults;

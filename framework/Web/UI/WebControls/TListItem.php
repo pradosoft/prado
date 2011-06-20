@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-20010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -57,8 +57,6 @@ class TListItem extends TComponent
 	 */
 	public function __construct($text='',$value='',$enabled=true,$selected=false)
 	{
-		parent::__construct();
-		
 		$this->setText($text);
 		$this->setValue($value);
 		$this->setEnabled($enabled);

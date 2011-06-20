@@ -49,7 +49,6 @@ class TDbTransaction extends TComponent
 	 */
 	public function __construct(TDbConnection $connection)
 	{
-		parent::__construct();
 		$this->_connection=$connection;
 		$this->setActive(true);
 	}

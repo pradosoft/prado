@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2010 PradoSoft
+ * @copyright Copyright &copy; 2005-2008 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -221,7 +221,6 @@ class THtmlArea extends TTextBox
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->setWidth('470px');
 		$this->setHeight('250px');
 	}

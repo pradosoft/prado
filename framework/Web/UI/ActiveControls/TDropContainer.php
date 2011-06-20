@@ -265,7 +265,6 @@ class TDropContainerEventParameter extends TEventParameter
 
 	public function __construct($dropParams)
 	{
-		parent::__construct();
 		$this->_dragElementId = $dropParams->DragElementID;
 		$this->_screenX = $dropParams->ScreenX;
 		$this->_screenY = $dropParams->ScreenY;
@@ -309,4 +308,3 @@ class TDropContainerEventParameter extends TEventParameter
 		 return $control;
 	 }
 }
-?>
