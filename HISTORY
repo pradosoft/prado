@@ -1,20 +1,9 @@
 Version 3.2 to be released
 NEW: Issue#83 - PHP configuration style (Carl)
-NEW: Port Yii's DBO (Christophe)
-NEW: Port Yii's ActiveRecords (Daniel + Robin)
-NEW: Port Yii's Models and Behaviors (Daniel + Robin)
-NEW: Add TActiveDataList (Marcosanobre, Robin)
-NEW: Add TActiveRepeater (LCS Team, Christophe)
-NEW: Add TActiveDatagrid (LCS Team, Christophe)
 BUG: Issue#232 Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 BUG: Fixed an inconsistency in TRegularExpressionValidator
-NEW: Add TActiveTableRow (LCS Team)
-NEW: Add TActiveTableCell (LCS Team)
 ENH: Issue#173 - Add "dragdropextra" (superghosting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
-NEW: Add TActiveMultiView (LCS Team)
-NEW: Beta of master/slave senario solution (Yves)
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
-BUG: Issue#246: TQueue::peek returns the top not the bottom (Christophe)
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
 EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define wether to use http or https on pattern level (Yves)
 EHN: Add second parameter to THttpResponse::appendHeader whether the header should replace a previous similar header, or add a second header of the same type (Yves)
@@ -28,10 +17,12 @@ BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
 BUG: Issue#327 - TDbCache with PostgreSQL throw a TDbException (ctrlaltca)
 NEW: added documentation and samples to the quickstart tutorial to include the active controls (ctrlaltca)
 NEW: Added TTemplateControlInheritable control
-NEW: Added TActiveDataGrid control
-NEW: Added TActiveDataList control
-NEW: Added TActiveMultiView control
-NEW: Added TActiveRepeater control
+NEW: Added TActiveDataGrid control (LCS Team, Christophe)
+NEW: Added TActiveDataList control (Marcosanobre, Robin)
+NEW: Added TActiveMultiView control (LCS Team)
+NEW: Added TActiveRepeater control (LCS Team, Christophe)
+NEW: Add TActiveTableRow (LCS Team)
+NEW: Add TActiveTableCell (LCS Team)
 
 Version 3.1.8 May 29, 2011
 BUG: Issue#16  - [684] TDatePicker problems (rojaro)

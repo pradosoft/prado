@@ -5,7 +5,7 @@
 If you are viewing this page from your own Web server, you are already done with the installation.
 </p>
 <p id="30019">
-The minimum requirement by PRADO is that the Web server support PHP 5. PRADO has been tested with Apache Web server on Windows and Linux. Highly possibly it may also run on other platforms with other Web servers, as long as PHP 5 is supported.
+The minimum requirement by PRADO is that the Web server support PHP 5.2. PRADO has been tested with Apache Web server on Windows and Linux. Highly possibly it may also run on other platforms with other Web servers, as long as PHP 5.2 is supported.
 </p>
 </div>
 

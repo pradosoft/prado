@@ -32,8 +32,8 @@
 $requirements = array(
 	array(
 		true,
-		version_compare(PHP_VERSION,"5.1.0",">="),
-		'PHP version check','PHP 5.1.0 or higher required'),
+		version_compare(PHP_VERSION,"5.2.0",">="),
+		'PHP version check','PHP 5.2.0 or higher required'),
 	array(
 		true,
 		isset($_SERVER["HTTP_ACCEPT"]),
