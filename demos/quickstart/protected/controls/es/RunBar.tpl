@@ -1,4 +1,4 @@
 <div class="runbar"> 
 <com:THyperLink ID="RunButton" Target="_blank" Text="Ver ejemplo" />
-<com:THyperLink ID="ViewSourceButton" Target="_blank" Text="Ver código fuente" />
+<com:THyperLink ID="ViewSourceButton" Target="_blank" Text="Ver cÃ³digo fuente" />
 </div>

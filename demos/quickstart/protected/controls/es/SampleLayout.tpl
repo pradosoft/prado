@@ -12,7 +12,7 @@
 <div class="sampleheader">
 
 <div class="title">
-<a href="?">GuÌa de comienzo r·pida con PRADO</a> Ejemplo
+<a href="?">Gu√≠a de comienzo r√°pida con PRADO</a> Ejemplo
 </div>
 <div class="image"></div>
 
