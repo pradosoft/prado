@@ -748,7 +748,6 @@ class TPageConfiguration extends TComponent
 	 */
 	public function __construct($pagePath)
 	{
-		parent::__construct();
 		$this->_pagePath=$pagePath;
 	}
 

@@ -451,9 +451,6 @@ class TWebControl extends TControl implements IStyleable
 	 */
 	public function render($writer)
 	{
-		if($this->getIsRenderBlocked())
-			return;
-		
 		$this->renderBeginTag($writer);
 		$this->renderContents($writer);
 		$this->renderEndTag($writer);
