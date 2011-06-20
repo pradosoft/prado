@@ -115,10 +115,10 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
 		$guest=$userManager->getUser(null);
-		self::assertType('TUser', $guest);
+		self::assertInstanceOf('TUser', $guest);
 		self::assertTrue($guest->getIsGuest());
 		$user=$userManager->getUser('joe');
-		self::assertType('TUser', $user);
+		self::assertInstanceOf('TUser', $user);
 		self::assertEquals('joe', $user->getName());
 		self::assertEquals(array ('Writer'), $user->getRoles());
 		self::assertFalse($user->getIsGuest());

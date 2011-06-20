@@ -22,28 +22,28 @@ class TDbStatementAnalysisParameterTest extends PHPUnit_Framework_TestCase
 
 	public function testConstruct() {
 		$this->analyserParameter = new TDbStatementAnalysisParameter();
-		self::assertType('string', $this->analyserParameter->getStatement());
+		self::assertInternalType('string', $this->analyserParameter->getStatement());
 		self::assertEquals('', $this->analyserParameter->getStatement());
 		self::assertEquals(TDbStatementClassification::UNKNOWN, $this->analyserParameter->getDefaultClassification());
 		self::assertNull($this->analyserParameter->getDriverName());
 
 		$this->analyserParameter = new TDbStatementAnalysisParameter('SELECT 1', TDbStatementClassification::SQL, 'mysql');
-		self::assertType('string', $this->analyserParameter->getStatement());
+		self::assertInternalType('string', $this->analyserParameter->getStatement());
 		self::assertEquals('SELECT 1', $this->analyserParameter->getStatement());
 		self::assertEquals(TDbStatementClassification::SQL, $this->analyserParameter->getDefaultClassification());
 		self::assertEquals('mysql', $this->analyserParameter->getDriverName());
 	}
 
 	public function testStatement() {
-		self::assertType('string', $this->analyserParameter->getStatement());
+		self::assertInternalType('string', $this->analyserParameter->getStatement());
 		self::assertEquals('', $this->analyserParameter->getStatement());
 
 		$this->analyserParameter->setStatement('SELECT 1');
-		self::assertType('string', $this->analyserParameter->getStatement());
+		self::assertInternalType('string', $this->analyserParameter->getStatement());
 		self::assertEquals('SELECT 1', $this->analyserParameter->getStatement());
 
 		$this->analyserParameter->setStatement(null);
-		self::assertType('string', $this->analyserParameter->getStatement());
+		self::assertInternalType('string', $this->analyserParameter->getStatement());
 		self::assertEquals('', $this->analyserParameter->getStatement());
 	}
 

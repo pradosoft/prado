@@ -172,7 +172,7 @@ class TPagedListTest extends PHPUnit_Framework_TestCase {
 	public function testGetIterator() {
 		$list = new TPagedList(array(1, 2));
 		$list->CustomPaging = true;
-		self::assertType('ArrayIterator', $list->getIterator());
+		self::assertInstanceOf('ArrayIterator', $list->getIterator());
 		$n = 0;
 		$found = 0;
 		foreach($list as $index => $item) {

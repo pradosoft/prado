@@ -120,7 +120,7 @@ class TRssFeedDocumentTest extends PHPUnit_Framework_TestCase {
     $feed->addItem($item);
     $items = $feed->getItems();
     /*    var_dump($items);
-    self::assertType($items[0], 'TRssItem');*/
+    self::assertInstanceOf($items[0], 'TRssItem');*/
   }
 
   public function testSetImage() {

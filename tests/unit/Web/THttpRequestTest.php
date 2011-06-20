@@ -63,13 +63,13 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	public function testGetUrl() {
 		$request = new THttpRequest();
 		$request->init(null);
-		self::assertType('TUri', $request->getUrl());
+		self::assertInstanceOf('TUri', $request->getUrl());
 		// Try with $_SERVER['HTTP_HOST'] empty
 		$request=null;
 		$request = new THttpRequest();
 		$request->init(null);
 		$_SERVER['HTTP_HOST']='';
-		self::assertType('TUri', $request->getUrl());
+		self::assertInstanceOf('TUri', $request->getUrl());
 	}
 
 	public function testGetUrlManager() {
@@ -111,7 +111,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$request->setUrlManager('goodmanager');
 		$request->init(null);
 		self::assertEquals ('goodmanager', $request->getUrlManager());
-		self::assertType ('TUrlManager',$request->getUrlManagerModule());
+		self::assertInstanceOf ('TUrlManager',$request->getUrlManagerModule());
 
 	}
 
@@ -203,7 +203,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
 		try {
 			$browser=$request->getBrowser();
-			self::assertType ('array', $browser);
+			self::assertInstanceOf ('array', $browser);
 			self::assertEquals('Firefox', $browser['browser']);
 			self::assertEquals('2.0.0.3', $browser['version']);
 		} catch (TPhpErrorException $e) {
@@ -261,7 +261,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	$request->init (null);
   	$request->setEnableCookieValidation (false);
   	$cookies=$request->getCookies();
-  	self::assertType('THttpCookieCollection', $cookies);
+  	self::assertInstanceOf('THttpCookieCollection', $cookies);
   	self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
   	$request = null;
 
@@ -273,7 +273,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	$request->init (null);
   	$request->setEnableCookieValidation (true);
   	$cookies=$request->getCookies();
-  	self::assertType('THttpCookieCollection', $cookies);
+  	self::assertInstanceOf('THttpCookieCollection', $cookies);
   	self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
   }
 
@@ -318,7 +318,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   public function testGetIterator() {
     $request = new THttpRequest ();
     $request->init(null);
-    self::assertType ('TMapIterator', $request->getIterator());
+    self::assertInstanceOf ('TMapIterator', $request->getIterator());
   }
 
   public function testGetCount() {

@@ -96,7 +96,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 
  	public function testGetIterator() {
 		$queue = new TQueue(array(1, 2));
-		self::assertType('ArrayIterator', $queue->getIterator());
+		self::assertInstanceOf('ArrayIterator', $queue->getIterator());
 		$n = 0;
 		$found = 0;
 		foreach($queue as $index => $item) {
