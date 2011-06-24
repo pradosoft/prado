@@ -172,6 +172,17 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		return 'Prado.WebUI.DropContainer';
 	}	
 
+	/**
+	 * Registers clientscripts
+	 *
+	 * This method overrides the parent implementation and is invoked before render.
+	 * @param mixed event parameter
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->getPage()->getClientScript()->registerPradoScript('dragdrop');
+	}
 
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
@@ -181,8 +192,6 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-
-		$this->getPage()->getClientScript()->registerPradoScript('dragdrop');
 
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());

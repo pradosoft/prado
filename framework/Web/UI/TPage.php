@@ -167,6 +167,10 @@ class TPage extends TTemplateControl implements IPageEvents
 	 * @var boolean whether client supports javascript
 	 */
 	private $_enableJavaScript=true;
+	/**
+	 * @var THtmlWriter current html render writer
+	 */
+	private $_writer;
 
 	/**
 	 * Constructor.
@@ -186,6 +190,8 @@ class TPage extends TTemplateControl implements IPageEvents
 	public function run($writer)
 	{
 		Prado::trace("Running page life cycles",'System.Web.UI.TPage');
+		$this->_writer = $writer;
+
 		$this->determinePostBackMode();
 
 		if($this->getIsPostBack())
@@ -197,6 +203,8 @@ class TPage extends TTemplateControl implements IPageEvents
 		}
 		else
 			$this->processNormalRequest($writer);
+
+		$this->_writer = null;
 	}
 
 	protected function processNormalRequest($writer)
@@ -933,6 +941,14 @@ class TPage extends TTemplateControl implements IPageEvents
 	}
 
 	/**
+	 * @return boolean Whether form rendering is in progress
+	 */
+	public function getInFormRender()
+	{
+		return $this->_inFormRender;
+	}
+
+	/**
 	 * Ensures the control is rendered within a form.
 	 * @param TControl the control to be rendered
 	 * @throws TConfigurationException if the control is outside of the form
@@ -951,8 +967,8 @@ class TPage extends TTemplateControl implements IPageEvents
 		if($this->_formRendered)
 			throw new TConfigurationException('page_form_duplicated');
 		$this->_formRendered=true;
-		$this->_inFormRender=true;
 		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
+		$this->_inFormRender=true;
 	}
 
 	/**
@@ -1198,6 +1214,15 @@ class TPage extends TTemplateControl implements IPageEvents
 		if(!$this->_cachingStack)
 			$this->_cachingStack=new TStack;
 		return $this->_cachingStack;
+	}
+
+	/**
+	 * Flushes output
+	 */
+	public function flushWriter()
+	{
+		if ($this->_writer)
+			$this->Response->write($this->_writer->flush());
 	}
 }
 

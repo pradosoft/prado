@@ -136,6 +136,20 @@ class TDraggable extends TPanel
 		$this->setViewState('Constraint', TPropertyValue::ensureEnum($value, 'TDraggableConstraint'), TDraggableConstraint::None);
 	}
 	
+	/**
+	 * Registers clientscripts
+	 *
+	 * This method overrides the parent implementation and is invoked before render.
+	 * @param mixed event parameter
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		if ($this->getGhosting()==TDraggableGhostingOptions::SuperGhosting)
+			$cs->registerPradoScript('dragdropextra');
+		else
+			$cs->registerPradoScript('dragdrop');
+	}
 
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
@@ -145,11 +159,6 @@ class TDraggable extends TPanel
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$cs=$this->getPage()->getClientScript();
-		if ($this->getGhosting()==TDraggableGhostingOptions::SuperGhosting)
-			$cs->registerPradoScript('dragdropextra');
-		else
-			$cs->registerPradoScript('dragdrop');
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$class=$this->getClientClassName();
 		$code="new {$class}('{$this->getClientId()}', {$options}) ";

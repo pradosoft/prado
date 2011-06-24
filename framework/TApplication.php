@@ -1252,10 +1252,11 @@ class TApplication extends TComponent
 
 	/**
 	 * Flushes output to client side.
+	 * @param boolean whether to continue buffering after flush if buffering was active
 	 */
-	public function flushOutput()
+	public function flushOutput($continueBuffering = true)
 	{
-		$this->getResponse()->flush();
+		$this->getResponse()->flush($continueBuffering);
 	}
 
 	/**
@@ -1264,6 +1265,7 @@ class TApplication extends TComponent
 	 */
 	public function onEndRequest()
 	{
+		$this->flushOutput(false); // flush all remaining content in the buffer
 		$this->saveGlobals();  // save global state
 		$this->raiseEvent('OnEndRequest',$this,null);
 	}

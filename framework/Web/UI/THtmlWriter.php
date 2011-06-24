@@ -181,6 +181,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	/**
 	 * Flushes the rendering result.
 	 * This will invoke the underlying writer's flush method.
+	 * @return string the content being flushed
 	 */
 	public function flush()
 	{

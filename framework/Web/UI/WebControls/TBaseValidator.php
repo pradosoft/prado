@@ -239,7 +239,6 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		{
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
-			$scripts->registerPradoScript('validator');
 			$scripts->registerEndScript($scriptKey, "new Prado.ValidationManager({$options});");
 		}
 		if($this->getEnableClientScript())
@@ -254,6 +253,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		parent::onPreRender($param);
 		$this->updateControlCssClass();
+		if ($this->getEnableClientScript())
+			$this->getPage()->getClientScript()->registerPradoScript('validator');
 	}
 
 	/**

@@ -75,6 +75,15 @@ class TActiveControlAdapter extends TControlAdapter
 			$this->_activeControlType = $type;
 	}
 
+ 	/**
+	 * Publish the ajax script
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->getPage()->getClientScript()->registerPradoScript('ajax');
+	}
+
 	/**
 	 * Renders the callback client scripts.
 	 */
@@ -93,7 +102,6 @@ class TActiveControlAdapter extends TControlAdapter
 		$key = 'Prado.CallbackRequest.addPostLoaders';
 		if(!$cs->isEndScriptRegistered($key))
 		{
-			$cs->registerPradoScript('ajax');
 			$data = $this->getPage()->getPostDataLoaders();
 			if(count($data) > 0)
 			{

@@ -72,11 +72,6 @@ class TForm extends TControl
 	public function render($writer)
 	{
 		$page=$this->getPage();
-		$page->beginFormRender($writer);
-		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
-		$this->renderChildren( $htmlWriter );
-		$content = $htmlWriter->flush();
-		$page->endFormRender($writer);
 
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');
@@ -84,18 +79,27 @@ class TForm extends TControl
 		$cs=$page->getClientScript();
 		if($page->getClientSupportsJavaScript())
 		{
-			$cs->renderHiddenFields($writer);
-			$cs->renderScriptFiles($writer);
+			$cs->renderHiddenFieldsBegin($writer);
+			$cs->renderScriptFilesBegin($writer);
 			$cs->renderBeginScripts($writer);
 
-			$writer->write($content);
-
+ 			$page->beginFormRender($writer);
+ 			$this->renderChildren($writer);
+			$cs->renderHiddenFieldsEnd($writer);
+ 			$page->endFormRender($writer);
+ 
+			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);
 		}
 		else
 		{
-			$cs->renderHiddenFields($writer);
-			$writer->write($content);
+			$cs->renderHiddenFieldsBegin($writer);
+
+			$page->beginFormRender($writer);
+			$this->renderChildren($writer);
+			$page->endFormRender($writer);
+
+			$cs->renderHiddenFieldsEnd($writer);
 		}
 
 		$writer->renderEndTag();

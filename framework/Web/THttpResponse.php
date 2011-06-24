@@ -116,6 +116,14 @@ class THttpResponse extends TModule implements ITextWriter
 	 * @var THttpResponseAdapter adapter.
 	 */
 	private $_adapter;
+	/**
+	 * @var boolean whether http response header has been sent
+	 */
+	private $_httpHeaderSent;
+	/**
+	 * @var boolean whether content-type header has been sent
+	 */
+	private $_contentTypeHeaderSent;
 
 	/**
 	 * Destructor.
@@ -203,6 +211,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function setContentType($type)
 	{
+		if ($this->_contentTypeHeaderSent)
+			throw new Exception('Unable to alter content-type as it has been already sent');
 		$this->_contentType = $type;
 	}
 
@@ -268,6 +278,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function setStatusCode($status, $reason=null)
 	{
+		if ($this->_httpHeaderSent)
+			throw new Exception('Unable to alter response as HTTP header already sent');
 		$status=TPropertyValue::ensureInteger($status);
 		if(isset(self::$HTTP_STATUS_CODES[$status])) {
 			$this->_reason=self::$HTTP_STATUS_CODES[$status];
@@ -308,6 +320,9 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function write($str)
 	{
+		// when starting output make sure we send the headers first
+		if (!$this->_bufferOutput and !$this->_httpHeaderSent)
+			$this->ensureHeadersSent();
 		echo $str;
 	}
 
@@ -435,36 +450,79 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * Flush the response contents and headers.
 	 */
-	public function flush()
+	public function flush($continueBuffering = true)
 	{
 		if($this->getHasAdapter())
-			$this->_adapter->flushContent();
+			$this->_adapter->flushContent($continueBuffering);
 		else
-			$this->flushContent();
+			$this->flushContent($continueBuffering);
+	}
+
+	/**
+	 * Ensures that HTTP response and content-type headers are sent
+	 */
+	public function ensureHeadersSent()
+	{
+		$this->ensureHttpHeaderSent();
+		$this->ensureContentTypeHeaderSent();
 	}
 
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@link flush} instead.
+	 * @param boolean whether to continue buffering after flush if buffering was active
 	 */
-	public function flushContent()
+	public function flushContent($continueBuffering = true)
 	{
 		Prado::trace("Flushing output",'System.Web.THttpResponse');
-		$this->sendHttpHeader();
-		$this->sendContentTypeHeader();
-		if($this->_bufferOutput)
-			ob_flush();
+		$this->ensureHeadersSent();
+ 		if($this->_bufferOutput)
+		{
+			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
+			if (ob_get_length()>0) 
+			{
+				if (!$continueBuffering)
+					{
+						$this->_bufferOutput = false;
+						ob_end_flush();
+					}
+				else
+						ob_flush();
+				flush();
+			}
+		}
+		else
+			flush();
+	}
+
+	/**
+	 * Ensures that the HTTP header with the status code and status reason are sent
+	 */
+	protected function ensureHttpHeaderSent()
+	{
+		if (!$this->_httpHeaderSent)
+			$this->sendHttpHeader();
 	}
 
 	/**
 	 * Send the HTTP header with the status code (defaults to 200) and status reason (defaults to OK)
 	 */
-	protected function sendHttpHeader ()
+	protected function sendHttpHeader()
 	{
 		if (($version=$this->getRequest()->getHttpProtocolVersion())==='')
 			header (' ', true, $this->_status);
 		else
 			header($version.' '.$this->_status.' '.$this->_reason, true, $this->_status);
+		$this->_httpHeaderSent = true;
+	}
+
+	/**
+	 * Ensures that the HTTP header with the status code and status reason are sent
+	 */
+	protected function ensureContentTypeHeaderSent()
+	{
+		if (!$this->_contentTypeHeaderSent)
+			$this->sendContentTypeHeader();
 	}
 
 	/**
@@ -484,6 +542,8 @@ class THttpResponse extends TModule implements ITextWriter
 
 		if($charset==='') $charset = self::DEFAULT_CHARSET;
 		$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
+
+		$this->_contentTypeHeaderSent = true;
 	}
 
 	/**
