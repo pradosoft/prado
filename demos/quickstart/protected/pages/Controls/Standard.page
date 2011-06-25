@@ -48,6 +48,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.FlushOutput">TFlushOutput</a> enables forced flushing of the current output buffer at (a) certain point(s) in the page.
+  </li>
+
+  <li>
   <a href="?page=Controls.Head">THead</a> represents the &lt;head&gt; element on an HTML Web page. It is required by a PRADO page should it use themes.
   </li>
 

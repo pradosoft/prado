@@ -1,0 +1,29 @@
+<com:TContent ID="body" >
+
+<h1>TFlushOutput</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TFlushOutput" />
+
+<p class="block-content">
+<tt>TFlushOutput</tt> enables forced flushing of the current output buffer
+at (a) certain point(s) in the page, after rendering of all previous
+controls has been completed.
+</p>
+
+<p class="block-content">
+To use <tt>TFlushOutput</tt>, simply place it where you want in a template;
+the output buffered between the start of the page (or a
+previous <tt>TFlushOutput</tt>) and the <tt>TFlushOutput</tt> will be sent to the client immediately.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TFlushOutput /&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">
+You can specify whether you want to keep buffering of the output 
+(if it was enabled) till the next occourence of a <tt><com: TFlushOutput /></tt>
+or the end of the page rendering, or stop buffering, by using the 
+<tt>ContinueBuffering</tt> property.
+</p>
+
+</com:TContent>
