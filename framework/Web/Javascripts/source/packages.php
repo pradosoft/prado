@@ -94,8 +94,8 @@ $dependencies = array(
 		'slider'			=> array('prado', 'slider'),
 		'keyboard'			=> array('prado', 'keyboard'),
 		'tabpanel'			=> array('prado', 'tabpanel'),
-		'activedatepicker'		=> array('datepicker', 'ajax', 'activedatepicker'),
-		'activefileupload'		=> array('prado', 'ajax', 'activefileupload'),
+		'activedatepicker'		=> array('prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'activefileupload'		=> array('prado', 'effects', 'ajax', 'activefileupload'),
 		'dragdropextra'			=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prado', 'effects', 'accordion'),
 );

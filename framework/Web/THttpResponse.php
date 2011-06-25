@@ -482,12 +482,12 @@ class THttpResponse extends TModule implements ITextWriter
 			if (ob_get_length()>0) 
 			{
 				if (!$continueBuffering)
-					{
-						$this->_bufferOutput = false;
-						ob_end_flush();
-					}
+				{
+					$this->_bufferOutput = false;
+					ob_end_flush();
+				}
 				else
-						ob_flush();
+					ob_flush();
 				flush();
 			}
 		}

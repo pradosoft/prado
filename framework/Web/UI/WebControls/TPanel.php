@@ -73,15 +73,7 @@ class TPanel extends TWebControl
 	{
 		parent::addAttributesToRender($writer);
 		if(($butt=$this->getDefaultButton())!=='')
-		{
-			if(($button=$this->findControl($butt))===null)
-				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
-			else
-			{
-				$writer->addAttribute('id',$this->getClientID());
-				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
-			}
-		}
+			$writer->addAttribute('id',$this->getClientID());
 	}
 
 	/**
@@ -231,6 +223,24 @@ class TPanel extends TWebControl
 		if($this->getGroupingText()!=='')
 			$writer->renderEndTag();
 		parent::renderEndTag($writer);
+	}
+
+	public function render($writer)
+	{
+		parent::render($writer);
+
+		if(($butt=$this->getDefaultButton())!=='')
+		{
+			$buttons = $this->findControlsByID($butt);
+			if (count($buttons)>0)
+				$button = reset($buttons);
+			else
+				$buttons = null;
+			if($button===null)
+				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
+			else
+				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+		}
 	}
 }
 

@@ -204,9 +204,9 @@ EOS;
 	/**
 	 * Publish the javascript
 	 */
-	public function onPreRender($param){
+	public function onPreRender($param)
+	{
 		parent::onPreRender($param);
-		$this->getPage()->getClientScript()->registerPradoScript('effects');
 		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 
 		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())

@@ -407,6 +407,7 @@ class TDatePicker extends TTextBox
 			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'year');
 		}
 		$this->publishCalendarStyle();
+		$this->registerCalendarClientScriptPre();
 	}
 
 	/**
@@ -427,7 +428,7 @@ class TDatePicker extends TTextBox
 			$this->renderDropDownListCalendar($writer);
 			if($this->hasDayPattern())
 			{
-				$this->registerCalendarClientScript();
+				$this->registerCalendarClientScriptPost();
 				$this->renderDatePickerButtons($writer);
 			}
 		}
@@ -840,20 +841,27 @@ class TDatePicker extends TTextBox
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->registerCalendarClientScript();
+		$this->registerCalendarClientScriptPost();
 	}
 
 
 	/**
 	 * Registers the javascript code to initialize the date picker.
 	 */
-	protected function registerCalendarClientScript()
+	protected function registerCalendarClientScriptPre()
 	{
 		if($this->getShowCalendar())
 		{
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPradoScript("datepicker");
+		}
+	}
 
+	protected function registerCalendarClientScriptPost()
+	{
+		if($this->getShowCalendar())
+		{
+			$cs = $this->getPage()->getClientScript();
 			if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
 			{
 				$spacer = $this->getAssetUrl('spacer.gif');

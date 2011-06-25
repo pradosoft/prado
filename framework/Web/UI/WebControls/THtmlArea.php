@@ -402,7 +402,7 @@ class THtmlArea extends TTextBox
 			$options['debug'] = false;
 			$js = TJavaScript::encode($options,true,true);
 			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
-			$scripts->registerBeginScript($key, $script);
+			$scripts->registerEndScript($key, $script);
 		}
 	}
 

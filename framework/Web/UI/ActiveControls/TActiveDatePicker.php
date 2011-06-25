@@ -107,12 +107,16 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	/**
 	 * Registers the javascript code to initialize the date picker.
 	 */
-	protected function registerCalendarClientScript()
+
+	protected function registerCalendarClientScriptPre()
 	{
-	
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript("activedatepicker");
+	}
 
+	protected function registerCalendarClientScriptPost()
+	{
+		$cs = $this->getPage()->getClientScript();
 		if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
 		{
 			$spacer = $this->getAssetUrl('spacer.gif');
