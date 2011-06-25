@@ -2370,6 +2370,7 @@ framework/Collections/TMap.php -text
 framework/Collections/TPagedDataSource.php -text
 framework/Collections/TPagedList.php -text
 framework/Collections/TPriorityList.php -text
+framework/Collections/TPriorityMap.php -text
 framework/Collections/TQueue.php -text
 framework/Collections/TStack.php -text
 framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php -text
@@ -3761,6 +3762,7 @@ tests/unit/Collections/TMapTest.php -text
 tests/unit/Collections/TPagedDataSourceTest.php -text
 tests/unit/Collections/TPagedListTest.php -text
 tests/unit/Collections/TPriorityListTest.php -text
+tests/unit/Collections/TPriorityMapTest.php -text
 tests/unit/Collections/TQueueTest.php -text
 tests/unit/Collections/TStackTest.php -text
 tests/unit/Data/DataGateway/AllTests.php -text

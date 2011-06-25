@@ -964,6 +964,77 @@ class TPriorityListTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($this->pitem3, $array[100][0]);
 	}
 	
+	public function testToArrayBelowPriority() {
+		$array = $this->plist->toArrayBelowPriority(0);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals(1, count($array));
+		
+		$array = $this->plist->toArrayBelowPriority(10);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals(1, count($array));
+		
+		$array = $this->plist->toArrayBelowPriority(10, true);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals($this->pitem1, $array[1]);
+		$this->assertEquals($this->pitem2, $array[2]);
+		$this->assertEquals(3, count($array));
+		
+		$array = $this->plist->toArrayBelowPriority(11);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals($this->pitem1, $array[1]);
+		$this->assertEquals($this->pitem2, $array[2]);
+		$this->assertEquals(3, count($array));
+		
+		$array = $this->plist->toArrayBelowPriority(100);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals($this->pitem1, $array[1]);
+		$this->assertEquals($this->pitem2, $array[2]);
+		$this->assertEquals(3, count($array));
+		
+		$array = $this->plist->toArrayBelowPriority(100, true);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals($this->pitem1, $array[1]);
+		$this->assertEquals($this->pitem2, $array[2]);
+		$this->assertEquals($this->pitem3, $array[3]);
+		$this->assertEquals(4, count($array));
+	}
+	
+	public function testToArrayAbovePriority() {
+		$array = $this->plist->toArrayAbovePriority(100, false);
+		$this->assertEquals(0, count($array));
+		
+		$array = $this->plist->toArrayAbovePriority(100, true);
+		$this->assertEquals(1, count($array));
+		$this->assertEquals($this->pitem3, $array[0]);
+		
+		$array = $this->plist->toArrayAbovePriority(10, false);
+		$this->assertEquals($this->pitem3, $array[0]);
+		$this->assertEquals(1, count($array));
+		
+		$array = $this->plist->toArrayAbovePriority(10);
+		$this->assertEquals($this->pitem1, $array[0]);
+		$this->assertEquals($this->pitem2, $array[1]);
+		$this->assertEquals($this->pitem3, $array[2]);
+		$this->assertEquals(3, count($array));
+		
+		$array = $this->plist->toArrayAbovePriority(11);
+		$this->assertEquals($this->pitem3, $array[0]);
+		$this->assertEquals(1, count($array));
+		
+		$array = $this->plist->toArrayAbovePriority(0);
+		$this->assertEquals($this->pitem1, $array[0]);
+		$this->assertEquals($this->pitem2, $array[1]);
+		$this->assertEquals($this->pitem3, $array[2]);
+		$this->assertEquals(3, count($array));
+		
+		$array = $this->plist->toArrayAbovePriority(-10000000, true);
+		$this->assertEquals($this->pfirst, $array[0]);
+		$this->assertEquals($this->pitem1, $array[1]);
+		$this->assertEquals($this->pitem2, $array[2]);
+		$this->assertEquals($this->pitem3, $array[3]);
+		$this->assertEquals(4, count($array));
+	}
+	
 	public function testArrayReadTPriorityList()
 	{
 		$this->assertTrue($this->plist[0] === $this->pfirst);
