@@ -684,7 +684,6 @@ class TPageNotFoundEventParameter extends TEventParameter {
 	 *	@param object $behavior this is the behavior to implement the class behavior
 	 */
 	public function __construct($path) {
-		parent::__construct();
 		$this->_path = $path;
 	}
 	

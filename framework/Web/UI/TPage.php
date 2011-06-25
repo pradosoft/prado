@@ -179,7 +179,6 @@ class TPage extends TTemplateControl implements IPageEvents
 	 */
 	public function __construct()
 	{
-		parent::__construct();
 		$this->setPage($this);
 	}
 
