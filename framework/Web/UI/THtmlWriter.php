@@ -58,34 +58,6 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 		'wbr'=>true,
 	);
 	/**
-	 * @var array list of attributes that need HTML encoding
-	 */
-	private static $_attrEncode=array(
-		'abbr'=>true,
-		'accesskey'=>true,
-		'alt'=>true,
-		'axis'=>true,
-		'background'=>true,
-		'class'=>true,
-		'content'=>true,
-		'headers'=>true,
-		'href'=>true,
-		'longdesc'=>true,
-		'onclick'=>true,
-		'onchange'=>true,
-		'src'=>true,
-		'title'=>true,
-		'label'=>true,
-		'value'=>true
-	);
-	/**
-	 * @var array list of stylesheet attributes that need HTML encoding
-	 */
-	private static $_styleEncode=array(
-		'background-image'=>true,
-		'list-style-image'=>true
-	);
-	/**
 	 * @var array list of attributes to be rendered for a tag
 	 */
 	private $_attributes=array();
@@ -127,7 +99,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	public function addAttributes($attrs)
 	{
 		foreach($attrs as $name=>$value)
-			$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
+			$this->_attributes[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -137,7 +109,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	 */
 	public function addAttribute($name,$value)
 	{
-		$this->_attributes[$name]=isset(self::$_attrEncode[$name])?THttpUtility::htmlEncode($value):$value;
+		$this->_attributes[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -146,7 +118,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	 */
 	public function removeAttribute($name)
 	{
-		unset($this->_attributes[$name]);
+		unset($this->_attributes[THttpUtility::htmlStrip($name)]);
 	}
 
 	/**
@@ -156,7 +128,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	public function addStyleAttributes($attrs)
 	{
 		foreach($attrs as $name=>$value)
-			$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
+			$this->_styles[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -166,7 +138,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	 */
 	public function addStyleAttribute($name,$value)
 	{
-		$this->_styles[$name]=isset(self::$_styleEncode[$name])?THttpUtility::htmlEncode($value):$value;
+		$this->_styles[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -175,7 +147,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	 */
 	public function removeStyleAttribute($name)
 	{
-		unset($this->_styles[$name]);
+		unset($this->_styles[THttpUtility::htmlStrip($name)]);
 	}
 
 	/**
