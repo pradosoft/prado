@@ -130,8 +130,8 @@ class TDbConnection extends TComponent
 	 */
 	public function __sleep()
 	{
-		$this->close();
-		return array_keys(get_object_vars($this));
+//		$this->close(); - DO NOT CLOSE the current connection as serializing doesn't neccessarily mean we don't this connection anymore in the current session
+		return array_diff(parent::__sleep(),array("\0TDbConnection\0_pdo","\0TDbConnection\0_active")); 
 	}
 
 	/**

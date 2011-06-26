@@ -292,6 +292,12 @@ class TSqlMapStatement extends TComponent
 		if(strlen($type= $this->getResultClass()) > 0)
 			return $this->createInstanceOf($registry,$type,$row);
 	}
+
+	public function __sleep()
+	{
+		return array_diff(parent::__sleep(),array("\0TSqlMapStatement\0_resultMap"));
+	}
+
 }
 
 /**

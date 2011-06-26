@@ -58,8 +58,7 @@ class TDbCommand extends TComponent
 	 */
 	public function __sleep()
 	{
-		$this->_statement=null;
-		return array_keys(get_object_vars($this));
+		return array_diff(parent::__sleep(),array("\0TDbCommand\0_statement")); 
 	}
 
 	/**

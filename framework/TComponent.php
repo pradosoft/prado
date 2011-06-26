@@ -451,6 +451,31 @@ class TComponent
 	public function addParsedObject($object)
 	{
 	}
+
+	/**
+	 * Do not call this method. This is a PHP magic method that will be called automatically
+	 * after any unserialization; it can perform reinitialization tasks on the object.
+	 */
+	public function __wakeup()
+	{
+		if ($this->_e===null)
+			$this->_e = array();
+	}
+
+	/**
+	 * Returns an array with the names of all variables of that object that should be serialized.
+	 * Do not call this method. This is a PHP magic method that will be called automatically
+	 * prior to any serialization.
+	 */
+	public function __sleep()
+	{
+		$a = (array)$this;
+		$a = array_keys($a);
+		$exprops = array(); 
+		if ($this->_e===array())
+			$exprops[] = "\0TComponent\0_e";
+		return array_diff($a,$exprops);
+	}
 }
 
 /**

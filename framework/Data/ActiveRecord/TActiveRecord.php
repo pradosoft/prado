@@ -203,8 +203,7 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function __sleep()
 	{
-		$this->_connection=null;
-		return array_keys(get_object_vars($this));
+		return array_diff(parent::__sleep(),array("\0*\0_connection"));
 	}
 
 	/**
