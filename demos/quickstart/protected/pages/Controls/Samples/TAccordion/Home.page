@@ -1,8 +1,14 @@
 <com:TContent ID="body">
 <h1>TAccordion Samples</h1>
 
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A simple TAccordion populated with other controls:
+</td><td class="sampleaction">
+
 <com:TAccordion>
-  <com:TAccordionView ID="View1" Caption="View 1" Height="200px">
+  <com:TAccordionView ID="View1" Caption="View 1" >
     <h2>View 1</h2>
   </com:TAccordionView>
 
@@ -24,5 +30,53 @@
     <com:TButton Text="Submit" />
   </com:TAccordionView>
 </com:TAccordion>
+
+</td></tr>
+
+<tr><td class="samplenote">
+Two nested TAccordion; the external one has AnimationDuration=0, while the internal one has a fixed ViewHeight=100
+</td><td class="sampleaction">
+
+<com:TAccordion AnimationDuration="0" >
+	<com:TAccordionView Caption="View 1">
+		<p>
+		Contents for view 1: a nested TAccordion control
+		</p>
+		<com:TAccordion ViewHeight="100" >
+			<com:TAccordionView Caption="Nested View A">
+				Contents for nested view A
+			</com:TAccordionView>
+			<com:TAccordionView Caption="Nested View B">
+				Contents for nested view B
+			</com:TAccordionView>
+			<com:TAccordionView Caption="Nested View C">
+				Contents for nested view C
+			</com:TAccordionView>
+			<com:TAccordionView Caption="Nested View D">
+				Contents for nested view D
+			</com:TAccordionView>
+		</com:TAccordion>
+		<p>
+			More content for view 1
+		</p>
+	</com:TAccordionView>
+
+	<com:TAccordionView Caption="View 2">
+		<p>
+			Contents for view 2: a callback button
+		</p>
+		<com:TActiveButton ID="linkExecute" Text="Execute transaction" OnClick="executeTransaction" />
+	</com:TAccordionView>
+
+	<com:TAccordionView Caption="View 3">
+		<p>
+			Contents for view 3: a postback button
+		</p>
+		<com:TButton ID="cmd2" Text="Execute postback" OnClick="executeTransaction" />
+	</com:TAccordionView>
+
+</com:TAccordion>
+<br />
+A label to check postback/callback results: <com:TActiveLabel ID="lab1" />
 
 </com:TContent>

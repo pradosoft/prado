@@ -7,143 +7,146 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-if (typeof Effect == 'undefined')
-  throw("You must have the script.aculo.us Effect library to use this accordion");
-
 Prado.WebUI.TAccordion = Class.create();
 Prado.WebUI.TAccordion.prototype =
 {
-    initialize : function(options)
-    {
-	this.element = $(options.ID);
-	this.onInit(options);
-	Prado.Registry.set(options.ID, this);
-    },
+	initialize : function(options)
+	{
+		this.element = $(options.ID);
+		this.onInit(options);
+		Prado.Registry.set(options.ID, this);
+	},
 
-    onInit : function(options)
-    {
-        this.accordion = $(options.ID);
-        this.options = options;
-        this.contents = this.accordion.select('div.'+this.options.contentClass);
-        this.isAnimating = false;
-        this.current = this.options.defaultExpandedCount ? this.contents[this.options.defaultExpandedCount-1] : this.contents[0];
-        this.toExpand = null;
+    	onInit : function(options)
+	{
+		this.accordion = $(options.ID);
+		this.options = options;
+		this.hiddenField = $(options.ID+'_1');
 
-        if (options.maxHeight)
-                this.maxHeight = options.maxHeight;
-        else
-                {
-                        this.maxHeight = 0;
-                        this.checkMaxHeight();
-                }
-            
-        this.initialHide();
-        this.attachInitialMaxHeight();
+		if (this.options.maxHeight)
+		{
+			this.maxHeight = this.options.maxHeight;
+		} else {
+			this.maxHeight = 0;
+			this.checkMaxHeight();
+		}
 
-        var clickHandler =  this.clickHandler.bindAsEventListener(this);
-        this.accordion.observe('click', clickHandler);
-    },
+		this.currentView = null;
+		this.oldView = null;
 
-    expand: function(el) {
-        this.toExpand = el.next('div.'+this.options.contentClass);
-        if(this.current != this.toExpand){
-			this.toExpand.show();
-            this.animate();
-        }
-    },
+		var i = 0;
+		for(var view in this.options.Views)
+		{
+			var header = $(view+'_0');
+			if(header)
+			{
+				Event.stopObserving(header, "click");
+				Event.observe(header, "click", this.elementClicked.bindEvent(this,view));
+				if(this.hiddenField.value == i)
+				{
+					this.currentView = view;
+					if($(this.currentView).getHeight() != this.maxHeight)
+						$(this.currentView).setStyle({height: this.maxHeight+"px"});
+				}
+			}
+			i++;
+		}
+	},
 
-    checkMaxHeight: function() {
-        for(var i=0; i<this.contents.length; i++) {
-            if(this.contents[i].getHeight() > this.maxHeight) {
-                this.maxHeight = this.contents[i].getHeight();
-            }
-        }
-    },
+	checkMaxHeight: function()
+	{
+		for(var viewID in this.options.Views)
+		{
+			var view = $(viewID);
+			if(view.getHeight() > this.maxHeight)
+ 				this.maxHeight = view.getHeight();
+		}
+	},
 
-    attachInitialMaxHeight: function() {
-	this.current.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
-        if(this.current.getHeight() != this.maxHeight) this.current.setStyle({height: this.maxHeight+"px"});
-    },
+	elementClicked : function(event,viewID)
+	{
+		var i = 0;
+		for(var index in this.options.Views)
+		{
+			if ($(index))
+			{
+				var header = $(index+'_0');
+				if(index == viewID)
+				{
+					this.oldView = this.currentView;
+					this.currentView = index;
 
-    clickHandler: function(e) {
-        var el = e.element();
-        if(el.hasClassName(this.options.toggleClass) && !this.isAnimating) {
-            this.expand(el);
-        }
-    },
+					this.hiddenField.value=i;
+				}
+			}
+			i++;
+		}
+		if(this.oldView != this.currentView)
+		{
+			if(this.options.Duration > 0)
+			{
+				this.animate();
+			} else {
+				$(this.currentView).setStyle({ height: this.maxHeight+"px" });
+				$(this.currentView).show();
+				$(this.oldView).hide();
+				
+				var oldHeader = $(this.oldView+'_0');
+				var currentHeader = $(this.currentView+'_0');
+				oldHeader.className=this.options.HeaderCssClass;
+				currentHeader.className=this.options.ActiveHeaderCssClass;
+			}
+		}
+	},
 
-    initialHide: function(){
-        for(var i=0; i<this.contents.length; i++){
-            if(this.contents[i] != this.current) {
-                this.contents[i].hide();
-                this.contents[i].setStyle({height: 0});
-            }
-        }
-    },
+	animate: function() {
+		var effects = new Array();
+		var options = {
+			sync: true,
+			scaleFrom: 0,
+			scaleContent: false,
+			transition: Effect.Transitions.sinoidal,
+			scaleMode: {
+				originalHeight: this.maxHeight,
+				originalWidth: this.accordion.getWidth()
+			},
+			scaleX: false,
+			scaleY: true
+		};
 
+		effects.push(new Effect.Scale(this.currentView, 100, options));
 
-    enableOverflows: function(enable) {
-        if (enable) val = ''; else val = 'hidden';
-        this.current.style.overflow = val;
-        this.toExpand.style.overflow = val;
-    },
+		options = {
+			sync: true,
+			scaleContent: false,
+			transition: Effect.Transitions.sinoidal,
+			scaleX: false,
+			scaleY: true
+		};
 
-    animate: function() {
-        var effects = new Array();
-        var options = {
-            sync: true,
-            scaleFrom: 0,
-            scaleContent: false,
-            transition: Effect.Transitions.sinoidal,
-            scaleMode: {
-                originalHeight: this.maxHeight,
-                originalWidth: this.accordion.getWidth()
-            },
-            scaleX: false,
-            scaleY: true
-        };
+		effects.push(new Effect.Scale(this.oldView, 0, options));
 
-        effects.push(new Effect.Scale(this.toExpand, 100, options));
+		var oldHeader = $(this.oldView+'_0');
+		var currentHeader = $(this.currentView+'_0');
 
-        options = {
-            sync: true,
-            scaleContent: false,
-            transition: Effect.Transitions.sinoidal,
-            scaleX: false,
-            scaleY: true
-        };
+		new Effect.Parallel(effects, {
+			duration: this.options.Duration,
+			fps: 35,
+			queue: {
+				position: 'end',
+				scope: 'accordion'
+			},
+			beforeStart: function() {
+				$(this.currentView).setStyle({ height: "0px" });
+				$(this.currentView).show();
 
-        effects.push(new Effect.Scale(this.current, 0, options));
-
-        var myDuration = 0.75;
-
-        new Effect.Parallel(effects, {
-            duration: myDuration,
-            fps: 35,
-            queue: {
-                position: 'end',
-                scope: 'accordion'
-            },
-            beforeStart: function() {
-                this.isAnimating = true;
-                this.enableOverflows(false);
-                this.current.previous('div.'+this.options.toggleClass).removeClassName(this.options.toggleActive);
-                this.toExpand.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
-            }.bind(this),
-            afterFinish: function() {
-                this.current.hide();
-                this.toExpand.setStyle({ height: this.maxHeight+"px" });
-                this.current = this.toExpand;
-                this.isAnimating = false;
-                this.enableOverflows(true);
-            }.bind(this)
-        });
-    }
-
+				oldHeader.className=this.options.HeaderCssClass;
+				currentHeader.className=this.options.ActiveHeaderCssClass;
+			}.bind(this),
+			afterFinish: function() {
+				$(this.oldView).hide();
+				$(this.currentView).setStyle({ height: this.maxHeight+"px" });
+			}.bind(this)
+		});
+	}
 };
-
-/*
-document.observe("dom:loaded", function(){
-    accordion = new Accordion("test-accordion", 2);
-})
-*/
