@@ -20,6 +20,10 @@
 To use <tt>TSafeHtml</tt>, simply enclose the content to be secured within the <tt>TSafeHtml</tt> component tag in a template. The content may consist of both static text and PRADO controls. If the latter, the rendering result of the controls will be secured.
 </p>
 
+<p class="block-content">
+If the content is encoded in UTF-7, you'll need to enable the <tt>RepackUTF7</tt> property to ensure the contents gets parsed correctly.
+</p>
+
 <com:RunBar PagePath="Controls.Samples.TSafeHtml.Home" />
 
 </com:TContent>

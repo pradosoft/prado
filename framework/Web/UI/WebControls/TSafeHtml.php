@@ -14,7 +14,7 @@
  * TSafeHtml class
  *
  * TSafeHtml is a control that strips down all potentially dangerous
- * HTML content. It is mainly a wrapper of {@link http://pixel-apes.com/safehtml/ SafeHTML}
+ * HTML content. It is mainly a wrapper of {@link http://pear.php.net/package/SafeHTML SafeHTML}
  * project. According to the SafeHTML project, it tries to safeguard
  * the following situations when the string is to be displayed to end-users,
  * - Opening tag without its closing tag
@@ -30,6 +30,9 @@
  * To use TSafeHtml, simply enclose the content to be secured within
  * the body of TSafeHtml in a template.
  *
+ * If the content is encoded in UTF-7, you'll need to enable the  {@link setRepackUTF7 RepackUTF7} property
+ * to ensure the contents gets parsed correctly.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -37,6 +40,24 @@
  */
 class TSafeHtml extends TControl
 {
+	/**
+	 * Sets whether to parse the contents as UTF-7. This property enables a routine
+	 * that repacks the content as UTF-7 before parsing it. Defaults to false.
+	 * @param boolean whether to parse the contents as UTF-7
+	 */
+	public function setRepackUTF7($value)
+	{
+		$this->setViewState('RepackUTF7',TPropertyValue::ensureBoolean($value),false);
+	}
+
+	/**
+	 * @return boolean whether to parse the contents as UTF-7. Defaults to false.
+	 */
+	public function getRepackUTF7()
+	{
+		return $this->getViewState('RepackUTF7',false);
+	}
+
 	/**
 	 * Renders body content.
 	 * This method overrides parent implementation by removing
@@ -58,7 +79,7 @@ class TSafeHtml extends TControl
 	protected function parseSafeHtml($text)
 	{
 		$renderer = Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
-		return $renderer->parse($text);
+		return $renderer->parse($text, $this->getRepackUTF7());
 	}
 }
 

@@ -20,6 +20,14 @@ Safeguard the control rendering results:
 </com:TSafeHtml>
 </td></tr>
 
+<tr><td class="samplenote">
+Safeguard and UTF-7 string:
+</td><td class="sampleaction">
+<com:TSafeHtml RepackUTF7="true" >
+  <com:TLiteral Text="+ADw-script+AD4-alert(document.location)+ADw-/script+AD4-" />
+</com:TSafeHtml>
+</td></tr>
+
 </table>
 
 </com:TContent>
