@@ -439,16 +439,15 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		$options['ID']=$this->getClientID();
 		$options['ActiveCssClass']=$this->getActiveTabCssClass();
 		$options['NormalCssClass']=$this->getTabCssClass();
-		$views='';
+		$viewIDs=array();
+		$viewVis=array();
 		foreach($this->getViews() as $view)
 		{
-			if($views!='') 
-				$views.=', ';
-			$views.= '"'.$view->getClientID().'":'.($view->getVisible() ? '1': '0' );
+			$viewIDs[]=$view->getClientID();
+			$viewVis[]=$view->getVisible();
 		}
-
-		$options['Views']='{'.$views.='}';
-		$viewIDs=array();
+		$options['Views']='[\''.implode('\',\'',$viewIDs).'\']';
+		$options['ViewsVis']='[\''.implode('\',\'',$viewVis).'\']';
 
 		return $options;
 	}
