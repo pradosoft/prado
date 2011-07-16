@@ -122,9 +122,8 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	 */
 	public function get($id)
 	{
-		if(($value=$this->getValue($this->generateUniqueKey($id)))!==false)
+		if(($data=$this->getValue($this->generateUniqueKey($id)))!==false)
 		{
-			$data=unserialize($value);
 			if(!is_array($data))
 				return false;
 			if(!($data[1] instanceof ICacheDependency) || !$data[1]->getHasChanged())
@@ -152,7 +151,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 		else
 		{
 			$data=array($value,$dependency);
-			return $this->setValue($this->generateUniqueKey($id),serialize($data),$expire);
+			return $this->setValue($this->generateUniqueKey($id),$data,$expire);
 		}
 	}
 
@@ -170,7 +169,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 		if(empty($value) && $expire === 0)
 			return false;
 		$data=array($value,$dependency);
-		return $this->addValue($this->generateUniqueKey($id),serialize($data),$expire);
+		return $this->addValue($this->generateUniqueKey($id),$data,$expire);
 	}
 
 	/**
@@ -252,7 +251,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 		return $this->get($id) !== false;
 	}
 
-	/*
+	/**
 	 * Retrieves the value from cache with a specified key.
 	 * This method is required by the interface ArrayAccess.
 	 * @param string a key identifying the cached value
@@ -263,7 +262,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 		return $this->get($id);
 	}
 
-	/*
+	/**
 	 * Stores the value identified by a key into cache.
 	 * If the cache already contains such a key, the existing value will be
 	 * replaced with the new ones. To add expiration and dependencies, use the set() method.
@@ -276,7 +275,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 		$this->set($id, $value);
 	}
 
-	/*
+	/**
 	 * Deletes the value with the specified key from cache
 	 * This method is required by the interface ArrayAccess.
 	 * @param string the key of the value to be deleted

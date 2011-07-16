@@ -199,8 +199,7 @@ class PradoBase
 	 */
 	public static function serialize($data)
 	{
-		$arr[0]=$data;
-		return serialize($arr);
+		return serialize($data);
 	}
 
 	/**
@@ -212,8 +211,7 @@ class PradoBase
 	 */
 	public static function unserialize($str)
 	{
-		$arr=unserialize($str);
-		return isset($arr[0])?$arr[0]:null;
+		return unserialize($str);
 	}
 
 	/**

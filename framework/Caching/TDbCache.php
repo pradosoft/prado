@@ -466,12 +466,12 @@ class TDbCache extends TCache
 		try {
 			$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
 			$command=$this->getDbConnection()->createCommand($sql);
-			return $command->queryScalar();
+			return Prado::unserialize($command->queryScalar());
 		}
 		catch(Exception $e)
 		{
 			$this->initializeCache(true);
-			return $command->queryScalar();
+			return Prado::unserialize($command->queryScalar());
 		}
 	}
 
@@ -508,7 +508,7 @@ class TDbCache extends TCache
 		{
 			$command=$this->getDbConnection()->createCommand($sql);
 			$command->bindValue(':key',$key,PDO::PARAM_STR);
-			$command->bindValue(':value',$value,PDO::PARAM_LOB);
+			$command->bindValue(':value',Prado::serialize($value),PDO::PARAM_LOB);
 			$command->execute();
 			return true;
 		}

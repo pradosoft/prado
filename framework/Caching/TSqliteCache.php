@@ -18,7 +18,7 @@
  * To use this module, the sqlite PHP extension must be loaded. Note, Sqlite extension
  * is no longer loaded by default since PHP 5.1.
  *
- * Sine PRADO v3.1.0, a new DB-based cache module called {@link TDbCache}
+ * Since PRADO v3.1.0, a new DB-based cache module called {@link TDbCache}
  * is provided. If you have PDO extension installed, you may consider using
  * the new cache module instead as it allows you to use different database
  * to store the cached data.
@@ -162,7 +162,7 @@ class TSqliteCache extends TCache
 	{
 		$sql='SELECT value FROM '.self::CACHE_TABLE.' WHERE key=\''.$key.'\' AND (expire=0 OR expire>'.time().') LIMIT 1';
 		if(($ret=$this->_db->query($sql))!=false && ($row=$ret->fetch(SQLITE_ASSOC))!==false)
-			return $row['value'];
+			return Prado::unserialize($row['value']);
 		else
 			return false;
 	}
@@ -179,7 +179,7 @@ class TSqliteCache extends TCache
 	protected function setValue($key,$value,$expire)
 	{
 		$expire=($expire<=0)?0:time()+$expire;
-		$sql='REPLACE INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string($value).'\','.$expire.')';
+		$sql='REPLACE INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string(Prado::serialize($value)).'\','.$expire.')';
 		return $this->_db->query($sql)!==false;
 	}
 
@@ -195,7 +195,7 @@ class TSqliteCache extends TCache
 	protected function addValue($key,$value,$expire)
 	{
 		$expire=($expire<=0)?0:time()+$expire;
-		$sql='INSERT INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string($value).'\','.$expire.')';
+		$sql='INSERT INTO '.self::CACHE_TABLE.' VALUES(\''.$key.'\',\''.sqlite_escape_string(Prado::serialize($value)).'\','.$expire.')';
 		return @$this->_db->query($sql)!==false;
 	}
 
