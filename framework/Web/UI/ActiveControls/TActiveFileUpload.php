@@ -4,6 +4,7 @@
  * 
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
+ * @author Gabor Berczi <gabor.berczi@devworx.hu> (issue 349 remote vulnerability fix)
  * @version $Id$
  * @package System.Web.UI.ActiveControls
  */
@@ -103,20 +104,30 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			parent::saveAs($localName);
 			
 			$filename=addslashes($this->getFileName());
+			
+			
+			$params = new TActiveFileUploadCallbackParams;
+			$params->localName = $localName;
+			$params->fileName = $filename;
+			$params->fileSize = $this->getFileSize();
+			$params->fileType = $this->getFileType();
+			$params->errorCode = $this->getErrorCode();
+
 			// return some javascript to display a completion status.
 			echo <<<EOS
 <script language="Javascript">
 	Options = new Object();
 	Options.clientID = '{$this->getClientID()}';
 	Options.targetID = '{$this->_target->getUniqueID()}';
-	Options.localName = '$localName';
-	Options.fileName = '{$filename}';
-	Options.fileSize = '{$this->getFileSize()}';
-	Options.fileType = '{$this->getFileType()}';
-	Options.errorCode = '{$this->getErrorCode()}';
+	Options.fileName = '{$params->fileName}';
+	Options.fileSize = '{$params->fileSize}';
+	Options.fileType = '{$params->fileType}';
+	Options.errorCode = '{$params->errorCode}';
+	Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
 	parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
 </script>
 EOS;
+			
 			exit();
 		}
 	}
@@ -165,6 +176,11 @@ EOS;
 	 */
 	public function onInit($sender){
 		parent::onInit($sender);
+		
+		if (!Prado::getApplication()->getCache())
+		  if (!Prado::getApplication()->getSecurityManager())
+			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+		
 		if (!is_writable(Prado::getPathOfNamespace($this->getTempPath()))){
 			throw new TInvalidDataValueException("activefileupload_temppath_invalid", $this->getTempPath());
 		}
@@ -180,11 +196,14 @@ EOS;
  	public function raiseCallbackEvent($param){
  		$cp = $param->getCallbackParameter();
 		if ($key = $cp->targetID == $this->_target->getUniqueID()){
-			$_FILES[$key]['name'] = $cp->fileName;
-			$_FILES[$key]['size'] = intval($cp->fileSize);
-			$_FILES[$key]['type'] = $cp->fileType;
-			$_FILES[$key]['error'] = intval($cp->errorCode);
-			$_FILES[$key]['tmp_name'] = $cp->localName;
+		
+			$params = $this->popParamsByToken($cp->callbackToken);
+		
+			$_FILES[$key]['name'] = $params->fileName;
+			$_FILES[$key]['size'] = intval($params->fileSize);
+			$_FILES[$key]['type'] = $params->fileType;
+			$_FILES[$key]['error'] = intval($params->errorCode);
+			$_FILES[$key]['tmp_name'] = $params->localName;
 			$this->loadPostData($key, null);
 			
 			$this->raiseEvent('OnFileUpload', $this, $param);
@@ -200,6 +219,49 @@ EOS;
 	{
 		$this->onFileUpload($this->getPage()->getRequest()->itemAt('tempActiveUploadField'));
 	}
+	
+	protected function pushParamsAndGetToken(TActiveFileUploadCallbackParams $params)
+	{
+		if ($cache = Prado::getApplication()->getCache())
+			{
+				// this is the most secure method, file info can't be forged from client side, no matter what
+				$token = md5('TActiveFileUpload::Params::'.$this->ClientID.'::'+rand(1000*1000,9999*1000));
+				$cache->set($token, serialize($params), 5*60); // expire in 5 minutes - the callback should arrive back in seconds, actually
+			}
+		else
+		if ($mgr = Prado::getApplication()->getSecurityManager())
+			{
+				// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
+				$token = base64_encode($mgr->encrypt(serialize($params)));
+			}
+		else
+			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+			
+		return $token;
+	}
+	
+	protected function popParamsByToken($token)
+	{
+		if ($cache = Prado::getApplication()->getCache())
+			{
+				$v = $cache->get($token);
+				assert($v!='');
+				$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
+				$params = unserialize($v);
+			}
+		else
+		if ($mgr = Prado::getApplication()->getSecurityManager())
+			{
+				$v = $mgr->decrypt(base64_decode($token));
+				$params = unserialize($v);
+			}
+		else
+			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+
+		assert($params instanceof TActiveFileUploadCallbackParams);
+		
+		return $params;
+	}
 
 	/**
 	 * Publish the javascript
@@ -214,16 +276,24 @@ EOS;
 			$this->_errorCode = UPLOAD_ERR_FORM_SIZE;
 			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
 			$filename = addslashes($this->getFileName());
+			
+			$params = new TActiveFileUploadCallbackParams;
+			$params->localName = $localName;
+			$params->fileName = $fileName;
+			$params->fileSize = $this->getFileSize();
+			$params->fileType = $this->getFileType();
+			$params->errorCode = $this->getErrorCode();
+			
 			echo <<<EOS
 <script language="Javascript">
 	Options = new Object();
 	Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
 	Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
-	Options.localName = '{$localName}';
-	Options.fileName = '{$fileName}';
-	Options.fileSize = '{$this->getFileSize()}';
-	Options.fileType = '{$this->getFileType()}';
-	Options.errorCode = '{$this->getErrorCode()}';
+	Options.fileName = '{$params->fileName}';
+	Options.fileSize = '{$params->fileSize}';
+	Options.fileType = '{$params->fileType}';
+	Options.errorCode = '{$params->errorCode}';
+	Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
 	parent.Prado.WebUI.TactiveFileUpload.onFileUpload(Options);
 </script>
 EOS;
@@ -367,4 +437,13 @@ EOS;
 		$this->ensureChildControls();
 		return $this->_busy;
 	}
+}
+
+class TActiveFileUploadCallbackParams
+{
+	public $localName;
+	public $fileName;
+	public $fileSize;
+	public $fileType;
+	public $errorCode;
 }
