@@ -3,6 +3,7 @@
  * TActivePageAdapter, TCallbackErrorHandler and TInvalidCallbackException class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2011 PradoSoft
  * @license http://www.pradosoft.com/license/
@@ -23,6 +24,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * Callback request handler.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @version $Id$
  * @package System.Web.UI.ActiveControls
  * @since 3.1
@@ -45,6 +47,18 @@ class TActivePageAdapter extends TControlAdapter
 	 * Callback page state header name.
 	 */
 	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
+	/**
+	 * Script list header name.
+	 */
+	const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
+	/**
+	 * Stylesheet list header name.
+	 */
+	const CALLBACK_STYLESHEETLIST_HEADER = 'X-PRADO-STYLESHEETLIST';
+	/**
+	 * Hidden field list header name.
+	 */
+	const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
 
 	/**
 	 * Callback redirect url header name.
@@ -189,6 +203,24 @@ class TActivePageAdapter extends TControlAdapter
 		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
 		//$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
+
+
+		$cs = $this->Page->getClientScript();
+
+		// collect all stylesheet file references
+		$stylesheets = $cs->getStyleSheetUrls();
+		if (count($stylesheets)>0)
+		$this->appendContentPart($response, self::CALLBACK_STYLESHEETLIST_HEADER, TJavaScript::jsonEncode($stylesheets));
+
+		// collect all script file references
+		$scripts = $cs->getScriptUrls();
+		if (count($scripts)>0)
+		$this->appendContentPart($response, self::CALLBACK_SCRIPTLIST_HEADER, TJavaScript::jsonEncode($scripts));
+
+		// collect all hidden field references
+		$fields = $cs->getHiddenFields();
+		if (count($fields)>0)
+		$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
 	}
 
 	/**

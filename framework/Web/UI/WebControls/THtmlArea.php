@@ -402,6 +402,8 @@ class THtmlArea extends TTextBox
 			$options['debug'] = false;
 			$js = TJavaScript::encode($options,true,true);
 			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
+			if ($this->getPage()->getIsCallback())
+				$script.= 'tinymce.dom.Event._pageInit();';
 			$scripts->registerEndScript($key, $script);
 		}
 	}
@@ -420,7 +422,7 @@ class THtmlArea extends TTextBox
 	{
 		$scripts = $this->getPage()->getClientScript();
 		$options = TJavaScript::encode($this->getEditorOptions(),true,true); // Force encoding of empty strings
-		$script = "if(typeof(tinyMCE)!='undefined'){ tinyMCE.init($options); }";
+		$script = "if(typeof(tinyMCE)!='undefined')\r\n{ tinyMCE.init($options); }";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
 

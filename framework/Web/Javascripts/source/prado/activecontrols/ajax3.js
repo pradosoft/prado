@@ -26,32 +26,53 @@ Object.extend(Prado.AjaxRequest.prototype,
 
 	    if (event == 'Complete')
 	    {
-			var redirectUrl = this.getBodyContentPart(Prado.CallbackRequest.REDIRECT_HEADER);
-	    	if(redirectUrl)
+		var redirectUrl = this.getBodyContentPart(Prado.CallbackRequest.REDIRECT_HEADER);
+		if (redirectUrl)
 	    		document.location.href = redirectUrl;
 
-	      if ((this.getHeader('Content-type') || '').match(/^text\/javascript/i))
-	      {
-	        try
+		if ((this.getHeader('Content-type') || '').match(/^text\/javascript/i))
+		{
+	        	try
 			{
-	           json = eval('(' + transport.responseText + ')');
-	        }catch (e)
+	          		json = eval('(' + transport.responseText + ')');
+		        }
+			catch (e)
 			{
 				if(typeof(json) == "string")
 					json = Prado.CallbackRequest.decode(result);
 			}
-	      }
+		}
 
-	      try
-	      {
-	      	Prado.CallbackRequest.updatePageState(this,transport);
-			Ajax.Responders.dispatch('on' + transport.status, this, transport, json);
-			Prado.CallbackRequest.dispatchActions(transport,this.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER));
+		try
+		{
+			Prado.CallbackRequest.updatePageState(this,transport);
+			Prado.CallbackRequest.checkHiddenFields(this,transport);
+			var obj = this;
+			Prado.CallbackRequest.loadAssets(this,transport, function()
 
-	        (this.options['on' + this.transport.status]
-	         || this.options['on' + (this.success() ? 'Success' : 'Failure')]
-	         || Prototype.emptyFunction)(this, json);
-	  	      } catch (e) {
+				{
+					try
+					{
+						Ajax.Responders.dispatch('on' + transport.status, obj, transport, json);
+						Prado.CallbackRequest.dispatchActions(transport,obj.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER));
+
+	        				(
+							obj.options['on' + obj.transport.status]
+	         					|| 
+							obj.options['on' + (obj.success() ? 'Success' : 'Failure')]
+	         					|| 
+							Prototype.emptyFunction
+						) (obj, json);
+					}
+					catch (e)
+					{
+	        				obj.dispatchException(e);
+					}
+				}
+			);
+	      } 
+	      catch (e) 
+              {
 	        this.dispatchException(e);
 	      }
 	    }
@@ -150,6 +171,18 @@ Object.extend(Prado.CallbackRequest,
 	 * Page state header name.
 	 */
 	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
+	/**
+	 * Script list header name.
+	 */
+	SCRIPTLIST_HEADER : 'X-PRADO-SCRIPTLIST',
+	/**
+	 * Stylesheet list header name.
+	 */
+	STYLESHEETLIST_HEADER : 'X-PRADO-STYLESHEETLIST',
+	/**
+	 * Hidden field list header name.
+	 */
+	HIDDENFIELDLIST_HEADER : 'X-PRADO-HIDDENFIELDLIST',
 
 	REDIRECT_HEADER : 'X-PRADO-REDIRECT',
 
@@ -342,6 +375,181 @@ Object.extend(Prado.CallbackRequest,
 		}
 		//else
 			//Logger.warn('current request ' + self.currentRequest.id);
+	},
+
+	/*
+	 * Checks which scripts are used by the response and ensures they're loaded 
+	 */
+	loadScripts : function(request, transport, callback)
+	{
+		var self = Prado.CallbackRequest;
+		var data = request.getBodyContentPart(self.SCRIPTLIST_HEADER);
+		if (!this.ScriptsToLoad) this.ScriptsToLoad = new Array();
+		this.ScriptLoadFinishedCallback = callback;
+		if (typeof(data) == "string" && data.length > 0)
+		{
+		  	json = Prado.CallbackRequest.decode(data);
+			if(typeof(json) != "object")
+				Logger.warn("Invalid script list:"+data);
+			else
+				for(var key in json)
+					if (/^\d+$/.test(key))
+					{
+						var url = json[key];
+						if (!Prado.ScriptManager.isAssetLoaded(url))
+							this.ScriptsToLoad.push(url);
+					}
+		}
+		this.loadNextScript();
+	},
+
+	loadNextScript: function()
+	{
+		var done = (!this.ScriptsToLoad || (this.ScriptsToLoad.length==0));
+		if (!done)
+			{
+				var url = this.ScriptsToLoad.shift(); var obj = this;
+				if (
+					Prado.ScriptManager.ensureAssetIsLoaded(url, 
+						function() { 
+							obj.loadNextScript(); 
+						} 
+					)
+				   )
+				   this.loadNextScript();
+			}
+		else
+			{
+				if (this.ScriptLoadFinishedCallback)
+				{
+					var cb = this.ScriptLoadFinishedCallback;
+					this.ScriptLoadFinishedCallback = null;
+					cb();
+				}
+			}
+	},
+
+	loadStyleSheetsAsync : function(request, transport)
+	{
+		var self = Prado.CallbackRequest;
+		var data = request.getBodyContentPart(self.STYLESHEETLIST_HEADER);
+		if (typeof(data) == "string" && data.length > 0)
+		{
+		  	json = Prado.CallbackRequest.decode(data);
+			if(typeof(json) != "object")
+				Logger.warn("Invalid stylesheet list:"+data);
+			else
+				for(var key in json)
+					if (/^\d+$/.test(key))
+						Prado.StyleSheetManager.ensureAssetIsLoaded(json[key],null);
+		}
+	},
+
+	loadStyleSheets : function(request, transport, callback)
+	{
+		var self = Prado.CallbackRequest;
+		var data = request.getBodyContentPart(self.STYLESHEETLIST_HEADER);
+		if (!this.StyleSheetsToLoad) this.StyleSheetsToLoad = new Array();
+		this.StyleSheetLoadFinishedCallback = callback;
+		if (typeof(data) == "string" && data.length > 0)
+		{
+		  	json = Prado.CallbackRequest.decode(data);
+			if(typeof(json) != "object")
+				Logger.warn("Invalid stylesheet list:"+data);
+			else
+				for(var key in json)
+					if (/^\d+$/.test(key))
+					{
+						var url = json[key];
+						if (!Prado.StyleSheetManager.isAssetLoaded(url))
+							this.StyleSheetsToLoad.push(url);
+					}
+		}
+		this.loadNextStyleSheet();
+	},
+
+	loadNextStyleSheet: function()
+	{
+		var done = (!this.StyleSheetsToLoad || (this.StyleSheetsToLoad.length==0));
+		if (!done)
+			{
+				var url = this.StyleSheetsToLoad.shift(); var obj = this;
+				if (
+					Prado.StyleSheetManager.ensureAssetIsLoaded(url, 
+						function() { 
+							obj.loadNextStyleSheet(); 
+						} 
+					)
+				   )
+				   this.loadNextStyleSheet();
+			}
+		else
+			{
+				if (this.StyleSheetLoadFinishedCallback)
+				{
+					var cb = this.StyleSheetLoadFinishedCallback;
+					this.StyleSheetLoadFinishedCallback = null;
+					cb();
+				}
+			}
+	},
+
+	/*
+	 * Checks which assets are used by the response and ensures they're loaded 
+	 */
+	loadAssets : function(request, transport, callback)
+	{
+		/*
+
+		  ! This is the callback-based loader for stylesheets, which loads them one-by-one, and
+		  ! waits for all of them to be loaded before loading scripts and processing the rest of
+		  ! the callback.
+		  !
+		  ! That however is not neccessary, as stylesheets can be loaded asynchronously too.
+		  !
+		  ! I leave this code here for the case that this turns out to be a compatibility issue
+		  ! (for ex. I can imagine some scripts trying to access stylesheet properties and such)
+		  ! so if need can be reactivated. If you do so, comment out the async stylesheet loader below!
+
+		var obj = this;
+		this.loadStyleSheets(request,transport, function() {
+			obj.loadScripts(request,transport,callback);
+		});
+
+		*/
+
+		this.loadStyleSheetsAsync(request,transport);
+
+		this.loadScripts(request,transport,callback);
+	},
+
+	checkHiddenField: function(name, value)
+	{
+		var id = name.replace(':','_');
+		if (!document.getElementById(id))
+		{
+   			var field = document.createElement('input');
+			field.setAttribute('type','hidden');
+			field.id = id;
+			field.name = name;
+			field.value = value;
+			document.body.appendChild(field);
+		}
+	},
+
+	checkHiddenFields : function(request, transport)
+	{
+		var self = Prado.CallbackRequest;
+		var data = request.getBodyContentPart(self.HIDDENFIELDLIST_HEADER);
+		if (typeof(data) == "string" && data.length > 0)
+		{
+		  	json = Prado.CallbackRequest.decode(data);
+			if(typeof(json) != "object")
+				Logger.warn("Invalid hidden field list:"+data);
+			else
+				for(var key in json)
+					this.checkHiddenField(key,json[key]);
+		}
 	},
 
 	/**
@@ -722,3 +930,194 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 	request.dispatch();
 	return false;
 };
+
+
+
+/**
+ * Asset manager classes for lazy loading of scripts and stylesheets
+ * @author Gabor Berczi (gabor.berczi@devworx.hu)
+ */
+
+if (typeof(Prado.AssetManagerClass)=="undefined") {
+
+  Prado.AssetManagerClass = Class.create();
+  Prado.AssetManagerClass.prototype = {
+
+	initialize: function() {
+		this.loadedAssets = new Array();
+		this.discoverLoadedAssets();
+	},
+
+	
+	/**
+	 * Detect which assets are already loaded by page markup.
+	 * This is done by looking up all <asset> elements and registering the values of their src attributes.
+	 */
+	discoverLoadedAssets: function() {
+
+		// wait until document has finished loading to avoid javascript errors
+		if (!document.body) return; 
+
+		var assets = this.findAssetUrlsInMarkup();
+		for(var i=0;i<assets.length;i++)
+			this.markAssetAsLoaded(assets[i]);
+	},
+
+	/**
+	 * Extend url to a fully qualified url.
+	 * @param string url 
+	 */
+	makeFullUrl: function(url) {
+
+		// this is not intended to be a fully blown url "canonicalizator", 
+		// just to handle the most common and basic asset paths used by Prado
+
+		if (!this.baseUri) this.baseUri = window.location;
+
+		if (url.indexOf('://')==-1)
+		{
+			var a = document.createElement('a');
+			a.href = url;
+
+			if (a.href.indexOf('://')!=-1)
+				url = a.href;
+			else
+				{
+					var path = a.pathname;
+					if (path.substr(0,1)!='/') path = '/'+path;
+					url = this.baseUri.protocol+'//'+this.baseUri.host+path;
+				}
+		}
+		return url;
+	},
+
+	isAssetLoaded: function(url) {
+		url = this.makeFullUrl(url);
+		return (this.loadedAssets.indexOf(url)!=-1);
+	},
+
+	/**
+	 * Mark asset as being already loaded
+	 * @param string url of the asset 
+	 */
+	markAssetAsLoaded: function(url) {
+		url = this.makeFullUrl(url);
+		if (this.loadedAssets.indexOf(url)==-1)
+			this.loadedAssets.push(url);
+	},
+
+	createAssetReadyStateChangeFunction: function(url, element, callback, finalevent) {
+		return function() {
+			if (finalevent || (element.readyState == 'loaded') || (element.readyState == 'complete'))
+				callback(url,element);
+		};
+	},
+
+	/**
+	 * Load a new asset dynamically into the page.
+         * Please not thet loading is asynchronous and therefore you can't assume that
+	 * the asset is loaded and ready when returning from this function.
+	 * @param string url of the asset to load
+	 * @param callback will be called when the asset has loaded (or failed to load)
+	 */
+	startAssetLoad: function(url, callback) {
+
+		// create new <asset> element in page header
+		var asset = this.createAssetElement(url);
+
+		if (callback)
+		{
+			asset.onreadystatechange = this.createAssetReadyStateChangeFunction(url, asset, callback, false);
+			asset.onload = this.createAssetReadyStateChangeFunction(url, asset, callback, true);
+		}
+
+		var head = document.getElementsByTagName('head')[0];
+   		head.appendChild(asset);
+
+		// mark this asset as loaded
+		this.markAssetAsLoaded(url);
+
+		return (callback!=false);
+	},
+
+	/**
+	 * Check whether a asset is loaded into the page, and if itsn't, load it now
+	 * @param string url of the asset to check/load
+	 * @return boolean returns true if asset is already loaded, or false, if loading has just started. callback will be called when loading has finished.
+	 */
+	ensureAssetIsLoaded: function(url, callback) {
+		url = this.makeFullUrl(url);
+		if (this.loadedAssets.indexOf(url)==-1)
+			{
+				this.startAssetLoad(url,callback);
+				return false;
+			}
+		else
+			return true;
+	}
+
+  }
+
+};
+
+  Prado.ScriptManagerClass = Class.extend(Prado.AssetManagerClass, {
+
+	findAssetUrlsInMarkup: function() {
+		var urls = new Array();
+		var scripts = document.getElementsByTagName('script');
+		for(var i=0;i<scripts.length;i++)
+		{	
+			var e = scripts[i]; var src = e.src;
+			if (src!="")
+				urls.push(src);
+		}
+		return urls;
+	},
+
+	createAssetElement: function(url) {
+   		var asset = document.createElement('script');
+   		asset.type = 'text/javascript';
+   		asset.src = url;
+//		asset.async = false; // HTML5 only
+		return asset;
+	}
+
+  });
+
+  Prado.StyleSheetManagerClass = Class.extend(Prado.AssetManagerClass, {
+
+	findAssetUrlsInMarkup: function() {
+		var urls = new Array();
+		var scripts = document.getElementsByTagName('link');
+		for(var i=0;i<scripts.length;i++)
+		{	
+			var e = scripts[i]; var href = e.href;
+			if ((e.rel=="stylesheet") && (href.length>0))
+				urls.push(href);
+		}
+		return urls;
+	},
+
+	createAssetElement: function(url) {
+   		var asset = document.createElement('link');
+   		asset.rel = 'stylesheet';
+   		asset.media = 'screen';
+   		asset.setAttribute('type', 'text/css');
+   		asset.href = url;
+//		asset.async = false; // HTML5 only
+		return asset;
+	}
+
+  });
+
+  if (typeof(Prado.ScriptManager)=="undefined") Prado.ScriptManager = new Prado.ScriptManagerClass();
+  if (typeof(Prado.StyleSheetManager)=="undefined") Prado.StyleSheetManager = new Prado.StyleSheetManagerClass();
+
+  // make sure we scan for loaded scripts again when the page has been loaded
+  var discover = function() {
+	Prado.ScriptManager.discoverLoadedAssets();
+	Prado.StyleSheetManager.discoverLoadedAssets();
+  }
+  if (window.attachEvent) window.attachEvent('onload', discover);
+  else if (window.addEventListener) window.addEventListener('load', discover, false);
+

@@ -3,6 +3,7 @@
  * TClientScriptManager and TClientSideOptions class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2011 PradoSoft
  * @license http://www.pradosoft.com/license/
@@ -16,6 +17,7 @@
  * TClientScriptManager manages javascript and CSS stylesheets for a page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @version $Id$
  * @package System.Web.UI
  * @since 3.0
@@ -107,6 +109,16 @@ class TClientScriptManager extends TApplicationComponent
 			|| count($this->_headScriptFiles) || count($this->_headScripts);
 	}
 
+	public static function getPradoPackages()
+	{
+		return self::$_pradoPackages;
+	}
+
+	public static function getPradoScripts()
+	{
+		return self::$_pradoScripts;
+	}
+
 	/**
 	 * Registers Prado javascript by library name. See "Web/Javascripts/source/packages.php"
 	 * for library names.
@@ -189,6 +201,37 @@ class TClientScriptManager extends TApplicationComponent
 			}
 			$this->_renderedPradoScripts = $this->_registeredPradoScripts;
 		}
+	}
+
+	/**
+	 * Returns the URLs of all script files referenced on the page
+	 * @return array Combined list of all script urls used in the page
+	 */
+	public function getScriptUrls()
+	{
+		$scripts = array();
+
+		$packages=array_keys($this->_registeredPradoScripts);
+		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+		list($path,$baseUrl)=$this->getPackagePathUrl($base);
+		foreach ($packages as $p)
+		{
+			foreach (self::$_pradoScripts[$p] as $dep)
+			{
+				foreach (self::$_pradoPackages[$dep] as $script)
+				{
+					if (!in_array($url=$baseUrl.'/'.$script,$scripts))
+						$scripts[]=$url;
+				}
+			}
+		}
+
+		$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
+		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
+
+		$scripts = array_unique($scripts);
+
+		return $scripts;
 	}
 
 	/**
@@ -421,6 +464,23 @@ class TClientScriptManager extends TApplicationComponent
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheet',$params);
+	}
+
+	/**
+	 * Returns the URLs of all stylesheet files referenced on the page
+	 * @return array Combined list of all stylesheet urls used in the page
+	 */
+	public function getStyleSheetUrls()
+	{
+		$stylesheets = array_values($this->_styleSheets);
+
+		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)
+			if (substr($url,strlen($url)-4)=='.css')
+				$stylesheets[] = $url;
+
+		$stylesheets = array_unique($stylesheets);
+
+		return $stylesheets;
 	}
 
 	/**
@@ -712,6 +772,11 @@ class TClientScriptManager extends TApplicationComponent
 		}
 		if($str!=='')
 			$writer->write("<div style=\"visibility:hidden;\">\n".$str."</div>\n");
+	}
+
+	public function getHiddenFields()	
+	{
+		return $this->_hiddenFields;
 	}
 
 	/**

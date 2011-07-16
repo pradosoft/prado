@@ -182,7 +182,7 @@ class TAssetManager extends TModule
 	 * @return array List of published assets
 	 * @since 3.1.6
 	 */
-	protected function getPublished()
+	public function getPublished()
 	{
 		return $this->_published;
 	}
