@@ -139,7 +139,17 @@ class TActiveCustomValidator extends TCustomValidator
 		}
 	}
 
-		/**
+
+	/**
+	 * It's mandatory for the EnableClientScript to be activated or the TActiveCustomValidator won't work.
+	 * @return boolean whether client-side validation is enabled.
+	 */
+	public function getEnableClientScript()
+	{
+		return true;
+	}
+
+	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
 	 */
