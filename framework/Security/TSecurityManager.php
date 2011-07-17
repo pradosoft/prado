@@ -195,7 +195,7 @@ class TSecurityManager extends TModule
 		$decrypted = mdecrypt_generic($module, substr($data, $ivSize));
 		mcrypt_generic_deinit($module);
 		mcrypt_module_close($module);
-		return $decrypted;
+		return rtrim($decrypted, "\0");
 	}
 
 	/**

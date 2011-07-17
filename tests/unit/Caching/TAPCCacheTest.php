@@ -33,7 +33,7 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 
 	protected function tearDown() {
 		$this->app = null;
-		$this->cache = null;
+		self::$cache = null;
 	}
 
 	public function testInit() {

@@ -83,17 +83,26 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 	public function testEncryptDecrypt() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
-		$sec->setEncryptionKey ('aKey');
-		try {
-			$encrypted = $sec->encrypt('a text');
-		} catch (TNotSupportedException $e) {
-			self::markTestSkipped('mcrypt extension not loaded');
-			return;
+		// loop through different string size
+		$testText = md5('a text (not) full of entrophy');
+		for($i=1; $i<strlen($testText); $i++)
+		{
+			$sec->setEncryptionKey ('aKey');
+			$plainText = substr($testText, 0, $i);
+			try {
+				$encrypted = $sec->encrypt($plainText);
+			} catch (TNotSupportedException $e) {
+				self::markTestSkipped('mcrypt extension not loaded');
+				return;
+			}
+			$decrypted = $sec->decrypt($encrypted);
+
+			self::assertEquals($plainText,$decrypted);
+
+			// try change key 
+			$sec->setEncryptionKey ('anotherKey');
+			self::assertNotEquals($plainText, $sec->decrypt($encrypted));
 		}
-		self::assertEquals('a text', $sec->decrypt($encrypted));
-		// try change key 
-		$sec->setEncryptionKey ('anotherKey');
-		self::assertNotEquals('a text', $sec->decrypt($encrypted));
 	}
 	
 	

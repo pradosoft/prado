@@ -483,10 +483,12 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	if (isset ($_GET['page'])) unset ($_GET['page']); // Remove service from a previous test !
 	$_SERVER['REQUEST_URI'] = '/index.php/test/value2';
 	$_SERVER['SCRIPT_NAME'] = '/index.php';
-	$_SERVER['PHP_SELF'] = '/index.php';
+	$_SERVER['PHP_SELF'] = '/index.php/test/value2';
 	$_SERVER['QUERY_STRING'] = '';
+	$_SERVER['PATH_INFO'] = '/test/value2';
 	$request = new THttpRequest();
 	$request->setUrlManager('friendly-url');
+	$request->setUrlFormat(THttpRequestUrlFormat::Path);
 	$request->init(null);
 	$module->init ($config);
 	self::assertEquals('testService', $request->resolveRequest(array ('page', 'testService')));
