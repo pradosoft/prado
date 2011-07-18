@@ -173,9 +173,8 @@ class TCachePageStatePersister extends TComponent implements IPageStatePersister
 	 * Saves state in cache.
 	 * @param mixed state to be stored
 	 */
-	public function save($state)
+	public function save($data)
 	{
-		$data=serialize($state);
 		$timestamp=(string)microtime(true);
 		$key=$this->calculateKey($timestamp);
 		$this->getCache()->add($key,$data,$this->_timeout);
@@ -193,7 +192,7 @@ class TCachePageStatePersister extends TComponent implements IPageStatePersister
 		{
 			$key=$this->calculateKey($timestamp);
 			if(($data=$this->getCache()->get($key))!==false)
-				return unserialize($data);
+				return $data;
 		}
 		throw new THttpException(400,'cachepagestatepersister_pagestate_corrupted');
 	}
