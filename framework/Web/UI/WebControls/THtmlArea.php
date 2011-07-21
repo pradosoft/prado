@@ -413,6 +413,7 @@ class THtmlArea extends TTextBox
 		$scripts = $this->getPage()->getClientScript();
 		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
 			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
+		$scripts->registerPradoScript('htmlarea');
 	}
 
 	/**
@@ -422,7 +423,7 @@ class THtmlArea extends TTextBox
 	{
 		$scripts = $this->getPage()->getClientScript();
 		$options = TJavaScript::encode($this->getEditorOptions(),true,true); // Force encoding of empty strings
-		$script = "if(typeof(tinyMCE)!='undefined')\r\n{ tinyMCE.init($options); }";
+		$script = "new Prado.WebUI.THtmlArea($options)";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
 

@@ -78,6 +78,10 @@ $packages = array(
 		'prado/controls/accordion.js'
 	),
 
+	'htmlarea'=>array(
+		'prado/controls/htmlarea.js'
+	),
+
 );
 
 
@@ -98,6 +102,7 @@ $dependencies = array(
 		'activefileupload'		=> array('prado', 'effects', 'ajax', 'activefileupload'),
 		'dragdropextra'			=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prado', 'effects', 'accordion'),
+		'htmlarea'			=> array('prado', 'htmlarea'),
 );
 
 return array($packages, $dependencies);

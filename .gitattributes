@@ -2830,6 +2830,7 @@ framework/Web/Javascripts/source/prado/colorpicker/target_black.gif -text
 framework/Web/Javascripts/source/prado/colorpicker/target_white.gif -text
 framework/Web/Javascripts/source/prado/controls/accordion.js -text
 framework/Web/Javascripts/source/prado/controls/controls.js -text
+framework/Web/Javascripts/source/prado/controls/htmlarea.js -text
 framework/Web/Javascripts/source/prado/controls/keyboard.js -text
 framework/Web/Javascripts/source/prado/controls/slider.js -text
 framework/Web/Javascripts/source/prado/controls/tabpanel.js -text
