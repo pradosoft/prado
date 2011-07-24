@@ -65,6 +65,24 @@ Prado.WebUI.TAccordion.prototype =
 
 	elementClicked : function(event,viewID)
 	{
+		// dummy effect to force processing of click into the event queue
+		// is not actually supposed to change the appearance of the accordion
+		var obj = this;
+        	new Effect.Opacity(
+			this.element,
+			{ 
+				from: 1.0, to: 1.0, duration: 0.0, 
+            			queue: {
+		                	position: 'end',
+			                scope: 'accordion'
+			        },
+				afterFinish: function() { obj.processElementClick(event, viewID); } 
+			}
+		);
+	},
+
+	processElementClick : function(event,viewID)
+	{
 		var i = 0;
 		for(var index in this.options.Views)
 		{
@@ -103,6 +121,10 @@ Prado.WebUI.TAccordion.prototype =
 		var effects = new Array();
 		var options = {
 			sync: true,
+            		queue: {
+		                position: 'end',
+		                scope: 'accordion'
+		        },
 			scaleFrom: 0,
 			scaleContent: false,
 			transition: Effect.Transitions.sinoidal,
@@ -118,6 +140,10 @@ Prado.WebUI.TAccordion.prototype =
 
 		options = {
 			sync: true,
+            		queue: {
+                		position: 'end',
+		                scope: 'accordion'
+		        },
 			scaleContent: false,
 			transition: Effect.Transitions.sinoidal,
 			scaleX: false,
@@ -150,3 +176,4 @@ Prado.WebUI.TAccordion.prototype =
 		});
 	}
 };
+
