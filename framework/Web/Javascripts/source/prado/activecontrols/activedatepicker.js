@@ -87,5 +87,11 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		// Make callback request
 		var request = new Prado.CallbackRequest(this.options.EventTarget,this.options);
 		request.dispatch();
+	},
+	
+	// reimplement parent method to avoid handling mouse whell events,
+	// since they can cause floods of callback events
+	mouseWheelChange : function (event)
+	{
 	}
 }); 

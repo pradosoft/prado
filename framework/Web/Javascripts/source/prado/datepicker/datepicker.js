@@ -303,8 +303,10 @@ Prado.WebUI.TDatePicker.prototype =
 		Event.observe(this._monthSelect, "change", this.monthSelect.bindEvent(this));
 		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
 
-		// ie6 extension
+		// ie, opera
 		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));
+		// ff
+		Event.observe(this._calDiv, "DOMMouseScroll", this.mouseWheelChange.bindEvent(this));
 
 		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
 
@@ -448,15 +450,18 @@ Prado.WebUI.TDatePicker.prototype =
 		this.setYear(Form.Element.getValue(Event.element(ev)));
 	},
 
-	// ie6 extension
-	mouseWheelChange : function (e)
+	mouseWheelChange : function (event)
 	{
-		if (e == null) e = document.parentWindow.event;
-		var n = - e.wheelDelta / 120;
-		var d = this.newDate(this.selectedDate);
-		var m = d.getMonth() + n;
-		this.setMonth(m);
+		var delta = 0;
+		if (!event) event = document.parentWindow.event;
+		if (event.wheelDelta) {
+			delta = event.wheelDelta/120;
+			if (window.opera) delta = -delta;
+		} else if (event.detail) { delta = -event.detail/3;     }
 
+		var d = this.newDate(this.selectedDate);
+		var m = d.getMonth() + Math.round(delta);
+		this.setMonth(m);
 		return false;
 	},
 
