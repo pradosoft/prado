@@ -461,7 +461,7 @@ Prado.WebUI.TDatePicker.prototype =
 
 		var d = this.newDate(this.selectedDate);
 		var m = d.getMonth() + Math.round(delta);
-		this.setMonth(m);
+		this.setMonth(m,true);
 		return false;
 	},
 
@@ -486,13 +486,33 @@ Prado.WebUI.TDatePicker.prototype =
 			this.options.OnDateChanged(this, date);
 		}
 	},
+
+	fireChangeEvent: function(element, capped)
+	{
+		if (capped)
+			{
+				var obj = this;
+
+				if (typeof(obj.changeeventtimer)!="undefined")
+				{
+					clearTimeout(obj.changeeventtimer);
+					obj.changeeventtimer = null;
+				}
+				obj.changeeventtimer = setTimeout(
+					function() { obj.changeeventtimer = null; Event.fireEvent(element, "change"); },
+					1500
+				);
+			}
+		else
+			Event.fireEvent(element, "change");
+	},
 	
-	onChange : function()
+	onChange : function(ref, date, capevents)
 	{ 
 		if(this.options.InputMode == "TextBox")
 		{
 			this.control.value = this.formatDate();
-			Event.fireEvent(this.control, "change");
+			this.fireChangeEvent(this.control, capevents);
 		}
 		else
 		{
@@ -515,7 +535,7 @@ Prado.WebUI.TDatePicker.prototype =
 				for(var i = 0; i < years.length; i++)
 					years[i].selected = years[i].value.toInteger() == currentYear;
 			}
-			Event.fireEvent(day || month || year, "change");
+			this.fireChangeEvent(day || month || year, capped);
 		}
 	},
 
@@ -533,7 +553,7 @@ Prado.WebUI.TDatePicker.prototype =
 		return new Date(Math.min(Math.max(date.getFullYear(),this.FromYear),this.UpToYear), date.getMonth(), date.getDate(), 0,0,0);
 	},
 
-	setSelectedDate : function(date)
+	setSelectedDate : function(date, capevents)
 	{
 		if (date == null)
 			return;
@@ -544,7 +564,7 @@ Prado.WebUI.TDatePicker.prototype =
 		this.updateHeader();
 		this.update();
 		if (dateChanged && typeof(this.onChange) == "function")
-			this.onChange(this, date);
+			this.onChange(this, date, capevents);
 	},
 
 	getElement : function()
@@ -564,12 +584,12 @@ Prado.WebUI.TDatePicker.prototype =
 		this.setSelectedDate(d);
 	},
 
-	setMonth : function (month)
+	setMonth : function (month, capevents)
 	{
 		var d = this.newDate(this.selectedDate);
 		d.setDate(Math.min(d.getDate(), this.getDaysPerMonth(month,d.getFullYear())));
 		d.setMonth(month);
-		this.setSelectedDate(d);
+		this.setSelectedDate(d,capevents);
 	},
 
 	nextMonth : function ()
