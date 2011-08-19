@@ -39,10 +39,18 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *  -----------------------------------------
  * </code>
  *
- * TDatePicker has three <b>Mode</b> to show the date picker popup.
+ * TDatePicker has four <b>Mode</b> to show the date picker popup.
  *
  *  # <b>Basic</b> -- Only shows a text input, focusing on the input shows the
- *                    date picker.
+ *                    date picker. This way you can access the popup using only
+ *                    the keyboard. Note that because of this, TAB-bing through
+ *                    this control will automatically select the current date if
+ *                    no previous date was selected. If you close the popup (eg.
+ *                    pressing the ESC key) you'll need to un-focus and re-focus
+ *                    the control again for the popup to reappear.
+ *  # <b>Clickable</b> -- Only shows a text input, clicking on the input shows the
+ *                    date picker. This mode solves the two small problems of the
+ *                    Basic mode. It was first introduced in Prado 3.2.
  *  # <b>Button</b> -- Shows a button next to the text input, clicking on the
  *                     button shows the date, button text can be by the
  *                     <b>ButtonText</b> property
@@ -525,8 +533,17 @@ class TDatePicker extends TTextBox
 		$options['CalendarStyle'] = $this->getCalendarStyle();
 		$options['FromYear'] = $this->getFromYear();
 		$options['UpToYear'] = $this->getUpToYear();
-		if($this->getMode()!==TDatePickerMode::Basic)
-			$options['Trigger'] = $this->getDatePickerButtonID();
+		switch($this->getMode())
+		{
+			case TDatePickerMode::Basic:
+				break;
+			case TDatePickerMode::Clickable:
+				$options['TriggerEvent'] = "click";
+				break;
+			default:
+				$options['Trigger'] = $this->getDatePickerButtonID();
+				break;
+		}
 		$options['PositionMode'] = $this->getPositionMode();
 
 		$options = array_merge($options, $this->getCulturalOptions());
@@ -940,6 +957,7 @@ class TDatePickerInputMode extends TEnumerable
  *
  * The following enumerable values are defined:
  * - Basic: Only shows a text input, focusing on the input shows the date picker
+ * - Clickable: Only shows a text input, clicking on the input shows the date picker (since 3.2)
  * - Button: Shows a button next to the text input, clicking on the button shows the date, button text can be by the
  * - ImageButton: Shows an image next to the text input, clicking on the image shows the date picker,
  *
@@ -951,6 +969,7 @@ class TDatePickerInputMode extends TEnumerable
 class TDatePickerMode extends TEnumerable
 {
 	const Basic='Basic';
+	const Clickable='Clickable';
 	const Button='Button';
 	const ImageButton='ImageButton';
 }
