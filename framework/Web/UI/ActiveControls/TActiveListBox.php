@@ -85,8 +85,6 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 		parent::setSelectionMode($value);
 		$multiple = $this->getIsMultiSelect();
 		$id = $this->getUniqueID(); $multi_id = $id.'[]';
-		if($multiple)
-			$this->getPage()->registerPostDataLoader($multi_id);
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
 			$client = $this->getPage()->getCallbackClient();
