@@ -80,8 +80,7 @@ class TThemeManager extends TModule
 	{
 		$themePath=$this->getBasePath().DIRECTORY_SEPARATOR.$name;
 		$themeUrl=rtrim($this->getBaseUrl(),'/').'/'.$name;
-		return new TTheme($themePath,$themeUrl);
-
+		return Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl);
 	}
 
 	/**
@@ -196,6 +195,17 @@ class TTheme extends TApplicationComponent implements ITheme
 	 * Extension name of skin files
 	 */
 	const SKIN_FILE_EXT='.skin';
+
+	/**
+	 * default theme class
+	 */
+	const DEFAULT_THEMECLASS = 'TTheme';
+
+	/**
+	 * @var string
+	 */
+	private $_themeClass=self::DEFAULT_THEMECLASS;
+
 	/**
 	 * @var string theme path
 	 */
@@ -328,7 +338,7 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_name;
 	}
 
- 	/**
+	/**
 	 * @param string theme name
 	 */
 	protected function setName($value)
@@ -344,7 +354,7 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_themeUrl;
 	}
 
- 	/**
+	/**
 	 * @param string the URL to the theme folder
 	 */
 	protected function setBaseUrl($value)
@@ -360,14 +370,29 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_themePath;
 	}
 
- 	/**
+	/**
 	 * @param string tthe file path to the theme folder
 	 */
 	protected function setBasePath($value)
 	{
 		$this->_themePath=$value;
 	}
-	
+
+	/**
+	 * @param string|null $class Theme class name in namespace format
+	 */
+	public function setThemeClass($class) {
+		$this->_themeClass = $class===null ? self::DEFAULT_THEMECLASS : (string)$class;
+
+	}
+
+	/**
+	 * @return string Theme class name in namespace format. Defaults to {@link TThemeManager::DEFAULT_THEMECLASS DEFAULT_THEMECLASS}.
+	 */
+	public function getThemeClass() {
+		return $this->_themeClass;
+	}
+
 	/**
 	 * @return array list of skins for the theme
 	 */
@@ -376,7 +401,7 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_skins;
 	}
 
- 	/**
+	/**
 	 * @param array list of skins for the theme
 	 */
 	protected function setSkins($value)
@@ -465,7 +490,7 @@ class TTheme extends TApplicationComponent implements ITheme
 		return $this->_cssFiles;
 	}
 
- 	/**
+	/**
 	 * @param array list of CSS files (URL) in the theme
 	 */
 	protected function setStyleSheetFiles($value)
