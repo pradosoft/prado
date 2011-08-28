@@ -99,6 +99,11 @@ class TDbConnection extends TComponent
 	private $_transaction;
 
 	/**
+	 * @var TDbMetaData
+	 */
+	private $_dbMeta = null;
+
+	/**
 	 * @var string
 	 * @since 3.1.7
 	 */
@@ -390,6 +395,49 @@ class TDbConnection extends TComponent
 			return $this->_pdo->quote($str);
 		else
 			throw new TDbException('dbconnection_connection_inactive');
+	}
+
+	/**
+	 * Quotes a table name for use in a query.
+	 * @param string $name table name
+	 * @return string the properly quoted table name
+	 */
+	public function quoteTableName($name)
+	{
+		return $this->getDbMetaData()->quoteTableName($name);
+	}
+
+	/**
+	 * Quotes a column name for use in a query.
+	 * @param string $name column name
+	 * @return string the properly quoted column name
+	 */
+	public function quoteColumnName($name)
+	{
+		return $this->getDbMetaData()->quoteColumnName($name);
+	}
+
+	/**
+	 * Quotes a column alias for use in a query.
+	 * @param string $name column name
+	 * @return string the properly quoted column alias
+	 */
+	public function quoteColumnAlias($name)
+	{
+		return $this->getDbMetaData()->quoteColumnAlias($name);
+	}
+
+	/**
+	 * @return TDbMetaData
+	 */
+	public function getDbMetaData()
+	{
+		if($this->_dbMeta===null)
+		{
+			Prado::using('System.Data.Common.TDbMetaData');
+			$this->_dbMeta = TDbMetaData::getInstance($this);
+		}
+		return $this->_dbMeta;
 	}
 
 	/**

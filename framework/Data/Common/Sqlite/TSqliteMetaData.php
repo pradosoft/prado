@@ -35,6 +35,36 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
+	 * Quotes a table name for use in a query.
+	 * @param string $name table name
+	 * @return string the properly quoted table name
+	 */
+	public function quoteTableName($name)
+	{
+		return parent::quoteTableName($name, "'", "'");
+	}
+
+	/**
+	 * Quotes a column name for use in a query.
+	 * @param string $name column name
+	 * @return string the properly quoted column name
+	 */
+	public function quoteColumnName($name)
+	{
+		return parent::quoteColumnName($name, '"', '"');
+	}
+
+	/**
+	 * Quotes a column alias for use in a query.
+	 * @param string $name column alias
+	 * @return string the properly quoted column alias
+	 */
+	public function quoteColumnAlias($name)
+	{
+		return parent::quoteColumnAlias($name, '"', '"');
+	}
+
+	/**
 	 * Get the column definitions for given table.
 	 * @param string table name.
 	 * @return TPgsqlTableInfo table information.

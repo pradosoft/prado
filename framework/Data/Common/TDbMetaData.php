@@ -27,6 +27,11 @@ abstract class TDbMetaData extends TComponent
 	private $_connection;
 
 	/**
+	 * @var array
+	 */
+	protected static $delimiterIdentifier = array('[', ']', '"', '`', "'");
+
+	/**
 	 * @param TDbConnection database connection.
 	 */
 	public function __construct($conn)
@@ -118,6 +123,49 @@ abstract class TDbMetaData extends TComponent
 	protected function getTableInfoClass()
 	{
 		return 'TDbTableInfo';
+	}
+
+	/**
+	 * Quotes a table name for use in a query.
+	 * @param string $name table name
+	 * @param string $lft left delimiter
+	 * @param string $rgt right delimiter
+	 * @return string the properly quoted table name
+	 */
+	public function quoteTableName($name, $lft='', $rgt='')
+	{
+		$name = str_replace(self::$delimiterIdentifier, '', $name);
+
+		if(strpos($name, '.')===false)
+			return $lft . $name . $rgt;
+		$names=explode('.', $name);
+		foreach($names as &$n)
+			$n = $lft . $n . $rgt;
+		return implode('.', $names);
+	}
+
+	/**
+	 * Quotes a column name for use in a query.
+	 * @param string $name column name
+	 * @param string $lft left delimiter
+	 * @param string $rgt right delimiter
+	 * @return string the properly quoted column name
+	 */
+	public function quoteColumnName($name, $lft='', $rgt='')
+	{
+		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
+	}
+
+	/**
+	 * Quotes a column alias for use in a query.
+	 * @param string $name column alias
+	 * @param string $lft left delimiter
+	 * @param string $rgt right delimiter
+	 * @return string the properly quoted column alias
+	 */
+	public function quoteColumnAlias($name, $lft='', $rgt='')
+	{
+		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
 }
 

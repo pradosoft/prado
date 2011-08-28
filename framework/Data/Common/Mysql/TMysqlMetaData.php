@@ -24,7 +24,7 @@ Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.Commom.Sqlite
+ * @package System.Data.Common.Mysql
  * @since 3.1
  */
 class TMysqlMetaData extends TDbMetaData
@@ -37,6 +37,36 @@ class TMysqlMetaData extends TDbMetaData
 	protected function getTableInfoClass()
 	{
 		return 'TMysqlTableInfo';
+	}
+
+	/**
+	 * Quotes a table name for use in a query.
+	 * @param string $name table name
+	 * @return string the properly quoted table name
+	 */
+	public function quoteTableName($name)
+	{
+		return parent::quoteTableName($name, '`', '`');
+	}
+
+	/**
+	 * Quotes a column name for use in a query.
+	 * @param string $name column name
+	 * @return string the properly quoted column name
+	 */
+	public function quoteColumnName($name)
+	{
+		return parent::quoteColumnName($name, '`', '`');
+	}
+
+	/**
+	 * Quotes a column alias for use in a query.
+	 * @param string $name column alias
+	 * @return string the properly quoted column alias
+	 */
+	public function quoteColumnAlias($name)
+	{
+		return parent::quoteColumnAlias($name, '`', '`');
 	}
 
 	/**
@@ -246,8 +276,8 @@ class TMysqlMetaData extends TDbMetaData
 			if($row['Key_name']==='PRIMARY')
 				$primary[] = $row['Column_name'];
 		}
-        // MySQL version was increased to >=5.1.21 instead of 5.x
-        // due to a MySQL bug (http://bugs.mysql.com/bug.php?id=19588)
+				// MySQL version was increased to >=5.1.21 instead of 5.x
+				// due to a MySQL bug (http://bugs.mysql.com/bug.php?id=19588)
 		if($this->getServerVersion() >= 5.121)
 			$foreign = $this->getForeignConstraints($schemaName,$tableName);
 		else
@@ -272,7 +302,7 @@ class TMysqlMetaData extends TDbMetaData
 				REFERENCED_TABLE_NAME as fktable,
 				REFERENCED_COLUMN_NAME as fkcol
 			FROM
-				 `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE`
+				`INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE`
 			WHERE
 				REFERENCED_TABLE_NAME IS NOT NULL
 				AND TABLE_NAME LIKE :table

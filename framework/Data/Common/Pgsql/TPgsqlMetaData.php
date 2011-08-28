@@ -37,6 +37,36 @@ class TPgsqlMetaData extends TDbMetaData
 	}
 
 	/**
+	 * Quotes a table name for use in a query.
+	 * @param string $name table name
+	 * @return string the properly quoted table name
+	 */
+	public function quoteTableName($name)
+	{
+		return parent::quoteTableName($name, '"', '"');
+	}
+
+	/**
+	 * Quotes a column name for use in a query.
+	 * @param string $name column name
+	 * @return string the properly quoted column name
+	 */
+	public function quoteColumnName($name)
+	{
+		return parent::quoteColumnName($name, '"', '"');
+	}
+
+	/**
+	 * Quotes a column alias for use in a query.
+	 * @param string $name column alias
+	 * @return string the properly quoted column alias
+	 */
+	public function quoteColumnAlias($name)
+	{
+		return parent::quoteColumnAlias($name, '"', '"');
+	}
+
+	/**
 	 * @param string default schema.
 	 */
 	public function setDefaultSchema($schema)
@@ -333,13 +363,13 @@ EOD;
 		$index = join(', ', explode(' ', $columnIndex));
 		$sql =
 <<<EOD
-    SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
+		SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
 		attrelid=(
 			SELECT oid FROM pg_catalog.pg_class WHERE relname=:table AND relnamespace=(
 				SELECT oid FROM pg_catalog.pg_namespace WHERE nspname=:schema
 			)
 		)
-        AND attnum IN ({$index})
+				AND attnum IN ({$index})
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
@@ -348,7 +378,7 @@ EOD;
 		$primary = array();
 		foreach($command->query() as $row)
 		{
-            $primary[] = $row['attname'];
+						$primary[] = $row['attname'];
 		}
 
 		return $primary;
