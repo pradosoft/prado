@@ -72,6 +72,26 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
  */
 class TActiveRecordConfig extends TDataSourceConfig
 {
+	const DEFAULT_MANAGER_CLASS = 'System.Data.ActiveRecord.TActiveRecordManager';
+	const DEFAULT_GATEWAY_CLASS = 'System.Data.ActiveRecord.TActiveRecordGateway';
+
+	/**
+	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 * @var string
+	 */
+	private $_managerClass = self::DEFAULT_MANAGER_CLASS;
+
+	/**
+	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @var string
+	 */
+	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
+
+	/**
+	 * @var TActiveRecordManager
+	 */
+	private $_manager = null;
+
 	private $_enableCache=false;
 
 	/**
@@ -89,11 +109,55 @@ class TActiveRecordConfig extends TDataSourceConfig
 	public function init($xml)
 	{
 		parent::init($xml);
-		$manager = TActiveRecordManager::getInstance();
+		$manager = $this -> getManager();
 		if($this->getEnableCache())
 			$manager->setCache($this->getApplication()->getCache());
 		$manager->setDbConnection($this->getDbConnection());
 		$manager->setInvalidFinderResult($this->getInvalidFinderResult());
+		$manager->setGatewayClass($this->getGatewayClass());
+	}
+
+	/**
+	 * @return TActiveRecordManager
+	 */
+	public function getManager() {
+		if($this->_manager === null)
+			$this->_manager = Prado::createComponent($this -> getManagerClass());
+		return TActiveRecordManager::getInstance($this->_manager);
+	}
+
+	/**
+	 * Set implementation class of ActiveRecordManager
+	 * @param string $value
+	 */
+	public function setManagerClass($value)
+	{
+		$this->_managerClass = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return string the implementation class of ActiveRecordManager. Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 */
+	public function getManagerClass()
+	{
+		return $this->_managerClass;
+	}
+
+	/**
+	 * Set implementation class of ActiveRecordGateway
+	 * @param string $value
+	 */
+	public function setGatewayClass($value)
+	{
+		$this->_gatewayClass = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 */
+	public function getGatewayClass()
+	{
+		return $this->_gatewayClass;
 	}
 
 	/**

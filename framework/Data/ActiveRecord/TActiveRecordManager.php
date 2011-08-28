@@ -37,6 +37,14 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordGateway');
  */
 class TActiveRecordManager extends TComponent
 {
+	const DEFAULT_GATEWAY_CLASS = 'System.Data.ActiveRecord.TActiveRecordGateway';
+
+	/**
+	 * Defaults to {@link TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @var string
+	 */
+	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
+
 	private $_gateway;
 	private $_meta=array();
 	private $_connection;
@@ -112,7 +120,24 @@ class TActiveRecordManager extends TComponent
 	 */
 	protected function createRecordGateway()
 	{
-		return new TActiveRecordGateway($this);
+		return Prado::createComponent($this->getGatewayClass(), $this);
+	}
+
+	/**
+	 * Set implementation class of ActiveRecordGateway
+	 * @param string $value
+	 */
+	public function setGatewayClass($value)
+	{
+		$this->_gatewayClass = (string)$value;
+	}
+
+	/**
+	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@link TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 */
+	public function getGatewayClass()
+	{
+		return $this->_gatewayClass;
 	}
 
 	/**

@@ -10,6 +10,7 @@ EHN: Add second parameter to THttpResponse::appendHeader whether the header shou
 ENH: Add THttpSession::regenerate() to update the current session id with a newly generated one (Yves)
 CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yves)
 CHG: Modifiy TTemplate::parseAttributes to allow definition of "HTML5 Custom Data Attributes (data-*)" e.g Attributes.data-custom-value="foobar" (Yves)
+EHN: Modify TActiveRecordConfig & TActiveRecordManager to allow custom subclassing of System.Data.ActiveRecord.TActiveRecordManager & System.Data.ActiveRecord.TActiveRecordGateway (Yves)
 
 Version 3.1.9 June 3, 2011
 BUG: Issue#280 - Documentation has been updated
