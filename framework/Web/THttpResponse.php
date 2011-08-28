@@ -476,10 +476,10 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		Prado::trace("Flushing output",'System.Web.THttpResponse');
 		$this->ensureHeadersSent();
- 		if($this->_bufferOutput)
+		if($this->_bufferOutput)
 		{
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
-			if (ob_get_length()>0) 
+			if (ob_get_length()>0)
 			{
 				if (!$continueBuffering)
 				{
@@ -566,6 +566,30 @@ class THttpResponse extends TModule implements ITextWriter
 		if($this->_bufferOutput)
 			ob_clean();
 		Prado::trace("Clearing output",'System.Web.THttpResponse');
+	}
+
+	/**
+	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @return array
+	 */
+	public function getHeaders($case=null)
+	{
+		$result = array();
+		$headers = headers_list();
+		foreach($headers as $header) {
+			$tmp = explode(':', $header);
+			$key = trim(array_shift($tmp));
+			$value = trim(implode(':', $tmp));
+			if(isset($result[$key]))
+				$result[$key] .= ', ' . $value;
+			else
+				$result[$key] = $value;
+		}
+
+		if($case !== null)
+			return array_change_key_case($result, $case);
+
+		return $result;
 	}
 
 	/**
@@ -673,7 +697,7 @@ class THttpResponse extends TModule implements ITextWriter
 		if($this->getHasAdapter())
 			return $this->_adapter->createNewHtmlWriter($type, $this);
 		else
-		 	return $this->createNewHtmlWriter($type, $this);
+			return $this->createNewHtmlWriter($type, $this);
 	}
 
 	/**

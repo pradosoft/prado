@@ -13,6 +13,7 @@ CHG: Modifiy TTemplate::parseAttributes to allow definition of "HTML5 Custom Dat
 EHN: Modify TActiveRecordConfig & TActiveRecordManager to allow custom subclassing of System.Data.ActiveRecord.TActiveRecordManager & System.Data.ActiveRecord.TActiveRecordGateway (Yves)
 EHN: Add methods quoteTableName, quoteColumnName, quoteColumnAlias to TDbMetaData & TDbConnection and add TDbConnection:getDbMetaData [TODO: customize TOracleMetaData] (Yves)
 EHN: Modify TThemeManager to allow custom subclassing of TTheme (Yves)
+EHN: Add method getHeaders to THttpRequest & THttpResponse (Yves)
 
 Version 3.1.9 June 3, 2011
 BUG: Issue#280 - Documentation has been updated
@@ -40,7 +41,7 @@ BUG: Issue#226 - TTimerControl fires immediately (rojaro)
 BUG: Issue#227 - Clientscript.php return last-modified date header for scripts (rojaro)
 BUG: Issue#229 - Typo in TCachePageStatePersister.php (Christophe)
 BUG: Issue#230 - TCachingStatement property access not working (rojaro)
-BUG: Issue#232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe) 
+BUG: Issue#232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 BUG: Issue#233 - THtmlWriter flush() doesn't result the contents of the output buffer (rojaro)
 BUG: Issue#234 - Unable to override default HTML writer / pointless THttpResponse::HtmlWriterType (uacaman)
 BUG: Issue#236 - Bug in getIsView() in TOracleMetaData (rojaro)
@@ -66,14 +67,14 @@ BUG: Issue#304 - Possible security issue in cookies (rojaro)
 BUG: Issue#305 - Password type TTextBox does not support AutoCompleteType (rojaro)
 BUG: Issue#319 - When TPanel's DefaultButton property is set to a TActiveButton it inhibits TButton's postbacks (ctrlaltca)
 BUG: Issue#324 - TTabPanel doesn't render properly upon postback if a TTabView's visible property = false (ctrlaltca)
-ENH: Security manager: removed the zero byte right trim from the decryption routine and also made some cosmetic changes (rojaro) 
+ENH: Security manager: removed the zero byte right trim from the decryption routine and also made some cosmetic changes (rojaro)
 ENH: Upgraded the phpunit ini file to work with PHPUnit 3.3 3.4 and 3.5. There are conditionals for 3.3 and 3.4. No more Framework file includes are needed with 3.5. (javalizard)
 ENH: Issue#264 - Prado wasting CPU by using ArrayAccess and IteratorAggregate interfaces (uacaman)
 ENH: Issue#199/272 - Updated prototype to 1.7 scriptaculous to 1.9.0 and dropped json.js for json2.js. Adds IE9 support (ctrlaltca)
 ENH: Updated tinyMCE to latest version (3.4.2). The package size grew up a bit (from 3.7 to 5.5 mb) since the new version is bigger in sizea and adds support for a lot of new localizations. Adds IE9 support (ctrlaltca)
 
 Version 3.1.7 February 22, 2010
-ENH: Issue#24  - Specify needed fields on demand (Yves) 
+ENH: Issue#24  - Specify needed fields on demand (Yves)
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
 BUG: Issue#94  - DataGrid header/footer renderers unable to locate their parent grid in setData() method (Christophe)

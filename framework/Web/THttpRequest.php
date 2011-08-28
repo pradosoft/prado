@@ -343,7 +343,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getIsSecureConnection()
 	{
-	    return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
+			return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
 	}
 
 	/**
@@ -368,6 +368,32 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function getHttpProtocolVersion ()
 	{
 		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'';
+	}
+
+	/**
+	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @return array
+	 */
+	public function getHeaders($case=null)
+	{
+		static $result;
+
+		if($result === null && function_exists('apache_request_headers')) {
+			$result = apache_request_headers();
+		}
+		elseif($result === null) {
+			$result = array();
+			foreach($_SERVER as $key=>$value) {
+				if(strncasecmp($key, 'HTTP_', 5) !== 0) continue;
+					$key = str_replace(' ','-', ucwords(strtolower(str_replace('_',' ', substr($key, 5)))));
+					$result[$key] = $value;
+			}
+		}
+
+		if($case !== null)
+			return array_change_key_case($result, $case);
+
+		return $result;
 	}
 
 	/**
@@ -455,14 +481,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getBrowser()
 	{
-	    try
-	    {
-		    return get_browser();
-	    }
-	    catch(TPhpErrorException $e)
-	    {
-	        throw new TConfigurationException('httprequest_browscap_required');
-	    }
+			try
+			{
+				return get_browser();
+			}
+			catch(TPhpErrorException $e)
+			{
+					throw new TConfigurationException('httprequest_browscap_required');
+			}
 	}
 
 	/**
