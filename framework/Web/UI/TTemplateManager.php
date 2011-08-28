@@ -823,7 +823,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	{
 		if($str==='')
 			return array();
-		$pattern='/([\w\.]+)\s*=\s*(\'.*?\'|".*?"|<%.*?%>)/msS';
+		$pattern='/([\w\.\-]+)\s*=\s*(\'.*?\'|".*?"|<%.*?%>)/msS';
 		$attributes=array();
 		$n=preg_match_all($pattern,$str,$matches,PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
 		for($i=0;$i<$n;++$i)
