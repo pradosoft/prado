@@ -12,6 +12,13 @@
 </tr>
 
 <tr>
+	<td class="samplenote">Clickable mode</td>
+	<td class="sampleaction">
+		<com:TDatePicker Mode="Clickable"/>
+	</td>
+</tr>
+
+<tr>
 	<td class="samplenote">Button Mode, <br />pre-selected date 20-10-2005</td>
 	<td class="sampleaction">
 		<com:TDatePicker Mode="Button" Date="20-10-2005"/>

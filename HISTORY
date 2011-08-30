@@ -12,7 +12,6 @@ CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yv
 CHG: Modifiy TTemplate::parseAttributes to allow definition of "HTML5 Custom Data Attributes (data-*)" e.g Attributes.data-custom-value="foobar" (Yves)
 EHN: Modify TActiveRecordConfig & TActiveRecordManager to allow custom subclassing of System.Data.ActiveRecord.TActiveRecordManager & System.Data.ActiveRecord.TActiveRecordGateway (Yves)
 EHN: Add methods quoteTableName, quoteColumnName, quoteColumnAlias to TDbMetaData & TDbConnection and add TDbConnection:getDbMetaData [TODO: customize TOracleMetaData] (Yves)
-EHN: Modify TThemeManager to allow custom subclassing of TTheme (Yves)
 EHN: Add method getHeaders to THttpRequest & THttpResponse (Yves)
 
 Version 3.1.9 June 3, 2011
