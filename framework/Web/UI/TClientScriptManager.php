@@ -209,29 +209,36 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getScriptUrls()
 	{
-		$scripts = array();
-
-		$packages=array_keys($this->_registeredPradoScripts);
-		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-		list($path,$baseUrl)=$this->getPackagePathUrl($base);
-		foreach ($packages as $p)
+		if (Prado::getApplication()->getMode()!==TApplicationMode::Debug)
 		{
-			foreach (self::$_pradoScripts[$p] as $dep)
+			$packages=array_keys($this->_registeredPradoScripts);
+			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+			return array($this->registerJavascriptPackages($base, $packages));
+		} else {
+			$scripts = array();
+
+			$packages=array_keys($this->_registeredPradoScripts);
+			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+			list($path,$baseUrl)=$this->getPackagePathUrl($base);
+			foreach ($packages as $p)
 			{
-				foreach (self::$_pradoPackages[$dep] as $script)
+				foreach (self::$_pradoScripts[$p] as $dep)
 				{
-					if (!in_array($url=$baseUrl.'/'.$script,$scripts))
-						$scripts[]=$url;
+					foreach (self::$_pradoPackages[$dep] as $script)
+					{
+						if (!in_array($url=$baseUrl.'/'.$script,$scripts))
+							$scripts[]=$url;
+					}
 				}
 			}
+
+			$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
+			$scripts = array_merge($scripts, array_values($this->_scriptFiles));
+
+			$scripts = array_unique($scripts);
+
+			return $scripts;
 		}
-
-		$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
-		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
-
-		$scripts = array_unique($scripts);
-
-		return $scripts;
 	}
 
 	/**
