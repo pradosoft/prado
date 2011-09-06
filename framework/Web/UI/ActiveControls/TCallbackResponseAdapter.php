@@ -152,10 +152,10 @@ class TCallbackResponseWriter extends TTextWriter
 	 */
 	public function flush()
 	{
-		$content = '<!--'.$this->getBoundary().'-->';
-		$content .= parent::flush();
-		$content .= '<!--//'.$this->getBoundary().'-->';
-		return $content;
+		$content = parent::flush();
+		if(empty($content))
+			return "";
+		return '<!--'.$this->getBoundary().'-->'.$content.'<!--//'.$this->getBoundary().'-->';
 	}
 }
 
