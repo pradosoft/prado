@@ -28,11 +28,13 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	initializeListeners : function()
 	{
 		this.onclickListener = this.enterEditMode.bindAsEventListener(this);
-	    Event.observe(this.element, 'click', this.onclickListener);
-	    if (this.options.ExternalControl)
-	        // Issue 181
-	        $(this.options.ExternalControl).stopObserving('click', this.onclickListener);
+		Event.observe(this.element, 'click', this.onclickListener);
+		if (this.options.ExternalControl)
+		{
+			// Issue 181
+			$(this.options.ExternalControl).stopObserving('click', this.onclickListener);
 			Event.observe($(this.options.ExternalControl), 'click', this.onclickListener);
+		}
 	},
 
 	/**
