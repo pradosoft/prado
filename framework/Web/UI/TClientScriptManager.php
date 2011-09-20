@@ -29,10 +29,9 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	const SCRIPT_PATH='Web/Javascripts/source';
 	/**
-	 * the PHP script for loading Prado javascript files
+	 * file containing javascript packages and their cross dependencies
 	 */
-	const SCRIPT_LOADER='Web/Javascripts/clientscripts.php';
-
+	const PACKAGES_FILE='Web/Javascripts/packages.php';
 	/**
 	 * @var TPage page who owns this manager
 	 */
@@ -74,12 +73,12 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	private $_registeredPradoScripts=array();
 	/**
-	 * Client-side javascript library dependencies, loads from SCRIPT_PATH.'/packages.php';
+	 * Client-side javascript library dependencies, loads from PACKAGES_FILE;
 	 * @var array
 	 */
 	private static $_pradoScripts;
 	/**
-	 * Client-side javascript library packages, loads from SCRIPT_PATH.'/packages.php';
+	 * Client-side javascript library packages, loads from PACKAGES_FILE;
 	 * @var array
 	 */
 	private static $_pradoPackages;
@@ -120,7 +119,7 @@ class TClientScriptManager extends TApplicationComponent
 	}
 
 	/**
-	 * Registers Prado javascript by library name. See "Web/Javascripts/source/packages.php"
+	 * Registers Prado javascript by library name. See "Web/Javascripts/packages.php"
 	 * for library names.
 	 * @param string script library name.
 	 */
@@ -141,7 +140,7 @@ class TClientScriptManager extends TApplicationComponent
 		{
 			if(self::$_pradoScripts === null)
 			{
-				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH.'/packages.php';
+				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::PACKAGES_FILE;
 				list($packages,$deps)= include($packageFile);
 				self::$_pradoScripts = $deps;
 				self::$_pradoPackages = $packages;
@@ -174,31 +173,38 @@ class TClientScriptManager extends TApplicationComponent
 		$addedScripts = array_diff($this->_registeredPradoScripts,$this->_renderedPradoScripts);
 		if(($packages=array_keys($addedScripts))!==array())
 		{
-			if (Prado::getApplication()->getMode()!==TApplicationMode::Debug)
+			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+			list($path,$baseUrl)=$this->getPackagePathUrl($base);
+			$packagesUrl=array();
+			$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
+			foreach ($packages as $p)
 			{
-				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-				$url = $this->registerJavascriptPackages($base, $packages);
-				$writer->write(TJavaScript::renderScriptFile($url));
-			}
-			else
-			{
-				// In debug mode, we add 1 <script> line by file
-				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-				list($path,$baseUrl)=$this->getPackagePathUrl($base);
-				$packagesUrl=array();
-				foreach ($packages as $p)
+				foreach (self::$_pradoScripts[$p] as $dep)
 				{
-					foreach (self::$_pradoScripts[$p] as $dep)
+					foreach (self::$_pradoPackages[$dep] as $script)
 					{
-						foreach (self::$_pradoPackages[$dep] as $script)
+						if($isDebug)
 						{
 							if (!in_array($url=$baseUrl.'/'.$script,$packagesUrl))
 								$packagesUrl[]=$url;
+						} else {
+							if (!in_array($url=$baseUrl.'/min/'.$script,$packagesUrl))
+							{
+								if(!is_file($filePath=$path.'/min/'.$script))
+								{
+									$dirPath=dirname($filePath);
+									if(!is_dir($dirPath))
+										mkdir($dirPath, PRADO_CHMOD, true);
+									file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
+									chmod($filePath, PRADO_CHMOD);
+								}
+								$packagesUrl[]=$url;
+							}
 						}
 					}
 				}
-				$writer->write(TJavaScript::renderScriptFiles($packagesUrl));
 			}
+			$writer->write(TJavaScript::renderScriptFiles($packagesUrl));
 			$this->_renderedPradoScripts = $this->_registeredPradoScripts;
 		}
 	}
@@ -209,84 +215,29 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getScriptUrls()
 	{
-		if (Prado::getApplication()->getMode()!==TApplicationMode::Debug)
-		{
-			$packages=array_keys($this->_registeredPradoScripts);
-			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-			return array($this->registerJavascriptPackages($base, $packages));
-		} else {
-			$scripts = array();
+		$scripts = array();
 
-			$packages=array_keys($this->_registeredPradoScripts);
-			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-			list($path,$baseUrl)=$this->getPackagePathUrl($base);
-			foreach ($packages as $p)
+		$packages=array_keys($this->_registeredPradoScripts);
+		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+		list($path,$baseUrl)=$this->getPackagePathUrl($base);
+		foreach ($packages as $p)
+		{
+			foreach (self::$_pradoScripts[$p] as $dep)
 			{
-				foreach (self::$_pradoScripts[$p] as $dep)
+				foreach (self::$_pradoPackages[$dep] as $script)
 				{
-					foreach (self::$_pradoPackages[$dep] as $script)
-					{
-						if (!in_array($url=$baseUrl.'/'.$script,$scripts))
-							$scripts[]=$url;
-					}
+					if (!in_array($url=$baseUrl.'/'.$script,$scripts))
+						$scripts[]=$url;
 				}
 			}
-
-			$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
-			$scripts = array_merge($scripts, array_values($this->_scriptFiles));
-
-			$scripts = array_unique($scripts);
-
-			return $scripts;
 		}
-	}
 
-	/**
-	 * Publishes a javascript library path and register packages to be loaded.
-	 * See TClientScriptLoader for component that enables users to register custom javascript libraries.
-	 * @param string javascript library base path
-	 * @param array list of packages or javascript files (without .js extension) to be loaded.
-	 * @param boolean true to enable keep comments in javascript files loaded, null to use application configuration.
-	 * @param boolean true to gzip the javascript code if browsers and php supports it.
-	 * @return string javascript src url
-	 * @since 3.1
-	 */
-	public function registerJavascriptPackages($base, $packages, $debug=null, $gzip=true)
-	{
-		list($path,$url) = $this->getPackagePathUrl($base);
-		$scriptLoaderPath = $path.'/'.basename(self::SCRIPT_LOADER);
-		$scriptLoaderSrc = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_LOADER;
-		if(!is_file($scriptLoaderPath))
-		{
-			copy($scriptLoaderSrc, $scriptLoaderPath);
-			chmod($scriptLoaderPath, PRADO_CHMOD);
-		}
-		$url .= '/'.basename(self::SCRIPT_LOADER).'?js='.implode(',', $packages);
-		if($debug!==false && $this->getApplication()->getMode()===TApplicationMode::Debug)
-		{
-			$this->verifyJavascriptPackages($base,$path,$packages);
-			$url.='&amp;mode=debug';
-		}
-		if($gzip===false)
-			$url.='&amp;gzip=false';
-		return $url;
-	}
+		$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
+		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
 
-	/**
-	 * @throws TConfigurationException when javascript packages mismatch.
-	 */
-	protected function verifyJavascriptPackages($base,$path,$scripts)
-	{
-		$file = $path.'/packages.php';
-		if(is_file($file))
-		{
-			list($packs,$deps) = include($file);
-			if(count($missing = array_diff($scripts, array_keys($deps))) > 0)
-			{
-				throw new TConfigurationException('csmanager_invalid_packages',
-					$base.'/packages.php',implode(', ', $missing), implode(', ', array_keys($deps)));
-			}
-		}
+		$scripts = array_unique($scripts);
+
+		return $scripts;
 	}
 
 	/**

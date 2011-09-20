@@ -2805,8 +2805,9 @@ framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavaScript.php -text
-framework/Web/Javascripts/clientscripts.php -text
-framework/Web/Javascripts/source/packages.php -text
+framework/Web/Javascripts/jsmin.php -text
+framework/Web/Javascripts/packages.php -text
+framework/Web/Javascripts/source/.htaccess -text
 framework/Web/Javascripts/source/prado/activecontrols/activecontrols3.js -text
 framework/Web/Javascripts/source/prado/activecontrols/activedatepicker.js -text
 framework/Web/Javascripts/source/prado/activecontrols/ajax3.js -text

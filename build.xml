@@ -513,7 +513,7 @@ the PRADO distribution:
 	<coverage-setup database="${reports.codecoverage.dir}/coverage.db">
 	  <fileset dir="${src.dir}">
 	    <include name="**/*.php"/>
-	    <exclude name="Web/Javascripts/js/clientscripts.php"/>
+	    <exclude name="Web/Javascripts/js/jsmin.php"/>
 	    <exclude name="Data/TCache.php"/>
 	    <exclude name="DataAccess/**/*.php"/>
 	    <exclude name="I18N/core/Gettext/MO.php"/>

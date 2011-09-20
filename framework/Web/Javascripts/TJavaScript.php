@@ -266,5 +266,17 @@ class TJavaScript
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->decode($value);
 	}
+
+	/**
+	 * Minimize the size of a javascript script.
+	 * This method is based on Douglas Crockford's JSMin.
+	 * @param string code that you want to minimzie 
+	 * @return minimized version of the code
+	 */
+	public static function JSMin($code)
+	{
+		include_once('jsmin.php');
+		return JSMin::minify($code);
+	}
 }
 

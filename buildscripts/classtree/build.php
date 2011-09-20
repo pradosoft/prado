@@ -11,7 +11,7 @@ Prado::using('System.Data.SqlMap.TSqlMapManager');
 $exclusions=array(
 	'pradolite.php',
 	'prado-cli.php',
-	'clientscripts.php',
+	'jsmin.php',
 	'.svn',
 	'/I18N/core',
 	'/3rdParty',
