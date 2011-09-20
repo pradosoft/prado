@@ -220,14 +220,31 @@ class TClientScriptManager extends TApplicationComponent
 		$packages=array_keys($this->_registeredPradoScripts);
 		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
 		list($path,$baseUrl)=$this->getPackagePathUrl($base);
+		$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
 		foreach ($packages as $p)
 		{
 			foreach (self::$_pradoScripts[$p] as $dep)
 			{
 				foreach (self::$_pradoPackages[$dep] as $script)
 				{
-					if (!in_array($url=$baseUrl.'/'.$script,$scripts))
-						$scripts[]=$url;
+					if($isDebug)
+					{
+						if (!in_array($url=$baseUrl.'/'.$script,$scripts))
+							$scripts[]=$url;
+					} else {
+						if (!in_array($url=$baseUrl.'/min/'.$script,$scripts))
+						{
+							if(!is_file($filePath=$path.'/min/'.$script))
+							{
+								$dirPath=dirname($filePath);
+								if(!is_dir($dirPath))
+									mkdir($dirPath, PRADO_CHMOD, true);
+								file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
+								chmod($filePath, PRADO_CHMOD);
+							}
+							$scripts[]=$url;
+						}
+					}
 				}
 			}
 		}
