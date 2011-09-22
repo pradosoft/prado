@@ -252,9 +252,9 @@ Prado.Element =
 	{
 		var el = $(element);
 		if(el)
-			Event.fireEvent(el,'click');
+			el.click();
 	},
-
+	
 	/**
 	 * Check if an DOM element is disabled.
 	 * @function {boolean} ?
