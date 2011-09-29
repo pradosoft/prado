@@ -84,7 +84,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Returns the id of the surrounding container (span).
+	 * Returns the id of the surrounding container (div).
 	 * @return string container id
 	 */
 	public function getSurroundingTagId() {
@@ -158,14 +158,14 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Renders the datagrid by writing a span tag with the container id obtained from {@link getSurroundingTagId()}
+	 * Renders the datagrid by writing a div tag with the container id obtained from {@link getSurroundingTagId()}
 	 * which will be called by the replacement method of the client script to update it's content.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
 	private function renderDataGrid($writer) {
-		$writer->write('<span id="'.$this->getSurroundingTagId().'">');
+		$writer->write('<div id="'.$this->getSurroundingTagId().'">');
 		parent::render($writer);
-		$writer->write('</span>');
+		$writer->write('</div>');
 	}
 }
 
