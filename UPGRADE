@@ -12,6 +12,27 @@ for both A and B.
 Upgrading from v3.1.x
 ---------------------
 - Prado 3.2 requires PHP >= 5.2 
+- Prado 3.2 doesn't use anymore a separate clientscripts.php script to publish minified javascript files.
+  If you were relying (linking directly) to that script to get some js file, you'll need to re-adapt your
+  scripts. Remember, linking directly a file in the assets/ directory is always a bad idea, let Prado do
+  it for you using publishAssets().
+- Ticket #325 enabled pregressive rendering inside Prado. Previously, all the output of Prado was
+  buffered and sent to the client all at once. Now, you decide to render smaller parts of the page
+  and send them to client right after completed, one after the other (see TFlushOutput documentation).
+  To ensure proper working of components requiring "head" resources (like external javascript files),
+  all the resource publishing needs to be made before the actual rendering occurs. Tipically the best
+  idea is to do it inside the onPreRender event. All the Prado components have been (obviously) updated
+  to support this change, but any custom component made by yourself could need some update efforts.
+  The easist way to understand if a component is broken because of this change is to check if you get a
+  'Operation invalid when page is already rendering' exception.
+ 
+
+
+Upgrading from v3.1.10
+----------------------
+
+Upgrading from v3.1.9
+---------------------
 
 Upgrading from v3.1.8
 ---------------------

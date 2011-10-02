@@ -1,8 +1,5 @@
 Version 3.2 to be released
-NEW: Issue#83 - PHP configuration style (Carl)
-BUG: Issue#232 Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 BUG: Fixed an inconsistency in TRegularExpressionValidator
-ENH: Issue#173 - Add "dragdropextra" (superghosting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
 EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMappingPatternSecureConnection to make it possible to to define wether to use http or https on pattern level (Yves)
@@ -14,6 +11,36 @@ EHN: Modify TActiveRecordConfig & TActiveRecordManager to allow custom subclassi
 EHN: Add methods quoteTableName, quoteColumnName, quoteColumnAlias to TDbMetaData & TDbConnection and add TDbConnection:getDbMetaData [TODO: customize TOracleMetaData] (Yves)
 EHN: Add method getHeaders to THttpRequest & THttpResponse (Yves)
 EHN: Modify TThemeManager to allow custom subclassing of TTheme (Yves)
+NEW: Issue  #83 - PHP configuration style (Carl)
+ENH: Issue #106 - TJavaScript::jsonEncode and TJavaScript::jsonDecode should use built-in PHP functions (ctrlaltca)
+ENH: Issue #173 - Add "dragdropextra" (supergsting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
+BUG: Issue #179 - Serialization issues in Prado (ctrlaltca)
+BUG: Issue #181 - Fixed regression introduced by the patch for #181 (ctrlaltca)
+BUG: Issue #203 - Workaround for ->CallbackClient->click under IE<=8 (ctrlaltca)
+BUG: Issue #232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
+ENH: Issue #235 - Progressive rendering not possible (Gabor)
+BUG: Issue #243 - Cross-site scripting issue in TForm (ctrlaltca)
+BUG: Issue #265 - Using scroll wheel causes NaN values in TDatePicker (Gabor)
+BUG: Issue #301 - Fixed a bug in TActiveFileUpload (ctrlaltca)
+ENH: Issue #337 - Prado serialization optimizations (Gabor)
+BUG: Issue #341 - TSafeHtmlParser messes up UTF8-encoded strings (ctrlaltca)
+BUG: Issue #348 - Scripts for dynamically created controls not registered properly in/after a callback (Gabor)
+BUG: Issue #351 - THtmlArea prone to double-registration, doesn't deregister properly (Gabor)
+BUG: Issue #353 - Accordion control behaves oddly if clicked too fast (Gabor)
+ENH: Issue #356 - Added a new "Clickable" operating mode to TDatePicker (ctrlaltca)
+BUG: Issue #361 - TActiveListBox multiple selection bug (ctrlaltca)
+BUG: Issue #366 - Use divs instead of spans around tables in TActiveDataGrid (ctrlaltca)
+
+Version 3.1.10 Jul 17, 2011
+BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
+BUG: Issue#332 - Minor typos (ctrlaltca)
+BUG: Issue#333 - Wrong tracker url on quickstart (ctrlaltca)
+BUG: Issue#334 - Wrong variable acces in TTemplateControlInheritable (ctrlaltca)
+BUG: Issue#335 - setcookie() bug (ctrlaltca)
+BUG: Issue#343 - New TTabPanel breaks compatibility (ctrlaltca)
+BUG: Issue#349 - Security problem in TActiveFileUpload control (Gabor)
+ENH: Merged a bit TPager's view style with TDataGridPager's one adding first/last buttons to TDataGridPagerStyle (ctrlaltca)
+ENH: Reworked the patch for #103 so that it actually fixes the use of TActiveCustomValidator with normal Postback controls (ctrlaltca)
 
 Version 3.1.9 June 3, 2011
 BUG: Issue#280 - Documentation has been updated
