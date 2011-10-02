@@ -25,7 +25,8 @@ Upgrading from v3.1.x
   to support this change, but any custom component made by yourself could need some update efforts.
   The easist way to understand if a component is broken because of this change is to check if you get a
   'Operation invalid when page is already rendering' exception.
- 
+- A new "TReCaptcha" control has been added to overcome the limited security offered by TCaptcha. If you
+  are currently using TCaptcha, an update to the new control is really adviced. 
 
 
 Upgrading from v3.1.10
