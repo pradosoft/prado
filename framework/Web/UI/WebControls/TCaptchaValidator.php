@@ -16,6 +16,10 @@ Prado::using('System.Web.UI.WebControls.TCaptcha');
 /**
  * TCaptchaValidator class
  *
+ * Notice: while this class is easy to use and implement, it does not provide full security.
+ * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
+ * A better alternative is provided by {@link TReCaptchaValidator}.
+ *
  * TCaptchaValidator validates user input against a CAPTCHA represented by
  * a {@link TCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in CAPTCHA. Note, if the user does

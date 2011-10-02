@@ -2294,6 +2294,8 @@ framework/3rdParty/PhpShell/PHP/Shell/Options.php -text
 framework/3rdParty/PhpShell/README -text
 framework/3rdParty/PhpShell/php-shell-cmd.php -text
 framework/3rdParty/PhpShell/php-shell-init.php -text
+framework/3rdParty/ReCaptcha/LICENSE -text
+framework/3rdParty/ReCaptcha/recaptchalib.php -text
 framework/3rdParty/SafeHtml/HTMLSax3.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/Decorators.php -text
 framework/3rdParty/SafeHtml/HTMLSax3/States.php -text
@@ -2998,6 +3000,8 @@ framework/Web/UI/WebControls/TRadioButton.php -text
 framework/Web/UI/WebControls/TRadioButtonList.php -text
 framework/Web/UI/WebControls/TRangeValidator.php -text
 framework/Web/UI/WebControls/TRatingList.php -text
+framework/Web/UI/WebControls/TReCaptcha.php -text
+framework/Web/UI/WebControls/TReCaptchaValidator.php -text
 framework/Web/UI/WebControls/TRegularExpressionValidator.php -text
 framework/Web/UI/WebControls/TRepeatInfo.php -text
 framework/Web/UI/WebControls/TRepeater.php -text

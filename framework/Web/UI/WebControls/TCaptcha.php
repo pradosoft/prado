@@ -15,6 +15,10 @@ Prado::using('System.Web.UI.WebControls.TImage');
 /**
  * TCaptcha class.
  *
+ * Notice: while this class is easy to use and implement, it does not provide full security.
+ * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
+ * A better alternative is provided by {@link TReCaptcha}.
+ *
  * TCaptcha displays a CAPTCHA (a token displayed as an image) that can be used
  * to determine if the input is entered by a real user instead of some program.
  *

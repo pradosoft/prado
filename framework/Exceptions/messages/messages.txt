@@ -455,6 +455,15 @@ captcha_gd2_required					= TCaptcha requires PHP GD2 extension.
 captcha_imagettftext_required			= TCaptcha requires PHP GD2 extension with TrueType font support.
 captcha_imagepng_required				= TCaptcha requires PHP GD2 extension with PNG image format support.
 
+captchavalidator_captchacontrol_required	= TReCaptchaValidator.CaptchaControl must point to an existing TCaptcha control.
+captchavalidator_captchacontrol_inexistent	= TReCaptchaValidator.CaptchaControl {0} must point to an existing TCaptcha control.
+captchavalidator_captchacontrol_invalid		= TReCaptchaValidator.CaptchaControl {0} must point to an existing TCaptcha control.
+
+recaptcha_privatekey_unknown				= TReCaptcha.PrivateKey is unknown. To use reCAPTCHA you must get an API key.
+recaptcha_publickey_unknown				= TReCaptcha.PublicKey is unknown. To use reCAPTCHA you must get an API key.
+
+recaptchavalidator_captchacontrol_invalid		= TReCaptchaValidator.ControlToValidate must be an instance of TReCaptcha.
+
 slider_handle_class_invalid				= TSlider.HandleClass '{0}' is not a valid user class. The class must extends TSliderHandle.
 
 cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheModuleID '{0}' does not point to a valid cache module.
