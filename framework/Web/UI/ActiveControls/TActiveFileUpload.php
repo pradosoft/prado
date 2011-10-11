@@ -97,7 +97,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * the invocation of the attached event handlers.
 	 * @param TEventParameter event parameter to be passed to the event handlers
 	 */
-	public function onFileUpload($param){
+	public function onFileUpload($param)
+	{
 		if ($this->_flag->getValue() && $this->getPage()->getIsPostBack() && $param == $this->_target->getUniqueID()){
 			// save the file so that it will persist past the end of this return.
 			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
@@ -217,7 +218,7 @@ EOS;
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		$this->onFileUpload($this->getPage()->getRequest()->itemAt('tempActiveUploadField'));
+		$this->onFileUpload($this->getPage()->getRequest()->itemAt('TActiveFileUpload_TargetId'));
 	}
 	
 	protected function pushParamsAndGetToken(TActiveFileUploadCallbackParams $params)

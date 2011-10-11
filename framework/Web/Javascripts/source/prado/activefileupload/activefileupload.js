@@ -15,13 +15,6 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		
 		Prado.Registry.set(options.inputID, this);
 
-		var tempfield = document.createElement('input');
-		tempfield.id = "tempActiveUploadField";
-		tempfield.name = "tempActiveUploadField";
-		tempfield.value = this.options.targetID;
-		tempfield.type = "hidden";
-		this.form.appendChild(tempfield);
-		
 		// set up events
 		if (options.autoPostBack){
 			Event.observe(this.input,"change",this.fileChanged.bind(this));
