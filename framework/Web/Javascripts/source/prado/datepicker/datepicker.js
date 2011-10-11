@@ -57,7 +57,7 @@ Prado.WebUI.TDatePicker.prototype =
 
 	CalendarStyle : "default",
 
-	FromYear : 2000, UpToYear: 2015,
+	FromYear : 2005, UpToYear: 2020,
 
 	initialize : function(options)
 	{
@@ -66,7 +66,6 @@ Prado.WebUI.TDatePicker.prototype =
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
-		this.selectedDate = this.newDate();
 		this.positionMode = 'Bottom';
 		
 		Prado.Registry.set(options.ID, this);
@@ -90,7 +89,9 @@ Prado.WebUI.TDatePicker.prototype =
 		}
 
 		Object.extend(this,options);
-
+		// generate default date _after_ extending options
+		this.selectedDate = this.newDate();
+		
 		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
 		
 		// Listen to change event if needed
