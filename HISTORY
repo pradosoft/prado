@@ -32,6 +32,7 @@ BUG: Issue #353 - Accordion control behaves oddly if clicked too fast (Gabor)
 ENH: Issue #356 - Added a new "Clickable" operating mode to TDatePicker (ctrlaltca)
 BUG: Issue #361 - TActiveListBox multiple selection bug (ctrlaltca)
 BUG: Issue #366 - Use divs instead of spans around tables in TActiveDataGrid (ctrlaltca)
+BUG: Issue #365 - [Runtime Notice] Declaration of T${DriverName}MetaData::quoteTableName() should be compatible with that of TDbMetaData::quoteTableName() (Yves)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)

@@ -132,9 +132,13 @@ abstract class TDbMetaData extends TComponent
 	 * @param string $rgt right delimiter
 	 * @return string the properly quoted table name
 	 */
-	public function quoteTableName($name, $lft='', $rgt='')
+	public function quoteTableName($name)
 	{
 		$name = str_replace(self::$delimiterIdentifier, '', $name);
+
+		$args = func_get_args();
+		$rgt = $lft = isset($args[1]) ? $args[1] : '';
+		$rgt = isset($args[2]) ? $args[2] : $rgt;
 
 		if(strpos($name, '.')===false)
 			return $lft . $name . $rgt;
@@ -151,8 +155,12 @@ abstract class TDbMetaData extends TComponent
 	 * @param string $rgt right delimiter
 	 * @return string the properly quoted column name
 	 */
-	public function quoteColumnName($name, $lft='', $rgt='')
+	public function quoteColumnName($name)
 	{
+		$args = func_get_args();
+		$rgt = $lft = isset($args[1]) ? $args[1] : '';
+		$rgt = isset($args[2]) ? $args[2] : $rgt;
+
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
 
@@ -163,8 +171,12 @@ abstract class TDbMetaData extends TComponent
 	 * @param string $rgt right delimiter
 	 * @return string the properly quoted column alias
 	 */
-	public function quoteColumnAlias($name, $lft='', $rgt='')
+	public function quoteColumnAlias($name)
 	{
+		$args = func_get_args();
+		$rgt = $lft = isset($args[1]) ? $args[1] : '';
+		$rgt = isset($args[2]) ? $args[2] : $rgt;
+
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
 }
