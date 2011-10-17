@@ -120,7 +120,7 @@ class TUrlMapping extends TUrlManager
 	protected function loadConfigFile()
 	{
 		if(is_file($this->_configFile))
- 		{
+		{
 			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 			{
 				$config = include $this->_configFile;
@@ -227,6 +227,8 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected function loadUrlMappings($config)
 	{
+		$defaultClass = $this->getDefaultMappingClass();
+
 		if(is_array($config))
 		{
 			if(isset($config['urls']) && is_array($config['urls']))
@@ -235,7 +237,7 @@ class TUrlMapping extends TUrlManager
 				{
 					$class=null;
 					if(!isset($url['class']))
-						$class=$this->getDefaultMappingClass();
+						$class=$defaultClass;
 					$pattern=Prado::createComponent($class,$this);
 					$properties = isset($url['properties'])?$url['properties']:array();
 					$this->buildUrlMapping($class,$pattern,$properties,$url);
@@ -248,7 +250,7 @@ class TUrlMapping extends TUrlManager
 			{
 				$properties=$url->getAttributes();
 				if(($class=$properties->remove('class'))===null)
-					$class=$this->getDefaultMappingClass();
+					$class=$defaultClass;
 				$pattern=Prado::createComponent($class,$this);
 				$this->buildUrlMapping($class,$pattern,$properties,$url);
 			}
@@ -262,6 +264,23 @@ class TUrlMapping extends TUrlManager
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 		foreach($properties as $name=>$value)
 			$pattern->setSubproperty($name,$value);
+
+		if($url instanceof TXmlElement) {
+			$text = $url -> getValue();
+			if($text) {
+				$text = preg_replace('/(\s+)/S', '', $text);
+				if(($regExp = $pattern->getRegularExpression()) !== '')
+				trigger_error(sPrintF('%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
+				get_class($pattern),
+				$regExp,
+				$pattern->getServiceID(),
+				$pattern->getServiceParameter(),
+				$text),
+				E_USER_NOTICE);
+				$pattern->setRegularExpression($text);
+			}
+		}
+
 		$this->_patterns[]=$pattern;
 		$pattern->init($url);
 
@@ -325,8 +344,8 @@ class TUrlMapping extends TUrlManager
 	{
 		if($this->_customUrl)
 		{
-	 		if(!(is_array($getItems) || ($getItems instanceof Traversable)))
-	 			$getItems=array();
+			if(!(is_array($getItems) || ($getItems instanceof Traversable)))
+				$getItems=array();
 			$key=$serviceID.':'.$serviceParam;
 			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
 				$serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
@@ -337,7 +356,7 @@ class TUrlMapping extends TUrlManager
 					if($rule->supportCustomUrl($getItems))
 						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
 				}
-			} 
+			}
 			elseif(isset($this->_constructRules[$wildCardKey]))
 			{
 				foreach($this->_constructRules[$wildCardKey] as $rule)
@@ -392,10 +411,12 @@ class TUrlMapping extends TUrlManager
  * by {@link setRegularExpression RegularExpression}. For example, the above pattern
  * is equivalent to the following regular expression-based pattern:
  * <code>
- * /^articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)$/u
+ * #^articles/(?P<year>\d{4})/(?P<month>\d{2})\/(?P<day>\d+)$#u
  * </code>
  * The above regular expression used the "named group" feature available in PHP.
- * Notice that you need to escape the slash in regular expressions.
+ * If you intended to use the <tt>RegularExpression</tt> property or
+ * regular expressions in CDATA sections, notice that you need to escape the slash,
+ * if you are using the slash as regular expressions delimiter.
  *
  * Thus, only an url that matches the pattern will be valid. For example,
  * a URL <tt>http://example.com/index.php/articles/2006/07/21</tt> will match the above pattern,
@@ -409,7 +430,7 @@ class TUrlMapping extends TUrlManager
  * (the default ID is 'page') set the service parameter and service id respectively.
  *
  * Since 3.1.4 you can also use simplyfied wildcard patterns to match multiple
- * ServiceParameters with a single rule. The pattern must contain the placeholder 
+ * ServiceParameters with a single rule. The pattern must contain the placeholder
  * {*} for the ServiceParameter. For example
  *
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}" />
@@ -417,24 +438,24 @@ class TUrlMapping extends TUrlManager
  * This rule will match an URL like <tt>http://example.com/index.php/admin/edituser</tt>
  * and resolve it to the page Application.pages.admin.edituser. The wildcard matching
  * is non-recursive. That means you have to add a rule for every subdirectory you
- * want to access pages in: 
+ * want to access pages in:
  *
  * <url ServiceParameter="adminpages.users.*" pattern="useradmin/{*}" />
  *
  * It is still possible to define an explicit rule for a page in the wildcard path.
  * This rule has to preceed the wildcard rule.
  *
- * You can also use parameters with wildcard patterns. The parameters are then 
+ * You can also use parameters with wildcard patterns. The parameters are then
  * available with every matching page:
  *
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}/{id}" parameters.id="\d+" />
  *
- * To enable automatic parameter encoding in a path format fro wildcard patterns you can set 
- * {@setUrlFormat UrlFormat} to 'Path': 
+ * To enable automatic parameter encoding in a path format fro wildcard patterns you can set
+ * {@setUrlFormat UrlFormat} to 'Path':
  *
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}" UrlFormat="Path" />
  *
- * This will create and parse URLs of the form 
+ * This will create and parse URLs of the form
  * <tt>.../index.php/admin/listuser/param1/value1/param2/value2</tt>.
  *
  * Use {@setUrlParamSeparator} to define another separator character between parameter
@@ -518,8 +539,8 @@ class TUrlMappingPattern extends TComponent
 	{
 		if($this->_serviceParameter===null)
 			throw new TConfigurationException('urlmappingpattern_serviceparameter_required', $this->getPattern());
-		if(strpos($this->_serviceParameter,'*')!==false) 
-		    $this->_isWildCardPattern=true;
+		if(strpos($this->_serviceParameter,'*')!==false)
+				$this->_isWildCardPattern=true;
 	}
 
 	/**
@@ -537,17 +558,17 @@ class TUrlMappingPattern extends TComponent
 			$values[]='(?P<'.$key.'>'.$value.')';
 		}
 		if ($this->getIsWildCardPattern()) {
-		    $params[]='{*}';
-		    // service parameter must not contain '=' and '/'
-		    $values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
+				$params[]='{*}';
+				// service parameter must not contain '=' and '/'
+				$values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
 		}
 		$params[]='/';
 		$values[]='\\/';
 		$regexp=str_replace($params,$values,trim($this->getPattern(),'/').'/');
 		if ($this->_urlFormat===THttpRequestUrlFormat::Get)
-		    $regexp='/^'.$regexp.'$/u';
-		else 
-		    $regexp='/^'.$regexp.'(?P<urlparams>.*)$/u';
+				$regexp='/^'.$regexp.'$/u';
+		else
+				$regexp='/^'.$regexp.'(?P<urlparams>.*)$/u';
 
 		if(!$this->getCaseSensitive())
 			$regexp.='i';
@@ -670,12 +691,12 @@ class TUrlMappingPattern extends TComponent
 		if (isset($matches['urlparams']))
 		{
 			$params=explode('/',$matches['urlparams']);
-			if ($this->_separator==='/') 
+			if ($this->_separator==='/')
 			{
 				while($key=array_shift($params))
 					$matches2[$key]=($value=array_shift($params)) ? $value : '';
-			} 
-			else 
+			}
+			else
 			{
 				array_pop($params);
 				foreach($params as $param)
