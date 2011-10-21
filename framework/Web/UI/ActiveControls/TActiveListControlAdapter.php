@@ -46,6 +46,15 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
+			// if a prompt is set, we mimic the postback behaviour of not counting it
+			// in the index. We assume the prompt is _always_ the first item (Issue #368)
+			$promptValue=$this->getControl()->getPromptValue();
+			if($promptValue==='')
+				$promptValue=$this->getControl()->getPromptText();
+			if($promptValue!=='')
+				$index++;
+
+			if($index >= 0 && $index <= $this->getControl()->getItemCount())
 			$this->getPage()->getCallbackClient()->select(
 					$this->getControl(), 'Index', $index);
 		}
@@ -61,10 +70,17 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		{
 			$this->updateListItems();
 			$n = $this->getControl()->getItemCount();
+
+			$promptValue=$this->getControl()->getPromptValue();
+			if($promptValue==='')
+				$promptValue=$this->getControl()->getPromptText();
+
 			$list = array();
 			foreach($indices as $index)
 			{
 				$index = intval($index);
+				if($promptValue!=='')
+					$index++;
 				if($index >= 0 && $index <= $n)
 					$list[] = $index;
 			}
@@ -114,7 +130,14 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
-			$this->getPage()->getCallbackClient()->select($this->getControl(), 'Clear');
+			if($this->getControl() instanceof TActiveDropDownList)
+			{
+				// clearing a TActiveDropDownList's selection actually doesn't select the first item;
+				// we mimic the postback behaviour selecting it (Issue #368)
+				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Index', 0);
+			} else {
+				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Clear');
+			}
 		}
     }
 

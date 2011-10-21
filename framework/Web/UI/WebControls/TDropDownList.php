@@ -32,6 +32,12 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * displayed as the first list item by specifying either {@link setPromptText PromptText} or
  * {@link setPromptValue PromptValue}, or both. Choosing the prompt item will unselect the TDropDownList.
  *
+ * When a prompt item is set, its index in the list is set to -1. So, the {@link getSelectedIndex SelectedIndex}
+ * property is not affected by a prompt item: the items list will still be zero-based.
+ *
+ * The {@link clearSelection clearSelection} method will select the prompt item if existing, otherway the first
+ * available item in the dropdown list will be selected.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
  * @package System.Web.UI.WebControls
