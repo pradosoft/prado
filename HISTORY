@@ -34,6 +34,7 @@ BUG: Issue #361 - TActiveListBox multiple selection bug (ctrlaltca)
 BUG: Issue #366 - Use divs instead of spans around tables in TActiveDataGrid (ctrlaltca)
 BUG: Issue #365 - [Runtime Notice] Declaration of T${DriverName}MetaData::quoteTableName() should be compatible with that of TDbMetaData::quoteTableName() (Yves)
 BUG: Issue #367 - Parameterized RegularExpression property in UrlMapping raise TPhpErrorException in DOMDocument::loadXML() (Yves)
+BUG: Issue #368 - Clearing selection of a TActiveDropDownList in callback should select its prompt (ctrlaltca)
 ENH: Performance (micro)optimization in TUrlMapping::loadUrlMappings - invoke `getDefaultMappingClass` outside of loop (Yves)
 
 Version 3.1.10 Jul 17, 2011
