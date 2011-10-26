@@ -58,10 +58,10 @@ class TDataFieldAccessor
 			{
 				if(strpos($field,'.')===false)  // simple field
 				{
-					if(property_exists($data,$field))
-						return $data->{$field};
-					else
+					if(method_exists($data, 'get'.$field))
 						return call_user_func(array($data,'get'.$field));
+					else
+						return $data->{$field};
 				}
 				else // field in the format of xxx.yyy.zzz
 				{
