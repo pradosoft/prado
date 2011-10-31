@@ -36,6 +36,8 @@ BUG: Issue #365 - [Runtime Notice] Declaration of T${DriverName}MetaData::quoteT
 BUG: Issue #367 - Parameterized RegularExpression property in UrlMapping raise TPhpErrorException in DOMDocument::loadXML() (Yves)
 BUG: Issue #368 - Clearing selection of a TActiveDropDownList in callback should select its prompt (ctrlaltca)
 ENH: Performance (micro)optimization in TUrlMapping::loadUrlMappings - invoke `getDefaultMappingClass` outside of loop (Yves)
+BUG: TActiveMultiView must update clientside only when necessary to get other active controls work fine inside it (ctrlaltca)
+BUG: TListBox doesn't correctly reports selected indices to serverside on callback
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)

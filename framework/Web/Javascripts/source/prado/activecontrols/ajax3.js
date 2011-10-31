@@ -869,7 +869,13 @@ Prado.CallbackRequest.prototype = Object.extend(Prado.AjaxRequest.prototype,
 		{
 			callback.PostDataLoaders.each(function(name)
 			{
-				$A(document.getElementsByName(name)).each(function(element)
+				var elements=$A(document.getElementsByName(name));
+				if(elements.size() == 0)
+				{
+					name += '[]';
+					elements=$A(document.getElementsByName(name));
+				}
+				elements.each(function(element)
 				{
 					//IE will try to get elements with ID == name as well.
 					if(element.type && element.name == name)
