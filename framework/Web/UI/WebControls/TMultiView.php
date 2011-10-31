@@ -229,14 +229,14 @@ class TMultiView extends TControl
 						$this->setActiveViewIndex($index-1);
 					return true;
 				case self::CMD_SWITCHVIEWID:
-					$view=$this->findControl($param->getCommandParameter());
+					$view=$this->findControl($viewID=$param->getCommandParameter());
 					if($view!==null && $view->getParent()===$this)
 					{
 						$this->setActiveView($view);
 						return true;
 					}
 					else
-						throw new TInvalidDataValueException('multiview_viewid_invalid');
+						throw new TInvalidDataValueException('multiview_viewid_invalid', $viewID);
 				case self::CMD_SWITCHVIEWINDEX:
 					$index=TPropertyValue::ensureInteger($param->getCommandParameter());
 					$this->setActiveViewIndex($index);

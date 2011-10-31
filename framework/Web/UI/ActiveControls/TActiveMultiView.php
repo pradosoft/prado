@@ -92,8 +92,9 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	*/
 	public function setActiveViewIndex($value)
 	{
+		$old=parent::getActiveViewIndex();
 		parent::setActiveViewIndex($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if($this->getActiveControl()->canUpdateClientSide() && $old!=$value)
 			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
 	}
 
@@ -103,8 +104,9 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	*/
 	public function setActiveView($value)
 	{
+		$old=parent::getActiveView();
 		parent::setActiveView($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if($this->getActiveControl()->canUpdateClientSide() && $old!=$value)
 			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
 	}
 }

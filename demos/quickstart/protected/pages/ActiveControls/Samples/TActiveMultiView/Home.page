@@ -9,7 +9,7 @@
     <com:TActiveTextBox ID="Memo" />
     <hr/>
     <com:TActiveButton Text="View 2" CommandName="NextView" />
-    <com:TActiveButton Text="View 3" CommandName="SwitchViewIndex" ActiveControl.CallbackParameter="2" />
+    <com:TActiveButton Text="View 3" CommandName="SwitchViewIndex" CommandParameter="2" />
   </com:TView>
   <com:TView>
     <h2>View 2</h2>
@@ -29,7 +29,7 @@
     <br/>
     <com:TActiveLabel ID="Result2" />
     <hr/>
-    <com:TActiveButton Text="View 1" CommandName="SwitchViewID" ActiveControl.CallbackParameter="View1" />
+    <com:TActiveButton Text="View 1" CommandName="SwitchViewID" CommandParameter="View1" />
     <com:TActiveButton Text="View 2" CommandName="PreviousView" />
   </com:TView>
 </com:TActiveMultiView>
