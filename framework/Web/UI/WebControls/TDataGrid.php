@@ -227,6 +227,14 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	}
 
 	/**
+	 * @return string Name of the class used in AutoGenerateColumns mode
+	 */
+	protected function getAutoGenerateColumnName()
+	{
+		return 'TBoundColumn';
+	}
+
+	/**
 	 * Adds objects parsed in template to datagrid.
 	 * Datagrid columns are added into {@link getColumns Columns} collection.
 	 * @param mixed object parsed in template
@@ -909,7 +917,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 				$this->_autoColumns=new TDataGridColumnCollection($this);
 				foreach($state as $st)
 				{
-					$column=new TBoundColumn;
+					$column=new $this->AutoGenerateColumnName;
 					$column->loadState($st);
 					$this->_autoColumns->add($column);
 				}
@@ -1404,7 +1412,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			foreach($row as $key=>$value)
 			{
-				$column=new TBoundColumn;
+				$column=new $this->AutoGenerateColumnName;
 				if(is_string($key))
 				{
 					$column->setHeaderText($key);

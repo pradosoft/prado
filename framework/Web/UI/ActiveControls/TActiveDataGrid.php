@@ -52,10 +52,19 @@ Prado::using('System.Web.UI.WebControls.TCheckBoxColumn');
  * @since 3.1.9
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable {
-/**
- * Creates a new callback control, sets the adapter to
- * TActiveControlAdapter.
- */
+
+	/**
+	 * @return string Name of the class used in AutoGenerateColumns mode
+	 */
+	protected function getAutoGenerateColumnName()
+	{
+		return 'TActiveBoundColumn';
+	}
+
+	/**
+	* Creates a new callback control, sets the adapter to
+	* TActiveControlAdapter.
+	*/
 	public function __construct() {
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
