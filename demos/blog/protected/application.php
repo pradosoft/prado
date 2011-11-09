@@ -20,7 +20,7 @@ return array(
 		),
 		
 		'cache' => array(
-			'class' => 'System.Caching.TSqliteCache',
+			'class' => 'System.Caching.TDbCache',
 		),
 		
 		'error' => array(

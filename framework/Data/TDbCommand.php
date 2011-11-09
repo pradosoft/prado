@@ -133,6 +133,8 @@ class TDbCommand extends TComponent
 	 * using named placeholders, this will be a parameter name of
 	 * the form :name. For a prepared statement using question mark
 	 * placeholders, this will be the 1-indexed position of the parameter.
+	 * Unlike {@link bindValue}, the variable is bound as a reference and will
+	 * only be evaluated at the time that {@link execute} or {@link query} is called. 
 	 * @param mixed Name of the PHP variable to bind to the SQL statement parameter
 	 * @param int SQL data type of the parameter
 	 * @param int length of the data type

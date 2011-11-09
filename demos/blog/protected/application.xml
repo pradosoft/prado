@@ -9,7 +9,7 @@
     <!-- Remove this comment mark to enable PATH url format
     <module id="request" class="THttpRequest" UrlFormat="Path" />
     -->
-    <module id="cache" class="System.Caching.TSqliteCache" />
+    <module id="cache" class="System.Caching.TDbCache" />
     <module class="Application.Common.BlogErrorHandler" />
     <module id="log" class="System.Util.TLogRouter">
       <route class="TFileLogRoute" Categories="BlogApplication" />

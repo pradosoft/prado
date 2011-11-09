@@ -50,8 +50,14 @@ class BlogDataModule extends TModule
 		{
 			if(trim($statement)!=='')
 			{
-				if(@sqlite_query($this->_db,$statement)===false)
-					throw new BlogException(500,'blogdatamodule_createdatabase_failed',sqlite_error_string(sqlite_last_error($this->_db)),$statement);
+				try {
+					$command=$this->_db->createCommand($statement);
+					$command->execute();
+				}
+				catch(TDbException $e)
+				{
+					throw new BlogException(500,'blogdatamodule_createdatabase_failed',$e->getErrorMessage(),$statement);
+				}
 			}
 		}
 	}
@@ -60,9 +66,16 @@ class BlogDataModule extends TModule
 	{
 		$dbFile=$this->getDbFile();
 		$newDb=!is_file($dbFile);
-		$error='';
-		if(($this->_db=sqlite_open($dbFile,0666,$error))===false)
-			throw new BlogException(500,'blogdatamodule_dbconnect_failed',$error);
+
+		try {
+			$this->_db=new TDbConnection("sqlite:".$dbFile);
+			$this->_db->Active=true;
+		}
+		catch(TDbException $e)
+		{
+			throw new BlogException(500,'blogdatamodule_dbconnect_failed',$e->getErrorMessage());
+		}
+
 		if($newDb)
 			$this->createDatabase();
 	}
@@ -81,10 +94,14 @@ class BlogDataModule extends TModule
 
 	public function query($sql)
 	{
-		if(($result=@sqlite_query($this->_db,$sql))!==false)
-			return $result;
-		else
-			throw new BlogException(500,'blogdatamodule_query_failed',sqlite_error_string(sqlite_last_error($this->_db)),$sql);
+		try {
+			$command=$this->_db->createCommand($sql);
+			return $command->query();
+		}
+		catch(TDbException $e)
+		{
+			throw new BlogException(500,'blogdatamodule_query_failed',$e->getErrorMessage(),$sql);
+		}
 	}
 
 	protected function populateUserRecord($row)
@@ -108,8 +125,7 @@ class BlogDataModule extends TModule
 		if($filter!=='')
 			$filter='WHERE '.$filter;
 		$sql="SELECT * FROM tblUsers $filter $orderBy $limit";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$rows=$this->query($sql);
 		$users=array();
 		foreach($rows as $row)
 			$users[]=$this->populateUserRecord($row);
@@ -122,7 +138,7 @@ class BlogDataModule extends TModule
 			$filter='WHERE '.$filter;
 		$sql="SELECT COUNT(id) AS user_count FROM tblUsers $filter";
 		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		if(($row=$result->read())!==false)
 			return $row['user_count'];
 		else
 			return 0;
@@ -132,7 +148,7 @@ class BlogDataModule extends TModule
 	{
 		$sql="SELECT * FROM tblUsers WHERE id=$id";
 		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		if(($row=$result->read())!==false)
 			return $this->populateUserRecord($row);
 		else
 			return null;
@@ -140,10 +156,12 @@ class BlogDataModule extends TModule
 
 	public function queryUserByName($name)
 	{
-		$name=sqlite_escape_string($name);
-		$sql="SELECT * FROM tblUsers WHERE name='$name'";
-		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		$command=$this->_db->createCommand("SELECT * FROM tblUsers WHERE name=?");
+		$command->bindValue(1, $name);
+
+		$result=$command->query();
+
+		if(($row=$result->read())!==false)
 			return $this->populateUserRecord($row);
 		else
 			return null;
@@ -151,42 +169,51 @@ class BlogDataModule extends TModule
 
 	public function insertUser($user)
 	{
-		$name=sqlite_escape_string($user->Name);
-		$fullName=sqlite_escape_string($user->FullName);
-		$passwd=sqlite_escape_string($user->Password);
-		$email=sqlite_escape_string($user->Email);
-		$website=sqlite_escape_string($user->Website);
-		$createTime=time();
-		$sql="INSERT INTO tblUsers ".
+		$command=$this->_db->createCommand("INSERT INTO tblUsers ".
 				"(name,full_name,role,passwd,email,reg_time,status,website) ".
-				"VALUES ('$name','$fullName',{$user->Role},'$passwd','$email',$createTime,{$user->Status},'$website')";
-		$this->query($sql);
-		$user->ID=sqlite_last_insert_rowid($this->_db);
+				"VALUES (?,?,?,?,?,?,?,?)");
+		$command->bindValue(1, $user->Name);
+		$command->bindValue(2, $user->FullName);
+		$command->bindValue(3, $user->Role);
+		$command->bindValue(4, $user->Password);
+		$command->bindValue(5, $user->Email);
+		$command->bindValue(6, time());
+		$command->bindValue(7, $user->Status);
+		$command->bindValue(8, $user->Website);
+		$command->execute();
+
+		$user->ID=$this->_db->getLastInsertID();
 	}
 
 	public function updateUser($user)
 	{
-		$name=sqlite_escape_string($user->Name);
-		$fullName=sqlite_escape_string($user->FullName);
-		$passwd=sqlite_escape_string($user->Password);
-		$email=sqlite_escape_string($user->Email);
-		$website=sqlite_escape_string($user->Website);
-		$sql="UPDATE tblUsers SET
-				name='$name',
-				full_name='$fullName',
-				role={$user->Role},
-				passwd='$passwd',
-				vcode='{$user->VerifyCode}',
-				email='$email',
-				status={$user->Status},
-				website='$website'
-				WHERE id={$user->ID}";
-		$this->query($sql);
+		$command=$this->_db->createCommand("UPDATE tblUsers SET
+				name=?,
+				full_name=?,
+				role=?,
+				passwd=?,
+				vcode=?,
+				email=?,
+				status=?,
+				website=?
+				WHERE id=?");
+		$command->bindValue(1, $user->Name);
+		$command->bindValue(2, $user->FullName);
+		$command->bindValue(3, $user->Role);
+		$command->bindValue(4, $user->Password);
+		$command->bindValue(5, $user->VerifyCode);
+		$command->bindValue(6, $user->Email);
+		$command->bindValue(7, $user->Status);
+		$command->bindValue(8, $user->Website);
+		$command->bindValue(9, $user->ID);
+		$command->execute();
 	}
 
 	public function deleteUser($id)
 	{
-		$this->query("DELETE FROM tblUsers WHERE id=$id");
+		$command=$this->_db->createCommand("DELETE FROM tblUsers WHERE id=?");
+		$command->bindValue(1, $id);
+		$command->execute();
 	}
 
 	protected function populatePostRecord($row)
@@ -209,6 +236,7 @@ class BlogDataModule extends TModule
 
 	public function queryPosts($postFilter,$categoryFilter,$orderBy,$limit)
 	{
+		//FIXME this is insecure by design since it misses proper escaping 
 		$filter='';
 		if($postFilter!=='')
 			$filter.=" AND $postFilter";
@@ -226,16 +254,54 @@ class BlogDataModule extends TModule
 					a.comment_count AS comment_count
 				FROM tblPosts a, tblUsers b
 				WHERE a.author_id=b.id $filter $orderBy $limit";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$rows=$this->query($sql);
 		$posts=array();
 		foreach($rows as $row)
 			$posts[]=$this->populatePostRecord($row);
 		return $posts;
 	}
 
+	public function queryPostsSearch($keywords,$orderBy,$limit)
+	{
+		$sql="SELECT a.id AS id,
+					a.author_id AS author_id,
+					b.name AS author_name,
+					b.full_name AS author_full_name,
+					a.create_time AS create_time,
+					a.modify_time AS modify_time,
+					a.title AS title,
+					a.content AS content,
+					a.status AS status,
+					a.comment_count AS comment_count
+				FROM tblPosts a, tblUsers b
+				WHERE a.author_id=b.id AND a.status=0";
+
+		foreach($keywords as $keyword)
+			$sql.=" AND (content LIKE ? OR title LIKE ?)";
+
+		$sql.=" $orderBy $limit";
+
+		$command=$this->_db->createCommand($sql);
+
+		$i=1;
+		foreach($keywords as $keyword)
+		{
+			$command->bindValue($i, "%".$keyword."%");
+			$i++;
+		}
+
+		$rows=$command->query();
+
+		$posts=array();
+		foreach($rows as $row)
+			$posts[]=$this->populatePostRecord($row);
+		return $posts;
+
+	}
+
 	public function queryPostCount($postFilter,$categoryFilter)
 	{
+		//FIXME this is insecure by design since it misses proper escaping 
 		$filter='';
 		if($postFilter!=='')
 			$filter.=" AND $postFilter";
@@ -245,7 +311,7 @@ class BlogDataModule extends TModule
 				FROM tblPosts a, tblUsers b
 				WHERE a.author_id=b.id $filter";
 		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		if(($row=$result->read())!==false)
 			return $row['post_count'];
 		else
 			return 0;
@@ -264,28 +330,33 @@ class BlogDataModule extends TModule
 		             a.status AS status,
 		             a.comment_count AS comment_count
 		      FROM tblPosts a, tblUsers b
-		      WHERE a.id=$id AND a.author_id=b.id";
-		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		      WHERE a.id=? AND a.author_id=b.id";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+
+		$result=$command->query();
+
+		if(($row=$result->read())!==false)
 			return $this->populatePostRecord($row);
 		else
 			return null;
 	}
 
-	public function escapeString($string)
-	{
-		return sqlite_escape_string($string);
-	}
-
 	public function insertPost($post,$catIDs)
 	{
-		$title=sqlite_escape_string($post->Title);
-		$content=sqlite_escape_string($post->Content);
-		$sql="INSERT INTO tblPosts
+		$command=$this->_db->createCommand("INSERT INTO tblPosts
 				(author_id,create_time,modify_time,title,content,status)
-				VALUES ({$post->AuthorID},{$post->CreateTime},{$post->ModifyTime},'$title','$content',{$post->Status})";
-		$this->query($sql);
-		$post->ID=sqlite_last_insert_rowid($this->_db);
+				VALUES (?,?,?,?,?,?)");
+		$command->bindValue(1, $post->AuthorID);
+		$command->bindValue(2, $post->CreateTime);
+		$command->bindValue(3, $post->ModifyTime);
+		$command->bindValue(4, $post->Title);
+		$command->bindValue(5, $post->Content);
+		$command->bindValue(6, $post->Status);
+
+		$command->execute();
+		$post->ID=$this->_db->getLastInsertID();
 		foreach($catIDs as $catID)
 			$this->insertPostCategory($post->ID,$catID);
 	}
@@ -306,15 +377,19 @@ class BlogDataModule extends TModule
 				$this->insertPostCategory($post->ID,$id);
 		}
 
-		$title=sqlite_escape_string($post->Title);
-		$content=sqlite_escape_string($post->Content);
-		$sql="UPDATE tblPosts SET
-				modify_time={$post->ModifyTime},
-				title='$title',
-				content='$content',
-				status={$post->Status}
-				WHERE id={$post->ID}";
-		$this->query($sql);
+		$command=$this->_db->createCommand("UPDATE tblPosts SET
+				modify_time=?,
+				title=?,
+				content=?,
+				status=?
+				WHERE id=?");
+		$command->bindValue(1, $post->ModifyTime);
+		$command->bindValue(2, $post->Title);
+		$command->bindValue(3, $post->Content);
+		$command->bindValue(4, $post->Status);
+		$command->bindValue(5, $post->ID);
+
+		$command->execute();
 	}
 
 	public function deletePost($id)
@@ -322,8 +397,14 @@ class BlogDataModule extends TModule
 		$cats=$this->queryCategoriesByPostID($id);
 		foreach($cats as $cat)
 			$this->deletePostCategory($id,$cat->ID);
-		$this->query("DELETE FROM tblComments WHERE post_id=$id");
-		$this->query("DELETE FROM tblPosts WHERE id=$id");
+
+		$command=$this->_db->createCommand("DELETE FROM tblComments WHERE post_id=?");
+		$command->bindValue(1, $id);
+		$command->execute();
+
+		$command=$this->_db->createCommand("DELETE FROM tblPosts WHERE id=?");
+		$command->bindValue(1, $id);
+		$command->execute();
 	}
 
 	protected function populateCommentRecord($row)
@@ -343,11 +424,11 @@ class BlogDataModule extends TModule
 
 	public function queryComments($filter,$orderBy,$limit)
 	{
+		//FIXME this is insecure by design since it misses proper escaping 
 		if($filter!=='')
 			$filter='WHERE '.$filter;
 		$sql="SELECT * FROM tblComments $filter $orderBy $limit";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$rows=$this->query($sql);
 		$comments=array();
 		foreach($rows as $row)
 			$comments[]=$this->populateCommentRecord($row);
@@ -356,9 +437,12 @@ class BlogDataModule extends TModule
 
 	public function queryCommentsByPostID($id)
 	{
-		$sql="SELECT * FROM tblComments WHERE post_id=$id ORDER BY create_time DESC";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$sql="SELECT * FROM tblComments WHERE post_id=? ORDER BY create_time DESC";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+
+		$rows=$command->query();
+
 		$comments=array();
 		foreach($rows as $row)
 			$comments[]=$this->populateCommentRecord($row);
@@ -367,35 +451,50 @@ class BlogDataModule extends TModule
 
 	public function insertComment($comment)
 	{
-		$authorName=sqlite_escape_string($comment->AuthorName);
-		$authorEmail=sqlite_escape_string($comment->AuthorEmail);
-		$authorWebsite=sqlite_escape_string($comment->AuthorWebsite);
-		$content=sqlite_escape_string($comment->Content);
 		$sql="INSERT INTO tblComments
 				(post_id,author_name,author_email,author_website,author_ip,create_time,status,content)
-				VALUES ({$comment->PostID},'$authorName','$authorEmail','$authorWebsite','{$comment->AuthorIP}',{$comment->CreateTime},{$comment->Status},'$content')";
-		$this->query($sql);
-		$comment->ID=sqlite_last_insert_rowid($this->_db);
+				VALUES (?,?,?,?,?,?,?,?)";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $comment->PostID);
+		$command->bindValue(2, $comment->AuthorName);
+		$command->bindValue(3, $comment->AuthorEmail);
+		$command->bindValue(4, $comment->AuthorWebsite);
+		$command->bindValue(5, $comment->AuthorIP);
+		$command->bindValue(6, $comment->CreateTime);
+		$command->bindValue(7, $comment->Status);
+		$command->bindValue(8, $comment->Content);
+
+		$command->execute();
+		$comment->ID=$this->_db->getLastInsertID();
 		$this->query("UPDATE tblPosts SET comment_count=comment_count+1 WHERE id={$comment->PostID}");
 	}
 
 	public function updateComment($comment)
 	{
-		$authorName=sqlite_escape_string($comment->AuthorName);
-		$authorEmail=sqlite_escape_string($comment->AuthorEmail);
-		$content=sqlite_escape_string($comment->Content);
-		$sql="UPDATE tblComments SET status={$comment->Status} WHERE id={$comment->ID}";
-		$this->query($sql);
+		$sql="UPDATE tblComments SET status=? WHERE id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $comment->Status);
+		$command->bindValue(2, $comment->ID);
+
+		$command->execute();
 	}
 
 	public function deleteComment($id)
 	{
-		$result=$this->query("SELECT post_id FROM tblComments WHERE id=$id");
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		$sql="SELECT post_id FROM tblComments WHERE id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+		$result=$command->query();
+
+		if(($row=$result->read())!==false)
 		{
-			$postID=$row['post_id'];
-			$this->query("DELETE FROM tblComments WHERE id=$id");
-			$this->query("UPDATE tblPosts SET comment_count=comment_count-1 WHERE id=$postID");
+			$command=$this->_db->createCommand("DELETE FROM tblComments WHERE id=?");
+			$command->bindValue(1, $id);
+			$command->execute();
+
+			$command=$this->_db->createCommand("UPDATE tblPosts SET comment_count=comment_count-1 WHERE id=?");
+			$command->bindValue(1, $row['post_id']);
+			$command->execute();
 		}
 	}
 
@@ -412,8 +511,7 @@ class BlogDataModule extends TModule
 	public function queryCategories()
 	{
 		$sql="SELECT * FROM tblCategories ORDER BY name ASC";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+		$rows=$this->query($sql);
 		$cats=array();
 		foreach($rows as $row)
 			$cats[]=$this->populateCategoryRecord($row);
@@ -427,9 +525,12 @@ class BlogDataModule extends TModule
 				a.description AS description,
 				a.post_count AS post_count
 				FROM tblCategories a, tblPost2Category b
-				WHERE a.id=b.category_id AND b.post_id=$postID ORDER BY a.name";
-		$result=$this->query($sql);
-		$rows=sqlite_fetch_all($result,SQLITE_ASSOC);
+				WHERE a.id=b.category_id AND b.post_id=? ORDER BY a.name";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $postID);
+		$rows=$command->query();
+
 		$cats=array();
 		foreach($rows as $row)
 			$cats[]=$this->populateCategoryRecord($row);
@@ -438,9 +539,13 @@ class BlogDataModule extends TModule
 
 	public function queryCategoryByID($id)
 	{
-		$sql="SELECT * FROM tblCategories WHERE id=$id";
-		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		$sql="SELECT * FROM tblCategories WHERE id=?";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+		$result=$command->query();
+
+		if(($row=$result->read())!==false)
 			return $this->populateCategoryRecord($row);
 		else
 			return null;
@@ -448,10 +553,13 @@ class BlogDataModule extends TModule
 
 	public function queryCategoryByName($name)
 	{
-		$name=sqlite_escape_string($name);
-		$sql="SELECT * FROM tblCategories WHERE name='$name'";
-		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		$sql="SELECT * FROM tblCategories WHERE name=?";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $name);
+		$result=$command->query();
+
+		if(($row=$result->read())!==false)
 			return $this->populateCategoryRecord($row);
 		else
 			return null;
@@ -459,46 +567,73 @@ class BlogDataModule extends TModule
 
 	public function insertCategory($category)
 	{
-		$name=sqlite_escape_string($category->Name);
-		$description=sqlite_escape_string($category->Description);
 		$sql="INSERT INTO tblCategories
 				(name,description)
-				VALUES ('$name','$description')";
-		$this->query($sql);
-		$category->ID=sqlite_last_insert_rowid($this->_db);
+				VALUES (?,?)";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $category->Name);
+		$command->bindValue(2, $category->Description);
+		$command->execute();
+
+		$category->ID=$this->_db->getLastInsertID();
 	}
 
 	public function updateCategory($category)
 	{
-		$name=sqlite_escape_string($category->Name);
-		$description=sqlite_escape_string($category->Description);
-		$sql="UPDATE tblCategories SET name='$name', description='$description', post_count={$category->PostCount} WHERE id={$category->ID}";
-		$this->query($sql);
+		$sql="UPDATE tblCategories SET name=?, description=?, post_count=? WHERE id=?";
+
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $category->Name);
+		$command->bindValue(2, $category->Description);
+		$command->bindValue(3, $category->PostCount);
+		$command->bindValue(4, $category->ID);
+
+		$command->execute();
 	}
 
 	public function deleteCategory($id)
 	{
-		$sql="DELETE FROM tblPost2Category WHERE category_id=$id";
-		$this->query($sql);
-		$sql="DELETE FROM tblCategories WHERE id=$id";
-		$this->query($sql);
+		$sql="DELETE FROM tblPost2Category WHERE category_id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+		$command->execute();
+
+		$sql="DELETE FROM tblCategories WHERE id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $id);
+		$command->execute();
 	}
 
 	public function insertPostCategory($postID,$categoryID)
 	{
-		$sql="INSERT INTO tblPost2Category (post_id, category_id) VALUES ($postID, $categoryID)";
-		$this->query($sql);
-		$sql="UPDATE tblCategories SET post_count=post_count+1 WHERE id=$categoryID";
-		$this->query($sql);
+		$sql="INSERT INTO tblPost2Category (post_id, category_id) VALUES (?, ?)";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $postID);
+		$command->bindValue(2, $categoryID);
+		$command->execute();
+
+		$sql="UPDATE tblCategories SET post_count=post_count+1 WHERE id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $categoryID);
+		$command->execute();
+
 	}
 
 	public function deletePostCategory($postID,$categoryID)
 	{
-		$sql="DELETE FROM tblPost2Category WHERE post_id=$postID AND category_id=$categoryID";
-		if($this->query($sql)>0)
+		$sql="DELETE FROM tblPost2Category WHERE post_id=? AND category_id=?";
+		$command=$this->_db->createCommand($sql);
+		$command->bindValue(1, $postID);
+		$command->bindValue(2, $categoryID);
+		$result=$command->query();
+
+		if($result->getRowCount()>0)
 		{
-			$sql="UPDATE tblCategories SET post_count=post_count-1 WHERE id=$categoryID";
-			$this->query($sql);
+			$sql="UPDATE tblCategories SET post_count=post_count-1 WHERE id=?";
+			$command=$this->_db->createCommand($sql);
+			$command->bindValue(1, $categoryID);
+			$command->execute();
 		}
 	}
 
@@ -506,7 +641,7 @@ class BlogDataModule extends TModule
 	{
 		$sql="SELECT MIN(create_time) AS create_time FROM tblPosts";
 		$result=$this->query($sql);
-		if(($row=sqlite_fetch_array($result,SQLITE_ASSOC))!==false)
+		if(($row=$result->read())!==false)
 			return $row['create_time'];
 		else
 			return time();

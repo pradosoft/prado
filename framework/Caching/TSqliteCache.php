@@ -15,8 +15,9 @@
  *
  * TSqliteCache implements a cache application module based on SQLite database.
  *
- * To use this module, the sqlite PHP extension must be loaded. Note, Sqlite extension
- * is no longer loaded by default since PHP 5.1.
+ * THIS CLASS IS DEPRECATED since it relies on the sqlite PHP extension, that is
+ * no longer loaded by default since PHP 5.1. You are discouraged from using it:
+ * use {@link TDbCache} instead.
  *
  * Since PRADO v3.1.0, a new DB-based cache module called {@link TDbCache}
  * is provided. If you have PDO extension installed, you may consider using

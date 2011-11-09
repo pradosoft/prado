@@ -7,23 +7,15 @@ class SearchPost extends BlogPage
 	public function onInit($param)
 	{
 		parent::onInit($param);
-		$this->_posts=$this->DataAccess->queryPosts(
-				$this->getPostFilter(),
-				'',
+		$this->_posts=$this->DataAccess->queryPostsSearch(
+				$this->getPostKeywords(),
 				'ORDER BY create_time DESC',
 				'LIMIT '.$this->getPageOffset().','.$this->getPageSize());
 	}
 
-	private function getPostFilter()
+	private function getPostKeywords()
 	{
-		$filter='a.status=0';
-		$keywords=explode(' ',$this->Request['keyword']);
-		foreach($keywords as $keyword)
-		{
-			if(($keyword=$this->DataAccess->escapeString(trim($keyword)))!=='')
-				$filter.=" AND (content LIKE '%$keyword%' OR title LIKE '%$keyword%')";
-		}
-		return $filter;
+		return explode(' ',$this->Request['keyword']);
 	}
 
 	private function getPageOffset()

@@ -98,7 +98,7 @@ $requirements = array(
 		false,
 		extension_loaded("sqlite"),
 		'SQLite extension check',
-		'SQLite extension optional'),
+		'SQLite extension optional deprecated'),
 	array(
 		false,
 		extension_loaded("memcache"),

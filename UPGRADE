@@ -30,7 +30,11 @@ Upgrading from v3.1.x
   The easist way to understand if a component is broken because of this change is to check if you get a
   'Operation invalid when page is already rendering' exception.
 - A new "TReCaptcha" control has been added to overcome the limited security offered by TCaptcha. If you
-  are currently using TCaptcha, an update to the new control is really adviced. 
+  are currently using TCaptcha, an update to the new control is really adviced.
+- Since php 5.2 the "sqlite" extension is not built by default. As a consequence, we deprecated (but kept
+  to mantain backwards compatibility) everything based on that extension.
+  TSqliteCache should be abandoned in favour of TDbCache.
+  The "sqlite" backend for message translation has been deprecated, use "Database" instead.
 
 
 Upgrading from v3.1.10
