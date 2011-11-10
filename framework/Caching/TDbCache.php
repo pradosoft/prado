@@ -217,10 +217,7 @@ class TDbCache extends TCache
 				else
 					$blob='BLOB';
 
-				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128), value $blob, expire INT)";
-				$db->createCommand($sql)->execute();
-
-				$sql='CREATE INDEX IX_itemkey ON ' . $this->_cacheTable . ' (itemkey)';
+				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
 				$db->createCommand($sql)->execute();
 
 				$sql='CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';

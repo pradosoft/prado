@@ -21,6 +21,7 @@ BUG: Issue #232 - Could not change enable-state of TActiveCheckBox via Ajax call
 ENH: Issue #235 - Progressive rendering not possible (Gabor)
 BUG: Issue #240 - TXCache has wrong flush() implementation (ctrlaltca)
 BUG: Issue #243 - Cross-site scripting issue in TForm (ctrlaltca)
+BUG: Issue #254 - TDbCache should use hash index for the cache key (ctrlaltca)
 BUG: Issue #265 - Using scroll wheel causes NaN values in TDatePicker (Gabor)
 BUG: Issue #301 - Fixed a bug in TActiveFileUpload (ctrlaltca)
 ENH: Issue #337 - Prado serialization optimizations (Gabor)
