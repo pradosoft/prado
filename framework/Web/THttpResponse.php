@@ -385,8 +385,10 @@ class THttpResponse extends TModule implements ITextWriter
 			header('Pragma: public');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header("Content-Type: $mimeType");
+			$this->_contentTypeHeaderSent = true;
 		}
-		header("Content-type: $mimeType");
+
 		header('Content-Length: '.$fileSize);
 		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		header('Content-Transfer-Encoding: binary');
