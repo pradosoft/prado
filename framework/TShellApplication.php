@@ -35,14 +35,6 @@
  */
 class TShellApplication extends TApplication
 {
-
-	/**
-	 * Override parent implementation. TShellApplication doesn't need to start any service
-	 */
-	public function startService($serviceID)
-	{
-
-	}
 	/**
 	 * Runs the application.
 	 * This method overrides the parent implementation by initializing
