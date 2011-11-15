@@ -90,7 +90,12 @@ class TActiveControlAdapter extends TControlAdapter
 	public function render($writer)
 	{
 		$this->renderCallbackClientScripts();
-		parent::render($writer);
+		if($this->_control->getVisible(false))
+		{
+			parent::render($writer);
+		} else {
+			$writer->write("<span id=\"".$this->_control->getClientID()."\" ></span>");
+		}
 	}
 
 	/**
@@ -341,9 +346,9 @@ class TCallbackPageStateTracker
 	protected function updateVisible($visible)
 	{
 		if($visible === false)
-			$this->client()->hide($this->_control);
+			$this->client()->replaceContent($this->_control,"<span id=\"".$this->_control->getClientID()."\" ></span>");
 		else
-			$this->client()->show($this->_control);
+			$this->client()->replaceContent($this->_control,$this->_control);
 	}
 
 	/**

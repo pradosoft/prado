@@ -1533,7 +1533,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function renderControl($writer)
 	{
-		if($this->getVisible(false))
+		if($this instanceof IActiveControl || $this->getVisible(false))
 		{
 			if(isset($this->_rf[self::RF_ADAPTER]))
 				$this->_rf[self::RF_ADAPTER]->render($writer);

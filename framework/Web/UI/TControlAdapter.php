@@ -26,7 +26,7 @@ class TControlAdapter extends TApplicationComponent
 	/**
 	 * @var TControl the control to which the adapter is attached
 	 */
-	private $_control;
+	protected $_control;
 
 	/**
 	 * Constructor.
