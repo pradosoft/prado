@@ -233,7 +233,7 @@ EOS;
 		if ($mgr = Prado::getApplication()->getSecurityManager())
 			{
 				// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
-				$token = base64_encode($mgr->encrypt(serialize($params)));
+				$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
 			}
 		else
 			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
@@ -253,7 +253,7 @@ EOS;
 		else
 		if ($mgr = Prado::getApplication()->getSecurityManager())
 			{
-				$v = $mgr->decrypt(base64_decode($token));
+				$v = $mgr->decrypt(base64_decode(urldecode($token)));
 				$params = unserialize($v);
 			}
 		else

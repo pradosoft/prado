@@ -77,7 +77,7 @@ class TSecurityManager extends TModule
 		if(null === $this->_validationKey) {
 			if(null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
 				$this->_validationKey = $this->generateRandomKey();
-				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY, $this->_validationKey, null);
+				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY, $this->_validationKey, null, true);
 			}
 		}
 		return $this->_validationKey;
@@ -104,7 +104,7 @@ class TSecurityManager extends TModule
 		if(null === $this->_encryptionKey) {
 			if(null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
 				$this->_encryptionKey = $this->generateRandomKey();
-				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null);
+				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null, true);
 			}
 		}
 		return $this->_encryptionKey;

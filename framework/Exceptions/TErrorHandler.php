@@ -154,8 +154,8 @@ class TErrorHandler extends TModule
 			$aTrace = $exception->getTrace();
 			foreach($aTrace as $item)
 			{
-				$file = $item['file'];
-				$aRpl[dirname($file) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
+				if(isset($item['file']))
+					$aRpl[dirname($item['file']) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
 			}
 		}
 		$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';

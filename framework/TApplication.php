@@ -468,14 +468,17 @@ class TApplication extends TComponent
 	 * @param string the name of the value to be set
 	 * @param mixed the global value to be set
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
+	 * @param boolean wheter to force an immediate GlobalState save. defaults to false
 	 */
-	public function setGlobalState($key,$value,$defaultValue=null)
+	public function setGlobalState($key,$value,$defaultValue=null,$forceSave=false)
 	{
 		$this->_stateChanged=true;
 		if($value===$defaultValue)
 			unset($this->_globals[$key]);
 		else
 			$this->_globals[$key]=$value;
+		if($forceSave)
+			$this->saveGlobals();
 	}
 
 	/**
