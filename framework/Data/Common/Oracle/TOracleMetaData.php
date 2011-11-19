@@ -85,7 +85,7 @@ class TOracleMetaData extends TDbMetaData
 			LOWER(a.COLUMN_NAME) as attname,
 			a.DATA_TYPE || DECODE( a.DATA_TYPE, 'NUMBER', '('||a.DATA_PRECISION||','||DATA_SCALE||')' , '') as type,
 			a.DATA_LENGTH as atttypmod,
-			DECODE(a.NULLABLE, 'Y', '1', '0') as attnotnull,
+			DECODE(a.NULLABLE, 'Y', '0', '1') as attnotnull,
 			DECODE(a.DEFAULT_LENGTH, NULL, '0', '1') as atthasdef,
 			DATA_DEFAULT as adsrc,
 			'0' AS attisserial

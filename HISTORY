@@ -37,6 +37,7 @@ BUG: Issue #346 - TJavaScript, TJSON documentation missing/misbehaving (ctrlaltc
 BUG: Issue #348 - Scripts for dynamically created controls not registered properly in/after a callback (Gabor)
 BUG: Issue #351 - THtmlArea prone to double-registration, doesn't deregister properly (Gabor)
 BUG: Issue #353 - Accordion control behaves oddly if clicked too fast (Gabor)
+BUG: Issue #354 - Oracle MetaData : Nullable/Not Nullable columns inverted (ctrlaltca)
 ENH: Issue #356 - Added a new "Clickable" operating mode to TDatePicker (ctrlaltca)
 BUG: Issue #361 - TActiveListBox multiple selection bug (ctrlaltca)
 BUG: Issue #366 - Use divs instead of spans around tables in TActiveDataGrid (ctrlaltca)
