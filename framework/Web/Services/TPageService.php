@@ -92,7 +92,11 @@ class TPageService extends TService implements IPageEvents
 	/**
 	 * Default base path
 	 */
-	const DEFAULT_BASEPATH='pages';
+	const DEFAULT_BASEPATH='Pages';
+	/**
+	 * Fallback base path - used to be the default up to Prado < 3.2
+	 */
+	const FALLBACK_BASEPATH='pages';
 	/**
 	 * Prefix of ID used for storing parsed configuration in cache
 	 */
@@ -426,7 +430,11 @@ class TPageService extends TService implements IPageEvents
 		{
 			$basePath=$this->getApplication()->getBasePath().DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
 			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
-				throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
+			{
+				$basePath=$this->getApplication()->getBasePath().DIRECTORY_SEPARATOR.self::FALLBACK_BASEPATH;
+				if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
+					throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
+			}
 		}
 		return $this->_basePath;
 	}

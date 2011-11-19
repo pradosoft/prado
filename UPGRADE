@@ -35,7 +35,10 @@ Upgrading from v3.1.x
   to mantain backwards compatibility) everything based on that extension.
   TSqliteCache should be abandoned in favour of TDbCache.
   The "sqlite" backend for message translation has been deprecated, use "Database" instead.
-
+- TPageService's default pages path has changed from "Application.pages" to "Application.Pages" (note the 
+  uppercase P). Using capital letters for the initial letter of the directories name is a long-time
+  convention in prado, and this has been changed to reflect it. TPageService has been patched anyway to
+  support even the old "Application.pages" to avoid breaking existing code.
 
 Upgrading from v3.1.10
 ----------------------
