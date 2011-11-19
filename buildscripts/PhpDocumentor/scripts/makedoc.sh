@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: makedoc.sh,v 1.1 2005/10/17 18:37:43 jeichorn Exp $ 
+# $Id: makedoc.sh,v 1.2 2007-12-10 01:11:19 ashnazg Exp $ 
 
 #/**
 #  * makedoc - PHPDocumentor script to save your settings
@@ -87,7 +87,7 @@ TEMPLATE=default
 PRIVATE=off
 
 # make documentation
-$PATH_PHPDOC -d $PATH_PROJECT -t $PATH_DOCS -ti "$TITLE" -dn $PACKAGES \
+"$PATH_PHPDOC" -d "$PATH_PROJECT" -t "$PATH_DOCS" -ti "$TITLE" -dn $PACKAGES \
 -o $OUTPUTFORMAT:$CONVERTER:$TEMPLATE -pp $PRIVATE
 
 

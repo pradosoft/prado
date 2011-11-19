@@ -7,7 +7,7 @@
 // | Email         jeichorn@phpdoc.org, cellog@phpdoc.org                   |
 // | Web           http://www.phpdoc.org                                    |
 // | Mirror        http://phpdocu.sourceforge.net/                          |
-// | PEAR          http://pear.php.net/package-info.php?pacid=137           |
+// | PEAR          http://pear.php.net/package/PhpDocumentor                |
 // +------------------------------------------------------------------------+
 // | This source file is subject to version 3.00 of the PHP License,        |
 // | that is available at http://www.php.net/license/3_0.txt.               |
@@ -39,10 +39,14 @@ $base_package = "phpDocumentor";
 */
 $title = "phpDocumentor Generated Documentation";
 /**
-* location of the files to parse.  Change to a location on your computer
+* location of the files to parse.  Change to a location on your computer.
+* Example:
+* <code>
+* $parse_directory = "/home/jeichorn/phpdoc";
+* </code>
 * @global	string	$parse_directory
 */
-$parse_directory = "/home/jeichorn/phpdoc";
+$parse_directory = "/you-MUST/change-me/to-fit/your-environment";
 
 /**
 * directories to output examples into.
@@ -57,7 +61,7 @@ $output = array(
 	$output_directory.'/docs/phpdoc_DOM_phpdoc_de' 		=> 'HTML:default:DOM/phpdoc.de',
 	$output_directory.'/docs/phpdoc_smarty_default' 	=> 'HTML:Smarty:default',
 	$output_directory.'/docs/phpdoc_pdf_default' 		=> 'PDF:default:default',
-	$output_directory.'/docs/phpdoc_chm_default' 		=> 'CHM:default:default'
+	$output_directory.'/docs/phpdoc_chm_default' 		=> 'CHM:default:default',
 	);
 
 foreach($output as $output => $template)

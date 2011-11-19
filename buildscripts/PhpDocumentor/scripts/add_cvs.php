@@ -7,7 +7,7 @@
 // | Email         jeichorn@phpdoc.org, cellog@phpdoc.org                   |
 // | Web           http://www.phpdoc.org                                    |
 // | Mirror        http://phpdocu.sourceforge.net/                          |
-// | PEAR          http://pear.php.net/package-info.php?pacid=137           |
+// | PEAR          http://pear.php.net/package/PhpDocumentor                |
 // +------------------------------------------------------------------------+
 // | This source file is subject to version 3.00 of the PHP License,        |
 // | that is available at http://www.php.net/license/3_0.txt.               |
@@ -23,7 +23,7 @@
  * found, ignoring any error messages, until all files in each directory
  * and subdirectory have been added to cvs.  It then commits the files to cvs
  * @package phpDocumentor
- * @author Greg Beaver <cellog@users.sourceforge.net>
+ * @author Greg Beaver <cellog@php.net>
  * @copyright Copyright 2003, Greg Beaver
  * @version 1.0
  */
