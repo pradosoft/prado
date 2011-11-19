@@ -352,9 +352,10 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
       </fileset>
     </delete>
     <exec command="${php} build.php" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} -interaction=nonstopmode -max-print-line=120 quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <!-- use -interaction=nonstopmode to see compilation errors in the shell output -->
+    <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
+    <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
     <move file="buildscripts/texbuilder/quickstart/quickstart.pdf" todir="${build.doc.dir}"/>
 
 	<echo>Building API manuals...</echo>
@@ -364,7 +365,7 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
                title="PRADO v${prado.version} API Manual"
                destdir="${build.doc.dir}/manual"
                sourcepath="${build.src.dir}/framework"
-               ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/*,*I18N/core/*"
+	       ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*jsmin.php,*I18N/core/*,*WebControls/assets/*"
                output="HTML:frames:default,CHM:default:default,HTML:Smarty:PradoSoft" />
 
     <echo>Indexing API manuals...</echo>
