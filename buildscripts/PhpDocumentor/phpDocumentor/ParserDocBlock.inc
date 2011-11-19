@@ -752,7 +752,7 @@ class parserDocBlock
                         $rest = implode($rest,"\t");
                     } else $value = trim($value[0]);
                 }
-                $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\x7f-\xff]/', '-', $value);
+                $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\.\x7f-\xff]/', '-', $value);
                 $this->packagedescrip = $this->package = trim($value);
                 if (!empty($rest)) $this->packagedescrip = $rest;
             } else
@@ -789,7 +789,7 @@ class parserDocBlock
                 }
                 if (!empty($value))
                 {
-                    $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\x7f-\xff]/', '-', $value);
+                    $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\.\x7f-\xff]/', '-', $value);
                 }
                 $this->subpackage = trim($value);
                 if (!empty($rest)) $this->subpackagedescrip = $rest;
@@ -806,7 +806,7 @@ class parserDocBlock
             {
                 if (!is_string($value))
                 $value = $value->getString();
-                $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\x7f-\xff]/', '-', $value);
+                $value = preg_replace('/[^\[\]0-9\-a-zA-Z_\.\x7f-\xff]/', '-', $value);
                 $this->category = $value;
             } else
             {
