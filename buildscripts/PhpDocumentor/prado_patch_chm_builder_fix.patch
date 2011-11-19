@@ -1,0 +1,13 @@
+Index: phpDocumentor/Converters/CHM/default/CHMdefaultConverter.inc
+===================================================================
+--- phpDocumentor/Converters/CHM/default/CHMdefaultConverter.inc	(revisione 3068)
++++ phpDocumentor/Converters/CHM/default/CHMdefaultConverter.inc	(copia locale)
+@@ -560,7 +560,7 @@
+      */
+     function returnSee(&$element, $eltext = false, $with_a = true)
+     {
+-        if (!$element) return false;
++        if (!is_object($element) || !$element) return false;
+         if (!$with_a) return $this->getId($element, false);
+         if (!$eltext)
+         {

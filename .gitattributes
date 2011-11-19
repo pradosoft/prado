@@ -1006,6 +1006,7 @@ buildscripts/PhpDocumentor/phpDocumentor/phpdoc.inc -text
 buildscripts/PhpDocumentor/phpdoc -text
 buildscripts/PhpDocumentor/phpdoc.php -text
 buildscripts/PhpDocumentor/poweredbyphpdoc.gif -text
+buildscripts/PhpDocumentor/prado_patch_chm_builder_fix.patch -text
 buildscripts/PhpDocumentor/prado_patch_dot_in_package_name.patch -text
 buildscripts/PhpDocumentor/scripts/add_cvs.php -text
 buildscripts/PhpDocumentor/scripts/create_examples.php -text

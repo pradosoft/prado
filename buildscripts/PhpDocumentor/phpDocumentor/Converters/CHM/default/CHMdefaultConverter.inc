@@ -560,7 +560,7 @@ class CHMdefaultConverter extends Converter
      */
     function returnSee(&$element, $eltext = false, $with_a = true)
     {
-        if (!$element) return false;
+        if (!is_object($element) || !$element) return false;
         if (!$with_a) return $this->getId($element, false);
         if (!$eltext)
         {
