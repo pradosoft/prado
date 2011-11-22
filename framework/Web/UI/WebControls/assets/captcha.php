@@ -116,7 +116,8 @@ function displayToken($token,$fontSize,$theme)
         	imagettftext($image,$size,$angle,$x+2,$y+2,$color,$font,$token[$i]);
         imagecolordeallocate($image,$color);
     }
-
+	
+	header('Content-Type: image/png');
 	imagepng($image);
 	imagedestroy($image);
 }
