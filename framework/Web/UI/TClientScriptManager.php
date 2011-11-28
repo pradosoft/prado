@@ -535,7 +535,6 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerHiddenField($name,$value)
 	{
-		$this->checkIfNotInRender();
 		$this->_hiddenFields[$name]=$value;
 
 		$params=func_get_args();
