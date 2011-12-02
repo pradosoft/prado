@@ -938,7 +938,10 @@ class TApplication extends TComponent
 	public function getGlobalization($createIfNotExists=true)
 	{
 		if($this->_globalization===null && $createIfNotExists)
+		{
 			$this->_globalization=new TGlobalization;
+			$this->_globalization->init(null);
+		}
 		return $this->_globalization;
 	}
 
