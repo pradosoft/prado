@@ -9,7 +9,7 @@ Themes in PRADO provide a way for developers to provide a consistent look-and-fe
 
 <h2 id="5903">Understanding Themes</h2>
 <p id="760597" class="block-content">
-A theme is a directory consists of skin files, javascript files and CSS files. Any javascript or CSS files contained in a theme will be registered with the page that the theme is applied to. A skin is a set of initial property values for a particular control type. A control type may have one or several skins, each identified by a unique <tt>SkinID</tt>. When applying a theme to a page, a skin is applied to a control if the control type and the <tt>SkinID</tt> value both match to those of the skin. Note, if a skin has an empty <tt>SkinID</tt> value, it will apply to all controls of the particular type whose <tt>SkinID</tt> is not set or empty. A skin file consists of one or several skins, for one or several control types. A theme is the union of skins defined in all skin files.
+A theme is a directory that consists of skin files, javascript files and CSS files. Any javascript or CSS files contained in a theme will be registered with the page that the theme is applied to. A skin is a set of initial property values for a particular control type. A control type may have one or several skins, each identified by a unique <tt>SkinID</tt>. When applying a theme to a page, a skin is applied to a control if the control type and the <tt>SkinID</tt> value both match to those of the skin. Note, if a skin has an empty <tt>SkinID</tt> value, it will apply to all controls of the particular type whose <tt>SkinID</tt> is not set or empty. A skin file consists of one or several skins, for one or several control types. A theme is the union of skins defined in all skin files.
 </p>
 
 <h2 id="5904">Using Themes</h2>
@@ -56,5 +56,46 @@ Creating a theme involves creating the theme directory and writing skin files (a
 </com:TTextHighlighter>
 <p id="760605" class="block-content">
 As aforementioned, you can put several skins within a single skin file, or split them into several files. A commonly used strategy is that each skin file only contains skins for one type of controls. For example, <tt>Button.skin</tt> would contain skins only for the <tt>TButton</tt> control type.
+</p>
+
+<h2 id="234001">Web controls decorators</h2>
+<com:SinceVersion Version="3.2a" />
+<p class="block-content">
+As an alternative to the previous methods, to customize the rending of a control its Decorator property can be customized. A <tt>TWebControlDecorator</tt> can add custom text (html code) before and after both the open and close tag of the control.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:THeader3&gt;
+	&lt;prop:Decorator.PreTagText&gt;
+			&lt;!-- Surround the control with a div and apply a css class to it --&gt;
+		&lt;div class="imported-theme-h3-container"&gt;
+	&lt;/prop:Decorator.PreTagText&gt;
+	&lt;prop:Decorator.PostTagText&gt;
+			&lt;!-- Properly close the tag --&gt;
+		&lt;/div&gt;
+	&lt;/prop:Decorator.PostTagText&gt;
+	My Nice Title
+&lt;/com:THeader3&gt;
+</com:TTextHighlighter>
+<p class="block-content">
+In this example, a container div will be rendered around the <tt>THeader3</tt> control, allowing the user to specify a css class for the container.
+<tt>TWebControlDecorator</tt> can also interpret prado's template code and output the resulting html:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TPanel&gt;
+	&lt;prop:Decorator.PreTagTemplate&gt;
+		&lt;!-- Insert an header before the panel --&gt;
+		&lt;com:THeader3&gt;
+			Panel's Injected Title
+		&lt;/com:THeader3&gt;
+	&lt;/prop:Decorator.PreTagTemplate&gt;
+	&lt;prop:Decorator.PostTagTemplate&gt;
+			&lt;!-- Insert a date picker after the panel --&gt;
+		Pick a date: &lt;com:TDatePicker /&gt;
+	&lt;/prop:Decorator.PostTagTemplate&gt;
+	Panel contents here.
+&lt;/com:TPanel&gt;
+</com:TTextHighlighter>
+<p class="block-content">
+Note that you can use the Decorator property also inside skin files, getting it applied automatically to all the controls subjected to the specific skin.
 </p>
 </com:TContent>

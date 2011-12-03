@@ -14,24 +14,26 @@
 /**
  * TWebControlDecorator class
  * 
- * This places theme related html and templates before and after both the open and close 
+ * A TWebControlDecorator can be applied to a {@link TWebControl} to customize its rendering.
+ * TWebControlDecorator can add custom html code before and after both the open and close 
  * tag of a {@link TWebControl}.
+ * The html code can be an user-defined text or an external template file that will be
+ * instantiated and rendered in place.
  * 
  * This is an easy way to have your look and feel depend upon the theme instead of writing 
- * specific html in your templates to achieve your website desires.  This makes updating the
- * look and feel of your website much more simple.  Here is an example of how to code your theme
- * skin:
+ * specific html in your templates to achieve your website desires.
+ * Here is an example of how to code your theme skin:
  * <code>
- * <com:THeader2 TagName="h3">
+ * <com:THeader3>
  *	<prop:Decorator.PreTagText>
- * 			<!-- In case the them you are importing needs this for it's h3 to look right -->
+ * 			<!-- Surround the control with a div and apply a css class to it -->
  *		<div class="imported-theme-h3-container">
  *	</prop:Decorator.PreTagText>
  *	<prop:Decorator.PostTagText>
- * 			<!-- To close things properly -->
+ * 			<!-- Properly close the tag -->
  *		</div>
  *	</prop:Decorator.PostTagText>
- * </com:THeader2>
+ * </com:THeader3>
  * </code>
  *
  * The order of the inclusion of the decoration into the page goes like this:
@@ -47,11 +49,6 @@
  * * PostTagText
  * * PostTagTemplate
  *
- * (more documentation forthcoming as internal class R&D continues) 
- * 
- * To move controls around please see the {@link TMigrate} control.  You may use {@link TMigrate} 
- * in your Decorator templates to move controls in your MasterTemplate around using your theme 
- * elements around on your page.
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id: TWebControlDecorator.php 2541 2008-10-21 15:05:13Z qiang.xue $
@@ -131,8 +128,6 @@ class TWebControlDecorator extends TComponent {
 	 * @param boolean whether decoration is just around the inner content
 	 */
 	public function __construct($control, $onlyinternal = false) {
-		parent::__construct();
-		
 		$this->_control = $control;
 		$this->_internalonly = $onlyinternal;
 	}

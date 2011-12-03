@@ -445,6 +445,15 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * @param string the skin ID of this control
+	 * @throws TInvalidOperationException if the SkinID is set in a stage later than PreInit, or if the skin is applied already.
+	 */
+	public function getIsSkinApplied()
+	{
+		return ($this->_flags & self::IS_SKIN_APPLIED);
+	}
+
+	/**
 	 * @return boolean whether theming is enabled for this control.
 	 * The theming is enabled if the control and all its parents have it enabled.
 	 */
