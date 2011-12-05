@@ -76,8 +76,7 @@ Prado::using('System.I18N.TGlobalization');
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
  * - [initApplication] : load application configuration and instantiate modules and the requested service
- * - onInitComplete : this event happens right after application initialization and can finish any initialization
- * - onBeginRequest : this event happens right before the request starts
+ * - onBeginRequest : this event happens right after application initialization
  * - onAuthentication : this event happens when authentication is needed for the current request
  * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
  * - onAuthorization : this event happens when authorization is needed for the current request
@@ -161,11 +160,6 @@ class TApplication extends TComponent
 	 * Global data file
 	 */
 	const GLOBAL_FILE='global.cache';
-	
-	/**
-	 * Defines which step the service is run
-	 */
-	const SERVICE_STEP=8;
 
 	/**
 	 * @var array list of events that define application lifecycles
@@ -418,15 +412,6 @@ class TApplication extends TComponent
 			$this->onError($e);
 		}
 		$this->onEndRequest();
-	}
-	
-
-	/**
-	 * Tells you whether the application is after the service step
-	 * @return boolean whether it is after the service step
-	 */
-	public function getIsAfterService() {
-		return $this->_step > self::SERVICE_STEP;
 	}
 
 	/**
@@ -716,21 +701,6 @@ class TApplication extends TComponent
 	public function getModule($id)
 	{
 		return isset($this->_modules[$id])?$this->_modules[$id]:null;
-	}
-
-	/**
-	 * This loops through all the modules and finds those with a specific type, with/witout strictness
-	 * @param string $type this is the string module type to look for
-	 * @param boolean $strict default false, the module can be an instanceof the type if false, otherwise it must be the exact class
-	 * @return IModule the module with the specified ID, null if not found
-	 */
-	public function getModulesByType($type,$strict=false)
-	{
-		$modules = array();
-		foreach($this->_modules as $module)
-			if( get_class($module)===$type || (!$strict && ($module instanceof $type)) )
-				$modules[] = $module;
-		return $modules;
 	}
 
 	/**
@@ -1075,8 +1045,6 @@ class TApplication extends TComponent
 			$serviceID=$this->getPageServiceID();
 		
 		$this->startService($serviceID);
-		
-		$this->onInitComplete();
 	}
 
 	/**
@@ -1131,23 +1099,10 @@ class TApplication extends TComponent
 	}
 
 	/**
-	 * Raises onInitComplete event.
-	 * At the time when this method is invoked, application modules are loaded, 
-	 * user request is resolved and the corresponding service
-	 * is loaded and initialized. The application is about to start processing
-	 * the user request.
-	 */
-	public function onInitComplete()
-	{
-		Prado::trace("Executing onInitComplete()",'System.TApplication');
-		$this->raiseEvent('onInitComplete',$this,null);
-	}
-
-	/**
 	 * Raises OnBeginRequest event.
 	 * At the time when this method is invoked, application modules are loaded
 	 * and initialized, user request is resolved and the corresponding service
-	 * is loaded and initialized. The application is starting to process
+	 * is loaded and initialized. The application is about to start processing
 	 * the user request.
 	 */
 	public function onBeginRequest()
