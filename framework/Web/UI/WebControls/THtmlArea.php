@@ -506,7 +506,7 @@ class THtmlArea extends TTextBox
 
 			if(count($option) == 2)
 			{
-				$value=trim(preg_replace('/\'|"/','',  $option[1]));
+				$value=trim(trim($option[1]),"'\"");
 				if (($s=strtolower($value))==='false') 
 					$value=false;
 				elseif ($s==='true')
