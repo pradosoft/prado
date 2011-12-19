@@ -39,12 +39,29 @@ class TReCaptchaValidator extends TBaseValidator
 	 */
 	protected function getClientClassName()
 	{
-		return '';
+		return 'Prado.WebUI.TReCaptchaValidator';
 	}
 
 	public function getEnableClientScript()
 	{
-		return false;
+		return true;
+	}
+
+	protected function getCaptchaControl()
+	{
+		$control = $this->getValidationTarget();
+		if (!$control)
+			throw new Exception('No target control specified for TReCaptchaValidator');
+		if (!($control instanceof TReCaptcha))
+			throw new Exception('TReCaptchaValidator only works with TReCaptcha controls');
+		return $control;
+	}
+
+	public function getClientScriptOptions()
+	{
+		$options = parent::getClientScriptOptions();
+		$options['ResponseFieldName'] = $this->getCaptchaControl()->getResponseFieldName();
+		return $options;
 	}
 
 	/**
@@ -56,15 +73,49 @@ class TReCaptchaValidator extends TBaseValidator
 	 */
 	protected function evaluateIsValid()
 	{
-		// check validity only once (if trying to evaluate multiple times, all redundant checks would fail)
+		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
 		if (is_null($this->_isvalid))
 		{
-			$control = $this->getValidationTarget();
-			if(!($control instanceof TCaptcha))
-				throw new TConfigurationException('recaptchavalidator_captchacontrol_invalid');
+			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
 		return ($this->_isvalid==true);
+	}
+
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+
+		$cs = $this->Page->getClientScript();
+
+		// communicate validation status to the client side
+		$value = $this->_isvalid===false ? '0' : '1';
+		$cs->registerHiddenField($this->getClientID().'_1',$value);
+
+		// check if we need to request a new captcha too
+		if ($this->Page->IsCallback)
+		{
+		  // force update of validator display
+		  if ($control = $this->getValidationTarget())
+		  {
+		    $cs->registerEndScript(
+				$this->getClientID().'::validate',
+				'$(\''.TJavaScript::quoteString($this->getClientID().'_1').'\').value = \''.TJavaScript::quoteString($value).'\';'.
+				'Prado.Validation.validateControl(\''.TJavaScript::quoteString($control->ClientID).'\');'
+		    );
+
+		    if ($control->getVisible(true))
+		      if ($this->_isvalid)
+			{
+				// if the challenge has been solved + we're in a callback and we still reach prerender phase,
+				// that means that some other validator failed and the user will be sent back to the page/form with 
+				// the captcha control. in this case we need to force re-rendering of the control, because once 
+				// solved, the old challenge won't validate anymore anyway
+
+				$control->regenerateToken();
+			}
+		  }
+		}
 	}
 
 }

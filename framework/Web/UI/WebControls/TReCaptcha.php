@@ -51,12 +51,17 @@
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
-class TReCaptcha extends TControl implements IValidatable
+class TReCaptcha extends TWebControl implements IValidatable
 {
 	private $_isValid=true;
 
 	const ChallengeFieldName = 'recaptcha_challenge_field';
 	const ResponseFieldName = 'recaptcha_response_field';
+
+	public function getTagName()
+	{
+		return 'span';
+	}
 	
 	/**
 	 * Returns true if this control validated successfully. 
@@ -135,7 +140,7 @@ class TReCaptcha extends TControl implements IValidatable
 		return /*$this->ClientID.'_'.*/self::ChallengeFieldName;
 	}
 	
-	protected function getResponseFieldName()
+	public function getResponseFieldName()
 	{
 		return /*$this->ClientID.'_'.*/self::ResponseFieldName;
 	}
@@ -170,18 +175,38 @@ class TReCaptcha extends TControl implements IValidatable
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
+
 		if("" == $this->getPublicKey())
 			throw new TConfigurationException('recaptcha_publickey_unknown');
 		if("" == $this->getPrivateKey())
 			throw new TConfigurationException('recaptcha_privatekey_unknown');
+
+		// need to register captcha fields so they will be sent back also in callbacks 
+		$page = $this->getPage();
+		$page->registerRequiresPostData($this->getChallengeFieldName());
+		$page->registerRequiresPostData($this->getResponseFieldName());
 	}
 
-	public function render($writer)
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$writer->addAttribute('id',$this->getClientID());
+	}
+
+	public function regenerateToken()
+	{
+		// if we're in a callback, then schedule re-rendering of the control 
+		// if not, don't do anything, because a new challenge will be rendered anyway
+		if ($this->Page->IsCallback)
+			$this->Page->ClientScript->registerEndScript($this->getClientID().'::refresh','Recaptcha.reload();');
+	}
+
+	public function renderContents($writer)
 	{
 		$writer->write(TJavaScript::renderScriptBlock(
 			'var RecaptchaOptions = '.TJavaScript::jsonEncode($this->getClientSideOptions()).';'
 		));
-	
+
 		$html = recaptcha_get_html($this->getPublicKey());
 		/*
 		reCAPTCHA currently does not support multiple validations per page

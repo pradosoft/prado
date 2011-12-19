@@ -790,7 +790,6 @@ Prado.WebUI.TBaseValidator.prototype =
 		options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
 		options.OnError = options.OnError || Prototype.emptyFunction;
 	*/
-
 		/**
 		 * Wether the validator is enabled (default true)
 		 * @var {boolean} enabled
@@ -839,6 +838,9 @@ Prado.WebUI.TBaseValidator.prototype =
 		this.message = $(options.ID);
 
 		Prado.Registry.set(options.ID, this);
+
+		if (this.onInit) this.onInit();
+
 		if(this.control && this.message)
 		{
 			this.group = options.ValidationGroup;
@@ -1940,3 +1942,44 @@ Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	    return crc ^ (-1);
 	}
 });
+
+
+/**
+ * TReCaptchaValidator client-side control.
+ * 
+ * @class Prado.WebUI.TReCaptchaValidator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TReCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
+{
+	onInit : function()
+	{
+		var obj = this;
+		var elements = document.getElementsByName(this.options.ResponseFieldName);
+		if (elements)
+		 if (elements.length>=1)
+		 {
+		  Event.observe(elements[0],'change',function() { obj.responseChanged() });
+		  Event.observe(elements[0],'keydown',function() { obj.responseChanged() });
+		 }
+	},
+
+	responseChanged: function()
+	{
+		var field = $(this.options.ID+'_1');
+		if (field.value=='1') return;
+		field.value = '1';
+		Prado.Validation.validateControl(this.options.ID);
+	},
+
+	/**
+	 * Evaluate validation state
+	 * @function {boolean} ?
+	 * @return True if the captcha has validate, False otherwise.
+	 */
+	evaluateIsValid : function()
+	{
+		return ($(this.options.ID+'_1').value=='1');
+	}
+});
+
