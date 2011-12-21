@@ -57,7 +57,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	/**
 	 * @var integer error code of the current file upload
 	 */
-	private $_errorCode=UPLOAD_ERR_NO_FILE;
+	protected $_errorCode=UPLOAD_ERR_NO_FILE;
 	private $_dataChanged=false;
 	private $_isValid=true;
 

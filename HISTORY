@@ -36,6 +36,7 @@ BUG: Issue #275 - THttpResponse::writeFile delivers the wrong content type (ctrl
 BUG: Issue #283 - constructUrl does not work as before in TShellApplication (ctrlaltca)
 BUG: Issue #284 - Wrong reading of information_schema (ctrlaltca)
 BUG: Issue #301 - Fixed a bug in TActiveFileUpload (ctrlaltca)
+BUG: Issue #314 - T(Active)FileUpload $_errorCode private vs protected (ctrlaltca)
 ENH: Issue #337 - Prado serialization optimizations (Gabor)
 BUG: Issue #341 - TSafeHtmlParser messes up UTF8-encoded strings (ctrlaltca)
 BUG: Issue #342 - TStyle does no accept style values with ":" (ctrlaltca)

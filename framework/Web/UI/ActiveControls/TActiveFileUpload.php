@@ -274,6 +274,7 @@ EOS;
 
 		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())
 		{
+			// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
 			$this->_errorCode = UPLOAD_ERR_FORM_SIZE;
 			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
 			$filename = addslashes($this->getFileName());
