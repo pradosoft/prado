@@ -2,7 +2,7 @@
 
 <h1 id="6101">Logging</h1>
 <p id="780615" class="block-content">
-PRADO provides a highly flexible and extensible logging functionality. Messages logged can be classified according to log levels and message categories. Using level and category filters, the messages can be further routed to different destinations, such as files, emails, browser windows, etc. The following diagram shows the basic architecture of PRADO logging mechanism,
+PRADO provides a highly flexible and extensible logging functionality. Messages logged can be classified according to log levels, message categories and originating control. Using level, category, control or timestamp filters, the messages can be further routed to different destinations, such as files, emails, browser windows, etc. The following diagram shows the basic architecture of PRADO logging mechanism,
 </p>
 <img src="<%~ logrouter.gif %>" alt="Log router" />
 
@@ -11,8 +11,8 @@ PRADO provides a highly flexible and extensible logging functionality. Messages 
 The following two methods are provided for logging messages in PRADO,
 </p>
 <com:TTextHighlighter CssClass="source block-content" id="code_780201">
-Prado::log($message, $logLevel, $category);
-Prado::trace($message, $category);
+Prado::log($message, $logLevel, $category, $control);
+Prado::trace($message, $category, $control);
 </com:TTextHighlighter>
 <p id="780617" class="block-content">
 The difference between <tt>Prado::log()</tt> and <tt>Prado::trace()</tt> is  that the latter automatically selects the log level according to the application mode. If the application is in <tt>Debug</tt> mode, stack trace information is appended to the messages. <tt>Prado::trace()</tt> is widely used in the core code of the PRADO framework.
@@ -58,5 +58,4 @@ Message categories are hierarchical. A category whose name is the prefix of anot
 <p id="780624" class="block-content">
 By convention, the messages logged in the core code of PRADO are categorized according to the namespace of the corresponding classes. For example, messages logged in <tt>TPage</tt> will be of category <tt>System.Web.UI.TPage</tt>.
 </p>
-
 </com:TContent>
