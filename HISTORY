@@ -20,6 +20,7 @@ BUG: TActiveFileUpload: urlencode the base64'ed token since it can contain the "
 BUG: TCaptcha: publish images with image/png content-type (ctrlaltca)
 
 BUG: Issue  #35 - [840] Capital letters for the initial letter of the directories name (ctrlaltca)
+BUG: Issue  #66 - TButton.CausesValidation=False ignored when pressing Enter on the button within a control with DefaultButton (ctrlaltca)
 NEW: Issue  #83 - PHP configuration style (Carl)
 ENH: Issue #106 - TJavaScript::jsonEncode and TJavaScript::jsonDecode should use built-in PHP functions (ctrlaltca)
 ENH: Issue #173 - Add "dragdropextra" (supergsting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
