@@ -102,6 +102,20 @@ class TActiveCustomValidator extends TCustomValidator
 	}
 
 	/**
+	 * @param boolean whether the value is valid; this method will trigger a clientside update if needed
+	 */
+	public function setIsValid($value)
+	{
+		parent::setIsValid($value);
+		if($this->getActiveControl()->canUpdateClientSide())
+		{
+			$client = $this->getPage()->getCallbackClient();
+			$func = 'Prado.Validation.updateActiveCustomValidator';
+			$client->callClientFunction($func, array($this, $value));
+		}
+	}
+
+	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event

@@ -212,6 +212,20 @@ Object.extend(Prado.Validation,
 				}
 			});
 		});
+	},
+	
+	updateActiveCustomValidator : function(validatorID, isValid)
+	{
+		$H(Prado.Validation.managers).each(function(manager)
+		{
+			manager[1].validators.each(function(validator)
+			{
+				if(validator.options.ID == validatorID)
+				{
+					validator.updateIsValid(isValid);
+				}
+			});
+		});
 	}
 });
 
@@ -1506,17 +1520,6 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 {
 	/**
-	 * Value to validate
-	 * @var {string} validatingValue
-	 */
-	validatingValue : null,
-	/**
-	 * DOM element that triggered validation
-	 * @var {element} invoker
-	 */
-	invoker : null,
-
-	/**
 	 * Override the parent implementation to store the invoker, in order to
 	 * re-validate after the callback has returned
 	 * Calls evaluateIsValid() function to set the value of isValid property.
@@ -1545,18 +1548,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 				this.options.OnValidate(this, invoker);
 		}
 
-		if(this.enabled && !this.control.getAttribute('disabled'))
-			this.isValid = this.evaluateIsValid();
-		else
-			this.isValid = true;
-
-		// Only update the message if the callback has already return !
-		if (!this.requestDispatched)
-			this.updateValidationDisplay(invoker);
-
-		this.observeChanges(this.control);
-
-		return this.isValid;
+		return true;
 	},
 
 	/**
@@ -1566,21 +1558,6 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		var value = this.getValidationValue();
-		if(!this.requestDispatched && (""+value) != (""+this.validatingValue))
-		{
-			this.validatingValue = value;
-			var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
-			if(this.options.DateFormat && value instanceof Date) //change date to string with formatting.
-				value = value.SimpleFormat(this.options.DateFormat);
-			request.setCallbackParameter(value);
-			request.setCausesValidation(false);
-			request.options.onSuccess = this.callbackOnSuccess.bind(this);
-			request.options.onFailure = this.callbackOnFailure.bind(this);
-			request.dispatch();
-			this.requestDispatched = true;
-			return false;
-		}
 		return this.isValid;
 	},
 
@@ -1590,36 +1567,15 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 * @param {CallbackRequest} request - CallbackRequest.
 	 * @param {string} data - Response data.
 	 */
-	callbackOnSuccess : function(request, data)
+	updateIsValid : function(data)
 	{
 		this.isValid = data;
 		this.requestDispatched = false;
 		if(typeof(this.options.onSuccess) == "function")
-			this.options.onSuccess(request,data);
+			this.options.onSuccess(null,data);
 		this.updateValidationDisplay();
 		this.manager.updateSummary(this.group);
-		// Redispatch initial request if any
-		if(this.isValid) {
-			if(this.invoker instanceof Prado.CallbackRequest) {
-				this.invoker.dispatch();
-			} else {
-				this.invoker.click();
-			}
-		}
 	},
-
-	/**
-	 * Handle callback failure.
-	 * @function ?
-	 * @param {CallbackRequest} request - CallbackRequest.
-	 * @param {string} data - Response data.
-	 */
-	callbackOnFailure : function(request, data)
-	{
-		this.requestDispatched = false;
-		if(typeof(this.options.onFailure) == "function")
-			this.options.onFailure(request,data);
-	}
 });
 
 /**

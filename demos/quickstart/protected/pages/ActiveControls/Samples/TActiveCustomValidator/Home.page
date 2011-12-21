@@ -12,7 +12,7 @@ Custom validator using callbacks:
 	ControlToValidate="textbox1"
 	ErrorMessage="Please enter 'Prado'"
 	OnServerValidate="validator1_onvalidate" />
-<com:TButton ID="button1" Text="Submit!" />
+<com:TActiveButton ID="button1" Text="Submit!" />
 </td></tr>
 </table>
 
