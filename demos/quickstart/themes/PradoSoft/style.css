@@ -72,6 +72,16 @@ a
     background-position: top right;
 }
 
+#header div.image_sqlmap
+{
+    display: block;
+    float: right;
+    width: 757px;
+    height: 100px;
+    background-image: url('sqlmap.jpg');
+    background-repeat: no-repeat;
+    background-position: top right;
+}
 
 .languages
 {

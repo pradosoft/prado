@@ -10,7 +10,7 @@
 <com:TForm>
 <div id="header">
 <div class="title">PRADO Time Tracker Guide</div>
-<div class="image"></div>
+<div class="image_sqlmap"></div>
 </div>
 
 <com:TPanel ID="MainMenu" CssClass="mainmenu">

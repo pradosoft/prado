@@ -2621,6 +2621,7 @@ demos/quickstart/themes/PradoSoft/mantisbg.jpg -text
 demos/quickstart/themes/PradoSoft/mantissample.jpg -text
 demos/quickstart/themes/PradoSoft/pradologo.gif -text
 demos/quickstart/themes/PradoSoft/sitemap_color.gif -text
+demos/quickstart/themes/PradoSoft/sqlmap.jpg -text svneol=unset#image/jpeg
 demos/quickstart/themes/PradoSoft/style.css -text
 demos/quickstart/themes/Simple/style.css -text
 demos/soap/index.php -text
