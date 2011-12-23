@@ -235,7 +235,7 @@ class TPanel extends TWebControl
 			if (count($buttons)>0)
 				$button = reset($buttons);
 			else
-				$buttons = null;
+				$button = null;
 			if($button===null)
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
 			else
