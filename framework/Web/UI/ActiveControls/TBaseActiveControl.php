@@ -124,12 +124,13 @@ class TBaseActiveControl extends TComponent
 	 * @return boolean true if the callback response is allowed update
 	 * client-side contents.
 	 */
-	public function canUpdateClientSide()
+	public function canUpdateClientSide($bDontRequireVisibility=false)
 	{
 		return 	$this->getControl()->getHasChildInitialized()
 				&& $this->getPage()->getIsLoadingPostData() == false
 				&& $this->getPage()->getIsCallback()
-				&& $this->getEnableUpdate();
+				&& $this->getEnableUpdate()
+				&& ($bDontRequireVisibility || $this->getControl()->getVisible());
 	}
 }
 

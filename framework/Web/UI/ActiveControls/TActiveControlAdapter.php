@@ -175,7 +175,7 @@ class TActiveControlAdapter extends TControlAdapter
 	public function saveState()
 	{
 		if(($this->_stateTracker!==null)
-			&& $this->getControl()->getActiveControl()->canUpdateClientSide())
+			&& $this->getControl()->getActiveControl()->canUpdateClientSide(true))
 		{
 			$this->_stateTracker->respondToChanges();
 		}
