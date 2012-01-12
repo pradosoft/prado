@@ -1575,7 +1575,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 			this.options.onSuccess(null,data);
 		this.updateValidationDisplay();
 		this.manager.updateSummary(this.group);
-	},
+	}
 });
 
 /**
