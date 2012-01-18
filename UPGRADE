@@ -20,14 +20,14 @@ Upgrading from v3.1.x
   and the entire TClientScriptLoader class. These two were used to publish multiple javascript files at once
   and to compress/minify them. While the compression is something that is probably better done at the
   webserver/processor level, you can still get your scripts minified using TJavaScript::JSMin();
-- Ticket #325 enabled pregressive rendering inside Prado. Previously, all the output of Prado was
-  buffered and sent to the client all at once. Now, you decide to render smaller parts of the page
+- Ticket #325 enabled progressive rendering inside Prado. Previously, all the output of Prado was
+  buffered and sent to the client all at once. Now, you can decide to render smaller parts of the page
   and send them to client right after completed, one after the other (see TFlushOutput documentation).
   To ensure proper working of components requiring "head" resources (like external javascript files),
   all the resource publishing needs to be made before the actual rendering occurs. Tipically the best
   idea is to do it inside the onPreRender event. All the Prado components have been (obviously) updated
   to support this change, but any custom component made by yourself could need some update efforts.
-  The easist way to understand if a component is broken because of this change is to check if you get a
+  The easiest way to understand if a component is broken because of this change is to check if you get a
   'Operation invalid when page is already rendering' exception.
 - A new "TReCaptcha" control has been added to overcome the limited security offered by TCaptcha. If you
   are currently using TCaptcha, an update to the new control is really adviced.

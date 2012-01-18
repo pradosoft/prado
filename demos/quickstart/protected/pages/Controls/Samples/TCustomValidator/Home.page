@@ -64,6 +64,19 @@ Custom validator with focus-on-error enabled and dynamic display:
 </td>
 </tr>
 
+<tr>
+<td class="samplenote">
+Custom validator without ControlToValidate:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox4" />
+<com:TCustomValidator
+	ValidationGroup="Group4"
+	OnServerValidate="serverValidateNoControl"
+	Text="You must enter 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group4" />
+</td>
+</tr>
 
 </table>
 

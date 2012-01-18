@@ -97,7 +97,7 @@ class RangeValidatorTestCase extends SeleniumTestCase
 		$this->click("//input[@type='submit' and @value='Test']", "");
 		$this->assertVisible("{$base}validator1", "");
 		$this->type("{$base}text1", "1/2/2005");
-		$this->click("//input[@type='submit' and @value='Test']", "");
+		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");

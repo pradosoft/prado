@@ -107,10 +107,7 @@ class TCustomValidator extends TBaseValidator
 	{
 		$param=new TServerValidateEventParameter($value,true);
 		$this->raiseEvent('OnServerValidate',$this,$param);
-		if($this->getValidationTarget()==null)
-			return true;
-		else
-			return $param->getIsValid();
+		return $param->getIsValid();
 	}
 
 	/**

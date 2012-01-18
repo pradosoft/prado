@@ -10,8 +10,8 @@
 		ControlToValidate="picker1"
 		DataType="Date"
 		DateFormat="d/M/yyyy"
-		ErrorMessage="Please enter a date greater than 17/4/2007"
-		MinValue="17/4/2007" />
+		ErrorMessage="Please enter a date greater than 17/4/2013"
+		MinValue="17/4/2013" />
 		
 	<hr />
 	<com:TDatePicker ID="picker2" DateFormat="d/M/yyyy" InputMode="DropDownList" />
@@ -21,9 +21,9 @@
 		ControlToValidate="picker2"
 		DataType="Date"
 		DateFormat="d/M/yyyy"
-		ErrorMessage="Please enter a date between 9/9/2006 and 8/10/2006"
-		MinValue="9/9/2006"
-		MaxValue="8/10/2006" />
+		ErrorMessage="Please enter a date between 9/9/2012 and 8/10/2012"
+		MinValue="9/9/2012"
+		MaxValue="8/10/2012" />
 		
 	<hr />
 	Date 1:

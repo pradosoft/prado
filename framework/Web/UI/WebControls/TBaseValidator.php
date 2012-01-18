@@ -163,7 +163,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$options['FocusElementID'] = $this->getFocusElementID();
 		}
 		$options['ValidationGroup'] = $this->getValidationGroup();
-		$options['ControlToValidate'] = $control->getClientID();
+		if($control)
+			$options['ControlToValidate'] = $control->getClientID();
 		$options['ControlCssClass'] = $this->getControlCssClass();
 
 		$options['ControlType'] = $this->getClientControlClass($control);
@@ -499,8 +500,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$this->onValidate();
 		if($this->getVisible(true) && $this->getEnabled(true))
 		{
+			$target=$this->getValidationTarget();
 			// if the target is not a disabled web control
-			if(($target=$this->getValidationTarget())!==null && !($target instanceof TWebControl && !$target->getEnabled(true)))
+			if($target===null ||
+				($target!==null && 
+				!($target instanceof TWebControl && !$target->getEnabled(true))))
 			{
 				if($this->evaluateIsValid())
 				{
@@ -509,7 +513,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				}
 				else
 				{
-					$target->setIsValid(false);
+					if($target)
+						$target->setIsValid(false);
 					$this->setIsValid(false);
 					$this->onValidationError();
 				}
