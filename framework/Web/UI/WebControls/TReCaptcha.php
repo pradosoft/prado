@@ -159,11 +159,20 @@ class TReCaptcha extends TWebControl implements IValidatable
 
 	public function validate()
 	{
+		if (!
+		      (
+			($challenge = @$_POST[$this->getChallengeFieldName()])
+			and
+			($response = @$_POST[$this->getResponseFieldName()])
+		      )
+                   )
+		   return false;
+
 		$resp = recaptcha_check_answer(
 			$this->getPrivateKey(),
 			$_SERVER["REMOTE_ADDR"],
-			$_POST[$this->getChallengeFieldName()],
-			$_POST[$this->getResponseFieldName()]
+			$challenge,
+			$response
 		); 
 		return ($resp->is_valid==1);
 	}
