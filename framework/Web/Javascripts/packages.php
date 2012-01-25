@@ -11,6 +11,7 @@ $packages = array(
 	'prado' => array(
 		PROTOTYPE_DIR.'/prototype.js',
 		SCRIPTACULOUS_DIR.'/builder.js',
+		SCRIPTACULOUS_DIR.'/effects.js',
 		'prado/prado.js',
 		'prado/scriptaculous-adapter.js',
 		'prado/controls/controls.js',
