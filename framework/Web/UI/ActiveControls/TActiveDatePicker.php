@@ -36,8 +36,11 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * Get javascript date picker options.
 	 * @return array date picker client-side options
 	 */
-	protected function getDatePickerOptions(){
+	protected function getDatePickerOptions()
+	{
 		$options = parent::getDatePickerOptions();
+		$options['CausesValidation']=$this->getCausesValidation();
+		$options['ValidationGroup']=$this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['ShowCalendar'] = $this->getShowCalendar();
 		return $options;

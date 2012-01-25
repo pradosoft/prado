@@ -62,6 +62,7 @@ ENH: Issue #372 - ActiveControls's Visible property should be reflected clientsi
 BUG: Issue #375 - Iconv error using htmlarea in TActiveDataList and chars like "αινσϊρ" (ctrlaltca)
 BUG: Issue #377 - THtmlArea Template Pluggin Options Parse Error (ctrlaltca)
 BUG: Issue #380 - TCustomValidator's ControlToValidate should be optional (ctrlaltca)
+BUG: Issue #381 - The property CausesValidation in the TActiveDatePicker not work (ctrlaltca)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
