@@ -143,7 +143,11 @@ class TJSON
 
             case 'double':
             case 'float':
-                return (float) $var;
+		$locale=localeConv();
+		if($locale['decimal_point']=='.')
+			return (float) $var;
+		else
+			return str_replace($locale['decimal_point'], '.', (float)$var);
 
             case 'string':
                 if (($g=Prado::getApplication()->getGlobalization(false))!==null &&
