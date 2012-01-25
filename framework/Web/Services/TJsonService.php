@@ -156,10 +156,8 @@ class TJsonService extends TService
 			$response = $this->getResponse();
 			$response->setContentType('text/javascript');
 			$response->setCharset('UTF-8');
-			$json = Prado::createComponent('System.Web.Javascripts.TJSON');
-
 			//send content
-			$response->write($json->encode($content));
+			$response->write(TJavaScript::jsonEncode($content));
 		}
 	}
 }
