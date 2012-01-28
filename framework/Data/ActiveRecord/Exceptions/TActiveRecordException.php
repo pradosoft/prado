@@ -34,6 +34,14 @@ class TActiveRecordException extends TDbException
 	}
 }
 
+/**
+ * TActiveRecordConfigurationException class.
+ *
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Data.ActiveRecord
+ * @since 3.1
+ */
 class TActiveRecordConfigurationException extends TActiveRecordException
 {
 

@@ -90,8 +90,8 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 
 	/**
 	 * Returns the index of the active accordion view.
-     * Note, this property may not return the correct index.
-     * To ensure the correctness, call {@link getActiveView()} first.
+	 * Note, this property may not return the correct index.
+	 * To ensure the correctness, call {@link getActiveView()} first.
 	 * @return integer the zero-based index of the active accordion view. If -1, it means no active accordion view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()
@@ -108,24 +108,24 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
 	}
 
-    /**
+	/**
 	 * Returns the ID of the active accordion view.
-     * Note, this property may not return the correct ID.
-     * To ensure the correctness, call {@link getActiveView()} first.
+	 * Note, this property may not return the correct ID.
+	 * To ensure the correctness, call {@link getActiveView()} first.
 	 * @return string The ID of the active accordion view. Defaults to '', meaning not set.
-     */
-    public function getActiveViewID()
-    {
+	 */
+	public function getActiveViewID()
+	{
 		return $this->getViewState('ActiveViewID','');
-    }
+	}
 
-    /**
+	/**
 	 * @param string The ID of the active accordion view.
-     */
-    public function setActiveViewID($value)
-    {
+	 */
+	public function setActiveViewID($value)
+	{
 		$this->setViewState('ActiveViewID',$value,'');
-    }
+	}
 
 	/**
 	 * Returns the currently active view.
@@ -251,21 +251,21 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		return $style;
 	}
 
-    /**
+	/**
 	 * @return string CSS class for view headers. Defaults to 'accordion-header'.
-     */
+	 */
 	public function getHeaderCssClass()
-    {
+	{
 		return $this->getHeaderStyle()->getCssClass();
-    }
+	}
 
-    /**
+	/**
 	 * @param string CSS class for view headers.
-     */
+	 */
 	public function setHeaderCssClass($value)
-    {
+	{
 		$this->getHeaderStyle()->setCssClass($value);
-    }
+	}
 
 	/**
 	 * @return TStyle the style for all the inactive header div
@@ -281,21 +281,21 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		return $style;
 	}
 
-    /**
+	/**
 	 * @return string Extra CSS class for the active header. Defaults to 'accordion-header-active'.
-     */
+	 */
 	public function getActiveHeaderCssClass()
-    {
+	{
 		return $this->getActiveHeaderStyle()->getCssClass();
-    }
+	}
 
-    /**
+	/**
 	 * @param string Extra CSS class for the active header. Will be added to the normal header specified by HeaderCssClass.
-     */
+	 */
 	public function setActiveHeaderCssClass($value)
-    {
+	{
 		$this->getActiveHeaderStyle()->setCssClass($value);
-    }
+	}
 
 	/**
 	 * @return TStyle the style for the active header div
@@ -536,6 +536,20 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 
 }
 
+/**
+ * Class TAccordionView.
+ *
+ * TAccordionView represents a single view in a {@link TAccordion}.
+ * 
+ * TAccordionView is represented inside the {@link TAccordion} with an header label whose text is defined by
+ * the {@link setCaption Caption} property; optionally the label can be an hyperlink: use the
+ * {@link setNavigateUrl NavigateUrl} property to define the destination url.
+ *
+ * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
+ * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
+ * @package System.Web.UI.WebControls
+ * @since 3.2
+ */
 class TAccordionView extends TWebControl
 {
 	private $_active=false;
@@ -685,6 +699,16 @@ class TAccordionView extends TWebControl
 	}
 }
 
+/**
+ * Class TAccordionViewCollection.
+ *
+ * TAccordionViewCollection is a collection of {@link TAccordionView} to be used inside a {@link TAccordion}.
+ * 
+ * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
+ * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
+ * @package System.Web.UI.WebControls
+ * @since 3.2
+ */
 class TAccordionViewCollection extends TControlCollection
 {
 	/**

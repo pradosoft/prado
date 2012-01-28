@@ -354,8 +354,6 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
     <exec command="${php} build.php" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
     <!-- use -interaction=nonstopmode to see compilation errors in the shell output -->
     <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
-    <exec command="${pdflatex} -interaction=batchmode quickstart.tex" dir="buildscripts/texbuilder/quickstart" passthru="true"/>
     <move file="buildscripts/texbuilder/quickstart/quickstart.pdf" todir="${build.doc.dir}"/>
 
 	<echo>Building API manuals...</echo>
@@ -393,11 +391,11 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
     <echo>Moving doc files to build...</echo>
     <mkdir dir="${build.dist.dir}" />
     <move file="${build.doc.dir}/quickstart.pdf" todir="${build.src.dir}/docs" />
-    <move todir="${build.src.dir}/docs/manual">
+    <copy todir="${build.src.dir}/docs/manual">
       <fileset dir="${build.doc.dir}/manual/HTMLframesConverter">
         <include name="**/**" />
       </fileset>
-    </move>
+    </copy>
     <if>
       <equals arg1="${prado.winbuild}" arg2="true"/>
       <then>
@@ -426,11 +424,11 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
 
     <echo>Moving HTML docs to Web folder...</echo>
     <mkdir dir="${build.web.dir}" />
-    <move todir="${build.web.dir}/docs/manual">
+    <copy todir="${build.web.dir}/docs/manual">
       <fileset dir="${build.doc.dir}/manual/HTMLSmartyConverter">
         <include name="**/**" />
       </fileset>
-    </move>
+    </copy>
 
     <echo>
 

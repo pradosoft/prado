@@ -28,6 +28,14 @@ require_once(dirname(__FILE__).'/PradoBase.php');
  */
 if(!class_exists('Prado',false))
 {
+	/**
+	 * Prado class.
+	 *
+	 * @author Qiang Xue <qiang.xue@gmail.com>
+	 * @version $Id$
+	 * @package System
+	 * @since 3.0
+	 */
 	class Prado extends PradoBase
 	{
 	}

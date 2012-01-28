@@ -441,6 +441,14 @@ EOS;
 	}
 }
 
+/**
+ * TActiveFileUploadCallbackParams is an internal class used by {@link TActiveFileUpload}.
+ *  
+ * @author Bradley Booms <Bradley.Booms@nsighttel.com>
+ * @author Christophe Boulain <Christophe.Boulain@gmail.com>
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ */
 class TActiveFileUploadCallbackParams
 {
 	public $localName;
