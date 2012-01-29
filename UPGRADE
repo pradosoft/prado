@@ -39,6 +39,9 @@ Upgrading from v3.1.x
   uppercase P). Using capital letters for the initial letter of the directories name is a long-time
   convention in prado, and this has been changed to reflect it. TPageService has been patched anyway to
   support even the old "Application.pages" to avoid breaking existing code.
+- All the THttpRequest's methods used to gather server informations have been paired to return null if no
+  information is available. Previously some of them returned an empty string (getQueryString and
+  getHttpProtocolVersion), some other returned null, others caused a php NOTICE.
 
 Upgrading from v3.1.10
 ----------------------

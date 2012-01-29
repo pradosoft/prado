@@ -320,7 +320,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getRequestType()
 	{
-		return $_SERVER['REQUEST_METHOD'];
+		return isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:null;
 	}
 
 	/**
@@ -359,15 +359,15 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getQueryString()
 	{
-		return isset($_SERVER['QUERY_STRING'])?$_SERVER['QUERY_STRING']:'';
+		return isset($_SERVER['QUERY_STRING'])?$_SERVER['QUERY_STRING']:null;
 	}
 
 	/**
 	 * @return string the requested http procolol. Blank string if not defined.
 	 */
-	public function getHttpProtocolVersion ()
+	public function getHttpProtocolVersion()
 	{
-		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'';
+		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:null;
 	}
 
 	/**
@@ -428,7 +428,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		if($this->_cgiFix&self::CGIFIX__SCRIPT_NAME && isset($_SERVER['ORIG_SCRIPT_NAME']))
 			return $_SERVER['ORIG_SCRIPT_NAME'];
 
-		return $_SERVER['SCRIPT_NAME'];
+		return isset($_SERVER['SCRIPT_NAME'])?$_SERVER['SCRIPT_NAME']:null;
 	}
 
 	/**
@@ -448,7 +448,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getApplicationFilePath()
 	{
-		return realpath($_SERVER['SCRIPT_FILENAME']);
+		return realpath(isset($_SERVER['SCRIPT_FILENAME'])?$_SERVER['SCRIPT_FILENAME']:null);
 	}
 
 	/**
@@ -456,7 +456,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getServerName()
 	{
-		return $_SERVER['SERVER_NAME'];
+		return isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:null;
 	}
 
 	/**
@@ -464,7 +464,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getServerPort()
 	{
-		return $_SERVER['SERVER_PORT'];
+		return isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:null;
 	}
 
 	/**
@@ -481,14 +481,14 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getBrowser()
 	{
-			try
-			{
-				return get_browser();
-			}
-			catch(TPhpErrorException $e)
-			{
-					throw new TConfigurationException('httprequest_browscap_required');
-			}
+		try
+		{
+			return get_browser();
+		}
+		catch(TPhpErrorException $e)
+		{
+			throw new TConfigurationException('httprequest_browscap_required');
+		}
 	}
 
 	/**
@@ -496,7 +496,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getUserAgent()
 	{
-		return $_SERVER['HTTP_USER_AGENT'];
+		return isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
 	}
 
 	/**
@@ -504,7 +504,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getUserHostAddress()
 	{
-		return $_SERVER['REMOTE_ADDR'];
+		return isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:null;
 	}
 
 	/**
@@ -521,7 +521,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	public function getAcceptTypes()
 	{
 		// TBD: break it into array??
-		return $_SERVER['HTTP_ACCEPT'];
+		return isset($_SERVER['HTTP_ACCEPT'])?$_SERVER['HTTP_ACCEPT']:null;
 	}
 
 	/**
