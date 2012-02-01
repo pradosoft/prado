@@ -447,7 +447,8 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getStyleSheetUrls()
 	{
-		$stylesheets = array_values($this->_styleSheets);
+
+		$stylesheets = array_values(array_merge($this->_styleSheetFiles, $this->_styleSheets));
 
 		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)
 			if (substr($url,strlen($url)-4)=='.css')
