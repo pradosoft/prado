@@ -416,7 +416,18 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	public function getFocusElementID()
 	{
 		if(($id=$this->getViewState('FocusElementID',''))==='')
-			$id=$this->getValidationTarget()->getClientID();
+		{
+			$target=$this->getValidationTarget();
+			/* Workaround: TCheckBoxList and TRadioButtonList nests the actual
+			 * inputs inside a table; we ensure the first input gets focused
+			 */
+			if($target instanceof TCheckBoxList && $target->getItemCount()>0)
+			{
+				$id=$target->getClientID().'_c0';
+			} else {
+				$id=$target->getClientID();
+			}
+		}
 		return $id;
 	}
 
