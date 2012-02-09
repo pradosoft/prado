@@ -388,7 +388,7 @@ class TClientScriptManager extends TApplicationComponent
 		if($target instanceof TControl)
 			$target=$target->getClientID();
 		$id = TJavaScript::quoteString($target);
-		$this->_endScripts['prado:focus'] = 'new Effect.ScrollTo("'.$id.'"); Prado.Element.focus("'.$id.'");';
+		$this->_endScripts['prado:focus'] = 'new Effect.ScrollTo('.$id.'); Prado.Element.focus('.$id.');';
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);

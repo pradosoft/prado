@@ -76,45 +76,14 @@ class TJavaScript
 
 	/**
 	 * Quotes a javascript string.
-	 * After processing, the string can be safely enclosed within a pair of
-	 * quotation marks and serve as a javascript string.
+	 * After processing, the string is safely enclosed within a pair of
+	 * quotation marks and can serve as a javascript string.
 	 * @param string string to be quoted
-	 * @param boolean whether this string is used as a URL
 	 * @return string the quoted string
 	 */
-	public static function quoteString($js,$forUrl=false)
+	public static function quoteString($js)
 	{
-		return self::quoteUTF8(($forUrl) ? strtr($js,array('%'=>'%25',"\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\')) : strtr($js,array("\t"=>'\t',"\n"=>'\n',"\r"=>'\r','"'=>'\"','\''=>'\\\'','\\'=>'\\\\')));
-	}
-
-	public static function quoteUTF8($str)
-	{
-		$entities = '';
-		$length = strlen($str);
-		$lookingFor = 1;
-		$unicode = array();
-		$values = array();
-
-		for($i=0;$i<$length;$i++) {
-			$thisValue = ord($str[$i]);
-			if($thisValue < 128)
-				$unicode[] = $thisValue;
-			else {
-				if(count($values)==0)
-					$lookingFor = ($thisValue<224) ? 2 : 3;
-				$values[] = $thisValue;
-				if(count($values)==$lookingFor) {
-					$unicode[] = ($lookingFor == 3) ? (($values[0]%16)*4096)+(($values[1]%64)*64)+($values[2]%64) : (($values[0]%32)*64)+($values[1]%64);
-					$values = array();
-					$lookingFor = 1;
-				}
-			}
-		}
-
-		foreach($unicode as $value)
-			$entities .= ($value < 128) ? chr($value) : '\u'.str_pad(dechex($value), 4, '0', STR_PAD_LEFT);
-
-		return $entities;
+		return self::jsonEncode($js,JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
 	}
 
 	/**
@@ -176,7 +145,7 @@ class TJavaScript
 			if(self::isFunction($value))
 				return preg_replace('/^\s*javascript:/', '', $value);
 			else
-				return "'".self::quoteString($value)."'";
+				return self::quoteString($value);
 		}
 		else if(is_bool($value))
 			return $value?'true':'false';
@@ -235,7 +204,7 @@ class TJavaScript
 	 * @param mixed variable to be encoded
 	 * @return string encoded string
 	 */
-	public static function jsonEncode($value)
+	public static function jsonEncode($value, $options = 0)
 	{
 		if (function_exists('json_encode'))
 		{
@@ -243,7 +212,9 @@ class TJavaScript
 				($g=Prado::getApplication()->getGlobalization(false))!==null &&
 				strtoupper($enc=$g->getCharset())!='UTF-8')
 				$value=iconv($enc, 'UTF-8', $value);
-			return json_encode($value);
+			$s = json_encode($value,$options);
+			self::checkJsonError();
+			return $s;
 		}
 
 		if(self::$_json === null)
@@ -260,11 +231,51 @@ class TJavaScript
 	public static function jsonDecode($value)
 	{
 		if (function_exists('json_decode'))
-			return json_decode($value);
-
+		{
+			$s= json_decode($value);
+			self::checkJsonError();
+			return $s;
+		}
 		if(self::$_json === null)
 			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
 		return self::$_json->decode($value);
+	}
+	
+	private static function checkJsonError()
+	{
+		// requires php 5.3.0
+		if (function_exists('json_last_error'))
+		{
+			// requires php 5.3.3
+			if(!defined('JSON_ERROR_UTF8'))
+				define('JSON_ERROR_UTF8', null);
+
+			switch (json_last_error())
+			{
+				case JSON_ERROR_NONE:
+					return;
+					break;
+				case JSON_ERROR_DEPTH:
+					$msg = 'Maximum stack depth exceeded';
+    				break;
+				case JSON_ERROR_STATE_MISMATCH:
+					$msg = 'Underflow or the modes mismatch';
+    				break;
+				case JSON_ERROR_CTRL_CHAR:
+					$msg = 'Unexpected control character found';
+					break;
+				case JSON_ERROR_SYNTAX:
+					$msg = 'Syntax error, malformed JSON';
+    				break;
+				case JSON_ERROR_UTF8:
+					$msg = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+					break;
+				default:
+					$msg = 'Unknown error';
+    				break;
+			}
+			throw new Exception("JSON encode error ($err): $msg");
+		}
 	}
 
 	/**

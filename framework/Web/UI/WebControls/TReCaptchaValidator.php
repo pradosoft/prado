@@ -100,8 +100,8 @@ class TReCaptchaValidator extends TBaseValidator
 		  {
 		    $cs->registerEndScript(
 				$this->getClientID().'::validate',
-				'$(\''.TJavaScript::quoteString($this->getClientID().'_1').'\').value = \''.TJavaScript::quoteString($value).'\';'.
-				'Prado.Validation.validateControl(\''.TJavaScript::quoteString($control->ClientID).'\');'
+				'$('.TJavaScript::quoteString($this->getClientID().'_1').').value = '.TJavaScript::quoteString($value).';'.
+				'Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).');'
 		    );
 
 		    if ($control->getVisible(true))

@@ -42,6 +42,11 @@ Upgrading from v3.1.x
 - All the THttpRequest's methods used to gather server informations have been paired to return null if no
   information is available. Previously some of them returned an empty string (getQueryString and
   getHttpProtocolVersion), some other returned null, others caused a php NOTICE.
+- Some TJavaScript methods have been modified to clear their use and provide better xss protection:
+  the undocumented quoteUTF8() was removed, since it didn't provide any real protection;
+  quoteString() now safely adds quotes around a string: previously it only added escape characters;
+  the json* family of methods actually checks for errors and generate exceptions on fail (requires
+  at least php 5.3.3).
 
 Upgrading from v3.1.10
 ----------------------

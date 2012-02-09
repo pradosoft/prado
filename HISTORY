@@ -64,6 +64,7 @@ BUG: Issue #377 - THtmlArea Template Pluggin Options Parse Error (ctrlaltca)
 BUG: Issue #379 - JSON float encoding depends on current locale (ctrlaltca)
 BUG: Issue #380 - TCustomValidator's ControlToValidate should be optional (ctrlaltca)
 BUG: Issue #381 - The property CausesValidation in the TActiveDatePicker not work (ctrlaltca)
+BUG: Issue #382	- TJavaScript::quoteString() vulnerable to Unicode strings & TJavaScript::jsonEncode() doesn't check for errors (gabor)
 BUG: Issue #383 - Some THttpRequest methods raise NOTICE level errors on missing headers (gabor)
 
 Version 3.1.10 Jul 17, 2011
