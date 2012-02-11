@@ -250,7 +250,7 @@ class TJavaScript
 			if(!defined('JSON_ERROR_UTF8'))
 				define('JSON_ERROR_UTF8', null);
 
-			switch (json_last_error())
+			switch ($err = json_last_error())
 			{
 				case JSON_ERROR_NONE:
 					return;
@@ -274,7 +274,7 @@ class TJavaScript
 					$msg = 'Unknown error';
     				break;
 			}
-			throw new Exception("JSON encode error ($err): $msg");
+			throw new Exception("JSON error ($err): $msg");
 		}
 	}
 
