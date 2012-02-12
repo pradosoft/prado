@@ -494,7 +494,6 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerScriptFile($key,$url)
 	{
-		$this->checkIfNotInRender();
 		$this->_scriptFiles[$key]=$url;
 
 		$params=func_get_args();
