@@ -6,7 +6,7 @@ EHN: Add property SecureConnection to TUrlMappingPattern and related enum TUrlMa
 EHN: Add second parameter to THttpResponse::appendHeader whether the header should replace a previous similar header, or add a second header of the same type (Yves)
 ENH: Add THttpSession::regenerate() to update the current session id with a newly generated one (Yves)
 CHG: Remove TReflectionClass and all references since equals ReflectionClass (Yves)
-CHG: Modifiy TTemplate::parseAttributes to allow definition of "HTML5 Custom Data Attributes (data-*)" e.g Attributes.data-custom-value="foobar" (Yves)
+CHG: Modify TTemplate::parseAttributes to allow definition of "HTML5 Custom Data Attributes (data-*)" e.g Attributes.data-custom-value="foobar" (Yves)
 EHN: Modify TActiveRecordConfig & TActiveRecordManager to allow custom subclassing of System.Data.ActiveRecord.TActiveRecordManager & System.Data.ActiveRecord.TActiveRecordGateway (Yves)
 EHN: Add methods quoteTableName, quoteColumnName, quoteColumnAlias to TDbMetaData & TDbConnection and add TDbConnection:getDbMetaData [TODO: customize TOracleMetaData] (Yves)
 EHN: Add method getHeaders to THttpRequest & THttpResponse (Yves)

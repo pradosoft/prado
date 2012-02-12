@@ -6,19 +6,87 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
-<h2 id="8001">Version 3.1.3</h2>
+<h2 id="8001">Version 3.2.0</h2>
+<ul>
+<li>Added methods quoteTableName, quoteColumnName, quoteColumnAlias to TDbMetaData & TDbConnection and added TDbConnection:getDbMetaData</li>
+<li>Added THttpSession::regenerate()</li>
+<li>Added method getHeaders to THttpRequest & THttpResponse</li>
+<li>Modified TThemeManager to allow custom subclassing of TTheme</li>
+<li>Application configuration can be stored in PHP code</li>
+<li>Added mouse coordinates and key status to drag & drop controls event</li>
+<li>Permit progressive rendering of a page and added TFlushOutput control to control it</li></li>
+<li>Added TReCaptcha control</li>
+<li>Added a new "Clickable" operating mode to TDatePicker</li>
+<li>ActiveControls's Visible property is reflected clientside on ajax requests</li>
+<li>Controls are able to automagically render their javascript dependencies on an ajax callback</li>
+</ul>
+
+<h2 id="8002">Version 3.1.10</h2>
+<ul>
+<li>bugfix-only release</a></li>
+</ul>
+
+<h2 id="8003">Version 3.1.9</h2>
+<ul>
+<li>Added documentation and samples to the quickstart tutorial for all the active controls</li>
+<li>Added TTemplateControlInheritable control
+<li>Added <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid control</a></li>
+<li>Added <a href="?page=ActiveControls.ActiveDataList">TActiveDataList control</a></li>
+<li>Added <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView control</a></li>
+<li>Added <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater control</a></li>
+<li>Added TActiveTableRow control</li>
+<li>Added TActiveTableCell control</li>
+</ul>
+
+<h2 id="8004">Version 3.1.8</h2>
+<ul>
+<li>Updated external packages to support Internet explorer 9</li>
+</ul>
+
+<h2 id="8005">Version 3.1.7</h2>
+<ul>
+<li>Added property ClientScriptManagerClass to TPageService</li>
+<li>Added property TValidationSummary.ScrollToSummary to server-side control since property exists on client-side</li>
+<li>Added property TransactionClass (defaults to System.Data.TDbTransaction) to TDbConnection</li>
+<li>Added ClientSide property to TDropContainer</li>
+<li>Added Columns property to TInPlaceTextBox</li>
+</ul>
+
+<h2 id="8006">Version 3.1.6</h2>
+<ul>
+<li>Added property TPage.EnableStateCompression and related modifications in TPageStateFormatter since it is unnecessary to compress clientstate if TCachePageStatePersister/TSessionPageStatePersister is used</li>
+<li>Add property CssClass to TBrowserLog otuput and hide inline CSS</li>
+</ul>
+
+<h2 id="8007">Version 3.1.5</h2>
+<ul>
+<li>Added support for namespaces in TXmlDocument</li>
+<li>Added Registry for Prado generated clientside counterparts of serverside controls</li>
+<li>TValidationSummary: new display mode "HeaderOnly" that only render value of HeaderText property</li>
+<li>TDbCache performance: new property 'FlushInterval' to control how often expired items will be removed</li>
+<li>Added caching of message files to TException</li>
+<li>Added a new log route subclass for FirePHP: TFirePhpLogRoute - FirePHP is ideally suited for AJAX development where clean JSON and XML responses are required</li>
+</ul>
+
+<h2 id="8008">Version 3.1.4</h2>
+<ul>
+<li>Added the ability to specify position of popup TDatePicker/TActiveDatePicker</a></li>
+<li>Add wildcard support to TUrlMapping</li>
+</ul>
+
+<h2 id="8009">Version 3.1.3</h2>
 <ul>
 <li>Added <a href="?page=ActiveControls.DragDrop">Drag and drop controls</a></li>
 <li>Added TActiveDatePicker control</li>
 </ul>
 
-<h2 id="8002">Version 3.1.2</h2>
+<h2 id="8010">Version 3.1.2</h2>
 <ul>
 <li>Added a new active control <a href="?page=ActiveControls.ActivePager">TActivePager</a> that allows to paginate a databound control with an ajax callback.</li>
 <li>Added TFirebugLogRoute to send logs to the Firebug console</li>
 </ul>
 
-<h2 id="8003">Version 3.1.1</h2>
+<h2 id="8011">Version 3.1.1</h2>
 <ul>
 <li>Added a new control <a href="?page=Controls.TabPanel">TTabPanel</a> that displays tabbed views.</li>
 <li>Added a new control <a href="?page=Controls.Keyboard">TKeyboard</a> that displays a virtual keyboard for text input.</li>
@@ -34,7 +102,7 @@ This page summarizes the main new features that are introduced in each PRADO rel
 <li>Added support to <a href="?page=Database.ActiveRecord">column mapping in Active Record</a>.</li>
 </ul>
 
-<h2 id="8006">Version 3.1.0</h2>
+<h2 id="8012">Version 3.1.0</h2>
 <ul>
 <li>Added seamless AJAX support. A whole array of AJAX-enabled controls, called active controls, are introduced. The usage of these active controls is very similar to their non-AJAX counterparts, i.e., plug in and use. For more details, see the tutorial about <a href="?page=ActiveControls.Home">active controls</a>.</li>
 <li>Added complete database support. </li>
