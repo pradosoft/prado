@@ -814,7 +814,7 @@ class TPage extends TTemplateControl
 		$this->registerPostDataLoader($id);
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
-			$item->registerAction('Page','registerRequiresPostData',$id);
+			$item->registerAction('Page','registerRequiresPostData',array($id));
 	}
 
 	/**
