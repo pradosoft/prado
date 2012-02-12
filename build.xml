@@ -363,7 +363,7 @@ var_dump($sqlmap->queryForList('products-with-price', 50));
                title="PRADO v${prado.version} API Manual"
                destdir="${build.doc.dir}/manual"
                sourcepath="${build.src.dir}/framework"
-	       ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*jsmin.php,*I18N/core/*,*WebControls/assets/*"
+	       ignorelist="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*"
                output="HTML:frames:default,CHM:default:default,HTML:Smarty:PradoSoft" />
 
     <echo>Indexing API manuals...</echo>
