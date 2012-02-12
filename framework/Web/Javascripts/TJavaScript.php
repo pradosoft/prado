@@ -286,7 +286,7 @@ class TJavaScript
 	 */
 	public static function JSMin($code)
 	{
-		include_once('jsmin.php');
+		Prado::using('System.Web.Javascripts.JSMin');
 		return JSMin::minify($code);
 	}
 }
