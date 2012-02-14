@@ -39,5 +39,19 @@ class TPreparedStatement extends TComponent
 	public function getParameterValues(){ return $this->_parameterValues; }
 	public function setParameterValues($value){ $this->_parameterValues = $value; }
 
+	public function __wakeup()
+	{
+		parent::__wakeup();
+		if (!$this->_parameterNames) $this->_parameterNames = new TList;
+		if (!$this->_parameterValues) $this->_parameterValues = new TMap;
+	}
+	
+	public function __sleep()
+	{
+		$exprops = array(); $cn = __CLASS__; 
+		if (!$this->_parameterNames->getCount()) $exprops[] = "\0$cn\0_parameterNames";
+		if (!$this->_parameterValues->getCount()) $exprops[] = "\0$cn\0_parameterValues";
+		return array_diff(parent::__sleep(),$exprops);
+	}
 }
 

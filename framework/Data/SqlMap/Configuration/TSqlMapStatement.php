@@ -295,7 +295,22 @@ class TSqlMapStatement extends TComponent
 
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),array("\0TSqlMapStatement\0_resultMap"));
+		$cn = __CLASS__; 
+		$exprops = array("\0$cn\0_resultMap");
+		if (!$this->_parameterMapName) $exprops[] = "\0$cn\0_parameterMapName";
+		if (!$this->_parameterMap) $exprops[] = "\0$cn\0_parameterMap";
+		if (!$this->_parameterClassName) $exprops[] = "\0$cn\0_parameterClassName";
+		if (!$this->_resultMapName) $exprops[] = "\0$cn\0_resultMapName";
+		if (!$this->_resultMap) $exprops[] = "\0$cn\0_resultMap";
+		if (!$this->_resultClassName) $exprops[] = "\0$cn\0_resultClassName";
+		if (!$this->_cacheModelName) $exprops[] = "\0$cn\0_cacheModelName";
+		if (!$this->_SQL) $exprops[] = "\0$cn\0_SQL";
+		if (!$this->_listClass) $exprops[] = "\0$cn\0_listClass";
+		if (!$this->_typeHandler) $exprops[] = "\0$cn\0_typeHandler";
+		if (!$this->_extendStatement) $exprops[] = "\0$cn\0_extendStatement";
+		if (!$this->_cache) $exprops[] = "\0$cn\0_cache";
+
+		return array_diff(parent::__sleep(),$exprops);
 	}
 
 }

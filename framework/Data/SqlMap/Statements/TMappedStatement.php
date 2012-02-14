@@ -41,7 +41,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	/**
 	 * @var TPostSelectBinding[] post select statement queue.
 	 */
-	private $_selectQueque=array();
+	private $_selectQueue=array();
 
 	/**
 	 * @var boolean true when data is mapped to a particular row.
@@ -506,9 +506,9 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	 */
 	protected function executePostSelect($connection)
 	{
-		while(count($this->_selectQueque))
+		while(count($this->_selectQueue))
 		{
-			$postSelect = array_shift($this->_selectQueque);
+			$postSelect = array_shift($this->_selectQueue);
 			$method = $postSelect->getMethod();
 			$statement = $postSelect->getStatement();
 			$property = $postSelect->getResultProperty()->getProperty();
@@ -869,7 +869,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			$postSelect->setMethod(self::QUERY_FOR_OBJECT);
 
 		if(!$property->getLazyLoad())
-			$this->_selectQueque[] = $postSelect;
+			$this->_selectQueue[] = $postSelect;
 	}
 
 	/**
@@ -918,6 +918,21 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		$this->_IsRowDataFound = $dataFound;
 		return $dataFound;
 	}
+
+	public function __wakeup()
+	{
+		parent::__wakeup();
+		if (is_null($this->_selectQueue)) $this->_selectQueue = array();
+	}
+	
+	public function __sleep()
+	{
+		$exprops = array(); $cn = __CLASS__; 
+		if (!count($this->_selectQueue)) $exprops[] = "\0$cn\0_selectQueue";
+		if (is_null($this->_groupBy)) $exprops[] = "\0$cn\0_groupBy";
+		if (!$this->_IsRowDataFound) $exprops[] = "\0$cn\0_IsRowDataFound";
+		return array_diff(parent::__sleep(),$exprops);
+	}
 }
 
 /**
@@ -964,7 +979,7 @@ class TPostSelectBinding
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
-class TSqlMapObjectCollectionTree
+class TSqlMapObjectCollectionTree extends TComponent
 {
 	/**
 	 * @var array object graph as tree
@@ -1132,6 +1147,15 @@ class TSqlMapObjectCollectionTree
 	protected function getCollection()
 	{
 		return $this->_list;
+	}
+
+	public function __sleep()
+	{
+		$exprops = array(); $cn = __CLASS__; 
+		if (!count($this->_tree)) $exprops[] = "\0$cn\0_tree";
+		if (!count($this->_entries)) $exprops[] = "\0$cn\0_entries";
+		if (!count($this->_list)) $exprops[] = "\0$cn\0_list";
+		return array_diff(parent::__sleep(),$exprops);
 	}
 }
 
