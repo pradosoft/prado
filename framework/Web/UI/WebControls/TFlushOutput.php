@@ -72,7 +72,7 @@ class TFlushOutput extends TControl
 	 */
 	public function render($writer)
 	{
-$writer->write('<!-- flush -->');
+//$writer->write('<!-- flush -->');
 		// ajax responses can't be parsed by the client side before loaded and returned completely, 
 		// so don't bother with flushing output somewhere mid-page if refreshing in a callback
 		if (!$this->Page->IsCallback)

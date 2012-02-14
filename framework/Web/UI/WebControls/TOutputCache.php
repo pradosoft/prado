@@ -262,7 +262,7 @@ class TOutputCache extends TControl implements INamingContainer
 		$this->_actions[]=array($context,$funcName,$funcParams);
 	}
 
-	private function getCacheKey()
+	public function getCacheKey()
 	{
 		if($this->_cacheKey===null)
 			$this->_cacheKey=$this->calculateCacheKey();
@@ -478,17 +478,18 @@ class TOutputCache extends TControl implements INamingContainer
 			$writer->write($this->_contents);
 		else if($this->_cacheAvailable)
 		{
-			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+			$textwriter = new TTextWriter();
+			$multiwriter = new TOutputCacheTextWriterMulti(array($writer->getWriter(),$textwriter));
+			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $multiwriter);
 			
 			$stack=$this->getPage()->getCachingStack();
 			$stack->push($this);
 			parent::render($htmlWriter);
 			$stack->pop();
 
-			$content=$htmlWriter->flush();
+			$content=$textwriter->flush();
 			$data=array($content,$this->_state,$this->_actions,time());
 			$this->_cache->set($this->getCacheKey(),$data,$this->getDuration(),$this->getCacheDependency());
-			$writer->write($content);
 		}
 		else
 			parent::render($writer);
@@ -579,6 +580,31 @@ class TOutputCacheCalculateKeyEventParameter extends TEventParameter
 	public function setCacheKey($value)
 	{
 		$this->_cacheKey=TPropertyValue::ensureString($value);
+	}
+}
+
+
+class TOutputCacheTextWriterMulti extends TTextWriter
+{
+	protected $_writers;
+
+	public function __construct(Array $writers)
+	{
+		//parent::__construct();
+		$this->_writers = $writers;
+	}
+	
+	public function write($s)
+	{
+		foreach($this->_writers as $writer)
+			$writer->write($s);
+	}
+
+	public function flush()
+	{
+		foreach($this->_writers as $writer)
+			$s = $writer->flush();
+		return $s;
 	}
 }
 
