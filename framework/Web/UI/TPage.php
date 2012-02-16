@@ -284,6 +284,20 @@ class TPage extends TTemplateControl
 		$this->unloadRecursive();
 	}
 
+	protected static function decodeUTF8($data, $enc)
+	{
+		if(is_array($data))
+		{
+			foreach($data as $k=>$v)
+				$data[$k]=self::decodeUTF8($v, $enc);
+			return $data;
+		} elseif(is_string($data)) {
+			return iconv('UTF-8',$enc.'//IGNORE',$data);
+		} else {
+			return $data;
+		}
+	}
+	
 	/**
 	 * Sets Adapter to TActivePageAdapter and calls apter to process the
 	 * callback request.
@@ -298,7 +312,7 @@ class TPage extends TTemplateControl
         if (($g=$this->getApplication()->getGlobalization(false))!==null &&
             strtoupper($enc=$g->getCharset())!='UTF-8')
                 foreach ($this->_postData as $k=>$v)
-                    $this->_postData[$k]=iconv('UTF-8',$enc.'//IGNORE',$v);
+                	$this->_postData[$k]=self::decodeUTF8($v, $enc);
 
 		Prado::trace("Page onPreInit()",'System.Web.UI.TPage');
 		$this->onPreInit(null);
