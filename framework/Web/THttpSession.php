@@ -169,9 +169,8 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function regenerate($deleteOld=false)
 	{
-		$old = $this->getID();
+		$old = $this->getSessionID();
 		session_regenerate_id($deleteOld);
-		$this->setID(session_id());
 		return $old;
 	}
 
