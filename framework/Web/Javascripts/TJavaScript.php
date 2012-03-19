@@ -24,11 +24,6 @@
 class TJavaScript
 {
 	/**
-	 * @var TJSON JSON decoder and encoder instance
-	 */
-	private static $_json;
-
-	/**
 	 * Renders a list of javascript files
 	 * @param array URLs to the javascript files
 	 * @return string rendering result
@@ -200,82 +195,61 @@ class TJavaScript
 
 	/**
 	 * Encodes a PHP variable into javascript string.
-	 * This method invokes {@TJSON} utility class to perform the encoding.
+	 * This method invokes json_encode to perform the encoding.
 	 * @param mixed variable to be encoded
 	 * @return string encoded string
 	 */
 	public static function jsonEncode($value, $options = 0)
 	{
-		if (function_exists('json_encode'))
-		{
-			if (is_string($value) &&
-				($g=Prado::getApplication()->getGlobalization(false))!==null &&
-				strtoupper($enc=$g->getCharset())!='UTF-8')
-				$value=iconv($enc, 'UTF-8', $value);
-			$s = json_encode($value,$options);
-			self::checkJsonError();
-			return $s;
-		}
-
-		if(self::$_json === null)
-			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
-		return self::$_json->encode($value);
+		if (is_string($value) &&
+			($g=Prado::getApplication()->getGlobalization(false))!==null &&
+			strtoupper($enc=$g->getCharset())!='UTF-8')
+			$value=iconv($enc, 'UTF-8', $value);
+		$s = json_encode($value,$options);
+		self::checkJsonError();
+		return $s;
 	}
 
 	/**
 	 * Decodes a javascript string into PHP variable.
-	 * This method invokes {@TJSON} utility class to perform the decoding.
+	 * This method invokes json_decode to perform the decoding.
 	 * @param string string to be decoded
 	 * @return mixed decoded variable
 	 */
 	public static function jsonDecode($value)
 	{
-		if (function_exists('json_decode'))
-		{
-			$s= json_decode($value);
-			self::checkJsonError();
-			return $s;
-		}
-		if(self::$_json === null)
-			self::$_json = Prado::createComponent('System.Web.Javascripts.TJSON');
-		return self::$_json->decode($value);
+		$s= json_decode($value);
+		self::checkJsonError();
+		return $s;
 	}
 	
 	private static function checkJsonError()
 	{
-		// requires php 5.3.0
-		if (function_exists('json_last_error'))
+		switch ($err = json_last_error())
 		{
-			// requires php 5.3.3
-			if(!defined('JSON_ERROR_UTF8'))
-				define('JSON_ERROR_UTF8', null);
-
-			switch ($err = json_last_error())
-			{
-				case JSON_ERROR_NONE:
-					return;
-					break;
-				case JSON_ERROR_DEPTH:
-					$msg = 'Maximum stack depth exceeded';
-    				break;
-				case JSON_ERROR_STATE_MISMATCH:
-					$msg = 'Underflow or the modes mismatch';
-    				break;
-				case JSON_ERROR_CTRL_CHAR:
-					$msg = 'Unexpected control character found';
-					break;
-				case JSON_ERROR_SYNTAX:
-					$msg = 'Syntax error, malformed JSON';
-    				break;
-				case JSON_ERROR_UTF8:
-					$msg = 'Malformed UTF-8 characters, possibly incorrectly encoded';
-					break;
-				default:
-					$msg = 'Unknown error';
-    				break;
-			}
-			throw new Exception("JSON error ($err): $msg");
+			case JSON_ERROR_NONE:
+				return;
+				break;
+			case JSON_ERROR_DEPTH:
+				$msg = 'Maximum stack depth exceeded';
+				break;
+			case JSON_ERROR_STATE_MISMATCH:
+				$msg = 'Underflow or the modes mismatch';
+				break;
+			case JSON_ERROR_CTRL_CHAR:
+				$msg = 'Unexpected control character found';
+				break;
+			case JSON_ERROR_SYNTAX:
+				$msg = 'Syntax error, malformed JSON';
+				break;
+			case JSON_ERROR_UTF8:
+				$msg = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+				break;
+			default:
+				$msg = 'Unknown error';
+				break;
 		}
+		throw new Exception("JSON error ($err): $msg");
 	}
 
 	/**

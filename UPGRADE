@@ -11,7 +11,7 @@ for both A and B.
 
 Upgrading from v3.1.x
 ---------------------
-- Prado 3.2 requires PHP >= 5.2 
+- Prado 3.2 requires PHP >= 5.3.3 
 - Prado 3.2 doesn't use anymore a separate clientscripts.php script to publish minified javascript files.
   If you were relying (linking directly) to that script to get some js file, you'll need to re-adapt your
   scripts. Remember, linking directly a file in the assets/ directory is always a bad idea, let Prado do
@@ -45,8 +45,10 @@ Upgrading from v3.1.x
 - Some TJavaScript methods have been modified to clear their use and provide better xss protection:
   the undocumented quoteUTF8() was removed, since it didn't provide any real protection;
   quoteString() now safely adds quotes around a string: previously it only added escape characters;
-  the json* family of methods actually checks for errors and generate exceptions on fail (requires
-  at least php 5.3.3).
+  the json* family of methods actually checks for errors and generate exceptions on fail.
+- The php JSON extension is required; it ships by default with php 5.3 and is a lot faster that the old
+  TJSON-based implementation. TJSON has been removed, if you were calling it directly to encode/decode
+  you can switch to TJavaScript::jsonEncode(), TJavaScript::jsonDecode().    
 
 Upgrading from v3.1.10
 ----------------------

@@ -32,8 +32,8 @@
 $requirements = array(
 	array(
 		true,
-		version_compare(PHP_VERSION,"5.2.0",">="),
-		'PHP version check','PHP 5.2.0 or higher required'),
+		version_compare(PHP_VERSION,"5.3.3",">="),
+		'PHP version check','PHP 5.3.3 or higher required'),
 	array(
 		true,
 		isset($_SERVER["HTTP_ACCEPT"]),
@@ -79,6 +79,11 @@ $requirements = array(
         extension_loaded("pcre"),
         'PCRE extension check',
         'PCRE extension required'),
+    array(
+        true,
+        extension_loaded("json"),
+        'JSON extension check',
+        'JSON extension required'),
     array(
         false,
         class_exists("PDO",false),

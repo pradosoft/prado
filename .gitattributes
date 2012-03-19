@@ -3406,7 +3406,6 @@ framework/Util/TRpcClient.php -text
 framework/Util/TSimpleDateFormatter.php -text
 framework/Util/TVarDumper.php -text
 framework/Web/Javascripts/JSMin.php -text
-framework/Web/Javascripts/TJSON.php -text
 framework/Web/Javascripts/TJavaScript.php -text
 framework/Web/Javascripts/packages.php -text
 framework/Web/Javascripts/source/.htaccess -text
