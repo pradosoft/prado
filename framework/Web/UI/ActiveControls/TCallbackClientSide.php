@@ -54,8 +54,7 @@ class TCallbackClientSide extends TClientSideOptions
 {
 	/**
 	 * Returns javascript statement enclosed within a javascript function.
-	 * @param string javascript statement, if string begins within
-	 * "javascript:" the whole string is assumed to be a function.
+	 * @param string javascript statement
 	 * @return string javascript statement wrapped in a javascript function
 	 */
 	protected function ensureFunction($javascript)

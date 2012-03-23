@@ -45,7 +45,9 @@ Upgrading from v3.1.x
 - Some TJavaScript methods have been modified to clear their use and provide better xss protection:
   the undocumented quoteUTF8() was removed, since it didn't provide any real protection;
   quoteString() now safely adds quotes around a string: previously it only added escape characters;
-  the json* family of methods actually checks for errors and generate exceptions on fail.
+  the json* family of methods actually checks for errors and generate exceptions on fail;
+  strings beginning with "javascript:" doesn't bypass security checks in TJavascript::encode(), you need
+  to explicitly use TJavascript::quoteFunction() to ensure raw javascript will be published.
 - The php JSON extension is required; it ships by default with php 5.3 and is a lot faster that the old
   TJSON-based implementation. TJSON has been removed, if you were calling it directly to encode/decode
   you can switch to TJavaScript::jsonEncode(), TJavaScript::jsonDecode().    

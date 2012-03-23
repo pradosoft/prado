@@ -82,23 +82,24 @@ class TJavaScript
 	}
 
 	/**
-	 * @return string considers the string as raw javascript function code
+	 * @return Marks a string as a javascript function. Once marke, the string is considered as a
+	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
 	public static function quoteFunction($js)
 	{
-		if(self::isFunction($js))
+		if($js instanceof TJavaScriptFunction)
 			return $js;
 		else
-			return 'javascript:'.$js;
+			return new TJavaScriptFunction($js);
 	}
 
 	/**
-	 * @return boolean true if string is raw javascript function code, i.e., if
-	 * the string begins with <tt>javascript:</tt>
+	 * @return boolean true if the parameter is marked as a javascript function, i.e. if it's considered as a
+	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
 	public static function isFunction($js)
 	{
-		return preg_match('/^\s*javascript:/i', $js);
+		return ($js instanceof TJavaScriptFunction);
 	}
 
 	/**
@@ -136,11 +137,7 @@ class TJavaScript
 				if(($first==='[' && $last===']') || ($first==='{' && $last==='}'))
 					return $value;
 			}
-			// if string begins with javascript: return the raw string minus the prefix
-			if(self::isFunction($value))
-				return preg_replace('/^\s*javascript:/', '', $value);
-			else
-				return self::quoteString($value);
+			return self::quoteString($value);
 		}
 		else if(is_bool($value))
 			return $value?'true':'false';
@@ -178,15 +175,28 @@ class TJavaScript
 			return "$value";
 		else if(is_float($value))
 		{
-			if($value===-INF)
-				return 'Number.NEGATIVE_INFINITY';
-			else if($value===INF)
-				return 'Number.POSITIVE_INFINITY';
-			else
-				return "$value";
+			switch($value)
+			{
+				case -INF:
+					return 'Number.NEGATIVE_INFINITY';
+					break;
+				case INF:
+					return 'Number.POSITIVE_INFINITY';
+					break;
+				default:
+					$locale=localeConv();
+					if($locale['decimal_point']=='.')
+						return "$value";
+					else
+						return str_replace($locale['decimal_point'], '.', "$value");
+					break;
+			}
 		}
 		else if(is_object($value))
-			return self::encode(get_object_vars($value),$toMap);
+			if ($value instanceof TJavaScriptFunction)
+				return preg_replace('/^\s*javascript:/', '', $value);
+			else
+				return self::encode(get_object_vars($value),$toMap);
 		else if($value===null)
 			return 'null';
 		else
@@ -262,6 +272,26 @@ class TJavaScript
 	{
 		Prado::using('System.Web.Javascripts.JSMin');
 		return JSMin::minify($code);
+	}
+}
+
+/**
+ * TJavaScriptFunction class that encloses string literals that are not 
+ * supposed to be escaped by TJavaScript::encode()
+ *
+ */
+class TJavaScriptFunction
+{
+	private $_s;
+
+	public function __construct($s)
+	{
+		$this->_s = $s;
+	}
+
+	public function __toString()
+	{
+		return $this->_s;
 	}
 }
 

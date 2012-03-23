@@ -67,6 +67,8 @@ BUG: Issue #381 - The property CausesValidation in the TActiveDatePicker not wor
 BUG: Issue #382	- TJavaScript::quoteString() vulnerable to Unicode strings & TJavaScript::jsonEncode() doesn't check for errors (gabor)
 BUG: Issue #383 - Some THttpRequest methods raise NOTICE level errors on missing headers (gabor)
 BUG: Issue #388 - Output caching will raise error in Performance mode (gabor)
+BUG: Issue #390 - TJavaScript::encode() float encoding depends on current locale (gabor)
+BUG: Issue #391 - TJavaScript::encode() provides no simple way to pass strings in an XSS-safe way (gabor, ctrlaltca)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
