@@ -43,10 +43,14 @@ Upgrading from v3.1.x
   information is available. Previously some of them returned an empty string (getQueryString and
   getHttpProtocolVersion), some other returned null, others caused a php NOTICE.
 - Some TJavaScript methods have been modified to clear their use and provide better xss protection:
-  the undocumented quoteUTF8() was removed, since it didn't provide any real protection;
-  quoteString() now safely adds quotes around a string: previously it only added escape characters;
-  the json* family of methods actually checks for errors and generate exceptions on fail;
-  strings beginning with "javascript:" doesn't bypass security checks in TJavascript::encode(), you need
+  1. the undocumented quoteUTF8() was removed, since it didn't provide any real protection;
+  2. quoteString() now safely adds quotes around a string: previously it only added escape characters;
+  3. the json* family of methods actually checks for errors and generate exceptions on fail;
+  4. strings beginning with "javascript:", enclosed in {..} or [..] were previously meant to bypass any
+  encoding in TJavascript::encode(): this could introduce xss vulnerabilities. Now everything always gets
+  encoded, if you need a string to bypass encoding, prepare it with TJavaScript::quoteJsLiteral(). To
+  achieve the same result on control properties defined in a template, prefix the property name with 
+  "js" and prado will figure it out automatically.
   to explicitly use TJavascript::quoteFunction() to ensure raw javascript will be published.
 - The php JSON extension is required; it ships by default with php 5.3 and is a lot faster that the old
   TJSON-based implementation. TJSON has been removed, if you were calling it directly to encode/decode

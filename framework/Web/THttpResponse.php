@@ -426,8 +426,8 @@ class THttpResponse extends TModule implements ITextWriter
 	 */
 	public function httpRedirect($url)
 	{
-		if(!$this->getApplication()->getRequestCompleted())
-			$this->getApplication()->onEndRequest();
+		$this->ensureHeadersSent();
+
 		if($url[0]==='/')
 			$url=$this->getRequest()->getBaseUrl().$url;
 		if ($this->_status >= 300 && $this->_status < 400)
@@ -435,6 +435,9 @@ class THttpResponse extends TModule implements ITextWriter
 			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
 		else
 			header('Location: '.str_replace('&amp;','&',$url));
+
+		if(!$this->getApplication()->getRequestCompleted())
+			$this->getApplication()->onEndRequest();
 
 		exit();
 	}

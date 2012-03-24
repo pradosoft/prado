@@ -26,7 +26,7 @@ BUG: Issue  #91 - TActiveCustomValidator can not be updated in JavaScript callba
 ENH: Issue #106 - TJavaScript::jsonEncode and TJavaScript::jsonDecode should use built-in PHP functions (ctrlaltca)
 ENH: Issue #173 - Add "dragdropextra" (supergsting) patch, mouse coordinates and key status to drag & drop controls (Christophe, DevWorx)
 BUG: Issue #179 - Serialization issues in Prado (ctrlaltca)
-BUG: Issue #181 - Fixed regression introduced by the patch for #181 (ctrlaltca)
+BUG: Issue #181 - Reworked a better patch to handle clientside event handling (gabor)
 BUG: Issue #203 - Workaround for ->CallbackClient->click under IE<=8 (ctrlaltca)
 BUG: Issue #232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 ENH: Issue #235 - Progressive rendering not possible (Gabor)
@@ -69,6 +69,7 @@ BUG: Issue #383 - Some THttpRequest methods raise NOTICE level errors on missing
 BUG: Issue #388 - Output caching will raise error in Performance mode (gabor)
 BUG: Issue #390 - TJavaScript::encode() float encoding depends on current locale (gabor)
 BUG: Issue #391 - TJavaScript::encode() provides no simple way to pass strings in an XSS-safe way (gabor, ctrlaltca)
+BUG: Issue #393 - 	THttpResponse::redirect() fails if output buffering has been disabled completely (gabor)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
