@@ -457,7 +457,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		$options['axis'] = strtolower($this->getDirection());
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
-		$options['range'] = TJavascript::quoteFunction('$R('.$minValue.",".$maxValue.")");
+		$options['range'] = TJavascript::quoteJsLiteral('$R('.$minValue.",".$maxValue.")");
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values=$this->getValues();
@@ -488,7 +488,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 			// Add max if it's not in the array because of step
 			if (!in_array($maxValue, $values)) $values[]=$maxValue;
 		}
-		$options['values'] = TJavaScript::Encode($values,false);
+		$options['values'] = $values;
 		if($this->_clientScript!==null)
 			$options = array_merge($options,$this->_clientScript->getOptions()->toArray());
 		return $options;
@@ -520,7 +520,7 @@ class TSliderClientScript extends TClientSideOptions
 	 */
 	public function setOnChange($javascript)
 	{
-		$code=TJavascript::quoteFunction("function (value) { {$javascript} }");
+		$code=TJavascript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onChange', $code);
 	}
 
@@ -537,7 +537,7 @@ class TSliderClientScript extends TClientSideOptions
 	 */
 	public function setOnSlide($javascript)
 	{
-		$code=TJavascript::quoteFunction("function (value) { {$javascript} }");
+		$code=TJavascript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onSlide', $code);
 	}
 

@@ -85,21 +85,37 @@ class TJavaScript
 	 * @return Marks a string as a javascript function. Once marke, the string is considered as a
 	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
-	public static function quoteFunction($js)
+	public static function quoteJsLiteral($js)
 	{
-		if($js instanceof TJavaScriptFunction)
+		if($js instanceof TJavaScriptLiteral)
 			return $js;
 		else
-			return new TJavaScriptFunction($js);
+			return new TJavaScriptLiteral($js);
+	}
+
+	/**
+	 * Deprecated, use {@link quoteJsLiteral} instead
+	 */
+	public static function quoteFunction($js)
+	{
+		return self::quoteJsLiteral($js);
 	}
 
 	/**
 	 * @return boolean true if the parameter is marked as a javascript function, i.e. if it's considered as a
 	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
+	public static function isJsLiteral($js)
+	{
+		return ($js instanceof TJavaScriptLiteral);
+	}
+
+	/**
+	 * Deprecated, use {@link isJsLiteral} instead
+	 */
 	public static function isFunction($js)
 	{
-		return ($js instanceof TJavaScriptFunction);
+		return self::isJsLiteral($js);
 	}
 
 	/**
@@ -117,9 +133,6 @@ class TJavaScript
 	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
 	 * to serialize and unserialize.
 	 *
-	 * Note: strings begining with <tt>javascript:</tt> will be considered as
-	 * raw javascript code and no encoding of that string will be enforced.
-	 *
 	 * @param mixed PHP variable to be encoded
 	 * @param boolean whether the output is a map or a list.
 	 * @since 3.1.5
@@ -129,16 +142,7 @@ class TJavaScript
 	public static function encode($value,$toMap=true,$encodeEmptyStrings=false)
 	{
 		if(is_string($value))
-		{
-			if(($n=strlen($value))>2)
-			{
-				$first=$value[0];
-				$last=$value[$n-1];
-				if(($first==='[' && $last===']') || ($first==='{' && $last==='}'))
-					return $value;
-			}
 			return self::quoteString($value);
-		}
 		else if(is_bool($value))
 			return $value?'true':'false';
 		else if(is_array($value))
@@ -193,7 +197,7 @@ class TJavaScript
 			}
 		}
 		else if(is_object($value))
-			if ($value instanceof TJavaScriptFunction)
+			if ($value instanceof TJavaScriptLiteral)
 				return preg_replace('/^\s*javascript:/', '', $value);
 			else
 				return self::encode(get_object_vars($value),$toMap);
@@ -276,11 +280,11 @@ class TJavaScript
 }
 
 /**
- * TJavaScriptFunction class that encloses string literals that are not 
+ * TJavaScriptLiteral class that encloses string literals that are not 
  * supposed to be escaped by TJavaScript::encode()
  *
  */
-class TJavaScriptFunction
+class TJavaScriptLiteral
 {
 	private $_s;
 

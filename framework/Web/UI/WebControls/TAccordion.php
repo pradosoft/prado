@@ -489,10 +489,10 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		{
 			if($views!='') 
 				$views.=', ';
-			$views.= '"'.$view->getClientID().'":'.($view->getVisible() ? '1': '0' );
+			$views.= TJavaScript::encode($view->getClientID()).':'.($view->getVisible() ? '1': '0' );
 		}
 
-		$options['Views']='{'.$views.='}';
+		$options['Views']=TJavaScript::quoteJsLiteral('{'.$views.='}');
 		$viewIDs=array();
 
 		return $options;

@@ -563,9 +563,9 @@ class TDatePicker extends TTextBox
 			return array();
 
 		$date = $this->getLocalizedCalendarInfo();
-		$options['MonthNames'] = TJavaScript::encode($date->getMonthNames(),false);
-		$options['AbbreviatedMonthNames'] = TJavaScript::encode($date->getAbbreviatedMonthNames(),false);
-		$options['ShortWeekDayNames'] = TJavaScript::encode($date->getAbbreviatedDayNames(),false);
+		$options['MonthNames'] = $date->getMonthNames();
+		$options['AbbreviatedMonthNames'] = $date->getAbbreviatedMonthNames();
+		$options['ShortWeekDayNames'] = $date->getAbbreviatedDayNames();
 
 		return $options;
 	}

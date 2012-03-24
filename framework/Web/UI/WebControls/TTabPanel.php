@@ -443,11 +443,11 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		$viewVis=array();
 		foreach($this->getViews() as $view)
 		{
-			$viewIDs[]=$view->getClientID();
-			$viewVis[]=$view->getVisible();
+			$viewIDs[]=TJavaScript::encode($view->getClientID());
+			$viewVis[]=TJavaScript::encode($view->getVisible());
 		}
-		$options['Views']='[\''.implode('\',\'',$viewIDs).'\']';
-		$options['ViewsVis']='[\''.implode('\',\'',$viewVis).'\']';
+		$options['Views']=TJavaScript::quoteJsLiteral('['.implode(',',$viewIDs).']');
+		$options['ViewsVis']=TJavaScript::quoteJsLiteral('['.implode(',',$viewVis).']');
 
 		return $options;
 	}

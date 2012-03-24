@@ -800,8 +800,8 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function setFunction($name, $code)
 	{
-		if(!TJavaScript::isFunction($code))
-			$code = TJavaScript::quoteFunction($this->ensureFunction($code));
+		if(!TJavaScript::isJsLiteral($code))
+			$code = TJavaScript::quoteJsLiteral($this->ensureFunction($code));
 		$this->setOption($name, $code);
 	}
 

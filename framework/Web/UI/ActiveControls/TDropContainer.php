@@ -157,7 +157,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 
-		$options['accept'] = TJavascript::encode($this->getAcceptCssClass());
+		$options['accept'] = $this->getAcceptCssClass();
 		$options['hoverclass'] = $this->getHoverCssClass();
 		return $options;
 	}

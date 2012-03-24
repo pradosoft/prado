@@ -590,6 +590,8 @@ class TPropertyValue
 	 */
 	public static function ensureString($value)
 	{
+		if (TJavaScript::isJsLiteral($value))
+			return $value;
 		if (is_bool($value))
 			return $value?'true':'false';
 		else
