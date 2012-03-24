@@ -1,6 +1,6 @@
-Prado.WebUI.TInPlaceTextBox = Base.extend(
+Prado.WebUI.TInPlaceTextBox = Class.create(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
 
 		this.isSaving = false;
@@ -18,8 +18,6 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		Prado.WebUI.TInPlaceTextBox.register(this);
 		this.createEditorInput();
 		this.initializeListeners();
-
-		Prado.Registry.set(options.ID, this);
 	},
 
 	/**
@@ -28,13 +26,9 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 	initializeListeners : function()
 	{
 		this.onclickListener = this.enterEditMode.bindAsEventListener(this);
-		Event.observe(this.element, 'click', this.onclickListener);
+		this.observe(this.element, 'click', this.onclickListener);
 		if (this.options.ExternalControl)
-		{
-			// Issue 181
-			$(this.options.ExternalControl).stopObserving('click', this.onclickListener);
-			Event.observe($(this.options.ExternalControl), 'click', this.onclickListener);
-		}
+			this.observe($(this.options.ExternalControl), 'click', this.onclickListener);
 	},
 
 	/**
@@ -132,13 +126,10 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		this.editField.style.display="none";
 		this.element.parentNode.insertBefore(this.editField,this.element)
         
-        // Issue 181
-        $(this.editField).stopObserving();
-        
 		//handle return key within single line textbox
 		if(this.options.TextMode == 'SingleLine')
 		{
-			Event.observe(this.editField, "keydown", function(e)
+			this.observe(this.editField, "keydown", function(e)
 			{
 				 if(Event.keyCode(e) == Event.KEY_RETURN)
 		        {
@@ -152,8 +143,8 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 			});
 		}
 
-		Event.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
-		Event.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
+		this.observe(this.editField, "blur", this.onTextBoxBlur.bind(this));
+		this.observe(this.editField, "keypress", this.onKeyPressed.bind(this));
 	},
 
 	/**
@@ -272,8 +263,13 @@ Prado.WebUI.TInPlaceTextBox = Base.extend(
 		if(typeof(this.options.onFailure)=="function")
 			this.options.onFailure(sender,parameter);
 	}
-},
+});
+
+
+Object.extend(Prado.WebUI.TInPlaceTextBox, 
 {
+	//class methods
+
 	textboxes : {},
 
 	register : function(obj)

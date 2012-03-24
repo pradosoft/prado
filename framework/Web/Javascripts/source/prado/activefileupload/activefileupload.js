@@ -1,6 +1,6 @@
-Prado.WebUI.TActiveFileUpload = Base.extend(
+Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
 		this.options = options || {};
 		Prado.WebUI.TActiveFileUpload.register(this);
@@ -13,11 +13,9 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
 		this.complete = $(options.completeID);
 		this.error = $(options.errorID);
 		
-		Prado.Registry.set(options.inputID, this);
-
 		// set up events
 		if (options.autoPostBack){
-			Event.observe(this.input,"change",this.fileChanged.bind(this));
+			this.observe(this.input,"change",this.fileChanged.bind(this));
 		}
 	},
 	
@@ -74,9 +72,12 @@ Prado.WebUI.TActiveFileUpload = Base.extend(
        		}
 	}
 
-},
+});
+
+Object.extend(Prado.WebUI.TActiveFileUpload, 
 {
-// class methods
+	//class methods
+
 	controls : {},
 
 	register : function(control)

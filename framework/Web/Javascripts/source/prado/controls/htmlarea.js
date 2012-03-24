@@ -8,12 +8,12 @@
 */
 
 
-Prado.WebUI.THtmlArea = Class.create();
-Prado.WebUI.THtmlArea.prototype =
+Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 {
-	initialize : function(options)
+	initialize: function($super, options)
 	{
-		this.onInit(options);
+		options.ID = options.elements;
+		$super(options);
 	},
 
     	onInit : function(options)
@@ -22,20 +22,14 @@ Prado.WebUI.THtmlArea.prototype =
 			throw "TinyMCE libraries must be loaded first";
 
 		this.options = options;
-		this.id = options.elements;
-
-		var p = Prado.Registry.get(this.id);
-		if (p) p.deinitialize();
 
 		tinyMCE.init(options);
-
-		Prado.Registry.set(this.id, this);
 
 		var obj = this;
 		this.ajaxresponder = {
 			onComplete : function(request) 
 			{
-				if(request && request instanceof Prado.AjaxRequest)
+				if(request && (request instanceof Prado.AjaxRequest))
 					obj.checkInstance();
 			}
 		};
@@ -44,18 +38,18 @@ Prado.WebUI.THtmlArea.prototype =
 
 	checkInstance: function()
 	{
-		if (!document.getElementById(this.id))
+		if (!document.getElementById(this.ID))
 			this.deinitialize();
 	},
 
 	removePreviousInstance: function()
 	{
 		for(var i=0;i<tinyMCE.editors.length;i++)
-			if (tinyMCE.editors[i].id==this.id)
+			if (tinyMCE.editors[i].id==this.ID)
 			{
-				tinyMCE.editors = tinyMCE.editors.slice(0,i-1).concat(tinyMCE.editors.slice(i+1)); // ugly hack, but works
+				tinyMCE.editors.splice(i,1); // ugly hack, but works
 				this.deRegisterAjaxHook();
-				Prado.Registry.unset(this.id);
+				this.deregister();
 				i--;
 			}
 	},
@@ -75,15 +69,15 @@ Prado.WebUI.THtmlArea.prototype =
 				Ajax.Responders.unregister(this.ajaxresponder);
 	},
 
-	deinitialize: function()
+	onDone: function()
 	{
 		// check for previous tinyMCE registration, and try to remove it gracefully first
-		var prev = tinyMCE.get(this.id);
+		var prev = tinyMCE.get(this.ID);
 		if (prev)
 		try
 		{
-			tinyMCE.execCommand('mceFocus', false, this.id); 
-			tinyMCE.execCommand('mceRemoveControl', false, this.id);
+			tinyMCE.execCommand('mceFocus', false, this.ID); 
+			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
 		}
 		catch (e) 
 		{
@@ -96,5 +90,5 @@ Prado.WebUI.THtmlArea.prototype =
 
 		this.deRegisterAjaxHook();
 	}
-}
+});
 

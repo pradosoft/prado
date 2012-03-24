@@ -294,6 +294,7 @@ Prado.Element =
 			}
 			catch(e)
 			{
+				debugger;
 				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;
 			}
 		}
@@ -451,7 +452,18 @@ Prado.Element =
 	 */
 	evaluateScript : function(content)
 	{
-		content.evalScripts();
+		try
+		{
+			content.evalScripts();
+		}
+		catch(e)
+		{
+			if(typeof(Logger) != "undefined")
+				Logger.error('Error during evaluation of script "'+content+'"');
+			else
+				debugger;
+			throw e;
+		}
 	},
 	
 	/**

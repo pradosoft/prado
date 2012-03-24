@@ -1,13 +1,5 @@
-Prado.WebUI.TKeyboard = Class.create();
-Prado.WebUI.TKeyboard.prototype =
+Prado.WebUI.TKeyboard = Class.create(Prado.WebUI.Control,
 {
-	initialize : function(options)
-	{
-		this.element = $(options.ID);
-		this.onInit(options);
-		Prado.Registry.set(options.ID, this);
-	},
-
 	onInit : function(options)
     {
 		this.cssClass = options['CssClass'];
@@ -166,4 +158,4 @@ Prado.WebUI.TKeyboard.prototype =
             this.forControl.selectionEnd = selectStart + value.length;
         }
     }
-};
+});

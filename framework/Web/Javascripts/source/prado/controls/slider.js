@@ -19,13 +19,6 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		this.minimum   = this.options.minimum || this.range.start;
 		this.hiddenField=$(this.options.ID+'_1');
 		
-		// Issue 181
-		this.element.stopObserving();
-		this.track.stopObserving();
-		this.handle.stopObserving();
-		if (this.progress) this.progress.stopObserving();
-		this.hiddenField.stopObserving();
-		
 		// Will be used to align the handle onto the track, if necessary
 		this.alignX = parseInt(this.options.alignX || - this.track.offsetLeft);
 		this.alignY = parseInt(this.options.alignY || - this.track.offsetTop);
@@ -57,34 +50,22 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		// Initialize handle
 		this.setValue(parseFloat(slider.options.sliderValue));
 		Element.makePositioned(this.handle); // fix IE
-		Event.observe (this.handle, "mousedown", this.eventMouseDown);
+		this.observe (this.handle, "mousedown", this.eventMouseDown);
 		
-		Event.observe (this.track, "mousedown", this.eventMouseDown);
-		if (this.progress) Event.observe (this.progress, "mousedown", this.eventMouseDown);
+		this.observe (this.track, "mousedown", this.eventMouseDown);
+		if (this.progress) this.observe (this.progress, "mousedown", this.eventMouseDown);
 		
-		// Issue 181
-		document.stopObserving("mouseup", this.eventMouseUp);
-		document.stopObserving("mousemove", this.eventMouseMove);
-		Event.observe (document, "mouseup", this.eventMouseUp);
-		Event.observe (document, "mousemove", this.eventMouseMove);
+		this.observe (document, "mouseup", this.eventMouseUp);
+		this.observe (document, "mousemove", this.eventMouseMove);
 		
 		this.initialized=true;
 		
 		
 		if(this.options['AutoPostBack']==true)
-			Event.observe(this.hiddenField, "change", Prado.PostBack.bindEvent(this,options));
+			this.observe(this.hiddenField, "change", Prado.PostBack.bindEvent(this,options));
     
 	},
   
-	dispose: function() {
-		var slider = this;    
-		Event.stopObserving(this.track, "mousedown", this.eventMouseDown);
-		Event.stopObserving(document, "mouseup", this.eventMouseUp);
-		Event.stopObserving(document, "mousemove", this.eventMouseMove);
-	
-		Event.stopObserving(this.handle, "mousedown", slider.eventMouseDown);
- 	},
- 	
 	setDisabled: function(){
 		this.disabled = true;
 	},

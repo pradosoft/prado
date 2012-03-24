@@ -78,9 +78,9 @@ Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
 	{
 		this.options=options;
 		if(options['TextMode'] != 'MultiLine')
-			Event.observe(this.element, "keydown", this.handleReturnKey.bind(this));
+			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			Event.observe(this.element, "change", this.doCallback.bindEvent(this,options));
+			this.observe(this.element, "change", this.doCallback.bindEvent(this,options));
 	},
 
 	doCallback : function(event, options)
@@ -177,26 +177,25 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 /**
  * Time Triggered Callback class.
  */
-Prado.WebUI.TTimeTriggeredCallback = Base.extend(
+Prado.WebUI.TTimeTriggeredCallback = Class.create(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
 		this.options = Object.extend({ Interval : 1	}, options || {});
-		Prado.WebUI.TTimeTriggeredCallback.register(this);
-		Prado.Registry.set(options.ID, this);
+		Prado.WebUI.TTimeTriggeredCallback.registerTimer(this);
 	},
 
 	startTimer : function()
 	{
 		if(typeof(this.timer) == 'undefined' || this.timer == null)
-			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
+			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
 	},
 
 	stopTimer : function()
 	{
 		if(typeof(this.timer) != 'undefined')
 		{
-			clearInterval(this.timer);
+			this.clearInterval(this.timer);
 			this.timer = null;
 		}
 	},
@@ -205,9 +204,9 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 	{
 		if(typeof(this.timer) != 'undefined')
 		{
-			clearInterval(this.timer);
+			this.clearInterval(this.timer);
 			this.timer = null;
-			this.timer = setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
+			this.timer = this.setInterval(this.onTimerEvent.bind(this),this.options.Interval*1000);
 		}
 	},
 
@@ -217,19 +216,28 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 		request.dispatch();
 	},
 	
-	setInterval : function(value)
+	setTimerInterval : function(value)
 	{
 		if (this.options.Interval != value){
 			this.options.Interval = value;
 			this.resetTimer();
 		}
+	},
+
+	onDone: function()
+	{
+		this.stopTimer();
 	}
-},
-//class methods
+});
+
+Object.extend(Prado.WebUI.TTimeTriggeredCallback, 
 {
+
+	//class methods
+
 	timers : {},
 
-	register : function(timer)
+	registerTimer : function(timer)
 	{
 		Prado.WebUI.TTimeTriggeredCallback.timers[timer.options.ID] = timer;
 	},
@@ -246,23 +254,21 @@ Prado.WebUI.TTimeTriggeredCallback = Base.extend(
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
 	},
 	
-	setInterval : function (id,value)
+	setTimerInterval : function (id,value)
 	{
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
-			Prado.WebUI.TTimeTriggeredCallback.timers[id].setInterval(value);
+			Prado.WebUI.TTimeTriggeredCallback.timers[id].setTimerInterval(value);
 	}
 });
 
-Prado.WebUI.ActiveListControl = Base.extend(
+Prado.WebUI.ActiveListControl = Class.create(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
-		this.element = $(options.ID);
-		Prado.Registry.set(options.ID, this);
 		if(this.element)
 		{
 			this.options = options;
-			Event.observe(this.element, "change", this.doCallback.bind(this));
+			this.observe(this.element, "change", this.doCallback.bind(this));
 		}
 	},
 
@@ -274,20 +280,19 @@ Prado.WebUI.ActiveListControl = Base.extend(
 	}
 });
 
-Prado.WebUI.TActiveDropDownList = Prado.WebUI.ActiveListControl;
-Prado.WebUI.TActiveListBox = Prado.WebUI.ActiveListControl;
+Prado.WebUI.TActiveDropDownList = Class.create(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveListBox = Class.create(Prado.WebUI.ActiveListControl);
 
 /**
  * Observe event of a particular control to trigger a callback request.
  */
-Prado.WebUI.TEventTriggeredCallback = Base.extend(
+Prado.WebUI.TEventTriggeredCallback = Class.create(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
-		this.options = options;
 		var element = $(options['ControlID']);
 		if(element)
-			Event.observe(element, this.getEventName(element), this.doCallback.bind(this));
+			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
 
 	getEventName : function(element)
@@ -320,32 +325,30 @@ Prado.WebUI.TEventTriggeredCallback = Base.extend(
 /**
  * Observe changes to a property of a particular control to trigger a callback.
  */
-Prado.WebUI.TValueTriggeredCallback = Base.extend(
+Prado.WebUI.TValueTriggeredCallback = Class.create(Prado.WebUI.Control,
 {
 	count : 1,
 
 	observing : true,
 
-	constructor : function(options)
+	onInit : function(options)
 	{
-		this.options = options;
 		this.options.PropertyName = this.options.PropertyName || 'value';
 		var element = $(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
-		Prado.Registry.set(options.ID, this);
 		this.startObserving();
 	},
 
 	stopObserving : function()
 	{
-		clearTimeout(this.timer);
+		this.clearTimeout(this.timer);
 		this.observing = false;
 	},
 
 	startObserving : function()
 	{
-		this.timer = setTimeout(this.checkChanges.bind(this), this.options.Interval*1000);
+		this.timer = this.setTimeout(this.checkChanges.bind(this), this.options.Interval*1000);
 	},
 
 	checkChanges : function()
@@ -363,7 +366,7 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 			else
 				this.count = this.count + this.options.Decay;
 			if(this.observing)
-				this.time = setTimeout(this.checkChanges.bind(this),
+				this.time = this.setTimeout(this.checkChanges.bind(this),
 					parseInt(this.options.Interval*1000*this.count));
 		}
 	},
@@ -374,10 +377,19 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 		var param = {'OldValue' : oldValue, 'NewValue' : newValue};
 		request.setCallbackParameter(param);
 		request.dispatch();
+	},
+
+	onDone : function()
+	{
+		if (this.observing)
+			this.stopObserving();
 	}
-},
-//class methods
+});
+
+Object.extend(Prado.WebUI.TTimeTriggeredCallback, 
 {
+	//class methods
+
 	timers : {},
 
 	register : function(timer)
@@ -391,5 +403,5 @@ Prado.WebUI.TValueTriggeredCallback = Base.extend(
 	}
 });
 
-Prado.WebUI.TActiveTableCell = Class.extend(Prado.WebUI.CallbackControl);
-Prado.WebUI.TActiveTableRow = Class.extend(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableCell = Class.create(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableRow = Class.create(Prado.WebUI.CallbackControl);

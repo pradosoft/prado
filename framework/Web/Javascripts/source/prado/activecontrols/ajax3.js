@@ -248,6 +248,8 @@ Object.extend(Prado.CallbackRequest,
 			{
 				if(typeof(Logger) != "undefined")
 					self.Exception.onException(null,e);
+				else
+					debugger;
 			}
 		}
 	},

@@ -2,11 +2,9 @@
  * DropContainer control
  */
  
-Prado.WebUI.DropContainer = Class.extend(Prado.WebUI.CallbackControl);
-
-Object.extend(Prado.WebUI.DropContainer.prototype,
+Prado.WebUI.DropContainer = Class.create(Prado.WebUI.CallbackControl,
 {
-	initialize: function(options)
+	onInit: function(options)
 	{
 		this.options = options;
 		Object.extend (this.options, 
@@ -15,7 +13,6 @@ Object.extend(Prado.WebUI.DropContainer.prototype,
 		});
 		
 		Droppables.add (options.ID, this.options);
-		Prado.Registry.set(options.ID, this);
 	},
 	
 	onDrop: function(dragElement, dropElement, event)

@@ -1,13 +1,5 @@
-Prado.WebUI.TTabPanel = Class.create();
-Prado.WebUI.TTabPanel.prototype =
+Prado.WebUI.TTabPanel = Class.create(Prado.WebUI.Control,
 {
-	initialize : function(options)
-	{
-		this.element = $(options.ID);
-		this.onInit(options);
-		Prado.Registry.set(options.ID, this);
-	},
-
 	onInit : function(options)
 	{
 		this.views = options.Views;
@@ -20,21 +12,22 @@ Prado.WebUI.TTabPanel.prototype =
 		{
 			var item = options.Views[i];
 			var element = $(item+'_0');
-			if (options.ViewsVis[i])
-			{
-				Event.observe(element, "click", this.elementClicked.bindEvent(this,item));
-			}
+			if (element)
+			 if (options.ViewsVis[i])
+				this.observe(element, "click", this.elementClicked.bindEvent(this,item));
 			
 			if(element)
 			{
-				if(this.hiddenField.value == i)
-				{
-					element.className=this.activeCssClass;
-					$(options.Views[i]).show();
-				} else {
-					element.className=this.normalCssClass;
-					$(options.Views[i]).hide();
-				}
+				var view = $(options.Views[i]);
+				if (view)
+					if(this.hiddenField.value == i)
+					{
+						element.className=this.activeCssClass;
+						view.show();
+					} else {
+						element.className=this.normalCssClass;
+						view.hide();
+					}
 			}
 		}
 	},
@@ -61,4 +54,4 @@ Prado.WebUI.TTabPanel.prototype =
 			}
 		}
 	}
-};
+});

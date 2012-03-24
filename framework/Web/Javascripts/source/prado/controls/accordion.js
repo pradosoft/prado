@@ -7,16 +7,8 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-Prado.WebUI.TAccordion = Class.create();
-Prado.WebUI.TAccordion.prototype =
+Prado.WebUI.TAccordion = Class.create(Prado.WebUI.Control,
 {
-	initialize : function(options)
-	{
-		this.element = $(options.ID);
-		this.onInit(options);
-		Prado.Registry.set(options.ID, this);
-	},
-
     	onInit : function(options)
 	{
 		this.accordion = $(options.ID);
@@ -40,8 +32,7 @@ Prado.WebUI.TAccordion.prototype =
 			var header = $(view+'_0');
 			if(header)
 			{
-				Event.stopObserving(header, "click");
-				Event.observe(header, "click", this.elementClicked.bindEvent(this,view));
+				this.observe(header, "click", this.elementClicked.bindEvent(this,view));
 				if(this.hiddenField.value == i)
 				{
 					this.currentView = view;
@@ -175,5 +166,5 @@ Prado.WebUI.TAccordion.prototype =
 			}.bind(this)
 		});
 	}
-};
+});
 

@@ -776,8 +776,7 @@ Prado.WebUI.TValidationSummary.prototype =
  * 
  * @class Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TBaseValidator = Class.create();
-Prado.WebUI.TBaseValidator.prototype =
+Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 {
 	/**
 	 * Initialize TBaseValidator.
@@ -800,6 +799,9 @@ Prado.WebUI.TBaseValidator.prototype =
 	 */
 	initialize : function(options)
 	{
+		this.observers = new Array();
+		this.intervals = new Array();
+
 	/*	options.OnValidate = options.OnValidate || Prototype.emptyFunction;
 		options.OnSuccess = options.OnSuccess || Prototype.emptyFunction;
 		options.OnError = options.OnError || Prototype.emptyFunction;
@@ -1053,7 +1055,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		{
 			var validator = this;
 
-			Event.observe(control, 'change', function()
+			this.observe(control, 'change', function()
 			{
 				if(validator.visible)
 				{
@@ -1323,7 +1325,7 @@ Prado.WebUI.TBaseValidator.prototype =
 		var selection = this.getSelectedValuesAndChecks(elements, initial);
 		return selection.values.length > 0 ? selection.values[0] : initial;
 	}
-}
+});
 
 
 /**
@@ -1906,7 +1908,7 @@ Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TReCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TReCaptchaValidator = Class.create(Prado.WebUI.TBaseValidator,
 {
 	onInit : function()
 	{
@@ -1915,8 +1917,8 @@ Prado.WebUI.TReCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		if (elements)
 		 if (elements.length>=1)
 		 {
-		  Event.observe(elements[0],'change',function() { obj.responseChanged() });
-		  Event.observe(elements[0],'keydown',function() { obj.responseChanged() });
+		  this.observe(elements[0],'change',function() { obj.responseChanged() });
+		  this.observe(elements[0],'keydown',function() { obj.responseChanged() });
 		 }
 	},
 

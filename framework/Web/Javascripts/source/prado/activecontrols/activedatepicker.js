@@ -1,9 +1,9 @@
 /**
  * TActiveDatePicker control
  */
-Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
+Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
 {
-	initialize : function(options)
+	onInit : function(options)
 	{
 		this.options = options || [];
 		this.control = $(options.ID);
@@ -14,9 +14,6 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		this.positionMode = 'Bottom';
 
 
-		// Issue 181
-		$(this.control).stopObserving();
-        
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
@@ -29,10 +26,6 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 			var triggerEvent = this.options.TriggerEvent || "focus";
 		}
 		
-		// Issue 181
-		if(this.trigger)
-			$(this.trigger).stopObserving();
-		
 		// Popup position
 		if(this.options.PositionMode == 'Top')
 		{
@@ -42,21 +35,21 @@ Prado.WebUI.TActiveDatePicker = Class.extend(Prado.WebUI.TDatePicker,
 		Object.extend(this,options);
 
 		if (this.options.ShowCalendar)
-			Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+			this.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
 		
 		// Listen to change event 
 		if(this.options.InputMode == "TextBox")
 		{
-			Event.observe(this.control, "change", this.onDateChanged.bindEvent(this));
+			this.observe(this.control, "change", this.onDateChanged.bindEvent(this));
 		} 
 		else
 		{
 			var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			if (day) Event.observe (day, "change", this.onDateChanged.bindEvent(this));
-			if (month) Event.observe (month, "change", this.onDateChanged.bindEvent(this));
-			if (year) Event.observe (year, "change", this.onDateChanged.bindEvent(this));
+			if (day) this.observe (day, "change", this.onDateChanged.bindEvent(this));
+			if (month) this.observe (month, "change", this.onDateChanged.bindEvent(this));
+			if (year) this.observe (year, "change", this.onDateChanged.bindEvent(this));
 				
 		}
 
