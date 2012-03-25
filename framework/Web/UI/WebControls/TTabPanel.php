@@ -436,18 +436,18 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 	 */
 	protected function getClientOptions()
 	{
-		$options['ID']=$this->getClientID();
-		$options['ActiveCssClass']=$this->getActiveTabCssClass();
-		$options['NormalCssClass']=$this->getTabCssClass();
-		$viewIDs=array();
-		$viewVis=array();
+		$options['ID'] = $this->getClientID();
+		$options['ActiveCssClass'] = $this->getActiveTabCssClass();
+		$options['NormalCssClass'] = $this->getTabCssClass();
+		$viewIDs = array();
+		$viewVis = array();
 		foreach($this->getViews() as $view)
 		{
-			$viewIDs[]=TJavaScript::encode($view->getClientID());
-			$viewVis[]=TJavaScript::encode($view->getVisible());
+			$viewIDs[] = $view->getClientID();
+			$viewVis[] = $view->getVisible();
 		}
-		$options['Views']=TJavaScript::quoteJsLiteral('['.implode(',',$viewIDs).']');
-		$options['ViewsVis']=TJavaScript::quoteJsLiteral('['.implode(',',$viewVis).']');
+		$options['Views'] = $viewIDs;
+		$options['ViewsVis'] = $viewVis;
 
 		return $options;
 	}

@@ -477,23 +477,17 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 	 */
 	protected function getClientOptions()
 	{
-		$options['ID']=$this->getClientID();
-		$options['ActiveHeaderCssClass']=$this->getActiveHeaderCssClass();
-		$options['HeaderCssClass']=$this->getHeaderCssClass();
-		$options['Duration']=$this->getAnimationDuration();
+		$options['ID'] = $this->getClientID();
+		$options['ActiveHeaderCssClass'] = $this->getActiveHeaderCssClass();
+		$options['HeaderCssClass'] = $this->getHeaderCssClass();
+		$options['Duration'] = $this->getAnimationDuration();
 
 		if (($viewheight = $this->getViewHeight())>0)
 			$options['maxHeight'] = $viewheight;
-		$views='';
+		$views = array();
 		foreach($this->getViews() as $view)
-		{
-			if($views!='') 
-				$views.=', ';
-			$views.= TJavaScript::encode($view->getClientID()).':'.($view->getVisible() ? '1': '0' );
-		}
-
-		$options['Views']=TJavaScript::quoteJsLiteral('{'.$views.='}');
-		$viewIDs=array();
+			$views[$view->getClientID()] = $view->getVisible() ? '1': '0';
+		$options['Views'] = $views;
 
 		return $options;
 	}

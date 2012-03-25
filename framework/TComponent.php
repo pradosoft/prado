@@ -84,6 +84,7 @@ class TComponent
 	 * to allow using the following syntax to read a property:
 	 * <code>
 	 * $value=$component->PropertyName;
+	 * $value=$component->jsPropertyName; // return JavaScript literal
 	 * </code>
 	 * and to obtain the event handler list for an event,
 	 * <code>
@@ -95,11 +96,16 @@ class TComponent
 	 */
 	public function __get($name)
 	{
-		$getter='get'.$name;
+		$getter='get'.$name; $jsgetter = 'getjs'.$name;
 		if(method_exists($this,$getter))
 		{
 			// getting a property
 			return $this->$getter();
+		}
+		else if(method_exists($this,$jsgetter))
+		{
+			// getting a property
+			return (string)$this->$jsgetter();
 		}
 		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
@@ -121,6 +127,7 @@ class TComponent
 	 * to allow using the following syntax to set a property or attach an event handler.
 	 * <code>
 	 * $this->PropertyName=$value;
+	 * $this->jsPropertyName=$value; // $value will be treated as a JavaScript literal
 	 * $this->EventName=$handler;
 	 * </code>
 	 * @param string the property name or event name
@@ -129,16 +136,23 @@ class TComponent
 	 */
 	public function __set($name,$value)
 	{
-		$setter='set'.$name;
-		if(method_exists($this,$setter))
+		if(method_exists($this, $setter='set'.$name))
 		{
+			if (strncasecmp($name,'js',2)===0 && $value && !($value instanceof TJavaScriptLiteral))
+				$value = new TJavaScriptLiteral($value);
 			$this->$setter($value);
+		}
+		else if(method_exists($this, $jssetter = 'setjs'.$name))
+		{
+			if ($value and !($value instanceof TJavaScriptString))
+				$value = new TJavaScriptString($value);
+			$this->$jssetter($value);
 		}
 		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			$this->attachEventHandler($name,$value);
 		}
-		else if(method_exists($this,'get'.$name))
+		else if(method_exists($this,'get'.$name) || method_exists($this,'getjs'.$name))
 		{
 			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 		}
@@ -146,6 +160,40 @@ class TComponent
 		{
 			throw new TInvalidOperationException('component_property_undefined',get_class($this),$name);
 		}
+	}
+
+	/**
+	 * Calls a method.
+	 * Do not call this method. This is a PHP magic method that we override
+	 * to allow using the following syntax to call a property setter or getter.
+	 * <code>
+	 * $this->getPropertyName($value); // if there's a $this->getjsPropertyName() method
+	 * $this->setPropertyName($value); // if there's a $this->setjsPropertyName() method
+	 * </code>
+	 * @param string the getter or setter method name 
+	 * @param mixed method call parameters
+	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 */
+	public function __call($name,$params)
+	{
+		$getset = substr($name,0,3);
+		if (($getset=='get') || ($getset=='set'))
+		{
+			$propname = substr($name,3);
+			$jsmethod = $getset.'js'.$propname;
+			if (method_exists($this, $jsmethod))
+			{
+				if (count($params)>0)
+					if ($params[0] && !($params[0] instanceof TJavaScriptString))
+						$params[0] = new TJavaScriptString($params[0]);
+				return call_user_func_array(array($this, $jsmethod), $params);
+			}
+
+			if (($getset=='set') and method_exists($this, 'getjs'.$propname))
+				throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
+		}
+
+		throw new TInvalidOperationException('component_property_undefined',get_class($this),$name);
 	}
 
 	/**
@@ -157,7 +205,10 @@ class TComponent
 	 */
 	public function hasProperty($name)
 	{
-		return method_exists($this,'get'.$name) || method_exists($this,'set'.$name);
+		return 
+			method_exists($this,'get'.$name) || method_exists($this,'set'.$name) ||
+			method_exists($this,'getjs'.$name) || method_exists($this,'setjs'.$name) 
+		;
 	}
 
 	/**
@@ -169,7 +220,7 @@ class TComponent
 	 */
 	public function canGetProperty($name)
 	{
-		return method_exists($this,'get'.$name);
+		return method_exists($this,'get'.$name) || method_exists($this,'getjs'.$name);
 	}
 
 	/**
@@ -181,7 +232,7 @@ class TComponent
 	 */
 	public function canSetProperty($name)
 	{
-		return method_exists($this,'set'.$name);
+		return method_exists($this,'set'.$name) || method_exists($this,'setjs'.$name);
 	}
 
 	/**
@@ -899,5 +950,38 @@ class TComponentReflection extends TComponent
 	public function getMethods()
 	{
 		return $this->_methods;
+	}
+}
+
+/**
+ * TJavaScriptLiteral class that encloses string literals that are not 
+ * supposed to be escaped by TJavaScript::encode()
+ *
+ */
+class TJavaScriptLiteral
+{
+	protected $_s;
+
+	public function __construct($s)
+	{
+		$this->_s = $s;
+	}
+
+	public function __toString()
+	{
+		return (string)$this->_s;
+	}
+
+	public function toJavaScriptLiteral()
+	{
+		return $this->__toString();
+	}
+}
+
+class TJavaScriptString extends TJavaScriptLiteral
+{
+	public function toJavaScriptLiteral()
+	{
+		return TJavaScript::jsonEncode((string)$this->_s,JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
 	}
 }

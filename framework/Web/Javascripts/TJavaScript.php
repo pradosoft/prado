@@ -198,7 +198,7 @@ class TJavaScript
 		}
 		else if(is_object($value))
 			if ($value instanceof TJavaScriptLiteral)
-				return preg_replace('/^\s*javascript:/', '', $value);
+				return $value->toJavaScriptLiteral();
 			else
 				return self::encode(get_object_vars($value),$toMap);
 		else if($value===null)
@@ -278,26 +278,6 @@ class TJavaScript
 	{
 		Prado::using('System.Web.Javascripts.JSMin');
 		return JSMin::minify($code);
-	}
-}
-
-/**
- * TJavaScriptLiteral class that encloses string literals that are not 
- * supposed to be escaped by TJavaScript::encode()
- *
- */
-class TJavaScriptLiteral
-{
-	private $_s;
-
-	public function __construct($s)
-	{
-		$this->_s = $s;
-	}
-
-	public function __toString()
-	{
-		return $this->_s;
 	}
 }
 

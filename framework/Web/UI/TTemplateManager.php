@@ -423,17 +423,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	{
 		if(strncasecmp($name,'on',2)===0)		// is an event
 			$this->configureEvent($control,$name,$value,$control);
-		else {
-			if(strncasecmp($name,'js',2)===0)
-			{
-				$name=substr($name,2);
-				$value=TJavaScript::quoteJsLiteral($value);
-			}
-			if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
-				$this->configureProperty($control,$name,$value);
-			else	// is a subproperty
-				$this->configureSubProperty($control,$name,$value);
-		}
+		else if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
+			$this->configureProperty($control,$name,$value);
+		else	// is a subproperty
+			$this->configureSubProperty($control,$name,$value);
 	}
 
 	/**
@@ -513,6 +506,9 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 		else
 		{
+			if (substr($name,0,2)=='js')
+				if ($value and !($value instanceof TJavaScriptLiteral))
+					$value = new TJavaScriptLiteral($value);
 			$setter='set'.$name;
 			$component->$setter($value);
 		}
@@ -944,12 +940,10 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				}
 				else
 				{
-					if(strncasecmp($name,'js',2)===0)
-						$name=substr($name, 2);
 					// a simple property
-					if(!$class->hasMethod('set'.$name))
+					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name)) )
 					{
-						if($class->hasMethod('get'.$name))
+						if ($class->hasMethod('get'.$name) || $class->hasMethod('getjs'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
