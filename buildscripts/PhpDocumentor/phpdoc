@@ -1,13 +1,3 @@
-#!/bin/sh
-if [ -z "$PHP" ]; then
-   PHP=`which php`
-fi
-(exec $PHP -C -q -d output_buffering=1 "$0" "$@") 2>/dev/null
-if [ "$?" -ne "0" ]; then
-	echo "FAILED:  Bad environment variable \$PHP (set to \"$PHP\")"
-	exit 1
-fi
-exit 0
 <?php
 /**
  * PHP auto documentor, like javadoc
@@ -47,7 +37,7 @@ exit 0
  * @todo      CS cleanup - change package to PhpDocumentor
  */
 
-ob_end_clean(); // make output from autofind php code disapear
+@ob_end_clean(); // make output from autofind php code disapear
 
 /**
  * utility: determine whether we're in PEAR or not
