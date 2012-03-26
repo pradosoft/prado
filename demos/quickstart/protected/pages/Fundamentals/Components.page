@@ -49,9 +49,32 @@ This is equivalent to the following,
 $name = $component->getFont()->getName();
 $component-&gt;getFont()-&gt;setName( $name );
 </com:TTextHighlighter>
-
-
 </p>
+
+<h3>Js-friendly properties</h3>
+<p class="block-content">
+A JavaScript-friendly property is a property that can accept both simple strings and raw javascript.
+Prado automatically encodes all properties sent clientside inside javascript blocks to avoid security problems (like injections or cross site scripting).
+If a property is known to always contain only safe javascript code and its value needs to bypass this encoding, that property can be defined in a special way that will make Prado mark its value as "safe".
+Js-friendly properties are identified by their name starting with 'js' (case insensitive):
+<com:TTextHighlighter CssClass="source block-content">
+// getter, defines a readable property 'Text'
+function getJsText() { … }
+// setter, defines a writable property 'Text', with $value being the value to be set to the property
+function setJsText(TJavaScriptLiteral $value) { … }
+</com:TTextHighlighter>
+Js-friendly properties can be accessed using both their Js-less name and their Js-enabled name:
+<com:TTextHighlighter CssClass="source block-content">
+// set some simple text as property value 
+$component-&gt;Text = 'text';
+// set some javascript code as property value
+$component-&gt;JsText = 'raw javascript';
+</com:TTextHighlighter>
+In the first case, the property value will automatically gets encoded when sent clientside inside a javascript block.
+In the second case, the property will be 'marked' as being a safe javascript statement and will not be encoded when rendered inside a javascript block.
+This special handling makes use of the <tt>TJavaScriptLiteral</tt> class. 
+</p>
+
 
 <h2 id="703">Component Events</h2>
 <p id="110119" class="block-content">

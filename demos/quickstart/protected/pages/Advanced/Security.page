@@ -36,7 +36,17 @@ One of the most important measures to prevent XSS attacks is to check user input
 <p id="730570" class="block-content">
 PRADO incorporates the work of <a href="http://pixel-apes.com/safehtml/">SafeHTML</a> and provides developers with a useful component called <tt>TSafeHtml</tt>. By enclosing content within a <tt>TSafeHtml</tt> component tag, the enclosed content are ensured to be safe to end users. In addition, the commonly used <tt>TTextBox</tt> has a <tt>SafeText</tt> property which contains user input that are ensured to be safe if displayed directly to end users.
 </p>
-
+<p class="block-content">
+With the broad use of active controls and more generally of AJAX-enabled controls using Javascript to transfer data between the server and the client, it's common to see attackers target javascript itself as a vector to inject malicious code.
+</p>
+<p class="block-content">
+Imagine a validator that uses an ajax callback to check user input from a textbox and returns an error message including the user input, example: 'The email address is not valid: test@example.com'.
+In such a situation user input <b>must</b> be checked to avoid possible injection.
+</p>
+<p class="block-content">
+The classic xss check involves checking for html tags inside the message and encode them; but since the message gets sent back to the client inside a javascript block, it needs to be encoded again to avoid any possible javascript escaping.
+By default PRADO encodes all variables sent clientside inside a javascript block to avoid any user-generated input from injecting malicious javascript code.  
+</p>
 <h2 id="5604">Cookie Attack Prevention</h2>
 <p id="730571" class="block-content">
 Protecting cookies from being attacked is of extreme important, as session IDs are commonly stored in cookies. If one gets hold of a session ID, he essentially owns all relevant session information.

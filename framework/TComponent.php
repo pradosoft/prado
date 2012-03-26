@@ -35,6 +35,31 @@
  * in the format of concatenated words, with the first letter of each word
  * capitalized (e.g. DisplayMode, ItemStyle).
  *
+ * Since Prado 3.2 a new class of javascript-friendly properties have been introduced
+ * to better deal with potential security problems like cross-site scripting issues.
+ * All the data that gets sent clientside inside a javascript block is now encoded by default.
+ * Sometimes there's the need to bypass this encoding and be able to send raw javascript code.
+ * This new class of javascript-friendly properties are identified by their name
+ * starting with 'js' (case insensitive):
+ * <code>
+ * // getter, defines a readable property 'Text'
+ * function getJsText() { ... }
+ * // setter, defines a writable property 'Text', with $value being the value to be set to the property
+ * function setJsText(TJavaScriptLiteral $value) { ... }
+ * </code>
+ * Js-friendly properties can be accessed using both their Js-less name and their Js-enabled name:
+ * <code>
+ * // set some simple text as property value 
+ * $component->Text = 'text';
+ * // set some javascript code as property value
+ * $component->JsText = 'raw javascript';
+ * </code>
+ * In the first case, the property value will automatically gets encoded when sent
+ * clientside inside a javascript block.
+ * In the second case, the property will be 'marked' as being a safe javascript
+ * statement and will not be encoded when rendered inside a javascript block.
+ * This special handling makes use of the {@link TJavaScriptLiteral} class. 
+ *
  * An event is defined by the presence of a method whose name starts with 'on'.
  * The event name is the method name and is thus case-insensitive.
  * An event can be attached with one or several methods (called event handlers).
@@ -955,8 +980,25 @@ class TComponentReflection extends TComponent
 
 /**
  * TJavaScriptLiteral class that encloses string literals that are not 
- * supposed to be escaped by TJavaScript::encode()
+ * supposed to be escaped by {@link TJavaScript::encode() }
  *
+ * Since Prado 3.2 all the data that gets sent clientside inside a javascript statement
+ * is encoded by default to avoid any kind of injection.
+ * Sometimes there's the need to bypass this encoding and send raw javascript code.
+ * To ensure that a string doesn't get encoded by {@link TJavaScript::encode() },
+ * construct a new TJavaScriptLiteral:
+ * <code>
+ * // a javascript test string
+ * $js="alert('hello')";
+ * // the string in $raw will not be encoded when sent clientside inside a javascript block
+ * $raw=new TJavaScriptLiteral($js);
+ * // shortened form
+ * $raw=_js($js);
+ * </code>
+ *
+ * @version $Id$
+ * @package System
+ * @since prado 3.2
  */
 class TJavaScriptLiteral
 {
@@ -978,6 +1020,14 @@ class TJavaScriptLiteral
 	}
 }
 
+/**
+ * TJavaScriptString class is an internal class that marks strings that will be
+ * forcibly encoded when rendered inside a javascript block 
+ *
+ * @version $Id$
+ * @package System
+ * @since prado 3.2
+ */
 class TJavaScriptString extends TJavaScriptLiteral
 {
 	public function toJavaScriptLiteral()
