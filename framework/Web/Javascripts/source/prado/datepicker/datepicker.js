@@ -1,5 +1,4 @@
-Prado.WebUI.TDatePicker = Class.create();
-Object.extend(Prado.WebUI.TDatePicker,
+Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 {
 	/**
 	 * @return Date the date from drop down list options.
@@ -35,11 +34,8 @@ Object.extend(Prado.WebUI.TDatePicker,
 	getDayListControl : function(control)
 	{
 		return $(control.id+"_day");
-	}
-});
+	},
 
-Prado.WebUI.TDatePicker.prototype =
-{
 	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
 		"September",	"October",		"November",	"December"
@@ -59,8 +55,10 @@ Prado.WebUI.TDatePicker.prototype =
 
 	FromYear : 2005, UpToYear: 2020,
 
-	initialize : function(options)
+	initialize : function($super, options)
 	{
+		$super(options);
+
 		this.options = options || [];
 		this.control = $(options.ID);
 		this.dateSlot = new Array(42);
@@ -788,4 +786,4 @@ Prado.WebUI.TDatePicker.prototype =
 		}
 
 	}
-};
+});

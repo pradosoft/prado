@@ -4,7 +4,7 @@ Prado.WebUI.Control = Class.create({
 
 	initialize : function(options)
 	{
-	        this.registered = false;
+	    this.registered = false;
 		this.ID = options.ID;
 		this.element = $(this.ID);
 		this.observers = new Array();

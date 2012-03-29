@@ -3,8 +3,10 @@
  */
 Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
 {
-	onInit : function(options)
+	initialize : function($super, options)
 	{
+		$super(options);
+		
 		this.options = options || [];
 		this.control = $(options.ID);
 		this.dateSlot = new Array(42);
