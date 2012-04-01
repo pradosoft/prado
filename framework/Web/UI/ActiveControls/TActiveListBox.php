@@ -11,6 +11,11 @@
  */
 
 /**
+ * Load active list control adapter
+ */
+Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
+
+/**
  * TActiveListBox class.
  *
  * List items can be added dynamically during a callback request.
