@@ -199,7 +199,7 @@ Prado.WebUI.TTimeTriggeredCallback = Class.create(Prado.WebUI.Control,
 			this.timer = null;
 		}
 	},
-	
+
 	resetTimer : function()
 	{
 		if(typeof(this.timer) != 'undefined')
@@ -215,7 +215,7 @@ Prado.WebUI.TTimeTriggeredCallback = Class.create(Prado.WebUI.Control,
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 	},
-	
+
 	setTimerInterval : function(value)
 	{
 		if (this.options.Interval != value){
@@ -230,7 +230,7 @@ Prado.WebUI.TTimeTriggeredCallback = Class.create(Prado.WebUI.Control,
 	}
 });
 
-Object.extend(Prado.WebUI.TTimeTriggeredCallback, 
+Object.extend(Prado.WebUI.TTimeTriggeredCallback,
 {
 
 	//class methods
@@ -253,7 +253,7 @@ Object.extend(Prado.WebUI.TTimeTriggeredCallback,
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
 			Prado.WebUI.TTimeTriggeredCallback.timers[id].stopTimer();
 	},
-	
+
 	setTimerInterval : function (id,value)
 	{
 		if(Prado.WebUI.TTimeTriggeredCallback.timers[id])
@@ -333,6 +333,7 @@ Prado.WebUI.TValueTriggeredCallback = Class.create(Prado.WebUI.Control,
 
 	onInit : function(options)
 	{
+		this.options = options || {} ;
 		this.options.PropertyName = this.options.PropertyName || 'value';
 		var element = $(options['ControlID']);
 		this.value = element ? element[this.options.PropertyName] : undefined;
@@ -386,7 +387,7 @@ Prado.WebUI.TValueTriggeredCallback = Class.create(Prado.WebUI.Control,
 	}
 });
 
-Object.extend(Prado.WebUI.TTimeTriggeredCallback, 
+Object.extend(Prado.WebUI.TValueTriggeredCallback,
 {
 	//class methods
 
