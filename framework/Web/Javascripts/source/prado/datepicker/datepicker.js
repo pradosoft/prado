@@ -1,41 +1,5 @@
 Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 {
-	/**
-	 * @return Date the date from drop down list options.
-	 */
-	getDropDownDate : function(control)
-	{
-		var now=new Date();
-		var year=now.getFullYear();
-		var month=now.getMonth();
-		var day=1;
-
-		var month_list = this.getMonthListControl(control);
-	 	var day_list = this.getDayListControl(control);
-	 	var year_list = this.getYearListControl(control);
-
-		var day = day_list ? $F(day_list) : 1;
-		var month = month_list ? $F(month_list) : now.getMonth();
-		var year = year_list ? $F(year_list) : now.getFullYear();
-
-		return new Date(year,month,day, 0, 0, 0);
-	},
-
-	getYearListControl : function(control)
-	{
-		return $(control.id+"_year");
-	},
-
-	getMonthListControl : function(control)
-	{
-		return $(control.id+"_month");
-	},
-
-	getDayListControl : function(control)
-	{
-		return $(control.id+"_day");
-	},
-
 	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
 		"September",	"October",		"November",	"December"
@@ -55,10 +19,8 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 
 	FromYear : 2005, UpToYear: 2020,
 
-	initialize : function($super, options)
+	onInit : function(options)
 	{
-		$super(options);
-
 		this.options = options || [];
 		this.control = $(options.ID);
 		this.dateSlot = new Array(42);
@@ -534,7 +496,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 				for(var i = 0; i < years.length; i++)
 					years[i].selected = years[i].value.toInteger() == currentYear;
 			}
-			this.fireChangeEvent(day || month || year, capped);
+			this.fireChangeEvent(day || month || year, capevents);
 		}
 	},
 
@@ -785,5 +747,44 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			}
 		}
 
+	}
+});
+
+Object.extend(Prado.WebUI.TDatePicker,
+{
+	/**
+	 * @return Date the date from drop down list options.
+	 */
+	getDropDownDate : function(control)
+	{
+		var now=new Date();
+		var year=now.getFullYear();
+		var month=now.getMonth();
+		var day=1;
+
+		var month_list = Prado.WebUI.TDatePicker.getMonthListControl(control);
+	 	var day_list = Prado.WebUI.TDatePicker.getDayListControl(control);
+	 	var year_list = Prado.WebUI.TDatePicker.getYearListControl(control);
+
+		var day = day_list ? $F(day_list) : 1;
+		var month = month_list ? $F(month_list) : now.getMonth();
+		var year = year_list ? $F(year_list) : now.getFullYear();
+
+		return new Date(year,month,day, 0, 0, 0);
+	},
+
+	getYearListControl : function(control)
+	{
+		return $(control.id+"_year");
+	},
+
+	getMonthListControl : function(control)
+	{
+		return $(control.id+"_month");
+	},
+
+	getDayListControl : function(control)
+	{
+		return $(control.id+"_day");
 	}
 });

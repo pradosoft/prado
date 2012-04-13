@@ -290,6 +290,7 @@ Prado.WebUI.TEventTriggeredCallback = Class.create(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
+		this.options = options || {} ;
 		var element = $(options['ControlID']);
 		if(element)
 			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
