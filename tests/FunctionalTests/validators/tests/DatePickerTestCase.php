@@ -28,11 +28,14 @@ class DatePickerTestCase extends SeleniumTestCase
 		$this->assertVisible("{$base}validator8", "");
 
 		$this->click("{$base}submit1");
+		$this->pause(250);
 		$this->type("{$base}picker1", "13/4/$year");
 		$this->select("{$base}picker2_month", "label=9");
 		$this->select("{$base}picker2_day", "label=10");
 		$this->select("{$base}picker2_year", "label=$year");
+		$this->pause(250);
 		$this->type("{$base}picker3", "14/4/$year");
+		$this->pause(250);
 		$this->type("{$base}picker4", "7/4/$year");
 		$this->select("{$base}picker5_day", "label=6");
 		$this->select("{$base}picker5_month", "label=3");
