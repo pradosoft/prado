@@ -21,9 +21,7 @@ class ActiveDropDownListTestCase extends SeleniumTestCase
 		$this->pause(800);
 		$this->assertSelected("list1", "item 2");
 
-		// due to clearing selection and then updating the selection
-		// otherwise it should not fire the changed event (fired by js because of change to options).
-		$this->assertText("label1", "Label 1");
+		$this->assertText("label1", "Selection 1: value 1");
 
 		$this->select("list1", "item 1");
 		$this->pause(800);

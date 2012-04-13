@@ -101,6 +101,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 	initialize : function(options)
 	{
 		this.options = options;
+		this.observers = new Array();
 		this.hasResults = false;
 		this.baseInitialize(options.ID, options.ResultPanel, options);
 		Object.extend(this.options,

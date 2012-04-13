@@ -3865,6 +3865,7 @@ tests/FunctionalTests/quickstart/Controls/Wizard3TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/Wizard4TestCase.php -text
 tests/FunctionalTests/quickstart/Controls/Wizard5TestCase.php -text
 tests/FunctionalTests/quickstart/Fundamentals/HangmanTestCase.php -text
+tests/FunctionalTests/selenium.css -text
 tests/FunctionalTests/tickets.php -text
 tests/FunctionalTests/tickets/index.php -text
 tests/FunctionalTests/tickets/index700.php -text
