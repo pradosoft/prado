@@ -23,9 +23,10 @@ class ActiveCustomValidatorTestCase extends SeleniumTestCase
 
 		$this->type($base.'textbox1', 'Prado');
 		$this->pause(800);
-		$this->assertNotVisible($base.'validator1');
+		$this->assertVisible($base.'validator1');
 
-		$this->clickAndWait($base.'button1');
+		$this->click($base.'button1');
+		$this->pause(800);
 		$this->assertNotVisible($base.'validator1');
 	}
 }
