@@ -507,7 +507,6 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function validate()
 	{
-		$this->setIsValid(true);
 		$this->onValidate();
 		if($this->getVisible(true) && $this->getEnabled(true))
 		{
@@ -536,6 +535,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 				$this->setIsValid(true);
 				$this->onValidationSuccess();
 			}
+		} else {
+			$this->setIsValid(true);
 		}
 		return $this->getIsValid();
 	}
