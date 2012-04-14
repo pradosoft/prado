@@ -1,4 +1,5 @@
 <com:TContent ID="Content">
+	<h3>Needs manual testing</h3>
 	<com:TPanel ID="panel1" DefaultButton="button2"
 		Style="border:1px solid #ccc; padding:2em">
 		<com:TTextBox ID="textbox1" />

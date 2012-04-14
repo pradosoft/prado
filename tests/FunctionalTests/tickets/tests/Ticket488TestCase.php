@@ -15,7 +15,7 @@ class Ticket488TestCase extends SeleniumTestCase
 		$this->click("checkLogin");
 		$this->pause(800);
 		$this->assertVisible("validator1");
-		$this->assertVisible("validator2");
+		$this->assertNotVisible("validator2");
 
 		$this->type('Username', 'tea');
 		$this->type('Password', 'mmama');
@@ -26,10 +26,10 @@ class Ticket488TestCase extends SeleniumTestCase
 		$this->assertVisible("validator2");
 
 		$this->type('Password', 'test');
+		$this->click("checkLogin");
 		$this->pause(800);
 		$this->assertNotVisible("validator1");
 		$this->assertNotVisible("validator2");
-		$this->assertNotVisible('loginBox');
 	}
 
 	function test_more()

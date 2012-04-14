@@ -13,7 +13,7 @@ class CustomValidatorByPass extends TPage
 		$Client->setOnComplete('$(\'loginLoader\').hide();');
 
 		//$Client->setOnValidationError('alert(\'Authentication Failed\');');
-		$Client->setOnValidationSuccess('new Effect.Fade(\'loginBox\')');
+		//$Client->setOnValidationSuccess('new Effect.Fade(\'loginBox\')');
 
 	}
 
