@@ -69,7 +69,10 @@ BUG: Issue #383 - Some THttpRequest methods raise NOTICE level errors on missing
 BUG: Issue #388 - Output caching will raise error in Performance mode (gabor)
 BUG: Issue #390 - TJavaScript::encode() float encoding depends on current locale (gabor)
 BUG: Issue #391 - TJavaScript::encode() provides no simple way to pass strings in an XSS-safe way (gabor, ctrlaltca)
-BUG: Issue #393 - 	THttpResponse::redirect() fails if output buffering has been disabled completely (gabor)
+BUG: Issue #393 - THttpResponse::redirect() fails if output buffering has been disabled completely (gabor)
+BUG: Issue #394 - TActiveCustomValidator Display Dynamic error or Double Update Value (ctrlaltca)
+BUG: Issue #395 - 'TActiveDatePicker' does not support AutoPostBack. (ctrlaltca)
+BUG: Issue #396 - TApplication warning with is_file php function (ctrlaltca)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
