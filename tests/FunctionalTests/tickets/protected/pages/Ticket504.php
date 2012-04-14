@@ -8,8 +8,6 @@ class Ticket504 extends TPage
 	private function showPanel($id, $param) {
   		foreach($this->panels as $panel) {
   			if($id == $panel) {
-  				$this->$panel->setAttribute('style', 'display: block;');
-  				$this->$panel->render($param->NewWriter);
 				$this->$panel->setVisible(true);
   			} else {
   				$this->$panel->setVisible(false);
