@@ -29,8 +29,29 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * @package System.Web.UI.ActiveControls
  * @since 3.1.3
  */
-class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, IActiveControl {
+class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, IActiveControl
+{
 	
+	/**
+	 * @return boolean a value indicating whether an automatic postback to the server
+     * will occur whenever the user modifies the text in the TTextBox control and
+     * then tabs out of the component. Defaults to false.
+	 */
+	public function getAutoPostBack()
+	{
+		return $this->getViewState('AutoPostBack',false);
+	}
+
+	/**
+	 * Sets the value indicating if postback automatically.
+	 * An automatic postback to the server will occur whenever the user
+	 * modifies the text in the TTextBox control and then tabs out of the component.
+	 * @param boolean the value indicating if postback automatically
+	 */
+	public function setAutoPostBack($value)
+	{
+		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+	}
 
 	/**
 	 * Get javascript date picker options.
@@ -43,6 +64,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 		$options['ValidationGroup']=$this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['ShowCalendar'] = $this->getShowCalendar();
+		$options['AutoPostBack'] = $this->getAutoPostBack();
 		return $options;
 	}
 	

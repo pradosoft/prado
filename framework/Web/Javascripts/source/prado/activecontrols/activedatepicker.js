@@ -77,8 +77,11 @@ Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
 		}
 		if (typeof(this.options.OnDateChanged) == "function") this.options.OnDateChanged(this, date);
 		
-		// Make callback request
-		var request = new Prado.CallbackRequest(this.options.EventTarget,this.options);
-		request.dispatch();
+		if(this.options['AutoPostBack']==true)
+		{
+			// Make callback request
+			var request = new Prado.CallbackRequest(this.options.EventTarget,this.options);
+			request.dispatch();
+		}
 	}
 }); 

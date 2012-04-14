@@ -88,7 +88,7 @@ class TDatePicker extends TTextBox
 	 * @var TDatePickerClientScript validator client-script options.
 	 */
 	private $_clientScript;
-		/**
+	/**
 	 * AutoPostBack is not supported.
 	 */
 	public function setAutoPostBack($value)
