@@ -349,9 +349,10 @@ class TApplication extends TComponent
 		// determine configuration path and file
 		if(empty($basePath) || ($basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
+		// is_file prints a warning if the file doesn't exists and open_basedir is in effect
+		if(@is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
 			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
-		else if(is_file($basePath))
+		else if(@is_file($basePath))
 		{
 			$configFile=$basePath;
 			$basePath=dirname($configFile);
