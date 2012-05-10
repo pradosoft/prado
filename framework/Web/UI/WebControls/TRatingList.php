@@ -283,7 +283,8 @@ class TRatingList extends TRadioButtonList
 		parent::onPreRender($param);
 		$this->publishStyle($this->getRatingStyle());
 		$this->_ratingImages = $this->publishImages($this->getRatingStyle());
- 	}
+ 		$this->registerClientScript();
+	}
 
 	/**
 	 * @param string rating style name
@@ -311,6 +312,15 @@ class TRatingList extends TRadioButtonList
 			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
 		return $files;
  	}
+
+	/**
+	 * Registers the relevant JavaScript.
+	 */
+	protected function registerClientScript()
+	{
+		$cs=$this->getPage()->getClientScript();
+		$cs->registerPradoScript('ratings');
+	}
 
 	/**
 	 * @param string asset file in the self::SCRIPT_PATH directory.

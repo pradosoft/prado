@@ -268,4 +268,23 @@ class TInPlaceTextBox extends TActiveTextBox
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
+	/**
+	 * Registers CSS and JS.
+	 * This method is invoked right before the control rendering, if the control is visible.
+	 * @param mixed event parameter
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
+		$this->registerClientScript();
+	}
+
+	/**
+	 * Registers the relevant JavaScript.
+	 */
+	protected function registerClientScript()
+	{
+		$cs=$this->getPage()->getClientScript();
+		$cs->registerPradoScript('inlineeditor');
+	}
 }

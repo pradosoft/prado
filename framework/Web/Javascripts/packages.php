@@ -14,8 +14,7 @@ $packages = array(
 		SCRIPTACULOUS_DIR.'/effects.js',
 		'prado/prado.js',
 		'prado/scriptaculous-adapter.js',
-		'prado/controls/controls.js',
-		'prado/ratings/ratings.js',
+		'prado/controls/controls.js'
 	),
 
 	'effects' => array(
@@ -42,8 +41,7 @@ $packages = array(
 		SCRIPTACULOUS_DIR.'/controls.js',
 		'prado/activecontrols/json2.js',
 		'prado/activecontrols/ajax3.js',
-		'prado/activecontrols/activecontrols3.js',
-		'prado/activecontrols/inlineeditor.js'
+		'prado/activecontrols/activecontrols3.js'
 	),
 
 	'dragdrop'=>array(
@@ -83,6 +81,14 @@ $packages = array(
 		'prado/controls/htmlarea.js'
 	),
 
+	'ratings' => array(
+		'prado/ratings/ratings.js',
+	),
+
+	'inlineeditor' => array(
+		'prado/activecontrols/inlineeditor.js'
+	),
+
 );
 
 
@@ -92,18 +98,20 @@ $dependencies = array(
 		'effects'			=> array('prado', 'effects'),
 		'validator'			=> array('prado', 'validator'),
 		'logger'			=> array('prado', 'logger'),
-		'datepicker'			=> array('prado', 'datepicker'),
-		'colorpicker'			=> array('prado', 'colorpicker'),
+		'datepicker'		=> array('prado', 'datepicker'),
+		'colorpicker'		=> array('prado', 'colorpicker'),
 		'ajax'				=> array('prado', 'effects', 'ajax'),
 		'dragdrop'			=> array('prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prado', 'slider'),
 		'keyboard'			=> array('prado', 'keyboard'),
 		'tabpanel'			=> array('prado', 'tabpanel'),
-		'activedatepicker'		=> array('prado', 'datepicker', 'ajax', 'activedatepicker'),
-		'activefileupload'		=> array('prado', 'effects', 'ajax', 'activefileupload'),
-		'dragdropextra'			=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
+		'activedatepicker'	=> array('prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'activefileupload'	=> array('prado', 'effects', 'ajax', 'activefileupload'),
+		'dragdropextra'		=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prado', 'effects', 'accordion'),
 		'htmlarea'			=> array('prado', 'htmlarea'),
+		'ratings'			=> array('prado', 'effects', 'ajax', 'ratings'),
+		'inlineeditor'		=> array('prado', 'effects', 'ajax', 'inlineeditor'),
 );
 
 return array($packages, $dependencies);
