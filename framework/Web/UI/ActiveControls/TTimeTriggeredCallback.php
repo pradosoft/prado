@@ -51,7 +51,7 @@ class TTimeTriggeredCallback extends TCallback
 		$this->setViewState('Interval', $interval, 1);
 		if ($this->getActiveControl()->canUpdateClientSide()){
 			$client = $this->getPage()->getCallbackClient();
-			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setInterval', array($this, $interval));
+			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', array($this, $interval));
 		}
 	}
 
