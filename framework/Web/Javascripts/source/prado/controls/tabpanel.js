@@ -12,10 +12,13 @@ Prado.WebUI.TTabPanel = Class.create(Prado.WebUI.Control,
 		{
 			var item = options.Views[i];
 			var element = $(item+'_0');
-			if (element)
-			 if (options.ViewsVis[i])
+			if (element && options.ViewsVis[i])
+			{
 				this.observe(element, "click", this.elementClicked.bindEvent(this,item));
-			
+				if (options.AutoSwitch)
+					this.observe(element, "mouseenter", this.elementClicked.bindEvent(this,item));
+			}
+	
 			if(element)
 			{
 				var view = $(options.Views[i]);

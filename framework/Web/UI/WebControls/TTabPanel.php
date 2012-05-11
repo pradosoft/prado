@@ -17,6 +17,9 @@
  * TTabPanel displays a tabbed panel. Users can click on the tab bar to switching among
  * different tab views. Each tab view is an independent panel that can contain arbitrary content.
  *
+ * If the {@link setAutoSwitch AutoSwitch} property is enabled, the user will be able to switch the active view
+ * to another one just hovering its corresponding tab caption.
+ *
  * A TTabPanel control consists of one or several {@link TTabView} controls representing the possible
  * tab views. At any time, only one tab view is visible (active), which is specified by any of
  * the following properties:
@@ -170,6 +173,23 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		else
 			throw new TInvalidOperationException('tabpanel_view_inexistent');
 	}
+
+    /**
+     * @return bool status of automatic tab switch on hover
+     */
+    public function getAutoSwitch()
+    {
+        return TPropertyValue::ensureBoolean($this->getViewState('AutoSwitch'));
+    }
+
+    /**
+     * @param bool whether to enable automatic tab switch on hover
+     */
+    public function setAutoSwitch($value)
+    {
+        $this->setViewState('AutoSwitch',TPropertyValue::ensureBoolean($value));
+    }
+
 
     /**
      * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
@@ -448,6 +468,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		}
 		$options['Views'] = $viewIDs;
 		$options['ViewsVis'] = $viewVis;
+		$options['AutoSwitch'] = $this->getAutoSwitch();
 
 		return $options;
 	}
