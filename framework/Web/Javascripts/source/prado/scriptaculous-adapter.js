@@ -414,6 +414,28 @@ Prado.Element =
 	},
 
 	/**
+	 * Appends a javascript block to the document.
+	 * @function ?
+	 * @param {string} boundary - Boundary containing the javascript code
+	 */
+	appendScriptBlock : function(boundary)
+	{
+		var content = Prado.Element.extractContent(this.transport.responseText, boundary);
+		if(content == null)
+			return;
+		var id = 'inline_' + boundary;
+
+		if($(id))
+			document.body.removeChild($(id));
+
+		var el   = document.createElement("script");
+		el.type  = "text/javascript";
+		el.id    = id;
+		el.text  = content;
+		document.body.appendChild(el);		
+	},
+
+	/**
 	 * Extract content from a text by its boundary id.
 	 * Boundaries have this form:
 	 * <pre>

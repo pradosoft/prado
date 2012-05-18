@@ -132,9 +132,16 @@ class TClientScript extends TControl
 	{
 		if($this->getHasControls())
 		{
-			$writer->write("<script type=\"text/javascript\">\n/*<![CDATA[*/\n");
-			$this->renderChildren($writer);
-			$writer->write("\n/*]]>*/\n</script>\n");
+			if($this->getPage()->getIsCallback())
+			{
+				$extWriter= $this->getPage()->getResponse()->createHtmlWriter();
+				$this->renderChildren($extWriter);
+				$this->getPage()->getCallbackClient()->appendScriptBlock($extWriter);
+			} else {
+				$writer->write("<script type=\"text/javascript\">\n/*<![CDATA[*/\n");
+				$this->renderChildren($writer);
+				$writer->write("\n/*]]>*/\n</script>\n");
+			}
 		}
 	}
 }

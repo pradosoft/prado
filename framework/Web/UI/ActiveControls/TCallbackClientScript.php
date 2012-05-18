@@ -434,6 +434,26 @@ class TCallbackClientScript extends TApplicationComponent
 	}
 
 	/**
+	 * Appends a block of inline javascript enclosed in a boundary.
+	 * Similar to to evaluateScript(), but functions declared in the
+	 * inline block will be available to page elements.
+	 * @param THtmlWriter writer for the content.
+	 */
+	public function appendScriptBlock($content)
+	{
+		if($content instanceof TControl)
+		{
+			$boundary = $this->getRenderedContentBoundary($content);
+		}
+		else if($content instanceof THtmlWriter)
+		{
+			$boundary = $this->getResponseContentBoundary($content);
+		}
+		
+		$this->callClientFunction('Prado.Element.appendScriptBlock', array($boundary));
+	}
+
+	/**
 	 * Renders the control and return the content boundary from
 	 * TCallbackResponseWriter. This method should only be used by framework
 	 * component developers. The render() method is defered to be called in the
