@@ -111,7 +111,17 @@ class TClientScript extends TControl
 	protected function renderCustomScriptFile($writer)
 	{
 		if(($scriptUrl = $this->getScriptUrl())!=='')
-			$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
+		{
+			if($this->getPage()->getIsCallback())
+			{
+				$cs = $this->getPage()->getClientScript();
+				$uniqueid=$this->ClientID.'_custom';
+				if(!$cs->isScriptFileRegistered($uniqueid))
+					$cs->registerScriptFile($uniqueid, $scriptUrl);
+			} else {
+				$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
+			}
+		}
 	}
 
 	/**
