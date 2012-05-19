@@ -28,6 +28,7 @@ ENH: Issue #173 - Add "dragdropextra" (supergsting) patch, mouse coordinates and
 BUG: Issue #179 - Serialization issues in Prado (ctrlaltca)
 BUG: Issue #181 - Reworked a better patch to handle clientside event handling (gabor)
 BUG: Issue #203 - Workaround for ->CallbackClient->click under IE<=8 (ctrlaltca)
+ENH: Issue #210 - Improvement: Auto-switch for TTabPanel (gabor)
 BUG: Issue #232 - Could not change enable-state of TActiveCheckBox via Ajax callback (Christophe)
 ENH: Issue #235 - Progressive rendering not possible (Gabor)
 BUG: Issue #237 - Log at a long time running process (ctrlaltca)
@@ -73,6 +74,10 @@ BUG: Issue #393 - THttpResponse::redirect() fails if output buffering has been d
 BUG: Issue #394 - TActiveCustomValidator Display Dynamic error or Double Update Value (ctrlaltca)
 BUG: Issue #395 - 'TActiveDatePicker' does not support AutoPostBack. (ctrlaltca)
 BUG: Issue #396 - TApplication warning with is_file php function (ctrlaltca)
+BUG: Issue #399 - ratings.js script always included on pages with postback controls (gabor, ctrlaltca)
+BUG: Issue #400 - FastCGI/Exceptions: Status code not sent to browser (ctrlaltca)
+BUG: Issue #401 - TClientScript doesn't render correctly itself if set visible in callback (ctrlaltca)
+BUG: Issue #402 - Component property 'TDatePickerClientScript.setOnLoading' is not defined. (ctrlaltca)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
