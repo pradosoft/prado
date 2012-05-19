@@ -31,6 +31,20 @@
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.
  *
+ * Since Prado 3.2, TClientScript gained the ability to render itself on ajax 
+ * callbacks. This means that every variable or function declared in javascript
+ * code will be available to the page.
+ *
+ * Beware that when rendered on normal (postback) or ajax callbacks, some
+ * javascript code won't behave in the same way. 
+ * When rendered as part of a normal/postback response, scripts will execute instantly 
+ * where they are in the page and in a synchronous fashion.
+ * Instead, when they are rendered as part of a callback response,
+ * they will be executed when all DOM modifications are complete and any dynamic
+ * script file includes are loaded, out-of-band and practically all blocks at once,
+ * regardless of where they actually occour in the original template/markup code.
+ * This can potentially hurt compatibility and graceful fallback.
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.WebControls
