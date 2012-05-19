@@ -49,8 +49,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
-	
-	
+
 	/**
 	 * @return TCallbackClientSide client side request options.
 	 */

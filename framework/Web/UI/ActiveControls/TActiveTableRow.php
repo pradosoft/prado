@@ -76,6 +76,14 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * @return string corresponding javascript class name for this TActiveTableRow.
 	 */
 	protected function getClientClassName()

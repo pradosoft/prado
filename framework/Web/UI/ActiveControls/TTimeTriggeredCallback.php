@@ -126,5 +126,3 @@ class TTimeTriggeredCallback extends TCallback
 		return 'Prado.WebUI.TTimeTriggeredCallback';
 	}
 }
-
-?>

@@ -354,6 +354,14 @@ EOS;
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * Adds ID attribute, and renders the javascript for active component.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */

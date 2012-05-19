@@ -75,6 +75,14 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	}
 
 	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+
+	/**
 	 * @return string corresponding javascript class name for this TActiveTableCell.
 	 */
 	protected function getClientClassName()
