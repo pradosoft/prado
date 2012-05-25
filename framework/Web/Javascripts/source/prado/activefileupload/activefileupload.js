@@ -29,11 +29,19 @@ Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
 		// set the form to submit in the iframe, submit it, and then reset it.
 		this.oldtargetID = this.form.target;
 		this.oldFormAction = this.form.action;
+		this.oldFormMethod = this.form.method;
+		this.oldFormEnctype = this.form.enctype;
+
 		this.form.action += (this.form.action.indexOf('?')!=-1 ? '&' : '?')+'TActiveFileUpload_InputId='+this.options.inputID+'&TActiveFileUpload_TargetId='+this.options.targetID;
 		this.form.target = this.options.targetID;
+		this.form.method = 'POST';
+		this.form.enctype = 'multipart/form-data';
 		this.form.submit();
+
 		this.form.action = this.oldFormAction;
 		this.form.target = this.oldtargetID;
+		this.form.method = this.oldFormMethod;
+		this.form.enctype = this.oldFormEnctype;
 	},
 	
 	finishUpload : function(options){
