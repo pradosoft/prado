@@ -12,18 +12,13 @@ Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 {
 	initialize: function($super, options)
 	{
-		options.ID = options.elements;
+		options.ID = options.EditorOptions.elements;
 		$super(options);
 	},
 
-    	onInit : function(options)
+    onInit : function(options)
 	{
-		if (typeof(tinyMCE)=='undefined') 
-			throw "TinyMCE libraries must be loaded first";
-
 		this.options = options;
-
-		tinyMCE.init(options);
 
 		var obj = this;
 		this.ajaxresponder = {
@@ -34,6 +29,59 @@ Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 			}
 		};
 		this.registerAjaxHook();
+
+		this.registerInstance();
+	},
+	
+	registerInstance: function()
+	{
+		if (typeof tinyMCE_GZ == 'undefined')
+			{
+				if (typeof tinyMCE == 'undefined')
+					{
+						if (typeof Prado.CallbackRequest != 'undefined')
+							if (typeof Prado.CallbackRequest.transport != 'undefined')
+							{
+								// we're in a callback
+								// try it again in some time, as tinyMCE is most likely still loading
+								this.setTimeout(this.registerInstance.bind(this), 50); 
+								return;
+							}
+						throw "TinyMCE libraries must be loaded first";
+					}
+				Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
+				this.initInstance();
+			}
+		else
+			if (Prado.WebUI.THtmlArea.tinyMCELoadState==255)
+				this.initInstance();
+			else
+				{
+					Prado.WebUI.THtmlArea.pendingRegistrations.push(this.options.ID);
+					if (Prado.WebUI.THtmlArea.tinyMCELoadState==0)
+					{
+						Prado.WebUI.THtmlArea.tinyMCELoadState = 1;
+						tinyMCE_GZ.init(
+							this.options.CompressionOptions,
+							this.compressedScriptsLoaded.bind(this)
+						);
+					}
+				}
+	},
+	
+	compressedScriptsLoaded: function()
+	{
+		Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
+		tinymce.dom.Event._pageInit();
+		var wrapper;
+		while(Prado.WebUI.THtmlArea.pendingRegistrations.length>0)
+			if (wrapper = Prado.Registry.get(Prado.WebUI.THtmlArea.pendingRegistrations.pop()))
+				wrapper.initInstance();
+	},
+
+	initInstance: function()
+	{
+		tinyMCE.init(this.options.EditorOptions);
 	},
 
 	checkInstance: function()
@@ -91,4 +139,11 @@ Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 		this.deRegisterAjaxHook();
 	}
 });
+
+Object.extend(Prado.WebUI.THtmlArea, 
+{
+	pendingRegistrations : [],
+	tinyMCELoadState : 0
+});
+
 

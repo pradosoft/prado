@@ -349,9 +349,6 @@ class THtmlArea extends TTextBox
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->loadJavascriptLibrary();
-		if($this->getEnableCompression())
-			$this->preLoadCompressedScript();
 	}
 
 	/**
@@ -389,31 +386,22 @@ class THtmlArea extends TTextBox
 		return self::$_themes;
 	}
 
-	protected function preLoadCompressedScript()
+	protected function getCompressionOptions()
 	{
-		$scripts = $this->getPage()->getClientScript();
-		$key = 'prado:THtmlArea:compressed';
-		if(!$scripts->isBeginScriptRegistered($key))
-		{
-			$options['plugins'] = implode(',', $this->getAvailablePlugins());
-			$options['themes'] = implode(',', $this->getAvailableThemes());
-			$options['languages'] = $this->getLanguageSuffix($this->getCulture());
-			$options['disk_cache'] = true;
-			$options['debug'] = false;
-			$js = TJavaScript::encode($options,true,true);
-			$script = "if(typeof(tinyMCE_GZ)!='undefined'){ tinyMCE_GZ.init({$js}); }";
-			if ($this->getPage()->getIsCallback())
-				$script.= 'tinymce.dom.Event._pageInit();';
-			$scripts->registerEndScript($key, $script);
-		}
+		return array(
+			'plugins' => implode(',', $this->getAvailablePlugins()),
+			'themes' => implode(',', $this->getAvailableThemes()),
+			'languages' => $this->getLanguageSuffix($this->getCulture()),
+			'disk_cache' => true,
+			'debug' => false
+		);
 	}
 
 	protected function loadJavascriptLibrary()
 	{
 		$scripts = $this->getPage()->getClientScript();
-		if(!$scripts->isScriptFileRegistered('prado:THtmlArea'))
-			$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 		$scripts->registerPradoScript('htmlarea');
+		$scripts->registerScriptFile('prado:THtmlArea', $this->getScriptUrl());
 	}
 
 	/**
@@ -421,8 +409,15 @@ class THtmlArea extends TTextBox
 	 */
 	protected function registerEditorClientScript($writer)
 	{
+		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
-		$options = TJavaScript::encode($this->getEditorOptions(),true,true); // Force encoding of empty strings
+		$options = array(
+			'EditorOptions' => $this->getEditorOptions()
+		);
+		if($this->getEnableCompression())
+			$options['CompressionOptions'] = $this->getCompressionOptions();
+
+		$options = TJavaScript::encode($options,true,true);
 		$script = "new Prado.WebUI.THtmlArea($options)";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
