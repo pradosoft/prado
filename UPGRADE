@@ -9,7 +9,7 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v3.1.x
+Upgrading from v3.1.10
 ---------------------
 - Prado 3.2 requires PHP >= 5.3.3 
 - Prado 3.2 doesn't use anymore a separate clientscripts.php script to publish minified javascript files.
@@ -58,9 +58,6 @@ Upgrading from v3.1.x
 - TActiveCustomValidator behaviour changed. Previously it was using a separate callback to perform
   validation on its own, while now it performs validation inside the main callback of the control that
   triggered the validation.
-
-Upgrading from v3.1.10
-----------------------
 
 Upgrading from v3.1.9
 ---------------------
