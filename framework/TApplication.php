@@ -349,10 +349,9 @@ class TApplication extends TComponent
 		// determine configuration path and file
 		if(empty($basePath) || ($basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		// is_file prints a warning if the file doesn't exists and open_basedir is in effect
-		if(@is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
+		if(is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
 			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
-		else if(@is_file($basePath))
+		else if(is_file($basePath))
 		{
 			$configFile=$basePath;
 			$basePath=dirname($configFile);
@@ -934,6 +933,11 @@ class TApplication extends TComponent
 		return $this->_authRules;
 	}
 
+	protected function getApplicationConfigurationClass()
+	{
+		return 'TApplicationConfiguration';
+	}
+
 	/**
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
@@ -1007,7 +1011,8 @@ class TApplication extends TComponent
 			{
 				if(($path=Prado::getPathOfNamespace($filePath,$this->getConfigurationFileExt()))===null || !is_file($path))
 					throw new TConfigurationException('application_includefile_invalid',$filePath);
-				$c=new TApplicationConfiguration;
+				$cn=$this->getApplicationConfigurationClass();
+				$c=new $cn;
 				$c->loadFromFile($path);
 				$this->applyConfiguration($c,$withinService);
 			}
