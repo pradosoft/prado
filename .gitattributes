@@ -3039,6 +3039,7 @@ framework/Data/SqlMap/Configuration/TSimpleDynamicParser.php -text
 framework/Data/SqlMap/Configuration/TSqlMapCacheModel.php -text
 framework/Data/SqlMap/Configuration/TSqlMapStatement.php -text
 framework/Data/SqlMap/Configuration/TSqlMapXmlConfiguration.php -text
+framework/Data/SqlMap/DataMapper/TFastSqlMapApplicationCache.php -text
 framework/Data/SqlMap/DataMapper/TLazyLoadList.php -text
 framework/Data/SqlMap/DataMapper/TPropertyAccess.php -text
 framework/Data/SqlMap/DataMapper/TSqlMapCache.php -text

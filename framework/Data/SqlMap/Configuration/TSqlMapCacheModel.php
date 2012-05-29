@@ -42,6 +42,13 @@ class TSqlMapCacheModel extends TComponent
 	private $_properties = array();
 	private $_flushInterval = 0;
 
+	private static $_cacheTypes = array();
+
+	public static function registerCacheType($type, $className)
+	{
+		self::$_cacheTypes[$type] = $className;
+	}
+
 	/**
 	 * @return string unique cache model identifier.
 	 */
@@ -71,7 +78,10 @@ class TSqlMapCacheModel extends TComponent
 	 */
 	public function setImplementation($value)
 	{
-		$this->_implementation = TPropertyValue::ensureEnum($value,'TSqlMapCacheTypes');
+		if (isset(self::$_cacheTypes[$value]))
+			$this->_implementation = $value;
+		else
+			$this->_implementation = TPropertyValue::ensureEnum($value,'TSqlMapCacheTypes');
 	}
 
 	/**
@@ -107,7 +117,10 @@ class TSqlMapCacheModel extends TComponent
 	 */
 	public function getImplementationClass()
 	{
-		switch(TPropertyValue::ensureEnum($this->_implementation,'TSqlMapCacheTypes'))
+		$implementation = $this->_implementation;
+		if (isset(self::$_cacheTypes[$implementation])) return self::$_cacheTypes[$implementation];
+
+		switch(TPropertyValue::ensureEnum($implementation,'TSqlMapCacheTypes'))
 		{
 			case TSqlMapCacheTypes::FIFO: return 'TSqlMapFifoCache';
 			case TSqlMapCacheTypes::LRU : return 'TSqlMapLruCache';
