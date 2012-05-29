@@ -1,4 +1,4 @@
-Version 3.2-rc3 (first public rc)  May 29, 2012
+Version 3.2.0-rc3 (first public rc)  May 29, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
