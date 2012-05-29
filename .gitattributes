@@ -3481,6 +3481,7 @@ framework/Web/THttpUtility.php -text
 framework/Web/TUrlManager.php -text
 framework/Web/TUrlMapping.php -text
 framework/Web/UI/ActiveControls/TActiveButton.php -text
+framework/Web/UI/ActiveControls/TActiveClientScript.php -text
 framework/Web/UI/ActiveControls/TActiveControlAdapter.php -text
 framework/Web/UI/ActiveControls/TActiveCustomValidator.php -text
 framework/Web/UI/ActiveControls/TActiveDataGrid.php -text
