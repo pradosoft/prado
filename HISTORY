@@ -79,6 +79,8 @@ BUG: Issue #400 - FastCGI/Exceptions: Status code not sent to browser (ctrlaltca
 BUG: Issue #401 - TClientScript doesn't render correctly itself if set visible in callback (ctrlaltca)
 BUG: Issue #402 - Component property 'TDatePickerClientScript.setOnLoading' is not defined. (ctrlaltca)
 BUG: Issue #404 - THtmlArea sometimes not loading properly from callbacks (gabor)
+BUG: Issue #406 - Prado does not allow extension of the application configuration (gabor)
+BUG: Issue #407 - Prado does not allow custom SqlMap data caching strategy/method & has inefficient Basic cache (gabor)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
