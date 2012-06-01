@@ -341,18 +341,6 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * Registers clientscripts
-	 *
-	 * This method overrides the parent implementation and is invoked before render.
-	 * @param mixed event parameter
-	 */
-	public function onPreRender($param)
-	{
-		parent::onPreRender($param);
-		$this->loadJavascriptLibrary();
-	}
-
-	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
@@ -410,6 +398,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function registerEditorClientScript($writer)
 	{
+		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
 		$options = array(
 			'EditorOptions' => $this->getEditorOptions()

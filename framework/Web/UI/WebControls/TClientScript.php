@@ -31,6 +31,14 @@
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.
  *
+ * Since Prado 3.2 the property {@link setFlushScriptFiles FlushScriptFiles} controls
+ * whether Prado will flush the script files defined in the page before rendering the
+ * TClientScript contents.
+ * If you're not using any external functions in your TClientScript block, you should
+ * set the {@link setFlushScriptFiles FlushScriptFiles} property to false, so Prado
+ * can postpone the loading of all the referenced script files further down the page
+ * generation cycle.
+ * 
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
  * @package System.Web.UI.WebControls
@@ -76,6 +84,22 @@ class TClientScript extends TControl
 	}
 
 	/**
+	 * @return bool whether to flush script files using TClientScriptManager::flushScriptFiles() before rendering the script block
+	 */
+	public function getFlushScriptFiles()
+	{
+		return TPropertyValue::ensureBoolean($this->getViewState('FlushScriptFiles', true));
+	}
+
+	/**
+	 * @param bool whether to flush script files using TClientScriptManager::flushScriptFiles() before rendering the script block
+	 */
+	public function setFlushScriptFiles($value)
+	{
+		$this->setViewState('FlushScriptFiles', TPropertyValue::ensureBoolean($value));
+	}
+
+	/**
 	 * Calls the client script manager to add each of the requested client
 	 * script libraries.
 	 * @param mixed event parameter
@@ -100,6 +124,8 @@ class TClientScript extends TControl
 	 */
 	public function render($writer)
 	{
+		if ($this->getFlushScriptFiles())
+			$this->getPage()->getClientScript()->flushScriptFiles($writer);
 		$this->renderCustomScriptFile($writer);
 		$this->renderCustomScript($writer);
 	}

@@ -270,7 +270,6 @@ EOS;
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 
 		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())
 		{
@@ -369,6 +368,7 @@ EOS;
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 		
+		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 		$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(),$this->getClientOptions());
 	}
 

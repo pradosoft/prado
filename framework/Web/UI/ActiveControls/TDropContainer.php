@@ -181,7 +181,6 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->getPage()->getClientScript()->registerPradoScript('dragdrop');
 	}
 
 	/**
@@ -193,6 +192,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 
+		$this->getPage()->getClientScript()->registerPradoScript('dragdrop');
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

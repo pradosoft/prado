@@ -81,7 +81,6 @@ class TActiveControlAdapter extends TControlAdapter
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->getPage()->getClientScript()->registerPradoScript('ajax');
 	}
 
 	/**
@@ -89,6 +88,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function render($writer)
 	{
+		$this->getPage()->getClientScript()->registerPradoScript('ajax');
 		$this->renderCallbackClientScripts();
 		if($this->_control->getVisible(false))
 		{

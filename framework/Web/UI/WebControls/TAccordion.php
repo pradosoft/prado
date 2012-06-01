@@ -415,7 +415,6 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		parent::onPreRender($param);
 		$this->getActiveView();  // determine the active view
 		$this->registerStyleSheet();
-		$this->registerClientScript();
 	}
 
 	/**
@@ -507,6 +506,12 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 	public function getViews()
 	{
 		return $this->getControls();
+	}
+
+	public function render($writer)
+	{
+		$this->registerClientScript();
+		parent::render($writer);
 	}
 
 	/**

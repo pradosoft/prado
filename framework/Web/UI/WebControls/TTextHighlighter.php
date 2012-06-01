@@ -141,7 +141,6 @@ class TTextHighlighter extends TTextProcessor
 	{
 		parent::onPreRender($writer);
 		$this->registerStyleSheet();
-		$this->getPage()->getClientScript()->registerPradoScript('prado');
 	}
 
 	/**
@@ -191,6 +190,14 @@ class TTextHighlighter extends TTextProcessor
 		$id = $this->getClientID();
 		return TJavaScript::renderScriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
 	}
+
+	public function render($writer)
+	{
+		$this->getPage()->getClientScript()->registerPradoScript('prado');
+		parent::render($writer);
+	}
+
+
 }
 
 /**

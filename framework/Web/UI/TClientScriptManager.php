@@ -87,7 +87,7 @@ class TClientScriptManager extends TApplicationComponent
 
 	private $_renderedScriptFiles;
 
-	private $_renderedPradoScripts;
+	private $_expandedPradoScripts;
 
 	/**
 	 * Constructor.
@@ -133,7 +133,7 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Registers a Prado javascript library to be loaded.
 	 */
-	private function registerPradoScriptInternal($name)
+	protected function registerPradoScriptInternal($name)
 	{
 		// $this->checkIfNotInRender();
 		if(!isset($this->_registeredPradoScripts[$name]))
@@ -146,10 +146,49 @@ class TClientScriptManager extends TApplicationComponent
 				self::$_pradoPackages = $packages;
 			}
 
-			if(isset(self::$_pradoScripts[$name]))
+			if (isset(self::$_pradoScripts[$name]))
 				$this->_registeredPradoScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
+				
+			if(($packages=array_keys($this->_registeredPradoScripts))!==array())
+			{
+				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+				list($path,$baseUrl)=$this->getPackagePathUrl($base);
+				$packagesUrl=array();
+				$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
+				foreach ($packages as $p)
+				{
+					foreach (self::$_pradoScripts[$p] as $dep)
+					{
+						foreach (self::$_pradoPackages[$dep] as $script)
+						if (!isset($this->_expandedPradoScripts[$script]))
+						{
+							$this->_expandedPradoScripts[$script] = true;
+							if($isDebug)
+							{
+								if (!in_array($url=$baseUrl.'/'.$script,$packagesUrl))
+									$packagesUrl[]=$url;
+							} else {
+								if (!in_array($url=$baseUrl.'/min/'.$script,$packagesUrl))
+								{
+									if(!is_file($filePath=$path.'/min/'.$script))
+									{
+										$dirPath=dirname($filePath);
+										if(!is_dir($dirPath))
+											mkdir($dirPath, PRADO_CHMOD, true);
+										file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
+										chmod($filePath, PRADO_CHMOD);
+									}
+									$packagesUrl[]=$url;
+								}
+							}
+						}
+					}
+				}
+				foreach($packagesUrl as $url)
+					$this->registerScriptFile($url,$url);
+			}
 		}
 	}
 
@@ -161,52 +200,6 @@ class TClientScriptManager extends TApplicationComponent
 		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
 		$assets = Prado::getApplication()->getAssetManager();
 		return $assets->getPublishedUrl($base);
-	}
-
-	/**
-	 * Renders the HTML tags for PRADO js files
-	 * @param THtmlWriter writer
-	 */
-	protected function renderPradoScriptsInt($writer, $initial)
-	{
-		if($initial) $this->_renderedPradoScripts = array();
-		$addedScripts = array_diff($this->_registeredPradoScripts,$this->_renderedPradoScripts);
-		if(($packages=array_keys($addedScripts))!==array())
-		{
-			$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-			list($path,$baseUrl)=$this->getPackagePathUrl($base);
-			$packagesUrl=array();
-			$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
-			foreach ($packages as $p)
-			{
-				foreach (self::$_pradoScripts[$p] as $dep)
-				{
-					foreach (self::$_pradoPackages[$dep] as $script)
-					{
-						if($isDebug)
-						{
-							if (!in_array($url=$baseUrl.'/'.$script,$packagesUrl))
-								$packagesUrl[]=$url;
-						} else {
-							if (!in_array($url=$baseUrl.'/min/'.$script,$packagesUrl))
-							{
-								if(!is_file($filePath=$path.'/min/'.$script))
-								{
-									$dirPath=dirname($filePath);
-									if(!is_dir($dirPath))
-										mkdir($dirPath, PRADO_CHMOD, true);
-									file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
-									chmod($filePath, PRADO_CHMOD);
-								}
-								$packagesUrl[]=$url;
-							}
-						}
-					}
-				}
-			}
-			$writer->write(TJavaScript::renderScriptFiles($packagesUrl));
-			$this->_renderedPradoScripts = $this->_registeredPradoScripts;
-		}
 	}
 
 	/**
@@ -492,10 +485,10 @@ class TClientScriptManager extends TApplicationComponent
 	 * @param string a unique key identifying the file
 	 * @param string URL to the javascript file to be rendered
 	 */
-	public function registerScriptFile($key,$url)
+	public function registerScriptFile($key, $url)
 	{
 		$this->_scriptFiles[$key]=$url;
-
+		
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerScriptFile',$params);
 	}
@@ -686,7 +679,6 @@ class TClientScriptManager extends TApplicationComponent
 	public function renderScriptFilesInt($writer, $initial)
 	{
 		if ($initial) $this->_renderedScriptFiles = array();
-		$this->renderPradoScriptsInt($writer, $initial);
 		if(!empty($this->_scriptFiles))
 		{
 			$addedScripts = array_diff($this->_scriptFiles,$this->_renderedScriptFiles);
@@ -720,6 +712,16 @@ class TClientScriptManager extends TApplicationComponent
 	public function renderHiddenFieldsEnd($writer)
 	{
 		$this->renderHiddenFieldsInt($writer,false);
+	}
+
+	/**
+	 * Flushes all pending script registrations
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function flushScriptFiles($writer)
+	{
+		assert($this->_page->InFormRender);
+		$this->renderScriptFilesInt($writer,false);
 	}
 
 	/**

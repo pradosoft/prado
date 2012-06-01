@@ -394,7 +394,6 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		parent::onPreRender($param);
 		$this->getActiveView();  // determine the active view
 		$this->registerStyleSheet();
-		$this->registerClientScript();
 	}
 
 	/**
@@ -488,6 +487,12 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 	public function getViews()
 	{
 		return $this->getControls();
+	}
+
+	public function render($writer)
+	{
+		$this->registerClientScript();
+		parent::render($writer);
 	}
 
 	/**
@@ -724,5 +729,3 @@ class TTabViewCollection extends TControlCollection
 		return -1;
 	}
 }
-
-?>

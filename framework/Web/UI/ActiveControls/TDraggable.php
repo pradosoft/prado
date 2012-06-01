@@ -145,11 +145,6 @@ class TDraggable extends TPanel
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$cs=$this->getPage()->getClientScript();
-		if ($this->getGhosting()==TDraggableGhostingOptions::SuperGhosting)
-			$cs->registerPradoScript('dragdropextra');
-		else
-			$cs->registerPradoScript('dragdrop');
 	}
 
 	/**
@@ -159,7 +154,12 @@ class TDraggable extends TPanel
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
+
 		$cs=$this->getPage()->getClientScript();
+		if ($this->getGhosting()==TDraggableGhostingOptions::SuperGhosting)
+			$cs->registerPradoScript('dragdropextra');
+		else
+			$cs->registerPradoScript('dragdrop');
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$class=$this->getClientClassName();

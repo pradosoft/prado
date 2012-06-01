@@ -8,13 +8,15 @@ if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1
 
 //package names and its contents (files relative to the current directory)
 $packages = array(
-	'prado' => array(
+	'prototype' => array(
 		PROTOTYPE_DIR.'/prototype.js',
 		SCRIPTACULOUS_DIR.'/builder.js',
-		SCRIPTACULOUS_DIR.'/effects.js',
+	),
+	'prado' => array(
 		'prado/prado.js',
 		'prado/scriptaculous-adapter.js',
-		'prado/controls/controls.js'
+		'prado/controls/controls.js',
+		SCRIPTACULOUS_DIR.'/effects.js'
 	),
 
 	'effects' => array(
@@ -41,7 +43,7 @@ $packages = array(
 		SCRIPTACULOUS_DIR.'/controls.js',
 		'prado/activecontrols/json2.js',
 		'prado/activecontrols/ajax3.js',
-		'prado/activecontrols/activecontrols3.js'
+		'prado/activecontrols/activecontrols3.js',
 	),
 
 	'dragdrop'=>array(
@@ -94,24 +96,25 @@ $packages = array(
 
 //package names and their dependencies
 $dependencies = array(
-		'prado'				=> array('prado'),
-		'effects'			=> array('prado', 'effects'),
-		'validator'			=> array('prado', 'validator'),
-		'logger'			=> array('prado', 'logger'),
-		'datepicker'		=> array('prado', 'datepicker'),
-		'colorpicker'		=> array('prado', 'colorpicker'),
-		'ajax'				=> array('prado', 'effects', 'ajax'),
-		'dragdrop'			=> array('prado', 'effects', 'ajax', 'dragdrop'),
-		'slider'			=> array('prado', 'slider'),
-		'keyboard'			=> array('prado', 'keyboard'),
-		'tabpanel'			=> array('prado', 'tabpanel'),
-		'activedatepicker'	=> array('prado', 'datepicker', 'ajax', 'activedatepicker'),
-		'activefileupload'	=> array('prado', 'effects', 'ajax', 'activefileupload'),
-		'dragdropextra'		=> array('prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
-		'accordion'			=> array('prado', 'effects', 'accordion'),
-		'htmlarea'			=> array('prado', 'htmlarea'),
-		'ratings'			=> array('prado', 'effects', 'ajax', 'ratings'),
-		'inlineeditor'		=> array('prado', 'effects', 'ajax', 'inlineeditor'),
+		'prototype'			=> array('prototype'),
+		'prado'				=> array('prototype', 'prado'),
+		'effects'			=> array('prototype', 'prado', 'effects'),
+		'validator'			=> array('prototype', 'prado', 'validator'),
+		'logger'			=> array('prototype', 'prado', 'logger'),
+		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
+		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
+		'ajax'				=> array('prototype', 'prado', 'effects', 'ajax'),
+		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
+		'slider'			=> array('prototype', 'prado', 'slider'),
+		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
+		'tabpanel'			=> array('prototype', 'prado', 'tabpanel'),
+		'activedatepicker'	=> array('prototype', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'activefileupload'	=> array('prototype', 'prado', 'effects', 'ajax', 'activefileupload'),
+		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
+		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
+		'htmlarea'			=> array('prototype', 'prado', 'htmlarea'),
+		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
+		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
 );
 
 return array($packages, $dependencies);
