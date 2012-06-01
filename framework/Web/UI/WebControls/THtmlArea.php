@@ -349,6 +349,7 @@ class THtmlArea extends TTextBox
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
+		$this->loadJavascriptLibrary();
 	}
 
 	/**
@@ -409,7 +410,6 @@ class THtmlArea extends TTextBox
 	 */
 	protected function registerEditorClientScript($writer)
 	{
-		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
 		$options = array(
 			'EditorOptions' => $this->getEditorOptions()
