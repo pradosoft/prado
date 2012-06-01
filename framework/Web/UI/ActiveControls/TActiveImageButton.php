@@ -166,5 +166,3 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 		return 'Prado.WebUI.TActiveImageButton';
 	}
 }
-
-?>
