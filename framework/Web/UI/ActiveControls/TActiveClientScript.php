@@ -68,7 +68,6 @@ class TActiveClientScript extends TClientScript
 			if($this->getPage()->getIsCallback())
 			{
 				$extWriter= $this->getPage()->getResponse()->createHtmlWriter();
-				$extWriter->getWriter()->setBoundary($this->ClientID);
 				$extWriter->write("/*<![CDATA[*/\n");
 				$this->renderChildren($extWriter);
 				$extWriter->write("\n/*]]>*/");

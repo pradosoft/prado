@@ -423,16 +423,14 @@ Prado.Element =
 		var content = Prado.Element.extractContent(this.transport.responseText, boundary);
 		if(content == null)
 			return;
-		var id = 'inline_' + boundary;
-
-		if($(id))
-			document.body.removeChild($(id));
 
 		var el   = document.createElement("script");
 		el.type  = "text/javascript";
-		el.id    = id;
+		el.id    = 'inline_' + boundary;
 		el.text  = content;
-		document.body.appendChild(el);		
+
+		(document.getElementsByTagName('head')[0] || document.documentElement).appendChild(el);
+		el.parentNode.removeChild(el);
 	},
 
 	/**
