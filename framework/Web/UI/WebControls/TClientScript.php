@@ -125,7 +125,7 @@ class TClientScript extends TControl
 	public function render($writer)
 	{
 		if ($this->getFlushScriptFiles())
-			$this->getPage()->getClientScript()->flushScriptFiles($writer);
+			$this->getPage()->getClientScript()->flushScriptFiles($writer, $this);
 		$this->renderCustomScriptFile($writer);
 		$this->renderCustomScript($writer);
 	}

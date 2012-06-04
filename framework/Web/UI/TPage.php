@@ -968,7 +968,7 @@ class TPage extends TTemplateControl
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->getIsCallback() && !$this->_inFormRender)
-			throw new TConfigurationException('page_control_outofform',get_class($control),$control->getUniqueID());
+			throw new TConfigurationException('page_control_outofform',get_class($control), $control ? $control->getUniqueID() : null);
 	}
 
 	/**

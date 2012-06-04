@@ -85,7 +85,7 @@ class TClientScriptManager extends TApplicationComponent
 
 	private $_renderedHiddenFields;
 
-	private $_renderedScriptFiles;
+	private $_renderedScriptFiles=array();
 
 	private $_expandedPradoScripts;
 
@@ -665,20 +665,19 @@ class TClientScriptManager extends TApplicationComponent
 
 	public function renderScriptFilesBegin($writer)
 	{
-		$this->renderScriptFilesInt($writer,true);
+		$this->renderScriptFilesInt($writer);
 	}
 
 	public function renderScriptFilesEnd($writer)
 	{
-		$this->renderScriptFilesInt($writer,false);
+		$this->renderScriptFilesInt($writer);
 	}
 
 	/**
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
-	public function renderScriptFilesInt($writer, $initial)
+	public function renderScriptFilesInt($writer)
 	{
-		if ($initial) $this->_renderedScriptFiles = array();
 		if(!empty($this->_scriptFiles))
 		{
 			$addedScripts = array_diff($this->_scriptFiles,$this->_renderedScriptFiles);
@@ -717,10 +716,11 @@ class TClientScriptManager extends TApplicationComponent
 	/**
 	 * Flushes all pending script registrations
 	 * @param THtmlWriter writer for the rendering purpose
+	 * @param TControl the control forcing the flush (used only in error messages)
 	 */
-	public function flushScriptFiles($writer)
+	public function flushScriptFiles($writer, $control=null)
 	{
-		assert($this->_page->InFormRender);
+		$this->_page->ensureRenderInForm($control);
 		$this->renderScriptFilesInt($writer,false);
 	}
 
