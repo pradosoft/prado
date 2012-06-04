@@ -394,6 +394,10 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		parent::onPreRender($param);
 		$this->getActiveView();  // determine the active view
 		$this->registerStyleSheet();
+
+		$page=$this->getPage();
+		$page->registerRequiresPostData($this);
+		$page->registerRequiresPostData($this->getClientID()."_1");
 	}
 
 	/**
@@ -426,8 +430,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		$id=$this->getClientID();
 		$options=TJavaScript::encode($this->getClientOptions());
 		$className=$this->getClientClassName();
-		$page=$this->getPage();
-		$cs=$page->getClientScript();
+		$cs=$this->getPage()->getClientScript();
 		$cs->registerPradoScript('tabpanel');
 		$code="new $className($options);";
 		$cs->registerEndScript("prado:$id", $code);
@@ -436,8 +439,6 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 		if(!$this->getViews()->itemAt($index)->Visible)
 			$index=0;
 		$cs->registerHiddenField($id.'_1', $index);
-		$page->registerRequiresPostData($this);
-		$page->registerRequiresPostData($id."_1");
 	}
 
 	/**
