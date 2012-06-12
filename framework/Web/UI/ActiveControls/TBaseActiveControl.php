@@ -142,16 +142,16 @@ class TBaseActiveControl extends TComponent
  * each individual active controls' {@link getActiveControl ActiveControl}
  * property.
  *
- * The following example to set the validation group property of a TCallback component.
+ * The following example sets the validation group property of a TCallback component.
  * <code>
  * 	<com:TCallback ActiveControl.ValidationGroup="group1" ... />
  * </code>
  *
  * Additional client-side options and events can be set using the
- * {@link getClientSide ClientSide} property. The following example to show
+ * {@link getClientSide ClientSide} property. The following example shows
  * an alert box when a TCallback component response returns successfully.
  * <code>
- * 	<com:TCallback Active.Control.ClientSide.OnSuccess="alert('ok!')" ... />
+ * 	<com:TCallback ActiveControl.ClientSide.OnSuccess="alert('ok!')" ... />
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -202,7 +202,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * Sets default callback options. Takes the ID of a TCallbackOptions
 	 * component to duplicate the client-side
 	 * options for this control. The {@link getClientSide ClientSide}
-	 * subproperties has precendent over the CallbackOptions property.
+	 * subproperties takes precedence over the CallbackOptions property.
 	 * @param string ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
@@ -223,7 +223,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	/**
 	 * Returns an array of default callback client-side options. The default options
 	 * are obtained from the client-side options of a TCallbackOptions control with
-	 * ID specified by {@link setCallbackOptionsID CallbackOptionsID}.
+	 * ID specified by {@link setCallbackOptions CallbackOptions}.
 	 * @return array list of default callback client-side options.
 	 */
 	protected function getDefaultClientSideOptions()
@@ -245,7 +245,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 			if($control instanceof TCallbackOptions)
 				return $control->getClientSide()->getOptions()->toArray();
 			else
-				throw new TConfigurationException('callback_invalid_callback_options_ID', $id);
+				throw new TConfigurationException('callback_invalid_callback_options', $this->getControl()->getID(), $id);
 		}
 
 		return array();
