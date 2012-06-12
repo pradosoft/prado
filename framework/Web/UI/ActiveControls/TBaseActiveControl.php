@@ -235,7 +235,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 				$control=$this->getControl()->getSubProperty(substr($id,0,$pos));
 				$newid=substr($id,$pos+1);
 				if ($control!==null)
-					$control=$control->findControl($newid);
+					$control=$control->$newid;
 			}
 			else
 			{
