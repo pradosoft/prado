@@ -43,6 +43,7 @@ PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCrea
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineUnitTest');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGen');
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGenAll');
 
 //run it;
 PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
@@ -728,6 +729,102 @@ $props
 ?>
 EOD;
 	}
+}
+
+/**
+ * Create active record skeleton for all tables in DB and its relations
+ *
+ * @author Matthias Endres <me[at]me23[dot]de>
+ * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.2
+ */
+class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {
+
+    protected $action = 'generateAll';
+    protected $parameters = array('output');
+    protected $optional = array('directory', 'soap', 'overwrite', 'prefix', 'postfix');
+    protected $description = "Generate Active Record skeleton for all Tables to <output> file using application.xml in [directory]. May also generate [soap] properties.\nGenerated Classes are named like the Table with optional [Prefix] and/or [Postfix]. [Overwrite] is used to overwrite existing Files.";
+    private $_soap = false;
+    private $_prefix = '';
+    private $_postfix = '';
+    private $_overwrite = false;
+
+    public function performAction($args) {
+        $app_dir = count($args) > 2 ? $this->getAppDir($args[2]) : $this->getAppDir();
+        $this->_soap = count($args) > 3 ? ($args[3] == "soap" || $args[3] == "true" ? true : false) : false;
+        $this->_overwrite = count($args) > 4 ? ($args[4] == "overwrite" || $args[4] == "true" ? true : false) : false;
+        $this->_prefix = count($args) > 5 ? $args[5] : '';
+        $this->_postfix = count($args) > 6 ? $args[6] : '';
+
+        if ($app_dir !== false) {
+            $config = $this->getActiveRecordConfig($app_dir);
+
+            $manager = TActiveRecordManager::getInstance();
+            $con = $manager->getDbConnection();
+            $con->Active = true;
+            $command = $con->createCommand("Show Tables");
+            $dataReader = $command->query();
+            $dataReader->bindColumn(1, $table);
+            $generator = new PHP_Shell_Extensions_ActiveRecord();
+            $tables = array();
+            while ($dataReader->read() !== false) {
+                $tables[] = $table;
+            }
+            $con->Active = False;
+            foreach ($tables as $key => $table) {
+                $output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
+                if ($config !== false && $output !== false) {
+                    $generator->generate("generate " . $table . " " . $output . " " . $this->_soap . " " . $this->_overwrite);
+                }
+            }
+        }
+        return true;
+    }
+
+    protected function getAppDir($dir=".") {
+        if (is_dir($dir))
+            return realpath($dir);
+        if (false !== ($app_dir = realpath($dir . '/protected/')) && is_dir($app_dir))
+            return $app_dir;
+        echo '** Unable to find directory "' . $dir . "\".\n";
+        return false;
+    }
+
+    protected function getXmlFile($app_dir) {
+        if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml))
+            return $xml;
+        if (false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml))
+            return $xml;
+        echo '** Unable to find application.xml in ' . $app_dir . "\n";
+        return false;
+    }
+
+    protected function getActiveRecordConfig($app_dir) {
+        if (false === ($xml = $this->getXmlFile($app_dir)))
+            return false;
+        if (false !== ($app = $this->initializePradoApplication($app_dir))) {
+            Prado::using('System.Data.ActiveRecord.TActiveRecordConfig');
+            foreach ($app->getModules() as $module)
+                if ($module instanceof TActiveRecordConfig)
+                    return $module;
+            echo '** Unable to find TActiveRecordConfig module in ' . $xml . "\n";
+        }
+        return false;
+    }
+
+    protected function getOutputFile($app_dir, $namespace) {
+        if (is_file($namespace) && strpos($namespace, $app_dir) === 0)
+            return $namespace;
+        $file = Prado::getPathOfNamespace($namespace, "");
+        if ($file !== null && false !== ($path = realpath(dirname($file))) && is_dir($path)) {
+            if (strpos($path, $app_dir) === 0)
+                return $file;
+        }
+        echo '** Output file ' . $file . ' must be within directory ' . $app_dir . "\n";
+        return false;
+    }
+
 }
 
 //run PHP shell

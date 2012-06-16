@@ -18,6 +18,7 @@ BUG: TErrorHandler: avoid an error when trying to hide the file path of a lambda
 BUG: TSecurityManager: avoid a race condition when first generating the encryptionkey or the validationkey (ctrlaltca)
 BUG: TActiveFileUpload: urlencode the base64'ed token since it can contain the "+" character (otherway it would be traslated to a space) (ctrlaltca)
 BUG: TCaptcha: publish images with image/png content-type (ctrlaltca)
+ENH: prado-cli: added generateAll command (darthdaniel85)
 
 BUG: Issue  #35 - [840] Capital letters for the initial letter of the directories name (ctrlaltca)
 BUG: Issue  #66 - TButton.CausesValidation=False ignored when pressing Enter on the button within a control with DefaultButton (ctrlaltca)
