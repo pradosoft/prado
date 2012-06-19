@@ -1014,11 +1014,22 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 			this.loadedAssets.push(url);
 	},
 
-	createAssetReadyStateChangeFunction: function(url, element, callback, finalevent) {
-		return function() {
-			if (finalevent || (element.readyState == 'loaded') || (element.readyState == 'complete'))
-				callback(url,element);
-		};
+	assetReadyStateChanged: function(url, element, callback, finalevent) {
+		if (finalevent || (element.readyState == 'loaded') || (element.readyState == 'complete'))
+		if (!element.assetCallbackFired)
+		{
+			element.assetCallbackFired = true;
+			callback(url,element);
+		}
+	},
+
+	assetLoadFailed: function(url, element, callback) {
+		debugger;
+		element.assetCallbackFired = true;
+		if(typeof Logger != "undefined")
+			Logger.error("Failed to load asset: "+url, this);
+		if (!element.assetCallbackFired)
+			callback(url,element,false);
 	},
 
 	/**
@@ -1035,8 +1046,10 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		if (callback)
 		{
-			asset.onreadystatechange = this.createAssetReadyStateChangeFunction(url, asset, callback, false);
-			asset.onload = this.createAssetReadyStateChangeFunction(url, asset, callback, true);
+			asset.onreadystatechange = this.assetReadyStateChanged.bind(this, url, asset, callback, false);
+			asset.onload = this.assetReadyStateChanged.bind(this, url, asset, callback, true);
+			asset.onerror = this.assetLoadFailed.bind(this, url, asset, callback);
+			asset.assetCallbackFired = false;
 		}
 
 		var head = document.getElementsByTagName('head')[0];
