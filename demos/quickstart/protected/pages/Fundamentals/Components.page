@@ -51,7 +51,7 @@ $component-&gt;getFont()-&gt;setName( $name );
 </com:TTextHighlighter>
 </p>
 
-<h3>Js-friendly properties</h3>
+<h3 id="26001">Js-friendly properties</h3>
 <p class="block-content">
 A JavaScript-friendly property is a property that can accept both simple strings and raw javascript.
 Prado automatically encodes all properties sent clientside inside javascript blocks to avoid security problems (like injections or cross site scripting).
