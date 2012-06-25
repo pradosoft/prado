@@ -24,7 +24,7 @@ Safeguard the control rendering results:
 Safeguard and UTF-7 string:
 </td><td class="sampleaction">
 <com:TSafeHtml RepackUTF7="true" >
-  <com:TLiteral Text="+ADw-script+AD4-alert(document.location)+ADw-/script+AD4-" />
+  <com:TLiteral Text="There's a UTF-7 encoded javascript block between here and+ADw-script+AD4-alert(document.location)+ADw-/script+AD4- here" />
 </com:TSafeHtml>
 </td></tr>
 
