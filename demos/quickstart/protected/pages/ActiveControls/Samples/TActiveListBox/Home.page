@@ -105,4 +105,30 @@ Listbox causing validation:
 
 </table>
 
+<h2>List Boxes in Multiple Selection Mode</h2>
+<i>Use Ctrl + Mouse Click to change selection</i>
+<br/>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Multiple items can be selected together:
+  </td>
+  <td class="sampleaction">
+    <com:TActiveListBox
+    	ID="MDropdownList"
+    	SelectionMode="Multiple"
+    	OnSelectedIndexChanged="multiSelectionChanged"
+	>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TActiveListBox>
+<com:TActiveLabel ID="MSelectionResult" ForeColor="red" />
+  </td>
+</tr>
+
+</table>
 </com:TContent>

@@ -31,6 +31,11 @@ class Home extends TPage
 		$this->collectSelectionResult($sender,$this->SelectionResult);
 	}
 
+	public function multiSelectionChanged($sender,$param)
+	{
+		$this->collectSelectionResult($sender,$this->MSelectionResult);
+	}
+
 	public function buttonClicked($sender, $param)
 	{
 		$data=array();
