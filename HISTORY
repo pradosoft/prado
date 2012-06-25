@@ -83,6 +83,7 @@ BUG: Issue #404 - THtmlArea sometimes not loading properly from callbacks (gabor
 BUG: Issue #406 - Prado does not allow extension of the application configuration (gabor)
 BUG: Issue #407 - Prado does not allow custom SqlMap data caching strategy/method & has inefficient Basic cache (gabor)
 BUG: Issue #408 - Missing script/stylesheet file(s) halt(s) callback processing (gabor)
+BUG: Issue #410 - Deferred script rendering does not work well with output caching (gabor)
 
 Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)

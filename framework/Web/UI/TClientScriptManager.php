@@ -208,43 +208,8 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getScriptUrls()
 	{
-		$scripts = array();
-
-		$packages=array_keys($this->_registeredPradoScripts);
-		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-		list($path,$baseUrl)=$this->getPackagePathUrl($base);
-		$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
-		foreach ($packages as $p)
-		{
-			foreach (self::$_pradoScripts[$p] as $dep)
-			{
-				foreach (self::$_pradoPackages[$dep] as $script)
-				{
-					if($isDebug)
-					{
-						if (!in_array($url=$baseUrl.'/'.$script,$scripts))
-							$scripts[]=$url;
-					} else {
-						if (!in_array($url=$baseUrl.'/min/'.$script,$scripts))
-						{
-							if(!is_file($filePath=$path.'/min/'.$script))
-							{
-								$dirPath=dirname($filePath);
-								if(!is_dir($dirPath))
-									mkdir($dirPath, PRADO_CHMOD, true);
-								file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
-								chmod($filePath, PRADO_CHMOD);
-							}
-							$scripts[]=$url;
-						}
-					}
-				}
-			}
-		}
-
-		$scripts = array_merge($scripts, array_values($this->_headScriptFiles));
+		$scripts = array_values($this->_headScriptFiles);
 		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
-
 		$scripts = array_unique($scripts);
 
 		return $scripts;
@@ -652,7 +617,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function renderHeadScriptFiles($writer)
 	{
-		$writer->write(TJavaScript::renderScriptFiles($this->_headScriptFiles));
+		$this->renderScriptFiles($writer,$this->_headScriptFiles);
 	}
 
 	/**
@@ -665,25 +630,44 @@ class TClientScriptManager extends TApplicationComponent
 
 	public function renderScriptFilesBegin($writer)
 	{
-		$this->renderScriptFilesInt($writer);
+		$this->renderAllPendingScriptFiles($writer);
 	}
 
 	public function renderScriptFilesEnd($writer)
 	{
-		$this->renderScriptFilesInt($writer);
+		$this->renderAllPendingScriptFiles($writer);
+	}
+
+	public function markScriptFileAsRendered($url)
+	{
+		$this->_renderedScriptFiles[$url] = $url;
+		$params=func_get_args();
+		$this->_page->registerCachingAction('Page.ClientScript','markScriptFileAsRendered',$params);
+	}
+
+	protected function renderScriptFiles($writer, Array $scripts)
+	{
+		foreach($scripts as $script)
+		{
+			$writer->write(TJavaScript::renderScriptFile($script));
+			$this->markScriptFileAsRendered($script);
+		}
+	}
+
+	protected function getRenderedScriptFiles()
+	{
+		return $this->_renderedScriptFiles;
 	}
 
 	/**
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
-	public function renderScriptFilesInt($writer)
+	public function renderAllPendingScriptFiles($writer)
 	{
 		if(!empty($this->_scriptFiles))
 		{
-			$addedScripts = array_diff($this->_scriptFiles,$this->_renderedScriptFiles);
-			if (count($addedScripts)>0)
-				$writer->write(TJavaScript::renderScriptFiles($addedScripts));
-			$this->_renderedScriptFiles = $this->_scriptFiles;
+			$addedScripts = array_diff($this->_scriptFiles,$this->getRenderedScriptFiles());
+			$this->renderScriptFiles($writer,$addedScripts);
 		}
 	}
 
@@ -721,7 +705,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function flushScriptFiles($writer, $control=null)
 	{
 		$this->_page->ensureRenderInForm($control);
-		$this->renderScriptFilesInt($writer,false);
+		$this->renderAllPendingScriptFiles($writer);
 	}
 
 	/**
