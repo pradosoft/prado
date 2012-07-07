@@ -18,6 +18,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveImageButton');
 Prado::using('System.Web.UI.ActiveControls.TActiveButton');
 Prado::using('System.Web.UI.ActiveControls.TActiveImage');
 Prado::using('System.Web.UI.ActiveControls.TActiveCheckBox');
+Prado::using('System.Web.UI.ActiveControls.TCallbackOptions');
 Prado::using('System.Web.UI.WebControls.TDataGrid');
 Prado::using('System.Web.UI.WebControls.TBoundColumn');
 Prado::using('System.Web.UI.WebControls.TEditCommandColumn');
