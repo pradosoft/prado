@@ -87,14 +87,6 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
-	 */
-	public function getClientSide()
-	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
-	}
-
-	/**
 	 * Client-side Text property can only be updated after the OnLoad stage.
 	 * @param string text content for the textbox
 	 */
@@ -161,5 +153,49 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 		$code = "new Prado.WebUI.TActiveDatePicker($options);";
 		$cs->registerEndScript("prado:".$this->getClientID(), $code);
 	}
+
+	/**
+	 * @return TActiveDatePickerClientScript javascript validator event options.
+	 */
+	protected function createClientScript()
+	{
+		return new TActiveDatePickerClientScript;
+	}
 }
-?>
+
+/**
+ * TActiveDatePickerClientScript class.
+ *
+ * Client-side date picker event {@link setOnDateChanged OnDateChanged}
+ * can be modified through the {@link TActiveDatePicker::getClientSide ClientSide}
+ * property of a date picker.
+ *
+ * The <tt>OnDateChanged</tt> event is raise when the date picker's date
+ * is changed.
+ * The formatted date according to {@link TDatePicker::getDateFormat DateFormat} is sent
+ * as parameter to this event
+ * 
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
+ * @version $Id$
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2.1
+ */
+class TActiveDatePickerClientScript extends TCallbackClientSide
+{
+	/**
+	 * Javascript code to execute when the date picker's date is changed.
+	 * @param string javascript code
+	 */
+	public function setOnDateChanged($javascript)
+	{
+		$this->setFunction('OnDateChanged', $javascript);
+	}
+
+	/**
+	 * @return string javascript code to execute when the date picker's date is changed.
+	 */
+	public function getOnDateChanged()
+	{
+		return $this->getOption('OnDateChanged');
+	}
+}

@@ -1,3 +1,7 @@
+Version 3.2.1 to be released
+
+BUG: Issue #413 - TActiveDatePicker does not fire TCallbackClientSide's events (ctrlaltca)
+
 Version 3.2.0 Jun 25, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
