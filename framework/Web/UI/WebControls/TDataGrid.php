@@ -1202,7 +1202,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		}
 	}
 
-	private function createPager()
+	protected function createPager()
 	{
 		$pager=new TDataGridPager($this);
 		$this->buildPager($pager);
@@ -1233,6 +1233,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
+	 * @param mixed the container pager instance of TActiveDatagridPager 
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
 	 * @param string caption of the button
@@ -1240,7 +1241,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
+	protected function createPagerButton($pager,$buttonType,$enabled,$text,$commandName,$commandParameter)
 	{
 		if($buttonType===TDataGridPagerButtonType::LinkButton)
 		{
@@ -1280,46 +1281,46 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			if(($text=$style->getFirstPageText())!=='')
 			{
-				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$label=$this->createPagerButton($pager,$buttonType,false,$text,'','');
 				$controls->add($label);
 				$controls->add("\n");
 			}
 
-			$label=$this->createPagerButton($buttonType,false,$style->getPrevPageText(),'','');
+			$label=$this->createPagerButton($pager,$buttonType,false,$style->getPrevPageText(),'','');
 			$controls->add($label);
 		}
 		else
 		{
 			if(($text=$style->getFirstPageText())!=='')
 			{
-				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
 				$controls->add($button);
 				$controls->add("\n");
 			}
 
-			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,self::CMD_PAGE_PREV);
+			$button=$this->createPagerButton($pager,$buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,self::CMD_PAGE_PREV);
 			$controls->add($button);
 		}
 		$controls->add("\n");
 		if($currentPageIndex===$this->getPageCount()-1)
 		{
-			$label=$this->createPagerButton($buttonType,false,$style->getNextPageText(),'','');
+			$label=$this->createPagerButton($pager,$buttonType,false,$style->getNextPageText(),'','');
 			$controls->add($label);
 			if(($text=$style->getLastPageText())!=='')
 			{
 				$controls->add("\n");
-				$label=$this->createPagerButton($buttonType,false,$text,'','');
+				$label=$this->createPagerButton($pager,$buttonType,false,$text,'','');
 				$controls->add($label);
 			}
 		}
 		else
 		{
-			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,self::CMD_PAGE_NEXT);
+			$button=$this->createPagerButton($pager,$buttonType,true,$style->getNextPageText(),self::CMD_PAGE,self::CMD_PAGE_NEXT);
 			$controls->add($button);
 			if(($text=$style->getLastPageText())!=='')
 			{
 				$controls->add("\n");
-				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
 				$controls->add($button);
 			}
 		}
@@ -1356,12 +1357,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			if(($text=$style->getFirstPageText())!=='')
 			{
-				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
 				$controls->add($button);
 				$controls->add("\n");
 			}
 			$prevPageIndex=$startPageIndex-1;
-			$button=$this->createPagerButton($buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,"$prevPageIndex");
+			$button=$this->createPagerButton($pager,$buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,"$prevPageIndex");
 			$controls->add($button);
 			$controls->add("\n");
 		}
@@ -1370,12 +1371,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			if($i===$pageIndex)
 			{
-				$label=$this->createPagerButton($buttonType,false,"$i",'','');
+				$label=$this->createPagerButton($pager,$buttonType,false,"$i",'','');
 				$controls->add($label);
 			}
 			else
 			{
-				$button=$this->createPagerButton($buttonType,true,"$i",self::CMD_PAGE,"$i");
+				$button=$this->createPagerButton($pager,$buttonType,true,"$i",self::CMD_PAGE,"$i");
 				$controls->add($button);
 			}
 			if($i<$endPageIndex)
@@ -1386,12 +1387,12 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		{
 			$controls->add("\n");
 			$nextPageIndex=$endPageIndex+1;
-			$button=$this->createPagerButton($buttonType,true,$style->getNextPageText(),self::CMD_PAGE,"$nextPageIndex");
+			$button=$this->createPagerButton($pager,$buttonType,true,$style->getNextPageText(),self::CMD_PAGE,"$nextPageIndex");
 			$controls->add($button);
 			if(($text=$style->getLastPageText())!=='')
 			{
 				$controls->add("\n");
-				$button=$this->createPagerButton($buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
 				$controls->add($button);
 			}
 		}
@@ -1727,7 +1728,7 @@ class TDataGridPagerEventParameter extends TEventParameter
 	 * The TDataGridPager control responsible for the event.
 	 * @var TDataGridPager
 	 */
-	private $_pager=null;
+	protected $_pager=null;
 
 	/**
 	 * Constructor.

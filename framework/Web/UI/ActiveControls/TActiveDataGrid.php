@@ -106,6 +106,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * It overrides the datagrid's original method to create active controls instead, thus
 	 * the pager will do callbacks instead of the regular postbacks.
+	 * @param mixed the container pager instance of TActiveDatagridPager 
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
 	 * @param string caption of the button
@@ -113,7 +114,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter) {
+	protected function createPagerButton($pager,$buttonType,$enabled,$text,$commandName,$commandParameter) {
 		if($buttonType===TDataGridPagerButtonType::LinkButton) {
 			if($enabled)
 				$button=new TActiveLinkButton;
@@ -132,7 +133,19 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		$button->setCommandName($commandName);
 		$button->setCommandParameter($commandParameter);
 		$button->setCausesValidation(false);
+		$button->getAdapter()->getBaseActiveControl()->setClientSide(
+			$pager->getClientSide()
+		);
 		return $button;
+	}
+
+	protected function createPager()
+	{
+		$pager=new TActiveDataGridPager($this);
+		$this->buildPager($pager);
+		$this->onPagerCreated(new TActiveDataGridPagerEventParameter($pager));
+		$this->getControls()->add($pager);
+		return $pager;
 	}
 
 	/**
@@ -763,5 +776,54 @@ class TActiveLiteralColumn extends TLiteralColumn {
 					else
 						$cell->setText('&nbsp;');
 			}
+	}
+}
+
+/**
+ * TActiveDataGridPager class.
+ *
+ * TActiveDataGridPager represents a pager in an activedatagrid.
+ *
+ * @author Fabio Bas <ctrlaltca@gmail.com>
+ * @version $Id: TDataGrid.php 3057 2011-11-09 12:35:57Z ctrlaltca@gmail.com $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2.1
+ */
+class TActiveDataGridPager extends TDataGridPager
+{
+	protected $_callbackoptions;
+
+	/**
+	 * @return TCallbackClientSide client side request options.
+	 */
+	public function getClientSide()
+	{
+		if($this->_callbackoptions === null)
+			$this->_callbackoptions = new TCallbackOptions;
+		return $this->_callbackoptions->getClientSide();
+	}
+}
+
+/**
+ * TActiveDataGridPagerEventParameter class
+ *
+ * TActiveDataGridPagerEventParameter encapsulates the parameter data for
+ * {@link TActiveDataGrid::onPagerCreated OnPagerCreated} event of {@link TActiveDataGrid} controls.
+ * The {@link getPager Pager} property indicates the datagrid pager related with the event.
+ *
+ * @author Fabio Bas <ctrlaltca@gmail.com>
+ * @version $Id: TActiveDataGrid.php 3057 2011-11-09 12:35:57Z ctrlaltca@gmail.com $
+ * @package System.Web.UI.ActiveControls
+ * @since 3.2.1
+ */
+class TActiveDataGridPagerEventParameter extends TDataGridPagerEventParameter
+{
+	/**
+	 * Constructor.
+	 * @param TActiveDataGridPager datagrid pager related with the corresponding event
+	 */
+	public function __construct(TActiveDataGridPager $pager)
+	{
+		$this->_pager=$pager;
 	}
 }
