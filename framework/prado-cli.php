@@ -85,14 +85,17 @@ class PradoCommandLineInterpreter
 		return $instance;
 	}
 
+	public static function printGreeting()
+	{
+		echo "Command line tools for Prado ".Prado::getVersion().".\n";
+	}
+
 	/**
 	 * Dispatch the command line actions.
 	 * @param array command line arguments
 	 */
 	public function run($args)
 	{
-		echo "Command line tools for Prado ".Prado::getVersion().".\n";
-
 		if(count($args) > 1)
 			array_shift($args);
 		$valid = false;
@@ -117,6 +120,8 @@ class PradoCommandLineInterpreter
 	 */
 	public function printHelp()
 	{
+		PradoCommandLineInterpreter::printGreeting();
+
 		echo "usage: php prado-cli.php action <parameter> [optional]\n";
 		echo "example: php prado-cli.php -c mysite\n\n";
 		echo "actions:\n";
@@ -198,6 +203,7 @@ EOD;
 				$app->run();
 				$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
 				$initialized=true;
+				PradoCommandLineInterpreter::printGreeting();
 				echo '** Loaded PRADO appplication in directory "'.$dir."\".\n";
 			}
 
@@ -205,6 +211,7 @@ EOD;
 		}
 		else
 		{
+			PradoCommandLineInterpreter::printGreeting();
 			echo '+'.str_repeat('-',77)."+\n";
 			echo '** Unable to load PRADO application in directory "'.$directory."\".\n";
 			echo '+'.str_repeat('-',77)."+\n";
@@ -230,6 +237,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 	public function performAction($args)
 	{
+		PradoCommandLineInterpreter::printGreeting();
 		$this->createNewPradoProject($args[1]);
 		return true;
 	}
@@ -381,6 +389,7 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 
 	public function performAction($args)
 	{
+		PradoCommandLineInterpreter::printGreeting();
 		$this->createTestFixtures($args[1]);
 		return true;
 	}
@@ -870,5 +879,3 @@ if(class_exists('PHP_Shell_Commands', false))
 
 	include_once(dirname(__FILE__).'/3rdParty/PhpShell/php-shell-cmd.php');
 }
-
-?>
