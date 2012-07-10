@@ -232,7 +232,7 @@ class TSecurityManager extends TModule
 		$ivSize = mcrypt_enc_get_iv_size($module);
 		$iv = $this->substr($data, 0, $ivSize);
 		mcrypt_generic_init($module, $key, $iv);
-		$decrypted = mdecrypt_generic($module, $this->substr($data, $ivSize));
+		$decrypted = mdecrypt_generic($module, $this->substr($data, $ivSize, $this->strlen($data)));
 		mcrypt_generic_deinit($module);
 		mcrypt_module_close($module);
 		return $decrypted;
@@ -287,7 +287,7 @@ class TSecurityManager extends TModule
 			return false;
 
 		$hmac = $this->substr($data, 0, $len);
-		$data2 = $this->substr($data, $len);
+		$data2=$this->substr($data, $len, $this->strlen($data));
 		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
 	}
 
@@ -311,6 +311,7 @@ class TSecurityManager extends TModule
 			$pack = 'H32';
 			$func = 'md5';
 		}
+
 		$key = str_pad($func($key), 64, chr(0));
 		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
 	}
