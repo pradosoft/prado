@@ -5,6 +5,10 @@ BUG: Issue #413 - TActiveDatePicker does not fire TCallbackClientSide's events (
 BUG: Issue #414 - ActiveDatagrid's pager does not fire TCallbackClientSide's events (ctrlaltca)
 BUG: Issue #415 - prado-cli throws an error if the application is making use of THttpSession (ctrlaltca)
 
+EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); changed the default cipher from 3DES to AES256 (ctrlaltca)
+EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the use of all algorithms supported by php (ctrlaltca)
+EHN: Use mbstring when available in TSecurityManager to better handle multibyte text (ctrlaltca)
+
 Version 3.2.0 Jun 25, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)

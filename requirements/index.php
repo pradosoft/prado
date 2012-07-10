@@ -25,7 +25,6 @@
  * Its localized version is stored in template-<language code>.html.
  */
 
-// TO BE CONFIRMED: PHP 5.1.0 has problem with I18N and L10N
 /**
  * @var array List of requirements (required or not, check item, hint)
  */
@@ -119,6 +118,16 @@ $requirements = array(
 		extension_loaded("mcrypt"),
 		'Mcrypt extension check',
 		'Mcrypt extension optional'),
+	array(
+		false,
+		extension_loaded("mbstring"),
+		'Mbstring extension check',
+		'Mbstring extension optional'),
+	array(
+		false,
+		extension_loaded("hash"),
+		'Hash extension check',
+		'Hash extension optional'),
 	array(
 		false,
 		extension_loaded("xsl"),

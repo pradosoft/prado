@@ -9,6 +9,14 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.2.0
+---------------------
+- The TSecurityManagerValidationMode class and TSecurityManager's Validation property have been deprecated.
+  Instead, use the new TSecurityManager's HashAlgorithm property that permits the use of any hashing
+  algorithm supported by the local php installation.
+- TSecurityManager's Encryption property has been deprecated (it was unusable). Instead, use the new
+  CryptAlgorithm property that permites the use of any algorithm supported by the local php installation.
+
 Upgrading from v3.1.10
 ---------------------
 - Prado 3.2 requires PHP >= 5.3.3 

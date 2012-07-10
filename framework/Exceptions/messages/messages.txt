@@ -53,6 +53,7 @@ appconfig_tag_invalid					= Application configuration cannot contain element <{0
 securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey must not be empty.
 securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey must not be empty.
 securitymanager_mcryptextension_required = Mcrypt PHP extension is required in order to use TSecurityManager's encryption feature.
+securitymanager_mcryptextension_initfailed = TSecurityManager failed to initialize the mcrypt module.
 
 uri_format_invalid						= '{0}' is not a valid URI.
 

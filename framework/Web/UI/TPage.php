@@ -1339,5 +1339,3 @@ class TPageStateFormatter
 		return null;
 	}
 }
-
-?>

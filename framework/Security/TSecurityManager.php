@@ -47,8 +47,9 @@ class TSecurityManager extends TModule
 
 	private $_validationKey = null;
 	private $_encryptionKey = null;
-	private $_validation = TSecurityManagerValidationMode::SHA1;
-	private $_encryption = 'rijndael-256';
+	private $_hashAlgorithm = 'sha1';
+	private $_cryptAlgorithm = 'rijndael-256';
+	private $_mbstring;
 
 	/**
 	 * Initializes the module.
@@ -57,6 +58,7 @@ class TSecurityManager extends TModule
 	 */
 	public function init($config)
 	{
+		$this->_mbstring=extension_loaded('mbstring');
 		$this->getApplication()->setSecurityManager($this);
 	}
 
@@ -65,7 +67,7 @@ class TSecurityManager extends TModule
 	 */
 	protected function generateRandomKey()
 	{
-		return rand().rand().rand().rand();
+		return sprintf('%08x%08x%08x%08x',mt_rand(),mt_rand(),mt_rand(),mt_rand());
 	}
 
 	/**
@@ -123,35 +125,79 @@ class TSecurityManager extends TModule
 	}
 
 	/**
-	 * @return TSecurityManagerValidationMode hashing algorithm used to generate HMAC. Defaults to TSecurityManagerValidationMode::SHA1.
+	 * This method has been deprecated since version 3.2.1.
+	 * Please use {@link getHashAlgorithm()} instead.
+	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha1'.
 	 */
 	public function getValidation()
 	{
-		return $this->_validation;
+		return $this->_hashAlgorithm;
 	}
 
 	/**
+	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha1'.
+	 */
+	public function getHashAlgorithm()
+	{
+		return $this->_hashAlgorithm;
+	}
+
+	/**
+	 * This method has been deprecated since version 3.2.1.
+	 * Please use {@link setHashAlgorithm()} instead.
 	 * @param TSecurityManagerValidationMode hashing algorithm used to generate HMAC.
 	 */
 	public function setValidation($value)
 	{
-		$this->_validation = TPropertyValue::ensureEnum($value, 'TSecurityManagerValidationMode');
+		$this->_hashAlgorithm = TPropertyValue::ensureEnum($value, 'TSecurityManagerValidationMode');
 	}
 
 	/**
-	 * @return string the algorithm used to encrypt/decrypt data. Defaults to 'rijndael-256'.
+	 * @param string hashing algorithm used to generate HMAC.
+	 */
+	public function setHashAlgorithm($value)
+	{
+		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * This method has been deprecated since version 3.2.1.
+	 * Please use {@link getCryptAlgorithm()} instead.
+	 * @return string the algorithm used to encrypt/decrypt data.
 	 */
 	public function getEncryption()
 	{
-		return $this->_encryption;
+		if(is_string($this->_cryptAlgorithm))
+			return $this->_cryptAlgorithm;
+		// fake the pre-3.2.1 answer
+		return "3DES";
 	}
 
 	/**
-	 * @throws TNotSupportedException Do not call this method presently.
+	 * This method has been deprecated since version 3.2.1.
+	 * Please use {@link setCryptAlgorithm()} instead.
+	 * @param string cipther name
 	 */
 	public function setEncryption($value)
 	{
-		throw new TNotSupportedException('Currently only rijndael-256 encryption is supported');
+		$this->_cryptAlgorithm = $value;
+	}
+
+	/**
+	 * @return mixed the algorithm used to encrypt/decrypt data. Defaults to the string 'rijndael-256'.
+	 */
+	public function getCryptAlgorithm()
+	{
+		return $this->_cryptAlgorithm;
+	}
+
+	/**
+	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@link encrypt} and {@link decrypt}.
+	 * @param mixed either a string containing the cipther name or an array containing the full parameters to call mcrypt_module_open().
+	 */
+	public function setCryptAlgorithm($value)
+	{
+		$this->_cryptAlgorithm = $value;
 	}
 
 	/**
@@ -162,11 +208,8 @@ class TSecurityManager extends TModule
 	 */
 	public function encrypt($data)
 	{
-		if(!function_exists('mcrypt_encrypt'))
-			throw new TNotSupportedException('securitymanager_mcryptextension_required');
-
-		$module = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CBC, '');
-		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
+		$module=$this->openCryptModule();
+		$key = $this->substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
 		srand();
 		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
 		mcrypt_generic_init($module, $key, $iv);
@@ -184,18 +227,38 @@ class TSecurityManager extends TModule
 	 */
 	public function decrypt($data)
 	{
-		if(!function_exists('mcrypt_decrypt'))
-			throw new TNotSupportedException('securitymanager_mcryptextension_required');
-		
-		$module = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CBC, '');
-		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
+		$module=$this->openCryptModule();
+		$key = $this->substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
 		$ivSize = mcrypt_enc_get_iv_size($module);
-		$iv = substr($data, 0, $ivSize);
+		$iv = $this->substr($data, 0, $ivSize);
 		mcrypt_generic_init($module, $key, $iv);
-		$decrypted = mdecrypt_generic($module, substr($data, $ivSize));
+		$decrypted = mdecrypt_generic($module, $this->substr($data, $ivSize));
 		mcrypt_generic_deinit($module);
 		mcrypt_module_close($module);
 		return $decrypted;
+	}
+
+	/**
+	 * Opens the mcrypt module with the configuration specified in {@link cryptAlgorithm}.
+	 * @return resource the mycrypt module handle.
+	 * @since 3.2.1
+	 */
+	protected function openCryptModule()
+	{
+		if(extension_loaded('mcrypt'))
+		{
+			if(is_array($this->_cryptAlgorithm))
+				$module=@call_user_func_array('mcrypt_module_open',$this->_cryptAlgorithm);
+			else
+				$module=@mcrypt_module_open($this->_cryptAlgorithm,'', MCRYPT_MODE_CBC,'');
+
+			if($module===false)
+				throw new TNotSupportedException('securitymanager_mcryptextension_initfailed');
+
+			return $module;
+		}
+		else
+			throw new TNotSupportedException('securitymanager_mcryptextension_required');
 	}
 
 	/**
@@ -218,12 +281,13 @@ class TSecurityManager extends TModule
 	 */
 	public function validateData($data)
 	{
-		$len = 'SHA1' === $this->_validation ? 40 : 32;
-		if(strlen($data) < $len)
+		$len=$this->strlen($this->computeHMAC('test'));
+
+		if($this->strlen($data) < $len)
 			return false;
 
-		$hmac = substr($data, 0, $len);
-		$data2 = substr($data, $len);
+		$hmac = $this->substr($data, 0, $len);
+		$data2 = $this->substr($data, $len);
 		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
 	}
 
@@ -234,21 +298,53 @@ class TSecurityManager extends TModule
 	 */
 	protected function computeHMAC($data)
 	{
-		if('SHA1' === $this->_validation) {
+		$key = $this->getValidationKey();
+
+		if(function_exists('hash_hmac'))
+			return hash_hmac($this->_hashAlgorithm, $data, $key);
+
+		if(!strcasecmp($this->_hashAlgorithm,'sha1'))
+		{
 			$pack = 'H40';
 			$func = 'sha1';
 		} else {
 			$pack = 'H32';
 			$func = 'md5';
 		}
-		$key = $this->getValidationKey();
 		$key = str_pad($func($key), 64, chr(0));
 		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
+	}
+
+	/**
+	 * Returns the length of the given string.
+	 * If available uses the multibyte string function mb_strlen.
+	 * @param string $string the string being measured for length
+	 * @return int the length of the string
+	 */
+	private function strlen($string)
+	{
+		return $this->_mbstring ? mb_strlen($string,'8bit') : strlen($string);
+	}
+
+	/**
+	 * Returns the portion of string specified by the start and length parameters.
+	 * If available uses the multibyte string function mb_substr
+	 * @param string $string the input string. Must be one character or longer.
+	 * @param int $start the starting position
+	 * @param int $length the desired portion length
+	 * @return string the extracted part of string, or FALSE on failure or an empty string.
+	 */
+	private function substr($string,$start,$length)
+	{
+		return $this->_mbstring ? mb_substr($string,$start,$length,'8bit') : substr($string,$start,$length);
 	}
 }
 
 /**
  * TSecurityManagerValidationMode class.
+ *
+ * This class has been deprecated since version 3.2.1.
+ *
  * TSecurityManagerValidationMode defines the enumerable type for the possible validation modes
  * that can be used by {@link TSecurityManager}.
  *
