@@ -48,7 +48,7 @@ class TSecurityManager extends TModule
 	private $_validationKey = null;
 	private $_encryptionKey = null;
 	private $_validation = TSecurityManagerValidationMode::SHA1;
-	private $_encryption = '3DES';
+	private $_encryption = 'rijndael-256';
 
 	/**
 	 * Initializes the module.
@@ -139,7 +139,7 @@ class TSecurityManager extends TModule
 	}
 
 	/**
-	 * @return string the algorithm used to encrypt/decrypt data. Defaults to '3DES'.
+	 * @return string the algorithm used to encrypt/decrypt data. Defaults to 'rijndael-256'.
 	 */
 	public function getEncryption()
 	{
@@ -151,7 +151,7 @@ class TSecurityManager extends TModule
 	 */
 	public function setEncryption($value)
 	{
-		throw new TNotSupportedException('Currently only 3DES encryption is supported');
+		throw new TNotSupportedException('Currently only rijndael-256 encryption is supported');
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TSecurityManager extends TModule
 		if(!function_exists('mcrypt_encrypt'))
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
 
-		$module = mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+		$module = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CBC, '');
 		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
 		srand();
 		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
@@ -187,7 +187,7 @@ class TSecurityManager extends TModule
 		if(!function_exists('mcrypt_decrypt'))
 			throw new TNotSupportedException('securitymanager_mcryptextension_required');
 		
-		$module = mcrypt_module_open(MCRYPT_3DES, '', MCRYPT_MODE_CBC, '');
+		$module = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CBC, '');
 		$key = substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
 		$ivSize = mcrypt_enc_get_iv_size($module);
 		$iv = substr($data, 0, $ivSize);
