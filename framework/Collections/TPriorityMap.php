@@ -4,7 +4,7 @@
  *
  * @author Brad Anderson <javalizard@mac.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2011 PradoSoft
+ * @copyright Copyright &copy; 2005-2012 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TPriorityMap.php 2817 2010-04-18 04:25:03Z javalizard $
  * @package System.Collections

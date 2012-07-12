@@ -5,38 +5,7 @@
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
- * @version $Id$
- * @package System.Web.UI.ActiveControls
- */
-
-/**
- * Load active control adapter.
- */
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
-/**
- * Load active panel.
- */
-Prado::using('System.Web.UI.ActiveControls.TActivePanel');
-
-
-/**
- * TDropContainer is a panel where TDraggable controls can be dropped.
- * When a TDraggable component is dropped into a TDropContainer, the {@link OnDrop OnDrop} event is raised.
- * The {@link TDropContainerEventParameter} param will contain the dropped control. 
- * 
- * Properties :
- * 
- * <b>{@link setAcceptCssClass AcceptCssClass}</b> : a coma delimited classname of elements that the drop container can accept.
- * <b>{@link setHoverCssClass HoverCssClass}</b>: CSS classname of the container when a draggable element hovers over the container.
- * 
- * Events:
- * 
- * <b>{@link OnDrop OnDrop}</b> : raised when a TDraggable control is dropped. The dropped control id is encapsulated in the event parameter,
- * as well as mouse coordinates and key modifiers status
- *
- * 
- * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @version $Id: TDropContainer.php 3159 2012-2012 PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id$
  * @package System.Web.UI.ActiveControls

@@ -6,7 +6,7 @@
  * @author Robin J. Rogge <rojaro@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2011 PradoSoft
+ * @copyright Copyright &copy; 2005-2012 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TListControl.php 2624 2009-03-19 21:20:47Z godzilla80@gmx.net $
  * @package System.Collections

@@ -4,7 +4,7 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2011 PradoSoft
+ * @copyright Copyright &copy; 2005-2012 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TPriorityList.php 2541 2008-10-21 15:05:13Z javalizard $
  * @package System.Collections

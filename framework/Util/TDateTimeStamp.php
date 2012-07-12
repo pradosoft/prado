@@ -9,7 +9,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2011 PradoSoft
+ * @copyright Copyright &copy; 2005-2012 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Util
