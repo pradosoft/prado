@@ -119,7 +119,7 @@ class TBaseActiveControl extends TComponent
 	/**
 	 * Returns true if callback response is allowed to update the browser contents.
 	 * Is is true if the control is initilized, and is a callback request and
-	 * the {@link setEnableUpdate EnabledUpdate} property is true and
+	 * the {@link setEnableUpdate EnableUpdate} property is true and
 	 * the page is not loading post data.
 	 * @return boolean true if the callback response is allowed update
 	 * client-side contents.

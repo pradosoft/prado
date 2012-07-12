@@ -23,7 +23,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
  * Thus, when a checkbox is clicked a {@link onCallback OnCallback} event is
  * raised after {@link OnSelectedIndexChanged} event.
  *
- * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnabledUpdate}
+ * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
  * set to true (default is true), changes to the selection will be updated
  * on the client side.
  *
