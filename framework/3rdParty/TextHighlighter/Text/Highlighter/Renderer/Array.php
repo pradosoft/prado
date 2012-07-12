@@ -196,4 +196,3 @@ class Text_Highlighter_Renderer_Array extends Text_Highlighter_Renderer
  * End:
  */
 
-?>

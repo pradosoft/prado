@@ -120,4 +120,3 @@ class TReCaptchaValidator extends TBaseValidator
 
 }
 
-?>

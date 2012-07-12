@@ -110,4 +110,3 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 
 }
 
-?>

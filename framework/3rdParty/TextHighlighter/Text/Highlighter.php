@@ -394,4 +394,3 @@ class Text_Highlighter
  * End:
  */
 
-?>

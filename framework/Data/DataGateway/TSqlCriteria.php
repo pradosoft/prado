@@ -281,4 +281,3 @@ class TSqlCriteria extends TComponent
 		return $str;
 	}
 }
-?>

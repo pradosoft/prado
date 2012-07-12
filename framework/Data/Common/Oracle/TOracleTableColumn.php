@@ -48,4 +48,3 @@ class TOracleTableColumn extends TDbTableColumn
 	}
 }
 
-?>

@@ -584,4 +584,3 @@ interface IItemDataRenderer extends IDataRenderer
 	public function setItemType($value);
 }
 
-?>

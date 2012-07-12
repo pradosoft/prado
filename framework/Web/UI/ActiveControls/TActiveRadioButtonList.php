@@ -108,4 +108,3 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	}
 }
 
-?>

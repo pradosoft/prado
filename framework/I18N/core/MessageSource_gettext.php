@@ -454,4 +454,3 @@ class MessageSource_gettext extends MessageSource
 	}
 }
 
-?>

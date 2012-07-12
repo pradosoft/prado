@@ -692,4 +692,3 @@ class TSax3 {
         $this->state_parser->parse($data);
     }
 }
-?>

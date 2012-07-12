@@ -235,4 +235,3 @@ class Text_Highlighter_Renderer_BB extends Text_Highlighter_Renderer_Array
  * End:
  */
 
-?>

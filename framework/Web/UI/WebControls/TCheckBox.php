@@ -529,4 +529,3 @@ class TTextAlign extends TEnumerable
 	const Right='Right';
 }
 
-?>

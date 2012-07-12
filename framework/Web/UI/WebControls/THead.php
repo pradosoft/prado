@@ -374,4 +374,3 @@ class TMetaTagCollection extends TList
 	}
 }
 
-?>

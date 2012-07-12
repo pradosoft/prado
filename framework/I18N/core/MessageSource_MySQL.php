@@ -415,4 +415,3 @@ class MessageSource_MySQL extends MessageSource
 
 }
 
-?>

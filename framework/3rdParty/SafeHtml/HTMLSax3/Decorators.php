@@ -360,4 +360,3 @@ class TSax3_Escape_Stripper {
         $this->orig_obj->{$this->orig_method}($this, $data);
     }
 }
-?>

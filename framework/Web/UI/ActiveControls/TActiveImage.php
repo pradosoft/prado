@@ -90,4 +90,3 @@ class TActiveImage extends TImage implements IActiveControl
 	}
 }
 
-?>

@@ -156,4 +156,3 @@ class TOracleTableInfo extends TComponent
 	}
 }
 
-?>

@@ -682,4 +682,3 @@ class TDbNullConversionMode extends TEnumerable
 	const EmptyStringToNull='EmptyStringToNull';
 }
 
-?>

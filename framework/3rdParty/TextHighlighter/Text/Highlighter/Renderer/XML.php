@@ -100,4 +100,3 @@ class Text_Highlighter_Renderer_XML extends Text_Highlighter_Renderer_Array
  * End:
  */
 
-?>

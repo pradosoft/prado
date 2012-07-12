@@ -83,4 +83,3 @@ class Text_Highlighter_Renderer_JSON extends Text_Highlighter_Renderer_Array
  * End:
  */
 
-?>

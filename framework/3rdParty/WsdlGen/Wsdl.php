@@ -278,4 +278,3 @@ class Wsdl
 		$this->types[$type] = $elements;
 	}
 }
-?>

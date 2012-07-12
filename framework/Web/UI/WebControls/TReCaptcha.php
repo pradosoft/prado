@@ -230,4 +230,3 @@ class TReCaptcha extends TWebControl implements IValidatable
 
 }
 
-?>

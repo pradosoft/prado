@@ -184,4 +184,3 @@ class Text_Highlighter_Renderer_HtmlTags extends Text_Highlighter_Renderer_Array
  * End:
  */
 
-?>

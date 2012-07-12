@@ -100,4 +100,3 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	}
 }
 
-?>

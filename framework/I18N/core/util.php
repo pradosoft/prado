@@ -185,4 +185,3 @@
 		return $string;
 	} 
     
-?>

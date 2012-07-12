@@ -88,4 +88,3 @@ class TStyleSheet extends TControl
 	}
 }
 
-?>

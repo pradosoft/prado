@@ -210,4 +210,3 @@ abstract class TJsonResponse extends TApplicationComponent
 	abstract public function getJsonContent();
 }
 
-?>

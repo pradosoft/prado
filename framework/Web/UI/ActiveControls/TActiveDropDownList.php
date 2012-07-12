@@ -143,4 +143,3 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	}
 }
 
-?>

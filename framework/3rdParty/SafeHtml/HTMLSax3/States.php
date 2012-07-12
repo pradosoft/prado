@@ -285,4 +285,3 @@ class TSax3_PiState {
         return TSax3_StateParser::TSAX3_STATE_START;
     }
 }
-?>

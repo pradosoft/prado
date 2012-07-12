@@ -296,4 +296,3 @@ class TGlobalization extends TModule
 
 }
 
-?>

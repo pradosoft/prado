@@ -174,4 +174,3 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	}
 }
 
-?>

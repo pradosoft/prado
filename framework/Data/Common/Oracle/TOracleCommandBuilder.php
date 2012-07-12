@@ -153,4 +153,3 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	}
 
 }
-?>

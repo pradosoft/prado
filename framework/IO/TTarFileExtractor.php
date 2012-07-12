@@ -571,4 +571,3 @@ class TTarFileExtractor
       return $p_path;
     }
 }
-?>

@@ -626,4 +626,3 @@ class TCache_Lite
 
 }
 
-?>

@@ -454,4 +454,3 @@ class TAuthManager extends TModule
 	}
 }
 
-?>

@@ -179,4 +179,3 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	}
 }
 
-?>

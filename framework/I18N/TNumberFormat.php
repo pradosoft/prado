@@ -248,4 +248,3 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 	}
 }
 
-?>

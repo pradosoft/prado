@@ -149,4 +149,3 @@ class Text_Highlighter_Renderer
  * End:
  */
 
-?>

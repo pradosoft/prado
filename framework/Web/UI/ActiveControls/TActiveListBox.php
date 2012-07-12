@@ -158,4 +158,3 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	}
 }
 
-?>

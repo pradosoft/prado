@@ -354,4 +354,3 @@ class TAssetManager extends TModule
 
 }
 
-?>

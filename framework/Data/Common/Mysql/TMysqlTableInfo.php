@@ -56,4 +56,3 @@ class TMysqlTableInfo extends TDbTableInfo
 	}
 }
 
-?>

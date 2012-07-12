@@ -351,4 +351,3 @@ class MessageSource_SQLite extends MessageSource
 	}	
 }
 
-?>

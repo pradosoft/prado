@@ -2392,4 +2392,3 @@ class TCompositeLiteral extends TComponent implements IRenderable, IBindable
 	}
 }
 
-?>

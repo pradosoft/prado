@@ -514,4 +514,3 @@ class TTheme extends TApplicationComponent implements ITheme
 	}
 }
 
-?>

@@ -107,4 +107,3 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 }
 
-?>

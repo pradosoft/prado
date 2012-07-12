@@ -128,4 +128,3 @@ class TXCache extends TCache
 	}
 }
 
-?>

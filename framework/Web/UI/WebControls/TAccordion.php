@@ -741,4 +741,3 @@ class TAccordionViewCollection extends TControlCollection
 	}
 }
 
-?>

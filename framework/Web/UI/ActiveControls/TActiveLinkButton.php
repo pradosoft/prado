@@ -132,4 +132,3 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	}
 }
 
-?>

@@ -373,4 +373,3 @@ class TSimpleDateFormatter
 	}
 }
 
-?>

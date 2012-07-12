@@ -320,4 +320,3 @@ class MessageSource_Database extends MessageSource
 	}
 
 }
-?>

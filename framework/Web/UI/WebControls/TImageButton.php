@@ -439,4 +439,3 @@ class TImageClickEventParameter extends TEventParameter
 	}
 }
 
-?>
