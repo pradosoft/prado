@@ -583,7 +583,18 @@ class TOutputCacheCalculateKeyEventParameter extends TEventParameter
 	}
 }
 
-
+/**
+ * TOutputCacheTextWriterMulti class
+ *
+ * TOutputCacheTextWriterMulti is an internal class used by
+ * TOutputCache to write simultaneously to multiple writers.
+ *
+ * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @version $Id$
+ * @package System.Web.UI.WebControls
+ * @since 3.2
+ */
 class TOutputCacheTextWriterMulti extends TTextWriter
 {
 	protected $_writers;

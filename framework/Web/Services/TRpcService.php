@@ -128,7 +128,7 @@ class TRpcService extends TService
 			throw new THttpException(405, 'Invalid request method "'.$_method.'"!'); // TODO Exception muss "Allow POST" Header setzen
 
 		if(($_mimeType = $_request->getContentType()) === null)
-			throw new THttpException(406, 'Content-Type is missing!'); // TODO Exception muss gültige Content-Type werte zurück geben
+			throw new THttpException(406, 'Content-Type is missing!'); // TODO Exception muss gÃ¼ltige Content-Type werte zurÃ¼ck geben
 
 		if(!in_array($_mimeType, array_keys($this->protocolHandlers)))
 			throw new THttpException(406, 'Unsupported Content-Type!'); // TODO see previous
