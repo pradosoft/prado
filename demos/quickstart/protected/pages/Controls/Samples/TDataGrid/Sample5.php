@@ -65,4 +65,3 @@ class Sample5 extends Sample1
 	}
 }
 
-?>

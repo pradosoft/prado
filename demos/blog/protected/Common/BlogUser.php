@@ -57,4 +57,3 @@ class BlogUser extends TUser
 	}
 }
 
-?>

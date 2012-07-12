@@ -46,4 +46,3 @@ class BlogPage extends TPage
 	}
 }
 
-?>

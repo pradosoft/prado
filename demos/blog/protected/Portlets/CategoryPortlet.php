@@ -35,4 +35,3 @@ class CategoryPortlet extends Portlet
 	}
 }
 
-?>

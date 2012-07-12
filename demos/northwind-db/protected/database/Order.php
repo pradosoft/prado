@@ -39,4 +39,3 @@ class Order extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

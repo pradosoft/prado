@@ -118,4 +118,3 @@ class Home extends TPage
 		return $this->getViewState('Misses',0);
 	}
 }
-?>

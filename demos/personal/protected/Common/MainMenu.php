@@ -9,4 +9,3 @@ class MainMenu extends TTemplateControl
 	}
 }
 
-?>

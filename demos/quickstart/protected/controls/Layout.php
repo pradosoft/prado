@@ -45,4 +45,3 @@ class Layout extends TTemplateControl
 	}
 }
 
-?>

@@ -82,4 +82,3 @@ class ChatUserManager extends TModule implements IUserManager
 }
 
 
-?>

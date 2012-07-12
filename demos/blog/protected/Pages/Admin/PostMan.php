@@ -70,4 +70,3 @@ class PostMan extends BlogPage
 	}
 }
 
-?>

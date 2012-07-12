@@ -80,4 +80,3 @@ class EditUser extends TPage
 	}
 }
 
-?>

@@ -33,4 +33,3 @@ class AdminUser extends TPage
 	}
 }
 
-?>

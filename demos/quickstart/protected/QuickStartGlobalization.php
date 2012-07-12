@@ -28,4 +28,3 @@ class QuickStartGlobalization extends TGlobalizationAutoDetect
 	}
 }
 
-?>

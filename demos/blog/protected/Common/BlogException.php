@@ -28,4 +28,3 @@ class BlogException extends THttpException
 	}
 }
 
-?>

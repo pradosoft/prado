@@ -23,4 +23,3 @@ class Home extends TPage
 		$this->link4->ImageUrl = $img;
 	}
 }
-?>

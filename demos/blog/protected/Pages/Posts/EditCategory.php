@@ -58,4 +58,3 @@ class EditCategory extends BlogPage
 	}
 }
 
-?>

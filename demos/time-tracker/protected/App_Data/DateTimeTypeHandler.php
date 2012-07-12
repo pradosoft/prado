@@ -32,4 +32,3 @@ class DateTimeTypeHandler extends TSqlMapTypeHandler
 
 }
 
-?>

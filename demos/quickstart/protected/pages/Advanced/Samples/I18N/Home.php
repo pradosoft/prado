@@ -42,4 +42,3 @@ class Home extends TPage
 	}
 }
 
-?>

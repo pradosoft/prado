@@ -85,4 +85,3 @@ $__shell_exts->registerExtensions(array(
    // "loadscript"     => new PHP_Shell_Extensions_LoadScript()
 ));
 
-?>

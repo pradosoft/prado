@@ -38,4 +38,3 @@ class ChatUserRecord extends TActiveRecord
 	}
 }
 
-?>

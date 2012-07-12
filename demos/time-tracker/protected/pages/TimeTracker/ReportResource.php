@@ -68,4 +68,3 @@ class ReportResource extends TPage
 	}
 }
 
-?>

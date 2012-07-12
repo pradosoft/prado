@@ -22,4 +22,3 @@ class Region extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

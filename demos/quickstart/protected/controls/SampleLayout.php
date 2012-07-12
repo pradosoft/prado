@@ -10,4 +10,3 @@ class SampleLayout extends TTemplateControl
 	}
 }
 
-?>

@@ -268,4 +268,3 @@ class UserDaoTestCase extends BaseTestCase
 	}
 }
 
-?>

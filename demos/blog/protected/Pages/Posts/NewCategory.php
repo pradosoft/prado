@@ -38,4 +38,3 @@ class NewCategory extends BlogPage
 	}
 }
 
-?>

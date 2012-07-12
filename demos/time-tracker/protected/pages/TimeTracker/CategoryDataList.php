@@ -91,4 +91,3 @@ class CategoryDataList extends TTemplateControl
 	}	
 }
 
-?>

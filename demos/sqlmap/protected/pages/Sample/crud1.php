@@ -18,4 +18,3 @@ class crud1 extends TPage
 	}
 }
 
-?>

@@ -31,4 +31,3 @@ class Logout extends TPage
 	}
 }
 
-?>

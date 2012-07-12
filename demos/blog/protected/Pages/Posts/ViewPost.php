@@ -87,4 +87,3 @@ class ViewPost extends BlogPage
 	}
 }
 
-?>

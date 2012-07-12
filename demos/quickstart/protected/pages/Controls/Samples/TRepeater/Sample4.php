@@ -34,4 +34,3 @@ class Sample4 extends TPage
 	}
 }
 
-?>

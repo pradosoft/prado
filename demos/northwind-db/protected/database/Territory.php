@@ -57,4 +57,3 @@ class Territory extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

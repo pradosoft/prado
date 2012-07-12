@@ -75,4 +75,3 @@ class EditPost extends BlogPage
 	}
 }
 
-?>

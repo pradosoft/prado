@@ -37,4 +37,3 @@ class BlogErrorHandler extends TErrorHandler
 	}
 }
 
-?>

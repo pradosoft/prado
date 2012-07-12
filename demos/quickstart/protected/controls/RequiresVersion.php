@@ -13,4 +13,3 @@ class RequiresVersion extends TTemplateControl
 	}
 }
 
-?>

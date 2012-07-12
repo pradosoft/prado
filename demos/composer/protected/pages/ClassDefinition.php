@@ -368,4 +368,3 @@ class PropertyDefinition extends TComponent
 	}
 }
 
-?>

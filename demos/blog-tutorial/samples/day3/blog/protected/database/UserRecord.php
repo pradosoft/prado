@@ -25,4 +25,3 @@ class UserRecord extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

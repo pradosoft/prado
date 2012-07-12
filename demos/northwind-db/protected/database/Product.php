@@ -33,4 +33,3 @@ class Product extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

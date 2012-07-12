@@ -25,4 +25,3 @@ class NorthwindCrud extends TPage
 	}
 }
 
-?>

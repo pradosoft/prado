@@ -74,4 +74,3 @@ class ConfigMan extends BlogPage
 	}
 }
 
-?>

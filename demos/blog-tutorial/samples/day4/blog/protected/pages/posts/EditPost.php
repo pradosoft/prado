@@ -69,4 +69,3 @@ class EditPost extends TPage
 	}
 }
 
-?>

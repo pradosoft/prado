@@ -10,4 +10,3 @@ class TipBox extends TControl
 	}
 }
 
-?>

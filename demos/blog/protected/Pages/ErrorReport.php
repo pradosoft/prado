@@ -26,4 +26,3 @@ class ErrorReport extends BlogPage
 	}
 }
 
-?>

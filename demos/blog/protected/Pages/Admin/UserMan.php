@@ -72,4 +72,3 @@ class UserMan extends BlogPage
 	}
 }
 
-?>

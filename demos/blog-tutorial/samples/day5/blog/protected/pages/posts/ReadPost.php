@@ -56,4 +56,3 @@ class ReadPost extends TPage
 	}
 }
 
-?>

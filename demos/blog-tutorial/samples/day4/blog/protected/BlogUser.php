@@ -56,4 +56,3 @@ class BlogUser extends TDbUser
 	}
 }
 
-?>

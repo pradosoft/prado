@@ -59,4 +59,3 @@ class ArchivePortlet extends Portlet
 	}
 }
 
-?>

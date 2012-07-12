@@ -37,4 +37,3 @@ class CommentPortlet extends Portlet
 	}
 }
 
-?>

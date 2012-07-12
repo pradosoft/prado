@@ -20,4 +20,3 @@ class RunBar extends TTemplateControl
 	}
 }
 
-?>

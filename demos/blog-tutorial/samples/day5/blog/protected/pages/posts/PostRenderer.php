@@ -4,4 +4,3 @@ class PostRenderer extends TRepeaterItemRenderer
 {
 }
 
-?>

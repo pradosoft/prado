@@ -4,4 +4,3 @@ class BlogException extends THttpException
 {
 }
 
-?>

@@ -17,4 +17,3 @@ require_once($frameworkPath);
 $application=new TApplication;
 $application->run();
 
-?>

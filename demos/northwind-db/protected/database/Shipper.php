@@ -22,4 +22,3 @@ class Shipper extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

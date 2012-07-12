@@ -82,4 +82,3 @@ class TrackerAuthManager extends TAuthManager
 	}
 }
 
-?>

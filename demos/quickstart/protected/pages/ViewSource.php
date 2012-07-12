@@ -109,4 +109,3 @@ class ViewSource extends TPage
 	}
 }
 
-?>

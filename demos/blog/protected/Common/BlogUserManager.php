@@ -92,4 +92,3 @@ class BlogUserManager extends TModule implements IUserManager
 	}
 }
 
-?>

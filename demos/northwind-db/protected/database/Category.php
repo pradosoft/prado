@@ -23,4 +23,3 @@ class Category extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

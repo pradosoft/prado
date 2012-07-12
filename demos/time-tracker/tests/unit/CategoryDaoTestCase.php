@@ -198,4 +198,3 @@ class CategoryDaoTestCase extends BaseTestCase
 	}
 }
 
-?>

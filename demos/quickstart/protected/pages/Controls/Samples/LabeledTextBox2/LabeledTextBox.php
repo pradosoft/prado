@@ -30,4 +30,3 @@ class LabeledTextBox extends TCompositeControl
 	}
 }
 
-?>

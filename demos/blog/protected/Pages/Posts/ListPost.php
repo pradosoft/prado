@@ -139,4 +139,3 @@ class ListPost extends BlogPage
 	}
 }
 
-?>

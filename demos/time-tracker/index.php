@@ -32,4 +32,3 @@ function h($text)
 $application=new TApplication;
 $application->run();
 
-?>

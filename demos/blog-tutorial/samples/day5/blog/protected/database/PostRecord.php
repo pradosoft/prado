@@ -25,4 +25,3 @@ class PostRecord extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

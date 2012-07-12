@@ -10,4 +10,3 @@ class NoteBox extends TControl
 	}
 }
 
-?>

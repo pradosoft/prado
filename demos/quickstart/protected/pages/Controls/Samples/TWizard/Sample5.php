@@ -9,4 +9,3 @@ class Sample5 extends TPage
 	}
 }
 
-?>

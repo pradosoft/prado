@@ -111,4 +111,3 @@ class FlexApp extends TTemplateControl
 	}
 }
 
-?>

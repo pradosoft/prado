@@ -66,4 +66,3 @@ class EditUser extends BlogPage
 	}
 }
 
-?>

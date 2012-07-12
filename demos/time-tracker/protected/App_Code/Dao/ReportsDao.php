@@ -84,4 +84,3 @@ class ReportsDao extends BaseDao
 	}
 }
 
-?>

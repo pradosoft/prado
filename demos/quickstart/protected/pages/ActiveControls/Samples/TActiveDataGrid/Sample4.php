@@ -18,4 +18,3 @@ class Sample4 extends Sample2
 	}
 }
 
-?>

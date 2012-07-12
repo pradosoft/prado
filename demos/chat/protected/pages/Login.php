@@ -37,4 +37,3 @@ class Login extends TPage
 	}
 }
 
-?>

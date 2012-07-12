@@ -53,4 +53,3 @@ class Sample6 extends Sample1
 	}
 }
 
-?>

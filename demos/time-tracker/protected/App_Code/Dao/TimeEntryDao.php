@@ -35,4 +35,3 @@ class TimeEntryDao extends BaseDao
 	}
 }
 
-?>

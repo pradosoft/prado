@@ -4,4 +4,3 @@ class MainLayout extends TTemplateControl
 {
 }
 
-?>

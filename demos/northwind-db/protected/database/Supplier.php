@@ -31,4 +31,3 @@ class Supplier extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

@@ -16,4 +16,3 @@ class Register extends TPage
 	}
 }
 
-?>

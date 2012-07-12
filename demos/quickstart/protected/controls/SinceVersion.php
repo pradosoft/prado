@@ -13,4 +13,3 @@ class SinceVersion extends TTemplateControl
 	}
 }
 
-?>

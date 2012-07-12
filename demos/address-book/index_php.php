@@ -24,4 +24,3 @@ require_once($frameworkPath);
 $application=new TApplication('protected',false,TApplication::CONFIG_TYPE_PHP);
 $application->run();
 
-?>

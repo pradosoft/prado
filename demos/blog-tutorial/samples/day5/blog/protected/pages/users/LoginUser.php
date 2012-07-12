@@ -34,4 +34,3 @@ class LoginUser extends TPage
 	}
 }
 
-?>

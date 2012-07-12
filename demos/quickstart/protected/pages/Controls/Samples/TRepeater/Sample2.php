@@ -76,4 +76,3 @@ class Sample2 extends TPage
 	}
 }
 
-?>

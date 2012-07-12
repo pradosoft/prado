@@ -188,4 +188,3 @@ class ProjectDetails extends TPage
 	}
 }
 
-?>

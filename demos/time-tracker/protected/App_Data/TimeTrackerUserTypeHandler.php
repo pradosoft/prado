@@ -51,4 +51,3 @@ class TimeTrackerUserTypeHandler extends TSqlMapTypeHandler
 	}
 }
 
-?>

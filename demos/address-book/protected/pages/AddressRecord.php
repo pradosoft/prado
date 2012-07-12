@@ -32,4 +32,3 @@ class AddressRecord extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

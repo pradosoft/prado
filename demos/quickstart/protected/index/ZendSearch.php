@@ -52,4 +52,3 @@ class ZendSearch extends TModule
 	}
 } 
 
-?>

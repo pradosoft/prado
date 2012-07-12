@@ -109,4 +109,3 @@ class UserCreate extends TPage
 	}
 }
 
-?>

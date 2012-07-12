@@ -4,4 +4,3 @@ class Home extends TPage
 {
 }
 
-?>

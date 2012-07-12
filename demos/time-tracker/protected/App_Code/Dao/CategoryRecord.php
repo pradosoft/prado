@@ -10,4 +10,3 @@ class CategoryRecord
 	public $ProjectID=0; 	
 }
 
-?>

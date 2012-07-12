@@ -31,4 +31,3 @@ class ProjectList extends TPage
 	}
 }
 
-?>

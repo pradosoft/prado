@@ -61,4 +61,3 @@ class ChatBufferRecord extends TActiveRecord
 	}
 }
 
-?>

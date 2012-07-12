@@ -53,4 +53,3 @@ class Search extends TPage
 	}
 }
 
-?>

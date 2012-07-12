@@ -27,4 +27,3 @@ class MainLayout extends TTemplateControl
 	}
 }
 
-?>

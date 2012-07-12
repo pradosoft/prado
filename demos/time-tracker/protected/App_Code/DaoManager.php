@@ -76,4 +76,3 @@ class DaoManager extends TSqlMapConfig
 	}
 }
 
-?>

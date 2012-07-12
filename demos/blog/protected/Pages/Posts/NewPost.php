@@ -54,4 +54,3 @@ class NewPost extends BlogPage
 	}
 }
 
-?>

@@ -24,4 +24,3 @@ class OrderDetail extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

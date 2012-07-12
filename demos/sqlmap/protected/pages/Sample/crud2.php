@@ -75,4 +75,3 @@ class crud2 extends TPage
 	}
 }
 
-?>

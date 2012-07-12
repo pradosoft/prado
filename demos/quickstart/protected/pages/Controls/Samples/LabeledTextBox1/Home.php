@@ -10,4 +10,3 @@ class Home extends TPage
 	}
 }
 
-?>

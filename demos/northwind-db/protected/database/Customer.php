@@ -30,4 +30,3 @@ class Customer extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

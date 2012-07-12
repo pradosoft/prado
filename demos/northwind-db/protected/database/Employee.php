@@ -45,4 +45,3 @@ class Employee extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-?>

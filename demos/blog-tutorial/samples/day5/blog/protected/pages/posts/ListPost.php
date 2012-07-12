@@ -61,4 +61,3 @@ class ListPost extends TPage
 	}
 }
 
-?>

@@ -21,4 +21,3 @@ class Portlet extends TTemplateControl
 {
 }
 
-?>

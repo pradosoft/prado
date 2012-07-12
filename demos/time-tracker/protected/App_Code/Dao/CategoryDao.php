@@ -50,4 +50,3 @@ class CategoryDao extends BaseDao
 	}
 }
 
-?>

@@ -25,4 +25,3 @@ class RegionDisplay extends TRepeaterItemRenderer
 	}
 }
 
-?>

@@ -87,4 +87,3 @@ class UserManager extends TModule implements IUserManager
 	}
 }
 
-?>

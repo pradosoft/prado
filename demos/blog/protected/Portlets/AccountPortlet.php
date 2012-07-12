@@ -28,4 +28,3 @@ class AccountPortlet extends Portlet
 	}
 }
 
-?>

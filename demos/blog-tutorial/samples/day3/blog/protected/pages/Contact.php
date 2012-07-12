@@ -27,4 +27,3 @@ class Contact extends TPage
 	}
 }
 
-?>

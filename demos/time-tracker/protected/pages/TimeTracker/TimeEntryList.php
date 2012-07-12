@@ -86,4 +86,3 @@ class TimeEntryList extends TTemplateControl
 	}
 }
 
-?>

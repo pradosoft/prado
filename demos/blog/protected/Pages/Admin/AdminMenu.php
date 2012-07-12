@@ -21,4 +21,3 @@ class AdminMenu extends TTemplateControl
 {
 }
 
-?>

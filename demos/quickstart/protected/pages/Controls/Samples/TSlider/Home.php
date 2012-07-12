@@ -20,4 +20,3 @@ class Home extends TPage
 		$this->slider3Result->setText('onSliderChanged, Value : '.$sender->getValue());
 	}
 }
-?>
