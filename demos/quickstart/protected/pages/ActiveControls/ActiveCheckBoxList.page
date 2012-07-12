@@ -14,7 +14,7 @@ raised after <tt>OnSelectedIndexChanged</tt> event.
 </p>
 
 <p class="block-content">
-With <tt>ActiveControl.EnabledUpdate</tt>
+With <tt>ActiveControl.EnableUpdate</tt>
 set to true (default is true), changes to the selection will be updated
 on the client side.
 </p>

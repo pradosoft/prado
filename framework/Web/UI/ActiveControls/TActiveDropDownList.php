@@ -23,7 +23,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
  * Thus, when the drop down list selection is changed the {@link onCallback OnCallback} event is
  * raised after {@link OnSelectedIndexChanged} event.
  *
- * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnabledUpdate}
+ * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
  * set to true (default is true), changes to the selection, <b>after</b> OnLoad event has
  * been raised, will be updated.
  * on the client side.
