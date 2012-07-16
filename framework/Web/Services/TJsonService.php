@@ -154,7 +154,7 @@ class TJsonService extends TService
 		if(($content=$service->getJsonContent())!==null)
 		{
 			$response = $this->getResponse();
-			$response->setContentType('text/javascript');
+			$response->setContentType('application/json');
 			$response->setCharset('UTF-8');
 			//send content
 			$response->write(TJavaScript::jsonEncode($content));
