@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveRatingList ID="${1:ratingList1}" OnCallback="${3:$1_oncallback}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveRatingList</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveRatingList</string>
+	<key>uuid</key>
+	<string>057EB744-BAB2-40A4-A694-444F32616388</string>
+</dict>
+</plist>

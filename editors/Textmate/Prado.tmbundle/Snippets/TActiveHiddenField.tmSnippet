@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveHiddenField ID="${1:hiddenField1}" Value="${2:value}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveHiddenField</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveHiddenField</string>
+	<key>uuid</key>
+	<string>BB4574A8-82FE-42CB-AC3B-CB7DA6493C66</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveCheckBox ID="${1:checkBox1}" Text="${2:CheckBox Text}" OnCallback="${3:$1_oncallback}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveCheckBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveCheckBox</string>
+	<key>uuid</key>
+	<string>E19C9489-DA1B-4986-9408-688A8E920AF9</string>
+</dict>
+</plist>

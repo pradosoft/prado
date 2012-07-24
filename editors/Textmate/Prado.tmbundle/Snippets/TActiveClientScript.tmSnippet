@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveClientScript ScriptUrl="${1:&lt;%~ ${2:script.js} %&gt;}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveClientScript</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveClientScript</string>
+	<key>uuid</key>
+	<string>3FDEA00B-494B-40E1-AC1C-410F60599AEE</string>
+</dict>
+</plist>

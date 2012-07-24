@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveImage ImageUrl=&lt;%~ ${1:hello_world.gif} %&gt; AlternateText="${1}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveImage</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveImage</string>
+	<key>uuid</key>
+	<string>082A1F65-8783-4E3B-8133-236F96B2FC66</string>
+</dict>
+</plist>

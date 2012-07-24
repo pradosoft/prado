@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveRepeater ID="${1:repeater1}" DataKeys="${2:Data key field}"&gt;
+	&lt;prop:EmptyTemplate&gt;
+		${3:&lt;!-- content --&gt;}
+	&lt;/prop:EmptyTemplate&gt;
+	&lt;prop:HeaderTemplate&gt;
+		${4:&lt;!-- content --&gt;}
+	&lt;/prop:HeaderTemplate&gt;
+	&lt;prop:ItemTemplate&gt;
+		${5:&lt;!-- content --&gt;}
+	&lt;/prop:ItemTemplate&gt;
+	&lt;prop:FooterTemplate&gt;
+		${6:&lt;!-- content --&gt;}
+	&lt;/prop:FooterTemplate&gt;
+&lt;/com:TActiveRepeater&gt;</string>
+	<key>name</key>
+	<string>TActiveRepeater</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveRepeater</string>
+	<key>uuid</key>
+	<string>2A8B6705-FDDB-42E3-9332-9BC8C8293B7B</string>
+</dict>
+</plist>

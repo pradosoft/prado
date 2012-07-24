@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveFileUpload ID="${1:file1}" OnFileUpload="${2:${1}_Uploaded}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveFileUpload</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveFileUpload</string>
+	<key>uuid</key>
+	<string>043A530C-4916-4965-AF83-B7C22FD69D8B</string>
+</dict>
+</plist>

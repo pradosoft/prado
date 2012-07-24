@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveLiteralColumn DataField="${2:Field Name from Data Source}" HeaderText="${3:${2}}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveLiteralColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveLiteralColumn</string>
+	<key>uuid</key>
+	<string>BE8CB4DD-0348-4049-A784-28B994B28F91</string>
+</dict>
+</plist>

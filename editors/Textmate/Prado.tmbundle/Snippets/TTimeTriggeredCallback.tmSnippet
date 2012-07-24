@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TTimeTriggeredCallback Interval="${1:5}" OnCallback="${2:time_callback}" /&gt;</string>
+	<key>name</key>
+	<string>TTimeTriggeredCallback</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TTimeTriggeredCallback</string>
+	<key>uuid</key>
+	<string>56EA2FDF-FED2-438F-9CDB-DEA87ED7DC39</string>
+</dict>
+</plist>

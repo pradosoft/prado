@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveDropDownListColumn DataTextField="${2:Field Name from Data Source}" DataValueField="${3:Field Name from Data Source}" HeaderText="${4:Dropdown}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveDropDownListColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveDropDownListColumn</string>
+	<key>uuid</key>
+	<string>795E3928-00F7-4631-9E54-355B8AD152BD</string>
+</dict>
+</plist>

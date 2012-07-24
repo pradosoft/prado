@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveMultiView ID="${1:multiView1}" ActiveViewIndex="${2:0}"&gt;
+	${3:&lt;com:TView ID="${4:view1}"&gt;
+		${5:&lt;!-- view1 content --&gt;}
+	&lt;/com:TView&gt;
+	&lt;com:TView ID="${6:view2}"&gt;
+		${7:&lt;!-- view2 content --&gt;}
+	&lt;/com:TView&gt;}$0
+&lt;/com:TActiveMultiView&gt;</string>
+	<key>name</key>
+	<string>TActiveMultiView</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveMultiView</string>
+	<key>uuid</key>
+	<string>E4AC4EB3-83F6-4EE2-BBF7-1C637D295824</string>
+</dict>
+</plist>

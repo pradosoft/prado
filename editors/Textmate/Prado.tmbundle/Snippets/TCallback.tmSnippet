@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TCallback ID="${1:callback1}" OnCallback="${2:$1_oncallback}" /&gt;
+&lt;script type="text/javascript"&gt;
+	function do_callback1()
+	{
+		var request = &lt;%= $this-&gt;${3:$1}-&gt;ActiveControl-&gt;Javascript %&gt;;
+		request.dispatch();
+	}
+&lt;/script&gt;</string>
+	<key>name</key>
+	<string>TCallback</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TCallback</string>
+	<key>uuid</key>
+	<string>B2C49ECC-2119-4609-9DE6-E85DA4FD7630</string>
+</dict>
+</plist>

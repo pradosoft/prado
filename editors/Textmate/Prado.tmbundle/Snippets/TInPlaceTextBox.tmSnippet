@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TInPlaceTextBox ID="${1:textbox1}" Text="${2:text}" OnTextChanged="${3:textChanged}"/&gt;$0</string>
+	<key>name</key>
+	<string>TInPlaceTextBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TInPlaceTextBox</string>
+	<key>uuid</key>
+	<string>0B978CED-4C7D-42B0-A55C-214E0A095C3E</string>
+</dict>
+</plist>

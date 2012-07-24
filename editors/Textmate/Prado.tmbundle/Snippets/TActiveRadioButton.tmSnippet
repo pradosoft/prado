@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveRadioButton
+	ID="${1:radioButton1}"
+	Text="${2:RadioButton Text}"
+	OnCallback="${3:$1_oncallback}"
+/&gt;$0</string>
+	<key>name</key>
+	<string>TActiveRadioButton</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveRadioButton</string>
+	<key>uuid</key>
+	<string>BB717BF2-0E69-419A-BC67-1E8FFBE64A21</string>
+</dict>
+</plist>

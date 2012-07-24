@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TValueTriggeredCallback ControlID="${1:ControlID}" PropertyName="${2:value}" OnCallback="${3:value_callback}" /&gt;</string>
+	<key>name</key>
+	<string>TValueTriggeredCallback</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TValueTriggeredCallback</string>
+	<key>uuid</key>
+	<string>59B41626-5E20-4FA4-9FAD-6B1511ED1A33</string>
+</dict>
+</plist>

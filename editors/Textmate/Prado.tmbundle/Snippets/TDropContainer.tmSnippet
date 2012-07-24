@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TDropContainer
+	CssClass="${1:cart}"
+	ID="${2:cart}"
+	AcceptCssClass="${3:draggable}" 
+	HoverCssClass="${4:cart-hover}"
+	OnDrop="${5:addItemToCart}"
+	OnCallback="${6:redrawCart}"
+&gt;
+&lt;!-- content --&gt;
+&lt;/com:TDropContainer&gt;</string>
+	<key>name</key>
+	<string>TDropContainer</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TDropContainer</string>
+	<key>uuid</key>
+	<string>427727D2-E017-48F9-BA6D-4D7435395419</string>
+</dict>
+</plist>

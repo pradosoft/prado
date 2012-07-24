@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveDropDownList ID="${1:dropDownList1}" OnCallback="${2:$1_oncallback}"&gt;
+	${3:&lt;com:TListItem Value="${4:value 1}" Text="${5:item 1}" /&gt;
+	&lt;com:TListItem Value="${6:value 2}" Text="${7:item 2}" /&gt;}$0
+&lt;/com:TActiveDropDownList&gt;</string>
+	<key>name</key>
+	<string>TActiveDropDownList</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveDropDownList</string>
+	<key>uuid</key>
+	<string>57A48175-D2DD-42C6-868B-6A74ADA4155D</string>
+</dict>
+</plist>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TAutoComplete
+	ID="${1:textbox1}"
+    OnSuggest="${2:$1_suggestNames}"
+    OnSuggestionSelected="${3:$1_suggestionSelected1}"
+    ResultPanel.CssClass="${4:acomplete}"
+    Suggestions.DataKeyField="${5:id}"
+&gt;
+    &lt;prop:Suggestions.ItemTemplate&gt;
+    &lt;li&gt;&lt;%# ${6:\$this-&gt;Data['name']} %&gt;&lt;/li&gt;
+    &lt;/prop:Suggestions.ItemTemplate&gt;
+&lt;/com:TAutoComplete&gt;$0</string>
+	<key>name</key>
+	<string>TAutoComplete</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TAutoComplete</string>
+	<key>uuid</key>
+	<string>49C6A148-2B66-4220-849D-C59A21FF4281</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveListBox ID="${1:listBox1}"&gt;
+	${2:&lt;com:TListItem Value="${3:value 1}" Text="${4:item 1}" /&gt;
+	&lt;com:TListItem Value="${5:value 2}" Text="${6:item 2}" /&gt;}$0
+&lt;/com:TActiveListBox&gt;</string>
+	<key>name</key>
+	<string>TActiveListBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveListBox</string>
+	<key>uuid</key>
+	<string>1CF971B4-2744-465D-8FD7-D464B3C44BA9</string>
+</dict>
+</plist>

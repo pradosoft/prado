@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveImageButton
+	ID="${1:imageButton1}"
+	ImageUrl=&lt;%~ ${2:hello_world.gif} %&gt;
+	Text="${3:hello world}"
+	OnClick="${4:${1}_Clicked}" 
+	OnCallback="${5:${1}_oncallback}" 
+/&gt;$0</string>
+	<key>name</key>
+	<string>TActiveImageButton</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveImageButton</string>
+	<key>uuid</key>
+	<string>3773B612-FAE7-4A6F-8F9A-382CC9ABEF56</string>
+</dict>
+</plist>

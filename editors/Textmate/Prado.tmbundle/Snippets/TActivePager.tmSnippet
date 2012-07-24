@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActivePager
+	ControlToPaginate="${2:dataGrid1}"
+	OnPageIndexChanged="${3:pagerIndexChanged}"
+	OnCallback="${4:pagerCallback}"
+/&gt;$0</string>
+	<key>name</key>
+	<string>TActivePager</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActivePager</string>
+	<key>uuid</key>
+	<string>DB28C735-5DDB-4444-8287-0CEBCA238D0C</string>
+</dict>
+</plist>

@@ -3,18 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TCustomValidator
+	<string>&lt;com:TActiveCustomValidator
 	ControlToValidate="${1:controlIDToValidate}"
-	OnServerValidate="${2:customValidate}"${3:
-	ClientValidationFunction="${4:clientSideCustomValidate}"}
+	OnCallback="${2:validator_oncallback}"
+	OnServerValidate="${3:customValidate}"${4:
+	ClientValidationFunction="${5:clientSideCustomValidate}"}
 	ErrorMessage="${6:required}" /&gt;$0</string>
 	<key>name</key>
-	<string>TCustomValidator (TValidator)</string>
+	<string>TActiveCustomValidator (TValidator)</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TValidator</string>
+	<string>TActiveCustomValidator</string>
 	<key>uuid</key>
-	<string>BF6A7ED6-28A0-4165-AA7A-F1F003161AE5</string>
+	<string>DDD64493-7F4F-4A90-9A8A-F8C63F36ACBF</string>
 </dict>
 </plist>

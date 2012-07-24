@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TEventTriggeredCallback ControlID="${1:ControlID}" EventName="${2:focus}" OnCallback="${3:event_callback}" /&gt;</string>
+	<key>name</key>
+	<string>TEventTriggeredCallback</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TEventTriggeredCallback</string>
+	<key>uuid</key>
+	<string>37F7D48C-F74E-4DF0-9CF1-2E1378FFDF49</string>
+</dict>
+</plist>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveLinkButton
+	ID="${1:linkButton1}"
+	Text="${2:Click Me}"
+	OnClick="${3:${1}_Clicked}"
+	OnCallback="${3:${1}_oncallback}"
+/&gt;$0</string>
+	<key>name</key>
+	<string>TActiveLinkButton</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveLinkButton</string>
+	<key>uuid</key>
+	<string>FE59932A-8624-4C3A-AA29-D151050D95E1</string>
+</dict>
+</plist>

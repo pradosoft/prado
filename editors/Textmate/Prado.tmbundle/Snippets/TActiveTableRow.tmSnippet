@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveTableRow&gt;
+	${1:&lt;com:TActiveTableCell&gt;${2:cell 1}&lt;/com:TActiveTableCell&gt;
+	&lt;com:TActiveTableCell&gt;${3:cell 2}&lt;/com:TActiveTableCell&gt;}$0
+&lt;/com:TActiveTableRow&gt;</string>
+	<key>name</key>
+	<string>TActiveTableRow</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveTableRow</string>
+	<key>uuid</key>
+	<string>6D11476C-C336-40A8-A39B-207B531FBAD3</string>
+</dict>
+</plist>

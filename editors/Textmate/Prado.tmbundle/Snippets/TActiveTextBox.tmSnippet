@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TActiveTextBox ID="${1:textbox1}" /&gt;$0</string>
+	<key>name</key>
+	<string>TActiveTextBox</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TActiveTextBox</string>
+	<key>uuid</key>
+	<string>66A8F08B-0A0B-47D8-B8F4-58173B0458AE</string>
+</dict>
+</plist>
