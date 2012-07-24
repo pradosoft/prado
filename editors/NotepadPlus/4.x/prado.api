@@ -1025,7 +1025,6 @@ TCheckBox::convertUniqueIdToClientId
 TCheckBoxList::convertUniqueIdToClientId
 TChoiceFormat::convertUniqueIdToClientId
 TClientScript::convertUniqueIdToClientId
-TClientScriptLoader::convertUniqueIdToClientId
 TColorPicker::convertUniqueIdToClientId
 TCompareValidator::convertUniqueIdToClientId
 TCompleteWizardStep::convertUniqueIdToClientId

@@ -353,7 +353,6 @@
 		<KeyWord name="TCheckBoxList" />
 		<KeyWord name="TChoiceFormat" />
 		<KeyWord name="TClientScript" />
-		<KeyWord name="TClientScriptLoader" />
 		<KeyWord name="TColorPicker" />
 		<KeyWord name="TCompareValidator" />
 		<KeyWord name="TCompleteWizardStep" />

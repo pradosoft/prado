@@ -24,10 +24,6 @@
   </li>
 
   <li>
-  <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> loads custom javascript libraries.
-  </li>
-
-  <li>
   <a href="?page=Controls.ColorPicker">TColorPicker</a> represents an input field taking color values via a color dialog.
   </li>
 

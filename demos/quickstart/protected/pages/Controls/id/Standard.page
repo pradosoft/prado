@@ -19,10 +19,6 @@
   <a href="?page=Controls.ClientScript">TClientScript</a> menambahkan kode javascript ke halaman.
   </li>
 
-  <li>
-  <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> mengambil pustaka javascript kustom.
-  </li>
-
   <li>*
   <a href="?page=Controls.ColorPicker">TColorPicker</a> mewakili field input yang mengambil nilai warna via dialog warna.
   </li>

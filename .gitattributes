@@ -1567,7 +1567,6 @@ demos/quickstart/protected/pages/Controls/Button.page -text
 demos/quickstart/protected/pages/Controls/Captcha.page -text
 demos/quickstart/protected/pages/Controls/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/ClientScript.page -text
-demos/quickstart/protected/pages/Controls/ClientScriptLoader.page -text
 demos/quickstart/protected/pages/Controls/ColorPicker.page -text
 demos/quickstart/protected/pages/Controls/Conditional.page -text
 demos/quickstart/protected/pages/Controls/Data.page -text
@@ -1748,7 +1747,6 @@ demos/quickstart/protected/pages/Controls/id/Button.page -text
 demos/quickstart/protected/pages/Controls/id/Captcha.page -text
 demos/quickstart/protected/pages/Controls/id/CheckBox.page -text
 demos/quickstart/protected/pages/Controls/id/ClientScript.page -text
-demos/quickstart/protected/pages/Controls/id/ClientScriptLoader.page -text
 demos/quickstart/protected/pages/Controls/id/ColorPicker.page -text
 demos/quickstart/protected/pages/Controls/id/Conditional.page -text
 demos/quickstart/protected/pages/Controls/id/Data.page -text
@@ -2191,7 +2189,6 @@ editors/InType/Prado.itBundle/snippets/holder_content.itSnippet -text
 editors/InType/Prado.itBundle/snippets/image.itSnippet -text
 editors/InType/Prado.itBundle/snippets/item.itSnippet -text
 editors/InType/Prado.itBundle/snippets/js.itSnippet -text
-editors/InType/Prado.itBundle/snippets/js_loader.itSnippet -text
 editors/InType/Prado.itBundle/snippets/js_prado.itSnippet -text
 editors/InType/Prado.itBundle/snippets/js_url.itSnippet -text
 editors/InType/Prado.itBundle/snippets/jslog.itSnippet -text
@@ -2262,7 +2259,6 @@ editors/Textmate/Prado.tmbundle/Snippets/TCheckBoxColumn.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TCheckBoxList.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TCircleHotSpot.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TClientScript.tmSnippet -text
-editors/Textmate/Prado.tmbundle/Snippets/TClientScriptLoader.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TColorPicker.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TCompareValidator.tmSnippet -text
 editors/Textmate/Prado.tmbundle/Snippets/TConditional.tmSnippet -text
