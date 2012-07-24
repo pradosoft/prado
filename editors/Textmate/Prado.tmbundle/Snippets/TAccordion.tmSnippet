@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TAccordion ID="${1:accordion1}" ActiveViewIndex="${2:0}"&gt;
+	${3:&lt;com:TAccordionView ID="${4:view1}" Caption="${5:caption1}"&gt;
+		${6:&lt;!-- view1 content --&gt;}
+	&lt;/com:TAccordionView&gt;
+	&lt;com:TAccordionView ID="${7:view2}" Caption="${8:caption2}"&gt;
+		${9:&lt;!-- view2 content --&gt;}
+	&lt;/com:TAccordionView&gt;}$0
+&lt;/com:TAccordion&gt;</string>
+	<key>name</key>
+	<string>TAccordion</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TAccordion</string>
+	<key>uuid</key>
+	<string>636508A0-20E0-4C46-909B-0253989706BE</string>
+</dict>
+</plist>

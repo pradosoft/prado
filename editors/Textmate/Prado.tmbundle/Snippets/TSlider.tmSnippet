@@ -3,16 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TSlider ID="${1:slider1}" MinValue="${2:0}" MaxValue="${3:100}" AutoPostBack="${4:true}" onValueChanged="${5:slider1ValueChanged}" /&gt;
+</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TSlider</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TSlider</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>D0F6A5F5-C4ED-468F-A3DC-2E6B70825217</string>
 </dict>
 </plist>

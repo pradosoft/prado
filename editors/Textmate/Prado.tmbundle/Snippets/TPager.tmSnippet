@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TPager ControlToPaginate="${2:dataGrid1}" OnPageIndexChanged="${3:pagerIndexChanged}" /&gt;$0</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TPager</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TPager</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>D450769C-D2C8-4C0F-BFBB-F008BEEBCEE7</string>
 </dict>
 </plist>

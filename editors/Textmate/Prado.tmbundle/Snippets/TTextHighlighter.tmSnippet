@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TTextHighlighter ShowLineNumbers="${1:true}" Language="${2:PHP}"&gt;
+	${0:&lt;!-- content --&gt;}
+&lt;/com:TTextHighlighter&gt;</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TTextHighlighter</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TTextHighlighter</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>09390D01-F829-4439-832A-D76B5BB363F5</string>
 </dict>
 </plist>

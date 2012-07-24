@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TCaptcha ID="${1:captcha1}" /&gt;
+	<string>&lt;com:TReCaptcha ID="${1:captcha1}" /&gt;
 &lt;com:TTextBox ID="${1}input" /&gt;
-&lt;com:TCaptchaValidator CaptchaControl="${1}" ControlToValidate="${1}input" ErrorMessage="${2:You are challenged!}" /&gt;$0</string>
+&lt;com:TReCaptchaValidator CaptchaControl="${1}" ControlToValidate="${1}input" ErrorMessage="${2:You are challenged!}" /&gt;$0</string>
 	<key>name</key>
-	<string>TCaptcha</string>
+	<string>TReCaptcha</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TCaptcha</string>
+	<string>TReCaptcha</string>
 	<key>uuid</key>
-	<string>5415E441-A4F5-489B-B4E5-359CBB0BC04D</string>
+	<string>2B964B74-45B4-45A7-87D5-A1B85F1870EF</string>
 </dict>
 </plist>

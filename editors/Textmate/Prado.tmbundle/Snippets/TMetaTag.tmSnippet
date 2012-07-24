@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TMetaTag Name="${1:keywords}" Content="${2:Prado}" /&gt;</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TMetaTag</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TMetaTag</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>455B8C57-4CA5-48FB-B692-B2D3871A290C</string>
 </dict>
 </plist>

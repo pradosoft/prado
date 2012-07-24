@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TTemplateColumn DataField="${2:Field Name from Data Source}" HeaderText="${3:${2}}"&gt;
+	&lt;prop:ItemTemplate&gt;
+		${4:&lt;!-- content --&gt;}
+	&lt;/prop:ItemTemplate&gt;
+	&lt;prop:EditItemTemplate&gt;
+		${5:&lt;!-- content --&gt;}
+	&lt;/prop:EditItemTemplate&gt;
+&lt;/com:TTemplateColumn&gt;$0</string>
+	<key>name</key>
+	<string>TTemplateColumn</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TTemplateColumn</string>
+	<key>uuid</key>
+	<string>4141D54F-3E7E-4F13-BA60-78FA659CFDDF</string>
+</dict>
+</plist>

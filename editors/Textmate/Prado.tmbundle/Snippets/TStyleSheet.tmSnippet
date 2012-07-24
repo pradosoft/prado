@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TStyleSheet StyleSheetUrl="${1:test.css}"&gt;
+	${2:&lt;!-- insert content here or use StyleSheetUrl --&gt;}
+&lt;/com:TStyleSheet&gt;$0</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TStyleSheet</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TStyleSheet</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>606E45DE-FC1C-4AE7-8DF1-3F61C4520F0B</string>
 </dict>
 </plist>

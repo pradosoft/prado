@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TKeyboard ForControl="${1:PasswordInput}" /&gt;$0</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TKeyboard</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TKeyboard</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>4BCA0D8A-355C-469B-B6BE-86F37A26E60B</string>
 </dict>
 </plist>

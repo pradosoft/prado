@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:TTabPanel ID="${1:tabpanel1}" ActiveViewIndex="${2:0}"&gt;
+	${3:&lt;com:TTabView ID="${4:view1}" Caption="${5:caption1}"&gt;
+		${6:&lt;!-- view1 content --&gt;}
+	&lt;/com:TTabView&gt;
+	&lt;com:TTabView ID="${7:view2}" Caption="${8:caption2}"&gt;
+		${9:&lt;!-- view2 content --&gt;}
+	&lt;/com:TTabView&gt;}$0
+&lt;/com:TTabPanel&gt;</string>
+	<key>name</key>
+	<string>TTabPanel</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>TTabPanel</string>
+	<key>uuid</key>
+	<string>6175973E-2916-4F52-A6A7-F5C343AA7268</string>
+</dict>
+</plist>

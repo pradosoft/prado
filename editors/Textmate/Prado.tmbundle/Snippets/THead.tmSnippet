@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;com:THead Title="${1:title1}" &gt;
+	${2:&lt;com:TMetaTag HttpEquiv="${3:Pragma}" Content="${4:no-cache}" /&gt;
+	&lt;com:TMetaTag Name="${5:keywords}" Content="${6:Prado}" /&gt;}$0
+&lt;/com:THead&gt;</string>
+	<key>name</key>
+	<string>THead</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>THead</string>
+	<key>uuid</key>
+	<string>61C1CB9E-ABFF-4E3D-9068-EE72B16B11D6</string>
+</dict>
+</plist>

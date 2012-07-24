@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:THeader2 /&gt;$0</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>THeader2</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>THeader2</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>F4528371-C48C-4A3F-ABD5-B48C42BB2DFC</string>
 </dict>
 </plist>

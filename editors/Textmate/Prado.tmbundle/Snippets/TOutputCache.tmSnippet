@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TTableFooterRow&gt;
-	$0
-&lt;/com:TTableFooterRow&gt;</string>
+	<string>&lt;com:TOutputCache&gt;
+	${0:&lt;!-- content to be cached--&gt;}
+&lt;/com:TOutputCache&gt;</string>
 	<key>name</key>
-	<string>TTableFooterRow</string>
+	<string>TOutputCache</string>
 	<key>scope</key>
 	<string>text.html</string>
 	<key>tabTrigger</key>
-	<string>TTableFooterRow</string>
+	<string>TOutputCache</string>
 	<key>uuid</key>
-	<string>23B521B1-6EA4-4E5D-9104-940CEDFDFD13</string>
+	<string>E91DB3C2-E41E-43AF-BEFF-827BD2452063</string>
 </dict>
 </plist>
