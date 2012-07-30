@@ -907,7 +907,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 			if(this.options.Display == "Dynamic")
 			{
 				var msg=this.message;
-				this.isValid ? setTimeout(function() { msg.hide(); }, 250) : msg.show();
+				this.isValid ? msg.hide() : msg.show();
 			}
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
