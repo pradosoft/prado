@@ -32,6 +32,9 @@
  * - PushButton: a normal button
  * - ImageButton: an image button (please set XXXPageImageUrl properties accordingly to specify the button images.)
  *
+ * Since Prado 3.2.1, you can use the {@link setButtonCssClass ButtonCssClass} property to specify a css class
+ * that will be applied to each button created by the pager in NextPrev or Numeric mode.
+ * 
  * TPager raises an {@link onPageIndexChanged OnPageIndexChanged} event when
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained
@@ -91,6 +94,24 @@ class TPager extends TWebControl implements INamingContainer
 	public function setControlToPaginate($value)
 	{
 		$this->setViewState('ControlToPaginate',$value,'');
+	}
+
+	/**
+	 * @return string the css class of the buttons.
+	 * @since 3.2.1
+	 */
+	public function getButtonCssClass()
+	{
+		return $this->getViewState('ButtonCssClass','');
+	}
+
+	/**
+	 * @param Sets the css class of the buttons that will be rendered by this pager.
+	 * @since 3.2.1
+	 */
+	public function setButtonCssClass($value)
+	{
+		$this->setViewState('ButtonCssClass',TPropertyValue::ensureString($value,''),'');
 	}
 
 	/**
@@ -439,6 +460,7 @@ class TPager extends TWebControl implements INamingContainer
 			{
 				$button=new TLabel;
 				$button->setText($text);
+				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
 		}
@@ -458,6 +480,7 @@ class TPager extends TWebControl implements INamingContainer
 		$button->setCommandName($commandName);
 		$button->setCommandParameter($commandParameter);
 		$button->setCausesValidation(false);
+		$button->setCssClass($this->getButtonCssClass());
 		return $button;
 	}
 

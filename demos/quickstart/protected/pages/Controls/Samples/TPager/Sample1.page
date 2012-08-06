@@ -2,7 +2,7 @@
 
 <h1>TPager Sample</h1>
 <p>
-The following sample displays three different pagers associated with a single TDataList control. The datalist control is enabled with custom paging, which allows it to read only one page of data each time. This is typical in DB-driven applications.
+The following sample displays four different pagers associated with a single TDataList control. The datalist control is enabled with custom paging, which allows it to read only one page of data each time. This is typical in DB-driven applications.
 </p>
 
 <div>
@@ -73,5 +73,20 @@ Choose page:
 	Mode="DropDownList"
 	OnPageIndexChanged="pageChanged"
 	/>
-
+<br/>
+Use of a css class for buttons:
+<com:TStyleSheet>
+.greenbold_button {
+	background-color: #0f0;
+	font-weight: bold;
+}
+</com:TStyleSheet>
+<com:TPager ID="Pager4"
+	ControlToPaginate="DataList"
+	PageButtonCount="3"
+	Mode="Numeric"
+	ButtonType="PushButton"
+	OnPageIndexChanged="pageChanged"
+	ButtonCssClass="greenbold_button"
+	/>
 </com:TContent>

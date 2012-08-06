@@ -7,6 +7,7 @@ BUG: Issue #415 - prado-cli throws an error if the application is making use of 
 BUG: Issue #416 - TJsonService reports the wrong content-type (ctrlaltca)
 BUG: Issue #417 - TActiveCustomValidator and Display=Dynamic not work anymore (sampsa.saarela)
 BUG: Issue #418 - Can't get parameters when friendly url enabled with UrlFormat=Path (sampsa.saarela)
+ENH: Issue #419 - CssClass for PushButtons of TPager (ctrlaltca)
 ENH: Issue #420 - Permit to easily mock TActiveRecordgateway for unit testing (mvschaik)
 
 EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); changed the default cipher from 3DES to AES256 (ctrlaltca)
