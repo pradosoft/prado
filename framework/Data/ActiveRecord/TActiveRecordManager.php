@@ -129,6 +129,7 @@ class TActiveRecordManager extends TComponent
 	 */
 	public function setGatewayClass($value)
 	{
+		$this->_gateway = null;
 		$this->_gatewayClass = (string)$value;
 	}
 
