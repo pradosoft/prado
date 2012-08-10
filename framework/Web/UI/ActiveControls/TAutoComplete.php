@@ -270,6 +270,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		$repeater->setHeaderTemplate(new TAutoCompleteTemplate('<ul>'));
 		$repeater->setFooterTemplate(new TAutoCompleteTemplate('</ul>'));
 		$repeater->setItemTemplate(new TTemplate('<li><%# $this->DataItem %></li>',null));
+		$repeater->setEmptyTemplate(new TAutoCompleteTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;
 	}
