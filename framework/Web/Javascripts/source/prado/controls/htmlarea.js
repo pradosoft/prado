@@ -72,7 +72,6 @@ Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 	compressedScriptsLoaded: function()
 	{
 		Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
-		tinymce.dom.Event._pageInit();
 		var wrapper;
 		while(Prado.WebUI.THtmlArea.pendingRegistrations.length>0)
 			if (wrapper = Prado.Registry.get(Prado.WebUI.THtmlArea.pendingRegistrations.pop()))
