@@ -71,6 +71,8 @@ class TRpcService extends TService
 		if(($_rpcServerClass = $_properties->remove('server')) === null)
 			$_rpcServerClass = self::BASE_RPC_SERVER;
 
+		prado::using($_rpcServerClass);
+
 		$_rpcServerClassName = ($_pos = strrpos($_rpcServerClass, '.')) !== false ? substr($_rpcServerClass, $_pos + 1) : $_rpcServerClass;
 		if($_rpcServerClassName!==self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER))
 			throw new TConfigurationException('rpcservice_rpcserver_invalid');
@@ -359,7 +361,6 @@ class TJsonRpcProtocol extends TRpcProtocol
 		}
 		catch(Exception $e)
 		{
-			error_log(Prado::varDump($e));
 			return $this->createErrorResponse(new TRpcException('An internal error occured'));
 		}
 	}
