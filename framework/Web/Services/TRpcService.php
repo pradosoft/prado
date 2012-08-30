@@ -13,10 +13,41 @@
 /**
  * TRpcService class
  *
- * Usage:
- * <service id="rpc" class="TRpcService">
- *     <rpcapi id="myapi" Class="MyApi" />
+ * The TRpcService class is a generic class that can be extended and used to implement
+ * rpc services using different servers and protocols.
+ * 
+ * A server is a {@link TModule} that must subclass {@link TRpcServer}: its role is
+ * to be an intermediate, moving data between the service and the provider. The base
+ * {@link TRpcServer} class should suit the most common needs, but can be sublassed for
+ * logging and debugging purposes, or to filter and modify the request/response on the fly.
+ * 
+ * A protocol is a {@link TModule} that must subclass {@link TRpcProtocol}: its role is
+ * to implement the protocol that exposes the rpc api. Prado already implements two
+ * protocols: {@link TXmlRpcProtocol} for Xml-Rpc request and {@link TJsonRpcProtocol} for
+ * JSON-Rpc requests.
+ *
+ * A provider is a {@link TModule} that must subclass {@link TRpcApiProvider}: its role is
+ * to implement the methods that are available through the api. Each defined api must be
+ * a sublass of the abstract class {@link TRpcApiProvider} and implement its methods.
+ *
+ * The flow of requests and reponses is the following:
+ * Request <-> TRpcService <-> TRpcServer <-> TRpcProtocol <-> TRpcApiProvider <-> Response
+ *
+ * To define an rpc service, add the proper application configuration:
+ *
+ * <code>
+ * <service id="rpc" class="System.Web.Services.TRpcService">
+ * 	 <rpcapi id="customers" class="Application.Api.CustomersApi" />
+ *   <modules>
+ *     <!--  register any module needed by the service here -->
+ *   </modules>
  * </service>
+ * </code>
+ *
+ * An api can be registered adding a proper <rpcapi ..> definition inside the service
+ * configuration. Each api definition must contain an id property and a class name
+ * expressed in namespace format. When the service receives a request for that api,
+ * the specified class will be instanciated in order to satisfy the request.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
@@ -96,6 +127,7 @@ class TRpcService extends TService
 	}
 
 	/**
+	 * Loads the service configuration
 	 * @param TXmlElement $xml configuration
 	 */
 	public function loadConfig(TXmlElement $xml)
@@ -148,6 +180,14 @@ class TRpcService extends TService
 /**
  * TRpcServer class
  *
+ * TRpcServer is a class 
+ *
+ * TRpcServer is the base class used to creare a server to be used in conjunction with
+ * {@link TRpcService}.
+ * The role of TRpcServer is to be an intermediate, moving data between the service and
+ * the provider. This base class should suit the most common needs, but can be sublassed for
+ * logging and debugging purposes, or to filter and modify the request/response on the fly.
+ * 
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
  * @package System.Web.Services
@@ -170,6 +210,7 @@ class TRpcServer extends TModule
 	}
 	
 	/**
+	 * Registers the method in the protocol handler
 	 * @param string $methodName
 	 * @param array $methodDetails
 	 */
@@ -179,6 +220,7 @@ class TRpcServer extends TModule
 	}
 
 	/**
+	 * Retrieves the request payload
 	 * @return string request payload
 	 */
 	public function getPayload()
@@ -187,6 +229,7 @@ class TRpcServer extends TModule
 	}
 
 	/**
+	 * Passes the request payload to the protocol handler and returns the result
 	 * @return string rpc response
 	 */
 	public function processRequest()
@@ -226,6 +269,32 @@ class TRpcException extends TException
 /**
  * TRpcApiProvider class
  *
+ * TRpcApiProvider is an abstract class the can be subclasses in order to implement an
+ * api for a {@link TRpcService}. A subclass of TRpcApiProvider must implement the
+ * {@link registerMethods} method in order to declare the available methods, their
+ * names and the associated callback.
+ *
+ * <code>
+ * public function registerMethods()
+ * {
+ *   return array(
+ *     'apiMethodName1' => array('method' => array($this, 'objectMethodName1')),
+ *     'apiMethodName2' => array('method' => array('ClassName', 'staticMethodName')),
+ *   );
+ * }
+ * </code>
+ *
+ * In this example, two api method have been defined. The first refers to an object
+ * method that must be implemented in the same class, the second to a static method
+ * implemented in a 'ClassName' class.
+ * In both cases, the method implementation will receive the request parameters as its
+ * method parameters. Since the number of received parameters depends on
+ * external-supplied data, it's adviced to use php's func_get_args() funtion to
+ * validate them.
+ *
+ * Providers must be registered in the service configuration in order to be available,
+ * as explained in {@link TRpcService}'s documentation.
+ *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
  * @package System.Web.Services
@@ -238,12 +307,15 @@ abstract class TRpcApiProvider extends TModule
 	 */
 	protected $rpcServer;
 
-	// abstracts
-
+	/**
+	 * Must return an array of the available methods
+	 * @abstract
+	 */
 	abstract public function registerMethods();
 
-	// methods
-
+	/**
+	 * Constructor: informs the rpc server of the registered methods
+	 */
 	public function __construct(TRpcServer $rpcServer)
 	{
 		$this->rpcServer = $rpcServer;
@@ -252,13 +324,18 @@ abstract class TRpcApiProvider extends TModule
 			$this->rpcServer->addRpcMethod($_methodName, $_methodDetails);
 	}
 
+	/**
+	 * Processes the request using the server
+	 * @return processed request
+	 */
 	public function processRequest()
 	{
 		return $this->rpcServer->processRequest();
 	}
 
-	// getter/setter
-
+	/**
+	 * @return rpc server instance
+	 */
 	public function getRpcServer()
 	{
 		return $this->rpcServer;
@@ -268,6 +345,10 @@ abstract class TRpcApiProvider extends TModule
 /**
  * TRpcProtocol class
  *
+ * TRpcProtocol is the base class used to implement a protocol in a {@link TRpcService}.
+ * Prado already implements two protocols: {@link TXmlRpcProtocol} for Xml-Rpc request
+ * and {@link TJsonRpcProtocol} for JSON-Rpc requests.
+ *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
  * @package System.Web.Services
@@ -276,16 +357,45 @@ abstract class TRpcApiProvider extends TModule
 abstract class TRpcProtocol
 {
 	/**
-	 * @var array containis the mapping from RPC method names to the actual handlers
+	 * @var array containing the mapping from RPC method names to the actual handlers
 	 */
 	protected $rpcMethods = array();
 
 	// abstracts
 
+	/**
+	 * @param string request payload
+	 * Processed the request ans returns the response, if any
+	 * @return processed response
+	 * @abstract
+	 */
 	abstract public function callMethod($requestPayload);
+	/**
+	 * @param TRpcException the exception with error details
+	 * Creates a proper response for an error condition
+	 * @return a response representing the error
+	 * @abstract
+	 */
 	abstract public function createErrorResponse(TRpcException $exception);
+	/**
+	 * @param response
+	 * Sets the needed headers for the response (eg: content-type, charset)
+	 * @abstract
+	 */
 	abstract public function createResponseHeaders($response);
+	/**
+	 * Encodes the response
+	 * @param mixed reponse data
+	 * @return string encoded response
+	 * @abstract
+	 */
 	abstract public function encode($data);
+	/**
+	 * Decodes the request payload
+	 * @param string request payload
+	 * @return mixed decoded request
+	 * @abstract
+	 */
 	abstract public function decode($data);
 
 	// methods
@@ -323,7 +433,9 @@ abstract class TRpcProtocol
 /**
  * TJsonRpcProtocol class
  *
- * Implements the JSON RPC protocol
+ * TJsonRpcProtocol is a class that implements JSON-Rpc protocol in {@link TRpcService}.
+ * Both version 1.0 and 2.0 of the specification are implemented, and the server will try
+ * to answer using the same version of the protocol used by the requesting client.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @author Fabio Bas <ctrlaltca@gmail.com>
@@ -492,7 +604,8 @@ class TJsonRpcProtocol extends TRpcProtocol
 /**
  * TXmlRpcProtocol class
  *
- * Implements the XML RPC protocol
+ * TXmlRpcProtocol is a class that implements XML-Rpc protocol in {@link TRpcService}.
+ * It's basically a wrapper to the xmlrpc_server_* family of php methods.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
