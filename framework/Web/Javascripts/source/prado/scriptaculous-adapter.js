@@ -283,7 +283,7 @@ Prado.Element =
 	{
 		var el = $(element);
 		if(!el) return;
-		if((attribute == "disabled" || attribute == "multiple") && value==false)
+		if((attribute == "disabled" || attribute == "multiple" || attribute == "readonly") && value==false)
 			el.removeAttribute(attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
