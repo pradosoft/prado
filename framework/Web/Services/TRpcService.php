@@ -62,7 +62,7 @@ class TRpcService extends TService
 		if(($_providerClass = $_properties->remove('class')) === null)
 			throw new TConfigurationException('rpcservice_apiprovider_required');
 
-		prado::using($_providerClass);
+		Prado::using($_providerClass);
 
 		$_providerClassName = ($_pos = strrpos($_providerClass, '.')) !== false ? substr($_providerClass, $_pos + 1) : $_providerClass;
 		if(!is_subclass_of($_providerClassName, self::BASE_API_PROVIDER))
@@ -71,7 +71,7 @@ class TRpcService extends TService
 		if(($_rpcServerClass = $_properties->remove('server')) === null)
 			$_rpcServerClass = self::BASE_RPC_SERVER;
 
-		prado::using($_rpcServerClass);
+		Prado::using($_rpcServerClass);
 
 		$_rpcServerClassName = ($_pos = strrpos($_rpcServerClass, '.')) !== false ? substr($_rpcServerClass, $_pos + 1) : $_rpcServerClass;
 		if($_rpcServerClassName!==self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER))
@@ -311,8 +311,11 @@ abstract class TRpcProtocol
 		if(!isset($this->rpcMethods[$methodName]))
 			throw new TRpcException('Method "'.$methodName.'" not found');
 
+		if($parameters === null)
+			$parameters = array();
+
 		if(!is_array($parameters))
-			throw new TRpcException('Invalid parameters');
+			$parameters = array($parameters);
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}
 }
@@ -323,14 +326,16 @@ abstract class TRpcProtocol
  * Implements the JSON RPC protocol
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
+ * @author Fabio Bas <ctrlaltca@gmail.com>
  * @version $Id$
  * @package System.Web.Services
  * @since 3.2
  */
 class TJsonRpcProtocol extends TRpcProtocol
 {
-	// methods
-	protected $_id=0;
+	protected $_id=null;
+	protected $_specificationVersion=1.0;
+
 	/**
 	 * Handles the RPC request
 	 * @param string $requestPayload
@@ -338,18 +343,50 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function callMethod($requestPayload)
 	{
-		$_request = $this->decode($requestPayload);
 		try
 		{
-			if(!isset($_request['id']))
-				throw new TRpcException('Missing mandatory request id');
+			$_request = $this->decode($requestPayload);
 
-			$this->_id=$_request['id'];
-			return $this->encode(array(
-				'id' => $this->_id,
-				'result' => $this->callApiMethod($_request['method'], $_request['params']),
-				'error' => null
-			));
+			if(isset($_request['jsonrpc']))
+			{
+				$this->_specificationVersion=$_request['jsonrpc'];
+				if($this->_specificationVersion > 2.0)
+					throw new TRpcException('Unsupported specification version', '-32600');
+			}
+
+			if(isset($_request['id']))
+				$this->_id=$_request['id'];
+
+			if(!isset($_request['method']))
+					throw new TRpcException('Missing request method', '-32600');
+
+			if(!isset($_request['params']))
+				$parameters = array();
+			else
+				$parameters = $_request['params'];
+
+			if(!is_array($parameters))
+				$parameters = array($parameters);
+
+			$ret = $this->callApiMethod($_request['method'], $parameters);
+			// a request without an id is a notification that doesn't need a response
+			if($this->_id !== null)
+			{
+				if($this->_specificationVersion==2.0)
+				{
+					return $this->encode(array(
+						'jsonrpc' => '2.0',
+						'id' => $this->_id,
+						'result' => $ret
+					));
+				} else {
+					return $this->encode(array(
+						'id' => $this->_id,
+						'result' => $this->callApiMethod($_request['method'], $_request['params']),
+						'error' => null
+					));
+				}
+			}
 		}
 		catch(TRpcException $e)
 		{
@@ -361,7 +398,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 		}
 		catch(Exception $e)
 		{
-			return $this->createErrorResponse(new TRpcException('An internal error occured'));
+			return $this->createErrorResponse(new TRpcException('An internal error occured', '-32603'));
 		}
 	}
 
@@ -372,15 +409,27 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		return $this->encode(array(
-			'id' => $this->_id,
-			'result' => null,
-			'error'=> array(
-				'code' => $exception->getCode(),
-				'message'=> $exception->getMessage(),
-				'data' => null,
-				)
-		));
+		if($this->_specificationVersion==2.0)
+		{
+			return $this->encode(array(
+				'id' => $this->_id,
+				'result' => null,
+				'error'=> array(
+					'code' => $exception->getCode(),
+					'message'=> $exception->getMessage(),
+					'data' => null,
+					)
+			));
+		} else {
+			return $this->encode(array(
+				'id' => $this->_id,
+				'error'=> array(
+					'code' => $exception->getCode(),
+					'message'=> $exception->getMessage(),
+					'data' => null,
+					)
+			));			
+		}
 	}
 
 	/**
@@ -400,7 +449,9 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function decode($data)
 	{
-		return json_decode($data, true);
+		$s = json_decode($data, true);
+		self::checkJsonError();
+		return $s;
 	}
 
 	/**
@@ -410,7 +461,31 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function encode($data)
 	{
-		return json_encode($data);
+		$s = json_encode($data);
+		self::checkJsonError();
+		return $s;		
+	}
+
+	private static function checkJsonError()
+	{
+		$errnum = json_last_error();
+		if($errnum != JSON_ERROR_NONE)
+			throw new Exception("JSON error: $msg", $err);
+	}
+
+	/**
+	 * Calls the callback handler for the given method
+	 * Overrides parent implementation to correctly handle error codes
+	 * @param string $methodName of the RPC
+	 * @param array $parameters for the callback handler as provided by the client
+	 * @return mixed whatever the callback handler returns
+	 */
+	public function callApiMethod($methodName, $parameters)
+	{
+		if(!isset($this->rpcMethods[$methodName]))
+			throw new TRpcException('Method "'.$methodName.'" not found', '-32601');
+
+		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}
 }
 
