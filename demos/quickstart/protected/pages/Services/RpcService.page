@@ -1,0 +1,74 @@
+<com:TContent ID="body" >
+
+<h1>RPC Service</h1>
+
+<p class="block-content">
+RPC Service stands for "Remote Procedure Call" Service and is a common name used to identify a service that exposes an interface that can be called by remote programs in order to execute a procedure.
+An RPC Service tipically exposes one or more APIs (Application programming interface), permitting remote clients to make requests to the available methods and receive a proper response.
+The interface itself is not bound to a specific programming language, but uses a standard data exchange protocol (tipically xml or json).
+PRADO provides <tt>TRpcService</tt> that makes developing a RPC server application an extremely easy task.
+</p>
+
+<p class="block-content">
+To use <tt>TRpcService</tt>, configure it in the application specification like following:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content">
+<services>
+  <service id="rpc" class="System.Web.Services.TRpcService">
+    <rpcapi id="stockquote" class="path.to.StockQuote" />
+    <!--
+    <rpcapi...other api... />
+    -->
+  </service>
+</services>
+</com:TTextHighlighter>
+<p class="block-content">
+The example specifies a RPC service provider named <tt>stockquote</tt> which implements the <tt>getPrice</tt> RPC method in the provider class <tt>StockQuote</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class StockQuote
+{
+	/**
+	 * @param string $symbol the symbol of the stock
+	 * @return float the stock price
+	 * @soapmethod
+	 */
+	public function getPrice($symbol)
+	{
+		....return stock price for $symbol
+	}
+
+    /**
+     * Register the available methods
+     * @return the list of implemented methods
+     */
+    public function registerMethods()
+    {
+        return array(
+        'getPrice' => array('method' => array($this, 'getPrice')),
+        );
+    }
+
+}
+</com:TTextHighlighter>
+
+<p class="block-content">
+PRADO already bundles two common protocols: <tt>TXmlRpcService</tt> and <tt>TJsonRpcService</tt>: requests made by clients using one of these protocol will be automatically resolved and will call the user-specified APIs.
+</p>
+
+<div class="note"><b class="tip">Note:</b>
+<tt>TXmlRpcService</tt> is based on <a href="http://www.php.net/manual/it/book.xmlrpc.php">PHP XML-RPC extension</a> and thus requires the extension to be installed.
+</div>
+
+<p class="block-content">
+With the above simple code, we already finish a simple RPC service that allows other applications to query the price of a specific stock. A client needs to know the exact url of the service, the name of the method and the list of parameters needed by the method.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+// Assuming we're using the json-rpc php library from http://jsonrpcphp.org/
+
+require_once 'jsonRPCClient.php'; 
+$client=new jsonRPCClient('http://path/to/index.php?rpc=stockquote');
+echo $client->getPrice('IBM');
+</com:TTextHighlighter>
+
+</com:TContent>

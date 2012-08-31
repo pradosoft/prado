@@ -66,6 +66,7 @@
 <ul>
     <li><a href="?page=Fundamentals.Services">Page Service</a></li>
     <li><a href="?page=Services.SoapService">SOAP Service</a></li>
+    <li><a href="?page=Services.RpcService">RPC Service</a></li>
 </ul>
 </div>
 
