@@ -57,7 +57,7 @@ PRADO already bundles two common protocols: <tt>TXmlRpcService</tt> and <tt>TJso
 </p>
 
 <div class="note"><b class="tip">Note:</b>
-<tt>TXmlRpcService</tt> is based on <a href="http://www.php.net/manual/it/book.xmlrpc.php">PHP XML-RPC extension</a> and thus requires the extension to be installed.
+<tt>TXmlRpcService</tt> is based on <a href="http://php.net/xmlrpc">PHP XML-RPC extension</a> and thus requires the extension to be installed.
 </div>
 
 <p class="block-content">
