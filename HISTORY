@@ -10,6 +10,7 @@ BUG: Issue #418 - Can't get parameters when friendly url enabled with UrlFormat=
 ENH: Issue #419 - CssClass for PushButtons of TPager (ctrlaltca)
 ENH: Issue #420 - Permit to easily mock TActiveRecordgateway for unit testing (mvschaik)
 BUG: Issue #421 - TAutocomplete not rendering an empty suggestion list (Dario Rigolin)
+BUG: Issue #424 - TDefaultButton broken when multiple TDefaultButton are on the same page (ctrlaltca)
 
 EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); changed the default cipher from 3DES to AES256 (ctrlaltca)
 EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the use of all algorithms supported by php (ctrlaltca)

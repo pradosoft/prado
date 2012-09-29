@@ -329,6 +329,7 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	protected function getDefaultButtonOptions($panelID, $buttonID)
 	{
+		$options['ID'] = TControl::convertUniqueIdToClientId($panelID);
 		$options['Panel'] = TControl::convertUniqueIdToClientId($panelID);
 		$options['Target'] = TControl::convertUniqueIdToClientId($buttonID);
 		$options['EventTarget'] = $buttonID;
