@@ -275,6 +275,7 @@ class TSoapService extends TService
 		{
 			// server WSDL file
 			Prado::trace("Generating WSDL",'System.Web.Services.TSoapService');
+			$this->getResponse()->clear();
 			$this->getResponse()->write($server->getWsdl());
 		}
 		else
