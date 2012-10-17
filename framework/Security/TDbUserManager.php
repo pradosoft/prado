@@ -300,7 +300,7 @@ abstract class TDbUser extends TUser
 
 	/**
 	 * Saves necessary auth data into a cookie.
-	 * This method is invoked when {@link TAuthManager::rememberLogin} is invoked.
+	 * This method is invoked when {@link TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
 	 * The default implementation does nothing, meaning auth data is not stored in the cookie
 	 * (and thus automatic login is not supported.)
 	 *
