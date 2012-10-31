@@ -2706,6 +2706,9 @@ framework/I18N/core/data/zh_TW.dat -text
 framework/I18N/schema/mysql.sql -text
 framework/I18N/schema/postgresql.sql -text
 framework/I18N/schema/sqlite.sql -text
+framework/Util/TBehavior.php -text
+framework/Util/TCallChain.php -text
+framework/Util/TClassBehavior.php -text
 framework/Web/Javascripts/source/.htaccess -text
 framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadBlank.html -text
 framework/Web/Javascripts/source/prado/activefileupload/ActiveFileUploadComplete.png -text svneol=unset#image/png
