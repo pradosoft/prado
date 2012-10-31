@@ -1,6 +1,6 @@
 <?php
 /**
- * CBehavior class file.
+ * TBehavior class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
@@ -9,11 +9,11 @@
  */
 
 /**
- * CBehavior is a convenient base class for behavior classes.
+ * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CBehavior.php 564 2009-01-21 22:07:10Z qiang.xue $
- * @package system.base
- * @since 1.0.2
+ * @version $Id: TBehaviour.php 3211 2012-10-31 02:35:01Z javalizard@gmail.com $
+ * @package System.Util
+ * @since 3.2.1
  */
 class TBehavior extends TComponent implements IBehavior
 {
@@ -62,7 +62,7 @@ class TBehavior extends TComponent implements IBehavior
 	}
 
 	/**
-	 * @return CComponent the owner component that this behavior is attached to.
+	 * @return TComponent the owner component that this behavior is attached to.
 	 */
 	public function getOwner()
 	{

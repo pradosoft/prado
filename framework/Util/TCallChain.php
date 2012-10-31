@@ -4,7 +4,7 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2008-2011 Pradosoft
+ * @copyright Copyright &copy; 2008-2012 Pradosoft
  * @license http://www.pradosoft.com/license/
  */
 
@@ -14,8 +14,8 @@
  * and patched through to the intended recipient 
  * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id: TCallChain.php 564 2009-01-21 22:07:10Z javalizard $
- * @package system.base
- * @since 3.2
+ * @package System.Util
+ * @since 3.2.1
  */
 class TCallChain extends TList implements IDynamicMethods
 {

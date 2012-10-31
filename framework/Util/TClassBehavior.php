@@ -12,8 +12,8 @@
  * TClassBehavior is a convenient base class for whole class behaviors.
  * @author Brad Anderson <javalizard@gmail.com>
  * @version $Id: TClassBehavior.php 564 2009-01-21 22:07:10Z javalizard $
- * @package system.base
- * @since 3.1.8
+ * @package System.Util
+ * @since 3.2.1
  */
 class TClassBehavior extends TComponent implements IClassBehavior
 {
