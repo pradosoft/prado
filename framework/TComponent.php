@@ -7,7 +7,7 @@
  * @author Brad Anderson <javalizard@mac.com>
  * 
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2011 PradoSoft
+ * @copyright Copyright &copy; 2005-2012 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System
@@ -155,7 +155,7 @@
  * is handed to the behaviors over the process and/or data.
  * 
  * If there are no handlers for an 'fx' or 'dy' event, it will return the first
- * parameter of the argument list.  If none there are no arguments, these events
+ * parameter of the argument list.  If there are no arguments, these events
  * will return null.  If there are handlers an 'fx' method will be called directly
  * within the object.  Global 'fx' events are triggered by calling {@link raiseEvent}.
  * For dynamic events where there are behaviors that respond to the dynamic events, a 
@@ -279,7 +279,7 @@
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.1.8
+ * @since 3.0
  */
 class TComponent
 {
@@ -698,7 +698,7 @@ class TComponent
 	 * will check for a behavior of the specified name, and also check 
 	 * the behavior for events and properties.
 	 * @param string the property name or the event name
-	 * @since 1.0.1
+	 * @since 3.2.1
 	 */
 	public function __isset($name)
 	{
@@ -739,7 +739,7 @@ class TComponent
 	 * to allow using unset() to set a component property to be null.
 	 * @param string the property name or the event name
 	 * @throws TInvalidOperationException if the property is read only.
-	 * @since 3.1.8
+	 * @since 3.2.1
 	 */
 	public function __unset($name)
 	{
@@ -1332,6 +1332,7 @@ class TComponent
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior added to this instance.
 	 * @param $sender the application
 	 * @param $param TClassBehaviorEventParameter
+	 * @since 3.2.1
 	 */
 	public function fxAttachClassBehavior($sender,$param) {
 		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
@@ -1345,6 +1346,7 @@ class TComponent
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior removed from this instance.
 	 * @param $sender the application
 	 * @param $param TClassBehaviorEventParameter
+	 * @since 3.2.1
 	 */
 	public function fxDetachClassBehavior($sender,$param) {
 		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
@@ -1368,6 +1370,7 @@ class TComponent
 	 * @param numeric|null priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
 	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
+	 * @since 3.2.1
 	 */
 	public static function attachClassBehavior($name,$behavior,$class=null,$priority=null) {
 		if(!$class&&function_exists('get_called_class'))
@@ -1401,6 +1404,7 @@ class TComponent
 	 *		{@link TPriorityList} priority, and numeric is a specific priority.  
 	 * @throws Exception if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
+	 * @since 3.2.1
 	 */
 	public static function detachClassBehavior($name,$class=null,$priority=false) {
 		if(!$class&&function_exists('get_called_class'))
@@ -1425,6 +1429,7 @@ class TComponent
 	 * The name 'asa' stands for 'as a'.
 	 * @param string the behavior name
 	 * @return IBehavior the behavior object, or null if the behavior does not exist
+	 * @since 3.2.1
 	 */
 	public function asa($behaviorname)
 	{
@@ -1448,6 +1453,7 @@ class TComponent
 	 *
 	 * @param class or string
 	 * @return boolean whether or not the object or a behavior is an instance of a particular class
+	 * @since 3.2.1
 	 */
 	public function isa($class)
 	{
@@ -1473,6 +1479,7 @@ class TComponent
 	 * {@link IBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
 	 * @param array list of behaviors to be attached to the component
+	 * @since 3.2.1
 	 */
 	public function attachBehaviors($behaviors)
 	{
@@ -1489,6 +1496,7 @@ class TComponent
 	 * {@link IBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
 	 * @param array list of behaviors to be detached from the component
+	 * @since 3.2.1
 	 */
 	public function detachBehaviors($behaviors)
 	{
@@ -1504,6 +1512,7 @@ class TComponent
 
 	/**
 	 * Detaches all behaviors from the component.
+	 * @since 3.2.1
 	 */
 	public function clearBehaviors()
 	{
@@ -1533,6 +1542,7 @@ class TComponent
 	 * @param mixed the behavior configuration. This is passed as the first
 	 * parameter to {@link YiiBase::createComponent} to create the behavior object.
 	 * @return IBehavior the behavior object
+	 * @since 3.2.1
 	 */
 	public function attachBehavior($name,$behavior,$priority=null)
 	{
@@ -1565,6 +1575,7 @@ class TComponent
 	 * @param string the behavior's name. It uniquely identifies the behavior.
 	 * @param numeric the behavior's priority. This defaults to false, aka any priority.
 	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
+	 * @since 3.2.1
 	 */
 	public function detachBehavior($name,$priority=false)
 	{
@@ -1589,6 +1600,7 @@ class TComponent
 	 * to be executed when enableBehaviors is called.  All attached behaviors are notified through 
 	 * dyEnableBehaviors.
 	 *
+	 * @since 3.2.1
 	 */
 	public function enableBehaviors()
 	{
@@ -1610,6 +1622,7 @@ class TComponent
 	 * to be executed when disableBehaviors is called.  All attached behaviors are notified through 
 	 * dyDisableBehaviors.
 	 *
+	 * @since 3.2.1
 	 */
 	public function disableBehaviors()
 	{
@@ -1624,6 +1637,7 @@ class TComponent
 	/**
 	 * Returns if all the behaviors are turned on or off for the object.
 	 * @return boolean whether or not all behaviors are enabled (true) or not (false)
+	 * @since 3.2.1
 	 */
 	public function getBehaviorsEnabled()
 	{
@@ -1644,6 +1658,7 @@ class TComponent
 	 * dyEnableBehavior.
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
+	 * @since 3.2.1
 	 */
 	public function enableBehavior($name)
 	{
@@ -1671,6 +1686,7 @@ class TComponent
 	 * dyDisableBehavior.
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
+	 * @since 3.2.1
 	 */
 	public function disableBehavior($name)
 	{
@@ -1719,7 +1735,7 @@ class TComponent
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 interface IDynamicMethods
 {
@@ -1735,7 +1751,7 @@ interface IDynamicMethods
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 class TClassBehaviorEventParameter extends TEventParameter
 {
@@ -2237,7 +2253,7 @@ class TComponentReflection extends TComponent
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 interface IBaseBehavior {
 	/**
@@ -2262,7 +2278,7 @@ interface IBaseBehavior {
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 interface IBehavior extends IBaseBehavior
 {
@@ -2306,7 +2322,7 @@ interface IBehavior extends IBaseBehavior
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 interface IClassBehavior extends IBaseBehavior {
 }
@@ -2321,7 +2337,7 @@ interface IClassBehavior extends IBaseBehavior {
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
- * @since 3.2
+ * @since 3.2.1
  */
 interface IInstanceCheck {
 	/**
@@ -2357,7 +2373,7 @@ interface IInstanceCheck {
  *
  * @version $Id$
  * @package System
- * @since prado 3.2
+ * @since 3.2.0
  */
 class TJavaScriptLiteral
 {
@@ -2385,7 +2401,7 @@ class TJavaScriptLiteral
  *
  * @version $Id$
  * @package System
- * @since prado 3.2
+ * @since 3.2.0
  */
 class TJavaScriptString extends TJavaScriptLiteral
 {
