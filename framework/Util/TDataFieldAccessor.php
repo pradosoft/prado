@@ -53,7 +53,15 @@ class TDataFieldAccessor
 		try
 		{
 			if(is_array($data) || ($data instanceof ArrayAccess))
-				return $data[$field];
+			{
+				if(isset($data[$field]))
+					return $data[$field];
+
+				$tmp = $data;
+				foreach (explode(".", $field) as $f)
+				    $tmp = $tmp[$f];
+				return $tmp;
+			}
 			else if(is_object($data))
 			{
 				if(strpos($field,'.')===false)  // simple field
@@ -79,4 +87,3 @@ class TDataFieldAccessor
 		throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
 	}
 }
-
