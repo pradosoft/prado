@@ -35,7 +35,9 @@ class TDataFieldAccessor
 	/**
 	 * Evaluates the data value at the specified field.
 	 * - If the data is an array, then the field is treated as an array index
-	 *   and the corresponding element value is returned;
+	 *   and the corresponding element value is returned; the field name can also include
+	 *   dots to access subarrays. For example a field named 'MyField.MySubField' will 
+	 *   first try to access $data['MyField.MySubField'], then try $data['MyField']['MySubField'].
 	 * - If the data is a TMap or TList object, then the field is treated as a key
 	 *   into the map or list, and the corresponding value is returned.
 	 * - If the data is an object, the field is treated as a property or sub-property
