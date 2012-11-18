@@ -135,7 +135,9 @@
     where &lt;target name&gt; can be one of the following:
 
     For all PRADO developers:
-    - test    : run unit tests (results are under /build/test-reports);
+    - test       : run unit tests (results are under /build/test-reports);
+    - lint       : run lint on framework
+    - lint-demos : run lint on demos
 
     For PRADO release manager:
     - dist    : create release files;
@@ -478,9 +480,10 @@ the PRADO distribution:
     <copy file="${build.src.dir}/HISTORY" tofile="${build.snapshot.dir}/changelog-latest.txt" />
   </target>
 
-<!--
   <taskdef name="phplint" classname="PhpLintTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="xmllint" classname="XmlLintTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="jslint" classname="JslLintTask" classpath="buildscripts/phing/tasks"/>
+<!--
   <taskdef name="analyze" classname="ZendCodeAnalyzerTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="pear-package" classname="BuildPradoPEARPackageTask" classpath="buildscripts/phing/tasks"/>
 
@@ -557,34 +560,72 @@ the PRADO distribution:
     </if>
   </target>
 
-  <target name="lint" description="Check syntax of PHP source files">
-    <phplint>
-      <fileset refid="src"/>
-    </phplint>
-  </target>
-
-  <target name="lint-demos" description="Check syntax of demo files and configuration files">
-    <echo>Validate application configuration</echo>
-    <xmllint schema="${application.xsd}">
-      <fileset dir="demos">
+-->
+  <target name="lint" description="Check syntax of source files">
+    <echo>Checking php files..</echo>
+    <phplint deprecatedAsError="true" >
+      <fileset dir="framework">
         <exclude name="**/.svn"/>
-        <include name="**/application.xml"/>
-      </fileset>
-    </xmllint>
-    <echo>Validate page configuration</echo>
-    <xmllint schema="${config.xsd}">
-      <fileset dir="demos">
-        <exclude name="**/.svn"/>
-        <include name="**/config.xml"/>
-      </fileset>
-    </xmllint>
-    <phplint>
-      <fileset dir="demos">
-        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
         <include name="**/*.php"/>
       </fileset>
     </phplint>
+
+    <echo>Checking js files..</echo>
+    <jsllint>
+      <fileset dir="framework">
+        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
+        <include name="**/*.js"/>
+      </fileset>
+    </jsllint>
+
+    <echo>Checking xml files..</echo>
+    <xmllint>
+      <fileset dir="framework">
+        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
+        <include name="**/*.xml"/>
+      </fileset>
+    </xmllint>
   </target>
+
+  <target name="lint-demos" description="Check syntax of demo files">
+    <echo>Checking php files..</echo>
+    <phplint deprecatedAsError="true" >
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
+        <include name="**/*.php"/>
+      </fileset>
+    </phplint>
+
+    <echo>Checking js files..</echo>
+    <jsllint>
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
+        <include name="**/*.js"/>
+      </fileset>
+    </jsllint>
+
+    <echo>Checking xml files..</echo>
+    <xmllint>
+      <fileset dir="demos">
+        <exclude name="**/.svn"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/*~"/>
+        <include name="**/*.xml"/>
+      </fileset>
+    </xmllint>
+  </target>
+
+<!--
   <target name="build-pear-package">
     <echo>Preparing files for PEAR package...</echo>
     <delete dir="${build.pear.dir}"/>
