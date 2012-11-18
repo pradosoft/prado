@@ -5,8 +5,6 @@
 /build.xml -text
 buildscripts/.htaccess -text
 buildscripts/Benchmark/LICENSE -text
-buildscripts/PHPUnit2/pear-phpunit -text
-buildscripts/PHPUnit2/pear-phpunit.bat -text
 buildscripts/PhpDocumentor/LICENSE -text
 buildscripts/PhpDocumentor/pear-phpdoc -text
 buildscripts/PhpDocumentor/phpDocumentor.ini -text
