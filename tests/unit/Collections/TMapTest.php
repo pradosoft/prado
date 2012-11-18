@@ -1,7 +1,7 @@
 <?php
 require_once dirname(__FILE__).'/../phpunit.php';
 
-class MapItem {
+class TMapTest_MapItem {
   public $data='data';
 }
 
@@ -14,9 +14,9 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 
   public function setUp() {
     $this->map=new TMap;
-    $this->item1=new MapItem;
-    $this->item2=new MapItem;
-    $this->item3=new MapItem;
+    $this->item1=new TMapTest_MapItem;
+    $this->item2=new TMapTest_MapItem;
+    $this->item3=new TMapTest_MapItem;
     $this->map->add('key1',$this->item1);
     $this->map->add('key2',$this->item2);
   }

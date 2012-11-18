@@ -12,7 +12,8 @@
 <!--  <taskdef name="prado-pear" classname="PradoPearTask" classpath="buildscripts/phing/tasks"/>-->
   <taskdef name="prado-quickstart-index" classname="QuickstartIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-api-index" classname="ManualIndexTask" classpath="buildscripts/phing/tasks"/>
-<!--  <taskdef name="prado-test" classname="PradoTestTask" classpath="buildscripts/phing/tasks"/>-->
+  <taskdef name="prado-test" classname="PradoTestTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="phpunitreporttask" classname="PhpUnitReportTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="compact-package" classname="PradoPackageTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-quickstart-docs" classname="PradoQuickStartDocs" classpath="buildscripts/phing/tasks" />
 
@@ -460,7 +461,7 @@ the PRADO distribution:
       </batchtest>
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
     </prado-test>
-    <phpunit2report infile="${build.test.dir}/unit-tests.xml" format="frames" styledir="buildscripts/phing/style" todir="${build.test.dir}"/>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
   </target>
 
   <target name="snapshot" depends="rebuild">

@@ -1,6 +1,5 @@
 <?php
 require_once dirname(__FILE__).'/../phpunit.php';
-require_once 'PHPUnit/Extensions/OutputTestCase.php';
 
 Prado::using('System.Web.THttpResponse');
 

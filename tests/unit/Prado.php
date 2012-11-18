@@ -146,5 +146,3 @@ class Prado extends PradoBase {
 	}
 
 }
-
-?>

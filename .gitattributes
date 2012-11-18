@@ -4021,7 +4021,6 @@ tests/unit/Web/data/aTarFile.md5 -text
 tests/unit/Web/data/aTarFile.tar -text
 tests/unit/Web/data/pradoheader.gif -text
 tests/unit/Xml/AllTests.php -text
-tests/unit/Xml/TRssFeedDocumentTest.php -text
 tests/unit/Xml/TXmlDocumentTest.php -text
 tests/unit/Xml/TXmlElementListTest.php -text
 tests/unit/Xml/TXmlElementTest.php -text
