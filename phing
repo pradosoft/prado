@@ -1,5 +1,13 @@
 #!/bin/sh
-PHING_HOME=`pwd`/buildscripts/phing
-export PHING_HOME
-php -d html_errors=off -qC buildscripts/phing/bin/phing.php $@
 
+# Old version: call phing directly (still working)
+#PHING_HOME=`pwd`/buildscripts/phing
+#export PHING_HOME
+
+#PHP_CLASSPATH=$PHING_HOME/classes
+#export PHP_CLASSPATH
+
+#php -d html_errors=off -qC buildscripts/phing/bin/phing.php $@
+
+# New version: let phing's wrapper do the dirty job
+./buildscripts/phing/bin/phing $@
