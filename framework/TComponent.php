@@ -1721,8 +1721,14 @@ class TComponent
 		$a = (array)$this;
 		$a = array_keys($a);
 		$exprops = array(); 
+		if($this->_listeningenabled===false)
+			$exprops[] = "\0TComponent\0_listeningenabled";			
+		if($this->_behaviorsenabled===true)
+			$exprops[] = "\0TComponent\0_behaviorsenabled";			
 		if ($this->_e===array())
 			$exprops[] = "\0TComponent\0_e";
+		if ($this->_m===null)
+			$exprops[] = "\0TComponent\0_m";
 		return array_diff($a,$exprops);
 	}
 }
