@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: IOException.php,v 1.4 2005/02/27 20:52:09 mrook Exp $
+ *  $Id: 8a019e4034b2236c19058ea849b12fb88d3e2f43 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,4 +25,3 @@
  * @package   phing.system.io
  */
 class IOException extends Exception {}
-?>

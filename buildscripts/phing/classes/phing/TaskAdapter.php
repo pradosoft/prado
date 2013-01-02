@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: TaskAdapter.php,v 1.7 2005/10/04 13:52:53 hlellelid Exp $
+ *  $Id: 8cd2a3322c659a5de7fcb47e21192730e5cc863d $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,8 +26,8 @@ require_once 'phing/Task.php';
  *  similar patterns).
  *
  *  @author    Andreas Aderhold <andi@binarycloud.com>
- *  @copyright © 2001,2002 THYRELL. All rights reserved
- *  @version   $Revision: 1.7 $
+ *  @copyright 2001,2002 THYRELL. All rights reserved
+ *  @version   $Id$
  *  @package   phing
  */
 class TaskAdapter extends Task {
@@ -45,7 +45,7 @@ class TaskAdapter extends Task {
             try {  // try to set project
                 $this->proxy->setProject($this->project);
             } catch (Exception $ex) {
-                $this->log("Error setting project in " . get_class($this->proxy) . PROJECT_MSG_ERR);
+                $this->log("Error setting project in " . get_class($this->proxy) . Project::MSG_ERR);
                 throw new BuildException($ex);
             }
         } else {
@@ -56,7 +56,8 @@ class TaskAdapter extends Task {
             try { //try to call main
                 $this->proxy->main($this->project);
             } catch (Exception $ex) {
-                $this->log("Error in " . get_class($this->proxy), PROJECT_MSG_ERR);
+                $this->log("Error in " . get_class($this->proxy), Project::MSG_ERR);
+                $this->log($ex->getTraceAsString(), Project::MSG_DEBUG);
                 throw new BuildException($ex->getMessage());
             }
         } else {

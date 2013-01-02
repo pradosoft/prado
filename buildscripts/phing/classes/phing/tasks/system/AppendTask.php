@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: AppendTask.php 59 2006-04-28 14:49:47Z mrook $  
+ *  $Id: 056086ae305f5447baee1a4c7b1ad59ceb8cf50b $  
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -48,7 +48,7 @@ include_once 'phing/types/FileSet.php';
  * </append>
  * </code>
  * @package phing.tasks.system
- * @version $Revision: 1.14 $
+ * @version $Id$
  */
 class AppendTask extends Task {
     
@@ -80,7 +80,7 @@ class AppendTask extends Task {
      * @deprecated Will be removed with final release.
      */
     function setTo(PhingFile $f) {        
-        $this->log("The 'to' attribute is deprecated in favor of 'destFile'; please update your code.", PROJECT_MSG_WARN);
+        $this->log("The 'to' attribute is deprecated in favor of 'destFile'; please update your code.", Project::MSG_WARN);
         $this->to = $f;
     }
     
@@ -165,7 +165,7 @@ class AppendTask extends Task {
             // out for better performance(?)
             $lines = explode("\n", $this->text);
             foreach($lines as $line) {
-                $this->log($line, PROJECT_MSG_VERBOSE);
+                $this->log($line, Project::MSG_VERBOSE);
             }
             
             $writer->write($this->text);
@@ -177,7 +177,7 @@ class AppendTask extends Task {
                 try {
                     $this->appendFile($writer, $this->file);
                 } catch (Exception $ioe) {
-                    $this->log("Unable to append contents of file " . $this->file->getAbsolutePath() . ": " . $ioe->getMessage(), PROJECT_MSG_WARN);
+                    $this->log("Unable to append contents of file " . $this->file->getAbsolutePath() . ": " . $ioe->getMessage(), Project::MSG_WARN);
                 }                
             }
             
@@ -187,7 +187,7 @@ class AppendTask extends Task {
                     $files = $fl->getFiles($this->project);
                     $this->appendFiles($writer, $files, $fl->getDir($this->project));
                 } catch (BuildException $be) {
-                    $this->log($be->getMessage(), PROJECT_MSG_WARN);
+                    $this->log($be->getMessage(), Project::MSG_WARN);
                 }
             }
             
@@ -197,7 +197,7 @@ class AppendTask extends Task {
                     $files = $fs->getDirectoryScanner($this->project)->getIncludedFiles();
                     $this->appendFiles($writer, $files, $fs->getDir($this->project));
                 } catch (BuildException $be) {
-                    $this->log($be->getMessage(), PROJECT_MSG_WARN);
+                    $this->log($be->getMessage(), Project::MSG_WARN);
                 }
             }                        
             
@@ -224,7 +224,7 @@ class AppendTask extends Task {
                     $pathSlot->setValue($f->getPath());
                     $this->appendFile($writer, $f);
                 } catch (Exception $ioe) {
-                    $this->log("Unable to append contents of file " . $f->getAbsolutePath() . ": " . $ioe->getMessage(), PROJECT_MSG_WARN);
+                    $this->log("Unable to append contents of file " . $f->getAbsolutePath() . ": " . $ioe->getMessage(), Project::MSG_WARN);
                 }
             }
         } // if !empty        

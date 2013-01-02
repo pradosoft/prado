@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: SimpleTestFormatterElement.php 58 2006-04-28 14:41:04Z mrook $
+ * $Id: 2441f1b83b9f9d1aeb2a4afd7e049c840d70bbd9 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,108 +19,50 @@
  * <http://phing.info>.
  */
 
-require_once 'phing/tasks/ext/simpletest/SimpleTestPlainResultFormatter.php';
-require_once 'phing/tasks/ext/simpletest/SimpleTestSummaryResultFormatter.php';
-require_once 'phing/tasks/ext/simpletest/SimpleTestXmlResultFormatter.php';
+require_once 'phing/tasks/ext/phpunit/FormatterElement.php';
 
 /**
  * Child class of "FormatterElement", overrides setType to provide other
  * formatter classes for SimpleTest
  *
- * @author Michiel Rook <michiel@trendserver.nl>
- * @version $Id: SimpleTestFormatterElement.php 58 2006-04-28 14:41:04Z mrook $
+ * @author Michiel Rook <mrook@php.net>
+ * @version $Id: 2441f1b83b9f9d1aeb2a4afd7e049c840d70bbd9 $
  * @package phing.tasks.ext.simpletest
  * @since 2.2.0
  */
-class SimpleTestFormatterElement
+class SimpleTestFormatterElement extends FormatterElement
 {
-	protected $formatter = NULL;
+    function setType($type)
+    {
+        $this->type = $type;
 
-	protected $type = "";
-
-	protected $useFile = true;
-
-	protected $toDir = ".";
-
-	protected $outfile = "";
-
-	function setType($type)
-	{
-		$this->type = $type;
-
-		if ($this->type == "xml")
-		{
-			//$destFile = new PhingFile($this->toDir, 'testsuites.xml');
-			$this->formatter = new SimpleTestXmlResultFormatter();
-		}
-		else
-		if ($this->type == "plain")
-		{
-			$this->formatter = new SimpleTestPlainResultFormatter();
-		}
-		else
-		if ($this->type == "summary")
-		{
-			$this->formatter = new SimpleTestSummaryResultFormatter();
-		}
-		else
-		{
-			throw new BuildException("Formatter '" . $this->type . "' not implemented");
-		}
-	}
-
-	function setClassName($className)
-	{
-		$classNameNoDot = Phing::import($className);
-
-		$this->formatter = new $classNameNoDot();
-	}
-
-	function setUseFile($useFile)
-	{
-		$this->useFile = $useFile;
-	}
-
-	function getUseFile()
-	{
-		return $this->useFile;
-	}
-
-	function setToDir($toDir)
-	{
-		$this->toDir = $toDir;
-	}
-
-	function getToDir()
-	{
-		return $this->toDir;
-	}
-
-	function setOutfile($outfile)
-	{
-		$this->outfile = $outfile;
-	}
-
-	function getOutfile()
-	{
-		if ($this->outfile)
-		{
-			return $this->outfile;
-		}
-		else
-		{
-			return $this->formatter->getPreferredOutfile() . $this->getExtension();
-		}
-	}
-
-	function getExtension()
-	{
-		return $this->formatter->getExtension();
-	}
-
-	function getFormatter()
-	{
-		return $this->formatter;
-	}
+        if ($this->type == "xml")
+        {
+            require_once 'phing/tasks/ext/simpletest/SimpleTestXmlResultFormatter.php';
+            $destFile = new PhingFile($this->toDir, 'testsuites.xml');
+            $this->formatter = new SimpleTestXmlResultFormatter();
+        }
+        else
+        if ($this->type == "plain")
+        {
+            require_once 'phing/tasks/ext/simpletest/SimpleTestPlainResultFormatter.php';
+            $this->formatter = new SimpleTestPlainResultFormatter();
+        }
+        else
+        if ($this->type == "summary")
+        {
+            require_once 'phing/tasks/ext/simpletest/SimpleTestSummaryResultFormatter.php';
+            $this->formatter = new SimpleTestSummaryResultFormatter();
+        }
+        else
+        if ($this->type == "debug")
+        {
+            require_once 'phing/tasks/ext/simpletest/SimpleTestDebugResultFormatter.php';
+            $this->formatter = new SimpleTestDebugResultFormatter();
+        }
+        else
+        {
+            throw new BuildException("Formatter '" . $this->type . "' not implemented");
+        }
+    }
 }
-?>

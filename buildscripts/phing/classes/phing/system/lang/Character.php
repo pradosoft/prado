@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Character.php,v 1.3 2003/11/19 05:48:29 hlellelid Exp $
+ *  $Id: afe71e9fbaaa9c49e543c338b5fdca1bc7c9d198 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@ class Character {
     // in form of an object.
     // anyway just a thought
 
-    function isLetter($char) {
+    public static function isLetter($char) {
 
         if (strlen($char) !== 1)
             $char = 0;
@@ -46,4 +46,4 @@ class Character {
     }
 
 }
-?>
+

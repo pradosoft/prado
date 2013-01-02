@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: Timer.php,v 1.5 2003/12/24 13:02:09 hlellelid Exp $
+ *  $Id: 085b1a92f765375e97d2c09c7569ca5747a44634 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -38,7 +38,7 @@
  * @author    Charles Killian
  * @author    Hans Lellelid <hans@xmpl.org>
  * @package    phing.system.util
- * @version    $Revision: 1.5 $ $Date: 2003/12/24 13:02:09 $
+ * @version    $Id$
  */
 class Timer {
 

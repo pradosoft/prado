@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: AbstractHandler.php,v 1.6 2004/02/27 18:16:10 hlellelid Exp $
+ * $Id: 3d81ac2784333ce8108cf32818b8dfc335993507 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,8 +26,8 @@ include_once 'phing/parser/ExpatParseException.php';
  * This is an abstract class all SAX handler classes must extend
  *
  * @author    Andreas Aderhold <andi@binarycloud.com>
- * @copyright © 2001,2002 THYRELL. All rights reserved
- * @version   $Revision: 1.6 $
+ * @copyright 2001,2002 THYRELL. All rights reserved
+ * @version   $Id$
  * @package   phing.parser
  */
 abstract class AbstractHandler {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: IncludePathTask.php 59 2006-04-28 14:49:47Z mrook $
+ * $Id: eaa0d6c5c7fb908d419cd6e22c7eccbf01506da7 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -34,7 +34,7 @@ include_once 'phing/types/Path.php';
  * </code>
  * 
  * @author    Hans Lellelid <hans@xmpl.org>
- * @version   $Revision: 1.1 $
+ * @version   $Id$
  * @package   phing.tasks.system
  */
 class IncludePathTask extends Task {
@@ -107,7 +107,7 @@ class IncludePathTask extends Task {
         $new_parts = array_diff($add_parts, $curr_parts);
         
         if ($new_parts) {
-            $this->log("Prepending new include_path components: " . implode(PATH_SEPARATOR, $new_parts), PROJECT_MSG_VERBOSE);
+            $this->log("Prepending new include_path components: " . implode(PATH_SEPARATOR, $new_parts), Project::MSG_VERBOSE);
             set_include_path(implode(PATH_SEPARATOR, array_merge($new_parts, $curr_parts)));
         }
         

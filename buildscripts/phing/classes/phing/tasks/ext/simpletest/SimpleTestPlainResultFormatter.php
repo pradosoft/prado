@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: SimpleTestPlainResultFormatter.php 59 2006-04-28 14:49:47Z mrook $
+ * $Id: c0fa060b8f439f7d0013a0ec016ede4c5a76b42d $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,72 +24,72 @@ require_once 'phing/tasks/ext/simpletest/SimpleTestResultFormatter.php';
 /**
  * Prints plain text output of the test to a specified Writer.
  *
- * @author Michiel Rook <michiel@trendserver.nl>
- * @version $Id: SimpleTestPlainResultFormatter.php 59 2006-04-28 14:49:47Z mrook $
+ * @author Michiel Rook <mrook@php.net>
+ * @version $Id: c0fa060b8f439f7d0013a0ec016ede4c5a76b42d $
  * @package phing.tasks.ext.simpletest
  * @since 2.2.0
  */
 class SimpleTestPlainResultFormatter extends SimpleTestResultFormatter
 {
-	private $inner = "";
+    private $inner = "";
+    
+    function getExtension()
+    {
+        return ".txt";
+    }
+    
+    function getPreferredOutfile()
+    {
+        return "testresults";
+    }
 
-	function getExtension()
-	{
-		return ".txt";
-	}
+    function paintCaseStart($test_name)
+    {
+        parent::paintCaseStart($test_name);
+        
+        $this->inner = "";
+    }
+    
+    function paintCaseEnd($test_name)
+    {
+        parent::paintCaseEnd($test_name);
+        
+    $sb = "";
+        /* Only count suites where more than one test was run */
+        if ($this->getRunCount())
+        {
+            $sb.= "Testsuite: $test_name\n";
+            $sb.= "Tests run: " . $this->getRunCount();
+            $sb.= ", Failures: " . $this->getFailureCount();
+            $sb.= ", Errors: " . $this->getErrorCount();
+            $sb.= ", Time elapsed: " . $this->getElapsedTime();
+            $sb.= " sec\n";
 
-	function getPreferredOutfile()
-	{
-		return "testresults";
-	}
+            if ($this->out != NULL)
+            {
+                $this->out->write($sb);
+                $this->out->write($this->inner);
+            }
+        }
+    }
 
-	function paintCaseStart($test_name)
-	{
-		parent::paintCaseStart($test_name);
+    function paintError($message)
+    {
+        parent::paintError($message);
+        
+        $this->formatError("ERROR", $message);
+    }
 
-		$this->inner = "";
-	}
+    function paintFail($message)
+    {
+        parent::paintFail($message);
+        
+        $this->formatError("FAILED", $message);
+    }
 
-	function paintCaseEnd($test_name)
-	{
-		parent::paintCaseEnd($test_name);
-
-		/* Only count suites where more than one test was run */
-		if ($this->getRunCount())
-		{
-			$sb = "Testsuite: $test_name\n";
-			$sb.= "Tests run: " . $this->getRunCount();
-			$sb.= ", Failures: " . $this->getFailureCount();
-			$sb.= ", Errors: " . $this->getErrorCount();
-			$sb.= ", Time elapsed: " . $this->getElapsedTime();
-			$sb.= " sec\n";
-
-			if ($this->out != NULL)
-			{
-				$this->out->write($sb);
-				$this->out->write($this->inner);
-			}
-		}
-	}
-
-	function paintError($message)
-	{
-		parent::paintError($message);
-
-		$this->formatError("ERROR", $message);
-	}
-
-	function paintFail($message)
-	{
-		parent::paintFail($message);
-
-		$this->formatError("FAILED", $message);
-	}
-
-	private function formatError($type, $message)
-	{
-		$this->inner.= $this->getTestName() . " " . $type . "\n";
-		$this->inner.= $message . "\n";
-	}
+    private function formatError($type, $message)
+    {
+        $this->inner.= $this->getTestName() . " " . $type . "\n";
+        $this->inner.= $message . "\n"; 
+    }
 }
-?>

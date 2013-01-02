@@ -1,6 +1,6 @@
 <?php
 /* 
- *  $Id: RegexpMapper.php,v 1.9 2004/03/15 17:11:15 hlellelid Exp $
+ *  $Id: 96aee1ffd32ba919d42e1141129068006e709976 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,7 +28,7 @@ include_once 'phing/util/regexp/Regexp.php';
  *
  * @author Andreas Aderhold <andi@binarycloud.com>
  * @author Hans Lellelid <hans@velum.net>
- * @version $Revision: 1.9 $
+ * @version $Id$
  * @package phing.mappers
  */
 class RegexpMapper implements FileNameMapper {

@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: SimpleTestPlainResultFormatter.php 59 2006-04-28 14:49:47Z mrook $
+ * $Id: 03b9f976a961a2688d51c9429087a98c31326f42 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,135 +20,159 @@
  */
 
 require_once 'phing/tasks/ext/simpletest/SimpleTestResultFormatter.php';
+require_once 'simpletest/xml.php';
 
 /**
  * Prints plain text output of the test to a specified Writer.
  *
- * @author Michiel Rook <michiel@trendserver.nl>
- * @version $Id: SimpleTestPlainResultFormatter.php 59 2006-04-28 14:49:47Z mrook $
+ * @author Michiel Rook <mrook@php.net>
+ * @version $Id: 03b9f976a961a2688d51c9429087a98c31326f42 $
  * @package phing.tasks.ext.simpletest
  * @since 2.2.0
  */
 class SimpleTestXmlResultFormatter extends SimpleTestResultFormatter
 {
-	private $results=array();
-	private $currentSuite;
-	private $currentTest;
-	private $methodCounts=0;
-	private $methodTime=0;
+    /**
+     * @var XmlReporter
+     */
+    private $logger = NULL;
+    
+    private $xmlData = "";
 
-	function paintFooter($test_name)
-	{
-		if($test_name=='GroupTest')
-			 $this->printXml($test_name);
+    function __construct()
+    {
+        $this->logger = new XmlReporter();
+    }
+    
+    function getExtension()
+    {
+        return ".xml";
+    }
+    
+    function getPreferredOutfile()
+    {
+        return "testsuites";
+    }
+    
+    private function captureStart()
+    {
+        ob_start();
+    }
+    
+    private function captureStop()
+    {
+        $this->xmlData .= ob_get_contents();
+        ob_end_clean();
     }
 
-	protected function printXml($test_name)
-	{
-		$suites = $this->printXmlSuites($this->results);
-$content = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites total="{$this->getRunCount()}" name="{$test_name}">
-$suites
-</testsuites>
-EOD;
-		$this->out->write($content);
-	}
+    function paintGroupStart($test_name, $size)
+    {
+        parent::paintGroupStart($test_name, $size);
+        
+        $this->captureStart();
+        $this->logger->paintGroupStart($test_name, $size);
+        $this->captureStop();
+    }
+    
+    function paintGroupEnd($test_name)
+    {
+        parent::paintGroupEnd($test_name);
+        
+        $this->captureStart();
+        $this->logger->paintGroupEnd($test_name);
+        $this->captureStop();
 
-	protected function printXmlSuites($results)
-	{
-		$contents = '';
-		foreach($results as $suiteName => $suite)
-		{
-			$tests = $this->printXmlTests($suite['tests'],$suiteName);
-$contents .= <<<EOD
-<testsuite name="{$suiteName}" tests="{$suite['total']}" failures="{$suite['failures']}" errors="{$suite['errors']}" time="{$suite['time']}">
-		$tests
-</testsuite>
-EOD;
-		}
-		return $contents;
-	}
+        if (count($this->_test_stack) == 0)
+        {
+            if ($this->out)
+            {
+                $this->out->write($this->xmlData);
+                $this->out->close();
+            }
+        }
+    }
 
-	protected function printXmlTests($tests,$suiteName)
-	{
-		$contents = '';
-		foreach($tests as $name => $result)
-		{
-			if(count($result['results'])==0)
-			{
-				$contents .= <<<EOD
-<testcase name="{$name}" class="{$suiteName}" result="success" time="{$result['time']}"/>
-EOD;
-			}
-			else
-			{
-				$type = strtolower($result['results']['type']);
-				$message = htmlspecialchars($result['results']['message']);
-$contents .= <<<EOD
-<testcase name="{$name}" class="{$suiteName}" result="{$type}" time="{$result['time']}">
-	<{$type}>$message</{$type}>
-</testcase>
-EOD;
-			}
-		}
-		return $contents;
-	}
+    function paintCaseStart($test_name)
+    {
+        $this->captureStart();
+        $this->logger->paintCaseStart($test_name);
+        $this->captureStop();
+    }
+    
+    function paintCaseEnd($test_name)
+    {
+        $this->captureStart();
+        $this->logger->paintCaseEnd($test_name);
+        $this->captureStop();
+    }
 
-	function paintCaseStart($test_name)
-	{
-		parent::paintCaseStart($test_name);
-		$this->results[$test_name] = array('tests'=>array());
-		$this->currentSuite=$test_name;
-		$this->methodCounts=0;
-	}
+    function paintMethodStart($test_name)
+    {
+        $this->captureStart();
+        $this->logger->paintMethodStart($test_name);
+        $this->captureStop();
+    }
+    
+    function paintMethodEnd($test_name)
+    {
+        $this->captureStart();
+        $this->logger->paintMethodEnd($test_name);
+        $this->captureStop();
+    }
 
-	function paintCaseEnd($test_name)
-	{
-		parent::paintCaseEnd($test_name);
-		$details = 	array(
-			'total' => $this->methodCounts,
-			'failures' => $this->getFailureCount(),
-			'errors' => $this->getErrorCount(),
-			'time' => $this->getElapsedTime());
+    function paintPass($message)
+    {
+        $this->captureStart();
+        $this->logger->paintPass($message);
+        $this->captureStop();
+    }
+    
+    function paintError($message)
+    {
+        $this->captureStart();
+        $this->logger->paintError($message);
+        $this->captureStop();
+    }
 
-		$this->results[$test_name] = array_merge($this->results[$test_name],$details);
-	}
+    function paintFail($message)
+    {
+        $this->captureStart();
+        $this->logger->paintFail($message);
+        $this->captureStop();
+    }
 
-	function paintMethodStart($test_name)
-	{
-		$this->currentTest=$test_name;
-		parent::paintMethodStart($test_name);
-		$this->results[$this->currentSuite]['tests'][$test_name]['results'] = array();
-		$this->methodCounts++;
-		$this->methodTime = new Timer();
-		$this->methodTime->start();
-	}
+    function paintException($exception)
+    {
+        $this->captureStart();
+        $this->logger->paintException($exception);
+        $this->captureStop();
+    }
 
-	function paintMethodEnd($test_name)
-	{
-		parent::paintMethodEnd($test_name);
-		$this->methodTime->stop();
-		$this->results[$this->currentSuite]['tests'][$test_name]['time'] = $this->methodTime->getElapsedTime();
-	}
+    function paintSkip($message)
+    {
+        $this->captureStart();
+        $this->logger->paintSkip($message);
+        $this->captureStop();
+    }
 
-	function paintError($message)
-	{
-		parent::paintError($message);
-		$this->formatError("ERROR", $message);
-	}
+    function paintMessage($message)
+    {
+        $this->captureStart();
+        $this->logger->paintMessage($message);
+        $this->captureStop();
+    }
 
-	function paintFail($message)
-	{
-		parent::paintFail($message);
-		$this->formatError("FAILED", $message);
-	}
+    function paintFormattedMessage($message)
+    {
+        $this->captureStart();
+        $this->logger->paintFormattedMessage($message);
+        $this->captureStop();
+    }
 
-	private function formatError($type, $message)
-	{
-		$result = array('type'=>$type, 'message' => $message);
-		$this->results[$this->currentSuite]['tests'][$this->currentTest]['results'] =
-			$result;
-	}
+    function paintSignal($type, $payload)
+    {
+        $this->captureStart();
+        $this->logger->paintSignal($type, $payload);
+        $this->captureStop();
+    }
 }
-?>

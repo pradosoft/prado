@@ -1,11 +1,9 @@
 <?php
 
-require_once(dirname(__FILE__).'/../phpunit2.php');
-
 /**
  * @package System.Caching
  */
-class TDirectoryCacheDependencyTest extends PHPUnit2_Framework_TestCase
+class TDirectoryCacheDependencyTest extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{

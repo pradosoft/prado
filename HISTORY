@@ -12,6 +12,9 @@ ENH: Issue #420 - Permit to easily mock TActiveRecordgateway for unit testing (m
 BUG: Issue #421 - TAutocomplete not rendering an empty suggestion list (Dario Rigolin)
 BUG: Issue #424 - TDefaultButton broken when multiple TDefaultButton are on the same page (ctrlaltca)
 BUG: Issue #425 - Error generating WSDL (cezarpirajant)
+ENH: Issue #426 - Make TDataFieldAccessor capable to access data in nested arrays (ctrlaltca)
+BUG: Issue #427 - Var name mismatch in TActiveFileUpload.php (piotr.knapik)
+BUG: Issue #428 - Using a TActiveCustomValidator with a TActiveTextBox and AutoPostBack does not work as expected (ctrlaltca)
 
 EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); changed the default cipher from 3DES to AES256 (ctrlaltca)
 EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the use of all algorithms supported by php (ctrlaltca)

@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: AdhocTask.php 59 2006-04-28 14:49:47Z mrook $
+ *  $Id: 03a742eb03e5e1515c297d941970a86b00e1f69e $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,7 +31,7 @@ require_once 'phing/Task.php';
  * Subclasses exist for conveniently declaring and registering tasks and types.
  * 
  * @author   Hans Lellelid <hans@xmpl.org>
- * @version  $Revision: 1.6 $
+ * @version  $Id$
  * @package  phing.tasks.system
  */
 class AdhocTask extends Task {
@@ -51,10 +51,10 @@ class AdhocTask extends Task {
         $this->execute();        
         if ($this->newClasses) {
             foreach($this->newClasses as $classname) {
-                $this->log("Added adhoc class " . $classname, PROJECT_MSG_VERBOSE);
+                $this->log("Added adhoc class " . $classname, Project::MSG_VERBOSE);
             }
         } else {
-            $this->log("Adhoc task executed but did not result in any new classes.", PROJECT_MSG_VERBOSE);
+            $this->log("Adhoc task executed but did not result in any new classes.", Project::MSG_VERBOSE);
         }
     }
     

@@ -2,8 +2,11 @@
 /.project
 /.settings
 /assets
+/build
 buildscripts/chmbuilder/assets/*
 buildscripts/chmbuilder/classes/runtime/*
+buildscripts/texbuilder/quickstart/*.png
+buildscripts/texbuilder/quickstart/*.tex
 demos/address-book/assets/*
 demos/address-book/protected/runtime/*
 demos/blog-tutorial/assets/*
@@ -58,5 +61,6 @@ tests/FunctionalTests/validators/assets/*
 tests/FunctionalTests/validators/protected/runtime/*
 tests/simple_unit/runtime/*
 tests/unit/Caching/mockapp/runtime/*
+tests/unit/Data/db/test.db
 tests/unit/Security/app/runtime/*
 tests/unit/Web/app/runtime/*

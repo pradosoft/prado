@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: ReflexiveTask.php 59 2006-04-28 14:49:47Z mrook $  
+ *  $Id: 3dcb1ad6e9fd3b2801c1fe3bcbaf2fcab8ea6018 $  
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -43,7 +43,7 @@ require_once 'phing/Task.php';
  * </code>
  * 
  * @author    Hans Lellelid <hans@xmpl.org>
- * @version   $Revision: 1.11 $
+ * @version   $Id$
  * @package   phing.tasks.system
  */
 class ReflexiveTask extends Task {
@@ -105,24 +105,24 @@ class ReflexiveTask extends Task {
                         $files[] = new PhingFile($dir, $fname);
                     }
                 } catch (BuildException $be) {
-                    $this->log($be->getMessage(), PROJECT_MSG_WARN);
+                    $this->log($be->getMessage(), Project::MSG_WARN);
                 }
             }                        
         }
         
         $this->log("Applying reflexive processing to " . count($files) . " files.");
 
-		// These "slots" allow filters to retrieve information about the currently-being-process files		
-		$slot = $this->getRegisterSlot("currentFile");
-		$basenameSlot = $this->getRegisterSlot("currentFile.basename");	
+        // These "slots" allow filters to retrieve information about the currently-being-process files      
+        $slot = $this->getRegisterSlot("currentFile");
+        $basenameSlot = $this->getRegisterSlot("currentFile.basename"); 
 
         
         foreach($files as $file) {
-			// set the register slots
-			
-			$slot->setValue($file->getPath());
-			$basenameSlot->setValue($file->getName());
-			
+            // set the register slots
+            
+            $slot->setValue($file->getPath());
+            $basenameSlot->setValue($file->getName());
+            
             // 1) read contents of file, pulling through any filters
             $in = null;
             try {                
@@ -134,7 +134,7 @@ class ReflexiveTask extends Task {
                 $in->close();
             } catch (Exception $e) {
                 if ($in) $in->close();
-                $this->log("Erorr reading file: " . $e->getMessage(), PROJECT_MSG_WARN);
+                $this->log("Erorr reading file: " . $e->getMessage(), Project::MSG_WARN);
             }
             
             try {
@@ -142,10 +142,10 @@ class ReflexiveTask extends Task {
                 $out = new FileWriter($file);
                 $out->write($contents);
                 $out->close();
-                $this->log("Applying reflexive processing to " . $file->getPath(), PROJECT_MSG_VERBOSE);
+                $this->log("Applying reflexive processing to " . $file->getPath(), Project::MSG_VERBOSE);
             } catch (Exception $e) {
                 if ($out) $out->close();
-                $this->log("Error writing file back: " . $e->getMessage(), PROJECT_MSG_WARN);
+                $this->log("Error writing file back: " . $e->getMessage(), Project::MSG_WARN);
             }
             
         }

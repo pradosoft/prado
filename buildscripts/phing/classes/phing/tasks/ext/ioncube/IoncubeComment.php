@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: IoncubeComment.php 59 2006-04-28 14:49:47Z mrook $
+ * $Id: dbbc1b4830ba43116d5b5e5d20c749598eaf62b7 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,23 +22,22 @@
 /**
  * Wrapper for comments for ionCube tasks
  *
- * @author Michiel Rook <michiel@trendserver.nl>
- * @version $Id: IoncubeComment.php 59 2006-04-28 14:49:47Z mrook $
+ * @author Michiel Rook <mrook@php.net>
+ * @version $Id: dbbc1b4830ba43116d5b5e5d20c749598eaf62b7 $
  * @package phing.tasks.ext.ioncube
  * @since 2.2.0
  */
 class IoncubeComment
 {
-	private $value = "";
-	
-	public function getValue()
-	{
-		return $this->value;
-	}
-	
-	public function addText($txt)
-	{
-		$this->value = trim($txt);
-	}
+    private $value = "";
+    
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    public function addText($txt)
+    {
+        $this->value = trim($txt);
+    }
 }
-?>

@@ -1,7 +1,7 @@
 <?php
 
 /*
- *  $Id: SequentialTask.php 59 2006-04-28 14:49:47Z mrook $
+ *  $Id: e6be0ff54ade0fb900d101759d8788590e769831 $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,11 +31,12 @@ require_once 'phing/TaskContainer.php';
  * sequential task.
  *
  * @since 2.1.2
+ * @package phing.tasks.system
  */
 class SequentialTask extends Task implements TaskContainer {
 
     /** Optional Vector holding the nested tasks */
-    private $nestedTasks = array();
+    protected $nestedTasks = array();
 
     /**
      * Add a nested task to Sequential.
@@ -50,8 +51,8 @@ class SequentialTask extends Task implements TaskContainer {
      * @throws BuildException if one of the nested tasks fails.
      */
     public function main() {
-		foreach($this->nestedTasks as $task) {
-			$task->perform();
-		}
+        foreach($this->nestedTasks as $task) {
+            $task->perform();
+        }
     }
 }

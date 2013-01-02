@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TFlushOutput</h1>
+<h1 id="74002">TFlushOutput</h1>
 <com:DocLink ClassPath="System.Web.UI.WebControls.TFlushOutput" />
 
 <p class="block-content">
