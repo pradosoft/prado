@@ -105,6 +105,30 @@ class TDateTimeStamp
 	/**
 	 * @return array an array with date info.
 	 */
+	function parseDate($txt=false)
+	{
+		if ($txt === false) return getdate();
+
+		$dt = new DateTime($txt);
+
+		return array(
+			'seconds' => (int) $dt->format('s'),
+			'minutes' => (int) $dt->format('i'),
+			'hours' => (int) $dt->format('G'),
+			'mday' => (int) $dt->format('j'),
+			'wday' => (int) $dt->format('w'),
+			'mon' => (int) $dt->format('n'),
+			'year' => (int) $dt->format('Y'),
+			'yday' => (int) $dt->format('z'),
+			'weekday' => $dt->format('l'),
+			'month' => $dt->format('F'),
+			0 => (int) $dt->format('U'),
+			);
+	}
+
+	/**
+	 * @return array an array with date info.
+	 */
 	function getDate($d=false,$fast=false)
 	{
 		if ($d === false) return getdate();
@@ -123,7 +147,7 @@ class TDateTimeStamp
 			'yday' => (int) $dt->format('z'),
 			'weekday' => $dt->format('l'),
 			'month' => $dt->format('F'),
-			0 => (int) $d
+			0 => (int) $dt->format('U'),
 			);
 	}
 

@@ -173,15 +173,8 @@ class TSimpleDateFormatter
 	 */
 	private function getDate($value)
 	{
-		if(!is_string($value))
-		{
-			$s = Prado::createComponent('System.Util.TDateTimeStamp');
-			return $s->getDate($value);
-		}
-		$date = @strtotime($value);
-		if($date < 0)
-			throw new TInvalidDataValueException('invalid_date', $value);
-		return @getdate($date);
+		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		return $s->parseDate($value);
 	}
 
 	/**

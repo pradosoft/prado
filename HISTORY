@@ -1,5 +1,6 @@
 Version 3.2.1 to be released
 
+BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
 BUG: Issue #412 - open_basedir restriction (ctrlaltca)
 BUG: Issue #413 - TActiveDatePicker does not fire TCallbackClientSide's events (ctrlaltca)
 BUG: Issue #414 - ActiveDatagrid's pager does not fire TCallbackClientSide's events (ctrlaltca)
