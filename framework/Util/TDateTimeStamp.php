@@ -197,7 +197,7 @@ class TDateTimeStamp
 			$mon!==false ? $mon : date('m'), 
 			$day!==false ? $day : date('d'));
 		$dt->setTime($hr, $min, $sec);
-		return $dt->format('U');
+		return (int) $dt->format('U');
 	}
 }
 
