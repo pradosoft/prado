@@ -197,7 +197,9 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGetBrowser() {
-		/*$request = new THttpRequest();
+		/*
+		// requires browscap configuration in php.ini
+		$request = new THttpRequest();
 		$request->init(null);
 		// Reset UserAgent, because constructor of THttpRequest unset it if called from cli !
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
@@ -240,13 +242,20 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetUserLanguages() {
+  	/*
+  	// this actually doesn't work because:
+  	// - THttpRequest::getUserLanguages() is a wrapper for PradoBase::getUserLanguages()
+  	// - PradoBase is using a static variable to hold the user languages array
+  	// - PradoBase exists before we set $_SERVER['HTTP_ACCEPT_LANGUAGE']
     $request = new THttpRequest();
     $request->init(null);
     // Browser sent fr,en-us;q=0.8,fr-fr;q=0.5,en;q=0.3
 	// that means that browser want fr (1) first, next en-us (0.8), then fr-fr(0.5)n and last en (0.3)
 	// So, we expect method to return an array with these languages, and this order
-    $acceptLanguages=array ('fr', 'en-us','fr-fr','en');
+    $acceptLanguages=array('fr', 'en-us','fr-fr','en');
     self::assertEquals($acceptLanguages, $request->getUserLanguages());
+    */
+    throw new PHPUnit_Framework_IncompleteTestError();
   }
 
   public function testSetEnableCookieValidation() {

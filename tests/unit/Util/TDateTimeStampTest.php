@@ -4,45 +4,21 @@ require_once dirname(__FILE__).'/../phpunit.php';
 
 Prado::using('System.Util.TDateTimeStamp');
 
+/**
+ * @package System.Util
+ */
 class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 	
 	public function testGetTimeStampAndFormat() {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0);
-		$this->assertEquals($s->formatDate('Y-m-d'), date('Y-m-d'));
+		$this->assertEquals($s->formatDate('Y-m-d',$t), date('Y-m-d'));
 
 		$t = $s->getTimeStamp(0,0,0,6,1,2102);
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '2102-06-01');
 
 		$t = $s->getTimeStamp(0,0,0,2,1,2102);
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '2102-02-01');
-	}
-
-	public function testGregorianToJulianConversion() {
-		$s = new TDateTimeStamp;
-		$t = $s->getTimeStamp(0,0,0,10,11,1492);
-
-		//http://www.holidayorigins.com/html/columbus_day.html - Friday check
-		$this->assertEquals($s->formatDate('D Y-m-d',$t), 'Fri 1492-10-11');
-
-		$t = $s->getTimeStamp(0,0,0,2,29,1500);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1500-02-29');
-
-		$t = $s->getTimeStamp(0,0,0,2,29,1700);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1700-03-01');
-
-	}
-
-	public function testGregorianCorrection() {
-		$s = new TDateTimeStamp;
-		$diff = $s->getTimeStamp(0,0,0,10,15,1582) - $s->getTimeStamp(0,0,0,10,4,1582);
-
-		//This test case fails on my windows machine!
-		//$this->assertEquals($diff, 3600*24,
-		//	"Error in gregorian correction = ".($diff/3600/24)." days");
-
-		$this->assertEquals($s->getDayOfWeek(1582,10,15), 5.0);
-		$this->assertEquals($s->getDayOfWeek(1582,10,4), 4.0);
 	}
 
 	public function testOverFlow() {
@@ -53,13 +29,13 @@ class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 		$t = $s->getTimeStamp(0,0,0,4,33,1971);
 		$this->assertEquals($s->formatDate('Y-m-d',$t), '1971-05-03', 'Error in day overflow 2');
 		$t = $s->getTimeStamp(0,0,0,1,60,1965);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1965-03-01', 'Error in day overflow 3 '.$s->getDate('Y-m-d',$t));
+		$this->assertEquals($s->formatDate('Y-m-d',$t), '1965-03-01', 'Error in day overflow 3 '.$s->formatDate('Y-m-d',$t));
 		$t = $s->getTimeStamp(0,0,0,12,32,1965);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-01-01', 'Error in day overflow 4 '.$s->getDate('Y-m-d',$t));
+		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-01-01', 'Error in day overflow 4 '.$s->formatDate('Y-m-d',$t));
 		$t = $s->getTimeStamp(0,0,0,12,63,1965);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-02-01', 'Error in day overflow 5 '.$s->getDate('Y-m-d',$t));
+		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-02-01', 'Error in day overflow 5 '.$s->formatDate('Y-m-d',$t));
 		$t = $s->getTimeStamp(0,0,0,13,3,1965);
-		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-01-03', 'Error in mth overflow 1');
+		$this->assertEquals($s->formatDate('Y-m-d',$t), '1966-01-03', 'Error in math overflow 1');
 	}
 
 	public function test2DigitTo4DigitYearConversion() {
@@ -93,11 +69,11 @@ class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 		}
 	}
 
-	public function testRandomDatesBetween100And4000() {
-		$this->assertIsValidDate(100,1);
+	public function testRandomDatesBetween1000And4000() {
+		$this->assertIsValidDate(1000,1);
 		//echo "Testing year ";
 		for ($i=10; --$i >= 0;) {
-			$y1 = 100+rand(0,1970-100);
+			$y1 = 1000+rand(0,1970-1000);
 			//echo $y1." ";
 			$m = rand(1,12);
 			$this->assertIsValidDate($y1,$m);
@@ -137,7 +113,12 @@ class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 
 			$newi = $s->getTimestamp($arr[3],$arr[4],$arr[5],$arr[0],$arr[1],$arr[2]);
 			if ($i != $newi) {
-				$fails++;
+				// This actually can fail if $i is in the middle of a time change due to DST
+				$tz = new DateTimeZone(date_default_timezone_get());
+				$transitions = $tz->getTransitions($i-3600, $i+3600);
+				if(count($transitions) == 0)
+					$fails++;
+
 				//$j = mktime($arr[3],$arr[4],$arr[5],$arr[0],$arr[1],$arr[2]);
 				//print "Error at $i, $j, getTimestamp() returned $newi ($ret)\n";
 			}

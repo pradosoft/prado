@@ -73,10 +73,11 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
 		try {
-			$sec->setEncryption ('DES');
+			$sec->setCryptAlgorithm('NotExisting');
+			$foo=$sec->encrypt('dummy');
 			self::fail ('Expected TNotSupportedException not thrown');
 		} catch (TNotSupportedException $e) {
-			self::assertEquals('3DES', $sec->getEncryption());
+			self::assertEquals('NotExisting', $sec->getCryptAlgorithm());
 		}
 	}
 	
@@ -96,6 +97,8 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 				return;
 			}
 			$decrypted = $sec->decrypt($encrypted);
+			// the decrypted string is padded with \0
+			$decrypted = strstr($decrypted, "\0", TRUE);
 
 			self::assertEquals($plainText,$decrypted);
 
