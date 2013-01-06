@@ -87,36 +87,53 @@ class TReCaptchaValidator extends TBaseValidator
 		parent::onPreRender($param);
 
 		$cs = $this->Page->getClientScript();
+		$cs->registerPradoScript('validator');
 
 		// communicate validation status to the client side
 		$value = $this->_isvalid===false ? '0' : '1';
 		$cs->registerHiddenField($this->getClientID().'_1',$value);
-
-		// check if we need to request a new captcha too
-		if ($this->Page->IsCallback)
+		
+		// update validator display
+		if ($control = $this->getValidationTarget())
 		{
-		  // force update of validator display
-		  if ($control = $this->getValidationTarget())
-		  {
-		    $cs->registerEndScript(
-				$this->getClientID().'::validate',
-				'$('.TJavaScript::quoteString($this->getClientID().'_1').').value = '.TJavaScript::quoteString($value).';'.
-				'Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).');'
-		    );
+			$fn = 'captchaUpdateValidatorStatus_'.$this->getClientID();
 
-		    if ($control->getVisible(true))
-		      if ($this->_isvalid)
+			// check if we need to request a new captcha too
+			if ($this->Page->IsCallback)
 			{
-				// if the challenge has been solved + we're in a callback and we still reach prerender phase,
-				// that means that some other validator failed and the user will be sent back to the page/form with 
-				// the captcha control. in this case we need to force re-rendering of the control, because once 
-				// solved, the old challenge won't validate anymore anyway
+				if ($control->getVisible(true))
+					if (!is_null($this->_isvalid))
+					{
+						// if the response has been tested and we reach the pre-render phase 
+						// then we need to regenerate the token, because it won't test positive
+						// anymore, even if solves correctly
 
-				$control->regenerateToken();
+						$control->regenerateToken();
+					}
 			}
-		  }
+
+			$cs->registerEndScript($this->getClientID().'::validate', implode(' ',array(
+				// this function will be used to update the validator
+				'function '.$fn.'(valid)',
+				'{',
+				'  var v = $('.TJavaScript::quoteString($this->getClientID()).');',
+				'  $('.TJavaScript::quoteString($this->getClientID().'_1').').value = valid;',
+				'  Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).'); ',
+				'}',
+				'',
+				// update the validator to the result if we're in a callback 
+				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
+				$this->Page->IsCallback ? $fn.'('.$value.');' : '',
+				'',
+				// wait for the captcha to be constructed
+				'Event.observe(document,"captchaready:'.$control->getClientID().'",function() { ',
+					// install event handler that clears the validation error when user changes the captcha response field
+					'Event.observe('.TJavaScript::quoteString($control->getResponseFieldName()).',"keyup",function() { ',
+						$fn.'("1");',
+					'});',
+				'});',
+			)));
 		}
 	}
 
 }
-
