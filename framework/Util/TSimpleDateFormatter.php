@@ -174,7 +174,10 @@ class TSimpleDateFormatter
 	private function getDate($value)
 	{
 		$s = Prado::createComponent('System.Util.TDateTimeStamp');
-		return $s->parseDate($value);
+		if(is_numeric($value))
+			return $s->getDate($value);
+		else
+			return $s->parseDate($value);		
 	}
 
 	/**
