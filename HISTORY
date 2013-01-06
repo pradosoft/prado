@@ -25,6 +25,7 @@ EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); c
 EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the use of all algorithms supported by php (ctrlaltca)
 EHN: Use mbstring when available in TSecurityManager to better handle multibyte text (ctrlaltca)
 EHN: Updated TinyMCE to 3.5.6 (ctrlaltca)
+CHG: Rewrite TDateTimeStamp as a wrapper to php's native DateTime and deprecate it (ctrlaltca)
 
 Version 3.2.0 Jun 25, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator

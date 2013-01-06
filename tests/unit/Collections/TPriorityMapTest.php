@@ -352,7 +352,7 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, $priorities[1]);
 		$this->assertEquals(10, $priorities[2]);
 		$this->assertEquals(100, $priorities[3]);
-		$this->assertEquals(null, $priorities[4]);
+		$this->assertEquals(false, isset($priorities[4]));
 	}
 	
 	

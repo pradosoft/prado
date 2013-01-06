@@ -16,6 +16,9 @@ Upgrading from v3.2.0
   algorithm supported by the local php installation.
 - TSecurityManager's Encryption property has been deprecated (it was unusable). Instead, use the new
   CryptAlgorithm property that permites the use of any algorithm supported by the local php installation.
+- TDateTimeStamp has been deprecated in favour of php's native DateTime classes. TDateTimeStamp has been
+  rewritten as a wrapper to DateTime, so porting and testing old code should be as easy as just looking at
+  the new implementation.
 
 Upgrading from v3.1.10
 ---------------------
