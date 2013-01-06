@@ -5,6 +5,7 @@ EHN: Issue #292 - Events should have priorities to allow event handler order to 
 
 Version 3.2.1 to be released
 
+BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
 BUG: Issue #412 - open_basedir restriction (ctrlaltca)
 BUG: Issue #413 - TActiveDatePicker does not fire TCallbackClientSide's events (ctrlaltca)
 BUG: Issue #414 - ActiveDatagrid's pager does not fire TCallbackClientSide's events (ctrlaltca)
@@ -27,6 +28,7 @@ EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the us
 EHN: Use mbstring when available in TSecurityManager to better handle multibyte text (ctrlaltca)
 EHN: Updated TinyMCE to 3.5.6 (ctrlaltca)
 CHG: Rewrite TDateTimeStamp as a wrapper to php's native DateTime and deprecate it (ctrlaltca)
+CHG: Updated prototype to 1.7.1 (ctrlaltca)
 
 Version 3.2.0 Jun 25, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator
