@@ -135,6 +135,16 @@ class TReCaptcha extends TWebControl implements IValidatable
 		return $this->setViewState('Language', TPropertyValue::ensureString($value));
 	}
 
+	public function getCallbackScript()
+	{
+		return $this->getViewState('CallbackScript');
+	}
+
+	public function setCallbackScript($value)
+	{
+		return $this->setViewState('CallbackScript', TPropertyValue::ensureString($value));
+	}
+
 	protected function getChallengeFieldName()
 	{
 		return /*$this->ClientID.'_'.*/self::ChallengeFieldName;
@@ -212,21 +222,47 @@ class TReCaptcha extends TWebControl implements IValidatable
 
 	public function renderContents($writer)
 	{
-		$writer->write(TJavaScript::renderScriptBlock(
-			'var RecaptchaOptions = '.TJavaScript::jsonEncode($this->getClientSideOptions()).';'
-		));
-
-		$html = recaptcha_get_html($this->getPublicKey());
-		/*
-		reCAPTCHA currently does not support multiple validations per page
-		$html = str_replace(
-			array(self::ChallengeFieldName,self::ResponseFieldName),
-			array($this->getChallengeFieldName(),$this->getResponseFieldName()),
-			$html
-		);
-		*/
-		$writer->write($html);
+		$readyscript = 'Event.fire(document, '.TJavaScript::quoteString('captchaready:'.$this->getClientID()).')';
+		$cs = $this->Page->ClientScript;
+		$id = $this->getClientID();
+		$divid = $id.'_1_recaptchadiv';
+		$writer->write('<div id="'.htmlspecialchars($divid).'">');
+	
+		if (!$this->Page->IsCallback)
+			{
+				$writer->write(TJavaScript::renderScriptBlock(
+					'var RecaptchaOptions = '.TJavaScript::jsonEncode($this->getClientSideOptions()).';'
+				));
+	
+				$html = recaptcha_get_html($this->getPublicKey());
+				/*
+				reCAPTCHA currently does not support multiple validations per page
+				$html = str_replace(
+					array(self::ChallengeFieldName,self::ResponseFieldName),
+					array($this->getChallengeFieldName(),$this->getResponseFieldName()),
+					$html
+				);
+				*/
+				$writer->write($html);
+				
+				$cs->registerEndScript('ReCaptcha::EventScript', 'Event.observe(document, "dom:loaded", function() { '.$readyscript.'; } );');
+			}
+		else
+			{
+				$options = $this->getClientSideOptions();
+				$options['callback'] = new TJavaScriptLiteral('function() { '.$readyscript.'; '.$this->getCallbackScript().'; }');
+				$cs->registerScriptFile('ReCaptcha::AjaxScript', 'http://www.google.com/recaptcha/api/js/recaptcha_ajax.js');
+				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', array(
+					'if (!$('.TJavaScript::quoteString($this->getResponseFieldName()).'))',
+					'Recaptcha.create(',
+						TJavaScript::quoteString($this->getPublicKey()).', ',
+						TJavaScript::quoteString($divid).', ',
+						TJavaScript::encode($options),
+					');',
+				)));
+			}
+			
+		$writer->write('</div>');
 	}
 
 }
-
