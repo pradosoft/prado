@@ -6,9 +6,6 @@
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3159 2012-2013 PradoSoft
- * @license http://www.pradosoft.com/license
- * @package System.Web.UI.ActiveControls
  * @version $Id$
  */
 class TDraggable extends TPanel 
@@ -194,9 +191,6 @@ class TDraggable extends TPanel
 /**
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
- * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3159 2012-2013 PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
  * @version $Id$
