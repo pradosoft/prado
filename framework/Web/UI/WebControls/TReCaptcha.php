@@ -217,7 +217,12 @@ class TReCaptcha extends TWebControl implements IValidatable
 		// if we're in a callback, then schedule re-rendering of the control 
 		// if not, don't do anything, because a new challenge will be rendered anyway
 		if ($this->Page->IsCallback)
-			$this->Page->ClientScript->registerEndScript($this->getClientID().'::refresh','Recaptcha.reload();');
+			$this->Page->ClientScript->registerEndScript($this->getClientID().'::refresh', implode(' ', array(
+				// work-around for "ReCaptchaState is undefined" bug 
+				// (if there's no previous instance yet, regenerating the token is not needed anyway)
+				'if (typeof ReCaptchaState != "undefined") '.
+				'  Recaptcha.reload();',
+			)));
 	}
 
 	public function renderContents($writer)
@@ -244,7 +249,7 @@ class TReCaptcha extends TWebControl implements IValidatable
 				);
 				*/
 				$writer->write($html);
-				
+
 				$cs->registerEndScript('ReCaptcha::EventScript', 'Event.observe(document, "dom:loaded", function() { '.$readyscript.'; } );');
 			}
 		else
@@ -254,11 +259,14 @@ class TReCaptcha extends TWebControl implements IValidatable
 				$cs->registerScriptFile('ReCaptcha::AjaxScript', 'http://www.google.com/recaptcha/api/js/recaptcha_ajax.js');
 				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', array(
 					'if (!$('.TJavaScript::quoteString($this->getResponseFieldName()).'))',
+					'{',
+					'Recaptcha.destroy();',
 					'Recaptcha.create(',
 						TJavaScript::quoteString($this->getPublicKey()).', ',
 						TJavaScript::quoteString($divid).', ',
 						TJavaScript::encode($options),
 					');',
+					'}',
 				)));
 			}
 			
