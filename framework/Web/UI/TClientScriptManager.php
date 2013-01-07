@@ -5,7 +5,7 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2012 PradoSoft
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI

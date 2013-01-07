@@ -3,7 +3,7 @@
  * TMysqlScaffoldInput class file.
  *
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2012 PradoSoft
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Data.ActiveReecord.Scaffold.InputBuilder
  */

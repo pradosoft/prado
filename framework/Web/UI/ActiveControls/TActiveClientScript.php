@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2012 PradoSoft
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TActiveClientScript.php 3144 2012-05-19 10:07:03Z ctrlaltca $
  * @package System.Web.UI.ActiveControls

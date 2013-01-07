@@ -5,7 +5,7 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @link http://www.pradosoft.com
- * @copyright Copyright &copy; 2005-2012 PradoSoft
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.Services

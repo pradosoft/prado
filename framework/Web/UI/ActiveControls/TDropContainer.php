@@ -5,7 +5,7 @@
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
- * @version $Id: TDropContainer.php 3159 2012-2012 PradoSoft
+ * @version $Id: TDropContainer.php 3159 2012-2013 PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id$
  * @package System.Web.UI.ActiveControls
