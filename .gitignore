@@ -5,8 +5,12 @@
 /build
 buildscripts/chmbuilder/assets/*
 buildscripts/chmbuilder/classes/runtime/*
+buildscripts/texbuilder/quickstart/*.aux
 buildscripts/texbuilder/quickstart/*.png
 buildscripts/texbuilder/quickstart/*.tex
+buildscripts/texbuilder/quickstart/quickstart.log
+buildscripts/texbuilder/quickstart/quickstart.out
+buildscripts/texbuilder/quickstart/quickstart.toc
 demos/address-book/assets/*
 demos/address-book/protected/runtime/*
 demos/blog-tutorial/assets/*
