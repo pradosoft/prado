@@ -23,6 +23,7 @@
  * @version $Id$
  * @package System.Util
  * @since 3.0.4
+ * @deprecated since 3.2.1
  */
 class TDateTimeStamp
 {
