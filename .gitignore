@@ -4,7 +4,10 @@
 /assets
 /build
 buildscripts/chmbuilder/assets/*
+buildscripts/chmbuilder/classes/Data/classes.data
 buildscripts/chmbuilder/classes/runtime/*
+buildscripts/classtree/Configuration
+buildscripts/classtree/PRADO.mxi
 buildscripts/texbuilder/quickstart/*.aux
 buildscripts/texbuilder/quickstart/*.png
 buildscripts/texbuilder/quickstart/*.tex
