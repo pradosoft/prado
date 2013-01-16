@@ -20,6 +20,7 @@ BUG: Issue #431 - TReCaptcha does not work well with active controls (Gabor)
 BUG: Issue #432 - Double slash with URL Tags in www root (ctrlaltca)
 
 EHN: Permit to change the default cipher in TSecurityManager::setEncryption(); changed the default cipher from 3DES to AES256 (ctrlaltca)
+EHN: Added a new UrlFormat for TUrlManager: HiddenPath; works like the 'Path' format, but hides the entryscript.php name (ctrlaltca)
 EHN: Use php's hash_hmac() when available in TSecurityManager, and permit the use of all algorithms supported by php (ctrlaltca)
 EHN: Use mbstring when available in TSecurityManager to better handle multibyte text (ctrlaltca)
 EHN: Updated TinyMCE to 3.5.6 (ctrlaltca)
