@@ -44,6 +44,18 @@ class TUrlManager extends TModule
 	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
 	 * the following format is used instead:
 	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
+	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
+	 * then entryscript.php will be hidden and the following format is used instead:
+	 * /serviceID/serviceParameter/get1,value1/get2,value2...
+	 * In order to use the 'HiddenPath' format you need proper url rewrite configuration;
+	 * here's an example for Apache's .htaccess:
+	 * <cdde>
+	 * Options +FollowSymLinks  
+	 * RewriteEngine On
+	 * RewriteCond %{REQUEST_FILENAME} !-d
+	 * RewriteCond %{REQUEST_FILENAME} !-f
+	 * RewriteRule ^(.*)$ index.php/$1 [L]
+	 * </code>
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not provided
@@ -87,10 +99,16 @@ class TUrlManager extends TModule
 				}
 			}
 		}
-		if($request->getUrlFormat()===THttpRequestUrlFormat::Path)
-			return $request->getApplicationUrl().'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
-		else
-			return $request->getApplicationUrl().'?'.$url;
+
+		switch($request->getUrlFormat())
+		{
+			case THttpRequestUrlFormat::Path:
+				return $request->getApplicationUrl().'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+			case THttpRequestUrlFormat::HiddenPath:
+				return rtrim(dirname($request->getApplicationUrl()), '/').'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+			default:
+				return $request->getApplicationUrl().'?'.$url;
+		}
 	}
 
 	/**
@@ -110,7 +128,9 @@ class TUrlManager extends TModule
 	{
 		$request=$this->getRequest();
 		$pathInfo=trim($request->getPathInfo(),'/');
-		if($request->getUrlFormat()===THttpRequestUrlFormat::Path && $pathInfo!=='')
+		if(($request->getUrlFormat()===THttpRequestUrlFormat::Path ||
+			$request->getUrlFormat()===THttpRequestUrlFormat::HiddenPath) &&
+			$pathInfo!=='')
 		{
 			$separator=$request->getUrlParamSeparator();
 			$paths=explode('/',$pathInfo);
