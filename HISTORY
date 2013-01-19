@@ -3,9 +3,10 @@ Next Prado iteration: 3.3.0
 EHN: Issue #260 - TComponent Update: Behaviors, Class Behaviors, fx global events, and dy one to one events (javalizard)
 EHN: Issue #292 - Events should have priorities to allow event handler order to be specified (javalizard)
 
-Version 3.2.1 to be released
+Version 3.2.1 Jan XX, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
+ENH: Issue #180 - Integrate XMLRPC web service (rojaro)
 BUG: Issue #412 - open_basedir restriction (ctrlaltca)
 BUG: Issue #413 - TActiveDatePicker does not fire TCallbackClientSide's events (ctrlaltca)
 BUG: Issue #414 - ActiveDatagrid's pager does not fire TCallbackClientSide's events (ctrlaltca)

@@ -50,7 +50,7 @@
 </table>
 
 <div id="footer">
-Copyright &copy; 2005-2012 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2005-2013 <a href="http://www.pradosoft.com">PradoSoft</a>.
 <br/><br/>
 <%= Prado::poweredByPrado() %>
 <a href="http://validator.w3.org/check?uri=referer"><img border="0" src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>

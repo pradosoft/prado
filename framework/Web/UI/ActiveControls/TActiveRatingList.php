@@ -5,7 +5,7 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2012 PradoSoft
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.ActiveControls
