@@ -1,4 +1,4 @@
-Version 3.2.1 Jan XX, 2013
+Version 3.2.1 Jan 19, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
 ENH: Issue #180 - Integrate XMLRPC web service (rojaro)
