@@ -770,14 +770,6 @@ abstract class TClientSideOptions extends TComponent
 	private $_options;
 
 	/**
-	 * Constructor, initialize the options list.
-	 */
-	public function __construct()
-	{
-		$this->_options = Prado::createComponent('System.Collections.TMap');
-	}
-
-	/**
 	 * Adds on client-side event handler by wrapping the code within a
 	 * javascript function block. If the code begins with "javascript:", the
 	 * code is assumed to be a javascript function block rather than arbiturary
@@ -797,7 +789,10 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function getOption($name)
 	{
-		return $this->_options->itemAt($name);
+		if ($this->_options)
+			return $this->_options->itemAt($name);
+		else
+			return null;
 	}
 
 	/**
@@ -806,7 +801,7 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function setOption($name, $value)
 	{
-		$this->_options->add($name, $value);
+		$this->getOptions()->add($name, $value);
 	}
 
 	/**
@@ -814,6 +809,8 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	public function getOptions()
 	{
+		if (!$this->_options)
+			$this->_options = Prado::createComponent('System.Collections.TMap');
 		return $this->_options;
 	}
 

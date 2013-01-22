@@ -1,9 +1,14 @@
 Next Prado iteration: 3.3.0
-
+ 
 EHN: Issue #260 - TComponent Update: Behaviors, Class Behaviors, fx global events, and dy one to one events (javalizard)
 EHN: Issue #292 - Events should have priorities to allow event handler order to be specified (javalizard)
 
-Version 3.2.1 Jan XX, 2013
+Version 3.2.2 to be released
+
+ENH: Issue 433:	Prado object-creation performance micro-optimizations
+BUG: Issue 434:	Buttons stops working properly after response->writeFile
+
+Version 3.2.1 Jan 19, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
 ENH: Issue #180 - Integrate XMLRPC web service (rojaro)

@@ -24,33 +24,32 @@ class TPreparedStatement extends TComponent
 	private $_parameterNames;
 	private $_parameterValues;
 
-	public function __construct()
-	{
-		$this->_parameterNames=new TList;
-		$this->_parameterValues=new TMap;
-	}
-
 	public function getPreparedSql(){ return $this->_sqlString; }
 	public function setPreparedSql($value){ $this->_sqlString = $value; }
 
-	public function getParameterNames(){ return $this->_parameterNames; }
+	public function getParameterNames($needed = true)
+	{ 
+		if (!$this->_parameterNames and $needed)
+			$this->_parameterNames = new TList;
+		return $this->_parameterNames; 
+	}
+
 	public function setParameterNames($value){ $this->_parameterNames = $value; }
 
-	public function getParameterValues(){ return $this->_parameterValues; }
-	public function setParameterValues($value){ $this->_parameterValues = $value; }
-
-	public function __wakeup()
-	{
-		parent::__wakeup();
-		if (!$this->_parameterNames) $this->_parameterNames = new TList;
-		if (!$this->_parameterValues) $this->_parameterValues = new TMap;
+	public function getParameterValues($needed = true)
+	{ 
+		if (!$this->_parameterValues and $needed)
+			$this->_parameterValues=new TMap;
+		return $this->_parameterValues; 
 	}
+
+	public function setParameterValues($value){ $this->_parameterValues = $value; }
 	
 	public function __sleep()
 	{
 		$exprops = array(); $cn = __CLASS__; 
-		if (!$this->_parameterNames->getCount()) $exprops[] = "\0$cn\0_parameterNames";
-		if (!$this->_parameterValues->getCount()) $exprops[] = "\0$cn\0_parameterValues";
+		if (!$this->_parameterNames or !$this->_parameterNames->getCount()) $exprops[] = "\0$cn\0_parameterNames";
+		if (!$this->_parameterValues or !$this->_parameterValues->getCount()) $exprops[] = "\0$cn\0_parameterValues";
 		return array_diff(parent::__sleep(),$exprops);
 	}
 }

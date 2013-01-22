@@ -47,9 +47,10 @@ class TPreparedCommand
 
 	protected function applyParameterMap($manager,$command,$prepared, $statement, $parameterObject)
 	{
-		$properties = $prepared->getParameterNames();
-		$parameters = $prepared->getParameterValues();
+		$properties = $prepared->getParameterNames(false);
+		//$parameters = $prepared->getParameterValues();
 		$registry=$manager->getTypeHandlers();
+		if ($properties)
 		for($i = 0, $k=$properties->getCount(); $i<$k; $i++)
 		{
 			$property = $statement->parameterMap()->getProperty($i);

@@ -518,8 +518,6 @@ class TUrlMappingPattern extends TComponent
 	public function __construct(TUrlManager $manager)
 	{
 		$this->_manager=$manager;
-		$this->_parameters=new TAttributeCollection;
-		$this->_parameters->setCaseSensitive(true);
 	}
 
 	/**
@@ -552,6 +550,7 @@ class TUrlMappingPattern extends TComponent
 	{
 		$params=array();
 		$values=array();
+		if ($this->_parameters)
 		foreach($this->_parameters as $key=>$value)
 		{
 			$params[]='{'.$key.'}';
@@ -660,6 +659,11 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function getParameters()
 	{
+		if (!$this->_parameters)
+		{
+			$this->_parameters=new TAttributeCollection;
+			$this->_parameters->setCaseSensitive(true);
+		}
 		return $this->_parameters;
 	}
 
@@ -809,6 +813,7 @@ class TUrlMappingPattern extends TComponent
 	{
 		if(!$this->_customUrl || $this->getPattern()===null)
 			return false;
+		if ($this->_parameters)
 		foreach($this->_parameters as $key=>$value)
 		{
 			if(!isset($getItems[$key]))
@@ -832,7 +837,7 @@ class TUrlMappingPattern extends TComponent
 		// for the GET variables matching the pattern, put them in the URL path
 		foreach($getItems as $key=>$value)
 		{
-			if($this->_parameters->contains($key) || $key==='*' && $this->getIsWildCardPattern())
+			if($this->_parameters && ($this->_parameters->contains($key) || $key==='*' && $this->getIsWildCardPattern()))
 				$replace['{'.$key.'}']=$encodeGetItems ? rawurlencode($value) : $value;
 			else
 				$extra[$key]=$value;
