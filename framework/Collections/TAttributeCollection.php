@@ -142,7 +142,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function hasProperty($name)
 	{
-		return $this->contains($name) || parent::hasProperty($name);
+		return $this->contains($name) || parent::canGetProperty($name) || parent::canSetProperty($name);
 	}
 
 	/**
