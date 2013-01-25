@@ -5,8 +5,9 @@ EHN: Issue #292 - Events should have priorities to allow event handler order to 
 
 Version 3.2.2 to be released
 
-ENH: Issue 433:	Prado object-creation performance micro-optimizations
-BUG: Issue 434:	Buttons stops working properly after response->writeFile
+ENH: Issue #433 - Prado object-creation performance micro-optimizations (gabor)
+BUG: Issue #434 - Buttons stops working properly after response->writeFile (ctrlaltca)
+BUG: Issue #435 - TWizard + No ID = Prototype Error (ctrlaltca)
 
 Version 3.2.1 Jan 19, 2013
 

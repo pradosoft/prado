@@ -772,6 +772,7 @@ class TWizard extends TWebControl implements INamingContainer
 	{
 		parent::onInit($param);
 		$this->ensureChildControls();
+		$this->setEnsureId(true);
 		if($this->getActiveStepIndex()<0 && $this->getWizardSteps()->getCount()>0)
 			$this->setActiveStepIndex(0);
 	}
