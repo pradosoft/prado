@@ -450,7 +450,7 @@ class TUrlMapping extends TUrlManager
  *
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}/{id}" parameters.id="\d+" />
  *
- * To enable automatic parameter encoding in a path format fro wildcard patterns you can set
+ * To enable automatic parameter encoding in a path format from wildcard patterns you can set
  * {@setUrlFormat UrlFormat} to 'Path':
  *
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}" UrlFormat="Path" />
@@ -464,6 +464,17 @@ class TUrlMapping extends TUrlManager
  * <url ServiceParameter="adminpages.*" pattern="admin/{*}" UrlFormat="Path" UrlParamSeparator="-" />
  *
  * <tt>.../index.php/admin/listuser/param1-value1/param2-value2</tt>.
+ *
+ * Since 3.2.2 you can also add a list of "constants" parameters that can be used just
+ * like the original "parameters" parameters, except that the supplied value will be treated
+ * as a simple string constant instead of a regular expression. For example
+ * 
+ * <url ServiceParameter="MyPage" pattern="/mypage/mypath/list/detail/{pageidx}" parameters.pageidx="\d+" constants.listtype="detailed"/>
+ * <url ServiceParameter="MyPage" pattern="/mypage/mypath/list/summary/{pageidx}" parameters.pageidx="\d+" constants.listtype="summarized"/>
+ *
+ * These rules, when matched by the actual request, will make the application see a "lisstype" parameter present
+ * (even through not supplied in the request) and equal to "detailed" or "summarized", depending on the friendly url matched.
+ * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
@@ -485,9 +496,13 @@ class TUrlMappingPattern extends TComponent
 	 */
 	private $_pattern;
 	/**
-	 * @var TMap parameter regular expressions.
+	 * @var TAttributeCollection parameter regular expressions.
 	 */
 	private $_parameters;
+	/**
+	 * @var TAttributeCollection of constant parameters.
+	 */
+	protected $_constants;
 	/**
 	 * @var string regular expression pattern.
 	 */
@@ -551,12 +566,15 @@ class TUrlMappingPattern extends TComponent
 		$params=array();
 		$values=array();
 		if ($this->_parameters)
-		foreach($this->_parameters as $key=>$value)
 		{
-			$params[]='{'.$key.'}';
-			$values[]='(?P<'.$key.'>'.$value.')';
+			foreach($this->_parameters as $key=>$value)
+			{
+				$params[]='{'.$key.'}';
+				$values[]='(?P<'.$key.'>'.$value.')';
+			}
 		}
-		if ($this->getIsWildCardPattern()) {
+		if ($this->getIsWildCardPattern())
+		{
 				$params[]='{*}';
 				// service parameter must not contain '=' and '/'
 				$values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
@@ -676,6 +694,20 @@ class TUrlMappingPattern extends TComponent
 	}
 
 	/**
+	 * @return TAttributeCollection constanst parameter key value pairs.
+	 * @since 3.2.2
+	 */
+	public function getConstants()
+	{
+		if (!$this->_constants)
+		{
+			$this->_constants = new TAttributeCollection;
+			$this->_constants->setCaseSensitive(true);
+		}
+		return $this->_constants;
+	}
+
+	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
 	 * @param THttpRequest the request module
@@ -710,6 +742,12 @@ class TUrlMappingPattern extends TComponent
 				}
 			}
 			unset($matches['urlparams']);
+		}
+
+		if(count($matches) > 0 && $this->_constants)
+		{
+			foreach($this->_constants->toArray() as $key=>$value)
+				$matches[$key] = $value;
 		}
 
 		return $matches;
@@ -759,7 +797,7 @@ class TUrlMappingPattern extends TComponent
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
 	 * @param THttpRequestUrlFormat the format of URLs.
-	 * @param since 3.1.4
+	 * @since 3.1.4
 	 */
 	public function setUrlFormat($value)
 	{
@@ -814,10 +852,23 @@ class TUrlMappingPattern extends TComponent
 		if(!$this->_customUrl || $this->getPattern()===null)
 			return false;
 		if ($this->_parameters)
-		foreach($this->_parameters as $key=>$value)
 		{
-			if(!isset($getItems[$key]))
-				return false;
+			foreach($this->_parameters as $key=>$value)
+			{
+				if(!isset($getItems[$key]))
+					return false;
+			}
+		}
+
+		if ($this->_constants)
+		{
+			foreach($this->_constants->toArray() as $key=>$value)
+			{
+				if (!isset($getItems[$key]))
+					return false;
+				if ($getItems[$key]!=$value)
+					return false;
+			}
 		}
 		return true;
 	}
@@ -832,6 +883,14 @@ class TUrlMappingPattern extends TComponent
 	 */
 	public function constructUrl($getItems,$encodeAmpersand,$encodeGetItems)
 	{
+		if ($this->_constants)
+		{
+			foreach($this->_constants->toArray() as $key=>$value)
+			{
+				unset($getItems[$key]);
+			}
+		}
+
 		$extra=array();
 		$replace=array();
 		// for the GET variables matching the pattern, put them in the URL path

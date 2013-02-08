@@ -803,6 +803,7 @@ buildscripts/chmbuilder/classes/pages/Classes.page -text
 buildscripts/chmbuilder/classes/pages/MainLayout.tpl -text
 buildscripts/chmbuilder/classes/pages/style.css -text
 buildscripts/classtree/DWExtensionReadme.txt -text
+buildscripts/classtree/ExtensionReadme.html -text
 buildscripts/jGrouseDoc/3rdparty/ant/LICENSE -text
 buildscripts/jGrouseDoc/3rdparty/ant/LICENSE.dom -text
 buildscripts/jGrouseDoc/3rdparty/ant/LICENSE.sax -text

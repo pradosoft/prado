@@ -6,11 +6,17 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
+<h2>Version 3.2.2</h2>
+<ul>
+<li>TUrlMappingPattern support for constant parameters</li>
+<li>Lazy module loading in application configuration</li>
+</ul>
+
 <h2 id="8001">Version 3.2.1</h2>
 <ul>
-<li>TSecurityManager has been enhanced to support all the ciphers available in php</a></li>
-<li>Added a new UrlFormat for TUrlManager: HiddenPath; works like the 'Path' format, but hides the entryscript.php name</a></li>
-<li>Updated external packages</a></li>
+<li>TSecurityManager has been enhanced to support all the ciphers available in php</li>
+<li>Added a new UrlFormat for TUrlManager: HiddenPath; works like the 'Path' format, but hides the entryscript.php name</li>
+<li>Updated external packages</li>
 </ul>
 
 <h2 id="8001">Version 3.2.0</h2>

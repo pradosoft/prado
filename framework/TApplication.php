@@ -205,9 +205,13 @@ class TApplication extends TComponent
 	 */
 	private $_service;
 	/**
-	 * @var array list of application modules
+	 * @var array list of loaded application modules
 	 */
 	private $_modules=array();
+	/**
+	 * @var array list of application modules yet to be loaded
+	 */
+	private $_lazyModules=array();
 	/**
 	 * @var TMap list of application parameters
 	 */
@@ -685,9 +689,9 @@ class TApplication extends TComponent
 	 * Adds a module to application.
 	 * Note, this method does not do module initialization.
 	 * @param string ID of the module
-	 * @param IModule module object
+	 * @param IModule module object or null if the module has not been loaded yet
 	 */
-	public function setModule($id,IModule $module)
+	public function setModule($id,IModule $module=null)
 	{
 		if(isset($this->_modules[$id]))
 			throw new TConfigurationException('application_moduleid_duplicated',$id);
@@ -700,10 +704,22 @@ class TApplication extends TComponent
 	 */
 	public function getModule($id)
 	{
-		return isset($this->_modules[$id])?$this->_modules[$id]:null;
+		if(!array_key_exists($id, $this->_modules))
+			return null;
+
+		// force loading of a lazy module
+		if($this->_modules[$id]===null)
+		{
+			$module = $this->internalLoadModule($id, true);
+			$module[0]->init($module[1]);
+		}
+
+		return $this->_modules[$id];
 	}
 
 	/**
+	 * Returns a list of application modules indexed by module IDs.
+	 * Modules that have not been loaded yet are returned as null objects.
 	 * @return array list of loaded application modules, indexed by module IDs
 	 */
 	public function getModules()
@@ -938,6 +954,28 @@ class TApplication extends TComponent
 		return 'TApplicationConfiguration';
 	}
 
+	protected function internalLoadModule($id, $force=false)
+	{
+		list($moduleClass, $initProperties, $configElement)=$this->_lazyModules[$id];
+		if(isset($initProperties['lazy']) && $initProperties['lazy'] && !$force)
+		{
+			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})",'System.TApplication');
+			$this->setModule($id, null);
+			return null;
+		}
+
+		Prado::trace("Loading module $id ({$moduleClass})",'System.TApplication');
+		$module=Prado::createComponent($moduleClass);
+		foreach($initProperties as $name=>$value)
+		{
+			if($name==='lazy') continue;
+			$module->setSubProperty($name,$value);
+		}
+		$this->setModule($id,$module);
+		unset($this->_lazyModules[$id]);
+
+		return array($module,$configElement);
+	}
 	/**
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
@@ -982,18 +1020,11 @@ class TApplication extends TComponent
 		$modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
-			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
-			list($moduleClass, $initProperties, $configElement)=$moduleConfig;
-			$module=Prado::createComponent($moduleClass);
 			if(!is_string($id))
-			{
-				$id='_module'.count($this->_modules);
-				$initProperties['id']=$id;
-			}
-			$this->setModule($id,$module);
-			foreach($initProperties as $name=>$value)
-				$module->setSubProperty($name,$value);
-			$modules[]=array($module,$configElement);
+				$id='_module'.count($this->_lazyModules);
+			$this->_lazyModules[$id]=$moduleConfig;
+			if($module = $this->internalLoadModule($id))
+				$modules[]=$module;
 		}
 		foreach($modules as $module)
 			$module[0]->init($module[1]);

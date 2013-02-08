@@ -56,4 +56,61 @@ An external configuration file has the same format as described above. Although 
 By default without explicit configuration, a PRADO application will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
 </p>
 
+<com:SinceVersion Version="3.2.2" />
+<p class="block-content">
+By default PRADO instanciates all modules defined in the application configuration at the beginning of the application lifecycle. This can hit the application performance if you have a lot of modules defined but not used at every request.
+Since version 3.2.2 you can set the <tt>lazy</tt> property on modules defined in the application configuration to enable the lazy loading of that module.
+
+<com:TTextHighlighter Language="xml" CssClass="source block-content">
+  <modules>
+    <module id="ModuleID" class="ModuleClass" lazy="true" PropertyName="PropertyValue" ... />
+  </modules>
+</com:TTextHighlighter>
+
+A module with the <tt>lazy</tt> property set won't be instanciated until the first time it gets actually used by the application:
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+  // requesting the lazy module to the application will instanciate it
+  Prado::getApplication()->getModule('ModuleID');
+</com:TTextHighlighter>
+</p>
+
+<com:SinceVersion Version="3.2" />
+<p class="block-content">
+Since version 3.2 the application configuration can be stored in PHP array format in a file named <tt>application.php</tt>.
+The format of the configuration file is exactly the same of its XML counterpart, but following the PHP syntax.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+<?php
+return array(
+  'application' => array(
+    'PropertyName' => 'PropertyValue'
+  ),
+  'modules' => array(
+    'ModuleID' => array(
+      'class' => 'ModuleClass',
+      'properties' => array(
+        'PropertyName' => 'PropertyValue'
+      ),
+    ),
+  ),
+  'services' => array(
+    'ServiceID' => array(
+      'class' => 'ServiceClass',
+      'properties' => array(
+        'PropertyName' => 'PropertyValue'
+      ),
+    ),
+  ),
+);
+</com:TTextHighlighter>
+
+The use of a PHP application configuration must be defined in the <tt>TApplication</tt> constructor, tipically located in the <tt>index.php</tt> entry script:
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$application=new TApplication('protected',false,TApplication::CONFIG_TYPE_PHP);
+$application->run();
+</com:TTextHighlighter>
+
 </com:TContent>
