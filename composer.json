@@ -1,0 +1,9 @@
+{
+  "name": "comperio/PUB/prado",
+  "description": "Component Framework for PHP 5.",
+  "homepage": "http://www.pradosoft.com/",
+  "license": "BSD",
+  "require": {
+    "php": ">=5.2.4",
+  }
+}
