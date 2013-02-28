@@ -3,6 +3,10 @@
   "description": "Component Framework for PHP 5.",
   "homepage": "http://www.pradosoft.com/",
   "license": "BSD",
+  "autoload": {
+      "classmap": ["framework"]
+  },
+  "include-path": ["framework"],
   "require": {
     "php": ">=5.2.4"
   }
