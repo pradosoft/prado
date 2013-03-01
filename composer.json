@@ -1,0 +1,16 @@
+{
+  "name": "ciromattia/prado",
+  "description": "Component Framework for PHP 5.",
+  "homepage": "http://www.pradosoft.com/",
+  "license": "BSD",
+  "include-path": ["framework"],
+  "require": {
+    "php": ">=5.2.4"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.2-dev"
+    }
+  },
+  "bin": ["framework/prado-cli", "framework/prado-cli.bat"]
+}
