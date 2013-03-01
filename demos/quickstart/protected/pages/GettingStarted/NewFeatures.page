@@ -6,7 +6,7 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
-<h2>Version 3.2.2</h2>
+<h2 id="8001">Version 3.2.2</h2>
 <ul>
 <li>TUrlMappingPattern support for constant parameters</li>
 <li>Lazy module loading in application configuration</li>
