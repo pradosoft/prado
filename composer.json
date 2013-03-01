@@ -7,4 +7,10 @@
   "require": {
     "php": ">=5.2.4"
   }
+  "extra": {
+    "branch-alias": {
+      "dev-master": "3.3-dev"
+    }
+  },
+  "bin": ["framework/prado-cli", "framework/prado-cli.bat"]
 }
