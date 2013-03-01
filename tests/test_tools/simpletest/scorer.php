@@ -3,7 +3,7 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	UnitTester
-     *	@version	$Id$
+     *	@version	$Id: scorer.php 1532 2006-12-01 12:28:55Z xue $
      */
 
     /**#@+*/

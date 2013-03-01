@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TDataFieldAccessor.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -26,7 +26,7 @@
  *   then field 'MyValue.MySubValue' will return that method call result.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TDataFieldAccessor.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */

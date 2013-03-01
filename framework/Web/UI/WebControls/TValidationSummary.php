@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TValidationSummary.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -30,7 +30,7 @@
  * {@link setEnableClientScript EnableClientScript} is true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TValidationSummary.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -430,7 +430,7 @@ class TValidationSummary extends TWebControl
  * See the quickstart documentation for further details.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TValidationSummary.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -499,7 +499,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
  * - HeaderOnly: only the HeaderText will be display.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TValidationSummary.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -523,7 +523,7 @@ class TValidationSummaryDisplayMode extends TEnumerable
  * - Fixed: Similar to Dynamic except that the error messages physically occupy the page layout (even though they may not be visible)
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TValidationSummary.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

@@ -28,7 +28,7 @@
 // | Copyright (c) 2004 Michael Wallner <mike@iworks.at>                  |
 // +----------------------------------------------------------------------+
 //
-// $Id$
+// $Id: TGettext.php 3187 2012-07-12 11:21:01Z ctrlaltca $
 
 /**
  * File::Gettext

@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  */
 
@@ -18,7 +18,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @version $Id$
+ * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -758,7 +758,7 @@ class TClientScriptManager extends TApplicationComponent
  * between ActiveControls and validators.
  *
  * @author <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */

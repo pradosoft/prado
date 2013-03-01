@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TInlineFrame.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -27,7 +27,7 @@
  * Original Prado v2 IFrame Author Information
  * @author Jason Ragsdale <jrags@jasrags.net>
  * @author Harry Pottash <hpottash@gmail.com>
- * @version $Id$
+ * @version $Id: TInlineFrame.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -239,7 +239,7 @@ class TInlineFrame extends TWebControl implements IDataRenderer
  * - Bottom: bottom aligned
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TInlineFrame.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -264,7 +264,7 @@ class TInlineFrameAlign extends TEnumerable
  * - Both: show both horizontal and vertical scroll bars all the time.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TInlineFrame.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

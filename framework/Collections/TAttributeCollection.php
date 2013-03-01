@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TAttributeCollection.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  */
 
@@ -38,7 +38,7 @@ Prado::using('System.Collections.TMap');
  * in the collection storage.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TAttributeCollection.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */

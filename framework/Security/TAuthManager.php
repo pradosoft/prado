@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TAuthManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  */
 
@@ -37,7 +37,7 @@ Prado::using('System.Security.IUserManager');
  * <module id="users" class="System.Security.TUserManager" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TAuthManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */

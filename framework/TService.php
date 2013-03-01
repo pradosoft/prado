@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  */
 
@@ -17,7 +17,7 @@
  * used as the basic class for application services.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  */
 
@@ -64,7 +64,7 @@ Prado::using('System.Security.TUser');
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl Mathisen <carl@kamikazemedia.no>
- * @version $Id$
+ * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */
@@ -389,7 +389,7 @@ class TUserManager extends TModule implements IUserManager
  * - SHA1: the password is recorded as the SHA1 hash value of the original password
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0.4
  */

@@ -4,7 +4,7 @@
  * a string token saved in the cookie.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TrackerAuthManager.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  * @since 3.1
  */

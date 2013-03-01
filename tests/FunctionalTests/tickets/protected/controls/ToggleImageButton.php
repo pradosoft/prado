@@ -6,7 +6,7 @@
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2007, CERAM Sophia Antipolis
  * @license url nameoflicense
- * @version $Id$
+ * @version $Id: ToggleImageButton.php 2043 2007-06-30 15:07:50Z xue $
  *
  */
 

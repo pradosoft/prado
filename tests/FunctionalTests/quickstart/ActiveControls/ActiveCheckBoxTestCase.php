@@ -1,6 +1,6 @@
 <?php
 
-//$Id$
+//$Id: ActiveCheckBoxTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
 class ActiveCheckBoxTestCase extends SeleniumTestCase
 {
 	function test ()

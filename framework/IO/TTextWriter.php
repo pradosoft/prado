@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TTextWriter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.IO
  */
 
@@ -18,7 +18,7 @@
  * and can be obtained by calling {@link flush()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TTextWriter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.IO
  * @since 3.0
  */

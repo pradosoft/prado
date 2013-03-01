@@ -7,7 +7,7 @@
  * @license http://www.pradosoft.com/license
  * @version $Id: TDropContainer.php 3159 2012-2013 PradoSoft
  * @license http://www.pradosoft.com/license
- * @version $Id$
+ * @version $Id: TDropContainer.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler 
@@ -225,7 +225,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
- * @version $Id$
+ * @version $Id: TDropContainer.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 class TDropContainerEventParameter extends TEventParameter

@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  */
 
 if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')
@@ -56,7 +56,7 @@ PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
  * Command line interface, configures the action classes and dispatches the command actions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineInterpreter
@@ -134,7 +134,7 @@ class PradoCommandLineInterpreter
  * Base class for command line actions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 abstract class PradoCommandLineAction
@@ -225,7 +225,7 @@ EOD;
  * Create a Prado project skeleton, including directories and files.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineCreateProject extends PradoCommandLineAction
@@ -377,7 +377,7 @@ EOD;
  * Creates test fixtures for a Prado application.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineCreateTests extends PradoCommandLineAction
@@ -454,7 +454,7 @@ $tester->run(new SimpleReporter());
  * Creates and run a Prado application in a PHP Shell.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLinePhpShell extends PradoCommandLineAction
@@ -476,7 +476,7 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
  * Runs unit test cases.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineUnitTest extends PradoCommandLineAction
@@ -592,7 +592,7 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
  * Create active record skeleton
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.1
  */
 class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
@@ -745,7 +745,7 @@ EOD;
  *
  * @author Matthias Endres <me[at]me23[dot]de>
  * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: prado-cli.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @since 3.2
  */
 class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {

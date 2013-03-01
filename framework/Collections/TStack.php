@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TStack.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  */
 
@@ -27,7 +27,7 @@
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TStack.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */
@@ -182,7 +182,7 @@ class TStack extends TComponent implements IteratorAggregate,Countable
  *
  * @deprecated Issue 264 : ArrayIterator should be used instead 
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TStack.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */

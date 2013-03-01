@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -42,7 +42,7 @@ Prado::using('System.Collections.TList');
  * the cache acts as an array.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.0
  */
@@ -313,7 +313,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
  * - {@link TChainedCacheDependency}: checks whether any of a list of dependencies is changed or not
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -331,7 +331,7 @@ abstract class TCacheDependency extends TComponent implements ICacheDependency
  * last modification time remains unchanged.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -400,7 +400,7 @@ class TFileCacheDependency extends TCacheDependency
  * to a certain depth of the subdirectories.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -556,7 +556,7 @@ class TDirectoryCacheDependency extends TCacheDependency
  * set {@link setStateName StateName} to the name of the global state.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -617,7 +617,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
  * (see {@link TList} for more details}).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -667,7 +667,7 @@ class TChainedCacheDependency extends TCacheDependency
  * will be checked.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
@@ -694,7 +694,7 @@ class TApplicationStateCacheDependency extends TCacheDependency
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.1.0
  */
