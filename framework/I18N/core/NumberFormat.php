@@ -118,11 +118,9 @@ class NumberFormat
 		$this->setPattern($pattern);
 
 		if(strtolower($pattern) == 'p')
-			$number = $number * 100;
+			$number = $number * 100.0;
 
-		$string = (string)$number;
-
-		$decimal = $this->formatDecimal($string);
+		$decimal = $this->formatDecimal($number);
 		$integer = $this->formatInteger(abs($number));
 
 		if(strlen($decimal)>0)
@@ -157,17 +155,17 @@ class NumberFormat
 	 * @param string the decimal number in string form.
 	 * @return string  formatted integer string with grouping
 	 */
-	protected function formatInteger($string)
+	protected function formatInteger($number)
 	{
-		$string = (string)$string;
-
 		$decimalDigits = $this->formatInfo->DecimalDigits;
+		$string = (string)intval(round($number,$decimalDigits));
+
 		//if not decimal digits, assume 0 decimal points.
-		if(is_int($decimalDigits) && $decimalDigits > 0)
-			$string = (string)round(floatval($string),$decimalDigits);
-		$dp = strpos($string, '.');
-		if(is_int($dp))
-			$string = substr($string, 0, $dp);
+		//if(is_int($decimalDigits) && $decimalDigits > 0)
+		//	$string = (string)round(floatval($string),$decimalDigits);
+		//$dp = strpos($string, '.');
+		//if(is_int($dp))
+		//	$string = substr($string, 0, $dp);
 		$integer = '';
 
 		$digitSize = $this->formatInfo->getDigitSize();
@@ -230,43 +228,23 @@ class NumberFormat
 	 * @param string the decimal number in string form.
 	 * @return string formatted decimal places.
 	 */
-	protected function formatDecimal($string)
+	protected function formatDecimal($number)
 	{
-		$dp = strpos($string, '.');
-		$decimal = '';
-
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		$decimalSeparator = $this->formatInfo->DecimalSeparator;
+		$decimal = '';
 
-		//do the correct rounding here
-		//$string = round(floatval($string), $decimalDigits);
-		if(is_int($dp))
-		{
-			if($decimalDigits == -1)
-			{
-				$decimal = substr($string, $dp+1);
-			}
-			else if(is_int($decimalDigits))
-			{
-				$float = round((float)$string, $decimalDigits);
-				if(strpos((string)$float, '.') === false)
-				{
-					$decimal = str_pad($decimal,$decimalDigits,'0');
-				}
-				else
-				{
-					$decimal = substr($float, strpos($float,'.')+1);
-					if(strlen($decimal)<$decimalDigits)
-						$decimal = str_pad($decimal,$decimalDigits,'0');
-				}
-			}
-			else
-				return $decimal;
+		if ($decimalDigits > 0) {
+			//do the correct rounding here
+			$number = round(floatval($number), $decimalDigits);
+			$decimal = substr((string)$number,strlen((string)intval($number))+1  );
+			$decimal =  $decimalSeparator.str_pad($decimal,$decimalDigits,'0',STR_PAD_RIGHT);
 
-			return $decimalSeparator.$decimal;
-		}
-		else if ($decimalDigits > 0)
-			return $decimalSeparator.str_pad($decimal,$decimalDigits,'0');
+		} elseif($decimalDigits == -1) {
+			$decimal = $decimalSeparator.substr((string)$number,strlen((string)intval($number))+1  );
+		} elseif($decimalDigits == false)
+			$decimal = $decimalSeparator.substr((string)$number,strlen((string)intval($number))+1  );
+
 
 		return $decimal;
 	}

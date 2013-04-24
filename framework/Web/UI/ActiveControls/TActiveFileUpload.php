@@ -5,7 +5,7 @@
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (issue 349 remote vulnerability fix)
- * @version $Id$
+ * @version $Id: TActiveFileUpload.php 3232 2013-01-02 14:42:24Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -39,7 +39,7 @@ Prado::using('System.Web.UI.WebControls.TFileUpload');
  *  
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id$
+ * @version $Id: TActiveFileUpload.php 3232 2013-01-02 14:42:24Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallbackEventHandler, INamingContainer 
@@ -454,7 +454,7 @@ EOS;
  *  
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id$
+ * @version $Id: TActiveFileUpload.php 3232 2013-01-02 14:42:24Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 class TActiveFileUploadCallbackParams

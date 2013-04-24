@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TApplication.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  */
 
@@ -24,8 +24,8 @@ Prado::using('System.TService');
 Prado::using('System.Exceptions.TErrorHandler');
 Prado::using('System.Caching.TCache');
 Prado::using('System.IO.TTextWriter');
-Prado::using('System.Collections.TPriorityList');
-Prado::using('System.Collections.TPriorityMap');
+Prado::using('System.Collections.TList');
+Prado::using('System.Collections.TMap');
 Prado::using('System.Collections.TStack');
 Prado::using('System.Xml.TXmlDocument');
 Prado::using('System.Security.TAuthorizationRule');
@@ -105,7 +105,7 @@ Prado::using('System.I18N.TGlobalization');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TApplication.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -205,13 +205,9 @@ class TApplication extends TComponent
 	 */
 	private $_service;
 	/**
-	 * @var array list of loaded application modules
+	 * @var array list of application modules
 	 */
 	private $_modules=array();
-	/**
-	 * @var array list of application modules yet to be loaded
-	 */
-	private $_lazyModules=array();
 	/**
 	 * @var TMap list of application parameters
 	 */
@@ -689,9 +685,9 @@ class TApplication extends TComponent
 	 * Adds a module to application.
 	 * Note, this method does not do module initialization.
 	 * @param string ID of the module
-	 * @param IModule module object or null if the module has not been loaded yet
+	 * @param IModule module object
 	 */
-	public function setModule($id,IModule $module=null)
+	public function setModule($id,IModule $module)
 	{
 		if(isset($this->_modules[$id]))
 			throw new TConfigurationException('application_moduleid_duplicated',$id);
@@ -704,22 +700,10 @@ class TApplication extends TComponent
 	 */
 	public function getModule($id)
 	{
-		if(!array_key_exists($id, $this->_modules))
-			return null;
-
-		// force loading of a lazy module
-		if($this->_modules[$id]===null)
-		{
-			$module = $this->internalLoadModule($id, true);
-			$module[0]->init($module[1]);
-		}
-
-		return $this->_modules[$id];
+		return isset($this->_modules[$id])?$this->_modules[$id]:null;
 	}
 
 	/**
-	 * Returns a list of application modules indexed by module IDs.
-	 * Modules that have not been loaded yet are returned as null objects.
 	 * @return array list of loaded application modules, indexed by module IDs
 	 */
 	public function getModules()
@@ -954,28 +938,6 @@ class TApplication extends TComponent
 		return 'TApplicationConfiguration';
 	}
 
-	protected function internalLoadModule($id, $force=false)
-	{
-		list($moduleClass, $initProperties, $configElement)=$this->_lazyModules[$id];
-		if(isset($initProperties['lazy']) && $initProperties['lazy'] && !$force)
-		{
-			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})",'System.TApplication');
-			$this->setModule($id, null);
-			return null;
-		}
-
-		Prado::trace("Loading module $id ({$moduleClass})",'System.TApplication');
-		$module=Prado::createComponent($moduleClass);
-		foreach($initProperties as $name=>$value)
-		{
-			if($name==='lazy') continue;
-			$module->setSubProperty($name,$value);
-		}
-		$this->setModule($id,$module);
-		unset($this->_lazyModules[$id]);
-
-		return array($module,$configElement);
-	}
 	/**
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
@@ -1020,11 +982,18 @@ class TApplication extends TComponent
 		$modules=array();
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
+			Prado::trace("Loading module $id ({$moduleConfig[0]})",'System.TApplication');
+			list($moduleClass, $initProperties, $configElement)=$moduleConfig;
+			$module=Prado::createComponent($moduleClass);
 			if(!is_string($id))
-				$id='_module'.count($this->_lazyModules);
-			$this->_lazyModules[$id]=$moduleConfig;
-			if($module = $this->internalLoadModule($id))
-				$modules[]=$module;
+			{
+				$id='_module'.count($this->_modules);
+				$initProperties['id']=$id;
+			}
+			$this->setModule($id,$module);
+			foreach($initProperties as $name=>$value)
+				$module->setSubProperty($name,$value);
+			$modules[]=array($module,$configElement);
 		}
 		foreach($modules as $module)
 			$module[0]->init($module[1]);
@@ -1279,7 +1248,7 @@ class TApplication extends TComponent
  * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TApplication.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0.4
  */
@@ -1299,7 +1268,7 @@ class TApplicationMode extends TEnumerable
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id$
+ * @version $Id: TApplication.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1808,7 +1777,7 @@ class TApplicationConfiguration extends TComponent
  * Cache will be exploited if it is enabled.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id$
+ * @version $Id: TApplication.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */

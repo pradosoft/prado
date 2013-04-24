@@ -6,7 +6,7 @@
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id$
+ * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
  */
 class TDraggable extends TPanel 
 {
@@ -193,7 +193,7 @@ class TDraggable extends TPanel
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id$
+ * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
  */
 class TDraggableGhostingOptions extends TEnumerable
 {
@@ -207,7 +207,7 @@ class TDraggableGhostingOptions extends TEnumerable
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id$
+ * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
  */
 class TDraggableRevertOptions extends TEnumerable
 {

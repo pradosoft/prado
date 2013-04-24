@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: index.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package prado
  */
 

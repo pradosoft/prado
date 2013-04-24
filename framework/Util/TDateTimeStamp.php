@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TDateTimeStamp.php 3246 2013-01-07 21:07:38Z ctrlaltca $
  * @package System.Util
  */
 
@@ -20,9 +20,10 @@
  * julian dates anymore.
  *
  * @author Fabio Bas ctrlaltca[AT]gmail[DOT]com
- * @version $Id$
+ * @version $Id: TDateTimeStamp.php 3246 2013-01-07 21:07:38Z ctrlaltca $
  * @package System.Util
  * @since 3.0.4
+ * @deprecated since 3.2.1
  */
 class TDateTimeStamp
 {

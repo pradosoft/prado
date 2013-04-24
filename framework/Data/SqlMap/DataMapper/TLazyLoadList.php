@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TLazyLoadList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  */
 
@@ -14,7 +14,7 @@
  * TLazyLoadList executes mapped statements when the proxy collection is first accessed.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TLazyLoadList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -107,7 +107,7 @@ class TLazyLoadList
  * particular object and relays the call to handler object.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TLazyLoadList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */

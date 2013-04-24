@@ -1,16 +1,3 @@
-Next Prado iteration: 3.3.0
- 
-EHN: Issue #260 - TComponent Update: Behaviors, Class Behaviors, fx global events, and dy one to one events (javalizard)
-EHN: Issue #292 - Events should have priorities to allow event handler order to be specified (javalizard)
-
-Version 3.2.2 to be released
-
-ENH: Issue #433 - Prado object-creation performance micro-optimizations (gabor)
-BUG: Issue #434 - Buttons stops working properly after response->writeFile (ctrlaltca)
-BUG: Issue #435 - TWizard + No ID = Prototype Error (ctrlaltca)
-BUG: Issue #436 - French Canadian date formats should be the same in TDateFormat and TDatePicker (ctrlaltca)
-ENH: Issue #439 - Module lazy loading (ctrlaltca)
-
 Version 3.2.1 Jan 19, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)

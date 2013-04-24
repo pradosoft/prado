@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TActivePager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -25,7 +25,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * and it is raise <b>after</b> the {@link onPageIndexChanged OnPageIndexChanged} event.
  * 
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
- * @version $Id$
+ * @version $Id: TActivePager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1.2
  */

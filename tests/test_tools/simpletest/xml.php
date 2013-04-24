@@ -3,7 +3,7 @@
      *	base include file for SimpleTest
      *	@package	SimpleTest
      *	@subpackage	UnitTester
-     *	@version	$Id$
+     *	@version	$Id: xml.php 1398 2006-09-08 19:31:03Z xue $
      */
 
     /**#@+

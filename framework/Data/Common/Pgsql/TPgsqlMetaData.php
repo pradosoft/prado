@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id$
+ * @version $Id: TPgsqlMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Pgsql
  */
 
@@ -20,7 +20,7 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlTableInfo');
  * TPgsqlMetaData loads PostgreSQL database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
+ * @version $Id: TPgsqlMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Pgsql
  * @since 3.1
  */

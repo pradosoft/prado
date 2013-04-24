@@ -1,6 +1,6 @@
 <?php
 
-//$Id$
+//$Id: packages.php 3187 2012-07-12 11:21:01Z ctrlaltca $
 
 // To make future upgrades easier
 if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.7');

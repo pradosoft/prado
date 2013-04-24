@@ -2,7 +2,7 @@
 /**
  * Translation table cache.
  * @author $Author: weizhuo $
- * @version $Id$
+ * @version $Id: MessageCache.php 3188 2012-07-12 12:13:23Z ctrlaltca $
  * @package System.I18N.core
  */
 
@@ -16,7 +16,7 @@ require_once(dirname(__FILE__).'/TCache_Lite.php');
  * It can cache each cataloug+variant or just the whole section.
  * @package System.I18N.core
  * @author $Author: weizhuo $
- * @version $Id$
+ * @version $Id: MessageCache.php 3188 2012-07-12 12:13:23Z ctrlaltca $
  */
 class MessageCache 
 {

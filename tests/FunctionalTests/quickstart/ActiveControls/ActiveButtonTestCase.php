@@ -1,5 +1,5 @@
 <?php
-//$Id$
+//$Id: ActiveButtonTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
 class ActiveButtonTestCase extends SeleniumTestCase
 {
 	function test ()
