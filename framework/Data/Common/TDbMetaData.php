@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDbMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  */
 
@@ -17,7 +17,7 @@
  * Use the {@link getTableInfo} method to retrieve a table information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TDbMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  * @since 3.1
  */
@@ -70,6 +70,7 @@ abstract class TDbMetaData extends TComponent
 				Prado::using('System.Data.Common.Sqlite.TSqliteMetaData');
 				return new TSqliteMetaData($conn);
 			case 'mssql': // Mssql driver on windows hosts
+			case 'sqlsrv': // sqlsrv driver on windows hosts
 			case 'dblib': // dblib drivers on linux (and maybe others os) hosts
 				Prado::using('System.Data.Common.Mssql.TMssqlMetaData');
 				return new TMssqlMetaData($conn);

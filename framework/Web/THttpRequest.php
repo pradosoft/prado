@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  */
 
@@ -64,7 +64,7 @@ Prado::using('System.Web.TUrlManager');
  * request module. It can be accessed via {@link TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  * @since 3.0
  */
@@ -114,6 +114,10 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	private $_enableCookieValidation=false;
 	private $_cgiFix=0;
 	/**
+	 * @var boolean whether to cache the TUrlManager class (useful with a lot of TUrlMappings)
+	 */
+	private $_enableCache=false;
+	/**
 	 * @var string request URL
 	 */
 	private $_url=null;
@@ -151,20 +155,6 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function init($config)
 	{
-		if(empty($this->_urlManagerID))
-		{
-			$this->_urlManager=new TUrlManager;
-			$this->_urlManager->init(null);
-		}
-		else
-		{
-			$this->_urlManager=$this->getApplication()->getModule($this->_urlManagerID);
-			if($this->_urlManager===null)
-				throw new TConfigurationException('httprequest_urlmanager_inexist',$this->_urlManagerID);
-			if(!($this->_urlManager instanceof TUrlManager))
-				throw new TConfigurationException('httprequest_urlmanager_invalid',$this->_urlManagerID);
-		}
-
 		// Fill in default request info when the script is run in command line
 		if(php_sapi_name()==='cli')
 		{
@@ -246,6 +236,72 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * Set true to cache the UrlManager instance. Consider to enable this cache
+	 * when the application defines a lot of TUrlMappingPatterns
+	 * @param boolean true to cache urlmanager instance.
+	 */
+	public function setEnableCache($value)
+	{
+		$this->_enableCache = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return boolean true if urlmanager instance should be cached, false otherwise.
+	 */
+	public function getEnableCache()
+	{
+		return $this->_enableCache;
+	}
+
+	protected function getCacheKey()
+	{
+		return $this->getID();
+	}
+
+	/**
+	 * Saves the current UrlManager instance to cache.
+	 * @return boolean true if UrlManager instance was cached, false otherwise.
+	 */
+	protected function cacheUrlManager($manager)
+	{
+		if($this->getEnableCache())
+		{
+			$cache = $this->getApplication()->getCache();
+			if($cache !== null) 
+			{
+				$dependencies = null;
+				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
+					if ($manager instanceof TUrlMapping && $fn = $manager->getConfigFile())
+					{
+						$fn = Prado::getPathOfNamespace($fn,$this->getApplication()->getConfigurationFileExt());
+						$dependencies = new TFileCacheDependency($fn);
+					}
+				return $cache->set($this->getCacheKey(), $manager, 0, $dependencies);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Loads UrlManager instance from cache.
+	 * @return TUrlManager intance if load was successful, null otherwise.
+	 */
+	protected function loadCachedUrlManager()
+	{
+		if($this->getEnableCache())
+		{
+			$cache = $this->getApplication()->getCache();
+			if($cache !== null)
+			{
+				$manager = $cache->get($this->getCacheKey());
+				if($manager instanceof TUrlManager)
+					return $manager;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * @return string the ID of the URL manager module
 	 */
 	public function getUrlManager()
@@ -271,6 +327,26 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getUrlManagerModule()
 	{
+		if($this->_urlManager===null)
+		{
+			if(($this->_urlManager = $this->loadCachedUrlManager())===null)
+			{
+				if(empty($this->_urlManagerID))
+				{
+					$this->_urlManager=new TUrlManager;
+					$this->_urlManager->init(null);
+				}
+				else
+				{
+					$this->_urlManager=$this->getApplication()->getModule($this->_urlManagerID);
+					if($this->_urlManager===null)
+						throw new TConfigurationException('httprequest_urlmanager_inexist',$this->_urlManagerID);
+					if(!($this->_urlManager instanceof TUrlManager))
+						throw new TConfigurationException('httprequest_urlmanager_invalid',$this->_urlManagerID);
+				}
+				$this->cacheUrlManager($this->_urlManager);
+			}
+		}
 		return $this->_urlManager;
 	}
 
@@ -643,7 +719,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	{
 		if ($this->_cookieOnly===null)
 				$this->_cookieOnly=(int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
-		$url=$this->_urlManager->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+		$url=$this->getUrlManagerModule()->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
 		if(defined('SID') && SID != '' && !$this->_cookieOnly)
 			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
 		else
@@ -658,7 +734,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	protected function parseUrl()
 	{
-		return $this->_urlManager->parseUrl();
+		return $this->getUrlManagerModule()->parseUrl();
 	}
 
 	/**
@@ -893,7 +969,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  * @since 3.0
  */
@@ -981,7 +1057,7 @@ class THttpCookieCollection extends TList
  * domain, path, expire, and secure.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  * @since 3.0
  */
@@ -1156,7 +1232,7 @@ class THttpCookie extends TComponent
  * - fragment: anchor
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  * @since 3.0
  */
@@ -1323,7 +1399,7 @@ class TUri extends TComponent
  * - HiddenPath: the URL format is like /path/to/name1,value1/name2,value2...
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THttpRequest.php 3253 2013-01-16 08:57:12Z ctrlaltca $
+ * @version $Id: THttpRequest.php 3273 2013-02-13 21:51:21Z ctrlaltca $
  * @package System.Web
  * @since 3.0.4
  */

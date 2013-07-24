@@ -6,7 +6,27 @@
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
+ * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
+ */
+
+/**
+ * TDraggable is a control which can be dragged
+ * 
+ * This control will make "draggable" control.
+ * Properties :
+ *
+ * <b>{@link setGhosting Ghosting}</b> : If set to "Ghosting" or "True", the dragged element will be cloned, and the clone will be dragged.
+ * If set to "SuperGhosting", the element will be cloned, and attached to body, so it can be dragged outside of its parent.
+ * If set to "None" of "False" (default), the element itself is dragged
+ * <b>{@link setRevert Revert}</b>: Set to True if you want your dragged element to revert to its initial position if not dropped on a valid area.
+ * <b>{@link setConstraint Constraint}</b>: Set this to Horizontal or Vertical if you want to constraint your move in one direction.
+ * <b>{@link setHandle Handle}</b>:
+ * 
+ * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggable extends TPanel 
 {
@@ -193,7 +213,21 @@ class TDraggable extends TPanel
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
+ * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
+ */
+class TDraggableConstraint extends TEnumerable
+{
+	const None='None';
+	const Horizontal='Horizontal';
+	const Vertical='Vertical';
+}
+
+/**
+ * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
+ * @copyright Copyright &copy; 2008, PradoSoft
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.ActiveControls
+ * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggableGhostingOptions extends TEnumerable
 {
@@ -207,7 +241,7 @@ class TDraggableGhostingOptions extends TEnumerable
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3247 2013-01-07 21:38:18Z ctrlaltca $
+ * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggableRevertOptions extends TEnumerable
 {

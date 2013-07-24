@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TButtonColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TButtonColumn.php 3287 2013-04-30 10:10:16Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -31,7 +31,7 @@ Prado::using('System.Web.UI.WebControls.TImageButton');
  * If {@link setDataTextFormatString DataTextFormatString} is not empty,
  * the value will be formatted before rendering.
  *
- * The buttons in the column can be set to display as hyperlinks or push buttons
+ * The buttons in the column can be set to display as hyperlinks, push buttons or images
  * by setting the {@link setButtonType ButtonType} property.
  * The {@link setCommandName CommandName} will assign its value to
  * all button's <b>CommandName</b> property. The datagrid will capture
@@ -48,7 +48,7 @@ Prado::using('System.Web.UI.WebControls.TImageButton');
  * datagrid cell is the first child.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TButtonColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TButtonColumn.php 3287 2013-04-30 10:10:16Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -237,6 +237,7 @@ class TButtonColumn extends TDataGridColumn
 			{
 				$button=new TImageButton;
 				$button->setImageUrl($this->getImageUrl());
+				$button->setToolTip($this->getText());
 			}
 			$button->setText($this->getText());
 			$button->setCommandName($this->getCommandName());

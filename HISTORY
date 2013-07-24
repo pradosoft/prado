@@ -1,3 +1,27 @@
+Version 3.2.2 Jul 20, 2013
+
+ENH: Issue  #50 - TUrlMapping - implement caching for loadUrlMappings (ctrlaltca)
+ENH: Issue #433 - Prado object-creation performance micro-optimizations (gabor)
+BUG: Issue #434 - Buttons stops working properly after response->writeFile (ctrlaltca)
+BUG: Issue #435 - TWizard + No ID = Prototype Error (ctrlaltca)
+BUG: Issue #436 - French Canadian date formats should be the same in TDateFormat and TDatePicker (ctrlaltca)
+ENH: Issue #437 - TUrlMapping optimizations: merge DxUrlMapping (gabor)
+ENH: Issue #439 - Module lazy loading (ctrlaltca)
+BUG: Issue #441 - TAccordion's ActiveViewIndex property is not honored on postback (ctrlatca)
+BUG: Issue #442 - TWizard's ShowSideBar property can't be changed from php (ctrlaltca)
+BUG: Issue #444 - Input validation vulnerability in unit test (ctrlaltca)
+BUG: Issue #446 - THtmlArea can't be updated in a callback (ctrlaltca)
+BUG: Issue #447 - Array to string conversion notice in TClientScriptManager (ctrlaltca)
+ENH: Issue #448 - Add TEACache eAccellerator cache module (drigolin)
+BUG: Issue #315 - TEmailAddressValidator regex (ctrlaltca)
+ENH: Issue #454 - TDraggableConstraint missing (ctrlaltca)
+ENH: Issue #455 - Support PDO::sqlsrv to support MS SQL database servers for PHP5.2+ (jonathan.martens)
+ENH: Issue #456 - Add ImageAlign to THyperLink (raoul@bhatia.at)
+ENH: Issue #459 - Add ToolTip and AlternateText to TButtonColumn (raoul@bhatia.at)
+ENH: Issue #451 - TRequiredFieldValidator should (automatically?) consider PromptValue as error (ctrlaltca)
+BUG: Issue #460 - Minor error in TUrlMappingPattern (raoul@bhatia.at)
+BUG: Issue #464 - Do not issue a callback request if an ActiveControl is disabled (ctrlaltca)
+
 Version 3.2.1 Jan 19, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)

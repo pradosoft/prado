@@ -7,7 +7,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  */
 
@@ -18,7 +18,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -406,8 +406,14 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function getStyleSheetUrls()
 	{
-
-		$stylesheets = array_values(array_merge($this->_styleSheetFiles, $this->_styleSheets));
+		$stylesheets = array_values(
+			array_merge(
+				array_map(
+					create_function('$e', 'return is_array($e) ? $e[0] : $e;'),
+					$this->_styleSheetFiles),
+				$this->_styleSheets
+			)
+		);
 
 		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)
 			if (substr($url,strlen($url)-4)=='.css')
@@ -758,7 +764,7 @@ class TClientScriptManager extends TApplicationComponent
  * between ActiveControls and validators.
  *
  * @author <weizhuo[at]gmail[dot]com>
- * @version $Id: TClientScriptManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -768,14 +774,6 @@ abstract class TClientSideOptions extends TComponent
 	 * @var TMap list of client-side options.
 	 */
 	private $_options;
-
-	/**
-	 * Constructor, initialize the options list.
-	 */
-	public function __construct()
-	{
-		$this->_options = Prado::createComponent('System.Collections.TMap');
-	}
 
 	/**
 	 * Adds on client-side event handler by wrapping the code within a
@@ -797,7 +795,10 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function getOption($name)
 	{
-		return $this->_options->itemAt($name);
+		if ($this->_options)
+			return $this->_options->itemAt($name);
+		else
+			return null;
 	}
 
 	/**
@@ -806,7 +807,7 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	protected function setOption($name, $value)
 	{
-		$this->_options->add($name, $value);
+		$this->getOptions()->add($name, $value);
 	}
 
 	/**
@@ -814,6 +815,8 @@ abstract class TClientSideOptions extends TComponent
 	 */
 	public function getOptions()
 	{
+		if (!$this->_options)
+			$this->_options = Prado::createComponent('System.Collections.TMap');
 		return $this->_options;
 	}
 

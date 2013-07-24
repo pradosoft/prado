@@ -202,6 +202,9 @@ Prado.PostBack = function(event,options)
 	/*if(options['StopEvent']) */
 		Event.stop(event);
 	Event.fireEvent(form,"submit");
+
+	$('PRADO_POSTBACK_TARGET').value = '';
+	$('PRADO_POSTBACK_PARAMETER').value = '';
 };
 
 /**
@@ -283,7 +286,7 @@ Prado.Element =
 	{
 		var el = $(element);
 		if(!el) return;
-		if((attribute == "disabled" || attribute == "multiple" || attribute == "readonly") && value==false)
+		if((attribute == "disabled" || attribute == "multiple" || attribute == "readonly" || attribute == "href") && value==false)
 			el.removeAttribute(attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{

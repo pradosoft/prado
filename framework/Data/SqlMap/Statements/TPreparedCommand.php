@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPreparedCommand.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TPreparedCommand.php 3261 2013-01-22 22:36:51Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
  */
 
@@ -17,7 +17,7 @@ Prado::using('System.Data.Common.TDbCommandBuilder');
  * TPreparedCommand class.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TPreparedCommand.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TPreparedCommand.php 3261 2013-01-22 22:36:51Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
@@ -47,9 +47,10 @@ class TPreparedCommand
 
 	protected function applyParameterMap($manager,$command,$prepared, $statement, $parameterObject)
 	{
-		$properties = $prepared->getParameterNames();
-		$parameters = $prepared->getParameterValues();
+		$properties = $prepared->getParameterNames(false);
+		//$parameters = $prepared->getParameterValues();
 		$registry=$manager->getTypeHandlers();
+		if ($properties)
 		for($i = 0, $k=$properties->getCount(); $i<$k; $i++)
 		{
 			$property = $statement->parameterMap()->getProperty($i);

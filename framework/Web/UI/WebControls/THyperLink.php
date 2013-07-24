@@ -6,7 +6,7 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Id: THyperLink.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -17,13 +17,16 @@
  * via the {@link setNavigateUrl NavigateUrl} property, and link text is via
  * the {@link setText Text} property. It is also possible to display an image
  * by setting the {@link setImageUrl ImageUrl} property. In this case,
- * {@link getText Text} is displayed as the alternate text of the image.
+ * the alignment of the image displayed is set by the
+ * {@link setImageAlign ImageAlign} property and {@link getText Text} is
+ * displayed as the alternate text of the image.
+ * 
  * The link target is specified via the {@link setTarget Target} property.
  * If both {@link getImageUrl ImageUrl} and {@link getText Text} are empty,
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THyperLink.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -92,6 +95,8 @@ class THyperLink extends TWebControl implements IDataRenderer
 			$image->setToolTip($toolTip);
 		if(($text=$this->getText())!=='')
 			$image->setAlternateText($text);
+		if(($align=$this->getImageAlign())!=='')
+			$image->setImageAlign($align);
 		$image->setBorderWidth('0');
 		return $image;
 	}
@@ -111,6 +116,26 @@ class THyperLink extends TWebControl implements IDataRenderer
 	public function setText($value)
 	{
 		$this->setViewState('Text',$value,'');
+	}
+
+	/**
+	 * @return string the alignment of the image with respective to other elements on the page, defaults to empty.
+	 */
+	public function getImageAlign()
+	{
+		return $this->getViewState('ImageAlign','');
+	}
+
+	/**
+	 * Sets the alignment of the image with respective to other elements on the page.
+	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
+	 * middle, right, texttop, and top. If an empty string is passed in,
+	 * imagealign attribute will not be rendered.
+	 * @param string the alignment of the image
+	 */
+	public function setImageAlign($value)
+	{
+		$this->setViewState('ImageAlign',$value,'');
 	}
 
 	/**

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TEmailAddressValidator.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TEmailAddressValidator.php 3283 2013-03-24 10:19:08Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -24,7 +24,7 @@ Prado::using('System.Web.UI.WebControls.TRegularExpressionValidator');
  * checkdnsrr() is available in the installed PHP.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TEmailAddressValidator.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TEmailAddressValidator.php 3283 2013-03-24 10:19:08Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -32,8 +32,9 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 {
 	/**
 	 * Regular expression used to validate the email address
+	 * @see http://www.regular-expressions.info/email.html
 	 */
-	const EMAIL_REGEXP="\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+	const EMAIL_REGEXP='[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.
@@ -60,10 +61,12 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function evaluateIsValid()
 	{
-		$valid=parent::evaluateIsValid();
+		$value=$this->getValidationValue($this->getValidationTarget());
+		$valid=$valid=is_string($value) && strlen($value)<=254 && parent::evaluateIsValid();
+
 		if($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr'))
 		{
-			if(($value=$this->getValidationValue($this->getValidationTarget()))!=='')
+			if($value!=='')
 			{
 				if(($pos=strpos($value,'@'))!==false)
 				{
@@ -82,7 +85,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function getCheckMXRecord()
 	{
-		return $this->getViewState('CheckMXRecord',true);
+		return $this->getViewState('CheckMXRecord',false);
 	}
 
 	/**
@@ -91,7 +94,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function setCheckMXRecord($value)
 	{
-		$this->setViewState('CheckMXRecord',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CheckMXRecord',TPropertyValue::ensureBoolean($value),false);
 	}
 }
 

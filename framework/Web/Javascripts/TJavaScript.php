@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJavaScript.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  */
 
@@ -17,7 +17,7 @@
  * functions.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Id: TJavaScript.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  * @since 3.0
  */
@@ -219,7 +219,7 @@ class TJavaScript
 			($g=Prado::getApplication()->getGlobalization(false))!==null &&
 			strtoupper($enc=$g->getCharset())!='UTF-8')
 			$value=iconv($enc, 'UTF-8', $value);
-		$s = json_encode($value,$options);
+		$s = @json_encode($value,$options);
 		self::checkJsonError();
 		return $s;
 	}
@@ -234,7 +234,7 @@ class TJavaScript
 	 */
 	public static function jsonDecode($value, $assoc = false, $depth = 512)
 	{
-		$s= json_decode($value, $assoc, $depth);
+		$s= @json_decode($value, $assoc, $depth);
 		self::checkJsonError();
 		return $s;
 	}

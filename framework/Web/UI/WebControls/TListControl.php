@@ -8,7 +8,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TListControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TListControl.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -75,8 +75,11 @@ Prado::using('System.Util.TDataFieldAccessor');
  * used to format how the item should be displayed. See {@link formatDataValue()}
  * for an explanation of the format string.
  *
+ * The {@link setPromptText PromptText} and {@link setPromptValue PromptValue} properties can
+ * be used to add a dummy list item that will be rendered first.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TListControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TListControl.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

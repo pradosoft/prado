@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveLinkButton.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TActiveLinkButton.php 3292 2013-05-31 08:51:42Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -29,7 +29,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * will update the link text upon callback response completion.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActiveLinkButton.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TActiveLinkButton.php 3292 2013-05-31 08:51:42Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -118,9 +118,36 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->renderLinkButtonHref($writer);
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+
+		if($this->getEnabled(true))
+		{
+			$this->getActiveControl()->registerCallbackClientScript(
+				$this->getClientClassName(), $this->getPostBackOptions());
+		}
+	}
+
+	/**
+	 * Ensures that the anchor is rendered correctly when its Enabled property
+	 * changes in a callback
+	 * @param bool enabled
+	 */
+	public function setEnabled($value)
+	{
+		parent::setEnabled($value);
+		if($this->getActiveControl()->canUpdateClientSide())
+		{
+			if($this->getEnabled(true))
+			{
+				$nop = "javascript:;//".$this->getClientID();
+				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $nop);
+
+				$this->getActiveControl()->registerCallbackClientScript(
+					$this->getClientClassName(), $this->getPostBackOptions());
+
+			} else {
+				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);				
+			}
+		}
 	}
 
 	/**

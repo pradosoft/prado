@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: index.php 3187 2012-07-12 11:21:01Z ctrlaltca $
+ * @version $Id: index.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package prado
  */
 
@@ -113,6 +113,16 @@ $requirements = array(
 		extension_loaded("apc"),
 		'APC extension check',
 		'APC extension optional'),
+	array(
+		false,
+		function_exists('eaccelerator_get'),
+		'eAccelerator extension check',
+		'eAccelerator extension optional'),
+	array(
+		false,
+		function_exists('xcache_isset'),
+		'XCache extension check',
+		'XCache extension optional'),
 	array(
 		false,
 		extension_loaded("mcrypt"),

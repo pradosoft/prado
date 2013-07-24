@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TRequiredFieldValidator.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TRequiredFieldValidator.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -25,8 +25,11 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * Validation will also succeed if input is of TListControl type and the number
  * of selected values different from the initial value is greater than zero.
  *
+ * If the input is of TListControl type and has a {@link TListControl::setPromptValue PromptValue}
+ * set, it will be automatically considered as the validator's {@link setInitialValue InitialValue}.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TRequiredFieldValidator.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TRequiredFieldValidator.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -43,15 +46,28 @@ class TRequiredFieldValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return string the initial value of the associated input control. Defaults to empty string.
+	 * @return string the initial value of the associated input control. Defaults to empty string
+	 * unless the control has a prompt value set.
 	 * If the associated input control does not change from this initial value
 	 * upon postback, the validation fails.
 	 */
 	public function getInitialValue()
 	{
-		return $this->getViewState('InitialValue','');
+		return $this->getViewState('InitialValue',$this->getControlPromptValue());
 	}
 
+	/**
+	 * @return string the initial value of the associated input control. Defaults to empty string.
+	 * If the associated input control does not change from this initial value
+	 * upon postback, the validation fails.
+	 */
+	protected function getControlPromptValue()
+	{
+		$control = $this->getValidationTarget();
+		if($control instanceof TListControl)
+			return $control->getPromptValue();
+		return '';
+	}
 	/**
 	 * @param string the initial value of the associated input control.
 	 * If the associated input control does not change from this initial value
