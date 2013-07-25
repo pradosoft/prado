@@ -4,7 +4,7 @@ Git mirror for Prado3 (https://code.google.com/p/prado3/)
 
 # Warning!
 
-This is a mirror with some small but core changes needed for working into *ClavisNG*.  
+This is a mirror with some small but core changes needed for working with **ClavisNG**.  
 Comperio does not provide support for this framework, please refer to the original [issue tracker](https://code.google.com/p/prado3/issues/list).
 
 [![Build Status](https://secure.travis-ci.org/nicmart/DomainSpecificQuery.png?branch=master)](http://travis-ci.org/nicmart/DomainSpecificQuery)
