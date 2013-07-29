@@ -7,6 +7,8 @@ Git mirror for Prado3 (https://code.google.com/p/prado3/)
 This is a mirror with some small but core changes needed for working with **ClavisNG**.  
 Comperio does not provide support for this framework, please refer to the original [issue tracker](https://code.google.com/p/prado3/issues/list).
 
+[![Build Status](https://travis-ci.org/comperio/prado.png?branch=master)](https://travis-ci.org/comperio/prado)
+
 ## Install
 
 The best way to install Prado is [through composer](http://getcomposer.org).
