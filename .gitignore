@@ -1,10 +1,13 @@
 /.idea
 atlassian-ide-plugin.xml
-/.cache
 /.project
-/.settings
 /assets
+/.settings
+/.cache
 /build
+/vendor
+/composer.lock
+/.cache
 buildscripts/chmbuilder/assets/*
 buildscripts/chmbuilder/classes/Data/classes.data
 buildscripts/chmbuilder/classes/runtime/*
@@ -72,3 +75,6 @@ tests/unit/Data/db/test.db
 tests/unit/Security/app/runtime/*
 tests/unit/Web/app/runtime/*
 vendor/*
+phpunit
+phing
+apigen.php
