@@ -10,7 +10,13 @@ class TRequiredFieldValidatorTest extends PHPUnit_Framework_TestCase {
 
   public function testGetEmptyInitialValue() {
     $validator = new TRequiredFieldValidator();
-    $this->assertEquals('', $validator->getInitialValue());
+    try {
+    	$value = $validator->getInitialValue();
+    } catch (TConfigurationException $e) {
+    	//since prado 3.2.2 you need to set at least ControlToValidate
+    	$value = '';
+    }
+    $this->assertEquals('', $value);
   }
 }
 

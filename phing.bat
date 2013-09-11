@@ -1,1 +1,0 @@
-buildscripts/phing/bin/phing %*

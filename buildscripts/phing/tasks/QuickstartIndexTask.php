@@ -28,5 +28,3 @@ class QuickstartIndexTask extends Task
 		$quickstart->create_index();
 	}
 }
-
-?>

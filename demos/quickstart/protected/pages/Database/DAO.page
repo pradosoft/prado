@@ -5,10 +5,10 @@
 Data Access Objects (DAO) separates a data resource's client interface from its data access mechanisms. It adapts a specific data resource's access API to a generic client interface. As a result, data access mechanisms can be changed independently of the code that uses the data.
 </p>
 <p id="680462" class="block-content">
-Since version 3.1, PRADO starts to provide a DAO that is a thin wrap around <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Data Objects (PDO)</a>. Although PDO has a nice feature set and good APIs, we choose to implement the PRADO DAO on top of PDO because the PRADO DAO classes are component classes and are thus configurable in a PRADO application. Users can use these DAO classes in a more PRADO-preferred way.
+Since version 3.1, PRADO starts to provide a DAO that is a thin wrap around <a href="http://www.php.net/manual/en/book.pdo.php">PHP Data Objects (PDO)</a>. Although PDO has a nice feature set and good APIs, we choose to implement the PRADO DAO on top of PDO because the PRADO DAO classes are component classes and are thus configurable in a PRADO application. Users can use these DAO classes in a more PRADO-preferred way.
 </p>
 <div class="note"><b class="tip">Note:</b>
-Since the PRADO DAO is based on PDO, the PDO PHP extension needs to be installed. In addition, you need to install the corresponding PDO driver for the database to be used in your application. See more details in the <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
+Since the PRADO DAO is based on PDO, the PDO PHP extension needs to be installed. In addition, you need to install the corresponding PDO driver for the database to be used in your application. See more details in the <a href="http://www.php.net/manual/en/book.pdo.php">PHP Manual</a>.
 </div>
 <p id="680463" class="block-content">
 The PRADO DAO mainly consists of the following four classes (in contrast to PDO which uses only two classes, <tt>PDO</tt> and <tt>PDOStatement</tt>):
@@ -36,12 +36,13 @@ $connection->Active=true;  // connection is established
 $connection->Active=false;  // connection is closed
 </com:TTextHighlighter>
 <p id="680466" class="block-content">
-Complete specification of DSN may be found in the <a href="http://www.php.net/manual/en/ref.pdo.php#pdo.drivers">PDO documentation</a>. Below is a list of commonly used DSN formats:
+Complete specification of DSN may be found in the <a href="http://www.php.net/manual/en/pdo.drivers.php">PDO documentation</a>. Below is a list of commonly used DSN formats:
 </p>
 <ul id="u2" class="block-content">
 <li>MySQL - <tt>mysql:host=localhost;dbname=test</tt></li>
 <li>SQLite - <tt>sqlite:/path/to/dbfile</tt></li>
-<li>ODBC - <tt>odbc:SAMPLE</tt>
+<li>ODBC - <tt>odbc:SAMPLE</tt></li>
+<li>MSSql - <tt>sqlsrv:server=hostname;database=test"</tt></li>
 </ul>
 <p id="680467" class="block-content">
 In case any error occurs when establishing the connection (such as bad DSN or username/password), a <tt>TDbException</tt> will be raised.

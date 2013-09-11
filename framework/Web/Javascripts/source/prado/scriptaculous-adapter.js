@@ -362,7 +362,7 @@ Prado.Element =
 			}
 			var opt = document.createElement('option');
 			opt.text = option[0];
-			opt.innerText = option[0];
+			opt.innerHTML = option[0];
 			opt.value = option[1];
 			if(optgroup!=null)
 				optgroup.appendChild(opt);

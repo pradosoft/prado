@@ -21,16 +21,15 @@ class api_index
 	function create_index()
 	{
 		echo "Building search index...\n";
-		$files = $this->get_file_list($this->_api);
+		$files = $this->get_files($this->_api);
 		$count = 0;
 		foreach($files as $file)
 		{
-			echo " processing $file...\n";
 			$content = $this->get_details($file, $this->_api);
 			
 			$doc = new Zend_Search_Lucene_Document();
 			
-			$title = $content['namespace'].'.'.$content['class'];
+			$title = $content['class'];
 			
 			echo "  Adding ".$title."\n";
 			
@@ -55,27 +54,6 @@ class api_index
 		return htmlentities(strip_tags( $input ));
 	}	
 
-
-	function get_file_list($path)
-	{
-		
-		$d = dir($path);
-		
-		$files = array();
-		while (false !== ($entry = $d->read())) 
-		{
-	   		$filepath = $path.'/'.$entry;
-	   		
-	   		if(is_dir($filepath) && is_int(strpos($entry, 'System')))
-	   		{
-	   			$files = array_merge($files, $this->get_files($filepath));
-	   		}
-		}
-		
-		$d->close();
-		return $files;
-	}
-	
 	function get_files($path)
 	{
 		$d = dir($path);
@@ -84,7 +62,7 @@ class api_index
 		while (false !== ($entry = $d->read()))
 		{
 			$filepath = $path.'/'.$entry;
-			if(is_file($filepath) && $entry[0] !== '_')
+			if(is_file($filepath) && strpos($entry, 'class-')===0)
 				$files[] = realpath($filepath);
 		}
 		$d->close();
@@ -107,15 +85,11 @@ class api_index
 	function get_details($file, $base)
 	{
 		$result['content'] = $this->get_doc_content($file);
-		$find = array($base, '.html', '-');
-		$replace = array('', '', '.');
-		$path = preg_split('/\/|\\\/', str_replace($find, $replace, $file));
-		$result['namespace'] = $path[1];
-		$result['class'] = $path[2];
-		$result['link'] = self::API_URL.$path[1].'/'.$path[2].'.html';
+		$find = array($base, '.html', 'class-');
+		$replace = array('', '', '');
+		$path = str_replace($find, $replace, $file);
+		$result['class'] = $path;
+		$result['link'] = self::API_URL.$file;
 		return $result;
 	}
 }
-
-
-?>

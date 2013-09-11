@@ -34,5 +34,3 @@ class ManualIndexTask extends Task
 		$api->create_index();
 	}
 }
-
-?>

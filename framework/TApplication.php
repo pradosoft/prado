@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TApplication.php 3272 2013-02-13 21:43:28Z ctrlaltca $
+ * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  */
 
@@ -105,7 +105,7 @@ Prado::using('System.I18N.TGlobalization');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3272 2013-02-13 21:43:28Z ctrlaltca $
+ * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -972,7 +972,8 @@ class TApplication extends TComponent
 			$module->setSubProperty($name,$value);
 		}
 		$this->setModule($id,$module);
-		unset($this->_lazyModules[$id]);
+		// keep the key to avoid reuse of the old module id
+		$this->_lazyModules[$id]=null;
 
 		return array($module,$configElement);
 	}
@@ -1279,7 +1280,7 @@ class TApplication extends TComponent
  * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3272 2013-02-13 21:43:28Z ctrlaltca $
+ * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0.4
  */
@@ -1299,7 +1300,7 @@ class TApplicationMode extends TEnumerable
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TApplication.php 3272 2013-02-13 21:43:28Z ctrlaltca $
+ * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1808,7 +1809,7 @@ class TApplicationConfiguration extends TComponent
  * Cache will be exploited if it is enabled.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3272 2013-02-13 21:43:28Z ctrlaltca $
+ * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */

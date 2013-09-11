@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TRepeater ID="${1:repeater1}" DataKeys="${2:Data key field}"&gt;
+	<string>&lt;com:TRepeater ID="${1:repeater1}" DataKeyField="${2:Data key field}"&gt;
 	&lt;prop:EmptyTemplate&gt;
 		${3:&lt;!-- content --&gt;}
 	&lt;/prop:EmptyTemplate&gt;

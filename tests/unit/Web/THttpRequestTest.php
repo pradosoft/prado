@@ -84,6 +84,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$request->setUrlManager('invalidManagerId');
 		try {
 			$request->init(null);
+			$request->getUrlManagerModule();
 			self::fail ('httprequest_urlmanager_inexist exception not thrown');
 		} catch (TConfigurationException $e) {
 
@@ -98,6 +99,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$request->setUrlManager('badmanager');
 		try {
 			$request->init(null);
+			$request->getUrlManagerModule();
 			self::fail ('httprequest_urlmanager_invalid exception not thrown');
 		} catch (TConfigurationException $e) {
 

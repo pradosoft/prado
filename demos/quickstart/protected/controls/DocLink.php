@@ -20,8 +20,8 @@ class DocLink extends THyperLink
 		$paths=explode('.',$this->getClassPath());
 		if(count($paths)>1)
 		{
-			$classFile=array_pop($paths).'.html';
-			$this->setNavigateUrl(self::BASE_URL . '/' . implode('.',$paths) . '/' . $classFile);
+			$classFile='class-'.array_pop($paths).'.html';
+			$this->setNavigateUrl(self::BASE_URL . '/' . $classFile);
 			if($this->getText() === '')
 				$this->setText('API Manual');
 		}

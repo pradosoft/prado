@@ -6,6 +6,11 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
+<h2 id="8001">Version 3.2.3</h2>
+<ul>
+<li>Added <a href="?page=Controls.HtmlArea4">THtmlArea4 control</a> based on TinyMCE4</li>
+</ul>
+
 <h2 id="8001">Version 3.2.2</h2>
 <ul>
 <li>TUrlMappingPattern support for constant parameters</li>

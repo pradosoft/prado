@@ -30,7 +30,7 @@ class Page2Tex
 	{
 		return "\begin{small}\begin{verbatim}".
 				str_replace($this->_verb_find, $this->_verb_replace, $matches[1]).
-				"\end{verbatim}\end{small}\n";
+				'\end{verbatim}\end{small}'."\n";
 	}
 
 	function escape_verb($matches)
@@ -242,8 +242,8 @@ class Page2Tex
 		$this->_tabular_total = count($widths);
 		$this->_tabular_col = 0;
 
-		$begin = "\begin{table}[!hpt]\centering \n \begin{tabular}{".$options['align']."}\\hline";
-		$end = "\end{tabular} \n \end{table}\n";
+		$begin = '\begin{table}[!hpt]\centering '."\n".' \begin{tabular}{'.$options['align'].'}\hline';
+		$end = '\end{tabular} '."\n".'\end{table}'."\n";
 		$table = preg_replace('/<\/tr>/', '\\\\\\\\ \hline', $matches[2]);
 		$table = preg_replace('/<tr>/', '', $table);
 		$table = preg_replace('/<th>([^<]+)<\/th>/', '\textbf{$1} &', $table);
@@ -267,7 +267,7 @@ class Page2Tex
 
 	function mbox($matches)
 	{
-		return "\n\begin{mybox}\n".$matches[1]."\n\end{mybox}\n";
+		return "\n\begin{mybox}\n".$matches[1]."\n".'\end{mybox}'."\n";
 	}
 
 	function get_chapter_label($chapter)

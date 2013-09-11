@@ -1,6 +1,6 @@
 <?php
 
-//$Id: packages.php 3187 2012-07-12 11:21:01Z ctrlaltca $
+//$Id: packages.php 3319 2013-09-08 20:59:44Z ctrlaltca $
 
 // To make future upgrades easier
 if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.7');
@@ -83,6 +83,10 @@ $packages = array(
 		'prado/controls/htmlarea.js'
 	),
 
+	'htmlarea4'=>array(
+		'prado/controls/htmlarea4.js'
+	),
+
 	'ratings' => array(
 		'prado/ratings/ratings.js',
 	),
@@ -113,6 +117,7 @@ $dependencies = array(
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
 		'htmlarea'			=> array('prototype', 'prado', 'htmlarea'),
+		'htmlarea4'			=> array('prototype', 'prado', 'htmlarea4'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
 		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
 );

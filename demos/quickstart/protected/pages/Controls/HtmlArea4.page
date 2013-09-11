@@ -1,0 +1,28 @@
+<com:TContent ID="body" >
+
+<h1>THtmlArea4</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THtmlArea4" />
+
+<p class="block-content">
+<tt>THtmlArea4</tt> is a newer version of the <tt>THtmlArea</tt> component, based on TinyMCE version 4. Please refer to <tt>THtmlArea</tt> for basic usage.
+</p>
+
+<p class="block-content">
+<tt>THtmlArea4</tt> provides the WYSIWYG feature by wrapping the functionalities provided by the <a href="http://tinymce.com/">TinyMCE project version 4</a>.
+</p>
+
+<p class="block-content">
+The default editor tries to mimic <tt>THtmlArea</tt>'s old style and behaviour, disabling the menubar and permitting the resize of the editor in both directions. To enable the menubar or change any other aspect of the editor layout, use the <tt>Options</tt> property to add additional editor options with each options on a new line. See <a href="http://www.tinymce.com/wiki.php/Configuration">TinyMCE website</a> for a complete list of options. The following example displays a menu specific for HTML table manipulation,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:THtmlArea&gt;
+  &lt;prop:Options&gt;
+    plugins: "table"
+    menubar: "file edit table"
+  &lt;/prop:Options&gt;
+&lt;/com:THtmlArea&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.THtmlArea4.Home" />
+
+</com:TContent>

@@ -496,7 +496,10 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 				for(var i = 0; i < years.length; i++)
 					years[i].selected = years[i].value.toInteger() == currentYear;
 			}
-			this.fireChangeEvent(day || month || year, capevents);
+
+			day && this.fireChangeEvent(day, capevents);
+			month && this.fireChangeEvent(month, capevents);
+			year && this.fireChangeEvent(year, capevents);
 		}
 	},
 

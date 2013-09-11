@@ -79,6 +79,12 @@ class Contact {
     public $name;
 
     /**
+      * @var string $notes {nillable=1, minOccurs=0, maxOccurs=2}
+      * @soapproperty
+      */
+    public $notes;
+
+    /**
      * @var Address $address
      * @soapproperty
      */
@@ -123,11 +129,25 @@ class ContactManager {
 </com:TTextHighlighter>
 <p id="670457" class="block-content">For a complex soap object, the properties of the object are specified with 
 <tt>@soapproperty</tt> keyword in the property phpdocs. Furthermore, the
-propert's type name must be specified as <tt>@var type $name</tt> where <tt>type
+property's type name must be specified as <tt>@var type $name</tt> where <tt>type
 </tt> is any valid type in mentioned earlier and <tt>$name</tt> will defined
 a property <tt>name</tt> (notice that if your class is a TComponent, you can
 provide property setter/getter methods).
 </p>
+
+<p class="block-content">
+Optionally, extra attributes (nillable, minOccurs, maxOccurs) can be defined for each property by enclosing definitions into curly brackets and separated by comma like so:
+<com:TTextHighlighter Language="javascript" CssClass="source block-content">
+{[attribute1 = value1][, attribute2 = value2], ...}
+</com:TTextHighlighter>
+where the attribute can be one of following:
+<ul>
+    <li>nillable = [0|1|true|false]</li>
+    <li>minOccurs = n; where n>=0</li>
+    <li>maxOccurs = n; where [n>=0|unbounded]</li>
+</ul>
+</p>
+
 <p id="670458" class="block-content">
 An array of complex objects can also be returned by adding a pair of 
 enclosing square brackets after the type name. For example, to return an

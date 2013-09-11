@@ -11,7 +11,7 @@
  * This file is part of the PRADO framework from {@link http://www.xisc.com}
  *
  * @author Marcus Nyeholt		<tanus@users.sourceforge.net>
- * @version $Id: WsdlGenerator.php 3188 2012-07-12 12:13:23Z ctrlaltca $
+ * @version $Id: WsdlGenerator.php 3314 2013-08-20 10:00:47Z ctrlaltca $
  * @package System.Web.Services.SOAP
  */
 
@@ -282,11 +282,35 @@ class WsdlGenerator
 			$comment = $property->getDocComment();
 			if(strpos($comment, '@soapproperty') !== false)
 			{
-				if (preg_match('/@var\s+(\w+(\[\])?)\s+\$(\w+)/mi', $comment, $match)) {
+				if(preg_match('/@var\s+([\w\.]+(\[\s*\])?)\s*?\$(.*)$/mi',$comment,$matches))
+				{
+					// support nillable, minOccurs, maxOccurs attributes
+					$nillable=$minOccurs=$maxOccurs=false;
+					if(preg_match('/{(.+)}/',$matches[3],$attr))
+					{
+						$matches[3]=str_replace($attr[0],'',$matches[3]);
+						if(preg_match_all('/((\w+)\s*=\s*(\w+))/mi',$attr[1],$attr))
+						{
+							foreach($attr[2] as $id=>$prop)
+							{
+								if(strcasecmp($prop,'nillable')===0)
+									$nillable=$attr[3][$id] ? 'true' : 'false';
+								elseif(strcasecmp($prop,'minOccurs')===0)
+									$minOccurs=(int)$attr[3][$id];
+								elseif(strcasecmp($prop,'maxOccurs')===0)
+									$maxOccurs=(int)$attr[3][$id];
+							}
+						}
+					}
+
 					$param = array();
-					$param['type'] = $this->convertType($match[1]);
-					$param['name'] = $match[3];
+					$param['type'] = $this->convertType($matches[1]);
+					$param['name'] = trim($matches[3]);
+					$param['nil'] = $nillable;
+					$param['minOc'] = $minOccurs;
+					$param['maxOc'] = $maxOccurs;
 					$this->types[$className][] = $param;
+
 				}
 			}
 		}

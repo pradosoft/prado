@@ -16,7 +16,7 @@ class PradoDocTask extends Task
 	
 	private $ignorelist = '';
 	
-	private $output = "";
+	private $template = "";
 			
 	private $linksource = false;
 	
@@ -66,11 +66,11 @@ class PradoDocTask extends Task
 	}
 	
 	/**
-	 * Set the output type
+	 * Set the template
 	 */		
-	function setOutput($output)
+	function setTemplate($template)
 	{
-		$this->output = $output;
+		$this->template = $template;
 	}
 	
 	/**
@@ -92,6 +92,7 @@ class PradoDocTask extends Task
 	function main()
 	{
 		$arguments = $this->constructArguments();
+		echo $this->phpdoc . " " . $arguments."\n";
 		passthru($this->phpdoc . " " . $arguments, $retval);
 	}
 	
@@ -109,7 +110,7 @@ class PradoDocTask extends Task
 		
 		if ($this->title)
 		{
-			$arguments.= "-ti \"" . $this->title . "\" ";
+			$arguments.= "--title \"" . $this->title . "\" ";
 		}
 		
 		if ($this->destdir)
@@ -122,9 +123,9 @@ class PradoDocTask extends Task
 			$arguments.= "-d \"" . $this->sourcepath->__toString() . "\" ";
 		}
 		
-		if ($this->output)
+		if ($this->template)
 		{
-			$arguments.= "-o \"" . $this->output . "\" ";
+			$arguments.= "--template \"" . $this->template . "\" ";
 		}
 		
 		if ($this->linksource)
@@ -145,5 +146,3 @@ class PradoDocTask extends Task
 		return $arguments;
 	}
 }
-
-?>

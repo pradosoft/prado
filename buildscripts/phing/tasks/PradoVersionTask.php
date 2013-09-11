@@ -52,5 +52,3 @@ class PradoVersionTask extends PropertyTask
 			return 'unknown';
 	}
 }
-
-?>

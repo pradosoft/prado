@@ -106,6 +106,7 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 	public function setActiveViewIndex($value)
 	{
 		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setActiveViewID('');
 	}
 
 	/**

@@ -6,7 +6,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAPCCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -41,7 +41,7 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @version $Id: TAPCCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  * @since 3.0b
  */
@@ -103,11 +103,7 @@ class TAPCCache extends TCache
 	 */
 	protected function addValue($key,$value,$expire)
 	{
-		if(function_exists('apc_add')) {
-			return apc_add($key,$value,$expire);
-		} else {
-			throw new TNotSupportedException('apccache_add_unsupported');
-		}
+		return apc_add($key,$value,$expire);
 	}
 
 	/**

@@ -3,14 +3,15 @@ class Ticket785TestCase extends SeleniumTestCase
 {
 	function test()
 	{
+		$year=date('Y')-1;
 		$base = 'ctl0_Content_';
 		$this->open('tickets/index.php?page=Ticket785');
 		$this->assertTitle("Verifying Ticket 785");
 		
 		$this->assertText('selDate', '');
-		$this->select($base."datePicker_year", "2007");
+		$this->select($base."datePicker_year", $year);
 		$this->pause(800);
-		$expectedDate=date("d-m").'-2007';
+		$expectedDate=date("d-m").'-'.$year;
 		$this->assertText('selDate', $expectedDate);
 		
 		$this->click($base."datePickerbutton");

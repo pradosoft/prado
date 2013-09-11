@@ -4,8 +4,11 @@ $TEST_TOOLS = dirname(__FILE__);
 
 if(isset($_GET['sr']))
 {
-	
-	if(($selenium_resource=realpath($TEST_TOOLS.'/selenium/'.$_GET['sr']))!==false)
+	$selenium_base=$TEST_TOOLS.'/selenium/';
+	$selenium_resource=realpath($selenium_base.$_GET['sr']);
+
+	if($selenium_resource!==false && 
+		strpos($selenium_resource, $selenium_base) === 0)
 		echo file_get_contents($selenium_resource);
 	exit;
 }

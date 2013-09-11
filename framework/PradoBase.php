@@ -9,7 +9,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: PradoBase.php 3246 2013-01-07 21:07:38Z ctrlaltca $
+ * @version $Id: PradoBase.php 3293 2013-07-10 21:33:04Z ctrlaltca $
  * @package System
  */
 
@@ -34,7 +34,7 @@ if(!defined('PRADO_CHMOD'))
  * rewritten for customization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: PradoBase.php 3246 2013-01-07 21:07:38Z ctrlaltca $
+ * @version $Id: PradoBase.php 3293 2013-07-10 21:33:04Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -71,7 +71,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.2.1';
+		return '3.2.2';
 	}
 
 	/**

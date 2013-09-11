@@ -124,7 +124,11 @@ Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
 		try
 		{
 			tinyMCE.execCommand('mceFocus', false, this.ID); 
+			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
+			// updated in this same callback, it will be overwritten with the old content. Workaround this.
+			var curtext = $(this.ID).value;
 			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
+			$(this.ID).value = curtext;
 		}
 		catch (e) 
 		{

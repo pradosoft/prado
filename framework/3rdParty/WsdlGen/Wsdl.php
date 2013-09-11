@@ -12,7 +12,7 @@
  *
  * @author Marcus Nyeholt		<tanus@users.sourceforge.net>
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: Wsdl.php 3188 2012-07-12 12:13:23Z ctrlaltca $
+ * @version $Id: Wsdl.php 3314 2013-08-20 10:00:47Z ctrlaltca $
  * @package System.Web.Services.SOAP
  */
 
@@ -90,7 +90,8 @@ class Wsdl
 	{
 		$this->_encoding = $encoding;
 		$this->serviceName = $name;
-		if ($serviceUri == '') $serviceUri = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
+		$protocol=(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS']!=='off'))?'https://':'http://';
+		if ($serviceUri === '') $serviceUri = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
 		$this->serviceUri = str_replace('&amp;', '&', $serviceUri);
 		$this->types = new ArrayObject();
 		$this->targetNamespace = 'urn:'.$name.'wsdl';
@@ -167,6 +168,12 @@ class Wsdl
 					$e = $dom->createElementNS('http://www.w3.org/2001/XMLSchema', 'xsd:element');
 					$e->setAttribute('name', $elem['name']);
 					$e->setAttribute('type', $elem['type']);
+					if($elem['minOc']!==false)
+						$e->setAttribute('minOccurs',$elem['minOc']);
+					if($elem['maxOc']!==false)
+						$e->setAttribute('maxOccurs',$elem['maxOc']);
+					if($elem['nil']!==false)
+						$e->setAttribute('nillable',$elem['nil']);
 					$all->appendChild($e);
 				}
 				$complexType->appendChild($all);

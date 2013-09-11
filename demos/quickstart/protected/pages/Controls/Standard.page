@@ -60,6 +60,10 @@
   </li>
 
   <li>
+  <a href="?page=Controls.HtmlArea4">THtmlArea4</a> is the counterpart of THtmlArea based on TinyMCE4.
+  </li>
+
+  <li>
   <a href="?page=Controls.HyperLink">THyperLink</a> represents a hyperlink on a Web page.
   </li>
 

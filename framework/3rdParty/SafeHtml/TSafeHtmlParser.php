@@ -364,21 +364,21 @@ class TSafeHtmlParser
                    }
                 }
 
-				$tempval = preg_replace_callback(
-						'/&#(\d+);?/m',
-						function ($matches) {
-							return chr($matches[0]);
-						},
-						$value
-					); //"'
+                $tempval = preg_replace_callback(
+                        '/&#(\d+);?/m',
+                        function ($matches) {
+                            return chr($matches[0]);
+                        },
+                        $value
+                    ); //"'
 
-				$tempval = preg_replace_callback(
-						'/&#x([0-9a-f]+);?/mi',
-						function ($matches) {
-							return chr(hexdec($matches[0]));
-						},
-						$tempval
-					);
+                $tempval = preg_replace_callback(
+                        '/&#x([0-9a-f]+);?/mi',
+                        function ($matches) {
+                            return chr(hexdec($matches[0]));
+                        },
+                        $tempval
+                    );
 
                 if ((in_array($name, $this->protocolAttributes)) &&
                     (strpos($tempval, ':') !== false))
