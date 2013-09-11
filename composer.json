@@ -22,6 +22,7 @@
             "role" : "Developer"
         }
     ],
+	"include-path": ["framework"],
     "require": {
         "php": ">=5.3.3",
         "ext-ctype" : "*",
@@ -40,7 +41,7 @@
     },
     "suggest" : {
         "ext-apc" : "*",
-        "ext-eaccellerator" : "*",
+        "ext-eaccelerator" : "*",
         "ext-hash" : "*",
         "ext-iconv" : "*",
         "ext-mbstring" : "*",
