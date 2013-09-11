@@ -71,3 +71,4 @@ tests/unit/Caching/mockapp/runtime/*
 tests/unit/Data/db/test.db
 tests/unit/Security/app/runtime/*
 tests/unit/Web/app/runtime/*
+vendor/*
