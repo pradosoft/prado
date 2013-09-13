@@ -8,7 +8,7 @@ This is a Prado unofficial mirror to get it into [Packagist](https://packagist.o
 _At the moment_ it's synced and updated with Prado branch *3.2* (currently developed),
  read below for the list of applied patches, if any.
 
-Comperio does not provide support for this framework, please refer to the original
+[Comperio](http://www.comperio.it) does not provide support for this framework, please refer to the original
  [issue tracker](https://code.google.com/p/prado3/issues/list) or the [forum](http://www.pradoframework.com/forum).
 
 [![Build Status](https://travis-ci.org/comperio/prado.png?branch=master)](https://travis-ci.org/comperio/prado)
