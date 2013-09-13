@@ -2,12 +2,20 @@
 
 Git mirror for Prado3 (https://code.google.com/p/prado3/)
 
-# Warning!
+# A Word Of Warning
 
-This is a mirror with some small but core changes needed for working with **ClavisNG**.  
-Comperio does not provide support for this framework, please refer to the original [issue tracker](https://code.google.com/p/prado3/issues/list).
+This is a Prado unofficial mirror to get it into [Packagist](https://packagist.org/).
+_At the moment_ it's synced and updated with Prado branch *3.2* (currently developed),
+ read below for the list of applied patches, if any.
+
+Comperio does not provide support for this framework, please refer to the original
+ [issue tracker](https://code.google.com/p/prado3/issues/list) or the [forum](http://www.pradoframework.com/forum).
 
 [![Build Status](https://travis-ci.org/comperio/prado.png?branch=master)](https://travis-ci.org/comperio/prado)
+
+## Patches applied in this mirror
+
+* None, at the moment
 
 ## Install
 
