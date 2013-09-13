@@ -1,18 +1,11 @@
 language: php
 
-env: APPLICATION_ENV travis
-
 php:
   - 5.3
   - 5.4
 
 before_script:
   - COMPOSER_PROCESS_TIMEOUT=10000 composer install
-  - ./bin/phing rw
-  - ./bin/phing db -D env=travis
 
 script:
   - ./bin/phing test
-
-notifications:
-  email: false
