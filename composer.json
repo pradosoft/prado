@@ -88,8 +88,5 @@
     },
     "bin" : [
         "bin/prado-cli"
-    ],
-    "config" : {
-        "bin-dir" : "bin"
-    }
+    ]
 }
