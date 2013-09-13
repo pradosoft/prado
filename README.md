@@ -4,8 +4,10 @@ PRADO is a component-based and event-driven programming framework for developing
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
 [![Build Status](https://travis-ci.org/pradosoft/prado.png?branch=master)](https://travis-ci.org/pradosoft/prado)
+[![Coverage Status](https://coveralls.io/repos/pradosoft/prado/badge.png?branch=master)](https://coveralls.io/r/pradosoft/prado?branch=master)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/pradosoft/prado/badges/quality-score.png?s=af8900c6d4649fb5c44d3c7dffd431bf546550ad)](https://scrutinizer-ci.com/g/pradosoft/prado/)
 
-# A Word Of Warning
+## A Word Of Warning
 
 Prado migration to Github is still in progress, please refer to the original
  [issue tracker](https://code.google.com/p/prado3/issues/list) or the [forum](http://www.pradoframework.com/forum)
