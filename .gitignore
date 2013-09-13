@@ -74,7 +74,11 @@ tests/unit/Caching/mockapp/runtime/*
 tests/unit/Data/db/test.db
 tests/unit/Security/app/runtime/*
 tests/unit/Web/app/runtime/*
+
+# Composer stuff
 vendor/*
-phpunit
-phing
-apigen.php
+bin/phpunit
+bin/phing
+bin/apigen.php
+bin/coveralls
+bin/dbunit.php
