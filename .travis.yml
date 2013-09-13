@@ -4,11 +4,10 @@ php:
   - 5.3
 
 before_script:
-  - phpunit --version
+  - pear upgrade-all
   - composer self-update
   - composer install --prefer-source --dev
   - export PATH=./bin:./vendor/bin/:$PATH
-  - phpunit --version
 
 script:
   - ./vendor/bin/phing test
