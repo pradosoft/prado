@@ -1,21 +1,18 @@
 # Prado PHP Framework
 
-Git mirror for Prado3 (https://code.google.com/p/prado3/)
+PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
+PRADO stands for PHP Rapid Application Development Object-oriented.
+
+[![Build Status](https://travis-ci.org/pradosoft/prado.png?branch=master)](https://travis-ci.org/comperio/pradosoft)
 
 # A Word Of Warning
 
-This is a Prado unofficial mirror to get it into [Packagist](https://packagist.org/).
-_At the moment_ it's synced and updated with Prado branch *3.2* (currently developed),
- read below for the list of applied patches, if any.
+Prado migration to Github is still in progress, please refer to the original
+ [issue tracker](https://code.google.com/p/prado3/issues/list) or the [forum](http://www.pradoframework.com/forum)
+ until all issues have been migrated.
 
-[Comperio](http://www.comperio.it) does not provide support for this framework, please refer to the original
- [issue tracker](https://code.google.com/p/prado3/issues/list) or the [forum](http://www.pradoframework.com/forum).
-
-[![Build Status](https://travis-ci.org/comperio/prado.png?branch=master)](https://travis-ci.org/comperio/prado)
-
-## Patches applied in this mirror
-
-* None, at the moment
+## API Documentation
+The complete API documentation can be found at http://www.pradoframework.com/docs/manual/
 
 ## Install
 
