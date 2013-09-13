@@ -20,7 +20,12 @@
             "name": "Robin J. Rogge",
             "email": "rojaro@gmail.com",
             "role" : "Developer"
-        }
+        },
+		{
+			"name": "Ciro Mattia Gonano",
+			"email": "ciromattia@gmail.com",
+			"role" : "Github/Packagist Maintainer"
+		}
     ],
     "require": {
         "php": ">=5.3.3",
@@ -37,7 +42,8 @@
         "phpunit/php-invoker": "*",
         "phpunit/phpunit-story": "*",
         "phing/phing" : "2.4.14",
-        "apigen/apigen": "2.*"
+        "apigen/apigen": "2.*",
+		"satooshi/php-coveralls": "dev-master"
     },
     "provide" : {
         "pradosoft/prado" : "3.2.3"
