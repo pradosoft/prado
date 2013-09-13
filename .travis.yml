@@ -7,10 +7,10 @@ before_script:
   - pear upgrade-all
   - composer self-update
   - composer install --prefer-source --dev
-  - export PATH=./bin:./vendor/bin/:$PATH
+  - export PATH=./bin/:$PATH
 
 script:
-  - ./vendor/bin/phing test
+  - ./bin/phing test
 
 #after_script:
-#  - php ./vendor/bin/coveralls -v
+#  - php ./bin/coveralls -v
