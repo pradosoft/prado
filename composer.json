@@ -22,7 +22,6 @@
             "role" : "Developer"
         }
     ],
-	"include-path": ["framework"],
     "require": {
         "php": ">=5.3.3",
         "ext-ctype" : "*",
@@ -33,6 +32,10 @@
     },
     "require-dev" : {
         "phpunit/phpunit" : "3.7.*",
+        "phpunit/dbunit": ">=1.2",
+        "phpunit/phpunit-selenium": ">=1.2",
+        "phpunit/php-invoker": "*",
+        "phpunit/phpunit-story": "*",
         "phing/phing" : "2.4.14",
         "apigen/apigen": "2.*"
     },
@@ -53,6 +56,7 @@
         "ext-xsl" : "*",
         "ext-zlib" : "*"
     },
+    "include-path": ["framework"],
     "autoload": {
         "psr-0" : {
             "Prado"              : "framework",

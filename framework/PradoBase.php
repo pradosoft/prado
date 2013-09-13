@@ -9,7 +9,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: PradoBase.php 3293 2013-07-10 21:33:04Z ctrlaltca $
+ * @version $Id: PradoBase.php 3325 2013-09-13 08:19:04Z ctrlaltca $
  * @package System
  */
 
@@ -34,7 +34,7 @@ if(!defined('PRADO_CHMOD'))
  * rewritten for customization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: PradoBase.php 3293 2013-07-10 21:33:04Z ctrlaltca $
+ * @version $Id: PradoBase.php 3325 2013-09-13 08:19:04Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -169,7 +169,7 @@ class PradoBase
 	 */
 	public static function setApplication($application)
 	{
-		if(self::$_application!==null)
+		if(self::$_application!==null && !defined('PRADO_TEST_RUN'))
 			throw new TInvalidOperationException('prado_application_singleton_required');
 		self::$_application=$application;
 	}
@@ -381,7 +381,7 @@ class PradoBase
 	 */
 	public static function setPathOfAlias($alias,$path)
 	{
-		if(isset(self::$_aliases[$alias]))
+		if(isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN'))
 			throw new TInvalidOperationException('prado_alias_redefined',$alias);
 		else if(($rp=realpath($path))!==false && is_dir($rp))
 		{
