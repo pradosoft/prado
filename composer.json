@@ -84,7 +84,7 @@
 	},
 	"support" : {
 		"forum" : "http://www.pradosoft.com/forum",
-		"source" : "https://code.google.com/p/prado3/source"
+		"source" : "https://github.com/pradosoft/prado"
 	},
 	"bin" : [
 		"bin/prado-cli"
