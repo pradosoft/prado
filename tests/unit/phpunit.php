@@ -15,4 +15,4 @@ define('PRADO_TEST_RUN', true);
 define('PRADO_FRAMEWORK_DIR', dirname(__FILE__).'/../../framework');
 set_include_path(PRADO_FRAMEWORK_DIR.PATH_SEPARATOR.get_include_path());
 
-?>
+require_once(PRADO_FRAMEWORK_DIR.'/prado.php');
