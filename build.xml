@@ -255,7 +255,7 @@
   <target name="test" description="Running unit tests">
     <delete dir="${build.test.dir}"/>
     <mkdir dir="${build.test.dir}"/>
-    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="true" bootstrap="./vendor/autoload.php">
+    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="true" bootstrap="./tests/unit/bootstrap.php">
       <batchtest>
         <fileset dir="tests/unit">
         <include name="**/*Test.php"/>

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../../phpunit.php';
+
 
 //NOTE: This page require UTF-8 aware editors
 Prado::using('System.I18N.core.NumberFormatInfo');

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__).'/../../../phpunit.php';
+
 
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapException');
 Prado::using('System.Data.SqlMap.DataMapper.TPropertyAccess');

@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit.php';
 
 Prado::using('System.Web.THttpRequest');
 Prado::using('System.Security.TSecurityManager');

@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit.php';
 
 class ListItem {
     public $data='data';

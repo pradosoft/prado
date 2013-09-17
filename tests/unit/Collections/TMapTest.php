@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__FILE__).'/../phpunit.php';
 
 class TMapTest_MapItem {
   public $data='data';
