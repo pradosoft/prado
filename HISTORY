@@ -14,8 +14,11 @@ BUG: Issue #481 - Typo in composer: ext-eaccellerator (ciromattia)
 BUG: Issue #482 - composer: add include path for prado.php (ciromattia)
 BUG: Issue #484 - Wrong DateTimePatterns for italian culture (ciromattia)
 BUG: Issue #485 - NumberFormat fails if LC_ALL locale provides non-english notation (ciromattia, drigolin)
+EHN: Issue #260 - TComponent Update: Behaviors, Class Behaviors, fx global events, and dy one to one events (javalizard)
+EHN: Issue #292 - Events should have priorities to allow event handler order to be specified (javalizard)
 BUG: TDatePicker can't render css attributes class "datepicker_year_options" (m_rizki_r)
 ENH: Added THtmlArea4 based on TinyMCE4 (ctrlaltca)
+
 
 Version 3.2.2 Jul 20, 2013
 
