@@ -76,6 +76,12 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
 		  "Los Angeles");
     $this->assertEquals($culture->TimeZones[1],$zone);
   }
+
+  function test_missing_english_names_returns_culture_code()
+  {
+    $culture = new CultureInfo('iw');
+    $this->assertEquals($culture->getEnglishName(), 'iw');
+  }
 }
 
 ?>

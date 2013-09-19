@@ -2,7 +2,10 @@
 
 Prado::using('System.I18N.core.ChoiceFormat');
 
-class ChoiceFormatTest extends UnitTestCase
+/**
+ * @package System.I18N.core
+ */
+class ChoiceFormatTest extends PHPUnit_Framework_TestCase
 {
 	function testChoices()
 	{
@@ -10,20 +13,20 @@ class ChoiceFormatTest extends UnitTestCase
 		$string = '[0] are no files |[1] is one file |(1,Inf] are {number} files';
 
 		$want = 'are no files';
-		$this->assertEqual($want, $choice->format($string, 0));
+		$this->assertEquals($want, $choice->format($string, 0));
 
 		$want = 'is one file';
-		$this->assertEqual($want, $choice->format($string, 1));
+		$this->assertEquals($want, $choice->format($string, 1));
 
 		$want = 'are {number} files';
-		$this->assertEqual($want, $choice->format($string, 5));
+		$this->assertEquals($want, $choice->format($string, 5));
 
 		$this->assertFalse($choice->format($string, -1));
 
 		$string = '{1,2} one two |{3,4} three four |[2,5] two to five inclusive';
-		$this->assertEqual($choice->format($string,1),'one two');
-		$this->assertEqual($choice->format($string,2.1),'two to five inclusive');
-		$this->assertEqual($choice->format($string,3),'three four');
+		$this->assertEquals($choice->format($string,1),'one two');
+		$this->assertEquals($choice->format($string,2.1),'two to five inclusive');
+		$this->assertEquals($choice->format($string,3),'three four');
 	}
 
 	function test_set_notation()
@@ -32,13 +35,13 @@ class ChoiceFormatTest extends UnitTestCase
 		$string = '{n: n%2 == 0} are even numbers |{n: n >= 5} are not even and greater than or equal to 5';
 
 		$want = 'are even numbers';
-		$this->assertEqual($want, $choice->format($string, 0));
-		$this->assertEqual($want, $choice->format($string, 2));
-		$this->assertEqual($want, $choice->format($string, 4));
-		$this->assertNotEqual($want, $choice->format($string, 1));
+		$this->assertEquals($want, $choice->format($string, 0));
+		$this->assertEquals($want, $choice->format($string, 2));
+		$this->assertEquals($want, $choice->format($string, 4));
+		$this->assertNotEquals($want, $choice->format($string, 1));
 
 		$want = 'are not even and greater than or equal to 5';
-		$this->assertEqual($want, $choice->format($string, 5));
+		$this->assertEquals($want, $choice->format($string, 5));
 	}
 
 	function test_polish()
@@ -53,7 +56,7 @@ class ChoiceFormatTest extends UnitTestCase
 		foreach($wants as $want => $numbers)
 		{
 			foreach($numbers as $n)
-				$this->assertEqual($want, $choice->format($string, $n));
+				$this->assertEquals($want, $choice->format($string, $n));
 		}
 	}
 
@@ -72,7 +75,7 @@ class ChoiceFormatTest extends UnitTestCase
 		foreach($wants as $want => $numbers)
 		{
 			foreach($numbers as $n)
-				$this->assertEqual($want, $choice->format($string, $n));
+				$this->assertEquals($want, $choice->format($string, $n));
 		}
 	}
 
@@ -90,7 +93,7 @@ class ChoiceFormatTest extends UnitTestCase
 		foreach($wants as $want => $numbers)
 		{
 			foreach($numbers as $n)
-				$this->assertEqual($want, $choice->format($string, $n));
+				$this->assertEquals($want, $choice->format($string, $n));
 		}
 	}
 }
