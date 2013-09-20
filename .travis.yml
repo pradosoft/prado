@@ -14,4 +14,4 @@ script:
   - ./bin/phing test
 
 after_script:
-  - php ./bin/coveralls -v
+  - php -d memory_limit=1G ./bin/coveralls -v
