@@ -45,6 +45,15 @@
   </fileset>
 
   <!--
+      Only php source files in framework
+  -->
+  <fileset dir="." id="framework-php">
+    <exclude name="**/pradolite.php"/>
+    <exclude name="**/prado-cli.php"/>
+    <include name="framework/**/*.php"/>
+  </fileset>
+
+  <!--
       Surrounding files
   -->
   <fileset dir="." id="misc">
@@ -255,13 +264,17 @@
   <target name="test" description="Running unit tests">
     <delete dir="${build.test.dir}"/>
     <mkdir dir="${build.test.dir}"/>
-    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="true" bootstrap="./tests/unit/bootstrap.php">
+    <coverage-setup database="${build.test.dir}/coverage.db">
+      <fileset refid="framework-php" />
+    </coverage-setup>
+    <phpunit codecoverage="true" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/unit/bootstrap.php">
       <batchtest>
         <fileset dir="tests/unit">
         <include name="**/*Test.php"/>
         </fileset>
       </batchtest>
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
+      <formatter type="clover" todir="${build.test.dir}" outfile="clover.xml"/>
     </phpunit>
     <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
   </target>

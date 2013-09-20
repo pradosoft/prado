@@ -1,0 +1,4 @@
+service_name: travis-ci
+src_dir: framework/
+coverage_clover: build/test-reports/clover.xml
+json_path: build/test-reports/coveralls.json

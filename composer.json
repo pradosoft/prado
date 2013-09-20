@@ -36,6 +36,7 @@
 		"ext-spl": "*"
 	},
 	"require-dev" : {
+		"ext-xdebug": "*",
 		"phpunit/phpunit" : "3.7.*",
 		"phpunit/dbunit": ">=1.2",
 		"phpunit/phpunit-selenium": ">=1.2",
