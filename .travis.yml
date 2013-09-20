@@ -9,9 +9,10 @@ before_script:
   - composer self-update
   - composer install --prefer-source --dev
   - export PATH=./bin/:$PATH
+  - phpenv config-add travis.php.ini
 
 script:
   - ./bin/phing test
 
 after_script:
-  - php -d memory_limit=1G ./bin/coveralls -v
+  - php ./bin/coveralls -v
