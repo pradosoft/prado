@@ -7,5 +7,3 @@ class Home extends TPage
 		$this->lblTest->Text = "Testing";
 	}
 }
-
-?>

@@ -42,5 +42,3 @@ class Ticket384 extends TPage
 		return $list;
 	}
 }
-
-?>

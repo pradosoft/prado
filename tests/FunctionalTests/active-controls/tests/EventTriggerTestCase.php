@@ -1,6 +1,6 @@
 <?php
 
-class EventTriggerTestCase extends SeleniumTestCase
+class EventTriggerTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,5 +18,3 @@ class EventTriggerTestCase extends SeleniumTestCase
 		$this->assertText('label1', 'text 1 focused');
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class ActiveButtonTestCase extends SeleniumTestCase
+class ActiveButtonTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -12,5 +12,3 @@ class ActiveButtonTestCase extends SeleniumTestCase
 		$this->assertText("label1", "Button 1 was clicked using callback!");
 	}
 }
-
-?>

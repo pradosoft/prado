@@ -20,5 +20,3 @@ class Ticket470 extends TPage
 		$this->Results->Text = "OK!!!";
 	}
 }
-
-?>

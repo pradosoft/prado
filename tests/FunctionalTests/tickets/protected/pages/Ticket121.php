@@ -7,5 +7,3 @@ class Ticket121 extends TPage
 		$this->Result->Text="clicked at ({$param->X},{$param->Y})";
 	}
 }
-
-?>

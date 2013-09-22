@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class I18NTestCase extends SeleniumTestCase
+class QuickstartI18NTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -50,5 +50,3 @@ class I18NTestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

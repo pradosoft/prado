@@ -46,5 +46,3 @@ class ActiveDatePicker extends TPage  {
 	
  }
  
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class Ticket504TestCase extends SeleniumTestCase
+class Ticket504TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -49,5 +49,3 @@ class Ticket504TestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

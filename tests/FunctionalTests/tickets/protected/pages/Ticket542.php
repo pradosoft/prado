@@ -19,5 +19,3 @@ class Ticket542 extends TPage {
 	}
 
 }
-
-?>

@@ -6,4 +6,3 @@ class Ticket656 extends TPage
 		$this->lblStatus->setText($this->datePicker->getDate());
 	}
 }
-?>

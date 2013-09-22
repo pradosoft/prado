@@ -10,4 +10,3 @@ class Ticket691 extends TPage
 		$this->Result->Text="You vote ".$sender->Rating;
 	}
 }
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class Wizard2TestCase extends SeleniumTestCase
+class QuickstartWizard2TestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -22,5 +22,3 @@ class Wizard2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent('Thank you for your answer');
 	}
 }
-
-?>

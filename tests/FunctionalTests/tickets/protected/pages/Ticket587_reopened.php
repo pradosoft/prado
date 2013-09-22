@@ -58,5 +58,3 @@ class Ticket587_reopened extends TPage
 		$this->label1->Text = $value;
 	}
 }
-
-?>

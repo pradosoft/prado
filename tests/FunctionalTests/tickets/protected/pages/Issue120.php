@@ -18,5 +18,3 @@ class Issue120 extends TPage
 		
 	}
 }
-
-?>

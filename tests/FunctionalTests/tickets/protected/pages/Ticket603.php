@@ -26,5 +26,3 @@ class Ticket603 extends TPage
 		$this->ContentPanel->render( $param->NewWriter );
 	}
 }
-
-?>

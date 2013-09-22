@@ -17,5 +17,3 @@ class EventTriggeredCallback extends TPage
 		$this->label1->Text = 'button 1 clicked';
 	}
 }
-
-?>

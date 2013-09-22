@@ -1,6 +1,6 @@
 <?php
 
-class TextBoxGroupValidationTestCase extends SeleniumTestCase
+class TextBoxGroupValidationTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -20,5 +20,3 @@ class TextBoxGroupValidationTestCase extends SeleniumTestCase
 		$this->assertValue('City', 'City: Sydney Zip: 2000');
 	}
 }
-
-?>

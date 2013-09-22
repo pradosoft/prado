@@ -8,4 +8,3 @@ class TextBoxValidationCallback extends TPage
 		$this->City->Text = "City: ".$this->Address->Text . ' Zip: '.$this->ZipCode->Text;
 	}
 }
-?>

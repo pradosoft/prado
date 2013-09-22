@@ -7,5 +7,3 @@ class ActiveControlWithTinyMce extends TPage
 		$this->label1->Text = $this->text1->SafeText;
 	}
 }
-
-?>

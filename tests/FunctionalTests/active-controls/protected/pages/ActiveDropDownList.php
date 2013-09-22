@@ -48,5 +48,3 @@ class ActiveDropDownList extends TPage
 		$this->label1->Text = $value;
 	}
 }
-
-?>

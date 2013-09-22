@@ -1,6 +1,6 @@
 <?php
 
-class Ticket28TestCase extends SeleniumTestCase
+class Ticket28TestCase extends PradoGenericSeleniumTest
 {
 	
 	function test()
@@ -11,5 +11,3 @@ class Ticket28TestCase extends SeleniumTestCase
 		$this->assertTextPresent('Link Button 1 Clicked!');
 	}
 }
-
-?>

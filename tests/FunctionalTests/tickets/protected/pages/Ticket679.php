@@ -40,4 +40,3 @@ class Ticket679 extends TPage
         }
 
 }
-?>

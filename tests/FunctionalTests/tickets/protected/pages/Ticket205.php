@@ -7,5 +7,3 @@ class Ticket205 extends TPage
 		$param->IsValid = $this->textbox1->Text == "Prado";
 	}
 }
-
-?>

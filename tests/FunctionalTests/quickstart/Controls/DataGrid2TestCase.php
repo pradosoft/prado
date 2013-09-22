@@ -1,6 +1,6 @@
 <?php
 
-class DataGrid2TestCase extends SeleniumTestCase
+class QuickstartDataGrid2TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -47,5 +47,3 @@ class DataGrid2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent('Head First Design Patterns','');
 	}
 }
-
-?>

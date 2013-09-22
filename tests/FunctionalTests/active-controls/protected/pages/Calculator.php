@@ -8,5 +8,3 @@ class Calculator extends TPage
 	}
 }
 
-
-?>

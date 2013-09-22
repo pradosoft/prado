@@ -1,6 +1,6 @@
 <?php
 
-class Ticket586TestCase extends SeleniumTestCase
+class Ticket586TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -17,5 +17,3 @@ class Ticket586TestCase extends SeleniumTestCase
 		$this->assertText("{$base}label1", "Button 2 (default) Clicked!");
 	}
 }
-
-?>

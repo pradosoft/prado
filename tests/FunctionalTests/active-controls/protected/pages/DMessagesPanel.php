@@ -59,5 +59,3 @@ class DMessagesPanel extends TTemplateControl
     	$this->Message->CssClass = $value;
     }
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class Ticket239TestCase extends SeleniumTestCase
+class Ticket239TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -51,5 +51,3 @@ class Ticket239TestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent('view3 is deactivated','');
 	}
 }
-
-?>

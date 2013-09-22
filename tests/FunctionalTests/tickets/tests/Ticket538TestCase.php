@@ -1,6 +1,6 @@
 <?php
 
-class Ticket538TestCase extends SeleniumTestCase
+class Ticket538TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -26,5 +26,3 @@ class Ticket538TestCase extends SeleniumTestCase
 		$this->assertText("{$base}ALLog", '4- "test1", 10- "test2",');
 	}
 }
-
-?>

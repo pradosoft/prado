@@ -1,6 +1,6 @@
 <?php
 
-class DropDownListTestCase extends SeleniumTestCase
+class QuickstartDropDownListTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -63,5 +63,3 @@ class DropDownListTestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_body_ctl8');
 	}
 }
-
-?>

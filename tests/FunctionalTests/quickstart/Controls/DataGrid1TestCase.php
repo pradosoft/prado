@@ -1,6 +1,6 @@
 <?php
 
-class DataGrid1TestCase extends SeleniumTestCase
+class QuickstartDataGrid1TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -27,5 +27,3 @@ class DataGrid1TestCase extends SeleniumTestCase
 		$this->verifyAttribute("ctl0_body_DataGrid@cellpadding","2");
 	}
 }
-
-?>

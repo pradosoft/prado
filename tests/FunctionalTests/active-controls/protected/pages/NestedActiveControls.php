@@ -15,5 +15,3 @@ class NestedActiveControls extends TPage
 		$this->label3->Text = "Label 3: Button 1 Clicked";
 	}
 }
-
-?>

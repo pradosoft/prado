@@ -7,5 +7,3 @@ class CustomTemplateComponent extends TTemplateControl
 		$sender->setText("Foo");
 	}
 }
-
-?>

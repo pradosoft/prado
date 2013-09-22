@@ -1,10 +1,9 @@
 <?php
 
-class Ticket587TestCase extends SeleniumTestCase
+class Ticket587TestCase extends PradoGenericSeleniumTest
 {
 	function testKeyPress()
 	{
-		$this->skipBrowsers(self::INTERNET_EXPLORER);
 		$base = 'ctl0_Content_';
 		$this->open('tickets/index.php?page=Ticket587_reopened');
 		$this->assertTitle("Verifying Ticket 587_reopened");
@@ -43,5 +42,3 @@ class Ticket587TestCase extends SeleniumTestCase
 		$this->assertText($base."label1", "Selection 2: asd 3 - item 2");
 	}
 }
-
-?>

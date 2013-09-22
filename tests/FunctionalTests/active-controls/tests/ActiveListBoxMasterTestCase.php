@@ -1,6 +1,6 @@
 <?php
 
-class ActiveListBoxMasterTestCase extends SeleniumTestCase
+class ActiveListBoxMasterTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -46,4 +46,3 @@ class ActiveListBoxMasterTestCase extends SeleniumTestCase
 		$this->assertText($base.'label1', 'Selection: value 1, value 4');
 	}
 }
-?>

@@ -8,5 +8,3 @@ class ActivePanelTest extends TPage
 		$this->panel1->render($param->NewWriter);
 	}
 }
-
-?>

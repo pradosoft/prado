@@ -1,6 +1,6 @@
 <?php
 
-class HangmanTestCase extends SeleniumTestCase
+class QuickstartHangmanTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -30,5 +30,3 @@ class HangmanTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("maximum of 5", "");
 	}
 }
-
-?>

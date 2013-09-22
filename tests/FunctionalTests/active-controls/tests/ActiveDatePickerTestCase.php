@@ -1,5 +1,5 @@
 <?php
-class ActiveDatePickerTestCase extends SeleniumTestCase
+class ActiveDatePickerTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -116,5 +116,3 @@ class ActiveDatePickerTestCase extends SeleniumTestCase
 		$this->verifyText("status3", date('m/Y', $dateToCheck));
 	}
 }
-
-?>

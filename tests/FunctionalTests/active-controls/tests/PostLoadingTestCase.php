@@ -1,6 +1,6 @@
 <?php
 
-class PostLoadingTestCase extends SeleniumTestCase
+class PostLoadingTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,5 +18,3 @@ class PostLoadingTestCase extends SeleniumTestCase
 		$this->assertTextPresent('Result is Hello World');
 	}
 }
-
-?>

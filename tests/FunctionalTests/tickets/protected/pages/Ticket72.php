@@ -9,5 +9,3 @@ class Ticket72 extends TPage
 		$this->ResultLabel->Text = $a2;
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class DataGrid4TestCase extends SeleniumTestCase
+class QuickstartDataGrid4TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -26,5 +26,3 @@ class DataGrid4TestCase extends SeleniumTestCase
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl4_ctl5@checked','regexp:false|null');
 	}
 }
-
-?>

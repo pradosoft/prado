@@ -40,5 +40,3 @@ class AutoCompleteTest extends TPage
 		var_dump($param->selectedIndex);
 	}
 }
-
-?>

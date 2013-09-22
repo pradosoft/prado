@@ -3,13 +3,10 @@
  * Created on 24/04/2006
  */
 
-class ListControlTestCase extends SeleniumTestCase
+class ListControlTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=ListControl", "");
 		$this->verifyTextPresent("List Control Required Field Validation Test", "");
@@ -48,4 +45,3 @@ class ListControlTestCase extends SeleniumTestCase
 
 }
 
-?>

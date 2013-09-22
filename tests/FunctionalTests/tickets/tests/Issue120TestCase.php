@@ -1,6 +1,6 @@
 <?php
 
-class Issue120TestCase extends SeleniumTestCase
+class Issue120TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -17,5 +17,3 @@ class Issue120TestCase extends SeleniumTestCase
 		$this->assertSelectedValue("ctl0_Content_ddl1", 'PromptValue');
 	}
 }
-
-?>

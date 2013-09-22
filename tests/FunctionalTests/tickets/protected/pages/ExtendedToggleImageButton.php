@@ -14,4 +14,3 @@ prado::using ('Application.controls.ToggleImageButton');
 class ExtendedToggleImageButton extends ToggleImageButton {
 	
 }
-?>

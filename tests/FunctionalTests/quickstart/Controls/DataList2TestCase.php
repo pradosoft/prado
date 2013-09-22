@@ -1,6 +1,6 @@
 <?php
 
-class DataList2TestCase extends SeleniumTestCase
+class QuickstartDataList2TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -57,5 +57,3 @@ class DataList2TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Monitor ", "");
 	}
 }
-
-?>

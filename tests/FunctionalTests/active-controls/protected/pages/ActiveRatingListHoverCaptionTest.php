@@ -24,4 +24,3 @@ class ActiveRatingListHoverCaptionTest extends TPage{
 		$sender->setCaption($sender->getRating().' : '.$sender->getSelectedValue());
 	}
 }
-?>

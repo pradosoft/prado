@@ -9,5 +9,3 @@ class Ticket488 extends TPage
 		//$param->IsValid = $this->Password == 'Prado';
 	}
 }
-
-?>

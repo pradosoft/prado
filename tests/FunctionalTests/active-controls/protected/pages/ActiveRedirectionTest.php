@@ -8,5 +8,3 @@ class ActiveRedirectionTest extends TPage
 		$this->Response->redirect($default);
 	}
 }
-
-?>

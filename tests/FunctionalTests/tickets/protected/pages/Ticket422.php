@@ -104,5 +104,3 @@ class Ticket422 extends TPage
 		$this->list2->setSelectedValue("value 3 - item 3");
 	}
 }
-
-?>

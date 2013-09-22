@@ -18,5 +18,3 @@ class LargePageStateTest extends TPage
 		$this->status->Text .= ' Callback Clicked... ';
 	}
 }
-
-?>

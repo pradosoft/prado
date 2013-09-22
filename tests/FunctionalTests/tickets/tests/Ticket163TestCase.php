@@ -1,6 +1,6 @@
 <?php
 
-class Ticket163TestCase extends SeleniumTestCase
+class Ticket163TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -10,5 +10,3 @@ class Ticket163TestCase extends SeleniumTestCase
 		$this->assertTextPresent('-kr 100,00');
 	}
 }
-
-?>

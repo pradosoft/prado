@@ -40,4 +40,3 @@ class ActiveControl extends TPage
 		return self::$_colors[rand(0,count(self::$_colors)-1)];
 	}
 }
-?>

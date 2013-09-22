@@ -24,5 +24,3 @@ class ActiveRadioButtonListTest extends TPage
 		$this->list1->setSelectedValue("value 1");
 	}
 }
-
-?>

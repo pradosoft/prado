@@ -22,4 +22,3 @@ class LabeledTextBox extends TTemplateControl
 	}
 } 
 
-?>

@@ -4,7 +4,7 @@
  *
  */
 
-class Ticket93TestCase extends SeleniumTestCase
+class Ticket93TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -13,4 +13,3 @@ class Ticket93TestCase extends SeleniumTestCase
 	}
 	
 }
-?>

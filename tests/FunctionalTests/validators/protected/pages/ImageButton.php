@@ -23,5 +23,3 @@ class ImageButton extends TPage
 			$this->Result3->Text.=' and valid';
 	}
 }
-
-?>

@@ -38,5 +38,3 @@ class ReplaceContentTest extends TPage
 			return $this->content->Text;
 	}
 }
-
-?>

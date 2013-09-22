@@ -30,5 +30,3 @@ class AutoComplete extends TPage
 		return $list;				 
 	}
 }
-
-?>

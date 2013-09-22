@@ -1,11 +1,10 @@
 <?php
 
-class AutoCompleteTestCase extends SeleniumTestCase
+class AutoCompleteTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
 		$this->disabled();
-		$this->skipBrowsers(self::INTERNET_EXPLORER);
 
 		$this->open("active-controls/index.php?page=AutoCompleteTest");
 		$this->verifyTextPresent("TAutoComplete Test");
@@ -45,5 +44,3 @@ class AutoCompleteTestCase extends SeleniumTestCase
 		$this->assertText("label1", "Label 1: Cuba,Mexico");
 	}
 }
-
-?>

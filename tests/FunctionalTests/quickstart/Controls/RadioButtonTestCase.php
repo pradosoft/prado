@@ -1,6 +1,6 @@
 <?php
 
-class RadioButtonTestCase extends SeleniumTestCase
+class QuickstartRadioButtonTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -54,5 +54,3 @@ class RadioButtonTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Your selection is 34");
 	}
 }
-
-?>

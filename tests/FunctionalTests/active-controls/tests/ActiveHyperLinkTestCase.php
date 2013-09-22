@@ -1,6 +1,6 @@
 <?php
 
-class ActiveHyperLinkTestCase extends SeleniumTestCase
+class ActiveHyperLinkTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -14,5 +14,3 @@ class ActiveHyperLinkTestCase extends SeleniumTestCase
 		$this->assertText("link1", "Pradosoft.com");
 	}
 }
-
-?>

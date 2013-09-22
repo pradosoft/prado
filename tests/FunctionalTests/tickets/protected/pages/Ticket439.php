@@ -11,5 +11,3 @@ class Ticket439 extends TPage
 		$this->Response->redirect($page);
 	}
 }
-
-?>

@@ -9,5 +9,3 @@ class Ticket500 extends TPage
 		$this->link1->NavigateUrl = $url;
 	}
 }
-
-?>

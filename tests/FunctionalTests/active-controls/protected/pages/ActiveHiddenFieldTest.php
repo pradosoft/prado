@@ -18,5 +18,3 @@ class ActiveHiddenFieldTest extends TPage
         $this->ResponseLabel->setText($this->HiddenFieldEmpty->getValue().'|'.$this->HiddenFieldUsed->getValue());
     }
 }
-
-?>

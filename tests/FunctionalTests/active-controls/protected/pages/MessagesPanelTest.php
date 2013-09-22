@@ -12,5 +12,3 @@ class MessagesPanelTest extends TPage
 		$this->panel1->setMessage("");
 	}
 }
-
-?>

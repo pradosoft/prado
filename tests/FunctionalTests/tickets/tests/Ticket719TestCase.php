@@ -1,6 +1,6 @@
 <?php
 
-class Ticket719TestCase extends SeleniumTestCase
+class Ticket719TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -36,5 +36,3 @@ class Ticket719TestCase extends SeleniumTestCase
 		$this->assertText("${base}Result", "TextBox Content : Prado -- Autocomplete Content :France");
 	}
 }
-
-?>

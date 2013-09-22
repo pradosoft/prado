@@ -7,4 +7,3 @@ class Ticket622 extends TPage {
         $this->ARB->setDisplay('Dynamic');
     }
 }
-?>

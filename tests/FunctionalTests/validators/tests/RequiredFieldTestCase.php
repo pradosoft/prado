@@ -1,12 +1,9 @@
 <?php
 
-class RequiredFieldTestCase extends SeleniumTestCase
+class RequiredFieldTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=RequiredFieldValidator");
 		$this->assertTextPresent("RequiredFieldValidator Tests");
@@ -87,4 +84,3 @@ class RequiredFieldTestCase extends SeleniumTestCase
 		$this->assertNotVisible("{$base}validator9");
 	}
 }
-?>

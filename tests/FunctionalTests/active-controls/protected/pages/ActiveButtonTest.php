@@ -17,5 +17,3 @@ class ActiveButtonTest extends TPage
 		$this->label1->Text .= "using callback!";
 	}
 }
-
-?>

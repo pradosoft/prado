@@ -1,6 +1,6 @@
 <?php
 
-class ActiveControlExpressionTagTestCase extends SeleniumTestCase
+class ActiveControlExpressionTagTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -16,5 +16,3 @@ class ActiveControlExpressionTagTestCase extends SeleniumTestCase
 		$this->assertText('contents', 'Text box content: Hello world');
 	}
 }
-
-?>

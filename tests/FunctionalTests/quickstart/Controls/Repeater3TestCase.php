@@ -1,6 +1,6 @@
 <?php
 
-class Repeater3TestCase extends SeleniumTestCase
+class QuickstartRepeater3TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -33,5 +33,3 @@ class Repeater3TestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//td[text()='99.01']",'');
 	}
 }
-
-?>

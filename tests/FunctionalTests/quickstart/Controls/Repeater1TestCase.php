@@ -1,6 +1,6 @@
 <?php
 
-class Repeater1TestCase extends SeleniumTestCase
+class QuickstartRepeater1TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -25,5 +25,3 @@ class Repeater1TestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//table[@cellpadding='2']");
 	}
 }
-
-?>

@@ -16,4 +16,3 @@ public function onLoad ($param) {
 		$this->Lbl->SetText(date("h:m:s"));
 	}
 }
-?>

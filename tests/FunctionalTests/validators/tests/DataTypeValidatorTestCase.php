@@ -3,7 +3,7 @@
  * Created on 25/04/2006
  */
 
-class DataTypeValidatorTestCase extends SeleniumTestCase
+class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -46,4 +46,3 @@ class DataTypeValidatorTestCase extends SeleniumTestCase
 		
 } 
 
-?>

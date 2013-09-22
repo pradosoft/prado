@@ -7,5 +7,3 @@ class Ticket745 extends TPage
 		$this->Result->Text="Your favorite color is: " . $this->DropDownList1->SelectedValue;
 	}
 }
-
-?>

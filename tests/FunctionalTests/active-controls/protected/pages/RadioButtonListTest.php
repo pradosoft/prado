@@ -24,5 +24,3 @@ class RadioButtonListTest extends TPage
 
 }
 
-
-?>

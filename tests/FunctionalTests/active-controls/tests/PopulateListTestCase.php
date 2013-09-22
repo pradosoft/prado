@@ -1,6 +1,6 @@
 <?php
 
-class PopulateListTestCase extends SeleniumTestCase
+class PopulateListTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -21,5 +21,3 @@ class PopulateListTestCase extends SeleniumTestCase
 		$this->assertText("label1", "list2: Prado");
 	}
 }
-
-?>

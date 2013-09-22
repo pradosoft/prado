@@ -21,5 +21,3 @@ class Ticket504 extends TPage
 		die("parameter is ".$param->CallbackParameter);
 	}
 }
-
-?>

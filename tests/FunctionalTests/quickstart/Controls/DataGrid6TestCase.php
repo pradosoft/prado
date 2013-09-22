@@ -1,6 +1,6 @@
 <?php
 
-class DataGrid6TestCase extends SeleniumTestCase
+class QuickstartDataGrid6TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -46,5 +46,3 @@ class DataGrid6TestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent('ITN006','');
 	}
 }
-
-?>

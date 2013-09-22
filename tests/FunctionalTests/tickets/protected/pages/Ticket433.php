@@ -20,5 +20,3 @@ class Ticket433 extends TPage
 		$sender->Text .= ' CALLBACK DONE';
 	}
 }
-
-?>

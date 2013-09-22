@@ -26,5 +26,3 @@ class Ticket484 extends TPage
 		$this->label1->Text .= "using callback!";
 	}
 }
-
-?>

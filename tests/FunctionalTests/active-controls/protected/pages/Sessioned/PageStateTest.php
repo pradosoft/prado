@@ -9,5 +9,3 @@ class PageStateTest extends TPage
 		$this->label1->Text = " button1 clicked ".$sender->CustomData." times";
 	}
 }
-
-?>

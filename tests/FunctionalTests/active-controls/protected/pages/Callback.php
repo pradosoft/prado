@@ -9,5 +9,3 @@ class Callback extends TPage
 		var_dump("ok!");
 	}
 }
-
-?>

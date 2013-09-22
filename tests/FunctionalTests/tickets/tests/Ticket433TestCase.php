@@ -1,6 +1,6 @@
 <?php
 
-class Ticket433TestCase extends SeleniumTestCase
+class Ticket433TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -14,5 +14,3 @@ class Ticket433TestCase extends SeleniumTestCase
 		$this->assertText("{$base}VoteClick", "AFTER click CALLBACK DONE");
 	}
 }
-
-?>

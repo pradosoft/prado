@@ -1,6 +1,6 @@
 <?php
 
-class ValueTriggerTestCase extends SeleniumTestCase
+class ValueTriggerTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,5 +18,3 @@ class ValueTriggerTestCase extends SeleniumTestCase
 		$this->assertText('label1', 'Old = test : New Value = more');
 	}
 }
-
-?>

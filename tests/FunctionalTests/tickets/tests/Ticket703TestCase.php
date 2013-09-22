@@ -1,5 +1,5 @@
 <?php
-class Ticket703TestCase extends SeleniumTestCase
+class Ticket703TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,4 +18,3 @@ class Ticket703TestCase extends SeleniumTestCase
 		$this->assertTextPresent($base.'logBox', "Test of prado logging system");			
 	}
 }
-?>

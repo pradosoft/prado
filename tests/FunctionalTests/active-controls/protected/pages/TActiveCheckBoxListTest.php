@@ -33,5 +33,3 @@ class TActiveCheckBoxListTest extends TPage
 		$this->list1->setSelectedValues(array('value 2', 'value 5'));
 	}
 }
-
-?>

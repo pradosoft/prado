@@ -9,5 +9,3 @@ class Ticket578 extends TPage
 	}
 
 }
-
-?>

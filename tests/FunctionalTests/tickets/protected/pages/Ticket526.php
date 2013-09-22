@@ -11,5 +11,3 @@ class Ticket526 extends TPage
 		$this->activePanel->render($p->NewWriter);
 	}
 }
-
-?>

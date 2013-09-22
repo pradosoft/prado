@@ -30,4 +30,3 @@ class Ticket671 extends TPage
 
 	
 }
-?>

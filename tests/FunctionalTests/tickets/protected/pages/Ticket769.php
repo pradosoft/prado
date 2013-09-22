@@ -23,4 +23,3 @@ class Ticket769 extends TPage
 		$sender->Text = $sender->Text.' clicked';
 	}
 }
-?>

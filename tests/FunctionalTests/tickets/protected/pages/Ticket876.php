@@ -8,4 +8,3 @@ class Ticket876 extends TPage {
 	
 }
 
-?>

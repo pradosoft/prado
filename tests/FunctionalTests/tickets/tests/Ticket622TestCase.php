@@ -1,6 +1,6 @@
 <?php
 
-class Ticket622TestCase extends SeleniumTestCase
+class Ticket622TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -15,4 +15,3 @@ class Ticket622TestCase extends SeleniumTestCase
         $this->assertAttribute('css=span#arb span@style','null');
 	}
 }
-?>

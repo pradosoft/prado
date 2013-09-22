@@ -1,6 +1,6 @@
 <?php
 
-class ButtonTestCase extends SeleniumTestCase
+class QuickstartButtonTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -31,5 +31,3 @@ class ButtonTestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_body_ctl3');
 	}
 }
-
-?>

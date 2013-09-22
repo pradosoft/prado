@@ -3,5 +3,3 @@
 class TestMasterPage extends TTemplateControl
 {
 }
-
-?>

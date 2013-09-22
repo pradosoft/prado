@@ -16,5 +16,3 @@ class Calculator2 extends TPage
 		$this->panel1->renderControl($param->Output); 
 	}
 }
-
-?>

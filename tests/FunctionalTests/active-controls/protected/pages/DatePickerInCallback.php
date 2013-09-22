@@ -13,5 +13,3 @@ class DatePickerInCallback extends TPage  {
 	}
 
  }
-
-?>

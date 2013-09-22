@@ -1,6 +1,6 @@
 <?php
 
-class ActivePanelTestCase extends SeleniumTestCase
+class ActivePanelTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -12,5 +12,3 @@ class ActivePanelTestCase extends SeleniumTestCase
 		$this->assertTextPresent("Something lalala");
 	}
 }
-
-?>

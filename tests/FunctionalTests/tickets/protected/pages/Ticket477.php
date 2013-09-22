@@ -12,5 +12,3 @@ class Ticket477 extends TPage
 		$param->IsValid=false;
 	}
 }
-
-?>

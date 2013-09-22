@@ -1,6 +1,6 @@
 <?php
 
-class ActiveHiddenFieldTestCase extends SeleniumTestCase
+class ActiveHiddenFieldTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -20,5 +20,3 @@ class ActiveHiddenFieldTestCase extends SeleniumTestCase
 		$this->assertText('ResponseLabel', $fieldEmpty.'|'.$fieldUsed);
 	}
 }
-
-?>

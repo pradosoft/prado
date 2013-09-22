@@ -1,6 +1,6 @@
 <?php
 
-class TableTestCase extends SeleniumTestCase
+class QuickstartTableTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -16,5 +16,3 @@ class TableTestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//td[text()='Cell 1']");
 	}
 }
-
-?>

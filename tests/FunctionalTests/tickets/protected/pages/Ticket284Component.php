@@ -100,4 +100,3 @@ class Ticket284Component extends TTemplateControl implements IValidatable
             $this->_isValid=TPropertyValue::ensureBoolean($value);
         }
 }
-?>

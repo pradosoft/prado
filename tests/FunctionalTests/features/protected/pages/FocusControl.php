@@ -13,5 +13,3 @@ class FocusControl extends TPage
 		}
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class TimeTriggeredCallbackTestCase extends SeleniumTestCase
+class TimeTriggeredCallbackTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -17,5 +17,3 @@ class TimeTriggeredCallbackTestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

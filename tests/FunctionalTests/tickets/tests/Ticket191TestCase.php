@@ -1,6 +1,6 @@
 <?php
 
-class Ticket191TestCase extends SeleniumTestCase
+class Ticket191TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -12,5 +12,3 @@ class Ticket191TestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_Content_ctl2');
 	}
 }
-
-?>

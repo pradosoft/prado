@@ -30,5 +30,3 @@ class PopulateActiveList extends TPage
 		$this->label1->Text = $sender->ID . ': '.$text;
 	}
 }
-
-?>

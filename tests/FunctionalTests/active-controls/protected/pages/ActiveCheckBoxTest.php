@@ -28,5 +28,3 @@ class ActiveCheckBoxTest extends TPage
 			($sender->checked ? ' Checked ' : ' Not Checked');
 	}
 }
-
-?>

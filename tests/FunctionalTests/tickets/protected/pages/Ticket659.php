@@ -16,4 +16,3 @@ class Ticket659 extends TPage {
 		$this->lbl->Text=$sender->State;
 	}
 }
-?>

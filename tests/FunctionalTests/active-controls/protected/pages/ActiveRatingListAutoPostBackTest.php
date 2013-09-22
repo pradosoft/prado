@@ -24,4 +24,3 @@ class ActiveRatingListAutoPostBackTest extends TPage{
 		$this->Status->setText($sender->getRating().' : '.$sender->getSelectedValue());
 	}
 }
-?>

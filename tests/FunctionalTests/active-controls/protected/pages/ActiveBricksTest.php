@@ -10,4 +10,3 @@ class ActiveBricksTest extends TPage
 		$this->Page->CallbackClient->insertContentAfter($this->AjaxInsertPoint, $x);
 	}
 }
-?>

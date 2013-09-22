@@ -18,5 +18,3 @@ class Ticket21 extends TPage
 		$this->setViewState("clicks", $clicks);
 	}
 }
-
-?>

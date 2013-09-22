@@ -15,5 +15,3 @@ class Ticket225 extends TPage
 		return $ids;
 	}
 }
-
-?>

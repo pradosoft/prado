@@ -1,7 +1,7 @@
 <?php
 
 //$Id: ActiveCheckBoxTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
-class ActiveCheckBoxTestCase extends SeleniumTestCase
+class QuickstartActiveCheckBoxTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -54,5 +54,3 @@ class ActiveCheckBoxTestCase extends SeleniumTestCase
 		$this->assertChecked("//input[@name='ctl0\$body\$CheckBox2']");
 	}
 }
-
-?>

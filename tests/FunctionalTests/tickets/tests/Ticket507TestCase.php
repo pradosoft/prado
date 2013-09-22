@@ -1,6 +1,6 @@
 <?php
 
-class Ticket507TestCase extends SeleniumTestCase
+class Ticket507TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -23,5 +23,3 @@ class Ticket507TestCase extends SeleniumTestCase
 		$this->assertText("{$base}label1", "Selection: value 1, value 3");
 	}
 }
-
-?>

@@ -30,5 +30,3 @@ class FeatureList extends TPage
 		return $list;
 	}
 }
-
-?>

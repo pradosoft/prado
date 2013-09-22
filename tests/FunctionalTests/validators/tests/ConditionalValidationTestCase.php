@@ -1,6 +1,6 @@
 <?php
 
-class ConditionalValidationTestCase extends SeleniumTestCase
+class ConditionalValidationTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -52,4 +52,3 @@ class ConditionalValidationTestCase extends SeleniumTestCase
 
 }
 
-?>

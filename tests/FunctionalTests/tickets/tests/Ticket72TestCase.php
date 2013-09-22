@@ -1,6 +1,6 @@
 <?php
 
-class Ticket72TestCase extends SeleniumTestCase
+class Ticket72TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -12,5 +12,3 @@ class Ticket72TestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent("abcefg", "");
 	}
 }
-
-?>

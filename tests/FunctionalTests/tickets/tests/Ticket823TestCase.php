@@ -1,6 +1,6 @@
 <?php
 
-class Ticket823TestCase extends SeleniumTestCase {
+class Ticket823TestCase extends PradoGenericSeleniumTest {
 
 	public function test() {
 		$this->open('tickets/index.php?page=Ticket823');
@@ -10,4 +10,3 @@ class Ticket823TestCase extends SeleniumTestCase {
 	}
 }
 
-?>

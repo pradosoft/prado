@@ -29,4 +29,3 @@ class TActiveFileUploadAutoPostBackTest extends TPage{
 		$this->label1->setText($sender->getFileName());
 	}
 }
-?>

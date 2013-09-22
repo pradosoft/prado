@@ -43,5 +43,3 @@ class ActiveListBoxMasterTest extends TPage
 		$this->list1->SelectionMode="Single";
 	}
 }
-
-?>

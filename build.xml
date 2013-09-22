@@ -30,6 +30,7 @@
   <property name="build.doc.dir" value="${build.base.dir}/docs"/>
   <property name="build.web.dir" value="${build.base.dir}/web"/>
   <property name="build.test.dir" value="${build.base.dir}/test-reports"/>
+  <property name="build.functionaltest.dir" value="${build.base.dir}/functional-test-reports"/>
   <property name="build.snapshot.dir" value="${build.base.dir}/snapshot"/>
 
   <!--
@@ -135,7 +136,8 @@
     where &lt;target name&gt; can be one of the following:
 
     For all PRADO developers:
-    - test       : run unit tests (results are under /build/test-reports);
+    - test       : run unit tests (results are under /build/test-reports)
+    - coverage   : run unit tests collecting coverage informations
     - lint       : run lint on framework
     - lint-demos : run lint on demos
 
@@ -264,6 +266,35 @@
   <target name="test" description="Running unit tests">
     <delete dir="${build.test.dir}"/>
     <mkdir dir="${build.test.dir}"/>
+    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/test_tools/phpunit_bootstrap.php">
+      <batchtest>
+        <fileset dir="tests/unit">
+        <include name="**/*Test.php"/>
+        </fileset>
+      </batchtest>
+      <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
+    </phpunit>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
+  </target>
+
+  <target name="functionaltest" description="Running functional tests">
+    <delete dir="${build.functionaltest.dir}"/>
+    <mkdir dir="${build.functionaltest.dir}"/>
+    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/test_tools/phpunit_bootstrap.php">
+      <batchtest>
+        <fileset dir="tests/FunctionalTests">
+        <include name="**/*TestCase.php"/>
+        </fileset>
+      </batchtest>
+      <formatter type="xml" todir="${build.functionaltest.dir}" outfile="functional-tests.xml"/>
+    </phpunit>
+    <phpunitreporttask infile="${build.functionaltest.dir}/functional-tests.xml" format="frames" todir="${build.functionaltest.dir}"/>
+  </target>
+
+  <target name="coverage" description="Running unit tests with coverage checks">
+    <delete dir="${build.test.dir}"/>
+    <mkdir dir="${build.test.dir}"/>
+
     <coverage-setup database="${build.test.dir}/coverage.db">
       <fileset refid="framework-php" />
     </coverage-setup>

@@ -22,7 +22,7 @@ class BasicI18N extends TPage
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package ${package}
  *//*
-class BasicI18NTestCase extends SeleniumTestCase
+class BasicI18NTestCase extends PradoGenericSeleniumTest
 {
 	function setup()
 	{
@@ -42,4 +42,3 @@ class BasicI18NTestCase extends SeleniumTestCase
 	}
 }
 */
-?>

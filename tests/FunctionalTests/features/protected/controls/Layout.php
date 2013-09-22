@@ -4,5 +4,3 @@ class Layout extends TTemplateControl
 {
 
 }
-
-?>

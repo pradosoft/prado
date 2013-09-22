@@ -34,4 +34,3 @@ class ActiveRatingListEnabledTest extends TPage{
 		$this->Status->setText('Enabled=false');
 	}
 }
-?>

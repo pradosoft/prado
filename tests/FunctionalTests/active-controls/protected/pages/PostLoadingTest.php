@@ -41,5 +41,3 @@ class PostLoadingTest extends TPage
 		$this->Page->CallbackClient->Highlight('heading');
 	}
 }
-
-?>

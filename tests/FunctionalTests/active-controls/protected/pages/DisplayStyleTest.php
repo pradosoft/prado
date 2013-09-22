@@ -22,5 +22,3 @@ class DisplayStyleTest extends TPage
 		$this->button2->Display="Hidden";
 	}
 }
-
-?>

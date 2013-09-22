@@ -1,6 +1,6 @@
 <?php
 
-class CalculatorTestCase extends SeleniumTestCase
+class CalculatorTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -20,5 +20,3 @@ class CalculatorTestCase extends SeleniumTestCase
 		$this->assertValue("c", "7");
 	}
 }
-
-?>

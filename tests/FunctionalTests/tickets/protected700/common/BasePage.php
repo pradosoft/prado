@@ -64,5 +64,3 @@ class BasePage extends TPage
 		$this->_param5=$value;
 	}
 }
-
-?>

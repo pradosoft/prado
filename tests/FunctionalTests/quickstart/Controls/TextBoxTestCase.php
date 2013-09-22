@@ -1,6 +1,6 @@
 <?php
 
-class TextBoxTestCase extends SeleniumTestCase
+class QuickstartTextBoxTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -89,5 +89,3 @@ End of message
 		$this->verifyNotVisible('ctl0_body_ctl15');
 	}
 }
-
-?>

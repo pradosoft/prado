@@ -7,5 +7,3 @@ class CallbackCustomValidatorTest extends TPage
 		$param->IsValid = $param->Value == 'Prado';
 	}
 }
-
-?>

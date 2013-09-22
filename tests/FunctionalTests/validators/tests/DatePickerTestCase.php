@@ -1,6 +1,6 @@
 <?php
 
-class DatePickerTestCase extends SeleniumTestCase
+class DatePickerTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -69,4 +69,3 @@ class DatePickerTestCase extends SeleniumTestCase
 
 }
 
-?>

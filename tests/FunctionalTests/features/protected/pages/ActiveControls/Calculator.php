@@ -11,5 +11,3 @@ class Calculator extends TPage
 		$this->c->Text = floatval($this->a->Text) + floatval($this->b->Text);	
 	}
 }
-
-?>

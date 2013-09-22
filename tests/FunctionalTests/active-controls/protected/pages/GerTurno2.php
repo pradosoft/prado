@@ -49,5 +49,3 @@ class GerTurno2 extends TPage {
     }
     
 }
-
-?>

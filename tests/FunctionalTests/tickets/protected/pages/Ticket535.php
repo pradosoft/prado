@@ -12,5 +12,3 @@ class Ticket535 extends TPage
 		$this->label1->Text = "bad_radio1 checked:{".$this->bad_radio1->getChecked()."}   bad_radio2 checked:{".$this->bad_radio2->getChecked()."} ";
 	}
 }
-
-?>

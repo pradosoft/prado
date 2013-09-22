@@ -11,4 +11,3 @@ class CustomValidator extends TPage
 	}	
 }
 
-?>

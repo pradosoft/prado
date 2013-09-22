@@ -1,6 +1,6 @@
 <?php
 
-class ButtonTestCase extends SeleniumTestCase
+class ButtonTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -61,5 +61,3 @@ class ButtonTestCase extends SeleniumTestCase
 		$this->verifyTextPresent('Button3 is clicked and valid');
 	}
 }
-
-?>

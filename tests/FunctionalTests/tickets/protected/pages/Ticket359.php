@@ -9,5 +9,3 @@ class Ticket359 extends TPage
 		$param->IsValid = $param->Value == 'Prado';
 	}
 }
-
-?>

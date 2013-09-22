@@ -1,6 +1,6 @@
 <?php
 
-class BulletedListTestCase extends SeleniumTestCase
+class QuickstartBulletedListTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -34,5 +34,3 @@ class BulletedListTestCase extends SeleniumTestCase
 		$this->verifyTextPresent("You clicked amazon : http://www.amazon.com/.", "");
 	}
 }
-
-?>

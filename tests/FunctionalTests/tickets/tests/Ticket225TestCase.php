@@ -1,12 +1,9 @@
 <?php
 
-class Ticket225TestCase extends SeleniumTestCase
+class Ticket225TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$base="ctl0_Content_";
 		$this->open('tickets/index.php?page=Ticket225');
 		$this->assertTextPresent('RadioButton Group Tests');
@@ -23,5 +20,3 @@ class Ticket225TestCase extends SeleniumTestCase
 		$this->assertNotVisible("{$base}validator1");
 	}
 }
-
-?>

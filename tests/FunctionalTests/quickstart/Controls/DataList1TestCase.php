@@ -1,6 +1,6 @@
 <?php
 
-class DataList1TestCase extends SeleniumTestCase
+class QuickstartDataList1TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -22,5 +22,3 @@ class DataList1TestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//td[@align='right']");
 	}
 }
-
-?>

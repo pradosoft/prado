@@ -43,5 +43,3 @@ class ToggleImageButtonState extends TEnumerable {
 	const Down='Down';
 	const Up='Up';
 }
-
-?>

@@ -28,4 +28,3 @@ class Ticket703 extends TPage {
 		prado::log($this->logMessage->getText(), TLogger::DEBUG, "Tickets"); 
 	}
 }
-?>

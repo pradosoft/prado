@@ -1,5 +1,5 @@
 <?php
-class Ticket700TestCase extends SeleniumTestCase
+class Ticket700TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -69,4 +69,3 @@ class Ticket700TestCase extends SeleniumTestCase
 		$this->clickAndWait('ctl0_Logout');
 	}
 }
-?>

@@ -23,5 +23,3 @@ class TimeTriggeredCallbackTest extends TPage
 			$this->label1->Text .= " ".$count;
 	}
 }
-
-?>

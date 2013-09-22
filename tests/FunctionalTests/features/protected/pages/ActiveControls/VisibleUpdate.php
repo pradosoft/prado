@@ -32,5 +32,3 @@ class VisibleUpdate extends TPage
 			" and Button 2 was ".($this->button2->Enabled ? 'enabled' : 'disabled');
 	}
 }
-
-?>

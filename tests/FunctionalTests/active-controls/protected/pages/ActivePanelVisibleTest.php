@@ -14,5 +14,3 @@ class ActivePanelVisibleTest extends TPage
     	$this->pnlA->Visible = false;
     }
 }
-
-?>

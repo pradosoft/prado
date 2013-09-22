@@ -30,5 +30,3 @@ class RatingList extends TPage
 		$this->list1->SelectedIndex=3;
 	}
 }
-
-?>

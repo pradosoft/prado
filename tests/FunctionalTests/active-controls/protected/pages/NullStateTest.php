@@ -7,5 +7,3 @@ class NullStateTest extends TPage
 		$this->lblTest->Text = "Testing";
 	}
 }
-
-?>

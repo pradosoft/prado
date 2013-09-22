@@ -27,4 +27,3 @@ class Ticket708 extends TPage
 		$this->Result->setText("You have selected Radio Button #".$sender->getValue());	
 	}
 }
-?>

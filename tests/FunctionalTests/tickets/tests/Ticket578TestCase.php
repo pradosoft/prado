@@ -1,6 +1,6 @@
 <?php
 
-class Ticket578TestCase extends SeleniumTestCase
+class Ticket578TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -25,5 +25,3 @@ class Ticket578TestCase extends SeleniumTestCase
 		return 'javascript{'."{$tinymce}.setHTML('{$text}') ? 0 : 1".'}';
 	}
 }
-
-?>

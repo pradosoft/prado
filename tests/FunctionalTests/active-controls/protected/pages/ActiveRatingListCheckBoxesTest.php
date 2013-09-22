@@ -20,4 +20,3 @@
  * Modifications:
  */
 class ActiveRatingListCheckBoxesTest extends TPage{ }
-?>

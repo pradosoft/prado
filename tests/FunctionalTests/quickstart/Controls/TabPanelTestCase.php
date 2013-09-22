@@ -1,6 +1,6 @@
 <?php
 
-class TabPanelTestCase extends SeleniumTestCase
+class QuickstartTabPanelTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -45,5 +45,3 @@ class TabPanelTestCase extends SeleniumTestCase
 		$this->verifyVisible('ctl0_body_ctl2');			// view 3
 	}
 }
-
-?>

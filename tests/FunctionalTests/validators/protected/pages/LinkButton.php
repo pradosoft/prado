@@ -23,5 +23,3 @@ class LinkButton extends TPage
 			$this->Result3->Text.=' and valid';
 	}
 }
-
-?>

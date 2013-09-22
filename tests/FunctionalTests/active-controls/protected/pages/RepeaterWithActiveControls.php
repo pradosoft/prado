@@ -57,5 +57,3 @@ class RepeaterWithActiveControls extends TPage
 		}
 	}
 }
-
-?>

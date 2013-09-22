@@ -1,6 +1,6 @@
 <?php
 
-class Wizard5TestCase extends SeleniumTestCase
+class QuickstartWizard5TestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -33,5 +33,3 @@ class Wizard5TestCase extends SeleniumTestCase
 		$this->verifyTextPresent('Your favorite sport is: Football');
 	}
 }
-
-?>

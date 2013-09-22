@@ -1,6 +1,6 @@
 <?php
 
-class NestedActiveControlsTestCase extends SeleniumTestCase
+class NestedActiveControlsTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -22,5 +22,3 @@ class NestedActiveControlsTestCase extends SeleniumTestCase
 		$this->assertText("label3", "Label 3: Button 1 Clicked");
 	}
 }
-
-?>

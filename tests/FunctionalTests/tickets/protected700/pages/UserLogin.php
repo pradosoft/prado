@@ -9,5 +9,3 @@ class UserLogin extends BasePage
 		$this->Response->redirect($this->Service->constructUrl('Home'));
 	}
 }
-
-?>

@@ -21,5 +21,3 @@ class Ticket507 extends TPage
 		$this->list1->enabled = true;
 	}
 }
-
-?>

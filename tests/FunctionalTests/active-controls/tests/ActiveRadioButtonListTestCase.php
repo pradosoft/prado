@@ -1,12 +1,9 @@
 <?php
 
-class ActiveRadioButtonListTestCase extends SeleniumTestCase
+class ActiveRadioButtonListTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$this->open("active-controls/index.php?page=ActiveRadioButtonListTest");
 		$this->verifyTextPresent("TActiveRadioButtonList Test Case");
 
@@ -46,5 +43,3 @@ class ActiveRadioButtonListTestCase extends SeleniumTestCase
 		}
 	}
 }
-
-?>

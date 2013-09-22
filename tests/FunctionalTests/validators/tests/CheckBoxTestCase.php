@@ -1,12 +1,9 @@
 <?php
 
-class CheckBoxTestCase extends SeleniumTestCase
+class CheckBoxTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$this->open('validators/index.php?page=CheckBox');
 
 
@@ -66,5 +63,3 @@ class CheckBoxTestCase extends SeleniumTestCase
 		$this->verifyTextPresent('Button3 is clicked and valid');
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class Ticket285TestCase extends SeleniumTestCase
+class Ticket285TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -9,4 +9,3 @@ class Ticket285TestCase extends SeleniumTestCase
 		$this->assertTextPresent('349.99');
 	}
 }
-?>

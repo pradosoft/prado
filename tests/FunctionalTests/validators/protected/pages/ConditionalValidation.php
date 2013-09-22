@@ -17,4 +17,3 @@ class ConditionalValidation extends TPage
 	}
 }
 
-?>

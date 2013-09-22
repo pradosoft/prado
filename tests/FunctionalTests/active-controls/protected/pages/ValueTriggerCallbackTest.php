@@ -8,5 +8,3 @@ class ValueTriggerCallbackTest extends TPage
 		$this->label1->Text = "Old  = ".$values->OldValue." : New Value = ".$values->NewValue;
 	}
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-class Ticket785TestCase extends SeleniumTestCase
+class Ticket785TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -31,4 +31,3 @@ class Ticket785TestCase extends SeleniumTestCase
 	}
 
 }
-?>

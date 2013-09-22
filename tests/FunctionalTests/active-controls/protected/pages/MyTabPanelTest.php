@@ -38,5 +38,3 @@ class MyTabPanelTest extends TPage
 }
 
 
-
-?>

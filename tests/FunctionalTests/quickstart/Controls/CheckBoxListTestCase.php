@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class CheckBoxListTestCase extends SeleniumTestCase
+class QuickstartCheckBoxListTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -50,5 +50,3 @@ class CheckBoxListTestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_body_ctl8');
 	}
 }
-
-?>

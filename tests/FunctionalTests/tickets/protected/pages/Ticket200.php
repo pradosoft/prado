@@ -12,5 +12,3 @@ class Ticket200 extends TPage
 		
 	}
 }
-
-?>

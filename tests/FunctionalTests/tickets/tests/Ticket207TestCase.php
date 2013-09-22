@@ -1,6 +1,6 @@
 <?php
 
-class Ticket207TestCase extends SeleniumTestCase
+class Ticket207TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -33,5 +33,3 @@ class Ticket207TestCase extends SeleniumTestCase
 		$this->assertVisible("{$base}validator2");
 	}
 }
-
-?>

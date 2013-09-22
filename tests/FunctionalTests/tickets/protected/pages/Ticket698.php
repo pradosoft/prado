@@ -12,4 +12,3 @@ class Ticket698 extends TPage
 		$this->ContentPanel->render( $param->NewWriter );	
 	}
 }
-?>

@@ -1,10 +1,9 @@
 <?php
 
-class CallbackAdapterTestCase extends SeleniumTestCase
+class CallbackAdapterTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		$this->skipBrowsers(self::INTERNET_EXPLORER);
 
 		$this->open("active-controls/index.php?page=ControlAdapterTest");
 		$this->assertTextPresent('Control Adapter - State Tracking Tests');
@@ -32,8 +31,6 @@ class CallbackAdapterTestCase extends SeleniumTestCase
 
 	function testIE()
 	{
-		$this->targetBrowsers(self::INTERNET_EXPLORER);
-
 		$this->open("active-controls/index.php?page=ControlAdapterTest");
 		$this->assertTextPresent('Control Adapter - State Tracking Tests');
 
@@ -58,5 +55,3 @@ class CallbackAdapterTestCase extends SeleniumTestCase
 		$this->assertAlert('ok');
 	}
 }
-
-?>

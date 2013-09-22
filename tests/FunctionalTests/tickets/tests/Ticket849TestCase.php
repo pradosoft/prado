@@ -1,6 +1,6 @@
 <?php
 
-class Ticket849TestCase extends SeleniumTestCase
+class Ticket849TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -14,5 +14,3 @@ class Ticket849TestCase extends SeleniumTestCase
 		$this->assertValue($base.'ctl0', date('m-d-Y'));
 	}
 }
-
-?>

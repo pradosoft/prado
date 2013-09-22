@@ -1,6 +1,6 @@
 <?php
 
-class CustomTemplateTestCase extends SeleniumTestCase
+class CustomTemplateTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,5 +18,3 @@ class CustomTemplateTestCase extends SeleniumTestCase
 		$this->assertText('label1', 'Button 1 was clicked Foo Bar! using callback!... and this is the textbox text: Foo Bar!');
 	}
 }
-
-?>

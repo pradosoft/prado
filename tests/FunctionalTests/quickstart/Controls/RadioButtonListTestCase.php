@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class RadioButtonListTestCase extends SeleniumTestCase
+class QuickstartRadioButtonListTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -50,5 +50,3 @@ class RadioButtonListTestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_body_ctl8');
 	}
 }
-
-?>

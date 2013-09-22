@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class LabelTestCase extends SeleniumTestCase
+class QuickstartLabelTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -19,5 +19,3 @@ class LabelTestCase extends SeleniumTestCase
 		$this->type("ctl0\$body\$test", "test");
 	}
 }
-
-?>

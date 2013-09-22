@@ -22,5 +22,3 @@ class ActiveControlExpressionTag extends TPage
 		$this->Page->CallbackClient->insertContentAfter('contents', $this->panel2);
 	}
 }
-
-?>

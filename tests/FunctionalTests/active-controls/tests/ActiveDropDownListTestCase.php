@@ -1,6 +1,6 @@
 <?php
 
-class ActiveDropDownListTestCase extends SeleniumTestCase
+class ActiveDropDownListTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -43,5 +43,3 @@ class ActiveDropDownListTestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class StatementsTestCase extends SeleniumTestCase
+class QuickstartStatementsTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -11,5 +11,3 @@ class StatementsTestCase extends SeleniumTestCase
 		$this->verifyTextPresent('UniqueID is \'ctl0$body$ctl0\'');
 	}
 }
-
-?>

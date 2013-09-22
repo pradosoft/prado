@@ -1,6 +1,6 @@
 <?php
 
-class ActiveImageButtonTestCase extends SeleniumTestCase
+class ActiveImageButtonTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -13,5 +13,3 @@ class ActiveImageButtonTestCase extends SeleniumTestCase
 		$this->assertTextPresent("regexp:Image clicked at x=\d+, y=\d+");
 	}
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class HtmlAreaTestCase extends SeleniumTestCase
+class QuickstartHtmlAreaTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -11,5 +11,3 @@ class HtmlAreaTestCase extends SeleniumTestCase
 		// can't perform any test
 	}
 }
-
-?>

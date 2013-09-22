@@ -1,6 +1,6 @@
 <?php
 
-class PagerTestCase extends SeleniumTestCase
+class QuickstartPagerTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -54,5 +54,3 @@ class PagerTestCase extends SeleniumTestCase
 		$this->verifyTextNotPresent('ITN018','');
 	}
 }
-
-?>

@@ -13,5 +13,3 @@ class ClientSideDispatch extends TPage
 		$this->status2->Text = "Method 2 callback";
 	}
 }
-
-?>

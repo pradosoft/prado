@@ -27,5 +27,3 @@ class ActiveImageButtonTest extends TPage
 		$this->label1->Text = "Image clicked at x={$param->x}, y={$param->y}";
 	}
 }
-
-?>

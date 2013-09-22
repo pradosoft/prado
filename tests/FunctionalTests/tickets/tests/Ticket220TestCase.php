@@ -1,6 +1,6 @@
 <?php
 
-class Ticket220TestCase extends SeleniumTestCase
+class Ticket220TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -14,5 +14,3 @@ class Ticket220TestCase extends SeleniumTestCase
 		$this->assertAlertNotPresent();
 	}
 }
-
-?>

@@ -30,5 +30,3 @@ class DActiveDropDownList2 extends TActiveDropDownList
         $this->dataBind();
     }
 }
-
-?>

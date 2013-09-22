@@ -22,5 +22,3 @@ class ActiveHyperLinkTest extends TPage
 		$this->link1->NavigateUrl = "http://www.xlab6.com";
 	}
 }
-
-?>

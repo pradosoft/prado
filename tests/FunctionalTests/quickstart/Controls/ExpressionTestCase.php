@@ -1,6 +1,6 @@
 <?php
 
-class ExpressionTestCase extends SeleniumTestCase
+class QuickstartExpressionTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -11,5 +11,3 @@ class ExpressionTestCase extends SeleniumTestCase
 		$this->verifyTextPresent('PRADO QuickStart Sample');
 	}
 }
-
-?>

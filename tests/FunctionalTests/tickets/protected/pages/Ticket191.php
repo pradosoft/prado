@@ -18,5 +18,3 @@ class Ticket191 extends TPage
 		$this->Application->setGlobalState('ticket190',$this->TextBox2->Text);
 	}
 }
-
-?>

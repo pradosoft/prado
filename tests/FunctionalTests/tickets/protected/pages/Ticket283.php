@@ -7,5 +7,3 @@ class Ticket283 extends TPage
 		$this->label1->Text = $sender->Text.' Clicked!';
 	}
 }
-
-?>

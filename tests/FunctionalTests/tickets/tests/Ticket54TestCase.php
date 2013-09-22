@@ -1,6 +1,6 @@
 <?php
 
-class Ticket54TestCase extends SeleniumTestCase
+class Ticket54TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -8,5 +8,3 @@ class Ticket54TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("|A|a|B|b|C|", "");
 	}
 }
-
-?>

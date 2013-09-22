@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class ListBoxTestCase extends SeleniumTestCase
+class QuickstartListBoxTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -80,5 +80,3 @@ class ListBoxTestCase extends SeleniumTestCase
 		$this->verifyNotVisible('ctl0_body_ctl12');
 	}
 }
-
-?>

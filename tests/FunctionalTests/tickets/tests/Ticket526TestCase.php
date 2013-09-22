@@ -1,6 +1,6 @@
 <?php
 
-class Ticket526TestCase extends SeleniumTestCase
+class Ticket526TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -15,4 +15,3 @@ class Ticket526TestCase extends SeleniumTestCase
 		$this->assertElementPresent("{$base}dpbutton");
 	}
 }
-?>

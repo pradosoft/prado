@@ -5,4 +5,3 @@ class Ticket695 extends TPage {
         $this->X->Text=$this->X->Text+1;
     }
 }
-?>

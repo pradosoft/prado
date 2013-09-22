@@ -27,5 +27,3 @@ class Ticket413 extends TPage
 	}
 	
 }
-
-?>

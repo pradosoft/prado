@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class ImageTestCase extends SeleniumTestCase
+class QuickstartImageTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -16,5 +16,3 @@ class ImageTestCase extends SeleniumTestCase
 		//$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and contains(@longdesc,'HelloWorld.html')]");
 	}
 }
-
-?>

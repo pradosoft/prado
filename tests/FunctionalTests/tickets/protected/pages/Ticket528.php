@@ -31,5 +31,3 @@ class Ticket528 extends TPage
         $this->loadDadosTurno($sender->getSelectedValue());
     }
 }
-
-?>

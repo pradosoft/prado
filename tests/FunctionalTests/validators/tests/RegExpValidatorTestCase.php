@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class RegExpValidatorTestCase extends SeleniumTestCase
+class RegExpValidatorTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -30,5 +30,3 @@ class RegExpValidatorTestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

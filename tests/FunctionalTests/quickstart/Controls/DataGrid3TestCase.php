@@ -1,6 +1,6 @@
 <?php
 
-class DataGrid3TestCase extends SeleniumTestCase
+class QuickstartDataGrid3TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -48,5 +48,3 @@ class DataGrid3TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("Extreme Programming Explained : Embrace Change",'');
 	}
 }
-
-?>

@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class ValidationSummaryTestCase extends SeleniumTestCase
+class ValidationSummaryTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -46,5 +46,3 @@ class ValidationSummaryTestCase extends SeleniumTestCase
 		*/
 	}
 }
-
-?>

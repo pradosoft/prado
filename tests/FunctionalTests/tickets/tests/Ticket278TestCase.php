@@ -1,12 +1,9 @@
 <?php
 
-class Ticket278TestCase extends SeleniumTestCase
+class Ticket278TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		//problem with test runner clicking on radio buttons
-		$this->skipBrowsers(self::OPERA);
-
 		$base = 'ctl0_Content_';
 		$this->open('tickets/index.php?page=Ticket278');
 		$this->assertTitle('Verifying Ticket 278');
@@ -53,5 +50,3 @@ class Ticket278TestCase extends SeleniumTestCase
 		$this->assertVisible($base.'panel1');
 	}
 }
-
-?>

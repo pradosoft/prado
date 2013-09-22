@@ -30,5 +30,3 @@ class ActiveRadioButtonTest extends TPage
 
 
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 
-class Repeater2TestCase extends SeleniumTestCase
+class QuickstartRepeater2TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -33,5 +33,3 @@ class Repeater2TestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//tr[@id='ctl0_body_Repeater_ctl4_Repeater2_ctl2_Row']","");
 	}
 }
-
-?>

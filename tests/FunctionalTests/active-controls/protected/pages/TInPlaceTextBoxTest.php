@@ -22,5 +22,3 @@ class TInPlaceTextBoxTest extends TPage
 		throw new TException('Exist');
 	}
 }
-
-?>

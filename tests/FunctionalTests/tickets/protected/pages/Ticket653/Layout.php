@@ -9,5 +9,3 @@ class Layout extends TTemplateControl
 		$this->ticketlink->setNavigateUrl("http://trac.pradosoft.com/prado/ticket/653");
 	}
 }
-
-?>

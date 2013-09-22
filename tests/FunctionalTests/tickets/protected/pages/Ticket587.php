@@ -8,5 +8,3 @@ class Ticket587 extends TPage
 		$this->count->setText( ++$count );
 	}
 }
-
-?>

@@ -38,4 +38,3 @@ class Ticket719 extends TPage
 		$this->Result->Text = "TextBox Content : ".$this->textbox->getText()."  -- Autocomplete Content :".$this->autocomplete->getText();
 	}
 }
-?>

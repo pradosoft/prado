@@ -29,4 +29,3 @@ class ActiveRatingListSelectedIndexTest extends TPage{
 		$this->ratingChanged($this->RatingList, null);
 	}
 }
-?>

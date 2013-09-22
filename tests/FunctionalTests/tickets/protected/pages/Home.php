@@ -30,5 +30,3 @@ class Home extends TPage
 		return $list;
 	}
 }
-
-?>

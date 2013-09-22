@@ -1,6 +1,6 @@
 <?php
 
-class TextBoxCallbackTestCase extends SeleniumTestCase
+class TextBoxCallbackTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -13,5 +13,3 @@ class TextBoxCallbackTestCase extends SeleniumTestCase
 		$this->assertText("label1", "Label 1: hello!");
 	}
 }
-
-?>

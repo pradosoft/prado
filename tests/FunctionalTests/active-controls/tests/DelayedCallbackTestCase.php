@@ -1,6 +1,6 @@
 <?php
 
-class DelayedCallbackTestCase extends SeleniumTestCase
+class DelayedCallbackTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -18,5 +18,3 @@ class DelayedCallbackTestCase extends SeleniumTestCase
 
 	}
 }
-
-?>

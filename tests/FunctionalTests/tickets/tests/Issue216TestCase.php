@@ -1,6 +1,6 @@
 <?php
 
-class Issue216TestCase extends SeleniumTestCase
+class Issue216TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -24,5 +24,3 @@ class Issue216TestCase extends SeleniumTestCase
 		$this->assertText("ctl0_Content_result", "Tab ActiveIndex is : 1");
 	}
 }
-
-?>

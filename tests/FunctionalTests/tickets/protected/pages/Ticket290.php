@@ -12,5 +12,3 @@ class Ticket290 extends TPage
 		$this->label2->Text = $sender->Text . " Clicked!";
 	}
 }
-
-?>

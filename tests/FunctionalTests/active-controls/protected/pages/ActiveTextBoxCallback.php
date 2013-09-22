@@ -7,5 +7,3 @@ class ActiveTextBoxCallback extends TPage
 		$this->label1->Text = 'Label 1: '.$sender->Text;
 	}
 }
-
-?>

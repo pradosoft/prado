@@ -3,7 +3,7 @@
 /**
 * 
 */
-class Ticket290TestCase extends SeleniumTestCase
+class Ticket290TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -22,5 +22,3 @@ class Ticket290TestCase extends SeleniumTestCase
 	}
 }
 
-
-?>

@@ -1,10 +1,9 @@
 <?php
 
-class ReplaceContentTestCase extends SeleniumTestCase
+class ReplaceContentTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		$this->skipBrowsers(self::INTERNET_EXPLORER);
 
 		$this->open('active-controls/index.php?page=ReplaceContentTest');
 		$this->assertTextPresent('Callback Replace Content Test');
@@ -48,8 +47,6 @@ class ReplaceContentTestCase extends SeleniumTestCase
 
 	function testIE()
 	{
-		$this->targetBrowsers(self::INTERNET_EXPLORER);
-
 		$this->open('active-controls/index.php?page=ReplaceContentTest');
 		$this->assertTextPresent('Callback Replace Content Test');
 
@@ -91,5 +88,3 @@ class ReplaceContentTestCase extends SeleniumTestCase
 	}
 
 }
-
-?>

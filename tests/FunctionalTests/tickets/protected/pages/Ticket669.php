@@ -32,5 +32,3 @@ class Ticket669 extends TPage
 		$this->panel7->render($param->getNewWriter());
 	}
 }
-
-?>

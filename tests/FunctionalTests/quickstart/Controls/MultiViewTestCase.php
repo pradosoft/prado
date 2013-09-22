@@ -1,6 +1,6 @@
 <?php
 
-class MultiViewTestCase extends SeleniumTestCase
+class QuickstartMultiViewTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -35,5 +35,3 @@ class MultiViewTestCase extends SeleniumTestCase
 		$this->verifySelected('ctl0$body$DropDownList', "label=Blue");
 	}
 }
-
-?>

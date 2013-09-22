@@ -10,5 +10,3 @@ class Issue216 extends TPage
 		
 	}
 }
-
-?>

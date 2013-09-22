@@ -1,6 +1,6 @@
 <?php
 
-class HyperLinkTestCase extends SeleniumTestCase
+class QuickstartHyperLinkTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
@@ -13,5 +13,3 @@ class HyperLinkTestCase extends SeleniumTestCase
 		$this->verifyElementPresent("//a[contains(text(),'Body contents')]");
 	}
 }
-
-?>

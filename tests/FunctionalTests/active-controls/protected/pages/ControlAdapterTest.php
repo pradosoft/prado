@@ -54,5 +54,3 @@ class ControlAdapterTest extends TPage
 		$this->button2->Attributes['onclick'] = "alert('baz!')";
 	}
 }
-
-?>

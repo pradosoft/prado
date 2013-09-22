@@ -17,5 +17,3 @@ class DelayedCallback extends TPage
 	}
 
 }
-
-?>

@@ -8,5 +8,3 @@ class MainLayout extends TTemplateControl
 		$this->Response->reload();
 	}
 }
-
-?>

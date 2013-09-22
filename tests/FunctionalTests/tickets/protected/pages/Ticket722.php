@@ -27,4 +27,3 @@ class Ticket722 extends TPage
 		return $this->getViewState('text', "Editable Text");
 	}
 }
-?>

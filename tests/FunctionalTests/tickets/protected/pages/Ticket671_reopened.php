@@ -36,4 +36,3 @@ class Ticket671_reopened extends TPage
 		return $this->getViewState('CheckCount', 0);
 	}
 }
-?>

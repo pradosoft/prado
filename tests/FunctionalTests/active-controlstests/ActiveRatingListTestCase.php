@@ -19,7 +19,7 @@
  * 
  * Modifications:
  */
-class ActiveRatingListTestCase extends SeleniumTestCase
+class ActiveRatingListTestCase extends PradoGenericSeleniumTest
 {
 	function testCheckBoxes()
 	{
@@ -250,4 +250,3 @@ class ActiveRatingListTestCase extends SeleniumTestCase
 		}
 	}
 }
-?>

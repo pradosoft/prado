@@ -1,6 +1,6 @@
 <?php
 
-class Ticket121TestCase extends SeleniumTestCase
+class Ticket121TestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
@@ -15,5 +15,3 @@ class Ticket121TestCase extends SeleniumTestCase
 		$this->verifyTextPresent("clicked at", "");
 	}
 }
-
-?>

@@ -16,5 +16,3 @@ class TestComp extends TControl
 		MyJavascriptLib::registerPackage($this,$this->_class);
 	}
 }
-
-?>

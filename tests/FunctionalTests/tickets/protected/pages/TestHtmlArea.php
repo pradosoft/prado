@@ -4,5 +4,3 @@ class TestHtmlArea extends THtmlArea
 {
 	
 }
-
-?>

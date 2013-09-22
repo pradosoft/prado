@@ -12,5 +12,3 @@ class Ticket239 extends TPage
 		$this->Result->Text.=$sender->ID." is deactivated. ";
 	}
 }
-
-?>

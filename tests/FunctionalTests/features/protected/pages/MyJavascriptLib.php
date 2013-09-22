@@ -28,5 +28,3 @@ class MyJavascriptLib extends TComponent
 		$this->_manager->registerScriptFile($url,$url);
 	}
 }
-
-?>

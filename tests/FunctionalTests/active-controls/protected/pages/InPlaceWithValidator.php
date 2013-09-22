@@ -9,5 +9,3 @@ class InPlaceWithValidator extends TPage
 	}
 
 }
-
-?>

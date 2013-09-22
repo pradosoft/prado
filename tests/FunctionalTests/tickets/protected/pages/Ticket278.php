@@ -19,5 +19,3 @@ class Ticket278 extends TPage
 			$this->check1->Checked ? "display:block" : "display:none";		
 	}
 }
-
-?>

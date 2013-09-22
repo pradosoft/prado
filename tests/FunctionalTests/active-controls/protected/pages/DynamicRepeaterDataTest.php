@@ -19,5 +19,3 @@ class DynamicRepeaterDataTest extends TPage
 		$item->label1->Text = $sender->Text;
 	}
 }
-
-?>
