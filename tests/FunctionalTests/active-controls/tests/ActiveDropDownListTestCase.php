@@ -15,7 +15,7 @@ class ActiveDropDownListTestCase extends PradoGenericSeleniumTest
 
 		$this->click("button2");
 		$this->pause(800);
-		$this->assertEmptySelection("list1");
+		$this->assertSelectedIndex("list1", 0);
 
 		$this->click("button3");
 		$this->pause(800);

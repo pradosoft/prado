@@ -11,29 +11,29 @@ class ActiveListBoxTestCase extends PradoGenericSeleniumTest
 
 		$this->click("button1");
 		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '1,2,3');
+		$this->assertEquals($this->getSelectedLabels('list1'), array('item 2', 'item 3', 'item 4')); 
 
 		$this->click('button3');
 		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '0');
+		$this->assertEquals($this->getSelectedLabels('list1'), array('item 1')); 
 
 		$this->click('button4');
 		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '4');
+		$this->assertEquals($this->getSelectedLabels('list1'), array('item 5')); 
 
 		$this->click('button5');
 		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '1,4');
+		$this->assertEquals($this->getSelectedLabels('list1'), array('item 2', 'item 5')); 
 
 		$this->click('button2');
 		$this->pause(800);
-		$this->assertEmptySelection("list1");
+		$this->assertNotSomethingSelected("list1");
 
 		$this->click('button6');
 		$this->pause(800);
 		$this->click("button1");
 		$this->pause(800);
-		$this->assertSelectedIndexes('list1', '1,2,3');
+		$this->assertEquals($this->getSelectedLabels('list1'), array('item 2', 'item 3', 'item 4')); 
 
 		$this->select("list1", "item 1");
 		$this->pause(800);
