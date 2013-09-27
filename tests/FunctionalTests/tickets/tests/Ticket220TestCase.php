@@ -10,7 +10,7 @@ class Ticket220TestCase extends PradoGenericSeleniumTest
 		$this->assertText("{$base}label1", "Label 1");
 		
 		$this->click("button1");
-		$this->assertText("{$base}label1", 'Label 1: ["ok", "ok 3?", "ok 2!"]');
+		$this->assertText("{$base}label1", 'exact:Label 1: ["ok", "ok 3?", "ok 2!"]');
 		$this->assertAlertNotPresent();
 	}
 }

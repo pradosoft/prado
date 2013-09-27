@@ -12,12 +12,12 @@ class QuickstartDropDownListTestCase extends PradoGenericSeleniumTest
 		$this->verifyElementPresent("ctl0\$body\$ctl0");
 
 		// dropdown list with initial options
-		$this->verifySelectOptions("ctl0\$body\$ctl1","item 1,item 2,item 3,item 4");
-		$this->verifySelected("ctl0\$body\$ctl1","value=value 2");
+		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl1"), array('item 1', 'item 2', 'item 3', 'item 4')); 
+		$this->assertSelected("ctl0\$body\$ctl1","item 2");
 
 		// dropdown list with customized styles
-		$this->verifySelectOptions("ctl0\$body\$ctl2","item 1,item 2,item 3,item 4");
-		$this->verifySelected("ctl0\$body\$ctl2","value=value 2");
+		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl2"), array('item 1', 'item 2', 'item 3', 'item 4')); 
+		$this->assertSelected("ctl0\$body\$ctl2","item 2");
 
 		// a disabled dropdown list
 		$this->verifyAttribute("ctl0\$body\$ctl3@disabled","regexp:true|disabled");

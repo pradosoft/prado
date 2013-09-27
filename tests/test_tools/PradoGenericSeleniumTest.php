@@ -9,6 +9,7 @@ class PradoGenericSeleniumTest extends PHPUnit_Extensions_SeleniumTestCase
 
 	protected function setUp()
 	{
+		$this->shareSession(true);
 		$this->setBrowser(static::$browser);
 		$this->setBrowserUrl(static::$baseurl);
 	}

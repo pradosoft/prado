@@ -28,7 +28,7 @@ class CallbackAdapterTestCase extends PradoGenericSeleniumTest
 		$this->assertAlert('baz!');
 
 	}
-
+/*
 	function testIE()
 	{
 		$this->open("active-controls/index.php?page=ControlAdapterTest");
@@ -54,4 +54,5 @@ class CallbackAdapterTestCase extends PradoGenericSeleniumTest
 		$this->assertAlert('baz!');
 		$this->assertAlert('ok');
 	}
+*/
 }

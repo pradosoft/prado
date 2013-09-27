@@ -44,7 +44,7 @@ class ReplaceContentTestCase extends PradoGenericSeleniumTest
 
 		$this->assertText('panel1', 'Main Panel pradomauahahahaphp');
 	}
-
+/*
 	function testIE()
 	{
 		$this->open('active-controls/index.php?page=ReplaceContentTest');
@@ -86,5 +86,5 @@ class ReplaceContentTestCase extends PradoGenericSeleniumTest
 
 		$this->assertText('panel1', 'Main Panel pradomauahahahaphp');
 	}
-
+*/
 }

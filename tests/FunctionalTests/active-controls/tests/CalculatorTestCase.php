@@ -15,8 +15,9 @@ class CalculatorTestCase extends PradoGenericSeleniumTest
 		$this->type("b", "5");
 		
 		$this->click("sum");
+		$this->pause(250);
+
 		$this->assertNotVisible("summary");
-		
 		$this->assertValue("c", "7");
 	}
 }

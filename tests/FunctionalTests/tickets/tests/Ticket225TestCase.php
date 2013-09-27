@@ -16,7 +16,7 @@ class Ticket225TestCase extends PradoGenericSeleniumTest
 		$this->click("{$base}button2");
 		$this->clickAndWait("{$base}button4");
 
-		$this->assertText("{$base}label1", 'ctl0$Content$button1 ctl0$Content$button2 ctl0$Content$button3');
+		$this->assertText("{$base}label1", 'exact:ctl0$Content$button1 ctl0$Content$button2 ctl0$Content$button3');
 		$this->assertNotVisible("{$base}validator1");
 	}
 }
