@@ -110,9 +110,9 @@ class TApplicationComponent extends TComponent
 	 * @param string absolute path of the file or directory to be published
 	 * @return string URL to the published file or directory
 	 */
-	public function publishFilePath($fullPath)
+	public function publishFilePath($fullPath, $checkTimestamp=false)
 	{
-		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath);
+		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
 	}
 }
 
