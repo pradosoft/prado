@@ -184,40 +184,40 @@ class ActiveRatingListTestCase extends PradoGenericSeleniumTest
 		$this->assertText("Status", "Enabled=false");
 		$this->assertCheckBoxes("RatingList", array(3), 6);
 	}
-		
+	
 	function testHoverCaption()
 	{
 		// Verify we're on the right page.
 		$this->open("active-controls/index.php?page=ActiveRatingListHoverCaptionTest");
 		$this->verifyTextPresent("TActiveRatingList Hover Caption Test Case");
 		$this->assertText("Status", "CaptionID='Status'");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating_half')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../..[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating_half')]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
 		
 		$this->mouseOver("//input[@id='RatingList_c4']/../../");
 		$this->assertText("Status", "Excellent");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementNotPresent("//input[@id='RatingList_c5']/../..[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../..[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[not(contains(@class, 'rating_hover'))]");
+		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
 		
 		$this->mouseOut("//input[@id='RatingList_c4']/../../");
 		$this->assertText("Status", "CaptionID='Status'");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementNotPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../..[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[not(contains(@class, 'rating_selected'))]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
 		
 		
 		$this->mouseOver("//input[@id='RatingList_c1']/../../");
@@ -226,13 +226,13 @@ class ActiveRatingListTestCase extends PradoGenericSeleniumTest
 		$this->click("//input[@id='RatingList_c1']/../../");
 		$this->pause(800);
 		$this->assertText("Status", "2 : Fair");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementNotPresent("//input[@id='RatingList_c2']/../..[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../..[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../..[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[not(contains(@class, 'rating_selected'))]");
+		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
 	}
 	
 	function clickTD($clientID){
