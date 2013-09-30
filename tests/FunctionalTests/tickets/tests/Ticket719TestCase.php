@@ -14,14 +14,19 @@ class Ticket719TestCase extends PradoGenericSeleniumTest
 		$this->assertVisible("${base}ctl0", 'Required');
 		$this->assertVisible("${base}ctl1", 'Required');
 		
-		$this->keyPress("${base}autocomplete", 'f');
-		$this->pause(1000);
+		$this->type("${base}autocomplete", 'f');
+		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
+		$this->pause(500);
 		$this->verifyTextPresent('Finland');
-		$this->keyPress("${base}autocomplete", 'r');
-		$this->pause(1000);
+
+		$this->type("${base}autocomplete", 'fr');
+		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
+		$this->pause(500);
 		$this->verifyTextPresent('French');
-		$this->keyPress("${base}autocomplete", 'a');
-		$this->pause(1000);
+
+		$this->type("${base}autocomplete", 'fra');
+		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
+		$this->pause(500);
 		$this->verifyTextPresent('France');
 	
 		$this->click("css=#${base}autocomplete_result ul li");

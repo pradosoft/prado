@@ -18,8 +18,7 @@ class Ticket703 extends TPage {
 	public function clearLog ($sender, $param)
 	{
 		$file=prado::getPathOfNameSpace('Ticket703.Logs.LogFile', '.txt');
-		$f=fopen($file,"w");
-		fclose($f);
+		file_put_contents($file, '');
 		$this->refreshLog();
 	}
 	

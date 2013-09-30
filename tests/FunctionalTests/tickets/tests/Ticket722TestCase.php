@@ -18,7 +18,7 @@ class Ticket722TestCase extends PradoGenericSeleniumTest
 		$this->assertText($base.'InPlaceTextBox__label', 'Prado');
 		$this->click($base.'ctl0');
 		$this->pause(800);
-		$this->assertText($base.'InPlaceTextBox__label', 'Prado [Read Only]');
+		$this->assertText($base.'InPlaceTextBox__label', 'exact:Prado [Read Only]');
 		$this->click($base.'InPlaceTextBox__label');
 		$this->pause(800);
 		$this->assertNotVisible($base.'InPlaceTextBox');
