@@ -84,8 +84,10 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 * @param string control ID
 	 * @return TControl control being found
 	 */
-	public function findControl($id)
+	public function findControl($id, $real=false)
 	{
+  		if ($real===true)
+  			return parent::findControl($id);
 		return $this;
 	}
 
@@ -418,12 +420,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$this->_repeatedControl->setTabIndex($tabIndex);
 			$this->setAccessKey('');
 			$this->setTabIndex(0);
+			$this->addAttributesToRender($writer);
 			$repeatInfo->renderRepeater($writer,$this);
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);
 			if ($needSpan)
 				$writer->renderEndTag();
 		}
+
 		//checkbox skipped the client control script in addAttributesToRender
 		if($this->getEnabled(true)
 			&& $this->getEnableClientScript()

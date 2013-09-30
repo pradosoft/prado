@@ -121,6 +121,17 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+		$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(), $this->getPostBackOptions());
+	}
+
+	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
 	 * This method overrides the parent implementation.
 	 * @return string the javascript class name
