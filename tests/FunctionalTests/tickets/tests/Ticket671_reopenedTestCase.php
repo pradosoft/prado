@@ -12,29 +12,28 @@ class Ticket671_reopenedTestCase extends PradoGenericSeleniumTest
 		$this->click($base.'ctl4');
 		$this->pause(800);
 		$this->assertVisible($base.'ctl2');
-		$this->assertText($base.'Result', 'Check callback called (1)');
+		$this->assertText($base.'Result', 'exact:Check callback called (1) --- Save callback called DATA NOK');
 		
 		// Reclick, should not have any callback
 		$this->click($base.'ctl4');
 		$this->pause(800);
 		$this->assertVisible($base.'ctl2');
-		$this->assertText($base.'Result', 'Check callback called (1)');
+		$this->assertText($base.'Result', 'exact:Check callback called (2) --- Save callback called DATA NOK');
 		
 		// Type right value
 		$this->type($base.'testField', 'Test');
 		$this->click($base.'ctl4');
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl2');
-		// The check method is called twice. Once by request on clientside, once on server side when callback request is issued.
-		$this->assertText($base.'Result', 'Check callback called (3) --- Save callback called DATA OK');
+		$this->assertText($base.'Result', 'exact:Check callback called (3) --- Save callback called DATA OK');
 		
 		// Type empty value
 		$this->type($base.'testField', '');
 		$this->click($base.'ctl4');
 		$this->pause(800);
 		$this->assertVisible($base.'ctl1');
-		$this->assertVisible($base.'ctl2');
-		$this->assertText($base.'Result', 'Check callback called (4)');
+		$this->assertNotVisible($base.'ctl2');
+		$this->assertText($base.'Result', 'exact:Check callback called (3) --- Save callback called DATA OK');
 		
 		// Type right value
 		$this->type($base.'testField', 'Test');
@@ -42,8 +41,6 @@ class Ticket671_reopenedTestCase extends PradoGenericSeleniumTest
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl1');
 		$this->assertNotVisible($base.'ctl2');
-		// The check method is called twice. Once by request on clientside, once on server side when callback request is issued.
-		$this->assertText($base.'Result', 'Check callback called (6) --- Save callback called DATA OK');
-		
+		$this->assertText($base.'Result', 'exact:Check callback called (4) --- Save callback called DATA OK');		
 	}
 }
