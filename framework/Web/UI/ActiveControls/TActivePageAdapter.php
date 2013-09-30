@@ -347,7 +347,13 @@ class TCallbackErrorHandler extends TErrorHandler
 		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
 		{
 			$response = $this->getApplication()->getResponse();
-			$trace = TJavaScript::jsonEncode($this->getExceptionStackTrace($exception));
+			$trace = $this->getExceptionStackTrace($exception);
+			try {
+				$trace = TJavaScript::jsonEncode($trace);
+			} catch (Exception $e) {
+				// strip everythin not 7bit ascii
+				$trace = preg_replace('/[^(\x20-\x7F)]*/','', serialize($trace));
+			}
 			$response->setStatusCode(500, 'Internal Server Error');
 			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
 		}
