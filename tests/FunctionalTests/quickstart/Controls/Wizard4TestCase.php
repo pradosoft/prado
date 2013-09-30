@@ -19,7 +19,7 @@ class QuickstartWizard4TestCase extends PradoGenericSeleniumTest
 		$this->clickAndWait('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
 
 		// step 1
-		$this->verifySelected('ctl0_body_Wizard1_DropDownList1', "label=Cyan");
+		$this->assertSelected('ctl0_body_Wizard1_DropDownList1', "Cyan");
 		$this->select('ctl0_body_Wizard1_DropDownList1', "label=Black");
 		$this->clickAndWait('ctl0_body_Wizard1_ctl4_ctl0');
 
@@ -30,7 +30,7 @@ class QuickstartWizard4TestCase extends PradoGenericSeleniumTest
 
 		// step 1
 		$this->verifyTextPresent('Step 1 of 3');
-		$this->verifySelected('ctl0_body_Wizard1_DropDownList1', "label=Black");
+		$this->assertSelected('ctl0_body_Wizard1_DropDownList1', "Black");
 		$this->clickAndWait('ctl0_body_Wizard1_ctl4_ctl0');
 
 		// step 2

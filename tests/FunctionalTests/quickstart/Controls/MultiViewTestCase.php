@@ -32,6 +32,6 @@ class QuickstartMultiViewTestCase extends PradoGenericSeleniumTest
 		$this->clickAndWait('ctl0$body$ctl7');
 
 		// view 2 : check if dropdownlist maintains state
-		$this->verifySelected('ctl0$body$DropDownList', "label=Blue");
+		$this->assertSelected('ctl0$body$DropDownList', "Blue");
 	}
 }

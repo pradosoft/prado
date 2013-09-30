@@ -7,6 +7,7 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
+		$this->setSpeed(500);
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=DataTypeValidator", "");
 		$this->verifyTextPresent("Data Type Validator Tests", "");
@@ -15,7 +16,7 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 		$this->assertNotVisible("{$base}validator3");
-		
+
 		$this->type("{$base}textbox1", "a");
 		$this->type("{$base}textbox2", "b");
 		$this->type("{$base}textbox3", "c");
@@ -42,6 +43,7 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 		$this->assertVisible("{$base}validator3");
+		$this->setSpeed(0);
 	}
 		
 } 

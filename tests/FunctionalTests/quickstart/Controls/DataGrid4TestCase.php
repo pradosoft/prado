@@ -15,14 +15,14 @@ class QuickstartDataGrid4TestCase extends PradoGenericSeleniumTest
 
 		// verify sorting
 		$this->clickAndWait("link=Book Title", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl1_ctl5").hasAttribute("checked")'), 'false');
 		$this->clickAndWait("link=Publisher", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl6_ctl5").hasAttribute("checked")'), 'false');
 		$this->clickAndWait("link=Price", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl2_ctl5").hasAttribute("checked")'), 'false');
 		$this->clickAndWait("link=In-stock", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl1_ctl5").hasAttribute("checked")'), 'false');
 		$this->clickAndWait("link=Rating", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl4_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl4_ctl5").hasAttribute("checked")'), 'false');
 	}
 }

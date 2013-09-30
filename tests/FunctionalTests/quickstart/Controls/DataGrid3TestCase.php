@@ -27,7 +27,7 @@ class QuickstartDataGrid3TestCase extends PradoGenericSeleniumTest
 		$this->verifyTextPresent("Design Pattern: Elements of Reusable Object-Oriented Software", "");
 		$this->verifyTextPresent("Addison Wesley Professional", "");
 		$this->verifyTextPresent("$57.04", "");
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl4@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl2_ctl4").hasAttribute("checked")'), 'false');
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl4@disabled','regexp:true|disabled');
 		//$this->verifyElementPresent("//img[@src='images/star1.gif']",'');
 

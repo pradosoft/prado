@@ -43,7 +43,7 @@ class QuickstartPagerTestCase extends PradoGenericSeleniumTest
 		$this->verifyTextNotPresent('ITN002','');
 		$this->verifyTextNotPresent('ITN005','');
 
-		$this->verifySelected("ctl0_body_Pager3_ctl0","label=2");
+		$this->assertSelected("ctl0_body_Pager3_ctl0","2");
 		$this->selectAndWait("ctl0_body_Pager3_ctl0", "label=5");
 		$this->verifyTextPresent('ITN009','');
 		$this->verifyTextPresent('ITN010','');

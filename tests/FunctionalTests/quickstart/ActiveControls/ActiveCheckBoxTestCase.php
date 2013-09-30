@@ -5,6 +5,7 @@ class QuickstartActiveCheckBoxTestCase extends PradoGenericSeleniumTest
 {
 	function test ()
 	{
+		$this->setSpeed(500);
 		$this->open("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCheckBox.Home&amp;notheme=true&amp;lang=en", "");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
@@ -52,5 +53,6 @@ class QuickstartActiveCheckBoxTestCase extends PradoGenericSeleniumTest
 		$this->click("//input[@name='ctl0\$body\$CheckBox2']", "");
 		$this->verifyVisible('ctl0_body_ctl5');
 		$this->assertChecked("//input[@name='ctl0\$body\$CheckBox2']");
+		$this->setSpeed(0);
 	}
 }

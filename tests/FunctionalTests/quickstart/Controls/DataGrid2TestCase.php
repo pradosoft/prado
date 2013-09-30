@@ -29,7 +29,7 @@ class QuickstartDataGrid2TestCase extends PradoGenericSeleniumTest
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked','regexp:true|checked');
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl1_ctl5@disabled','regexp:true|disabled');
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl5@checked','regexp:true|checked');
-		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl5@checked','regexp:false|null');
+		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl6_ctl5").hasAttribute("checked")'), 'false');
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl6_ctl5@disabled','regexp:true|disabled');
 
 		// verify ratings

@@ -48,7 +48,7 @@ class QuickstartTextBoxTestCase extends PradoGenericSeleniumTest
 
 		// SafeText
 		$this->verifyText("ctl0_body_Output","test");
-		$this->typeAndWait("ctl0\$body\$TextBox2","&lt;a href=javascript:xxx&gt;malicious code&lt;/a&gt;");
+		$this->typeAndWait("ctl0\$body\$TextBox2","<a href=javascript:xxx>malicious code</a>");
 		$this->verifyText("ctl0_body_Output","malicious code");
 
 		// password
