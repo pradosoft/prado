@@ -15,7 +15,8 @@ class Ticket587TestCase extends PradoGenericSeleniumTest
 		$this->pause(800);
 		$this->assertText($base."label1", "Selection 2: value 3 - item 4");
 
-		$this->keyPress($base.'text1', 't');
+		$this->type($base.'text1', 't');
+		$this->runScript("Prado.Registry.get('{$base}text1').onKeyPress({})");
 		$this->pause(800);
 		$this->select($base."list2", "asd 3 - item 2");
 		$this->pause(800);

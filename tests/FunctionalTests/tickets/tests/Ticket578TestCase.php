@@ -13,15 +13,10 @@ class Ticket578TestCase extends PradoGenericSeleniumTest
 		$this->pause(800);
 		$this->assertText("{$base}label1", "Button 1 was clicked : ");
 
-		$this->store($this->setTinymceHtml("{$base}text1", "helloworld"),"t2");
+		$text="helloworld";
+		$this->runScript("tinyMCE.get('{$base}text1').setContent('{$text}')");
 		$this->click("{$base}button1", "");
 		$this->pause(800);
-		$this->assertText("{$base}label1", "Button 1 was clicked : helloworld");
-	}
-
-	function setTinymceHtml($id, $text)
-	{
-		$tinymce = "this.browserbot.getCurrentWindow().tinyMCE.getInstanceById('{$id}')";
-		return 'javascript{'."{$tinymce}.setHTML('{$text}') ? 0 : 1".'}';
+		$this->assertText("{$base}label1", "exact:Button 1 was clicked : <p>{$text}</p>");
 	}
 }

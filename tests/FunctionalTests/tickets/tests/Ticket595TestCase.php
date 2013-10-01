@@ -18,21 +18,20 @@ class Ticket595TestCase extends PradoGenericSeleniumTest
 		$this->type($base.'A', 'test@pradosoft.com');
 		$this->click($base.'ctl2');
 		$this->pause(800);
-        $this->assertAttribute($base.'A@class','null');
-
+        $this->assertAttribute($base.'A@class','');
 
 		$this->click($base.'ctl5');
 		$this->pause(800);
-        $this->assertAttribute($base.'B@class','errorclassB');
+        $this->assertAttribute($base.'B@class','exact: errorclassB');
 		
 		$this->type($base.'B', 'Prado');
 		$this->click($base.'ctl5');
 		$this->pause(800);
-        $this->assertAttribute($base.'B@class','errorclassB');
+        $this->assertAttribute($base.'B@class','exact: errorclassB');
 		
 		$this->type($base.'B', 'test@pradosoft.com');
 		$this->click($base.'ctl5');
 		$this->pause(800);
-        $this->assertAttribute($base.'B@class','null');
+        $this->assertAttribute($base.'B@class','');
 	}
 }
