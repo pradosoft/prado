@@ -176,6 +176,10 @@ Object.extend(Prado.CallbackRequest,
 	 */
 	SCRIPTLIST_HEADER : 'X-PRADO-SCRIPTLIST',
 	/**
+	 * Stylesheet code header name.
+	 */
+	STYLESHEET_HEADER : 'X-PRADO-STYLESHEET',
+	/**
 	 * Stylesheet list header name.
 	 */
 	STYLESHEETLIST_HEADER : 'X-PRADO-STYLESHEETLIST',
@@ -431,6 +435,22 @@ Object.extend(Prado.CallbackRequest,
 			}
 	},
 
+	loadStyleSheetsCode : function(request, transport)
+	{
+		var self = Prado.CallbackRequest;
+		var data = request.getBodyContentPart(self.STYLESHEET_HEADER);
+		if (typeof(data) == "string" && data.length > 0)
+		{
+		  	json = Prado.CallbackRequest.decode(data);
+			if(typeof(json) != "object")
+				Logger.warn("Invalid stylesheet list:"+data);
+			else
+				for(var key in json)
+					if (/^\d+$/.test(key))
+						Prado.StyleSheetManager.createStyleSheetCode(json[key],null);
+		}
+	},
+
 	loadStyleSheetsAsync : function(request, transport)
 	{
 		var self = Prado.CallbackRequest;
@@ -519,6 +539,8 @@ Object.extend(Prado.CallbackRequest,
 		});
 
 		*/
+
+		this.loadStyleSheetsCode(request,transport);
 
 		this.loadStyleSheetsAsync(request,transport);
 
@@ -1127,6 +1149,15 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
    		asset.href = url;
 //		asset.async = false; // HTML5 only
 		return asset;
+	},
+
+	createStyleSheetCode: function(code) {
+   		var asset = document.createElement('style');
+   		asset.setAttribute('type', 'text/css');
+		asset.innerText = code;
+
+		var head = document.getElementsByTagName('head')[0];
+   		head.appendChild(asset);
 	}
 
   });

@@ -56,6 +56,10 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	const CALLBACK_STYLESHEETLIST_HEADER = 'X-PRADO-STYLESHEETLIST';
 	/**
+	 * Stylesheet header name.
+	 */
+	const CALLBACK_STYLESHEET_HEADER = 'X-PRADO-STYLESHEET';
+	/**
 	 * Hidden field list header name.
 	 */
 	const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
@@ -211,6 +215,11 @@ class TActivePageAdapter extends TControlAdapter
 		$stylesheets = $cs->getStyleSheetUrls();
 		if (count($stylesheets)>0)
 		$this->appendContentPart($response, self::CALLBACK_STYLESHEETLIST_HEADER, TJavaScript::jsonEncode($stylesheets));
+
+		// collect all stylesheet snippets references
+		$stylesheets = $cs->getStyleSheetCodes();
+		if (count($stylesheets)>0)
+		$this->appendContentPart($response, self::CALLBACK_STYLESHEET_HEADER, TJavaScript::jsonEncode($stylesheets));
 
 		// collect all script file references
 		$scripts = $cs->getScriptUrls();

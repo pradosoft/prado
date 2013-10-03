@@ -402,17 +402,14 @@ class TClientScriptManager extends TApplicationComponent
 
 	/**
 	 * Returns the URLs of all stylesheet files referenced on the page
-	 * @return array Combined list of all stylesheet urls used in the page
+	 * @return array List of all stylesheet urls used in the page
 	 */
 	public function getStyleSheetUrls()
 	{
 		$stylesheets = array_values(
-			array_merge(
-				array_map(
-					create_function('$e', 'return is_array($e) ? $e[0] : $e;'),
-					$this->_styleSheetFiles),
-				$this->_styleSheets
-			)
+			array_map(
+				create_function('$e', 'return is_array($e) ? $e[0] : $e;'),
+				$this->_styleSheetFiles)
 		);
 
 		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)
@@ -422,6 +419,15 @@ class TClientScriptManager extends TApplicationComponent
 		$stylesheets = array_unique($stylesheets);
 
 		return $stylesheets;
+	}
+
+	/**
+	 * Returns all the stylesheet code snippets referenced on the page
+	 * @return array List of all stylesheet snippets used in the page
+	 */
+	public function getStyleSheetCodes()
+	{
+		return array_unique(array_values($this->_styleSheets));
 	}
 
 	/**
