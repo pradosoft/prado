@@ -10,6 +10,8 @@ define('PRADO_TEST_RUN', true);
 define('PRADO_FRAMEWORK_DIR', dirname(__FILE__).'/../../framework');
 define('VENDOR_DIR', dirname(__FILE__).'/../../vendor');
 set_include_path(PRADO_FRAMEWORK_DIR.PATH_SEPARATOR.get_include_path());
+// coverage tests waste a lot of memory!
+ini_set('memory_limit', '1G');
 
 if (!@include_once VENDOR_DIR.'/autoload.php') {
     die('You must set up the project dependencies, run the following commands:
