@@ -298,10 +298,13 @@
     <coverage-setup database="${build.test.dir}/coverage.db">
       <fileset refid="framework-php" />
     </coverage-setup>
-    <phpunit codecoverage="true" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/unit/bootstrap.php">
+    <phpunit codecoverage="true" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/test_tools/phpunit_bootstrap.php">
       <batchtest>
         <fileset dir="tests/unit">
         <include name="**/*Test.php"/>
+        </fileset>
+        <fileset dir="tests/FunctionalTests">
+        <include name="**/*TestCase.php"/>
         </fileset>
       </batchtest>
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
