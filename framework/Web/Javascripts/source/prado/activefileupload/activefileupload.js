@@ -1,4 +1,4 @@
-Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{

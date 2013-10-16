@@ -8,7 +8,7 @@
 */
 
 
-Prado.WebUI.THtmlArea = Class.create(Prado.WebUI.Control,
+Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 {
 	initialize: function($super, options)
 	{

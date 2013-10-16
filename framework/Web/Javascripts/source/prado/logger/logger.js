@@ -13,7 +13,7 @@ Use it all you want. Just remember to give me some credit :)
 // Custom Event
 // ------------
 
-CustomEvent = Class.create();
+CustomEvent = jQuery.klass();
 CustomEvent.prototype = {
   initialize : function() {
   	this.listeners = []
@@ -179,7 +179,7 @@ Logger = {
 	}
 };
 
-LogEntry = Class.create()
+LogEntry = jQuery.klass()
 LogEntry.prototype = {
     initialize : function(message, tag) {
       this.message = message
@@ -187,7 +187,7 @@ LogEntry.prototype = {
     }
 };
 
-LogConsole = Class.create();
+LogConsole = jQuery.klass();
 LogConsole.prototype = {
 
   // Properties
