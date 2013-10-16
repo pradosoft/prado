@@ -1,5 +1,5 @@
 
-Prado.AjaxRequest = Class.create();
+Prado.AjaxRequest = jQuery.klass();
 Prado.AjaxRequest.prototype = Object.clone(Ajax.Request.prototype);
 
 /**
@@ -127,7 +127,7 @@ Object.extend(Prado.AjaxRequest.prototype,
 /**
  * Prado Callback client-side request handler.
  */
-Prado.CallbackRequest = Class.create();
+Prado.CallbackRequest = jQuery.klass();
 
 /**
  * Static definitions.
@@ -970,7 +970,7 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 
 if (typeof(Prado.AssetManagerClass)=="undefined") {
 
-  Prado.AssetManagerClass = Class.create();
+  Prado.AssetManagerClass = jQuery.klass();
   Prado.AssetManagerClass.prototype = {
 
 	initialize: function() {

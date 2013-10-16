@@ -1,7 +1,7 @@
 //-------------------- ricoColor.js
 if(typeof(Rico) == "undefined") Rico = {};
 
-Rico.Color = Class.create();
+Rico.Color = jQuery.klass();
 
 Rico.Color.prototype = {
 
@@ -242,7 +242,7 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
 };
 
 
-Prado.WebUI.TColorPicker = Class.create();
+Prado.WebUI.TColorPicker = jQuery.klass();
 
 Object.extend(Prado.WebUI.TColorPicker,
 {
@@ -573,7 +573,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		for(var type in this.inputs)
 		{
 			Event.observe(this.inputs[type], "change",
-				this.onInputChanged.bindEvent(this,type));
+				jQuery.proxy(this.onInputChanged,this,type));
 			i++;
 
 			if(i > 6) break;
@@ -596,7 +596,7 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 		this.observeMouseMovement();
 
-		Event.observe(this.buttons.Cancel, "click", this.hide.bindEvent(this,this.options['Mode']));
+		Event.observe(this.buttons.Cancel, "click", jQuery.proxy(this.hide,this,this.options['Mode']));
 		Event.observe(this.buttons.OK, "click", this.onOKClicked.bind(this));
 	},
 

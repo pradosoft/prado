@@ -4,6 +4,7 @@
 
 // To make future upgrades easier
 if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.7');
+if (!defined('JQUERY_DIR')) define ('JQUERY_DIR', 'jquery');
 if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.9.0');
 
 //package names and its contents (files relative to the current directory)
@@ -14,9 +15,7 @@ $packages = array(
 	),
 	'prado' => array(
 		'prado/prado.js',
-		'prado/scriptaculous-adapter.js',
-		'prado/controls/controls.js',
-		SCRIPTACULOUS_DIR.'/effects.js'
+		'prado/controls/controls.js'
 	),
 
 	'effects' => array(
@@ -95,15 +94,27 @@ $packages = array(
 		'prado/activecontrols/inlineeditor.js'
 	),
 
+	// jquery
+	'jquery' => array(
+		JQUERY_DIR.'/jquery.js',
+		JQUERY_DIR.'/lowpro.jquery.js',
+	),
+	'jqueryui' => array(
+		JQUERY_DIR.'/jquery-ui.min.js',
+		JQUERY_DIR.'/jquery-ui-i18n.min.js',
+	),
+
 );
 
 
 //package names and their dependencies
 $dependencies = array(
 		'prototype'			=> array('prototype'),
-		'prado'				=> array('prototype', 'prado'),
+		'jquery'			=> array('jquery'),
+		'prado'				=> array('jquery', 'prado'),
+		'validator'			=> array('jquery', 'prado', 'validator'),
+		'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
 		'effects'			=> array('prototype', 'prado', 'effects'),
-		'validator'			=> array('prototype', 'prado', 'validator'),
 		'logger'			=> array('prototype', 'prado', 'logger'),
 		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
 		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
@@ -111,7 +122,6 @@ $dependencies = array(
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
-		'tabpanel'			=> array('prototype', 'prado', 'tabpanel'),
 		'activedatepicker'	=> array('prototype', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 		'activefileupload'	=> array('prototype', 'prado', 'effects', 'ajax', 'activefileupload'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
@@ -120,6 +130,7 @@ $dependencies = array(
 		'htmlarea4'			=> array('prototype', 'prado', 'htmlarea4'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
 		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
+		'jqueryui'			=> array('jquery', 'jqueryui'),
 );
 
 return array($packages, $dependencies);

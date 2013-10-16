@@ -1,4 +1,4 @@
-Prado.WebUI.TInPlaceTextBox = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{

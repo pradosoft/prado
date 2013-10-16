@@ -80,7 +80,7 @@ Prado.WebUI.TActiveTextBox = Class.extend(Prado.WebUI.TTextBox,
 		if(options['TextMode'] != 'MultiLine')
 			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.element, "change", this.doCallback.bindEvent(this,options));
+			this.observe(this.element, "change", jQuery.proxy(this.doCallback,this,options));
 	},
 
 	doCallback : function(event, options)
@@ -178,7 +178,7 @@ Prado.WebUI.TAutoComplete = Class.extend(Prado.WebUI.TAutoComplete,
 /**
  * Time Triggered Callback class.
  */
-Prado.WebUI.TTimeTriggeredCallback = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TTimeTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
@@ -262,7 +262,7 @@ Object.extend(Prado.WebUI.TTimeTriggeredCallback,
 	}
 });
 
-Prado.WebUI.ActiveListControl = Class.create(Prado.WebUI.Control,
+Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
@@ -281,13 +281,13 @@ Prado.WebUI.ActiveListControl = Class.create(Prado.WebUI.Control,
 	}
 });
 
-Prado.WebUI.TActiveDropDownList = Class.create(Prado.WebUI.ActiveListControl);
-Prado.WebUI.TActiveListBox = Class.create(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveDropDownList = jQuery.klass(Prado.WebUI.ActiveListControl);
+Prado.WebUI.TActiveListBox = jQuery.klass(Prado.WebUI.ActiveListControl);
 
 /**
  * Observe event of a particular control to trigger a callback request.
  */
-Prado.WebUI.TEventTriggeredCallback = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
@@ -327,7 +327,7 @@ Prado.WebUI.TEventTriggeredCallback = Class.create(Prado.WebUI.Control,
 /**
  * Observe changes to a property of a particular control to trigger a callback.
  */
-Prado.WebUI.TValueTriggeredCallback = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 {
 	count : 1,
 
@@ -406,5 +406,5 @@ Object.extend(Prado.WebUI.TValueTriggeredCallback,
 	}
 });
 
-Prado.WebUI.TActiveTableCell = Class.create(Prado.WebUI.CallbackControl);
-Prado.WebUI.TActiveTableRow = Class.create(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableCell = jQuery.klass(Prado.WebUI.CallbackControl);
+Prado.WebUI.TActiveTableRow = jQuery.klass(Prado.WebUI.CallbackControl);

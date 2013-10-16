@@ -1,0 +1,29 @@
+Targets:
+
+ * Import jQuery as a prado js package (done)
+ * Basic class/inheritance support to replace prototype's Class.create (done, using lowpro)
+ * Glue prado PostBack/PostbackControl/Registry to jQuery (done)
+ * port standard controls (started, wip)
+ * port features (defaultbutton, validators, ..) (started, wip)
+ * port Prado.Element's functions (replace, setStyle, ..)
+ * port Effects
+ * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..)
+ * port basic active controls
+ * port exotic active controls (autocomplete, ...)
+ * get tests running
+ * ensure jQuery's compatibility mode with prototype (support old third party components from users? jQuery.noConflict(); by default?)
+ * fix debug components (TJavascriptLogger)
+ * document everything
+
+
+DONE
+
+Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox)
+TTabPanel
+Validators
+
+TBD
+accordion
+colorpicker
+htmlarea/4
+*

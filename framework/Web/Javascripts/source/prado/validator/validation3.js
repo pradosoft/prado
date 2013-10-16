@@ -61,7 +61,7 @@
  * @module validation
  */
  
-Prado.Validation =  Class.create();
+Prado.Validation =  jQuery.klass();
 
 /**
  * Global Validation Object.
@@ -76,7 +76,7 @@ Prado.Validation =  Class.create();
  * 
  * @object {static} Prado.Validation
  */
-Object.extend(Prado.Validation,
+jQuery.extend(Prado.Validation,
 {
 	/**
 	 * Hash of registered validation managers
@@ -133,8 +133,10 @@ Object.extend(Prado.Validation,
 	 */
 	getForm : function()
 	{
-		var keys = $H(this.managers).keys();
-		return keys[0];
+		var keys = jQuery.map(this.managers, function(value, key) {
+			return key;
+		});
+		return keys.length>0 ? keys[0] : null;
 	},
 
 	/**
@@ -201,14 +203,14 @@ Object.extend(Prado.Validation,
 
 	setErrorMessage : function(validatorID, message)
 	{
-		$H(Prado.Validation.managers).each(function(manager)
+		jQuery.each(Prado.Validation.managers, function(manager)
 		{
-			manager[1].validators.each(function(validator)
+			jQuery.each(manager[1].validators, function(validator)
 			{
 				if(validator.options.ID == validatorID)
 				{
 					validator.options.ErrorMessage = message;
-					$(validatorID).innerHTML = message;
+					jQuery("#" + validatorID).get(0).innerHTML = message;
 				}
 			});
 		});
@@ -216,9 +218,9 @@ Object.extend(Prado.Validation,
 	
 	updateActiveCustomValidator : function(validatorID, isValid)
 	{
-		$H(Prado.Validation.managers).each(function(manager)
+		jQuery.each(Prado.Validation.managers, function(idx, manager)
 		{
-			manager[1].validators.each(function(validator)
+			jQuery.each(manager[1].validators, function(idx, validator)
 			{
 				if(validator.options.ID == validatorID)
 				{
@@ -239,7 +241,7 @@ Object.extend(Prado.Validation,
  * 
  * @class Prado.ValidationManager
  */
-Prado.ValidationManager = Class.create();
+Prado.ValidationManager = jQuery.klass();
 Prado.ValidationManager.prototype =
 {
 	/**
@@ -301,7 +303,10 @@ Prado.ValidationManager.prototype =
 	 */
 	reset : function(group)
 	{
-		this.validatorPartition(group)[0].invoke('reset');
+		var vals = this.validatorPartition(group)[0];
+		for(var i = 0; i < vals.length; i++)
+			vals[i].reset();
+
 		this.updateSummary(group, true);
 	},
 
@@ -316,9 +321,14 @@ Prado.ValidationManager.prototype =
 	validate : function(group, source)
 	{
 		var partition = this.validatorPartition(group);
-		var valid = partition[0].invoke('validate', source).all();
+		var valid=true;
+		for(var i = 0; i < partition[0].length; i++)
+		{
+			if(!partition[0][i].validate(source))
+				valid=false;
+		}
 		this.focusOnError(partition[0]);
-		partition[1].invoke('hide');
+		jQuery(partition[1]).hide();
 		this.updateSummary(group, true);
 		return valid;
 	},
@@ -374,12 +384,16 @@ Prado.ValidationManager.prototype =
 	 */
 	validatorsInGroup : function(groupID)
 	{
-		if(this.groups.include(groupID))
+		if(jQuery.inArray(groupID, this.groups)!=-1)
 		{
-			return this.validators.partition(function(val)
-			{
-				return val.group == groupID;
+			var trues = [], falses = [];
+			jQuery.each(this.validators, function(idx, val) {
+				if(val.group == groupID)
+					trues.push(val);
+				else
+					falses.push(val);
 			});
+			return [trues, falses];
 		}
 		else
 			return [[],[]];
@@ -396,10 +410,14 @@ Prado.ValidationManager.prototype =
 	 */
 	validatorsWithoutGroup : function()
 	{
-		return this.validators.partition(function(val)
-		{
-			return !val.group;
+		var trues = [], falses = [];
+		jQuery.each(this.validators, function(idx, val) {
+			if(!val.group)
+				trues.push(val);
+			else
+				falses.push(val);
 		});
+		return [trues, falses];
 	},
 
 	/**
@@ -412,7 +430,13 @@ Prado.ValidationManager.prototype =
 	 */
 	isValid : function(group)
 	{
-		return this.validatorPartition(group)[0].pluck('isValid').all();
+		for(var i = 0; i < this.validatorPartition(group)[0]; i++)
+		{
+			if(!this.validatorPartition(group)[0].isValid())
+				return false;
+		}
+
+		return true;
 	},
 
 	/**
@@ -427,7 +451,7 @@ Prado.ValidationManager.prototype =
         this.removeValidator(validator);
 
 		this.validators.push(validator);
-		if(validator.group && !this.groups.include(validator.group))
+		if(validator.group && jQuery.inArray(validator.group, this.groups)==-1)
 			this.groups.push(validator.group);
 
         if (typeof this.controls[validator.control.id] === 'undefined')
@@ -452,14 +476,15 @@ Prado.ValidationManager.prototype =
 	 */
     removeValidator : function(validator)
     {
-		this.validators = this.validators.reject(function(v)
+		this.validators = jQuery.grep(this.validators, function(v)
 		{
-			return (v.options.ID==validator.options.ID);
+			return (v.options.ID!=validator.options.ID);
 		});
+		// WTF?
         if (this.controls[validator.control.id])
-            this.controls[validator.control.id].reject( function(v)
+            jQuery.grep(this.controls[validator.control.id],  function(v)
             {
-                return (v.options.ID==validator.options.ID)
+                return (v.options.ID!=validator.options.ID)
             });
     },
 
@@ -473,7 +498,7 @@ Prado.ValidationManager.prototype =
 	 */
 	getValidatorsWithError : function(group)
 	{
-		return this.validatorPartition(group)[0].findAll(function(validator)
+		return jQuery.grep(this.validatorPartition(group)[0], function(validator)
 		{
 			return !validator.isValid;
 		});
@@ -491,7 +516,7 @@ Prado.ValidationManager.prototype =
 	updateSummary : function(group, refresh)
 	{
 		var validators = this.getValidatorsWithError(group);
-		this.summaries.each(function(summary)
+		jQuery.each(this.summaries, function(idx, summary)
 		{
 			var inGroup = group && summary.group == group;
 			var noGroup = !group || !summary.group;
@@ -522,7 +547,7 @@ Prado.ValidationManager.prototype =
  * 
  * @class Prado.WebUI.TValidationSummary
  */
-Prado.WebUI.TValidationSummary = Class.create();
+Prado.WebUI.TValidationSummary = jQuery.klass();
 Prado.WebUI.TValidationSummary.prototype =
 {
 	/**
@@ -558,8 +583,8 @@ Prado.WebUI.TValidationSummary.prototype =
 		 * Summary DOM element
 		 * @var {element} messages
 		 */
-		this.messages = $(options.ID);
-		Prado.Registry.set(options.ID, this);
+		this.messages = jQuery("#" + options.ID).get(0);
+		Prado.Registry[options.ID] = this;
 		if(this.messages)
 		{
 			/**
@@ -592,7 +617,14 @@ Prado.WebUI.TValidationSummary.prototype =
 		var refresh = update || this.visible == false || this.options.Refresh != false;
 		// Also, do not refresh summary if at least 1 validator is waiting for callback response.
 		// This will avoid the flickering of summary if the validator passes its test
-		refresh = refresh && validators.any(function(v) { return !v.requestDispatched; });
+		for(var i = 0; i < validators.length; i++)
+		{
+			if(validators[i].requestDispatched)
+			{
+				refresh=false;
+				break;
+			}
+		}
 
 		if(this.options.ShowSummary != false && refresh)
 		{
@@ -619,7 +651,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		while(this.messages.childNodes.length > 0)
 			this.messages.removeChild(this.messages.lastChild);
-		this.messages.insert(this.formatSummary(messages));
+		jQuery(this.messages).append(this.formatSummary(messages));
 	},
 
 	/**
@@ -642,7 +674,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	getMessages : function(validators)
 	{
 		var messages = [];
-		validators.each(function(validator)
+		jQuery.each(validators, function(idx, validator)
 		{
 			var message = validator.getErrorMessage();
 			if(typeof(message) == 'string' && message.length > 0)
@@ -666,7 +698,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		{
 			this.messages.style.visibility="hidden";
 			if(this.options.Display == "None" || this.options.Display == "Dynamic")
-				this.messages.hide();
+				jQuery(this.messages).hide();
 		}
 		this.visible = false;
 	},
@@ -682,7 +714,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		if(typeof(this.options.OnShowSummary) == "function")
 			this.options.OnShowSummary(this,validators);
 		else
-			this.messages.show();
+			jQuery(this.messages).show();
 		this.visible = true;
 	},
 
@@ -724,7 +756,7 @@ Prado.WebUI.TValidationSummary.prototype =
 		var format = this.formats(this.options.DisplayMode);
 		var output = this.options.HeaderText ? this.options.HeaderText + format.header : "";
 		output += format.first;
-		messages.each(function(message)
+		jQuery.each(messages, function(idx, message)
 		{
 			output += message.length > 0 ? format.pre + message + format.post : "";
 		});
@@ -776,7 +808,7 @@ Prado.WebUI.TValidationSummary.prototype =
  * 
  * @class Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 {
 	/**
 	 * Initialize TBaseValidator.
@@ -846,14 +878,14 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 		 * DOM element of control to validate
 		 * @var {element} control
 		 */
-		this.control = $(options.ControlToValidate);
+		this.control = jQuery("#" + options.ControlToValidate).get(0);
 		/**
 		 * DOM element of validator
 		 * @var {element} message
 		 */
-		this.message = $(options.ID);
+		this.message = jQuery("#" + options.ID).get(0);
 
-		Prado.Registry.set(options.ID, this);
+		Prado.Registry[options.ID] = this;
 
 		if (this.onInit) this.onInit();
 
@@ -907,7 +939,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 			if(this.options.Display == "Dynamic")
 			{
 				var msg=this.message;
-				this.isValid ? msg.hide() : msg.show();
+				this.isValid ? jQuery(msg).hide() : jQuery(msg).show();
 			}
 			this.message.style.visibility = this.isValid ? "hidden" : "visible";
 		}
@@ -933,13 +965,13 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 				if (control.lastValidator == this.options.ID)
 				{
 					control.lastValidator = null;
-					control.removeClassName(CssClass);
+					jQuery(control).removeClass(CssClass);
 				}
 			}
 			else
 			{
 				control.lastValidator = this.options.ID;
-				control.addClassName(CssClass);
+				jQuery(control).addClass(CssClass);
 			}
 		}
 	},
@@ -977,7 +1009,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	{
 		//try to find the control.
 		if(!this.control)
-			this.control = $(this.options.ControlToValidate);
+			this.control = jQuery("#" + this.options.ControlToValidate).get(0);
 
 		if(!this.control || this.control.disabled)
 		{
@@ -1102,7 +1134,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 					return value;
 				else
 				{
-					var value = string.toDate(this.options.DateFormat);
+					var value = string.toDate(string, this.options.DateFormat);
 					if(value && typeof(value.getTime) == "function")
 						return value.getTime();
 					else
@@ -1131,7 +1163,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
 	 			{
-	 				var value = this.trim($F(control));
+	 				var value = this.trim(jQuery("#" + control).get(0).val());
 
 					if(this.options.DateFormat)
 	 				{
@@ -1151,15 +1183,17 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	 		case 'THtmlArea4':
 	 			if(typeof tinyMCE != "undefined")
 					tinyMCE.triggerSave();
-				return $F(control);
+				return control.value;
 			case 'TRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
+			case 'TCheckBox':
+				return control.checked;
 	 		default:
 	 			if(this.isListControlType())
 	 				return this.getFirstSelectedListValue();
 	 			else
-		 			return $F(control);
+		 			return jQuery(control).val();
 	 	}
 	 },
 	
@@ -1184,6 +1218,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 			case 'THtmlArea4':
 				return this.trim(value);
 			case 'TRadioButton':
+			case 'TCheckBox':
 				return value;
 			default:
 				if(this.isListControlType())
@@ -1202,7 +1237,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	{
 		var name = this.control.name;
 		var value = "";
-		$A(document.getElementsByName(name)).each(function(el)
+		jQuery.each(document.getElementsByName(name), function(idx, el)
 		{
 			if(el.checked)
 				value =  el.value;
@@ -1216,13 +1251,10 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	  */
 	 observeDatePickerChanges : function()
 	 {
-	 	if(Prado.Browser().ie)
-	 	{
-	 		var DatePicker = Prado.WebUI.TDatePicker;
-	 		this.observeChanges(DatePicker.getDayListControl(this.control));
-			this.observeChanges(DatePicker.getMonthListControl(this.control));
-			this.observeChanges(DatePicker.getYearListControl(this.control));
-	 	}
+ 		var DatePicker = Prado.WebUI.TDatePicker;
+ 		this.observeChanges(DatePicker.getDayListControl(this.control));
+		this.observeChanges(DatePicker.getMonthListControl(this.control));
+		this.observeChanges(DatePicker.getYearListControl(this.control));
 	 },
 
 	/**
@@ -1239,7 +1271,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 		var checked = 0;
 		var values = [];
 		var isSelected = this.isCheckBoxType(elements[0]) ? 'checked' : 'selected';
-		elements.each(function(element)
+		jQuery.each(elements, function(idx, element)
 		{
 			if(element[isSelected] && element.value != initialValue)
 			{
@@ -1266,19 +1298,19 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 				var elements = [];
 				for(var i = 0; i < this.options.TotalItems; i++)
 				{
-					var element = $(this.options.ControlToValidate+"_c"+i);
+					var element = jQuery("#" + this.options.ControlToValidate+"_c"+i).get(0);
 					if(this.isCheckBoxType(element))
 						elements.push(element);
 				}
 				return elements;
 			case 'TListBox':
 				var elements = [];
-				var element = $(this.options.ControlToValidate);
+				var element = jQuery("#" + this.options.ControlToValidate).get(0);
 				var type;
 				if(element && (type = element.type.toLowerCase()))
 				{
 					if(type == "select-one" || type == "select-multiple")
-						elements = $A(element.options);
+						elements = element.options;
 				}
 				return elements;
 			default:
@@ -1310,7 +1342,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 	isListControlType : function()
 	{
 		var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
-		return list.include(this.options.ControlType);
+		return (jQuery.inArray(this.options.ControlType, list)!=-1);
 	},
 
 	/**
@@ -1339,7 +1371,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
  * @class Prado.WebUI.TRequiredFieldValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRequiredFieldValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
@@ -1380,7 +1412,7 @@ Prado.WebUI.TRequiredFieldValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TCompareValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1407,7 +1439,7 @@ Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	    if (value.length <= 0)
 	    	return true;
 
-    	var comparee = $(this.options.ControlToCompare);
+    	var comparee = jQuery("#" + this.options.ControlToCompare).get(0);
 
 		if(comparee)
 			var compareTo = this.getValidationValue(comparee);
@@ -1487,7 +1519,7 @@ Prado.WebUI.TCompareValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1521,7 +1553,7 @@ Prado.WebUI.TCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TActiveCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Override the parent implementation to store the invoker, in order to
@@ -1538,7 +1570,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
 
 		//try to find the control.
 		if(!this.control)
-			this.control = $(this.options.ControlToValidate);
+			this.control = jQuery("#" + this.options.ControlToValidate).get(0);
 
 		if(!this.control || this.control.disabled)
 		{
@@ -1604,7 +1636,7 @@ Prado.WebUI.TActiveCustomValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TRangeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor options.
@@ -1663,7 +1695,7 @@ Prado.WebUI.TRangeValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TRegularExpressionValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TRegularExpressionValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor option.
@@ -1707,7 +1739,7 @@ Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
  * @class Prado.WebUI.TListControlValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
@@ -1733,10 +1765,10 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 	 */
 	 observeListElements : function(elements)
 	 {
-		if(Prado.Browser().ie && this.isCheckBoxType(elements[0]))
+		if(this.isCheckBoxType(elements[0]))
 		{
 			var validator = this;
-			elements.each(function(element)
+			jQuery.each(elements, function(idx, element)
 			{
 				validator.observeChanges(element);
 			});
@@ -1763,9 +1795,9 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
 		{
 			if(values.length < required.length)
 				return false;
-			required.each(function(requiredValue)
+			jQuery.each(required, function(idx, requiredValue)
 			{
-				exists = exists && values.include(requiredValue);
+				exists = exists && (jQuery.inArray(requiredValue, values)!=-1);
 			});
 		}
 
@@ -1808,7 +1840,7 @@ Prado.WebUI.TListControlValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TDataTypeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Additional constructor option.
@@ -1839,7 +1871,7 @@ Prado.WebUI.TDataTypeValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	/**
 	 * Evaluate validation state
@@ -1910,7 +1942,7 @@ Prado.WebUI.TCaptchaValidator = Class.extend(Prado.WebUI.TBaseValidator,
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
  */
-Prado.WebUI.TReCaptchaValidator = Class.create(Prado.WebUI.TBaseValidator,
+Prado.WebUI.TReCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 {
 	onInit : function()
 	{
@@ -1926,7 +1958,7 @@ Prado.WebUI.TReCaptchaValidator = Class.create(Prado.WebUI.TBaseValidator,
 
 	responseChanged: function()
 	{
-		var field = $(this.options.ID+'_1');
+		var field = jQuery("#" + this.options.ID+'_1').get(0);
 		if (field.value=='1') return;
 		field.value = '1';
 		Prado.Validation.validateControl(this.options.ID);
@@ -1939,7 +1971,7 @@ Prado.WebUI.TReCaptchaValidator = Class.create(Prado.WebUI.TBaseValidator,
 	 */
 	evaluateIsValid : function()
 	{
-		return ($(this.options.ID+'_1').value=='1');
+		return (jQuery("#" + this.options.ID+'_1').get(0).value=='1');
 	}
 });
 

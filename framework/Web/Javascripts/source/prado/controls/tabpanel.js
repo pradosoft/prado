@@ -1,58 +1,58 @@
-Prado.WebUI.TTabPanel = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
 		this.views = options.Views;
 		this.viewsvis = options.ViewsVis;
-		this.hiddenField = $(options.ID+'_1');
+		this.hiddenField = $("#"+options.ID+'_1').get(0);
 		this.activeCssClass = options.ActiveCssClass;
 		this.normalCssClass = options.NormalCssClass;
 		var length = options.Views.length;
 		for(var i = 0; i<length; i++)
 		{
 			var item = options.Views[i];
-			var element = $(item+'_0');
+			var element = jQuery("#"+item+'_0').get(0);
 			if (element && options.ViewsVis[i])
 			{
-				this.observe(element, "click", this.elementClicked.bindEvent(this,item));
+				this.observe(element, "click", jQuery.proxy(this.elementClicked,this,item));
 				if (options.AutoSwitch)
-					this.observe(element, "mouseenter", this.elementClicked.bindEvent(this,item));
+					this.observe(element, "mouseenter", jQuery.proxy(this.elementClicked,this,item));
 			}
 	
 			if(element)
 			{
-				var view = $(options.Views[i]);
+				var view = $("#"+options.Views[i]).get(0);
 				if (view)
 					if(this.hiddenField.value == i)
 					{
 						element.className=this.activeCssClass;
-						view.show();
+						jQuery(view).show();
 					} else {
 						element.className=this.normalCssClass;
-						view.hide();
+						jQuery(view).hide();
 					}
 			}
 		}
 	},
 
-	elementClicked : function(event,viewID)
+	elementClicked : function(viewID, event)
 	{
 		var length = this.views.length;
 		for(var i = 0; i<length; i++)
 		{
 			var item = this.views[i];
-			if ($(item))
+			if (jQuery("#"+item))
 			{
 				if(item == viewID)
 				{
-					$(item+'_0').className=this.activeCssClass;
-					$(item).show();
+					jQuery("#"+item+'_0').removeClass(this.normalCssClass).addClass(this.activeCssClass);
+					jQuery("#"+item).show();
 					this.hiddenField.value=i;
 				}
 				else
 				{
-					$(item+'_0').className=this.normalCssClass;
-					$(item).hide();
+					jQuery("#"+item+'_0').removeClass(this.activeCssClass).addClass(this.normalCssClass);
+					jQuery("#"+item).hide();
 				}
 			}
 		}

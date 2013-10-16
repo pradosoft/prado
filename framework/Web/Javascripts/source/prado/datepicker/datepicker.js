@@ -1,4 +1,4 @@
-Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 {
 	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
@@ -52,23 +52,23 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 		// generate default date _after_ extending options
 		this.selectedDate = this.newDate();
 		
-		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+		Event.observe(this.trigger, triggerEvent, jQuery.proxy(this.show,this));
 		
 		// Listen to change event if needed
 		if (typeof(this.options.OnDateChanged) == "function")
 		{
 			if(this.options.InputMode == "TextBox")
 			{
-				Event.observe(this.control, "change", this.onDateChanged.bindEvent(this));
+				Event.observe(this.control, "change", jQuery.proxy(this.onDateChanged,this));
 			} 
 			else
 			{
 				var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 				var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 				var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-				Event.observe (day, "change", this.onDateChanged.bindEvent(this));
-				Event.observe (month, "change", this.onDateChanged.bindEvent(this));
-				Event.observe (year, "change", this.onDateChanged.bindEvent(this));
+				Event.observe (day, "change", jQuery.proxy(this.onDateChanged,this));
+				Event.observe (month, "change", jQuery.proxy(this.onDateChanged,this));
+				Event.observe (year, "change", jQuery.proxy(this.onDateChanged,this));
 				
 			}
 			
@@ -214,8 +214,8 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 				tmp.data = text;
 				this.dateSlot[(week*7)+day] = tmp;
 
-				Event.observe(td, "mouseover", this.hover.bindEvent(this));
-				Event.observe(td, "mouseout", this.hover.bindEvent(this));
+				Event.observe(td, "mouseover", jQuery.proxy(this.hover,this));
+				Event.observe(td, "mouseout", jQuery.proxy(this.hover,this));
 
 			}
 		}
@@ -257,19 +257,19 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 		// end IE55+ extension
 
 		// hook up events
-		Event.observe(previousMonth, "click", this.prevMonth.bindEvent(this));
-		Event.observe(nextMonth, "click", this.nextMonth.bindEvent(this));
-		Event.observe(todayButton, "click", this.selectToday.bindEvent(this));
-		//Event.observe(clearButton, "click", this.clearSelection.bindEvent(this));
-		Event.observe(this._monthSelect, "change", this.monthSelect.bindEvent(this));
-		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
+		Event.observe(previousMonth, "click", jQuery.proxy(this.prevMonth,this));
+		Event.observe(nextMonth, "click", jQuery.proxy(this.nextMonth,this));
+		Event.observe(todayButton, "click", jQuery.proxy(this.selectToday,this));
+		//Event.observe(clearButton, "click", jQuery.proxy(this.clearSelection,this));
+		Event.observe(this._monthSelect, "change", jQuery.proxy(this.monthSelect,this));
+		Event.observe(this._yearSelect, "change", jQuery.proxy(this.yearSelect,this));
 
 		// ie, opera
-		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));
+		Event.observe(this._calDiv, "mousewheel", jQuery.proxy(this.mouseWheelChange,this));
 		// ff
-		Event.observe(this._calDiv, "DOMMouseScroll", this.mouseWheelChange.bindEvent(this));
+		Event.observe(this._calDiv, "DOMMouseScroll", jQuery.proxy(this.mouseWheelChange,this));
 
-		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
+		Event.observe(calendarBody, "click", jQuery.proxy(this.selectDate,this));
 
 		Prado.Element.focus(this.control);
 
