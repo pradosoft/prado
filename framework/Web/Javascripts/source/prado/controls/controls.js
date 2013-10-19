@@ -261,7 +261,7 @@ Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
 			if(typeof(onclicked) == "boolean")
 				doPostBack = onclicked;
 		}
-		if(doPostBack && !Prado.Element.isDisabled(src))
+		if(doPostBack && !jQuery(src).is(':disabled'))
 			this.onPostBack(options,event);
 		if(typeof(onclicked) == "boolean" && !onclicked)
 			event.stopPropagation();

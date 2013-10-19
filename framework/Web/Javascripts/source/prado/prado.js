@@ -17,6 +17,25 @@ var Prado =
 	Registry: {},
 };
 
+Prado.RequestManager = 
+{
+	/**
+	 * Callback request target POST field name.
+	 */
+	FIELD_CALLBACK_TARGET : 'PRADO_CALLBACK_TARGET',
+	/**
+	 * Callback request parameter POST field name.
+	 */
+	FIELD_CALLBACK_PARAMETER : 'PRADO_CALLBACK_PARAMETER',
+	/**
+	 * Callback request page state field name,
+	 */
+	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
+
+	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
+
+	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER',
+};
 /**
  * Performs a PostBack using javascript.
  * @function Prado.PostBack
@@ -31,46 +50,72 @@ var Prado =
  * @... {string} EventTarget - Id of element that triggered PostBack
  * @... {string} EventParameter - EventParameter for PostBack
  */
-Prado.PostBack = function(options, event)
+Prado.PostBack = jQuery.klass(
 {
-	var form = jQuery("#" + options['FormID']).get(0);
-	var canSubmit = true;
+	options : {
+		iscallback: false
+	},
 
-	if(options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+	initialize: function(options, event)
 	{
-		if(!Prado.Validation.validate(options['FormID'], options['ValidationGroup'], $(options['ID'])))
-			return event.preventDefault();
-	}
+		jQuery.extend(this.options, options || {});
+		this.doPostBack();
+	},
 
-	if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
-		form.action = options['PostBackUrl'];
-
-	if(options['TrackFocus'])
+	getForm : function()
 	{
-		var lastFocus = $('PRADO_LASTFOCUS');
-		if(lastFocus)
+		return jQuery("#" + this.options['FormID']).get(0);
+	},
+
+	getParameters : function()
+	{
+		var form = this.getForm();
+		var data = {};
+
+		if(this.options.iscallback)
 		{
-			var active = document.activeElement; //where did this come from
-			if(active)
-				lastFocus.value = active.id;
-			else
-				lastFocus.value = options['EventTarget'];
+			if(typeof(this.options.CallbackParameter) != "undefined")
+				data[Prado.CallbackRequestManager.FIELD_CALLBACK_PARAMETER] = this.getCallbackParameter();
+			if(this.options.EventTarget)
+				data[Prado.RequestManager.FIELD_CALLBACK_TARGET] = this.options.EventTarget;
+		} else {
+			if(this.options.EventTarget)
+				data[Prado.RequestManager.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
+			if(this.options.EventParameter)
+				data[Prado.RequestManager.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
 		}
+
+		return jQuery(form).serialize() + '&' + jQuery.param(data);
+	},
+
+	doPostBack : function()
+	{
+		var form = this.getForm();
+		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+		{
+			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $("#" + this.options['ID'])))
+				return event.preventDefault();
+		}
+
+		if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
+			form.action = options['PostBackUrl'];
+
+		if(options['TrackFocus'])
+		{
+			var lastFocus = $('PRADO_LASTFOCUS');
+			if(lastFocus)
+			{
+				var active = document.activeElement; //where did this come from
+				if(active)
+					lastFocus.value = active.id;
+				else
+					lastFocus.value = options['EventTarget'];
+			}
+		}
+
+		$(form).trigger('submit');
 	}
-
-	$('PRADO_POSTBACK_TARGET').value = options['EventTarget'];
-	$('PRADO_POSTBACK_PARAMETER').value = options['EventParameter'];
-	/**
-	 * Since google toolbar prevents browser default action,
-	 * we will always disable default client-side browser action
-	 */
-	/*if(options['StopEvent']) */
-		event.preventDefault();
-	form.submit();
-
-	$('PRADO_POSTBACK_TARGET').value = '';
-	$('PRADO_POSTBACK_PARAMETER').value = '';
-};
+});
 
 /**
  * Prado utilities to manipulate DOM elements.
@@ -78,17 +123,17 @@ Prado.PostBack = function(options, event)
  */
 Prado.Element =
 {
+
 	/**
-	 * Set the value of a particular element.
+	 * Executes a jQuery method on a particular element.
 	 * @function ?
 	 * @param {string} element - Element id
-	 * @param {string} value - New element value
+	 * @param {string} method - method name
+	 * @param {string} value - method parameter
 	 */
-	setValue : function(element, value)
+	j: function(element, method, param)
 	{
-		var el = jQuery("#" + element).get(0);
-		if(el && typeof(el.value) != "undefined")
-			el.value = value;
+		jQuery("#" + element)[method](param);
 	},
 
 	/**
@@ -112,35 +157,6 @@ Prado.Element =
 	},
 
 	/**
-	 * Trigger a click event on a DOM element.
-	 * @function ?
-	 * @param {string} element - Element id
-	 */
-	click : function(element)
-	{
-		var el = jQuery("#" + element).get(0);
-		if(el)
-			el.click();
-	},
-	
-	/**
-	 * Check if an DOM element is disabled.
-	 * @function {boolean} ?
-	 * @param {string} element - Element id
-	 * @returns true if element is disabled
-	 */
-	isDisabled : function(element)
-	{
-		if(!element.attributes['disabled']) //FF
-			return false;
-		var value = element.attributes['disabled'].nodeValue;
-		if(typeof(value)=="string")
-			return value.toLowerCase() == "disabled";
-		else
-			return value == true;
-	},
-
-	/**
 	 * Sets an attribute of a DOM element.
 	 * @function ?
 	 * @param {string} element - Element id
@@ -149,10 +165,10 @@ Prado.Element =
 	 */
 	setAttribute : function(element, attribute, value)
 	{
-		var el = jQuery("#" + element).get(0);
+		var el = jQuery("#" + element);
 		if(!el) return;
 		if((attribute == "disabled" || attribute == "multiple" || attribute == "readonly" || attribute == "href") && value==false)
-			el.removeAttribute(attribute);
+			el.removeAttr(attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
 			try
@@ -163,11 +179,23 @@ Prado.Element =
 			catch(e)
 			{
 				debugger;
-				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element.id;
+				throw "Error in evaluating '"+value+"' for attribute "+attribute+" for element "+element;
 			}
 		}
 		else
-			el.setAttribute(attribute, value);
+			el.attr(attribute, value);
+	},
+
+	scrollTo : function(element, options)
+	{
+		var op = {
+			duration : 500,
+			offset : 50
+		};
+		jQuery.extend(op, options || {});
+		$('html, body').animate({
+			scrollTop: $("#"+element).offset().top - op.offset
+		}, op.duration);
 	},
 
 	/**
@@ -240,19 +268,6 @@ Prado.Element =
 	},
 
 	/**
-	 * Set focus (delayed) on a particular element.
-	 * @function ?
-	 * @param {string} element - Element id
-	 */
-	focus : function(element)
-	{
-		var obj = jQuery("#" + element).get(0);
-		if(typeof(obj) != "undefined" && typeof(obj.focus) != "undefined")
-			setTimeout(function(){ obj.focus(); }, 100);
-		return false;
-	},
-
-	/**
 	 * Replace a DOM element either with given content or
 	 * with content from a CallBack response boundary
 	 * using a replacement method.
@@ -271,14 +286,9 @@ Prado.Element =
 				content = result;
 		}
 		if(typeof(element) == "string")
-		{
-			if(jQuery("#" + element).get(0))
-				method.toFunction().apply(this,[element,""+content]);
-		}
+			method.toFunction().apply(this,[element,""+content]);
 		else
-		{
 			method.toFunction().apply(this,[""+content]);
-		}
 	},
 
 	/**
@@ -353,25 +363,6 @@ Prado.Element =
 			throw e;
 		}
 	},
-	
-	/**
-	 * Set CSS style with Camelized keys.
- 	 * See <a href="http://www.prototypejs.org/api/element/setstyle" target="_blank">Prototype's 
- 	 * Element.setStyle</a> for details.
-	 * @function ?
-	 * @param {string|element} element - DOM element or element id
-	 * @param {object} styles - Object with style properties/values
-	 */
-	setStyle : function (element, styles)
-	{
-		var s = {}
-		// Camelize all styles keys
-		for (var property in styles)
-		{
-			s[property.camelize()]=styles[property].camelize();
-		}
-		Element.setStyle(element, s);
-	}
 };
 
 jQuery.extend(String.prototype, {

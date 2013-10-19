@@ -286,8 +286,6 @@ class TClientScriptManager extends TApplicationComponent
 		$code="new {$class}({$optionString});";
 
 		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_PARAMETER]='';
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
@@ -315,7 +313,6 @@ class TClientScriptManager extends TApplicationComponent
 		$code = "new Prado.WebUI.DefaultButton($options);";
 
 		$this->_endScripts['prado:'.$panelID]=$code;
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
 		$this->registerPradoScriptInternal('prado');
 
 		$params=array($panelID,$buttonID);
