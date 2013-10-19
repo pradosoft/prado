@@ -47,6 +47,8 @@ class TCallbackClientScript extends TApplicationComponent
 		$this->_actions = new TList;
 	}
 
+	const JQUERY_CALL='Prado.Element.j';
+
 	/**
 	 * @return array list of client function to be executed during callback
 	 * response.
@@ -81,7 +83,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setValue($input, $text)
 	{
-		$this->callClientFunction('Prado.Element.setValue', array($input, $text));
+		$this->callClientFunction(self::JQUERY_CALL, array($input, 'val', $text));
 	}
 
 	/**
@@ -132,7 +134,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function click($control)
 	{
-		$this->callClientFunction('Prado.Element.click', $control);
+		$this->callClientFunction(self::JQUERY_CALL, array($control, 'trigger', 'click'));
 	}
 
 	/**
@@ -152,8 +154,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function raiseClientEvent($control, $eventName)
 	{
-		$this->callClientFunction('Event.fireEvent',
-				array($control, strtolower($eventName)));
+		$this->callClientFunction(self::JQUERY_CALL, array($control, 'trigger', $eventName));
 	}
 
 	/**
@@ -164,9 +165,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setAttribute($control, $name, $value)
 	{
-        // Attributes should be applied on Surrounding tag, except for 'disabled' attribute
+		// Attributes should be applied on Surrounding tag, except for 'disabled' attribute
 		if ($control instanceof ISurroundable && strtolower($name)!=='disabled')
-            $control=$control->getSurroundingTagID();
+			$control=$control->getSurroundingTagID();
 		$this->callClientFunction('Prado.Element.setAttribute',array($control, $name, $value));
 	}
 
@@ -206,9 +207,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function show($element)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.show', $element);
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'show'));
 	}
 
 	/**
@@ -217,22 +218,37 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function hide($element)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.hide', $element);
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'hide'));
 	}
 
 	/**
 	 * Toggles the visibility of the element.
 	 * @param TControl control element or element id
-	 * @param string visual effect, such as, 'appear' or 'slide' or 'blind'.
+	 * @param string visual effect, such as, 'fade' or 'slide'.
 	 * @param array additional options.
 	 */
 	public function toggle($element, $effect=null, $options=array())
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.toggle', array($element,$effect,$options));
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		switch(strtolower($effect))
+		{
+			case 'fade':
+				$method='fadeToggle';
+				break;
+			case 'slide':
+				$method='slideToggle';
+				break;
+			default:
+				$method='toggle';
+				// avoid fancy effect by default
+				if(!array_key_exists('duration', $options))
+					$options['duration']=0;
+				break;
+		}
+		$this->callClientFunction(self::JQUERY_CALL, array($element, $method, $options));
 	}
 
 	/**
@@ -241,9 +257,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function remove($element)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.remove', $element);
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'remove'));
 	}
 
 	public function addPostDataLoader($name)
@@ -259,9 +275,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function update($element, $content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->replace($element, $content, 'Element.update');
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'html', $content));
 	}
 
 	/**
@@ -271,9 +287,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function addCssClass($element, $cssClass)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.addClassName', array($element, $cssClass));
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'addClass', $cssClass));
 	}
 
 	/**
@@ -283,31 +299,23 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function removeCssClass($element, $cssClass)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.removeClassName', array($element, $cssClass));
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'removeClass', $cssClass));
 	}
-
-	/**
-	 * Sets the CssClass of an element.
-	 * @param TControl control element or element id
-	 * @param string new CssClass name for the element.
-	 */
-	/*public function setCssClass($element, $cssClass)
-	{
-		$this->callClientFunction('Prado.Element.CssClass.set', array($element, $cssClass));
-	}*/
 
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
+	 * 
 	 * @param TControl control element or element id
+	 * @param array additional options: 'duration' in ms, 'offset' from the top in pixels
 	 */
-	public function scrollTo($element)
+	public function scrollTo($element, $options=array())
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Element.scrollTo', $element);
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction('Prado.Element.scrollTo', array($element, $options));
 	}
 
 	/**
@@ -316,7 +324,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function focus($element)
 	{
-		$this->callClientFunction('Prado.Element.focus', $element);
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'trigger', 'focus'));
 	}
 
 	/**
@@ -327,9 +335,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setStyle($element, $styles)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->callClientFunction('Prado.Element.setStyle', array($element, $styles));
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'css', $styles));
 	}
 
 	/**
@@ -339,9 +347,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function appendContent($element, $content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->replace($element, $content, 'Prado.Element.Insert.append');
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'append', $content));
 	}
 
 	/**
@@ -351,9 +359,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function prependContent($element, $content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->replace($element, $content, 'Prado.Element.Insert.prepend');
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'prepend', $content));
 	}
 
 	/**
@@ -363,9 +371,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentAfter($element, $content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->replace($element, $content, 'Prado.Element.Insert.after');
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'after', $content));
 	}
 
 	/**
@@ -375,9 +383,9 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentBefore($element, $content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
-		$this->replace($element, $content, 'Prado.Element.Insert.before');
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
+		$this->callClientFunction(self::JQUERY_CALL, array($element, 'before', $content));
 	}
 
 	/**
@@ -419,8 +427,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function replaceContent($element,$content)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->replace($element, $content);
 	}
 
@@ -491,8 +499,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function visualEffect($type, $element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->callClientFunction($type, array($element, $options));
 	}
 
@@ -503,8 +511,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function appear($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Appear', $element, $options);
 	}
 
@@ -515,8 +523,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function blindDown($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.BlindDown', $element, $options);
 	}
 
@@ -527,8 +535,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function blindUp($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.BlindUp', $element, $options);
 
 	}
@@ -540,8 +548,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function dropOut($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.DropOut', $element, $options);
 	}
 
@@ -552,8 +560,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function fade($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Fade', $element, $options);
 	}
 
@@ -564,8 +572,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function fold($element, $options = null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Fold', $element, $options);
 	}
 
@@ -576,8 +584,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function grow($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Grow', $element, $options);
 	}
 
@@ -588,8 +596,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function puff($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Puff', $element, $options);
 	}
 
@@ -600,8 +608,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function pulsate($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Pulsate', $element, $options);
 	}
 
@@ -612,8 +620,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function shake($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Shake', $element, $options);
 	}
 
@@ -624,8 +632,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function shrink($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Shrink', $element, $options);
 	}
 
@@ -636,8 +644,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function slideDown($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.SlideDown', $element, $options);
 	}
 
@@ -648,8 +656,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function slideUp($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.SlideUp', $element, $options);
 	}
 
@@ -660,8 +668,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function squish($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.Squish', $element, $options);
 	}
 
@@ -672,8 +680,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function switchOff($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Effect.SwitchOff', $element, $options);
 	}
 
@@ -684,8 +692,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function highlight($element, $options=null)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$this->visualEffect('Prado.Effect.Highlight', $element, $options);
 	}
 
@@ -696,8 +704,8 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setOpacity($element, $value)
 	{
-        if ($element instanceof ISurroundable) 
-            $element=$element->getSurroundingTagID();
+		if ($element instanceof ISurroundable) 
+			$element=$element->getSurroundingTagID();
 		$value = TPropertyValue::ensureFloat($value);
 		$this->callClientFunction('Element.setOpacity', array($element,$value));
 	}

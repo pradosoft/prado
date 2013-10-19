@@ -39,8 +39,6 @@ $packages = array(
 	),
 
 	'ajax' => array(
-		SCRIPTACULOUS_DIR.'/controls.js',
-		'prado/activecontrols/json2.js',
 		'prado/activecontrols/ajax3.js',
 		'prado/activecontrols/activecontrols3.js',
 	),
@@ -109,16 +107,17 @@ $packages = array(
 
 //package names and their dependencies
 $dependencies = array(
-		'prototype'			=> array('prototype'),
+		//'prototype'			=> array('prototype'),
 		'jquery'			=> array('jquery'),
 		'prado'				=> array('jquery', 'prado'),
 		'validator'			=> array('jquery', 'prado', 'validator'),
 		'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
+		'ajax'				=> array('jquery', 'prado', 'ajax'),
+
 		'effects'			=> array('prototype', 'prado', 'effects'),
 		'logger'			=> array('prototype', 'prado', 'logger'),
 		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
 		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
-		'ajax'				=> array('prototype', 'prado', 'effects', 'ajax'),
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
