@@ -123,17 +123,17 @@ Prado.PostBack = jQuery.klass(
  */
 Prado.Element =
 {
-
 	/**
 	 * Executes a jQuery method on a particular element.
 	 * @function ?
 	 * @param {string} element - Element id
 	 * @param {string} method - method name
-	 * @param {string} value - method parameter
+	 * @param {array} value - method parameters
 	 */
-	j: function(element, method, param)
+	j: function(element, method, params)
 	{
-		jQuery("#" + element)[method](param);
+		var obj=jQuery("#" + element);
+		obj[method].apply(obj, params);
 	},
 
 	/**
@@ -208,7 +208,6 @@ Prado.Element =
 	setOptions : function(element, options)
 	{
 		var el = jQuery("#" + element).get(0);
-		if(!el) return;
 		var previousGroup = null;
 		var optGroup=null;
 		if(el && el.tagName.toLowerCase() == "select")
@@ -273,22 +272,18 @@ Prado.Element =
 	 * using a replacement method.
 	 * @function ?
 	 * @param {string|element} element - DOM element or element id
-	 * @param {string} method - Name of method to use for replacement
 	 * @param {optional string} content - New content of element
 	 * @param {optional string} boundary - Boundary of new content
 	 */
-	replace : function(element, method, content, boundary)
+	replace : function(element, content, boundary)
 	{
 		if(boundary)
 		{
-			var result = Prado.Element.extractContent(this.transport.responseText, boundary);
+			var result = this.extractContent(boundary);
 			if(result != null)
 				content = result;
 		}
-		if(typeof(element) == "string")
-			method.toFunction().apply(this,[element,""+content]);
-		else
-			method.toFunction().apply(this,[""+content]);
+		jQuery('#'+element).replaceWith(content);
 	},
 
 	/**
@@ -298,7 +293,7 @@ Prado.Element =
 	 */
 	appendScriptBlock : function(boundary)
 	{
-		var content = Prado.Element.extractContent(this.transport.responseText, boundary);
+		var content = this.extractContent(boundary);
 		if(content == null)
 			return;
 
@@ -312,38 +307,6 @@ Prado.Element =
 	},
 
 	/**
-	 * Extract content from a text by its boundary id.
-	 * Boundaries have this form:
-	 * <pre>
-	 * &lt;!--123456--&gt;Democontent&lt;!--//123456--&gt;
-	 * </pre>
-	 * @function {string} ?
-	 * @param {string} text - Text that contains boundaries
-	 * @param {string} boundary - Boundary id
-	 * @returns Content from given boundaries
-	 */
-	extractContent : function(text, boundary)
-	{
-		var tagStart = '<!--'+boundary+'-->';
-		var tagEnd = '<!--//'+boundary+'-->';
-		var start = text.indexOf(tagStart);
-		if(start > -1)
-		{
-			start += tagStart.length;
-			var end = text.indexOf(tagEnd,start);
-			if(end > -1)
-				return text.substring(start,end);
-		}
-		return null;
-		/*var f = RegExp('(?:<!--'+boundary+'-->)((?:.|\n|\r)+?)(?:<!--//'+boundary+'-->)',"m");
-		var result = text.match(f);
-		if(result && result.length >= 2)
-			return result[1];
-		else
-			return null;*/
-	},
-
-	/**
 	 * Evaluate a javascript snippet from a string.
 	 * @function ?
 	 * @param {string} content - String containing the script
@@ -352,7 +315,7 @@ Prado.Element =
 	{
 		try
 		{
-			content.evalScripts();
+			jQuery.globalEval(content);
 		}
 		catch(e)
 		{
@@ -363,6 +326,304 @@ Prado.Element =
 			throw e;
 		}
 	},
+};
+
+/**
+ * Utilities for selections.
+ * @object Prado.Element.Selection
+ */
+Prado.Element.Selection =
+{
+	/**
+	 * Check if an DOM element can be selected.
+	 * @function {boolean} ?
+	 * @param {element} el - DOM elemet
+	 * @returns true if element is selectable
+	 */
+	isSelectable : function(el)
+	{
+		if(el && el.type)
+		{
+			switch(el.type.toLowerCase())
+			{
+				case 'checkbox':
+				case 'radio':
+				case 'select':
+				case 'select-multiple':
+				case 'select-one':
+				return true;
+			}
+		}
+		return false;
+	},
+
+	/**
+	 * Set checked attribute of a checkbox or radiobutton to value.
+	 * @function {boolean} ?
+	 * @param {element} el - DOM element
+	 * @param {boolean} value - New value of checked attribute
+	 * @returns New value of checked attribute
+	 */
+	inputValue : function(el, value)
+	{
+		switch(el.type.toLowerCase())
+		{
+			case 'checkbox':
+			case 'radio':
+			return el.checked = value;
+		}
+	},
+
+	/**
+	 * Set selected attribute for elements options by value.
+	 * If value is boolean, all elements options selected attribute will be set
+	 * to value. Otherwhise all options that have the given value will be selected. 
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {boolean|string} value - Value of options that should be selected or boolean value of selection status
+	 */
+	selectValue : function(elements, value)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			jQuery.each(el.options, function(idx, option)
+			{
+				if(typeof(value) == "boolean")
+					option.selected = value;
+				else if(option.value == value)
+					option.selected = true;
+			});
+		})
+	},
+
+	/**
+	 * Set selected attribute for elements options by array of values.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {string[]} value - Array of values to select
+	 */
+	selectValues : function(elements, values)
+	{
+		var selection = this;
+		jQuery.each(values, function(idx, value)
+		{
+			selection.selectValue(elements,value);
+		})
+	},
+
+	/**
+	 * Set selected attribute for elements options by option index.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int} index - Index of option to select
+	 */
+	selectIndex : function(elements, index)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			if(el.type.toLowerCase() == 'select-one')
+				el.selectedIndex = index;
+			else
+			{
+				for(var i = 0; i<el.length; i++)
+				{
+					if(i == index)
+						el.options[i].selected = true;
+				}
+			}
+		})
+	},
+
+	/**
+	 * Set selected attribute to true for all elements options.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
+	selectAll : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			if(el.type.toLowerCase() != 'select-one')
+			{
+				jQuery.each(el.options, function(idx, option)
+				{
+					option.selected = true;
+				})
+			}
+		})
+	},
+
+	/**
+	 * Toggle the selected attribute for elements options.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
+	selectInvert : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			if(el.type.toLowerCase() != 'select-one')
+			{
+				jQuery.each(el.options, function(idx, option)
+				{
+					option.selected = !option.selected;
+				})
+			}
+		})
+	},
+
+	/**
+	 * Set selected attribute for elements options by array of option indices.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int[]} indices - Array of option indices to select
+	 */
+	selectIndices : function(elements, indices)
+	{
+		var selection = this;
+		jQuery.each(indices, function(idx, index)
+		{
+			selection.selectIndex(elements,index);
+		})
+	},
+
+	/**
+	 * Unselect elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
+	selectClear : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			el.selectedIndex = -1;
+		})
+	},
+
+	/**
+	 * Get list elements of an element.
+	 * @function {element[]} ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int} total - Number of list elements to return
+	 * @returns Array of list DOM elements
+	 */
+	getListElements : function(element, total)
+	{
+		var elements = new Array();
+		var el;
+		for(var i = 0; i < total; i++)
+		{
+			el = $("#"+element+"_c"+i).get(0);
+			if(el)
+				elements.push(el);
+		}
+		return elements;
+	},
+
+	/**
+	 * Set checked attribute of elements by value.
+	 * If value is boolean, checked attribute will be set to value. 
+	 * Otherwhise all elements that have the given value will be checked. 
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {boolean|String} value - Value that should be checked or boolean value of checked status
+	 * 	 
+	 */
+	checkValue : function(elements, value)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			if(typeof(value) == "boolean")
+				el.checked = value;
+			else if(el.value == value)
+				el.checked = true;
+		});
+	},
+
+	/**
+	 * Set checked attribute of elements by array of values.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {string[]} values - Values that should be checked
+	 * 	 
+	 */
+	checkValues : function(elements, values)
+	{
+		var selection = this;
+		jQuery(values).each(function(idx, value)
+		{
+			selection.checkValue(elements, value);
+		})
+	},
+
+	/**
+	 * Set checked attribute of elements by list index.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 * @param {int} index - Index of element to set checked
+	 */
+	checkIndex : function(elements, index)
+	{
+		for(var i = 0; i<elements.length; i++)
+		{
+			if(i == index)
+				elements[i].checked = true;
+		}
+	},
+
+	/**
+	 * Set checked attribute of elements by array of list indices.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 * @param {int[]} indices - Array of list indices to set checked
+	 */
+	checkIndices : function(elements, indices)
+	{
+		var selection = this;
+		jQuery.each(indices, function(idx, index)
+		{
+			selection.checkIndex(elements, index);
+		})
+	},
+
+	/**
+	 * Uncheck elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 */
+	checkClear : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			el.checked = false;
+		});
+	},
+
+	/**
+	 * Set checked attribute of all elements to true.
+	 * @function ?
+	 * @param {element[]} elements - Array of checkable DOM elements
+	 */
+	checkAll : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			el.checked = true;
+		})
+	},
+
+	/**
+	 * Toggle the checked attribute of elements.
+	 * @function ?
+	 * @param {element[]} elements - Array of selectable DOM elements
+	 */
+	checkInvert : function(elements)
+	{
+		jQuery.each(elements, function(idx, el)
+		{
+			el.checked = !el.checked;
+		})
+	}
 };
 
 jQuery.extend(String.prototype, {

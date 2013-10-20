@@ -41,6 +41,7 @@ Prado.CallbackRequestManager =
 Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	options : {},
+	data    : '',
 
 	initialize: function(target, options)
 	{
@@ -75,9 +76,41 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		jQuery.ajax(this.options);
 	},
 
+	/**
+	 * Extract content from a text by its boundary id.
+	 * Boundaries have this form:
+	 * <pre>
+	 * &lt;!--123456--&gt;Democontent&lt;!--//123456--&gt;
+	 * </pre>
+	 * @function {string} ?
+	 * @param {string} boundary - Boundary id
+	 * @returns Content from given boundaries
+	 */
+	extractContent: function (boundary)
+	{
+		var tagStart = '<!--'+boundary+'-->';
+		var tagEnd = '<!--//'+boundary+'-->';
+		var start = this.data.indexOf(tagStart);
+		if(start > -1)
+		{
+			start += tagStart.length;
+			var end = this.data.indexOf(tagEnd,start);
+			if(end > -1)
+				return this.data.substring(start,end);
+		}
+		return null;
+		/*var f = RegExp('(?:<!--'+boundary+'-->)((?:.|\n|\r)+?)(?:<!--//'+boundary+'-->)',"m");
+		var result = this.data.match(f);
+		if(result && result.length >= 2)
+			return result[1];
+		else
+			return null;*/
+	},
+
 	onSuccess: function(data)
 	{
-		var redirectUrl = Prado.Element.extractContent(data, Prado.CallbackRequestManager.REDIRECT_HEADER);
+		this.data = data;
+		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
 	    		document.location.href = redirectUrl;
 /*
@@ -143,7 +176,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		var aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
-			var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.PAGESTATE_HEADER);
+			var data = this.extractContent(Prado.CallbackRequestManager.PAGESTATE_HEADER);
 			if(typeof(data) == "string" && data.length > 0)
 				pagestate.val(data);
 			else
@@ -178,7 +211,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	checkHiddenFields : function(request, datain)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
 		  	json = jQuery.parseJSON(data);
@@ -226,7 +259,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 	 */
 	loadScripts : function(request, datain, callback)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.SCRIPTLIST_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.SCRIPTLIST_HEADER);
 		if (!this.ScriptsToLoad) this.ScriptsToLoad = new Array();
 		this.ScriptLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
@@ -274,7 +307,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	loadStyleSheetsCode : function(request, datain)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.STYLESHEET_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEET_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
 		  	json = jQuery.parseJSON(data);
@@ -289,7 +322,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	loadStyleSheetsAsync : function(request, datain)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
 		  	json = jQuery.parseJSON(data);
@@ -304,7 +337,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	loadStyleSheets : function(request, datain, callback)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (!this.StyleSheetsToLoad) this.StyleSheetsToLoad = new Array();
 		this.StyleSheetLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
@@ -355,12 +388,12 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 	 */
 	dispatchActions : function(request, datain)
 	{
-		var data = Prado.Element.extractContent(datain, Prado.CallbackRequestManager.ACTION_HEADER);
+		var data = this.extractContent(Prado.CallbackRequestManager.ACTION_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
 		  	json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
-				Logger.warn("Invalid hidden field list:"+data);
+				Logger.warn("Invalid action:"+data);
 			else
 				for(var key in json)
 					this.__run(this, json[key]);
