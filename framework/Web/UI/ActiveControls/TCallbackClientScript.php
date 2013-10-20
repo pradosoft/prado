@@ -17,7 +17,7 @@
  * executed on the client-side (i.e. the browser client that is viewing
  * the page) during a callback response.
  *
- * The avaiable methods includes setting/clicking input elements, changing Css
+ * The available methods includes setting/clicking input elements, changing Css
  * styles, hiding/showing elements, and adding visual effects to elements on the
  * page. The client-side methods can be access through the CallbackClient
  * property available in TPage.
@@ -27,7 +27,33 @@
  * $this->getPage()->getCallbackClient()->hide($myTextBox);
  * </code>
  *
- * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
+ * To call a specific jQuery method on an element, use the {@link jQuery} method:
+ * <code>
+ * // simple example: focus a textbox
+ * $this->getCallbackClient()->jQuery($myTextBox, 'focus');
+ *
+ * // complex example: resize a textbox using an animation
+ * 	$this->getCallbackClient()->jQuery($myTextBox, 'animate', array(
+ *		array(	'width' => '+=100',
+ *				'height' => '+=50'
+ *			),
+ *		array('duration' => 1000)
+ *		));
+ * </code>
+ *
+ * To call a jQueryUI effect on an element, use the {@link juiEffect} method:
+ * <code>
+ * // simple example: focus a textbox
+ * $this->getCallbackClient()->juiEffect($myTextBox, 'highlight');
+ * </code>
+ *
+ * In order to use the jQueryUI effects, the jqueryui script must be registered:
+ * <code>
+ * $this->getPage()->getClientScript()->registerPradoScript('jqueryui');
+ * </code>
+ *
+ * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @version $Id: TCallbackClientScript.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
@@ -47,8 +73,6 @@ class TCallbackClientScript extends TApplicationComponent
 		$this->_actions = new TList;
 	}
 
-	const JQUERY_CALL='Prado.Element.j';
-
 	/**
 	 * @return array list of client function to be executed during callback
 	 * response.
@@ -63,17 +87,38 @@ class TCallbackClientScript extends TApplicationComponent
 	 * @param string javascript function name
 	 * @param array list of arguments for the function
 	 */
-	public function callClientFunction($function, $params=null)
+	public function callClientFunction($function, $params=array())
 	{
 		if(!is_array($params))
 			$params = array($params);
 
 		if(count($params) > 0)
 		{
-			if($params[0] instanceof TControl)
+			if ($params[0] instanceof ISurroundable) 
+				$params[0] = $params[0]->getSurroundingTagID();
+			elseif($params[0] instanceof TControl)
 				$params[0] = $params[0]->getClientID();
 		}
 		$this->_actions->add(array($function => $params));
+	}
+
+	/**
+	 * Executes a jQuery client-side method over an element.
+	 * @param string control or element id
+	 * @param string jQuery method name
+	 * @param array list of arguments for the function
+	 */
+	public function jQuery($element, $method, $params=array())
+	{
+		if ($element instanceof ISurroundable) 
+			$element = $element->getSurroundingTagID();
+		elseif($element instanceof TControl)
+			$element = $element->getClientID();
+
+		if(!is_array($params))
+			$params = array($params);
+
+		$this->_actions->add(array('Prado.Element.j' => array($element, $method, $params)));
 	}
 
 	/**
@@ -83,7 +128,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setValue($input, $text)
 	{
-		$this->callClientFunction(self::JQUERY_CALL, array($input, 'val', $text));
+		$this->jQuery($input, 'val', $text);
 	}
 
 	/**
@@ -134,7 +179,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function click($control)
 	{
-		$this->callClientFunction(self::JQUERY_CALL, array($control, 'trigger', 'click'));
+		$this->jQuery($control, 'trigger', 'click');
 	}
 
 	/**
@@ -154,7 +199,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function raiseClientEvent($control, $eventName)
 	{
-		$this->callClientFunction(self::JQUERY_CALL, array($control, 'trigger', $eventName));
+		$this->jQuery($control, 'trigger', $eventName);
 	}
 
 	/**
@@ -207,9 +252,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function show($element)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'show'));
+		$this->jQuery($element, 'show');
 	}
 
 	/**
@@ -218,9 +261,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function hide($element)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'hide'));
+		$this->jQuery($element, 'hide');
 	}
 
 	/**
@@ -231,8 +272,6 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function toggle($element, $effect=null, $options=array())
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
 		switch(strtolower($effect))
 		{
 			case 'fade':
@@ -248,7 +287,7 @@ class TCallbackClientScript extends TApplicationComponent
 					$options['duration']=0;
 				break;
 		}
-		$this->callClientFunction(self::JQUERY_CALL, array($element, $method, $options));
+		$this->jQuery($element, $method, $options);
 	}
 
 	/**
@@ -257,9 +296,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function remove($element)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'remove'));
+		$this->jQuery($element, 'remove');
 	}
 
 	public function addPostDataLoader($name)
@@ -275,9 +312,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function update($element, $content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'html', $content));
+		$this->jQuery($element, 'html', $content);
 	}
 
 	/**
@@ -287,9 +322,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function addCssClass($element, $cssClass)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'addClass', $cssClass));
+		$this->jQuery($element, 'addClass', $cssClass);
 	}
 
 	/**
@@ -299,9 +332,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function removeCssClass($element, $cssClass)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'removeClass', $cssClass));
+		$this->jQuery($element, 'removeClass', $cssClass);
 	}
 
 	/**
@@ -313,8 +344,6 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function scrollTo($element, $options=array())
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
 		$this->callClientFunction('Prado.Element.scrollTo', array($element, $options));
 	}
 
@@ -324,7 +353,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function focus($element)
 	{
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'trigger', 'focus'));
+		$this->jQuery($element, 'trigger', 'focus');
 	}
 
 	/**
@@ -335,9 +364,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function setStyle($element, $styles)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'css', $styles));
+		$this->jQuery($element, 'css', array($styles));
 	}
 
 	/**
@@ -347,9 +374,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function appendContent($element, $content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'append', $content));
+		$this->jQuery($element, 'append', $content);
 	}
 
 	/**
@@ -359,9 +384,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function prependContent($element, $content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'prepend', $content));
+		$this->jQuery($element, 'prepend', $content);
 	}
 
 	/**
@@ -371,9 +394,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentAfter($element, $content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'after', $content));
+		$this->jQuery($element, 'after', $content);
 	}
 
 	/**
@@ -383,9 +404,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function insertContentBefore($element, $content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction(self::JQUERY_CALL, array($element, 'before', $content));
+		$this->jQuery($element, 'before', $content);
 	}
 
 	/**
@@ -395,15 +414,13 @@ class TCallbackClientScript extends TApplicationComponent
 	 * will be used for replacement.
 	 * @param TControl control element or HTML element id.
 	 * @param string HTML fragement or the control to be rendered
-	 * @param string replacement method, default is to replace the outter
-	 * html content.
 	 * @param string provide a custom boundary.
 	 * @see insertAbout
 	 * @see insertBelow
 	 * @see insertBefore
 	 * @see insertAfter
 	 */
-	protected function replace($element, $content, $method="Element.replace", $boundary=null)
+	protected function replace($element, $content, $boundary=null)
 	{
 		if($content instanceof TControl)
 		{
@@ -416,8 +433,7 @@ class TCallbackClientScript extends TApplicationComponent
 			$content = null;
 		}
 
-		$this->callClientFunction('Prado.Element.replace',
-					array($element, $method, $content, $boundary));
+		$this->callClientFunction('Prado.Element.replace', array($element, $content, $boundary));
 	}
 
 	/**
@@ -427,8 +443,6 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function replaceContent($element,$content)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
 		$this->replace($element, $content);
 	}
 
@@ -438,7 +452,7 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function evaluateScript($writer)
 	{
-		$this->replace(null, $writer, 'Prado.Element.evaluateScript');
+		$this->callClientFunction('Prado.Element.evaluateScript', array($writer));
 	}
 
 	/**
@@ -453,7 +467,7 @@ class TCallbackClientScript extends TApplicationComponent
 		{
 			$boundary = $this->getRenderedContentBoundary($content);
 		}
-		else if($content instanceof THtmlWriter)
+		elseif($content instanceof THtmlWriter)
 		{
 			$boundary = $this->getResponseContentBoundary($content);
 		}
@@ -491,223 +505,311 @@ class TCallbackClientScript extends TApplicationComponent
 		return null;
 	}
 
+	/* VISUAL EFFECTS */
+
 	/**
 	 * Add a visual effect the element.
 	 * @param string visual effect function name.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function visualEffect($type, $element, $options=null)
+	public function visualEffect($type, $element, $options=array())
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->callClientFunction($type, array($element, $options));
+		$this->jQuery($element, $type, $options);
 	}
+
+	/* BASIC EFFECTS (JQUERY CORE) */
 
 	/**
 	 * Visual Effect: Gradually make the element appear.
+	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function appear($element, $options=null)
+	public function fadeIn($element, $options=array())
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Appear', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Blind down.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function blindDown($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.BlindDown', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Blind up.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function blindUp($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.BlindUp', $element, $options);
-
-	}
-
-	/**
-	 * Visual Effect: Drop out.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function dropOut($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.DropOut', $element, $options);
+		$this->visualEffect('fadeIn', $element, $options);
 	}
 
 	/**
 	 * Visual Effect: Gradually fade the element.
+	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function fade($element, $options=null)
+	public function fadeOut($element, $options=array())
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Fade', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Fold.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function fold($element, $options = null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Fold', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Gradually make an element grow to a predetermined size.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function grow($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Grow', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Gradually grow and fade the element.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function puff($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Puff', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Pulsate.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function pulsate($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Pulsate', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Shake the element.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function shake($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Shake', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Shrink the element.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function shrink($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Shrink', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Slide down.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function slideDown($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.SlideDown', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Side up.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function slideUp($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.SlideUp', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Squish the element.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function squish($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.Squish', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: Switch Off effect.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function switchOff($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Effect.SwitchOff', $element, $options);
-	}
-
-	/**
-	 * Visual Effect: High light the element for about 2 seconds.
-	 * @param TControl control element or element id
-	 * @param array visual effect key-value pair options.
-	 */
-	public function highlight($element, $options=null)
-	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$this->visualEffect('Prado.Effect.Highlight', $element, $options);
+		$this->visualEffect('fadeOut', $element, $options);
 	}
 
 	/**
 	 * Set the opacity on a html element or control.
+	 * This effect doesn't need jQueryUI.
+	 * @param TControl control element or element id
+	 * @param float opacity value between 1 and 0
+	 */
+	public function fadeTo($element, $value, $duration=500)
+	{
+		$value = TPropertyValue::ensureFloat($value);
+		$this->visualEffect('fadeTo', $element, array($duration, $value));
+	}
+
+	/**
+	 * Visual Effect: Slide down.
+	 * This effect doesn't need jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function slideDown($element, $options=array())
+	{
+		$this->visualEffect('slideDown', $element, $options);
+	}
+
+	/**
+	 * Visual Effect: Slide up.
+	 * This effect doesn't need jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function slideUp($element, $options=array())
+	{
+		$this->visualEffect('slideUp', $element, $options);
+	}
+
+	/* OLD METHODS, DEPRECATED, BACKWARDS-COMPATIBILITY */
+
+	/**
+	 * Alias of fadeIn()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function appear($element, $options=array())
+	{
+		$this->fadeIn($element, $options);
+	}
+
+	/**
+	 * Alias of fadeOut()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function fade($element, $options=array())
+	{
+		$this->fadeOut($element, $options);
+	}
+
+	/**
+	 * Alias of fadeTo()
+	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param float opacity value between 1 and 0
 	 */
 	public function setOpacity($element, $value)
 	{
-		if ($element instanceof ISurroundable) 
-			$element=$element->getSurroundingTagID();
-		$value = TPropertyValue::ensureFloat($value);
-		$this->callClientFunction('Element.setOpacity', array($element,$value));
+		$this->fadeTo($element, $value);
 	}
+
+	/* JQUERY UI EFFECTS */
+
+	/**
+	 * Add a jQuery-ui effect the element.
+	 * This method needs jQueryUI.
+	 * @param string visual effect function name.
+	 * @param TControl control element or element id
+	 * @param array effect options.
+	 */
+	public function juiEffect($element, $effect, $options=array())
+	{
+		$options['effect']=$effect;
+		$this->jQuery($element, 'effect', array($options));
+	}
+
+	/**
+	 * Visual Effect: Blind.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function blind($element, $options=array())
+	{
+		$this->juiEffect($element, 'blind', $options);
+	}
+
+	/**
+	 * Visual Effect: Drop out.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function drop($element, $options=array())
+	{
+		$this->juiEffect($element, 'drop', $options);
+	}
+
+	/**
+	 * Visual Effect: Fold.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function fold($element, $options=array())
+	{
+		$this->juiEffect($element, 'fold', $options);
+	}
+
+	/**
+	 * Visual Effect: Gradually make an element grow to a predetermined size.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function size($element, $options=array())
+	{
+		$this->juiEffect($element, 'size', $options);
+	}
+
+	/**
+	 * Visual Effect: Gradually grow and fade the element.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function puff($element, $options=array())
+	{
+		$this->juiEffect($element, 'puff', $options);
+	}
+
+	/**
+	 * Visual Effect: Pulsate.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function pulsate($element, $options=array())
+	{
+		$this->juiEffect($element, 'pulsate', $options);
+	}
+
+	/**
+	 * Visual Effect: Shake the element.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function shake($element, $options=array())
+	{
+		$this->juiEffect($element, 'shake', $options);
+	}
+
+	/**
+	 * Visual Effect: Scale the element.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function scale($element, $options=array())
+	{
+		$this->juiEffect($element, 'scale', $options);
+	}
+
+	/**
+	 * Visual Effect: High light the element for about 2 seconds.
+	 * This effect needs jQueryUI.
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function highlight($element, $options=array())
+	{
+		$this->juiEffect($element, 'highlight', $options);
+	}
+
+	/* jui - OLD METHODS, DEPRECATED, BACKWARDS-COMPATIBILITY */
+
+	/**
+	 * Alias of blind(), presets the direction to 'down'
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function blindDown($element, $options=array())
+	{
+		$options['direction']='down';
+		$this->blind($element, $options);
+	}
+
+	/**
+	 * Alias of blind(), presets the direction to 'up'
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function blindUp($element, $options=array())
+	{
+		$options['direction']='up';
+		$this->blind($element, $options);
+	}
+
+	/**
+	 * Alias of drop()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function dropOut($element, $options=array())
+	{
+		$this->drop($element, $options);
+	}
+
+	/**
+	 * Alias of size()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function grow($element, $options=array())
+	{
+		$this->size($element, $options);
+	}
+
+	/**
+	 * Alias of scale()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function shrink($element, $options=array())
+	{
+		$options['percent']=0;
+		$this->scale($element, $options);
+	}
+
+	/**
+	 * Alias of scale()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function squish($element, $options=array())
+	{
+		$options['origin']=array('top', 'left');
+		$options['percent']=0;
+		$this->scale($element, $options);
+	}
+
+	/**
+	 * Alias of scale()
+	 * @deprecated since 3.4
+	 * @param TControl control element or element id
+	 * @param array visual effect key-value pair options.
+	 */
+	public function switchOff($element, $options=array())
+	{
+		$options['direction']='vertical';
+		$options['percent']=0;
+		$this->scale($element, $options);
+	}
+
 }
 

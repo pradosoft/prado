@@ -5,10 +5,10 @@ Targets:
  * Glue prado PostBack/PostbackControl/Registry to jQuery (done)
  * port standard controls (started, wip)
  * port features (defaultbutton, validators, ..) (started, wip)
- * port Prado.Element's functions (replace, setStyle, ..)
- * port Effects
- * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..)
+ * port Prado.Element's functions (replace, setStyle, ..) (done)
+ * port Effects (done)
  * port basic active controls
+ * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..)
  * port exotic active controls (autocomplete, ...)
  * get tests running
  * ensure jQuery's compatibility mode with prototype (support old third party components from users? jQuery.noConflict(); by default?)
@@ -17,7 +17,6 @@ Targets:
 
 
 DONE
-
 Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox)
 TTabPanel
 Validators
@@ -27,3 +26,10 @@ accordion
 colorpicker
 htmlarea/4
 *
+
+TBD-JQUERY-UI
+clip
+explode
+transfer
+switchclass
+jui show, hide toggle?
