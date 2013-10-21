@@ -1,6 +1,18 @@
 Prado.CallbackRequestManager = 
 {
 	/**
+	 * Callback request target POST field name.
+	 */
+	FIELD_CALLBACK_TARGET : 'PRADO_CALLBACK_TARGET',
+	/**
+	 * Callback request parameter POST field name.
+	 */
+	FIELD_CALLBACK_PARAMETER : 'PRADO_CALLBACK_PARAMETER',
+	/**
+	 * Callback request page state field name,
+	 */
+	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
+	/**
 	 * Response redirect header name.
 	 */
 	REDIRECT_HEADER : 'X-PRADO-REDIRECT',
@@ -48,19 +60,21 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		this.options = {
 			RequestTimeOut : 30000, // 30 second timeout.
 			EnablePageStateUpdate : true,
-			HasPriority : true,
 			CausesValidation : true,
 			ValidationGroup : null,
 			PostInputs : true,
 
 			type: "POST",
-			iscallback: true,
-
-			context: this,
-			success: this.onSuccess,
+			context:  this,
+			success:  this.successHandler,
+			error:    this.errorHandler,
+			complete: this.completeHandler,
 		};
 
 		jQuery.extend(this.options, options || {});
+
+		if(this.options.onUninitialized)
+			this.options.onUninitialized(this,null);
 	},
 
 	getForm: function()
@@ -68,12 +82,125 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		return jQuery('#PRADO_PAGESTATE').get(0).form;
 	},
 
+	/**
+	 * Gets the url from the forms that contains the PRADO_PAGESTATE
+	 * @return {String} callback url.
+	 */
+	getCallbackUrl : function()
+	{
+		return jQuery('#PRADO_PAGESTATE').get(0).form.action;
+	},
+
+	/**
+	 * Sets the request parameter
+	 * @param {Object} parameter value
+	 */
+	setCallbackParameter : function(value)
+	{
+		this.options['CallbackParameter'] = value;
+	},
+
+	/**
+	 * @return {Object} request paramater value.
+	 */
+	getCallbackParameter : function()
+	{
+		return JSON.stringify(this.options['CallbackParameter']);
+	},
+
+	/**
+	 * Sets the callback request timeout.
+	 * @param {integer} timeout in  milliseconds
+	 */
+	setRequestTimeOut : function(timeout)
+	{
+		this.options['RequestTimeOut'] = timeout;
+	},
+
+	/**
+	 * @return {integer} request timeout in milliseconds
+	 */
+	getRequestTimeOut : function()
+	{
+		return this.options['RequestTimeOut'];
+	},
+
+	/**
+	 * Set true to enable validation on callback dispatch.
+	 * @param {boolean} true to validate
+	 */
+	setCausesValidation : function(validate)
+	{
+		this.options['CausesValidation'] = validate;
+	},
+
+	/**
+	 * @return {boolean} validate on request dispatch
+	 */
+	getCausesValidation : function()
+	{
+		return this.options['CausesValidation'];
+	},
+
+	/**
+	 * Sets the validation group to validate during request dispatch.
+	 * @param {string} validation group name
+	 */
+	setValidationGroup : function(group)
+	{
+		this.options['ValidationGroup'] = group;
+	},
+
+	/**
+	 * @return {string} validation group name.
+	 */
+	getValidationGroup : function()
+	{
+		return this.options['ValidationGroup'];
+	},
+
 	dispatch: function()
 	{
+		//Logger.info("dispatching request");
+		//trigger tinyMCE to save data.
+		if(typeof tinyMCE != "undefined")
+			tinyMCE.triggerSave();
+
+		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
+		{
+			if(!Prado.Validation.validate(this.getForm(), this.options['ValidationGroup'], this))
+				return false;
+		}
+
+		if(this.options.onPreDispatch)
+			this.options.onPreDispatch(this,null);
+	
+		// jQuery don't have all these states.. simulate them to avoid breaking old scripts
+		if (this.options.onLoading)
+			this.options.onLoading(this,null);
+		if (this.options.onLoaded)
+			this.options.onLoaded(this,null);
+		if (this.options.onInteractive)
+			this.options.onInteractive(this,null);
+
+		// go!
 		this.options.data = this.getParameters();
-		this.options.url = this.getForm().action;
+		this.options.url = this.getCallbackUrl();
 
 		jQuery.ajax(this.options);
+	},
+
+	getParameters : function()
+	{
+		var form = this.getForm();
+		var data = {};
+
+		if(typeof(this.options.CallbackParameter) != "undefined")
+			data[Prado.CallbackRequestManager.FIELD_CALLBACK_PARAMETER] = this.getCallbackParameter();
+		if(this.options.EventTarget)
+			data[Prado.CallbackRequestManager.FIELD_CALLBACK_TARGET] = this.options.EventTarget;
+
+		return jQuery(form).serialize() + '&' + jQuery.param(data);
 	},
 
 	/**
@@ -107,19 +234,44 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 			return null;*/
 	},
 
-	onSuccess: function(data)
+	errorHandler: function(request, textStatus, errorThrown)
 	{
+//null) are "timeout", "error", "abort", and "parsererror"
+		if (this.options.onFailure)
+			this.options.onFailure(this,null);
+	},
+
+	completeHandler: function(request, textStatus)
+	{
+//"success", "notmodified", "error", "timeout", "abort", or "parsererror"
+		if (this.options.onComplete)
+			this.options.onComplete(this,null);
+
+	},
+
+	exceptionHandler: function(e)
+	{
+		if (this.options.onException)
+			this.options.onException(this,null);
+
+	},
+
+	successHandler: function(data, textStatus, request)
+	{
+		if (this.options.onSuccess)
+			this.options.onSuccess(this,null);
+
 		this.data = data;
 		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
-	    		document.location.href = redirectUrl;
+				document.location.href = redirectUrl;
 /*
 		if ((this.getHeader('Content-type') || '').match(/^text\/javascript/i))
 		{
-	        	try
+				try
 			{
-	          		json = eval('(' + transport.responseText + ')');
-		        }
+					json = eval('(' + transport.responseText + ')');
+				}
 			catch (e)
 			{
 				if(typeof(json) == "string")
@@ -134,8 +286,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 			var obj = this;
 			this.loadAssets(this, data, function()
 				{
-		//			try
-		//			{
+					try
+					{
 						//Ajax.Responders.dispatch('on' + transport.status, obj, transport, json);
 						obj.dispatchActions(obj, data);
 /*
@@ -147,21 +299,17 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 							Prototype.emptyFunction
 						) (obj, json);
 			*/
-							/*
 					}
 					catch (e)
 					{
-							obj.dispatchException(e);
+							obj.exceptionHandler(e);
 					}
-					*/
 				}
 			);
 
-	      } 
-	      catch (e) 
-              {
-	        this.dispatchException(e);
-	      }
+		} catch (e) {
+			this.exceptionHandler(e);
+		}
 	},
 
 	/**
@@ -170,9 +318,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 	 */
 	updatePageState : function(request, datain)
 	{
-		//var self = Prado.CallbackRequest;
-		var pagestate = $("#"+Prado.RequestManager.FIELD_CALLBACK_PAGESTATE);
-		var enabled = request.options.EnablePageStateUpdate && request.options.HasPriority;
+		var pagestate = $("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
+		var enabled = request.options.EnablePageStateUpdate;
 		var aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
 		{
@@ -214,7 +361,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		var data = this.extractContent(Prado.CallbackRequestManager.HIDDENFIELDLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid hidden field list:"+data);
 			else
@@ -223,7 +370,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		}
 	},
 
- 	/*
+	/*
 	 * Checks which assets are used by the response and ensures they're loaded 
 	 */
 	loadAssets : function(request, datain, callback)
@@ -264,7 +411,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		this.ScriptLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid script list:"+data);
 			else
@@ -310,7 +457,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEET_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid stylesheet list:"+data);
 			else
@@ -325,7 +472,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		var data = this.extractContent(Prado.CallbackRequestManager.STYLESHEETLIST_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid stylesheet list:"+data);
 			else
@@ -342,7 +489,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		this.StyleSheetLoadFinishedCallback = callback;
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid stylesheet list:"+data);
 			else
@@ -391,7 +538,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 		var data = this.extractContent(Prado.CallbackRequestManager.ACTION_HEADER);
 		if (typeof(data) == "string" && data.length > 0)
 		{
-		  	json = jQuery.parseJSON(data);
+			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 				Logger.warn("Invalid action:"+data);
 			else
@@ -414,7 +561,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 			catch(e)
 			{
 				if(typeof(Logger) != "undefined")
-					this.Exception.onException(null,e);
+					this.Exception.exceptionHandler(null,e);
 				else
 					debugger;
 			}
@@ -443,13 +590,6 @@ Prado.CallbackRequest.addPostLoaders = function(ids)
 // 	    if (event == 'Complete')
 // 	    {
 
-// 	    }
-
-// 	    try {
-// 	      (this.options['on' + event] || Prototype.emptyFunction)(this, json);
-// 	      Ajax.Responders.dispatch('on' + event, this, transport, json);
-// 	    } catch (e) {
-// 	      this.dispatchException(e);
 // 	    }
 
 // 	    /* Avoid memory leak in MSIE: clean up the oncomplete event handler */
@@ -799,135 +939,6 @@ Prado.CallbackRequest.addPostLoaders = function(ids)
 // 			//this.options.parameters = this.options.parameters.toQueryParams();
 // 		}
 // 	},
-	
-// 	/**
-// 	 * Gets the url from the forms that contains the PRADO_PAGESTATE
-// 	 * @return {String} callback url.
-// 	 */
-// 	getCallbackUrl : function()
-// 	{
-// 		return jQuery('#PRADO_PAGESTATE').get(0).form.action;
-// 	},
-
-// 	/**
-// 	 * Sets the request parameter
-// 	 * @param {Object} parameter value
-// 	 */
-// 	setCallbackParameter : function(value)
-// 	{
-// 		var requestId = this.id+"__"+this.randomId;
-// 		this.ActiveControl['CallbackParameter'] = value;
-// 		Prado.CallbackRequestManager.requests[requestId].ActiveControl['CallbackParameter'] = value;
-// 	},
-
-// 	/**
-// 	 * @return {Object} request paramater value.
-// 	 */
-// 	getCallbackParameter : function()
-// 	{
-// 		return Prado.CallbackRequestManager.requests[this.id+"__"+this.randomId].ActiveControl['CallbackParameter'];
-// 	},
-
-// 	/**
-// 	 * Sets the callback request timeout.
-// 	 * @param {integer} timeout in  milliseconds
-// 	 */
-// 	setRequestTimeOut : function(timeout)
-// 	{
-// 		this.ActiveControl['RequestTimeOut'] = timeout;
-// 	},
-
-// 	/**
-// 	 * @return {integer} request timeout in milliseconds
-// 	 */
-// 	getRequestTimeOut : function()
-// 	{
-// 		return this.ActiveControl['RequestTimeOut'];
-// 	},
-
-// 	/**
-// 	 * Set true to enable validation on callback dispatch.
-// 	 * @param {boolean} true to validate
-// 	 */
-// 	setCausesValidation : function(validate)
-// 	{
-// 		this.ActiveControl['CausesValidation'] = validate;
-// 	},
-
-// 	/**
-// 	 * @return {boolean} validate on request dispatch
-// 	 */
-// 	getCausesValidation : function()
-// 	{
-// 		return this.ActiveControl['CausesValidation'];
-// 	},
-
-// 	/**
-// 	 * Sets the validation group to validate during request dispatch.
-// 	 * @param {string} validation group name
-// 	 */
-// 	setValidationGroup : function(group)
-// 	{
-// 		this.ActiveControl['ValidationGroup'] = group;
-// 	},
-
-// 	/**
-// 	 * @return {string} validation group name.
-// 	 */
-// 	getValidationGroup : function()
-// 	{
-// 		return this.ActiveControl['ValidationGroup'];
-// 	},
-
-// 	/**
-// 	 * Dispatch the callback request.
-// 	 */
-// 	dispatch : function()
-// 	{
-// 		//Logger.info("dispatching request");
-// 		//trigger tinyMCE to save data.
-// 		if(typeof tinyMCE != "undefined")
-// 			tinyMCE.triggerSave();
-
-// 		if(this.ActiveControl.CausesValidation && typeof(Prado.Validation) != "undefined")
-// 		{
-// 			var form =  this.ActiveControl.Form || Prado.Validation.getForm();
-// 			if(Prado.Validation.validate(form,this.ActiveControl.ValidationGroup,this) == false)
-// 				return false;
-// 		}
-
-// 		if(this.ActiveControl.onPreDispatch)
-// 			this.ActiveControl.onPreDispatch(this,null);
-
-// 		if(!this.Enabled)
-// 			return;
-	
-// 		// Opera don't have onLoading/onLoaded state, so, simulate them just
-// 		// before sending the request.
-// 		/*
-// 		if (Prototype.Browser.Opera)
-// 		{
-// 			if (this.ActiveControl.onLoading)
-// 			{
-// 				this.ActiveControl.onLoading(this,null);
-// 				Ajax.Responders.dispatch('onLoading',this, this.transport,null);
-// 			}
-// 			if (this.ActiveControl.onLoaded)
-// 			{
-// 				this.ActiveControl.onLoaded(this,null);
-// 				Ajax.Responders.dispatch('onLoaded',this, this.transport,null);
-// 			}
-// 		}
-// 		*/
-// 		var result;
-// 		if(this.ActiveControl.HasPriority)
-// 		{
-// 			return Prado.CallbackRequestManager.enqueue(this);
-// 			//return Prado.CallbackRequest.dispatchPriorityRequest(this);
-// 		}
-// 		else
-// 			return Prado.CallbackRequestManager.dispatchNormalRequest(this);
-// 	},
 
 // 	abort : function()
 // 	{
@@ -1110,7 +1121,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		/**
 		 * Load a new asset dynamically into the page.
-		     * Please not thet loading is asynchronous and therefore you can't assume that
+			 * Please not thet loading is asynchronous and therefore you can't assume that
 		 * the asset is loaded and ready when returning from this function.
 		 * @param string url of the asset to load
 		 * @param callback will be called when the asset has loaded (or failed to load)

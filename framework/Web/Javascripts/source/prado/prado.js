@@ -19,19 +19,6 @@ var Prado =
 
 Prado.RequestManager = 
 {
-	/**
-	 * Callback request target POST field name.
-	 */
-	FIELD_CALLBACK_TARGET : 'PRADO_CALLBACK_TARGET',
-	/**
-	 * Callback request parameter POST field name.
-	 */
-	FIELD_CALLBACK_PARAMETER : 'PRADO_CALLBACK_PARAMETER',
-	/**
-	 * Callback request page state field name,
-	 */
-	FIELD_CALLBACK_PAGESTATE : 'PRADO_PAGESTATE',
-
 	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
 
 	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER',
@@ -52,9 +39,7 @@ Prado.RequestManager =
  */
 Prado.PostBack = jQuery.klass(
 {
-	options : {
-		iscallback: false
-	},
+	options : {},
 
 	initialize: function(options, event)
 	{
@@ -72,18 +57,10 @@ Prado.PostBack = jQuery.klass(
 		var form = this.getForm();
 		var data = {};
 
-		if(this.options.iscallback)
-		{
-			if(typeof(this.options.CallbackParameter) != "undefined")
-				data[Prado.CallbackRequestManager.FIELD_CALLBACK_PARAMETER] = this.getCallbackParameter();
-			if(this.options.EventTarget)
-				data[Prado.RequestManager.FIELD_CALLBACK_TARGET] = this.options.EventTarget;
-		} else {
-			if(this.options.EventTarget)
-				data[Prado.RequestManager.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
-			if(this.options.EventParameter)
-				data[Prado.RequestManager.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
-		}
+		if(this.options.EventTarget)
+			data[Prado.RequestManager.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
+		if(this.options.EventParameter)
+			data[Prado.RequestManager.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
 
 		return jQuery(form).serialize() + '&' + jQuery.param(data);
 	},
