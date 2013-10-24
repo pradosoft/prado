@@ -304,11 +304,6 @@ class TCallbackClientScript extends TApplicationComponent
 		$this->jQuery($element, 'remove');
 	}
 
-	public function addPostDataLoader($name)
-	{
-		$this->callClientFunction('Prado.CallbackRequest.addPostLoaders', $name);
-	}
-
 	/**
 	 * Update the element's innerHTML with new content.
 	 * @param TControl control element or element id

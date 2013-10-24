@@ -52,19 +52,6 @@ Prado.PostBack = jQuery.klass(
 		return jQuery("#" + this.options['FormID']).get(0);
 	},
 
-	getParameters : function()
-	{
-		var form = this.getForm();
-		var data = {};
-
-		if(this.options.EventTarget)
-			data[Prado.RequestManager.FIELD_POSTBACK_TARGET] = this.options.EventTarget;
-		if(this.options.EventParameter)
-			data[Prado.RequestManager.FIELD_POSTBACK_PARAMETER] = this.options.EventParameter;
-
-		return jQuery(form).serialize() + '&' + jQuery.param(data);
-	},
-
 	doPostBack : function()
 	{
 		var form = this.getForm();
@@ -90,7 +77,25 @@ Prado.PostBack = jQuery.klass(
 			}
 		}
 
-		$(form).trigger('submit');
+		var input=null;
+		if(this.options.EventTarget)
+		{
+			input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_TARGET);
+			input.setAttribute("value", this.options.EventTarget);
+			form.appendChild(input);
+		}
+		if(this.options.EventParameter)
+		{
+			input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("name", Prado.RequestManager.FIELD_POSTBACK_PARAMETER);
+			input.setAttribute("value", this.options.EventParameter);
+			form.appendChild(input);
+		}
+
+		jQuery(form).trigger('submit');
 	}
 });
 

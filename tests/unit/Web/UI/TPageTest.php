@@ -28,14 +28,6 @@ class TPageTest extends PHPUnit_Framework_TestCase {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
 	
-	public function testRegisterPostDataLoader() {
-		throw new PHPUnit_Framework_IncompleteTestError();
-	}
-	
-	public function testGetPostDataLoaders() {
-		throw new PHPUnit_Framework_IncompleteTestError();
-	}
-	
 	public function testSetAndGetForm() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}

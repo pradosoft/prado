@@ -1330,18 +1330,8 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 						$control->evaluateDynamicContent();
 				}
 			}
-			$this->addToPostDataLoader();
 		}
 		$this->_stage=self::CS_PRERENDERED;
-	}
-
-	/**
-	 * Add controls implementing IPostBackDataHandler to post data loaders.
-	 */
-	protected function addToPostDataLoader()
-	{
-		if($this instanceof IPostBackDataHandler)
-			$this->getPage()->registerPostDataLoader($this);
 	}
 
 	/**
