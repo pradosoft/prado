@@ -406,14 +406,6 @@ class TDatePicker extends TTextBox
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getInputMode() === TDatePickerInputMode::DropDownList)
-		{
-			$page = $this->getPage();
-			$uniqueID = $this->getUniqueID();
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'day');
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'month');
-			$page->registerPostDataLoader($uniqueID.TControl::ID_SEPARATOR.'year');
-		}
 		$this->publishCalendarStyle();
 		$this->registerCalendarClientScriptPre();
 	}

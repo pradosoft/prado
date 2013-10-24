@@ -135,18 +135,6 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * Register the x and y hidden input names of the position clicked.
-	 * @param THtmlWriter the renderer.
-	 */
-	public function onPreRender($writer)
-	{
-		parent::onPreRender($writer);
-		$uid = $uid=$this->getUniqueID();
-		$this->getPage()->registerPostDataLoader($uid.'_x');
-		$this->getPage()->registerPostDataLoader($uid.'_y');
-	}
-
-	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
 	 */

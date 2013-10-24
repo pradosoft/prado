@@ -409,3 +409,19 @@ jQuery.extend(Prado.WebUI.TValueTriggeredCallback,
 
 Prado.WebUI.TActiveTableCell = jQuery.klass(Prado.WebUI.CallbackControl);
 Prado.WebUI.TActiveTableRow = jQuery.klass(Prado.WebUI.CallbackControl);
+
+Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
+{	
+	dispatchRequest : function(ev)
+	{
+		var requestOptions = jQuery.extend(
+		{
+			ID : this.options.ListID+"_c"+this.selectedIndex,
+			EventTarget : this.options.ListName+"$c"+this.selectedIndex
+		},this.options);
+		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
+		if(request.dispatch()==false)
+			ev.stopPropagation();
+	}
+	
+});
