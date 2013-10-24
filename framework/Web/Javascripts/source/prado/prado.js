@@ -74,10 +74,10 @@ Prado.PostBack = jQuery.klass(
 				return event.preventDefault();
 		}
 
-		if(options['PostBackUrl'] && options['PostBackUrl'].length > 0)
-			form.action = options['PostBackUrl'];
+		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
+			form.action = this.options['PostBackUrl'];
 
-		if(options['TrackFocus'])
+		if(this.options['TrackFocus'])
 		{
 			var lastFocus = $('PRADO_LASTFOCUS');
 			if(lastFocus)
@@ -86,7 +86,7 @@ Prado.PostBack = jQuery.klass(
 				if(active)
 					lastFocus.value = active.id;
 				else
-					lastFocus.value = options['EventTarget'];
+					lastFocus.value = this.options['EventTarget'];
 			}
 		}
 

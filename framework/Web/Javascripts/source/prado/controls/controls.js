@@ -269,7 +269,7 @@ Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
 
 	onPostBack : function(options, event)
 	{
-		Prado.PostBack(options, event);
+		new Prado.PostBack(options, event);
 	}
 
 });
