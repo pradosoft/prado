@@ -70,7 +70,7 @@ class TJavascriptLogger extends TWebControl
 	{
 		$key = strtolower($this->getToggleKey());
 		$code = isset(self::$_keyCodes[$key]) ? self::$_keyCodes[$key] : 74;
-		$js = "var logConsole; Event.OnLoad(function() { logConsole = new LogConsole($code)}); ";
+		$js = "var logConsole; jQuery(function() { logConsole = new LogConsole($code)}); ";
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerBeginScript($this->getClientID(),$js);
 		$cs->registerPradoScript('logger');

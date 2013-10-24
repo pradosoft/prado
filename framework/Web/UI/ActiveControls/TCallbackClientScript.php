@@ -153,6 +153,11 @@ class TCallbackClientScript extends TApplicationComponent
 				'Value', 'Index', 'Clear', 'Indices', 'Values', 'All', 'Invert');
 		$type = ($type===null) ? $this->getSelectionControlType($control) : $type;
 		$total = $this->getSelectionControlIsListType($control) ? $control->getItemCount() : 1;
+
+		// pass the ID to avoid getting the surrounding elements (ISurroundable)
+		if($control instanceof TControl)
+			$control = $control->getClientID();
+
 		$this->callClientFunction('Prado.Element.select',
 				array($control, $type.$method, $value, $total));
 	}

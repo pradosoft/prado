@@ -113,9 +113,9 @@ $dependencies = array(
 		'validator'			=> array('jquery', 'prado', 'validator'),
 		'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
 		'ajax'				=> array('jquery', 'prado', 'ajax'),
+		'logger'			=> array('jquery', 'prado', 'logger'),
 
 		'effects'			=> array('prototype', 'prado', 'effects'),
-		'logger'			=> array('prototype', 'prado', 'logger'),
 		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
 		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),

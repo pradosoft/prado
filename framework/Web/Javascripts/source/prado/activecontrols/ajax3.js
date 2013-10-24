@@ -239,6 +239,24 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 //null) are "timeout", "error", "abort", and "parsererror"
 		if (this.options.onFailure)
 			this.options.onFailure(this,null);
+
+		if(request.status==500)
+		{
+			/**
+			 * Server returns 500 exception. Just log it.
+			 */
+			var e = request.getResponseHeader(Prado.CallbackRequestManager.ERROR_HEADER);
+			if (e)
+			{
+				json = jQuery.parseJSON(e);
+				if(typeof(json) == "object")
+					Logger.error("Callback Server Error "+json.code, this.formatException(json));
+				else
+					Logger.error("Callback Server Error Corrupted");
+			}
+			else
+				Logger.error("Callback Server Error Unknown",'');
+		}
 	},
 
 	completeHandler: function(request, textStatus)
@@ -249,17 +267,50 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack, {
 
 	},
 
+	/**
+	 * Uncaught exceptions during callback response.
+	 */
 	exceptionHandler: function(e)
 	{
 		if (this.options.onException)
 			this.options.onException(this,null);
 
+		var msg = "";
+		jQuery.each(e, function(item)
+		{
+			msg += item.key+": "+item.value+"\n";
+		})
+		Logger.error('Uncaught Callback Client Exception:', msg);
 	},
 
+	/**
+	 * Formats the exception message for display in console.
+	 */
+	formatException : function(e)
+	{
+		var msg = e.type + " with message \""+e.message+"\"";
+		msg += " in "+e.file+"("+e.line+")\n";
+		msg += "Stack trace:\n";
+		var trace = e.trace;
+		for(var i = 0; i<trace.length; i++)
+		{
+			msg += "  #"+i+" "+trace[i].file;
+			msg += "("+trace[i].line+"): ";
+			msg += trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";
+		}
+		msg += e.version+" "+e.time+"\n";
+		return msg;
+	},
+
+	/**
+	 * Callback OnSuccess event,logs reponse and data to console.
+	 */
 	successHandler: function(data, textStatus, request)
 	{
 		if (this.options.onSuccess)
 			this.options.onSuccess(this,null);
+
+		Logger.info('HTTP '+request.status+" with response : \n"+data);
 
 		this.data = data;
 		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
@@ -689,84 +740,6 @@ Prado.CallbackRequest.addPostLoaders = function(ids)
 // 				list.push(id);
 // 		});
 // 		self.PostDataLoaders = list;
-// 	},
-
-// 	/**
-// 	 * Respond to Prado Callback request exceptions.
-// 	 */
-// 	Exception :
-// 	{
-// 		/**
-// 		 * Server returns 500 exception. Just log it.
-// 		 */
-// 		"on500" : function(request, transport, data)
-// 		{
-// 			var e = request.getHeaderData(Prado.CallbackRequest.ERROR_HEADER);
-// 			if (e)
-// 				Logger.error("Callback Server Error "+e.code, this.formatException(e));
-// 			else
-// 				Logger.error("Callback Server Error Unknown",'');
-// 		},
-
-// 		/**
-// 		 * Callback OnComplete event,logs reponse and data to console.
-// 		 */
-// 		'on200' : function(request, transport, data)
-// 		{
-// 			if(transport.status < 500)
-// 			{
-// 				var msg = 'HTTP '+transport.status+" with response : \n";
-// 				if(transport.responseText.trim().length >0)
-// 				{
-// 					var f = RegExp('(<!--X-PRADO[^>]+-->)([\\s\\S\\w\\W]*)(<!--//X-PRADO[^>]+-->)',"m");
-// 					msg += transport.responseText.replace(f,'') + "\n";
-// 				}
-// 				if(typeof(data)!="undefined" && data != null)
-// 					msg += "Data : \n"+inspect(data)+"\n";
-// 				data = request.getBodyDataPart(Prado.CallbackRequest.ACTION_HEADER);
-// 				if(data && data.length > 0)
-// 				{
-// 					msg += "Actions : \n";
-// 					data.each(function(action)
-// 					{
-// 						msg += inspect(action)+"\n";
-// 					});
-// 				}
-// 				Logger.info(msg);
-// 			}
-// 		},
-
-// 		/**
-// 		 * Uncaught exceptions during callback response.
-// 		 */
-// 		onException : function(request,e)
-// 		{
-// 			var msg = "";
-// 			$H(e).each(function(item)
-// 			{
-// 				msg += item.key+": "+item.value+"\n";
-// 			})
-// 			Logger.error('Uncaught Callback Client Exception:', msg);
-// 		},
-
-// 		/**
-// 		 * Formats the exception message for display in console.
-// 		 */
-// 		formatException : function(e)
-// 		{
-// 			var msg = e.type + " with message \""+e.message+"\"";
-// 			msg += " in "+e.file+"("+e.line+")\n";
-// 			msg += "Stack trace:\n";
-// 			var trace = e.trace;
-// 			for(var i = 0; i<trace.length; i++)
-// 			{
-// 				msg += "  #"+i+" "+trace[i].file;
-// 				msg += "("+trace[i].line+"): ";
-// 				msg += trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";
-// 			}
-// 			msg += e.version+" "+e.time+"\n";
-// 			return msg;
-// 		}
 // 	},
 
 // 	/**
