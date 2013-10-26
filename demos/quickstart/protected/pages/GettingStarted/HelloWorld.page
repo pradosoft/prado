@@ -60,6 +60,7 @@ $application->run();                // run the application
 </li>
 <li><tt>Home.php</tt> - page class for the <tt>Home</tt> page. It mainly contains the method responding to the <tt>OnClick</tt> event of the button.
 <com:TTextHighlighter CssClass="source block-content" id="code_50005">
+<?php
 class Home extends TPage
 {
     public function buttonClicked($sender,$param)
