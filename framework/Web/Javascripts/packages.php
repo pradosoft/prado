@@ -95,7 +95,6 @@ $packages = array(
 	// jquery
 	'jquery' => array(
 		JQUERY_DIR.'/jquery.js',
-		JQUERY_DIR.'/lowpro.jquery.js',
 	),
 	'jqueryui' => array(
 		JQUERY_DIR.'/jquery-ui.js',
