@@ -205,7 +205,7 @@ jQuery.extend(Prado.Validation,
 	{
 		jQuery.each(Prado.Validation.managers, function(manager)
 		{
-			jQuery.each(manager[1].validators, function(validator)
+			jQuery.each(manager.validators, function(validator)
 			{
 				if(validator.options.ID == validatorID)
 				{
@@ -220,7 +220,7 @@ jQuery.extend(Prado.Validation,
 	{
 		jQuery.each(Prado.Validation.managers, function(idx, manager)
 		{
-			jQuery.each(manager[1].validators, function(idx, validator)
+			jQuery.each(manager.validators, function(idx, validator)
 			{
 				if(validator.options.ID == validatorID)
 				{
