@@ -1188,6 +1188,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
 			case 'TCheckBox':
+			case 'TActiveCheckBox':
 				return control.checked;
 	 		default:
 	 			if(this.isListControlType())
@@ -1219,6 +1220,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 				return this.trim(value);
 			case 'TRadioButton':
 			case 'TCheckBox':
+			case 'TActiveCheckBox':
 				return value;
 			default:
 				if(this.isListControlType())
