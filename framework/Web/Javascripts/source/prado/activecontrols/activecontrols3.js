@@ -83,12 +83,11 @@ Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
 			this.observe(this.element, "change", jQuery.proxy(this.doCallback,this,options));
 	},
 
-	doCallback : function(event, options)
+	doCallback : function(options, event)
 	{
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
-        if (!Prototype.Browser.IE)
-		    event.preventDefault();
+	    event.preventDefault();
 	}
 });
 
