@@ -15,10 +15,10 @@ Go to page:
 	OnCallBack="RenderCallback"
 	>
 		<prop:ClientSide.OnLoading>
-			Element.show('wait')
+			jQuery('#wait').show()
 		</prop:ClientSide.OnLoading>
 		<prop:ClientSide.OnComplete>
-			Element.hide('wait')
+			jQuery('#wait').hide()
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
 <span id="wait" style="display: none;color: red">Please Wait...</span>
@@ -77,11 +77,11 @@ Total <%# $this->Parent->PageCount %> pages.
 	OnPageIndexChanged="pageChanged"
 	OnCallBack="RenderCallback"
 >
-<prop:ClientSide.OnLoading>
-			Element.show('wait')
+		<prop:ClientSide.OnLoading>
+			jQuery('#wait').show()
 		</prop:ClientSide.OnLoading>
 		<prop:ClientSide.OnComplete>
-			Element.hide('wait')
+			jQuery('#wait').hide()
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
 <br/>
@@ -92,11 +92,11 @@ Choose page:
 	OnPageIndexChanged="pageChanged"
 	OnCallBack="RenderCallback"
 >
-<prop:ClientSide.OnLoading>
-			Element.show('wait')
+		<prop:ClientSide.OnLoading>
+			jQuery('#wait').show()
 		</prop:ClientSide.OnLoading>
 		<prop:ClientSide.OnComplete>
-			Element.hide('wait')
+			jQuery('#wait').hide()
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
 <com:TJavascriptLogger/>
