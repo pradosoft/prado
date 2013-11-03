@@ -274,14 +274,14 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	{
 //null) are "timeout", "error", "abort", and "parsererror"
 		if (this.options.onFailure)
-			this.options.onFailure(this,null);
+			this.options.onFailure(this,textStatus);
 	},
 
 	completeHandler: function(request, textStatus)
 	{
 //"success", "notmodified", "error", "timeout", "abort", or "parsererror"
 		if (this.options.onComplete)
-			this.options.onComplete(this,null);
+			this.options.onComplete(this,textStatus);
 	},
 
 	/**
@@ -290,14 +290,21 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	exceptionHandler: function(e)
 	{
 		if (this.options.onException)
-			this.options.onException(this,null);
-
+			this.options.onException(this,e);
+		/*
 		var msg = "";
 		jQuery.each(e, function(item)
 		{
 			msg += item.key+": "+item.value+"\n";
 		})
-		Logger.error('Uncaught Callback Client Exception:', msg);
+		*/
+		if(typeof(Logger) != "undefined")
+		{
+			Logger.error('Uncaught Callback Client Exception:', e.message);
+			Logger.error('Stack:', e.message);
+		} else {
+			debugger;
+		}
 	},
 
 	/**
@@ -305,10 +312,11 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	successHandler: function(data, textStatus, request)
 	{
-		if (this.options.onSuccess)
-			this.options.onSuccess(this,null);
-
 		this.data = data;
+
+		if (this.options.onSuccess)
+			this.options.onSuccess(this,textStatus);
+
 		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
 				document.location.href = redirectUrl;
@@ -388,7 +396,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 					Logger.warn("Invalid hidden field list:"+data);
 			} else {
 				for(var key in json)
-					Prado.CallbackRequestManager.checkHiddenField(key,json[key]);
+					this.checkHiddenField(key,json[key]);
 			}
 		}
 	},
@@ -593,7 +601,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			try {
 				method.toFunction().apply(request,command[method]);
 			} catch(e) {
-				this.exceptionHandler(null,e);
+				this.exceptionHandler(e);
 			}
 		}
 	},
