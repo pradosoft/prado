@@ -196,7 +196,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 		{
-			if(!Prado.Validation.validate(this.getForm(), this.options['ValidationGroup'], this))
+			if(!Prado.Validation.validate(this.getForm().id, this.options['ValidationGroup'], this))
 				return false;
 		}
 

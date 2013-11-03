@@ -24,11 +24,11 @@ Prado.WebUI.TActiveImageButton = jQuery.klass(Prado.WebUI.TImageButton,
 {
 	onPostBack : function(options, event)
 	{
-		this.addXYInput(event,options);
+		this.addXYInput(options, event);
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
-		event.stopPropagation();
-		this.removeXYInput(event,options);
+		event.preventDefault();
+		this.removeXYInput(options, event);
 	}
 });
 /**
@@ -40,7 +40,7 @@ Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
 	{
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		if(request.dispatch()==false)
-			event.stopPropagation();
+			event.preventDefault();
 	}
 });
 
@@ -88,7 +88,7 @@ Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
 		var request = new Prado.CallbackRequest(options.EventTarget, options);
 		request.dispatch();
         if (!Prototype.Browser.IE)
-		    event.stopPropagation();
+		    event.preventDefault();
 	}
 });
 
@@ -278,7 +278,7 @@ Prado.WebUI.ActiveListControl = jQuery.klass(Prado.WebUI.Control,
 	{
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
-		event.stopPropagation();
+		event.preventDefault();
 	}
 });
 
@@ -321,7 +321,7 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.dispatch();
 		if(this.options.StopEvent == true)
-			event.stopPropagation();
+			event.preventDefault();
 	}
 });
 
@@ -421,7 +421,7 @@ Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
 		},this.options);
 		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)
-			ev.stopPropagation();
+			ev.preventDefault();
 	}
 	
 });
