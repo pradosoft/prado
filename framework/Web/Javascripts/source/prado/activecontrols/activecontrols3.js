@@ -292,7 +292,7 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	onInit : function(options)
 	{
 		this.options = options || {} ;
-		var element = $(options['ControlID']);
+		var element = $('#'+options['ControlID']).get(0);
 		if(element)
 			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
@@ -337,7 +337,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	{
 		this.options = options || {} ;
 		this.options.PropertyName = this.options.PropertyName || 'value';
-		var element = $(options['ControlID']);
+		var element = $('#'+options['ControlID']).get(0);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
 		this.startObserving();
@@ -356,7 +356,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 
 	checkChanges : function()
 	{
-		var element = $(this.options.ControlID);
+		var element = $('#'+this.options.ControlID).get(0);
 		if(element)
 		{
 			var value = element[this.options.PropertyName];
