@@ -113,6 +113,7 @@ $dependencies = array(
 		'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
 		'ajax'				=> array('jquery', 'prado', 'ajax'),
 		'logger'			=> array('jquery', 'prado', 'logger'),
+		'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
 
 		'effects'			=> array('prototype', 'prado', 'effects'),
 		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
@@ -121,7 +122,6 @@ $dependencies = array(
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
 		'activedatepicker'	=> array('prototype', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
-		'activefileupload'	=> array('prototype', 'prado', 'effects', 'ajax', 'activefileupload'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
 		'htmlarea'			=> array('prototype', 'prado', 'htmlarea'),
