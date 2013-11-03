@@ -304,33 +304,30 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 */
 	addXYInput : function(event,options)
 	{
-		var imagePos = this.element.cumulativeOffset();
+		var imagePos = jQuery(this.element).offset();
 		var clickedPos = [event.clientX, event.clientY];
-		var x = clickedPos[0]-imagePos[0]+1;
-		var y = clickedPos[1]-imagePos[1]+1;
+		var x = clickedPos[0]-imagePos['left']+1;
+		var y = clickedPos[1]-imagePos['top']+1;
 		x = x < 0 ? 0 : x;
 		y = y < 0 ? 0 : y;
-		var id = options['EventTarget'];
-		var x_input = $(id+"_x");
-		var y_input = $(id+"_y");
-		if(x_input)
-		{
-			x_input.value = x;
-		}
-		else
-		{
-			x_input = INPUT({type:'hidden',name:id+'_x','id':id+'_x',value:x});
-			this.element.parentNode.appendChild(x_input);
-		}
-		if(y_input)
-		{
-			y_input.value = y;
-		}
-		else
-		{
-			y_input = INPUT({type:'hidden',name:id+'_y','id':id+'_y',value:y});
-			this.element.parentNode.appendChild(y_input);
-		}
+		var id = this.element.id;
+		var name = options['EventTarget'];
+		var form = this.element.form;
+
+		var input=null;
+		input = document.createElement("input");
+		input.setAttribute("type", "hidden");
+		input.setAttribute("id", id+"_x");
+		input.setAttribute("name", name+"_x");
+		input.setAttribute("value", x);
+		form.appendChild(input);
+
+		input = document.createElement("input");
+		input.setAttribute("type", "hidden");
+		input.setAttribute("id", id+"_y");
+		input.setAttribute("name", name+"_y");
+		input.setAttribute("value", y);
+		form.appendChild(input);
 	},
 
 	/**
@@ -340,9 +337,9 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 */
 	removeXYInput : function(event,options)
 	{
-		var id = options['EventTarget'];
-		this.element.parentNode.removeChild($(id+"_x"));
-		this.element.parentNode.removeChild($(id+"_y"));
+		var id = this.element.id;
+		jQuery('#'+id+'_x').remove();
+		jQuery('#'+id+'_y').remove();
 	}
 });
 
