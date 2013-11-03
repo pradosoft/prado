@@ -1185,6 +1185,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 					tinyMCE.triggerSave();
 				return control.value;
 			case 'TRadioButton':
+			case 'TActiveRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
 			case 'TCheckBox':
@@ -1221,6 +1222,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 			case 'TRadioButton':
 			case 'TCheckBox':
 			case 'TActiveCheckBox':
+			case 'TActiveRadioButton':
 				return value;
 			default:
 				if(this.isListControlType())
