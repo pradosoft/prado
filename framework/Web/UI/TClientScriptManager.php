@@ -697,6 +697,22 @@ class TClientScriptManager extends TApplicationComponent
 		$writer->write(TJavaScript::renderScriptBlocks($this->_endScripts));
 	}
 
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderBeginScriptsCallback($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocksCallback($this->_beginScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderEndScriptsCallback($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocksCallback($this->_endScripts));
+	}
+
 	public function renderHiddenFieldsBegin($writer)
 	{
 		$this->renderHiddenFieldsInt($writer,true);

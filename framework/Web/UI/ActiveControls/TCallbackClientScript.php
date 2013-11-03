@@ -452,7 +452,16 @@ class TCallbackClientScript extends TApplicationComponent
 	 */
 	public function evaluateScript($writer)
 	{
-		$this->callClientFunction('Prado.Element.evaluateScript', array($writer));
+		if($writer instanceof THtmlWriter)
+		{
+			$boundary = $this->getResponseContentBoundary($writer);
+			$content = null;
+		} else {
+			$boundary = null;
+			$content = $writer;
+		}
+
+		$this->callClientFunction('Prado.Element.evaluateScript', array($content, $boundary));
 	}
 
 	/**

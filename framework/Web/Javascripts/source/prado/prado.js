@@ -524,9 +524,17 @@ Prado.Element =
 	 * Evaluate a javascript snippet from a string.
 	 * @function ?
 	 * @param {string} content - String containing the script
+	 * @param {string} boundary - Boundary containing the script
 	 */
-	evaluateScript : function(content)
+	evaluateScript : function(content, boundary)
 	{
+		if(boundary)
+		{
+			var result = this.extractContent(boundary);
+			if(result != null)
+				content = result;
+		}
+
 		try
 		{
 			jQuery.globalEval(content);
