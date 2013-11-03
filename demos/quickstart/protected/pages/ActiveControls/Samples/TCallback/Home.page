@@ -39,7 +39,7 @@ The third parameter is taken from the textbox;
   {
     var request = <%= $this->callback2->ActiveControl->Javascript %>;
     var param2 = 'value 2';
-    var param3 = $('<%= $this->txt1->ClientID %>').value;
+    var param3 = $('#<%= $this->txt1->ClientID %>').val();
     request.setCallbackParameter({'Param1':param1, 'Param2':param2, 'Param3':param3});
     request.dispatch();
   }

@@ -332,6 +332,9 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		$options['CausesValidation']= $validate ? '' : false;
 		$options['ValidationGroup']=$this->getValidationGroup();
 		$options['CallbackParameter'] = $this->getCallbackParameter();
+		// needed for TCallback
+		if(!isset($options['EventTarget']))
+			$options['EventTarget'] = $this->getControl()->getUniqueID();
 		return $options;
 	}
 
