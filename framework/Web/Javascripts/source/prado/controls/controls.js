@@ -185,7 +185,7 @@ Prado.WebUI.Control = jQuery.klass({
 	clearInterval: function(intervalid)
 	{
 		window.clearInterval(intervalid);
-		this.intervals = this.intervals.without(intervalid);
+		this.intervals.splice( jQuery.inArray(intervalid, this.intervals), 1 );
 	},
 
 	/**
