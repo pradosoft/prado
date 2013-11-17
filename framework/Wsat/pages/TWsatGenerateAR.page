@@ -1,0 +1,23 @@
+<com:TContent ID="Content">
+    <div style="margin-left: 220px">
+        <div class="form_row">
+        <com:TLabel Text="Table Name:" ForControl="table_name" style="margin-right: 14px" />
+        <com:TTextBox ID="table_name" Text="*" CssClass="in_text" />
+        </div>
+        <div class="form_row">
+            <com:TLabel Text="Class Prefix:" ForControl="class_prefix" style="margin-right: 16px"/>
+            <com:TTextBox ID="class_prefix" Text="AR_" CssClass="in_text" />
+        </div>
+        <div class="form_row">
+            <com:TLabel Text="Output Folder:" ForControl="output_folder"/>
+            <com:TTextBox ID="output_folder" Text="Application.App_Data.AR_Classes" CssClass="in_text" />
+        </div>
+
+        <br/> 
+        <div style="text-align: center">
+            <com:TButton Text="Preview" OnClick="preview" />
+            <com:TButton Text="Generate" OnClick="generate" />
+        </div>        
+    </div>    
+        
+</com:TContent>

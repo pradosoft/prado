@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+    <div>
+        <com:TLabel Text="Password:" ForControl="password"/>
+        <com:TTextBox ID="password" />
+    </div>
+
+    <br/>    
+    <com:TButton Text="Login" OnClick="login" />   
+</com:TContent>

@@ -1,0 +1,5 @@
+<com:TContent ID="Content">
+    <label style="font-size: 18px; font-weight: bold">Welcome to Web Site Administration Tool</label> 
+    
+    <div style="margin-top: 25px"><b>Application Dir:</b> <%= Prado::getPathOfNamespace('Application') %></div>
+</com:TContent>

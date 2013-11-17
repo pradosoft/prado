@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration> 
+    <modules>
+        <module id="wsat_theme" class="System.Web.UI.TThemeManager" BasePath="System.Wsat.themes"  />    
+    </modules>
+    
+    <pages Theme="PradoSoft" MasterClass="System.Wsat.pages.layout.TWsatLayout" />
+</configuration>
