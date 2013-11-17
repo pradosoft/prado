@@ -1275,9 +1275,9 @@ class TPageStateFormatter
 	{
 		$sm=$page->getApplication()->getSecurityManager();
 		if($page->getEnableStateValidation())
-			$str=$sm->hashData(Prado::serialize($data));
+			$str=$sm->hashData(serialize($data));
 		else
-			$str=Prado::serialize($data);
+			$str=serialize($data);
 		if($page->getEnableStateCompression() && extension_loaded('zlib'))
 			$str=gzcompress($str);
 		if($page->getEnableStateEncryption())
@@ -1305,10 +1305,10 @@ class TPageStateFormatter
 			if($page->getEnableStateValidation())
 			{
 				if(($str=$sm->validateData($str))!==false)
-					return Prado::unserialize($str);
+					return unserialize($str);
 			}
 			else
-				return Prado::unserialize($str);
+				return unserialize($str);
 		}
 		return null;
 	}

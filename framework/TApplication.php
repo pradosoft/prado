@@ -1071,10 +1071,10 @@ class TApplication extends TComponent
 				$config=new TApplicationConfiguration;
 				$config->loadFromFile($this->_configFile);
 				if($this->_cacheFile!==null)
-					file_put_contents($this->_cacheFile,Prado::serialize($config),LOCK_EX);
+					file_put_contents($this->_cacheFile,serialize($config),LOCK_EX);
 			}
 			else
-				$config=Prado::unserialize(file_get_contents($this->_cacheFile));
+				$config=unserialize(file_get_contents($this->_cacheFile));
 
 			$this->applyConfiguration($config,false);
 		}
@@ -1844,11 +1844,11 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	public function load()
 	{
 		if(($cache=$this->getApplication()->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
-			return Prado::unserialize($value);
+			return unserialize($value);
 		else
 		{
 			if(($content=@file_get_contents($this->getStateFilePath()))!==false)
-				return Prado::unserialize($content);
+				return unserialize($content);
 			else
 				return null;
 		}
@@ -1860,7 +1860,7 @@ class TApplicationStatePersister extends TModule implements IStatePersister
 	 */
 	public function save($state)
 	{
-		$content=Prado::serialize($state);
+		$content=serialize($state);
 		$saveFile=true;
 		if(($cache=$this->getApplication()->getCache())!==null)
 		{
