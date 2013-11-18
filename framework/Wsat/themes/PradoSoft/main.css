@@ -110,7 +110,17 @@ html, body{
 }
 
 .in_text{
-   width: 250px; 
+    width: 250px; 
+}
+
+.login_form{
+    text-align: center;
+    margin: 30px auto;
+    border: 1px solid red;
+    border-radius: 5px;
+    padding: 10px;
+    width: 250px;
+    font-size: 11px;
 }
 
 #footer {

@@ -23,7 +23,7 @@
                 <div style="float: right"><com:THyperLink NavigateUrl="<%= $this->Service->DefaultPageUrl %>" Text="Web App" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="float: right"><com:THyperLink NavigateUrl="http://www.pradosoft.com/forum/" Text="Help" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="clear: both"></div>
-            </div>
+            </div> 
             
             <div id="central_div">
                 <div id="toc">

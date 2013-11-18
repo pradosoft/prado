@@ -9,7 +9,7 @@ class TWsatLayout extends TTemplateControl {
 
     public function onLoad($param) {
         parent::onLoad($param);
-        $this->validateSecurity();
+        $this->validateSecurity(); 
     }
 
     private function validateSecurity() {
