@@ -413,24 +413,24 @@ Prado.WebUI.DefaultButton = jQuery.klass(Prado.WebUI.Control,
 	onInit : function(options)
 	{
 		this.options = options;
-		this.observe(options['Panel'], "keydown", jQuery.proxy(this.triggerEvent,this));
+		this.observe(jQuery('#'+options['Panel']), "keydown", jQuery.proxy(this.triggerEvent,this));
 	},
 
-	triggerEvent : function(ev, target)
+	triggerEvent : function(ev)
 	{
-		var enterPressed = Event.keyCode(ev) == Event.KEY_RETURN;
-		var isTextArea = Event.element(ev).tagName.toLowerCase() == "textarea";
-		var isHyperLink = Event.element(ev).tagName.toLowerCase() == "a" && Event.element(ev).hasAttribute("href");
-		var isValidButton = Event.element(ev).tagName.toLowerCase() == "input" &&  Event.element(ev).type.toLowerCase() == "submit";
+		var enterPressed = ev.keyCode == 13;
+		var isTextArea = ev.target.tagName.toLowerCase() == "textarea";
+		var isHyperLink = ev.target.tagName.toLowerCase() == "a" && ev.target.hasAttribute("href");
+		var isValidButton = ev.target.tagName.toLowerCase() == "input" &&  ev.target.type.toLowerCase() == "submit";
 		
 		if(enterPressed && !isTextArea && !isValidButton && !isHyperLink)
 		{
-			var defaultButton = $(this.options['Target']);
+			var defaultButton = $('#'+this.options['Target']);
 			if(defaultButton)
 			{
 				this.triggered = true;
-				Event.fireEvent(defaultButton, this.options['Event']);
-				Event.stop(ev);
+				defaultButton.trigger(this.options['Event']);
+				ev.preventDefault();
 			}
 		}
 	}
