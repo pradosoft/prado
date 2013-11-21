@@ -121,7 +121,7 @@ Prado.WebUI.Control = jQuery.klass({
 	{
 		var idx = this.findObserver(element,eventName,handler);
 		if (idx!=-1)
-			this.observers = this.observers.without(this.observers[idx]);
+			this.observers.splice(idx, 1);
 		else
 			debugger; // shouldn't happen
 
