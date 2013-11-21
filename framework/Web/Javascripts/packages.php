@@ -117,8 +117,8 @@ $dependencies = array(
 		'effects'			=> array('jquery', 'jqueryui'),
 		'datepicker'		=> array('jquery', 'prado', 'datepicker'),
 		'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
 /*
-		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
