@@ -431,7 +431,7 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 					obj.changeeventtimer = null;
 				}
 				obj.changeeventtimer = setTimeout(
-					function() { obj.changeeventtimer = null; element.trigger("change"); },
+					function() { obj.changeeventtimer = null; jQuery(element).trigger("change"); },
 					1500
 				);
 			}

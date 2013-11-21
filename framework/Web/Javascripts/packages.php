@@ -116,12 +116,12 @@ $dependencies = array(
 		'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
 		'effects'			=> array('jquery', 'jqueryui'),
 		'datepicker'		=> array('jquery', 'prado', 'datepicker'),
+		'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 /*
 		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
-		'activedatepicker'	=> array('prototype', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
 		'htmlarea'			=> array('prototype', 'prado', 'htmlarea'),
