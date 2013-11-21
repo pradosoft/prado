@@ -114,9 +114,9 @@ $dependencies = array(
 		'ajax'				=> array('jquery', 'prado', 'ajax'),
 		'logger'			=> array('jquery', 'prado', 'logger'),
 		'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
-
-		'effects'			=> array('prototype', 'prado', 'effects'),
-		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
+		'effects'			=> array('jquery', 'jqueryui'),
+		'datepicker'		=> array('jquery', 'prado', 'datepicker'),
+/*
 		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
@@ -128,6 +128,7 @@ $dependencies = array(
 		'htmlarea4'			=> array('prototype', 'prado', 'htmlarea4'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
 		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
+		*/
 		'jqueryui'			=> array('jquery', 'jqueryui'),
 );
 
