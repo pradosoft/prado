@@ -457,7 +457,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		$options['axis'] = strtolower($this->getDirection());
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
-		$options['range'] = TJavascript::quoteJsLiteral('$R('.$minValue.",".$maxValue.")");
+		$options['range'] = array($minValue, $maxValue);
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values=$this->getValues();

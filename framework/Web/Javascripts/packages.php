@@ -121,9 +121,9 @@ $dependencies = array(
 		'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
 		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
 		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
+		'slider'			=> array('jquery', 'prado', 'slider'),
 /*
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
-		'slider'			=> array('prototype', 'prado', 'slider'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
