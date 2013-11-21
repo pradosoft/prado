@@ -119,13 +119,13 @@ $dependencies = array(
 		'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 		'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
 		'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
+		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
 /*
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'slider'			=> array('prototype', 'prado', 'slider'),
 		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
-		'htmlarea4'			=> array('prototype', 'prado', 'htmlarea4'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
 		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
 		*/
