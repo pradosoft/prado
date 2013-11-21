@@ -369,7 +369,12 @@ Prado.WebUI.TTextBox = jQuery.klass(Prado.WebUI.PostBackControl,
 		if(this.options['TextMode'] != 'MultiLine')
 			this.observe(this.element, "keydown", this.handleReturnKey.bind(this));
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.element, "change", jQuery.proxy(Prado.PostBack,this,options));
+			this.observe(this.element, "change", jQuery.proxy(this.doPostback,this,options));
+	},
+
+	doPostback : function(options, event)
+	{
+		new Prado.PostBack(options, event);
 	},
 
 	handleReturnKey : function(e)
