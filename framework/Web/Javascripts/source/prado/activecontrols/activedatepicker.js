@@ -6,7 +6,7 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 	onInit : function(options)
 	{
 		this.options = options || [];
-		this.control = $(options.ID);
+		this.control = $('#'+options.ID).get(0);
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
@@ -17,7 +17,7 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
-			this.trigger = $(this.options.Trigger) ;
+			this.trigger = $('#'+this.options.Trigger).get(0) ;
 			var triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
@@ -32,7 +32,7 @@ Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 			this.positionMode = this.options.PositionMode;
 		}
 
-		Object.extend(this,options);
+		jQuery.extend(this,options);
 
 		if (this.options.ShowCalendar)
 			this.observe(this.trigger, triggerEvent, jQuery.proxy(this.show,this));
