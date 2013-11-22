@@ -428,7 +428,7 @@ class TDatePicker extends TTextBox
 			$this->renderDropDownListCalendar($writer);
 			if($this->hasDayPattern())
 			{
-				$this->registerCalendarClientScriptPost();
+				$this->renderClientControlScript($writer);
 				$this->renderDatePickerButtons($writer);
 			}
 		}
@@ -850,9 +850,7 @@ class TDatePicker extends TTextBox
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$this->registerCalendarClientScriptPost();
 	}
-
 
 	/**
 	 * Registers the javascript code to initialize the date picker.
@@ -866,7 +864,7 @@ class TDatePicker extends TTextBox
 		}
 	}
 
-	protected function registerCalendarClientScriptPost()
+	protected function renderClientControlScript($writer)
 	{
 		if($this->getShowCalendar())
 		{

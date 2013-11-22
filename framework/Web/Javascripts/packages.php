@@ -114,20 +114,21 @@ $dependencies = array(
 		'ajax'				=> array('jquery', 'prado', 'ajax'),
 		'logger'			=> array('jquery', 'prado', 'logger'),
 		'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
-
-		'effects'			=> array('prototype', 'prado', 'effects'),
-		'datepicker'		=> array('prototype', 'prado', 'datepicker'),
-		'colorpicker'		=> array('prototype', 'prado', 'colorpicker'),
+		'effects'			=> array('jquery', 'jqueryui'),
+		'datepicker'		=> array('jquery', 'prado', 'datepicker'),
+		'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
+		'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
+		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
+		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
+		'slider'			=> array('jquery', 'prado', 'slider'),
+/*
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
-		'slider'			=> array('prototype', 'prado', 'slider'),
-		'keyboard'			=> array('prototype', 'prado', 'keyboard'),
-		'activedatepicker'	=> array('prototype', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
 		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
-		'htmlarea'			=> array('prototype', 'prado', 'htmlarea'),
-		'htmlarea4'			=> array('prototype', 'prado', 'htmlarea4'),
 		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
 		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
+		*/
 		'jqueryui'			=> array('jquery', 'jqueryui'),
 );
 
