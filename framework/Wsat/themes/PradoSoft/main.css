@@ -123,6 +123,24 @@ html, body{
     font-size: 11px;
 }
 
+.success_panel{
+    background-color: #C5FBBD;
+    border: 1px solid #76C376;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.exception_panel{
+    background-color: #ff6666;
+    border: 1px solid red;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
 #footer {
     clear:both;
     color: gray;
