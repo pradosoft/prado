@@ -10,13 +10,11 @@
 		Click Me!
 	</div>
 	<script type="text/javascript">
-		Event.OnLoad(function()
-		{
-			Event.observe($("div1"), "click", function()
-			{
-				Prado.Callback("<%= $this->callback1->UniqueID %>")
-			})
-		})
+		jQuery( document ).ready(function() {
+			jQuery("#div1").click(function() {
+				Prado.Callback("<%= $this->callback1->UniqueID %>");
+			});
+		});
 	</script>
 	<com:TJavascriptLogger />
 </com:TForm>
