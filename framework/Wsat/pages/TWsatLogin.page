@@ -29,9 +29,10 @@
             <div class="login_form">
                 <com:TLabel Text="Please enter your password:" ForControl="password"/><br/>  
                 <com:TTextBox ID="password" TextMode="Password" style="margin: 5px" /><br/>  
-                <com:TRequiredFieldValidator ControlToValidate="password" Text="Password cannot be blank." /><br/>  
-                
-                <com:TButton Text="Enter" OnClick="login" />  
+                <com:TRequiredFieldValidator ControlToValidate="password" ValidationGroup="loginGroup" Text="Password cannot be blank." /><br/>  
+                <com:TCustomValidator ControlToValidate="password" ValidationGroup="loginGroup" OnServerValidate="validatePassword" Text="Incorrect password." />
+
+                <com:TButton Text="Enter" ValidationGroup="loginGroup" OnClick="login" />  
             </div>                       
 
             <div id="footer">

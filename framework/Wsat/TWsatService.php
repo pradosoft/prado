@@ -7,10 +7,11 @@
  * @author Daniel Sampedro darthdaniel85@gmail.com
  * @since Prado 3.3
  * 
- * To use TWsatService, configure it in the application specification like following:
+ * To use TWsatService, configure it in the application configuration file like following:
  * <code>
  *   <services>
- *    <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
+ *     ...
+ *     <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
  *   </services>
  * </code>
  * ...and then you need to go to http://localhost/yoursite/index.php?wsat=TWsatLogin
