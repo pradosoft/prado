@@ -388,7 +388,7 @@ Prado.Element =
 			try
 			{
 				eval("(func = function(event){"+value+"})");
-				el[attribute] = func;
+				el.get(0)[attribute] = func;
 			}
 			catch(e)
 			{
