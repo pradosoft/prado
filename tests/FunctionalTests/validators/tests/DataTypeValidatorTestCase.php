@@ -7,11 +7,11 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 {
 	function test()
 	{
-		$this->setSpeed(500);
 		$base = "ctl0_Content_";
 		$this->open("validators/index.php?page=DataTypeValidator", "");
 		$this->verifyTextPresent("Data Type Validator Tests", "");
 		$this->click("//input[@type='submit' and @value='submit!']", "");
+		$this->pause(500);
 		
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
@@ -21,6 +21,7 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->type("{$base}textbox2", "b");
 		$this->type("{$base}textbox3", "c");
 		$this->click("//input[@type='submit' and @value='submit!']", "");
+		$this->pause(500);
 
 		$this->assertVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
@@ -39,11 +40,11 @@ class DataTypeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->type("{$base}textbox2", "-12.5");
 		$this->type("{$base}textbox3", "2/13/2005");
 		$this->click("//input[@type='submit' and @value='submit!']", "");
+		$this->pause(500);
 		
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 		$this->assertVisible("{$base}validator3");
-		$this->setSpeed(0);
 	}
 		
 } 

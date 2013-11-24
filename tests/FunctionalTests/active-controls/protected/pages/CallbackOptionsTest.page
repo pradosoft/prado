@@ -3,25 +3,25 @@
 
 	<com:TCallbackOptions ID="options1">
 		<prop:ClientSide.OnLoading>
-			$("status").show();
+			$("#status").show();
 		</prop:ClientSide.OnLoading>
 		<prop:ClientSide.OnComplete>
-			$("status").hide();
+			$("#status").hide();
 		</prop:ClientSide.OnComplete>
 		<prop:ClientSide.OnSuccess>
-			Element.update("label1", "Button 1 has returned");
+			$("#label1").html("Button 1 has returned");
 		</prop:ClientSide.OnSuccess>
 	</com:TCallbackOptions>
 
 	<com:TActiveButton id="button1" Text="Button 1" ActiveControl.CallbackOptions="options1" />
 	<com:TActiveButton id="button2" Text="Button 2" ActiveControl.CallbackOptions="options1">
 		<prop:ClientSide.OnSuccess>
-			Element.update("label2", "Button 2 has returned");
+			$("#label2").html("Button 2 has returned");
 		</prop:ClientSide.OnSuccess>
 	</com:TActiveButton>
 	<com:TActiveButton id="button3" Text="Button 3">
 		<prop:ClientSide.OnSuccess>
-			Element.update("label3", "Button 3 has returned");
+			$("#label3").html("Button 3 has returned");
 		</prop:ClientSide.OnSuccess>
 	</com:TActiveButton>
 
