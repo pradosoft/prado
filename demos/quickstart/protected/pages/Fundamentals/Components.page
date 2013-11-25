@@ -96,7 +96,216 @@ $button->OnClick->add( $callback );
 $button->OnClick[] = $callback;
 $button->attachEventHandler( 'OnClick' , $callback );
 </com:TTextHighlighter>
-where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
+</p>
+ The variable <tt>$callback</tt> contains the definition of the event handler that can be either a string referring to a global function name, or an array whose first element refers to an object and second element a method name/path that is reachable by the object, e.g.
+ </p>
+<ul>
+<li>'buttonClicked' : buttonClicked($sender,$param);</li>
+<li>array($object,'buttonClicked') : $object->buttonClicked($sender,$param);</li>
+<li>array($object,'MainContent.SubmitButton.buttonClicked') : $object->MainContent->SubmitButton->buttonClicked($sender,$param);</li>
+</ul>
+<com:SinceVersion Version="3.2.3" />
+<h2>Global events</h2>
+<p>
+With the addition of behaviors, a more expansive event model is needed.  There 
+are two new event types (global and dynamic events) as well as a more comprehensive 
+behavior model that includes class wide behaviors.
+</p>
+<p>
+A global event is defined by all events whose name starts with 'fx'.
+The event name is potentially a method name and is thus case-insensitive. All 'fx' events 
+are valid as the whole 'fx' event/method space is global in nature. Any object may patch into
+any global event by defining that event as a method. Global events have priorities 
+just like 'on' events; so as to be able to order the event execution. Due to the 
+nature of all events which start with 'fx' being valid, in effect, every object 
+has every 'fx' global event. It is simply an issue of tapping into the desired 
+global event.
+</p>
+<p>
+A global event that starts with 'fx' can be called even if the object does not
+implement the method of the global event.  A call to a non-existing 'fx' method
+will, at minimal, function and return null.  If a method argument list has a first 
+parameter, it will be returned instead of null.  This allows filtering and chaining.
+'fx' methods do not automatically install and uninstall. To install and uninstall an
+object's global event listeners, call the object's <tt>listen</tt> and 
+<tt>unlisten</tt> methods, respectively.  An object may auto-install its global event
+during <tt>__construct</tt> by overriding <tt>getAutoGlobalListen</tt> and returning true.
+</p>
+<p>
+As of PHP version 5.3, nulled objects without code references will still continue to persist
+in the global event queue because <tt>__destruct</tt> is not automatically called.  In the common
+__destruct method, if an object is listening to global events, then <tt>unlisten</tt> is called.
+<tt>unlisten</tt> is required to be manually called before an object is
+left without references if it is currently listening to any global events. This includes 
+class wide behaviors.
+</p>
+<p>
+An object that contains a method that starts with 'fx' will have those functions 
+automatically receive those events of the same name after <tt>listen</tt> is called on the object.
+</p>
+<p>
+An object may listen to a global event without defining an 'fx' method of the same name by 
+adding an object method to the global event list.  For example
+</p>
+<com:TTextHighlighter CssClass="source block-content">
+$component->fxGlobalCheck=$callback;  // or $component->OnClick->add($callback);
+$component->attachEventHandler('fxGlobalCheck',array($object, 'someMethod'));
+</com:TTextHighlighter>
+<h2>Events between Objects and their behaviors, Dynamic Events</h2>
+<p>
+An intra-object/behavior event is defined by methods that start with 'dy'.  Just as with 
+'fx' global events, every object has every dynamic event.  Any call to a method that
+starts with 'dy' will be handled, regardless of whether it is implemented.  These 
+events are for communicating with attached behaviors.
+</p>
+<p>
+Dynamic events can be used in a variety of ways.  They can be used to tell behaviors
+when a non-behavior method is called.  Dynamic events could be used as data filters.
+They could also be used to specify when a piece of code is to be run, eg. should the 
+loop process be performed on a particular piece of data.  In this way, some control
+is handed to the behaviors over the process and/or data.
+</p>
+<p>
+If there are no handlers for an 'fx' or 'dy' event, it will return the first
+parameter of the argument list.  If there are no arguments, these events
+will return null.  If there are handlers an 'fx' method will be called directly
+within the object.  Global 'fx' events are triggered by calling <tt>raiseEvent</tt>.
+For dynamic events where there are behaviors that respond to the dynamic events, a 
+<tt>TCallChain</tt> is developed.  A call chain allows the behavior dynamic event
+implementations to call further implementing behaviors within a chain.
+</p>
+<p>
+If an object implements <tt>IDynamicMethods</tt>, all global and object dynamic 
+events will be sent to <tt>__dycall</tt>.  In the case of global events, all 
+global events will trigger this method.  In the case of behaviors, all undefined
+dynamic events  which are called will be passed through to this method.
+</p>
+<p>
+<h2>Behaviors</h2>
+<p>
+There are two types of behaviors.  There are individual object behaviors and
+there are class wide behaviors.  Class behaviors depend upon object behaviors.
+</p>
+<p>
+When a new class implements <tt>IBehavior</tt> or <tt>IClassBehavior</tt> or
+extends <tt>TBehavior</tt> or <tt>TClassBehavior</tt>, it may be added to an 
+object by calling the object's <tt>attachBehavior</tt>.  The behaviors associated
+name can then be used to <tt>enableBehavior</tt> or <tt>disableBehavior</tt> 
+the specific behavior.
+</p>
+<p>
+All behaviors may be turned on and off via <tt>enableBehaviors</tt> and 
+<tt>disableBehaviors</tt>, respectively.  To check if behaviors are on or off
+a call to <tt>getBehaviorsEnabled</tt> will provide the variable.
+</p>
+<p>
+Attaching and detaching whole sets of behaviors is done using 
+<tt>attachBehaviors</tt> and <tt>detachBehaviors</tt>.  <tt>clearBehaviors</tt>
+removes all of an object's behaviors.
+</p>
+<p>
+<tt>asa</tt> returns a behavior of a specific name.  <tt>isa</tt> is the
+behavior inclusive function that acts as the PHP operator <tt>instanceof</tt>.
+A behavior could provide the functionality of a specific class thus causing
+the host object to act similarly to a completely different class.  A behavior 
+would then implement <tt>IInstanceCheck</tt> to provide the identity of the 
+different class.
+</p>
+<p>
+Class behaviors are similar to object behaviors except that the class behavior 
+is the implementation for all instances of the class.  A class behavior
+will have the object upon which is being called be prepended to the parameter
+list.  This way the object is known across the class behavior implementation.
+</p>
+<p>
+Class behaviors are attached using <tt>attachClassBehavior</tt> and detached
+using <tt>detachClassBehavior</tt>.  Class behaviors are important in that
+they will be applied to all new instances of a particular class.  In this way
+class behaviors become default behaviors to a new instances of a class in
+<tt>__construct</tt>.  Detaching a class behavior will remove the behavior 
+from the default set of behaviors created for an object when the object
+is instanced.
+</p>
+<p>
+Class behaviors are also added to all existing instances via the global 'fx' 
+event mechanism.  When a new class behavior is added, the event 
+<tt>fxAttachClassBehavior</tt> is raised and all existing instances that are
+listening to this global event (primarily after <tt>listen</tt> is called)
+will have this new behavior attached.  A similar process is used when
+detaching class behaviors.  Any objects listening to the global 'fx' event
+<tt>fxDetachClassBehavior</tt> will have a class behavior removed.
+</p>
+<h2>Dynamic Intra-Object Events</h2>
+<p>
+Dynamic events start with 'dy'.  This mechanism is used to allow objects
+to communicate with their behaviors directly.  The entire 'dy' event space
+is valid.  All attached, enabled behaviors that implement a dynamic event 
+are called when the host object calls the dynamic event.  If there is no 
+implementation or behaviors, this returns null when no parameters are
+supplied and will return the first parameter when there is at least one
+parameter in the dynamic event.
+</p>
+<com:TTextHighlighter CssClass="source block-content">
+	null == $this->dyBehaviorEvent();
+	5 == $this->dyBehaviorEvent(5); //when no behaviors implement this dynamic event
+</com:TTextHighlighter>
+<p>
+Dynamic events can be chained together within behaviors to allow for data 
+filtering. Dynamic events are implemented within behaviors by defining the
+event as a method.
+</p>
+<com:TTextHighlighter CssClass="source block-content">
+class TObjectBehavior extends TBehavior {
+    public function dyBehaviorEvent($param1, $callchain) {
+			//Do something, eg:  $param1 += 13;
+			return $callchain->dyBehaviorEvent($param1);
+    }
+}
+</com:TTextHighlighter>
+<p>
+This implementation of a behavior and dynamic event will flow through to the 
+next behavior implementing the dynamic event.  The first parameter is always 
+return when it is supplied.  Otherwise a dynamic event returns null.
+</p>
+<p>
+In the case of a class behavior, the object is also prepended to the dynamic
+event.
+</p>
+<com:TTextHighlighter CssClass="source block-content">
+class TObjectClassBehavior extends TClassBehavior {
+    public function dyBehaviorEvent($hostobject, $param1, $callchain) {
+			//Do something, eg:  $param1 += $hostobject->getNumber();
+			return $callchain->dyBehaviorEvent($param1);
+    }
+}
+</com:TTextHighlighter>
+</p>
+<p>
+When calling a dynamic event, only the parameters are passed.  The host object
+and the call chain are built into the framework.
+</p>
+
+<h2>Global Event and Dynamic event catching</h2>
+
+<p>
+Given that all global 'fx' events and dynamic 'dy' events are valid and 
+operational, there is a mechanism for catching events called that are not
+implemented (similar to the built-in PHP method <tt>__call</tt>).  When
+a dynamic or global event is called but a behavior does not implement it, 
+yet desires to know when an undefined dynamic event is run, the behavior 
+implements the interface <tt>IDynamicMethods</tt> and method <tt>__dycall</tt>.
+</p>
+<p>
+In the case of dynamic events, <tt>__dycall</tt> is supplied with the method 
+name and its parameters.  When a global event is raised, via <tt>raiseEvent</tt>,
+the method is the event name and the parameters are supplied.
+</p>
+<p>
+When implemented, this catch-all mechanism is called for event global event event
+when implemented outside of a behavior.  Within a behavior, it will also be called
+when the object to which the behavior is attached calls any unimplemented dynamic 
+event.  This is the fall-back mechanism for informing a class and/or behavior 
+of when an global and/or undefined dynamic event is executed.
 </p>
 
 <h2 id="704">Namespaces</h2>
