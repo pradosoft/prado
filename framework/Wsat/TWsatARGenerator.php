@@ -1,9 +1,13 @@
 <?php
 
 /**
- * Description of TWsatARGenerator
- *
- * @author Daniel
+ * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @version $Id$
+ * @since 3.3
+ * @package Wsat
  */
 class TWsatARGenerator {
 
@@ -30,9 +34,20 @@ class TWsatARGenerator {
     private $_clas_prefix;
 
     /**
+     * Class name sufix
+     */
+    private $_class_sufix;
+
+    /**
      * all table relations array
      */
     private $_relations;
+
+    /**
+     * unquote chars
+     * @var array 
+     */
+    private $uq_chars = array('[', ']', '"', '`', "'");
 
     function __construct() {
         $ar_manager = TActiveRecordManager::getInstance();
@@ -63,6 +78,10 @@ class TWsatARGenerator {
 
     public function setClasPrefix($_clas_prefix) {
         $this->_clas_prefix = $_clas_prefix;
+    }
+
+    public function setClassSufix($_clas_sufix) {
+        $this->_class_sufix = $_clas_sufix;
     }
 
 //-----------------------------------------------------------------------------    
@@ -137,7 +156,7 @@ class TWsatARGenerator {
     private function _getProperClassName($tableName) {
         $table_name_words = str_replace("_", " ", strtolower($tableName));
         $final_conversion = str_replace(" ", "", ucwords($table_name_words));
-        return $this->_clas_prefix . $final_conversion;
+        return $this->_clas_prefix . $final_conversion . $this->_class_sufix;
     }
 
     public function renderAllTablesInformation() {
@@ -184,9 +203,9 @@ class TWsatARGenerator {
         try {
             foreach ($tableInfo->getColumns() as $column) {
                 if (isset($column->IsPrimaryKey) && $column->IsPrimaryKey) {
-                    $property = str_replace(array("`", "'", '"'), "", $column->ColumnName);
-                } elseif ($column->DbType == "varchar") {
-                    $property = str_replace(array("`", "'", '"'), "", $column->ColumnName);
+                    $property = str_replace($this->uq_chars, "", $column->ColumnName);
+                } elseif ($column->PHPType == "string" && $column->DBType != "date") {
+                    $property = str_replace($this->uq_chars, "", $column->ColumnName);
                     break;
                 }
             }

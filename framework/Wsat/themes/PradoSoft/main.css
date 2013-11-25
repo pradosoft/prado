@@ -58,6 +58,7 @@ html, body{
     padding: 1em 1em 1em 1em;
     line-height: 135%;
     float: left;
+    width: 700px;
 }
 
 .topic {
@@ -123,7 +124,7 @@ html, body{
     font-size: 11px;
 }
 
-.success_panel{
+.green_panel{
     background-color: #C5FBBD;
     border: 1px solid #76C376;
     padding: 10px;
@@ -132,7 +133,7 @@ html, body{
     text-align: center;
 }
 
-.exception_panel{
+.red_panel{
     background-color: #ff6666;
     border: 1px solid red;
     padding: 10px;
