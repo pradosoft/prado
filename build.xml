@@ -37,7 +37,6 @@
       All Source Files in framework
   -->
   <fileset dir="." id="framework">
-    <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
     <exclude name="**/pradolite.php"/><!-- will be generated -->
@@ -58,7 +57,6 @@
       Surrounding files
   -->
   <fileset dir="." id="misc">
-    <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
     <include name="COPYRIGHT"/>
@@ -72,7 +70,6 @@
       Documentation
   -->
   <fileset dir="." id="docs">
-    <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
     <exclude name="**/latex"/>
@@ -85,7 +82,6 @@
       Demos
   -->
   <fileset dir="." id="demos">
-    <exclude name="**/.svn"/>
     <exclude name="**/*.bak"/>
     <exclude name="**/*~"/>
     <exclude name="**/runtime/*"/>
@@ -201,8 +197,6 @@
       php="false"
       templateconfig="buildscripts/apigen/pradosoft/config.neon"
     />
-    <echo>Cleaning svn directories from API manuals...</echo>
-    <delete dir="${build.doc.dir}/manual/resources/.svn" includeemptydirs="true" failonerror="true" />
 
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual" todir="${build.doc.dir}/manual"/>
@@ -335,7 +329,6 @@
     <echo>Checking php files..</echo>
     <phplint deprecatedAsError="true">
       <fileset dir="framework">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.php"/>
@@ -345,7 +338,6 @@
     <echo>Checking js files..</echo>
     <jsllint>
       <fileset dir="framework">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.js"/>
@@ -355,7 +347,6 @@
     <echo>Checking xml files..</echo>
     <xmllint>
       <fileset dir="framework">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.xml"/>
@@ -367,7 +358,6 @@
     <echo>Checking php files..</echo>
     <phplint deprecatedAsError="true">
       <fileset dir="demos">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.php"/>
@@ -377,7 +367,6 @@
     <echo>Checking js files..</echo>
     <jsllint>
       <fileset dir="demos">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.js"/>
@@ -387,7 +376,6 @@
     <echo>Checking xml files..</echo>
     <xmllint>
       <fileset dir="demos">
-        <exclude name="**/.svn"/>
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.xml"/>
