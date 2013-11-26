@@ -191,30 +191,6 @@ class PradoBase
 	}
 
 	/**
-	 * Serializes a data.
-	 * The original PHP serialize function has a bug that may not serialize
-	 * properly an object.
-	 * @param mixed data to be serialized
-	 * @return string the serialized data
-	 */
-	public static function serialize($data)
-	{
-		return serialize($data);
-	}
-
-	/**
-	 * Unserializes a data.
-	 * The original PHP unserialize function has a bug that may not unserialize
-	 * properly an object.
-	 * @param string data to be unserialized
-	 * @return mixed unserialized data, null if unserialize failed
-	 */
-	public static function unserialize($str)
-	{
-		return unserialize($str);
-	}
-
-	/**
 	 * Creates a component with the specified type.
 	 * A component type can be either the component class name
 	 * or a namespace referring to the path of the component class file.
