@@ -12,7 +12,6 @@ $exclusions=array(
 	'pradolite.php',
 	'prado-cli.php',
 	'JSMin.php',
-	'.svn',
 	'/I18N/core',
 	'/3rdParty',
 	'/Testing',

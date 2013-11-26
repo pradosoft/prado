@@ -569,7 +569,7 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
 				if($match==null||($match!=null && $this->hasMatch($match,$entry)))
 					$test->addTestFile($path.'/'.$entry);
 			}
-			if($entry!=='.' && $entry!=='..' && $entry!=='.svn' && is_dir($path.'/'.$entry) && $recursive)
+			if($entry!=='.' && $entry!=='..' && is_dir($path.'/'.$entry) && $recursive)
 				$this->addTests($test,$path.'/'.$entry,$recursive,$match);
 		}
 		closedir($dir);
