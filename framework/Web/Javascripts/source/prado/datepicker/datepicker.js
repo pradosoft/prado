@@ -1,4 +1,4 @@
-Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 {
 	MonthNames : [	"January",		"February",		"March",	"April",
 		"May",			"June",			"July",		"August",
@@ -22,18 +22,18 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 	onInit : function(options)
 	{
 		this.options = options || [];
-		this.control = $(options.ID);
+		this.control = $('#'+options.ID).get(0);
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
 		this.positionMode = 'Bottom';
 		
-		Prado.Registry.set(options.ID, this);
+		Prado.Registry[options.ID] = this;
 
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
-			this.trigger = $(this.options.Trigger) ;
+			this.trigger = $('#'+this.options.Trigger).get(0);
 			var triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
@@ -48,27 +48,27 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			this.positionMode = this.options.PositionMode;
 		}
 
-		Object.extend(this,options);
+		jQuery.extend(this,options);
 		// generate default date _after_ extending options
 		this.selectedDate = this.newDate();
 		
-		Event.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+		this.observe(this.trigger, triggerEvent, jQuery.proxy(this.show,this));
 		
 		// Listen to change event if needed
 		if (typeof(this.options.OnDateChanged) == "function")
 		{
 			if(this.options.InputMode == "TextBox")
 			{
-				Event.observe(this.control, "change", this.onDateChanged.bindEvent(this));
+				this.observe(this.control, "change", jQuery.proxy(this.onDateChanged,this));
 			} 
 			else
 			{
 				var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 				var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 				var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-				Event.observe (day, "change", this.onDateChanged.bindEvent(this));
-				Event.observe (month, "change", this.onDateChanged.bindEvent(this));
-				Event.observe (year, "change", this.onDateChanged.bindEvent(this));
+				this.observe (day, "change", jQuery.proxy(this.onDateChanged,this));
+				this.observe (month, "change", jQuery.proxy(this.onDateChanged,this));
+				this.observe (year, "change", jQuery.proxy(this.onDateChanged,this));
 				
 			}
 			
@@ -214,8 +214,8 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 				tmp.data = text;
 				this.dateSlot[(week*7)+day] = tmp;
 
-				Event.observe(td, "mouseover", this.hover.bindEvent(this));
-				Event.observe(td, "mouseout", this.hover.bindEvent(this));
+				this.observe(td, "mouseover", jQuery.proxy(this.hover,this));
+				this.observe(td, "mouseout", jQuery.proxy(this.hover,this));
 
 			}
 		}
@@ -233,60 +233,28 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 		todayButton.value = buttonText;
 		div.appendChild(todayButton);
 
-		if(Prado.Browser().ie)
-		{
-			this.iePopUp = document.createElement('iframe');
-			this.iePopUp.src = Prado.WebUI.TDatePicker.spacer;
-			this.iePopUp.style.position = "absolute"
-			this.iePopUp.scrolling="no"
-			this.iePopUp.frameBorder="0"
-			this.control.parentNode.appendChild(this.iePopUp);
-		}
-
 		this.control.parentNode.appendChild(this._calDiv);
 
 		this.update();
 		this.updateHeader();
 
-		this.ieHack(true);
-
-		// IE55+ extension
-		previousMonth.hideFocus = true;
-		nextMonth.hideFocus = true;
-		todayButton.hideFocus = true;
-		// end IE55+ extension
-
 		// hook up events
-		Event.observe(previousMonth, "click", this.prevMonth.bindEvent(this));
-		Event.observe(nextMonth, "click", this.nextMonth.bindEvent(this));
-		Event.observe(todayButton, "click", this.selectToday.bindEvent(this));
-		//Event.observe(clearButton, "click", this.clearSelection.bindEvent(this));
-		Event.observe(this._monthSelect, "change", this.monthSelect.bindEvent(this));
-		Event.observe(this._yearSelect, "change", this.yearSelect.bindEvent(this));
+		this.observe(previousMonth, "click", jQuery.proxy(this.prevMonth,this));
+		this.observe(nextMonth, "click", jQuery.proxy(this.nextMonth,this));
+		this.observe(todayButton, "click", jQuery.proxy(this.selectToday,this));
+		//Event.observe(clearButton, "click", jQuery.proxy(this.clearSelection,this));
+		this.observe(this._monthSelect, "change", jQuery.proxy(this.monthSelect,this));
+		this.observe(this._yearSelect, "change", jQuery.proxy(this.yearSelect,this));
 
 		// ie, opera
-		Event.observe(this._calDiv, "mousewheel", this.mouseWheelChange.bindEvent(this));
+		this.observe(this._calDiv, "mousewheel", jQuery.proxy(this.mouseWheelChange,this));
 		// ff
-		Event.observe(this._calDiv, "DOMMouseScroll", this.mouseWheelChange.bindEvent(this));
+		this.observe(this._calDiv, "DOMMouseScroll", jQuery.proxy(this.mouseWheelChange,this));
 
-		Event.observe(calendarBody, "click", this.selectDate.bindEvent(this));
+		this.observe(calendarBody, "click", jQuery.proxy(this.selectDate,this));
 
-		Prado.Element.focus(this.control);
+		jQuery(this.control).focus();
 
-	},
-
-	ieHack : function(cleanup)
-	{
-		// IE hack
-		if(this.iePopUp)
-		{
-			this.iePopUp.style.display = "block";
-			this.iePopUp.style.left = (this._calDiv.offsetLeft -1)+ "px";
-			this.iePopUp.style.top = (this._calDiv.offsetTop -1 ) + "px";
-			this.iePopUp.style.width = Math.abs(this._calDiv.offsetWidth -2)+ "px";
-			this.iePopUp.style.height = (this._calDiv.offsetHeight + 1)+ "px";
-			if(cleanup) this.iePopUp.style.display = "none";
-		}
 	},
 
 	keyPressed : function(ev)
@@ -295,15 +263,18 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 		if (!ev) ev = document.parentWindow.event;
 		var kc = ev.keyCode != null ? ev.keyCode : ev.charCode;
 
-		if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR || kc == Event.KEY_TAB)
+		// return, space, tab
+		if(kc == 13 || kc == 32 || kc == 9)
 		{
 			this.setSelectedDate(this.selectedDate);
-			Event.stop(ev);
+			ev.preventDefault();
 			this.hide();
 		}
-		if(kc == Event.KEY_ESC)
+		// esc
+		if(kc == 27)
 		{
-			Event.stop(ev); this.hide();
+			ev.preventDefault();
+			this.hide();
 		}
 
 		var getDaysPerMonth = function (nMonth, nYear)
@@ -320,7 +291,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 
 		var current = this.selectedDate;
 		var d = current.valueOf();
-		if(kc == Event.KEY_LEFT)
+		if(kc == 37) // left
 		{
 			if(ev.ctrlKey || ev.shiftKey) // -1 month
 			{
@@ -330,7 +301,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			else
 				d -= 86400000; //-1 day
 		}
-		else if (kc == Event.KEY_RIGHT)
+		else if (kc == 39) // right
 		{
 			if(ev.ctrlKey || ev.shiftKey) // +1 month
 			{
@@ -340,7 +311,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			else
 				d += 86400000; //+1 day
 		}
-		else if (kc == Event.KEY_UP)
+		else if (kc == 38) // up
 		{
 			if(ev.ctrlKey || ev.shiftKey) //-1 year
 			{
@@ -350,7 +321,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			else
 				d -= 604800000; // -7 days
 		}
-		else if (kc == Event.KEY_DOWN)
+		else if (kc == 40) // down
 		{
 			if(ev.ctrlKey || ev.shiftKey) // +1 year
 			{
@@ -361,12 +332,12 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 				d += 7 * 24 * 61 * 60 * 1000; // +7 days
 		}
 		this.setSelectedDate(d);
-		Event.stop(ev);
+		ev.preventDefault();
 	},
 
 	selectDate : function(ev)
 	{
-		var el = Event.element(ev);
+		var el = ev.target;
 		while (el.nodeType != 1)
 			el = el.parentNode;
 
@@ -403,12 +374,12 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 
 	monthSelect : function(ev)
 	{
-		this.setMonth(Form.Element.getValue(Event.element(ev)));
+		this.setMonth(ev.target.value);
 	},
 
 	yearSelect : function(ev)
 	{
-		this.setYear(Form.Element.getValue(Event.element(ev)));
+		this.setYear(ev.target.value);
 	},
 
 	mouseWheelChange : function (event)
@@ -460,12 +431,12 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 					obj.changeeventtimer = null;
 				}
 				obj.changeeventtimer = setTimeout(
-					function() { obj.changeeventtimer = null; Event.fireEvent(element, "change"); },
+					function() { obj.changeeventtimer = null; jQuery(element).trigger("change"); },
 					1500
 				);
 			}
 		else
-			Event.fireEvent(element, "change");
+			jQuery(element).trigger("change");
 	},
 	
 	onChange : function(ref, date, capevents)
@@ -598,39 +569,36 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 
 		if(!this.showing)
 		{
-			var pos = this.control.positionedOffset();
+			var pos = jQuery(this.control).position();
 
 			pos[1] += this.getDatePickerOffsetHeight();
 			this._calDiv.style.top = (pos[1]-1) + "px";
 			this._calDiv.style.display = "block";
 			this._calDiv.style.left = pos[0] + "px";
 
-			this.documentClickEvent = this.hideOnClick.bindEvent(this);
-			this.documentKeyDownEvent = this.keyPressed.bindEvent(this);
-			Event.observe(document.body, "click", this.documentClickEvent);
+			this.documentClickEvent = jQuery.bind(this.hideOnClick, this);
+			this.documentKeyDownEvent = jQuery.bind(this.keyPressed, this);
+			this.observe(document.body, "click", this.documentClickEvent);
 			var date = this.getDateFromInput();
 			if(date)
 			{
 				this.selectedDate = date;
 				this.setSelectedDate(date);
 			}
-			Event.observe(document,"keydown", this.documentKeyDownEvent);
+			this.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
 			
 			if(this.positionMode=='Top')
 			{
 				this._calDiv.style.top = ((pos[1]-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
-				if(Prado.Browser().ie)
-					this.iePopup = this._calDiv.style.top;					
 			}
-			this.ieHack(false);
 		}
 	},
 
 	getDateFromInput : function()
 	{
 		if(this.options.InputMode == "TextBox")
-			return Date.SimpleParse($F(this.control), this.Format);
+			return Date.SimpleParse(this.control.value, this.Format);
 		else
 			return Prado.WebUI.TDatePicker.getDropDownDate(this.control);
 	},
@@ -639,11 +607,11 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 	hideOnClick : function(ev)
 	{
 		if(!this.showing) return;
-		var el = Event.element(ev);
+		var el = ev.target;
 		var within = false;
 		do
 		{
-			within = within || (el.className && Element.hasClassName(el, "TDatePicker_"+this.CalendarStyle));
+			within = within || (el.className && jQuery(el).hasClass("TDatePicker_"+this.CalendarStyle));
 			within = within || el == this.trigger;
 			within = within || el == this.control;
 			if(within) break;
@@ -662,8 +630,8 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 			if(this.iePopUp)
 				this.iePopUp.style.display = "none";
 			this.showing = false;
-			Event.stopObserving(document.body, "click", this.documentClickEvent);
-			Event.stopObserving(document,"keydown", this.documentKeyDownEvent);
+			this.stopObserving(document.body, "click", this.documentClickEvent);
+			this.stopObserving(document,"keydown", this.documentKeyDownEvent);
 		}
 	},
 
@@ -721,12 +689,12 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 
 	hover : function(ev)
 	{
-		if(Event.element(ev).tagName)
+		if(ev.target.tagName)
 		{
 			if(ev.type == "mouseover")
-				Event.element(ev).addClassName("hover");
-				else
-				Event.element(ev).removeClassName("hover");
+				jQuery(ev.target).addClass("hover");
+			else
+				jQuery(ev.target).removeClass("hover");
 		}
 	},
 
@@ -753,7 +721,7 @@ Prado.WebUI.TDatePicker = Class.create(Prado.WebUI.Control,
 	}
 });
 
-Object.extend(Prado.WebUI.TDatePicker,
+jQuery.extend(Prado.WebUI.TDatePicker,
 {
 	/**
 	 * @return Date the date from drop down list options.
@@ -769,25 +737,25 @@ Object.extend(Prado.WebUI.TDatePicker,
 	 	var day_list = Prado.WebUI.TDatePicker.getDayListControl(control);
 	 	var year_list = Prado.WebUI.TDatePicker.getYearListControl(control);
 
-		var day = day_list ? $F(day_list) : 1;
-		var month = month_list ? $F(month_list) : now.getMonth();
-		var year = year_list ? $F(year_list) : now.getFullYear();
+		var day = day_list ? day_list.value : 1;
+		var month = month_list ? month_list.value : now.getMonth();
+		var year = year_list ? year_list.value : now.getFullYear();
 
 		return new Date(year,month,day, 0, 0, 0);
 	},
 
 	getYearListControl : function(control)
 	{
-		return $(control.id+"_year");
+		return $('#'+control.id+"_year").get(0);
 	},
 
 	getMonthListControl : function(control)
 	{
-		return $(control.id+"_month");
+		return $('#'+control.id+"_month").get(0);
 	},
 
 	getDayListControl : function(control)
 	{
-		return $(control.id+"_day");
+		return $('#'+control.id+"_day").get(0);
 	}
 });

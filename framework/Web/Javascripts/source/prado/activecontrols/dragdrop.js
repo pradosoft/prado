@@ -2,7 +2,7 @@
  * DropContainer control
  */
  
-Prado.WebUI.DropContainer = Class.create(Prado.WebUI.CallbackControl,
+Prado.WebUI.DropContainer = jQuery.klass(Prado.WebUI.CallbackControl,
 {
 	onInit: function(options)
 	{

@@ -60,6 +60,19 @@ class TJavaScript
 	}
 
 	/**
+	 * Renders a list of javascript code
+	 * @param array javascript blocks
+	 * @return string rendering result
+	 */
+	public static function renderScriptBlocksCallback($scripts)
+	{
+		if(count($scripts))
+			return implode("\n",$scripts)."\n";
+		else
+			return '';
+	}
+
+	/**
 	 * Renders javascript block
 	 * @param string javascript block
 	 * @return string rendering result

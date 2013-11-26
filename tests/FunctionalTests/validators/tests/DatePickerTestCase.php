@@ -17,6 +17,7 @@ class DatePickerTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator8", "");
 
 		$this->click("{$base}submit1");
+		$this->pause(500);
 		$this->assertVisible("{$base}validator1", "");
 		$this->assertNotVisible("{$base}validator2", "");
 
@@ -27,8 +28,8 @@ class DatePickerTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator6", "");
 		$this->assertVisible("{$base}validator8", "");
 
-		$this->click("{$base}submit1");
-		$this->pause(250);
+		$this->clickAndWait("{$base}submit1");
+
 		$this->type("{$base}picker1", "13/4/$year");
 		$this->select("{$base}picker2_month", "label=9");
 		$this->select("{$base}picker2_day", "label=10");
@@ -43,8 +44,8 @@ class DatePickerTestCase extends PradoGenericSeleniumTest
 		$this->select("{$base}picker6_month", "label=3");
 		$this->select("{$base}picker6_year", "label=$year2");
 		$this->select("{$base}picker6_day", "label=5");
-
 		$this->click("{$base}submit1");
+		$this->pause(500);
 
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->assertVisible("{$base}validator2", "");

@@ -1,12 +1,12 @@
 /**
  * TActiveDatePicker control
  */
-Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
+Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 {
 	onInit : function(options)
 	{
 		this.options = options || [];
-		this.control = $(options.ID);
+		this.control = $('#'+options.ID).get(0);
 		this.dateSlot = new Array(42);
 		this.weekSlot = new Array(6);
 		this.minimalDaysInFirstWeek	= 4;
@@ -17,7 +17,7 @@ Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
 		//which element to trigger to show the calendar
 		if(this.options.Trigger)
 		{
-			this.trigger = $(this.options.Trigger) ;
+			this.trigger = $('#'+this.options.Trigger).get(0) ;
 			var triggerEvent = this.options.TriggerEvent || "click";
 		}
 		else
@@ -32,24 +32,24 @@ Prado.WebUI.TActiveDatePicker = Class.create(Prado.WebUI.TDatePicker,
 			this.positionMode = this.options.PositionMode;
 		}
 
-		Object.extend(this,options);
+		jQuery.extend(this,options);
 
 		if (this.options.ShowCalendar)
-			this.observe(this.trigger, triggerEvent, this.show.bindEvent(this));
+			this.observe(this.trigger, triggerEvent, jQuery.proxy(this.show,this));
 		
 		// Listen to change event 
 		if(this.options.InputMode == "TextBox")
 		{
-			this.observe(this.control, "change", this.onDateChanged.bindEvent(this));
+			this.observe(this.control, "change", jQuery.proxy(this.onDateChanged,this));
 		} 
 		else
 		{
 			var day = Prado.WebUI.TDatePicker.getDayListControl(this.control);
 			var month = Prado.WebUI.TDatePicker.getMonthListControl(this.control);
 			var year = Prado.WebUI.TDatePicker.getYearListControl(this.control);
-			if (day) this.observe (day, "change", this.onDateChanged.bindEvent(this));
-			if (month) this.observe (month, "change", this.onDateChanged.bindEvent(this));
-			if (year) this.observe (year, "change", this.onDateChanged.bindEvent(this));
+			if (day) this.observe (day, "change", jQuery.proxy(this.onDateChanged,this));
+			if (month) this.observe (month, "change", jQuery.proxy(this.onDateChanged,this));
+			if (year) this.observe (year, "change", jQuery.proxy(this.onDateChanged,this));
 				
 		}
 

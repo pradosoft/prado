@@ -155,10 +155,6 @@ class TPage extends TTemplateControl
 	 */
 	private $_clientState='';
 	/**
-	 * @var array post data loader IDs.
-	 */
-	protected $_postDataLoaders=array();
-	/**
 	 * @var boolean true if loading post data.
 	 */
 	protected $_isLoadingPostData=false;
@@ -424,27 +420,6 @@ class TPage extends TTemplateControl
 	public function setCallbackEventParameter($value)
 	{
 		$this->getAdapter()->setCallbackEventParameter($value);
-	}
-
-	/**
-	 * Register post data loaders for Callback to collect post data.
-	 * This method should only be called by framework developers.
-	 * @param TControl control that requires post data.
-	 * @see TControl::preRenderRecursive();
-	 */
-	public function registerPostDataLoader($control)
-	{
-		$id=is_string($control)?$control:$control->getUniqueID();
-		$this->_postDataLoaders[$id] = true;
-	}
-
-	/**
-	 * Get a list of IDs of controls that are enabled and require post data.
-	 * @return array list of IDs implementing IPostBackDataHandler
-	 */
-	public function getPostDataLoaders()
-	{
-		return array_keys($this->_postDataLoaders);
 	}
 
 	/**
@@ -825,7 +800,6 @@ class TPage extends TTemplateControl
 	{
 		$id=is_string($control)?$control:$control->getUniqueID();
 		$this->_controlsRegisteredForPostData[$id]=true;
-		$this->registerPostDataLoader($id);
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
 			$item->registerAction('Page','registerRequiresPostData',array($id));
@@ -1301,9 +1275,9 @@ class TPageStateFormatter
 	{
 		$sm=$page->getApplication()->getSecurityManager();
 		if($page->getEnableStateValidation())
-			$str=$sm->hashData(Prado::serialize($data));
+			$str=$sm->hashData(serialize($data));
 		else
-			$str=Prado::serialize($data);
+			$str=serialize($data);
 		if($page->getEnableStateCompression() && extension_loaded('zlib'))
 			$str=gzcompress($str);
 		if($page->getEnableStateEncryption())
@@ -1331,10 +1305,10 @@ class TPageStateFormatter
 			if($page->getEnableStateValidation())
 			{
 				if(($str=$sm->validateData($str))!==false)
-					return Prado::unserialize($str);
+					return unserialize($str);
 			}
 			else
-				return Prado::unserialize($str);
+				return unserialize($str);
 		}
 		return null;
 	}

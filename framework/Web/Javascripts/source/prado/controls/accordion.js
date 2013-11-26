@@ -7,7 +7,7 @@
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
 
-Prado.WebUI.TAccordion = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 {
     	onInit : function(options)
 	{
@@ -32,7 +32,7 @@ Prado.WebUI.TAccordion = Class.create(Prado.WebUI.Control,
 			var header = $(view+'_0');
 			if(header)
 			{
-				this.observe(header, "click", this.elementClicked.bindEvent(this,view));
+				this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
 				if(this.hiddenField.value == i)
 				{
 					this.currentView = view;

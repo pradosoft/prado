@@ -3,21 +3,21 @@
  * This clas is mainly based on Scriptaculous Slider control (http://script.aculo.us)
  */
 
-Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
+Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 {
 	onInit : function (options)
 	{
 		var slider = this;
 		this.options=options || {};
-		this.track = $(options.ID+'_track');
-		this.handle =$(options.ID+'_handle');
-		this.progress = $(options.ID+'_progress');
+		this.track = $('#'+options.ID+'_track').get(0);
+		this.handle =$('#'+options.ID+'_handle').get(0);
+		this.progress = $('#'+options.ID+'_progress').get(0);
 		this.axis  = this.options.axis || 'horizontal';
-		this.range = this.options.range || $R(0,1);
+		this.range = this.options.range || [0, 1];
 		this.value = 0;
-		this.maximum   = this.options.maximum || this.range.end;
-		this.minimum   = this.options.minimum || this.range.start;
-		this.hiddenField=$(this.options.ID+'_1');
+		this.maximum   = this.options.maximum || this.range[1];
+		this.minimum   = this.options.minimum || this.range[0];
+		this.hiddenField=$('#'+this.options.ID+'_1').get(0);
 		
 		// Will be used to align the handle onto the track, if necessary
 		this.alignX = parseInt(this.options.alignX || - this.track.offsetLeft);
@@ -37,19 +37,18 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		if(this.options.disabled) this.setDisabled();
 	
 		// Allowed values array
-		this.allowedValues = this.options.values ? this.options.values.sortBy(Prototype.K) : false;
+		this.allowedValues = this.options.values ? this.options.values.sort() : false;
 		if(this.allowedValues) {
-			this.minimum = this.allowedValues.min();
-			this.maximum = this.allowedValues.max();
+			this.minimum = Math.min.apply( Math, this.allowedValues );
+			this.maximum = Math.max.apply( Math, this.allowedValues );
 		}
 
-		this.eventMouseDown = this.startDrag.bindAsEventListener(this);
-		this.eventMouseUp   = this.endDrag.bindAsEventListener(this);
-		this.eventMouseMove = this.update.bindAsEventListener(this);
+		this.eventMouseDown = this.startDrag.bind(this);
+		this.eventMouseUp   = this.endDrag.bind(this);
+		this.eventMouseMove = this.update.bind(this);
 
 		// Initialize handle
 		this.setValue(parseFloat(slider.options.sliderValue));
-		Element.makePositioned(this.handle); // fix IE
 		this.observe (this.handle, "mousedown", this.eventMouseDown);
 		
 		this.observe (this.track, "mousedown", this.eventMouseDown);
@@ -60,10 +59,13 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		
 		this.initialized=true;
 		
-		
 		if(this.options['AutoPostBack']==true)
-			this.observe(this.hiddenField, "change", Prado.PostBack.bindEvent(this,options));
-    
+			this.observe(this.hiddenField, "change", jQuery.proxy(this.doPostback,this,options));
+	},
+
+	doPostback : function(options, event)
+	{
+		new Prado.PostBack(options, event);
 	},
   
 	setDisabled: function(){
@@ -74,12 +76,14 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 	},  
 	getNearestValue: function(value){
 		if(this.allowedValues){
-			if(value >= this.allowedValues.max()) return(this.allowedValues.max());
-			if(value <= this.allowedValues.min()) return(this.allowedValues.min());
+			var max = Math.max.apply( Math, this.allowedValues );
+			var min = Math.min.apply( Math, this.allowedValues );
+			if(value >= max) return(max);
+			if(value <= min) return(min);
       
 			var offset = Math.abs(this.allowedValues[0] - value);
 			var newValue = this.allowedValues[0];
-			this.allowedValues.each( function(v) {
+			jQuery.each(this.allowedValues, function(idx, v) {
 				var currentOffset = Math.abs(v - value);
 				if(currentOffset <= offset){
 					newValue = v;
@@ -88,8 +92,8 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 			});
 			return newValue;
 		}
-		if(value > this.range.end) return this.range.end;
-		if(value < this.range.start) return this.range.start;
+		if(value > this.range[1]) return this.range[1];
+		if(value < this.range[0]) return this.range[0];
 		return value;
 	},
 	
@@ -113,19 +117,13 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 	
 	translateToPx: function(value) {
 		return Math.round(
-      		((this.trackLength-this.handleLength)/(this.range.end-this.range.start)) * (value - this.range.start)) + "px";
+      		((this.trackLength-this.handleLength)/(this.range[1]-this.range[0])) * (value - this.range[0])) + "px";
 	},
 	
 	translateToValue: function(offset) {
-		return ((offset/(this.trackLength-this.handleLength) * (this.range.end-this.range.start)) + this.range.start);
+		return ((offset/(this.trackLength-this.handleLength) * (this.range[1]-this.range[0])) + this.range[0]);
 	},
-	
-	getRange: function(range) {
-		var v = this.values.sortBy(Prototype.K); 
-		range = range || 0;
-		return $R(v[range],v[range+1]);
-	},
-	
+		
 	minimumOffset: function(){
 		return(this.isVertical() ? this.alignY : this.alignX);
   	},
@@ -144,35 +142,36 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 	
 	updateStyles: function() {
 		if (this.active) 
-			Element.addClassName(this.handle, 'selected');
+			jQuery(this.handle).addClass('selected');
 		else
-			Element.removeClassName(this.handle, 'selected');
+			jQuery(this.handle).removeClass('selected');
 	},
 	
 	startDrag: function(event) {
-		if(Event.isLeftClick(event)) {
+		if (event.which === 1) {
+			// left click
 			if(!this.disabled){
 				this.active = true;
-				var handle = Event.element(event);
-				var pointer  = [Event.pointerX(event), Event.pointerY(event)];
+				var handle = event.target;
+				var pointer  = [event.pageX, event.pageY];
 				var track = handle;
 				if(track==this.track) {
-					var offsets  = this.track.cumulativeOffset(); 
+					var offsets  = jQuery(this.track).offset();
 					this.event = event;
 					this.setValue(this.translateToValue( 
-						(this.isVertical() ? pointer[1]-offsets[1] : pointer[0]-offsets[0])-(this.handleLength/2)
+						(this.isVertical() ? pointer[1]-offsets['top'] : pointer[0]-offsets['left'])-(this.handleLength/2)
 					));
-					var offsets  = this.handle.cumulativeOffset();
-					this.offsetX = (pointer[0] - offsets[0]);
-					this.offsetY = (pointer[1] - offsets[1]);
+					var offsets  = jQuery(this.handle).offset();
+					this.offsetX = (pointer[0] - offsets['left']);
+					this.offsetY = (pointer[1] - offsets['top']);
 				} else {
 					this.updateStyles();
-					var offsets  = this.handle.cumulativeOffset();
-					this.offsetX = (pointer[0] - offsets[0]);
-					this.offsetY = (pointer[1] - offsets[1]);
+					var offsets  = jQuery(this.handle).offset();
+					this.offsetX = (pointer[0] - offsets['left']);
+					this.offsetY = (pointer[1] - offsets['top']);
 				}
 			}
-			Event.stop(event);
+			event.stopPropagation();
 		}
 	},
 	
@@ -180,16 +179,15 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		if(this.active) {
 			if(!this.dragging) this.dragging = true;
 			this.draw(event);
-			if(Prototype.Browser.WebKit) window.scrollBy(0,0);
-			Event.stop(event);
+			event.stopPropagation();
 		}
 	},
 	
 	draw: function(event) {
-		var pointer = [Event.pointerX(event), Event.pointerY(event)];
-		var offsets = this.track.cumulativeOffset();
-		pointer[0] -= this.offsetX + offsets[0];
-		pointer[1] -= this.offsetY + offsets[1];
+		var pointer = [event.pageX, event.pageY];
+		var offsets = jQuery(this.track).offset();
+		pointer[0] -= this.offsetX + offsets['left'];
+		pointer[1] -= this.offsetY + offsets['top'];
 		this.event = event;
 		this.setValue(this.translateToValue( this.isVertical() ? pointer[1] : pointer[0] ));
 		if(this.initialized && this.options.onSlide)
@@ -199,7 +197,7 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 	endDrag: function(event) {
 		if(this.active && this.dragging) {
 			this.finishDrag(event, true);
-			Event.stop(event);
+			event.stopPropagation();
 		}
 		this.active = false;
 		this.dragging = false;
@@ -219,7 +217,7 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		this.event = null;
 		if (this.options['AutoPostBack']==true)
 		{
-			Event.fireEvent(this.hiddenField,"change");
+			jQuery(this.hiddenField).trigger("change");
 		}
 	}
 

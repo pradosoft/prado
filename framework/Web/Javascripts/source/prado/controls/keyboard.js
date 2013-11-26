@@ -1,4 +1,4 @@
-Prado.WebUI.TKeyboard = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
     {

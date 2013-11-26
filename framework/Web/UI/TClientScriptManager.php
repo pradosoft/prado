@@ -286,8 +286,6 @@ class TClientScriptManager extends TApplicationComponent
 		$code="new {$class}({$optionString});";
 
 		$this->_endScripts[sprintf('%08X', crc32($code))]=$code;
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_PARAMETER]='';
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
@@ -315,7 +313,6 @@ class TClientScriptManager extends TApplicationComponent
 		$code = "new Prado.WebUI.DefaultButton($options);";
 
 		$this->_endScripts['prado:'.$panelID]=$code;
-		$this->_hiddenFields[TPage::FIELD_POSTBACK_TARGET]='';
 		$this->registerPradoScriptInternal('prado');
 
 		$params=array($panelID,$buttonID);
@@ -343,11 +340,10 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function registerFocusControl($target)
 	{
-		$this->registerPradoScriptInternal('effects');
+		$this->registerPradoScriptInternal('jquery');
 		if($target instanceof TControl)
 			$target=$target->getClientID();
-		$id = TJavaScript::quoteString($target);
-		$this->_endScripts['prado:focus'] = 'new Effect.ScrollTo('.$id.'); Prado.Element.focus('.$id.');';
+		$this->_endScripts['prado:focus'] = 'new Prado.Element.scrollTo(\''.$target.'\'); jQuery(\'#'.$target.'\').focus();';
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
@@ -698,6 +694,22 @@ class TClientScriptManager extends TApplicationComponent
 	public function renderEndScripts($writer)
 	{
 		$writer->write(TJavaScript::renderScriptBlocks($this->_endScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderBeginScriptsCallback($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocksCallback($this->_beginScripts));
+	}
+
+	/**
+	 * @param THtmlWriter writer for the rendering purpose
+	 */
+	public function renderEndScriptsCallback($writer)
+	{
+		$writer->write(TJavaScript::renderScriptBlocksCallback($this->_endScripts));
 	}
 
 	public function renderHiddenFieldsBegin($writer)

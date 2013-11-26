@@ -274,7 +274,7 @@
   <target name="functionaltest" description="Running functional tests">
     <delete dir="${build.functionaltest.dir}"/>
     <mkdir dir="${build.functionaltest.dir}"/>
-    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/test_tools/phpunit_bootstrap.php">
+    <phpunit codecoverage="false" haltonfailure="false" haltonerror="false" printsummary="false" bootstrap="./tests/test_tools/phpunit_bootstrap.php" processIsolation="false">
       <batchtest>
         <fileset dir="tests/FunctionalTests">
         <include name="**/*TestCase.php"/>

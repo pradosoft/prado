@@ -198,7 +198,7 @@ class TActivePageAdapter extends TControlAdapter
 		if($this->getPage()->getClientScript()->hasEndScripts())
 		{
 			$writer = $response->createHtmlWriter();
-			$this->getPage()->getClientScript()->renderEndScripts($writer);
+			$this->getPage()->getClientScript()->renderEndScriptsCallback($writer);
 			$this->getPage()->getCallbackClient()->evaluateScript($writer);
 		}
 

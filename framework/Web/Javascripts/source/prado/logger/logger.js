@@ -13,8 +13,7 @@ Use it all you want. Just remember to give me some credit :)
 // Custom Event
 // ------------
 
-CustomEvent = Class.create();
-CustomEvent.prototype = {
+CustomEvent = jQuery.klass({
   initialize : function() {
   	this.listeners = []
   },
@@ -54,7 +53,7 @@ CustomEvent.prototype = {
 
 		return indexes
 	}
-};
+});
 
 // ------
 // Cookie
@@ -179,16 +178,14 @@ Logger = {
 	}
 };
 
-LogEntry = Class.create()
-LogEntry.prototype = {
+LogEntry = jQuery.klass({
     initialize : function(message, tag) {
       this.message = message
       this.tag = tag
     }
-};
+});
 
-LogConsole = Class.create();
-LogConsole.prototype = {
+LogConsole = jQuery.klass({
 
   // Properties
   // ----------
@@ -207,7 +204,7 @@ LogConsole.prototype = {
   	// I hate writing javascript in HTML... but what's a better alternative
     this.logElement = document.createElement('div')
     document.body.appendChild(this.logElement)
-    Element.hide(this.logElement)
+    jQuery(this.logElement).hide();
 
 	this.logElement.style.position = "absolute"
     this.logElement.style.left = '0px'
@@ -247,8 +244,8 @@ LogConsole.prototype = {
     this.tagFilterElement.value = this.tagPattern
     this.tagFilterElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
 
-    Event.observe(this.tagFilterElement, 'keyup', this.updateTags.bind(this))
-    Event.observe(this.tagFilterElement, 'click', function() {this.tagFilterElement.select()}.bind(this))
+    jQuery(this.tagFilterElement).on('keyup', this.updateTags.bind(this));
+    jQuery(this.tagFilterElement).on('click', function() {this.tagFilterElement.select()}.bind(this));
 
     // Add outputElement
     this.outputElement = document.createElement('div')
@@ -271,8 +268,8 @@ LogConsole.prototype = {
     this.inputElement.value = 'Type command here'
     this.inputElement.setAttribute('autocomplete', 'off') // So Firefox doesn't flip out
 
-    Event.observe(this.inputElement, 'keyup', this.handleInput.bind(this))
-    Event.observe(this.inputElement, 'click', function() {this.inputElement.select()}.bind(this))
+    jQuery(this.inputElement).on('keyup', this.handleInput.bind(this));
+    jQuery(this.inputElement).on('click', function() {this.inputElement.select()}.bind(this));
 
 	if(document.all && !window.opera)
 	{
@@ -284,9 +281,9 @@ LogConsole.prototype = {
 		this.logElement.style.bottom="0px";
 	}
 	var self=this;
-	Event.observe(document, 'keydown', function(e)
+	jQuery(document).on('keydown', function(e)
 	{
-		if((e.altKey==true) && Event.keyCode(e) == toggleKey ) //Alt+J | Ctrl+J
+		if((e.altKey==true) && e.keyCode == toggleKey ) //Alt+J | Ctrl+J
 			self.toggle();
 	});
 
@@ -301,7 +298,7 @@ LogConsole.prototype = {
 
   	// Feed all errors into the logger (For some unknown reason I can only get this to work
   	// with an inline event declaration)
-  	Event.observe(window, 'error', function(msg, url, lineNumber) {Logger.error("Error in (" + (url || location) + ") on line "+lineNumber+"", msg)})
+  	jQuery(window).on('error', function(msg, url, lineNumber) {Logger.error("Error in (" + (url || location) + ") on line "+lineNumber+"", msg)});
 
     // Allow acess key link
     var accessElement = document.createElement('span')
@@ -315,27 +312,27 @@ LogConsole.prototype = {
 
 	toggle : function() {
 	  if (this.logElement.style.display == 'none') {
-		  this.show()
+		  this.show();
 		}
 		else {
-			this.hide()
+			this.hide();
 		}
 	},
 
 	show : function() {
-	  Element.show(this.logElement)
+	  jQuery(this.logElement).show();
 	  this.outputElement.scrollTop = this.outputElement.scrollHeight // Scroll to bottom when toggled
 	  if(document.all && !window.opera)
 		  this.repositionWindow();
 	  Cookie.set('ConsoleVisible', 'true')
- 	  this.inputElement.select()
+ 	  this.inputElement.select();
  	  this.hidden = false;
 	},
 
 	hide : function() {
 	  this.hidden = true;
-	  Element.hide(this.logElement)
-	  Cookie.set('ConsoleVisible', 'false')
+	  jQuery(this.logElement).hide();
+	  Cookie.set('ConsoleVisible', 'false');
 	},
 
 	output : function(message, style) {
@@ -349,7 +346,7 @@ LogConsole.prototype = {
 		  if (this.outputCount % 2 == 0) style += ";background-color:#101010"
 
 	  	message = message || "undefined"
-	  	message = message.toString().escapeHTML()
+	  	message = message.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 	  	this.outputElement.innerHTML += "<pre style='" + style + "'>" + message + "</pre>"
 
@@ -408,7 +405,7 @@ LogConsole.prototype = {
 	},
 
 	handleInput : function(e) {
-		if (e.keyCode == Event.KEY_RETURN ) {
+		if (e.keyCode == 13 ) {
 	  	var command = this.inputElement.value
 
 	  	switch(command) {
@@ -438,14 +435,14 @@ LogConsole.prototype = {
 	  	this.commandIndex = 0
 	  	this.inputElement.value = ""
 		}
-    else if (e.keyCode == Event.KEY_UP && this.commandHistory.length > 0) {
+    else if (e.keyCode == 38 && this.commandHistory.length > 0) {
     	this.inputElement.value = this.commandHistory[this.commandIndex]
 
 			if (this.commandIndex < this.commandHistory.length - 1) {
       	this.commandIndex += 1
       }
     }
-    else if (e.keyCode == Event.KEY_DOWN && this.commandHistory.length > 0) {
+    else if (e.keyCode == 40 && this.commandHistory.length > 0) {
     	if (this.commandIndex > 0) {
       	this.commandIndex -= 1
 	    }
@@ -456,7 +453,7 @@ LogConsole.prototype = {
     		this.commandIndex = 0
     }
 	}
-};
+});
 
 
 // -------------------------
@@ -697,8 +694,7 @@ Prado.Inspector =
 		{
 			this.d.body.removeChild(this.d.getElementById("so_mContainer"));
 			this.d.body.removeChild(this.d.getElementById("so_mStyle"));
-			if(typeof Event != "undefined")
-				Event.stopObserving(this.d, "keydown", this.dKeyDownEvent);
+			jQuery(this.d).unbind("keydown", this.dKeyDownEvent);
 			this.types = new Array();
 			this.objs = new Array();
 			this.hidden = new Array();
@@ -718,8 +714,7 @@ Prado.Inspector =
 		sObj.type="text/css";
 		sObj.innerHTML = this.style;
 		this.dKeyDownEvent = this.handleKeyEvent.bind(this);
-		if(typeof Event != "undefined")
-			Event.observe(this.d, "keydown", this.dKeyDownEvent);
+		jQuery(this.d).on("keydown", this.dKeyDownEvent);
 
 		this.parseJS(obj);
 		this.buildTree();

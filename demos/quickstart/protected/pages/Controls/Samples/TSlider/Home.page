@@ -16,7 +16,7 @@ Horizontal slider from -50 to 50,  Javascript 'onSlide' handler, ServerSide 'onS
 </td><td class="sampleaction">
 <com:TSlider id="slider2" AutoPostBack="true"  Direction="Horizontal" Value="0" Enabled="true" MinValue="-50" MaxValue="50" OnValueChanged="slider2Changed">
 	<prop:ClientSide.onSlide>
-		$('slider2value').innerHTML = value;
+		$('#slider2value').get(0).innerHTML = value;
 	</prop:ClientSide.onSlide>
 </com:TSlider>
 Value  : <span id="slider2value"><%=$this->slider2->value%></span>
@@ -28,7 +28,7 @@ Vertical slider from 0 to 1, Javascript 'onSlide' handler, ServerSide 'onSliderC
 </td><td class="sampleaction">
 <com:TSlider id="slider3" AutoPostBack="false" Direction="Vertical" Enabled="true" MinValue="0" MaxValue="1" StepSize="0.1" OnValueChanged="slider3Changed">
 	<prop:ClientSide.onSlide>
-		$('slider3value').innerHTML = value;
+		$('#slider3value').get(0).innerHTML = value;
 	</prop:ClientSide.onSlide>
 </com:TSlider>
 Value  : <span id="slider3value"><%=$this->slider3->value%></span>

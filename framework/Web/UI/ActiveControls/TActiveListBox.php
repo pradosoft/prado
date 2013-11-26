@@ -95,8 +95,6 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 			$client = $this->getPage()->getCallbackClient();
 			$client->setAttribute($this, 'multiple', $multiple ? 'multiple' : false);
 			$client->setAttribute($this, 'name', $multiple ? $multi_id : $id);
-			if($multiple)
-				$client->addPostDataLoader($multi_id);
 		}
 	}
 
@@ -130,10 +128,6 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	{
 		parent::onPreRender($param);
 		$this->getAdapter()->updateListItems();
-		$multiple = $this->getIsMultiSelect();
-		$id = $this->getUniqueID(); $multi_id = $id.'[]';
-		if($multiple)
-			$this->getPage()->registerPostDataLoader($multi_id);
 	}
 
 	/**

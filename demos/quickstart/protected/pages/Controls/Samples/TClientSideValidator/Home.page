@@ -1,6 +1,11 @@
 <com:TContent ID="body">
 <h1>Conditional Validation (client-side + server side)</h1>
 
+<com:TStyleSheet>
+.required {
+	background-color: #E77471;
+}
+</com:TStyleSheet>
 <table class="sampletable">
 <tr>
 <td class="samplenote">
@@ -22,7 +27,7 @@ Check "optional" to validate both textboxes
 			ErrorMessage="*"
 			ControlCssClass="required">
 		<prop:ClientSide.OnValidate>
-			sender.enabled = $('<%= $this->check1->ClientID %>').checked;
+			sender.enabled = jQuery('#<%= $this->check1->ClientID %>').get(0).checked;
 		</prop:ClientSide.OnValidate>
 
 		</com:TRequiredFieldValidator>

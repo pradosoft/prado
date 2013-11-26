@@ -719,7 +719,6 @@ PostBackOptions
 PostBackParameter
 PostBackTarget
 PostBackValue
-PostDataLoaders
 PostState
 Prado::autoload
 Prado::createComponent
@@ -1326,7 +1325,6 @@ addMappedStatement
 addNode
 addParameterMap
 addParsedObject
-addPostDataLoader
 addProperty
 addResultMap
 addResultMapGroupBy
@@ -1336,7 +1334,6 @@ addStatesToTrack
 addStyleAttribute
 addStyleAttributes
 addSubMap
-addToPostDataLoader
 addValue
 addedControl
 addedWizardStep
@@ -2186,7 +2183,6 @@ registerHiddenField
 registerJavascriptPackages
 registerObject
 registerPostBackControl
-registerPostDataLoader
 registerPradoScript
 registerRequiresPostData
 registerScriptFile
@@ -2216,7 +2212,6 @@ renderCalendarMonthOptions
 renderCalendarSelections
 renderCalendarYearOptions
 renderCallback
-renderCallbackClientScripts
 renderCallbackResponse
 renderChildren
 renderClientControlScript

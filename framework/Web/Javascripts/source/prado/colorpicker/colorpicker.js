@@ -1,7 +1,7 @@
 //-------------------- ricoColor.js
 if(typeof(Rico) == "undefined") Rico = {};
 
-Rico.Color = Class.create();
+Rico.Color = jQuery.klass();
 
 Rico.Color.prototype = {
 
@@ -79,7 +79,7 @@ Rico.Color.prototype = {
    },
 
    asHex: function() {
-      return "#" + this.rgb.r.toColorPart() + this.rgb.g.toColorPart() + this.rgb.b.toColorPart();
+      return "#" + this.toColorPart(this.rgb.r) + this.toColorPart(this.rgb.g) + this.toColorPart(this.rgb.b);
    },
 
    asHSB: function() {
@@ -88,8 +88,13 @@ Rico.Color.prototype = {
 
    toString: function() {
       return this.asHex();
-   }
+   },
 
+   toColorPart: function(number) {
+        number = (number > 255 ? 255 : (number < 0 ? 0 : number));
+        var hex = number.toString(16);
+        return hex.length < 2 ? "0" + hex : hex;               
+    }
 };
 
 Rico.Color.createFromHex = function(hexCode) {
@@ -122,7 +127,7 @@ Rico.Color.createFromHex = function(hexCode) {
  */
 Rico.Color.createColorFromBackground = function(elem) {
 
-   var actualColor = Element.getStyle($(elem), "background-color");
+   var actualColor = jQuery(elem).css("background-color");
   if ( actualColor == "transparent" && elem.parent )
       return Rico.Color.createColorFromBackground(elem.parent);
 
@@ -241,40 +246,9 @@ Rico.Color.RGBtoHSB = function(r, g, b) {
    return { h : hue, s : saturation, b : brightness };
 };
 
+Prado.WebUI.TColorPicker = jQuery.klass(Prado.WebUI.Control, {
 
-Prado.WebUI.TColorPicker = Class.create();
-
-Object.extend(Prado.WebUI.TColorPicker,
-{
-	palettes:
-	{
-		Small : [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
-				["ccc", "f66", "f96", "ff6", "ff3", "6f9", "3ff", "6ff", "99f", "f9f"],
-				["c0c0c0", "f00", "f90", "fc6", "ff0", "3f3", "6cc", "3cf", "66c", "c6c"],
-				["999", "c00", "f60", "fc3", "fc0", "3c0", "0cc", "36f", "63f", "c3c"],
-				["666", "900", "c60", "c93", "990", "090", "399", "33f", "60c", "939"],
-				["333", "600", "930", "963", "660", "060", "366", "009", "339", "636"],
-				["000", "300", "630", "633", "330", "030", "033", "006", "309", "303"]],
-
-		Tiny : [["ffffff"/*white*/, "00ff00"/*lime*/, "008000"/*green*/, "0000ff"/*blue*/],
-				["c0c0c0"/*silver*/, "ffff00"/*yellow*/, "ff00ff"/*fuchsia*/, "000080"/*navy*/],
-				["808080"/*gray*/, "ff0000"/*red*/, "800080"/*purple*/, "000000"/*black*/]]
-	},
-
-	UIImages :
-	{
-		'button.gif' : 'button.gif',
-//		'target_black.gif' : 'target_black.gif',
-//		'target_white.gif' : 'target_white.gif',
-		'background.png' : 'background.png'
-//		'slider.gif' : 'slider.gif',
-//		'hue.gif' : 'hue.gif'
-	}
-});
-
-Object.extend(Prado.WebUI.TColorPicker.prototype,
-{
-	initialize : function(options)
+	onInit : function(options)
 	{
 		var basics =
 		{
@@ -289,16 +263,16 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		this.element = null;
 		this.showing = false;
 
-		options = Object.extend(basics, options);
+		options = jQuery.extend(basics, options);
 		this.options = options;
-		this.input = $(options['ID']);
-		this.button = $(options['ID']+'_button');
-		this._buttonOnClick = this.buttonOnClick.bind(this);
+		this.input = $('#'+options['ID']).get(0);
+		this.button = $('#'+options['ID']+'_button').get(0);
+		this._buttonOnClick = jQuery.proxy(this.buttonOnClick, this);
 		if(options['ShowColorPicker'])
-			Event.observe(this.button, "click", this._buttonOnClick);
-		Event.observe(this.input, "change", this.updatePicker.bind(this));
+			this.observe(this.button, "click", this._buttonOnClick);
+		this.observe(this.input, "change", jQuery.proxy(this.updatePicker, this));
 		
-		Prado.Registry.set(options.ID, this);
+		Prado.Registry[options.ID] = this;
 	},
 
 	updatePicker : function(e)
@@ -317,15 +291,6 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			this.input.parentNode.appendChild(this.element);
 			this.element.style.display = "none";
 
-			if(Prado.Browser().ie)
-			{
-				this.iePopUp = document.createElement('iframe');
-				this.iePopUp.src = Prado.WebUI.TColorPicker.UIImages['button.gif'];
-				this.iePopUp.style.position = "absolute"
-				this.iePopUp.scrolling="no"
-				this.iePopUp.frameBorder="0"
-				this.input.parentNode.appendChild(this.iePopUp);
-			}
 			if(mode == "Full")
 				this.initializeFullPicker();
 		}
@@ -336,20 +301,18 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		if(!this.showing)
 		{
-			var pos = this.input.positionedOffset();
-			pos[1] += this.input.offsetHeight;
+			var pos = jQuery(this.input).position();
+			pos['top'] += this.input.offsetHeight;
 
-			this.element.style.top = (pos[1]-1) + "px";
-			this.element.style.left = pos[0] + "px";
+			this.element.style.top = (pos['top']-1) + "px";
+			this.element.style.left = pos['left'] + "px";
 			this.element.style.display = "block";
 
-			this.ieHack(type);
-
 			//observe for clicks on the document body
-			this._documentClickEvent = this.hideOnClick.bindEvent(this, type);
-			this._documentKeyDownEvent = this.keyPressed.bindEvent(this, type);
-			Event.observe(document.body, "click", this._documentClickEvent);
-			Event.observe(document,"keydown", this._documentKeyDownEvent);
+			this._documentClickEvent = jQuery.bind(this.hideOnClick, this, type);
+			this._documentKeyDownEvent = jQuery.bind(this.keyPressed, this, type);
+			this.observe(document.body, "click", this._documentClickEvent);
+			this.observe(document,"keydown", this._documentKeyDownEvent);
 			this.showing = true;
 
 			if(type == "Full")
@@ -366,17 +329,14 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		if(this.showing)
 		{
-			if(this.iePopUp)
-				this.iePopUp.style.display = "none";
-
 			this.element.style.display = "none";
 			this.showing = false;
-			Event.stopObserving(document.body, "click", this._documentClickEvent);
-			Event.stopObserving(document,"keydown", this._documentKeyDownEvent);
+			this.stopObserving(document.body, "click", this._documentClickEvent);
+			this.stopObserving(document,"keydown", this._documentKeyDownEvent);
 
 			if(this._observingMouseMove)
 			{
-				Event.stopObserving(document.body, "mousemove", this._onMouseMove);
+				this.stopObserving(document.body, "mousemove", this._onMouseMove);
 				this._observingMouseMove = false;
 			}
 		}
@@ -384,14 +344,15 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 	keyPressed : function(event,type)
 	{
-		if(Event.keyCode(event) == Event.KEY_ESC)
+		// esc
+		if(event.keyCode == 27)
 			this.hide(event,type);
 	},
 
 	hideOnClick : function(ev)
 	{
 		if(!this.showing) return;
-		var el = Event.element(ev);
+		var el = ev.target;
 		var within = false;
 		do
 		{	within = within || String(el.className).indexOf('FullColorPicker') > -1
@@ -404,53 +365,60 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		if(!within) this.hide(ev);
 	},
 
-	ieHack : function()
-	{
-		// IE hack
-		if(this.iePopUp)
-		{
-			this.iePopUp.style.display = "block";
-			this.iePopUp.style.top = (this.element.offsetTop) + "px";
-			this.iePopUp.style.left = (this.element.offsetLeft)+ "px";
-			this.iePopUp.style.width = Math.abs(this.element.offsetWidth)+ "px";
-			this.iePopUp.style.height = (this.element.offsetHeight + 1)+ "px";
-		}
-	},
-
 	getBasicPickerContainer : function(pickerID, palette)
 	{
-		var table = TABLE({className:'basic_colors palette_'+palette},TBODY());
+		var div;
+		var table;
+		var tbody;
+		var tr;
+		var td;
+
+		// main div
+		div = document.createElement("div");
+		div.className = this.options['ClassName']+" BasicColorPicker";
+		div.id = pickerID+"_picker";
+
+		table = document.createElement("table");
+		table.className = 'basic_colors palette_'+palette;
+		div.appendChild(table);
+
+		tbody = document.createElement("tbody");
+		table.appendChild(tbody);
+
 		var colors = Prado.WebUI.TColorPicker.palettes[palette];
 		var pickerOnClick = this.cellOnClick.bind(this);
-		colors.each(function(color)
+		var obj=this;
+		jQuery.each(colors, function(idx, color)
 		{
 			var row = document.createElement("tr");
-			color.each(function(c)
+			jQuery.each(color, function(idx, c)
 			{
 				var td = document.createElement("td");
-				var img = IMG({src:Prado.WebUI.TColorPicker.UIImages['button.gif'],width:16,height:16});
+				var img = document.createElement("img");
+				img.src=Prado.WebUI.TColorPicker.UIImages['button.gif'];
+				img.width=16;
+				img.height=16;
 				img.style.backgroundColor = "#"+c;
-				Event.observe(img,"click", pickerOnClick);
-				Event.observe(img,"mouseover", function(e)
+				obj.observe(img,"click", pickerOnClick);
+				obj.observe(img,"mouseover", function(e)
 				{
-					Element.addClassName(Event.element(e), "pickerhover");
+					jQuery(e.target).addClass("pickerhover");
 				});
-				Event.observe(img,"mouseout", function(e)
+				obj.observe(img,"mouseout", function(e)
 				{
-					Element.removeClassName(Event.element(e), "pickerhover");
+					jQuery(e.target).removeClass("pickerhover");
 				});
 				td.appendChild(img);
 				row.appendChild(td);
 			});
 			table.childNodes[0].appendChild(row);
 		});
-		return DIV({className:this.options['ClassName']+" BasicColorPicker",
-					id:pickerID+"_picker"}, table);
+		return div;
 	},
 
 	cellOnClick : function(e)
 	{
-		var el = Event.element(e);
+		var el = e.target;
 		if(el.tagName.toLowerCase() != "img")
 			return;
 		var color = Rico.Color.createColorFromBackground(el);
@@ -469,98 +437,148 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 	getFullPickerContainer : function(pickerID)
 	{
-		//create the 3 buttons
+		//create the buttons
+		var okBtn = document.createElement("input");
+		okBtn.className = 'button';
+		okBtn.type = 'button';
+		okBtn.value = this.options.OKButtonText;
+
+		var cancelBtn = document.createElement("input");
+		cancelBtn.className = 'button';
+		cancelBtn.type = 'button';
+		cancelBtn.value = this.options.CancelButtonText;
+
 		this.buttons =
 		{
-			//Less   : INPUT({value:'Less Colors', className:'button', type:'button'}),
-			OK	   : INPUT({value:this.options.OKButtonText, className:'button', type:'button'}),
-			Cancel : INPUT({value:this.options.CancelButtonText, className:'button', type:'button'})
+			OK	   : okBtn,
+			Cancel : cancelBtn
 		};
 
 		//create the 6 inputs
 		var inputs = {};
-		['H','S','V','R','G','B'].each(function(type)
+		jQuery.each(['H','S','V','R','G','B'], function(idx, type)
 		{
-			inputs[type] = INPUT({type:'text',size:'3',maxlength:'3'});
+			inputs[type] = document.createElement("input");
+			inputs[type].type='text';
+			inputs[type].size='3';
+			inputs[type].maxlength='3';
 		});
 
 		//create the HEX input
-		inputs['HEX'] = INPUT({className:'hex',type:'text',size:'6',maxlength:'6'});
+		inputs['HEX'] = document.createElement("input");
+		inputs['HEX'].className = 'hex';
+		inputs['HEX'].type='text';
+		inputs['HEX'].size='6';
+		inputs['HEX'].maxlength='6';
+
 		this.inputs = inputs;
 
 		var images = Prado.WebUI.TColorPicker.UIImages;
 
-		this.inputs['currentColor'] = SPAN({className:'currentColor'});
-		this.inputs['oldColor'] = SPAN({className:'oldColor'});
+		this.inputs['currentColor'] = document.createElement("span");
+		this.inputs['currentColor'].className='currentColor';
+		this.inputs['oldColor'] = document.createElement("span");
+		this.inputs['oldColor'].className='oldColor';
 
-		var inputsTable =
-			TABLE({className:'inputs'}, TBODY(null,
-				TR(null,
-					TD({className:'currentcolor',colSpan:2},
-						this.inputs['currentColor'], this.inputs['oldColor'])),
+		var inputsTable = document.createElement("table");
+		inputsTable.className='inputs';
 
-				TR(null,
-					TD(null,'H:'),
-					TD(null,this.inputs['H'], '??')),
+		var tbody = document.createElement("tbody");
+		inputsTable.appendChild(tbody);
 
-				TR(null,
-					TD(null,'S:'),
-					TD(null,this.inputs['S'], '%')),
+		var tr = document.createElement("tr");
+		tbody.appendChild(tr);
 
-				TR(null,
-					TD(null,'V:'),
-					TD(null,this.inputs['V'], '%')),
+		var td= document.createElement("td");
+		tr.appendChild(td);
+		td.className='currentcolor';
+		td.colSpan=2;
+		td.appendChild(this.inputs['currentColor']);
+		td.appendChild(this.inputs['oldColor']);
 
-				TR(null,
-					TD({className:'gap'},'R:'),
-					TD({className:'gap'},this.inputs['R'])),
-
-				TR(null,
-					TD(null,'G:'),
-					TD(null, this.inputs['G'])),
-
-				TR(null,
-					TD(null,'B:'),
-					TD(null, this.inputs['B'])),
-
-				TR(null,
-					TD({className:'gap'},'#'),
-					TD({className:'gap'},this.inputs['HEX']))
-			));
+		this.internalAddRow(tbody, 'H:', this.inputs['H'], '°');
+		this.internalAddRow(tbody, 'S:', this.inputs['S'], '%');
+		this.internalAddRow(tbody, 'V:', this.inputs['V'], '%');
+		this.internalAddRow(tbody, 'R:', this.inputs['R'], null, 'gap');
+		this.internalAddRow(tbody, 'G:', this.inputs['G']);
+		this.internalAddRow(tbody, 'B:', this.inputs['B']);
+		this.internalAddRow(tbody, '#', this.inputs['HEX'], null, 'gap');
 
 		var UIimages =
 		{
-			selector : SPAN({className:'selector'}),
-			background : SPAN({className:'colorpanel'}),
-			slider : SPAN({className:'slider'}),
-			hue : SPAN({className:'strip'})
+			selector : document.createElement("span"),
+			background : document.createElement("span"),
+			slider : document.createElement("span"),
+			hue : document.createElement("span")
 		}
 
-		//png alpha channels for IE
-		if(Prado.Browser().ie)
-		{
-			var filter = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader";
-			UIimages['background'] = SPAN({className:'colorpanel',style:filter+"(src='"+images['background.png']+"' sizingMethod=scale);"})
-		}
+		UIimages['selector'].className='selector';
+		UIimages['background'].className='colorpanel';
+		UIimages['slider'].className='slider';
+		UIimages['hue'].className='strip';
 
-		this.inputs = Object.extend(this.inputs, UIimages);
+		this.inputs = jQuery.extend(this.inputs, UIimages);
 
-		var pickerTable =
-			TABLE(null,TBODY(null,
-				TR({className:'selection'},
-					TD({className:'colors'},UIimages['selector'],UIimages['background']),
-					TD({className:'hue'},UIimages['slider'],UIimages['hue']),
-					TD({className:'inputs'}, inputsTable)
-				),
-				TR({className:'options'},
-					TD({colSpan:3},
-						this.buttons['OK'],
-						this.buttons['Cancel'])
-				)
-			));
+		var pickerTable = document.createElement("table");
+		tbody=document.createElement("tbody");
+		pickerTable.appendChild(tbody);
 
-		return DIV({className:this.options['ClassName']+" FullColorPicker",
-						id:pickerID+"_picker"},pickerTable);
+		var tr = document.createElement("tr");
+		tr.className='selection';
+		tbody.appendChild(tr);
+
+		var td= document.createElement("td");
+		tr.appendChild(td);
+		td.className='colors';
+		td.appendChild(UIimages['selector']);
+		td.appendChild(UIimages['background']);
+
+		var td= document.createElement("td");
+		tr.appendChild(td);
+		td.className='hue';
+		td.appendChild(UIimages['slider']);
+		td.appendChild(UIimages['hue']);
+
+		var td= document.createElement("td");
+		tr.appendChild(td);
+		td.className='inputs';
+		td.appendChild(inputsTable);
+
+		var tr = document.createElement("tr");
+		tr.className='options';
+		tbody.appendChild(tr);
+
+		var td= document.createElement("td");
+		tr.appendChild(td);
+		td.colSpan=3;
+		td.appendChild(this.buttons['OK']);
+		td.appendChild(this.buttons['Cancel']);
+
+		var div = document.createElement('div');
+		div.className=this.options['ClassName']+" FullColorPicker";
+		div.id=pickerID+"_picker";
+		div.appendChild(pickerTable);
+		return div;
+	},
+
+	internalAddRow : function(tbody, label1, object2, label2, className)
+	{
+		var tr = document.createElement("tr");
+		tbody.appendChild(tr);
+
+		var td= document.createElement("td");
+		if(className!==undefined && className!==null)
+			td.className=className;
+		tr.appendChild(td);
+		td.appendChild(document.createTextNode(label1));
+
+		var td= document.createElement("td");
+		if(className!==undefined && className!==null)
+			td.className=className;
+		tr.appendChild(td);
+		td.appendChild(object2);
+		if(label2!==undefined && label2!==null)
+			td.appendChild(document.createTextNode(label2));
 	},
 
 	initializeFullPicker : function()
@@ -572,8 +590,8 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		var i = 0;
 		for(var type in this.inputs)
 		{
-			Event.observe(this.inputs[type], "change",
-				this.onInputChanged.bindEvent(this,type));
+			this.observe(this.inputs[type], "change",
+				jQuery.proxy(this.onInputChanged,this,type));
 			i++;
 
 			if(i > 6) break;
@@ -587,24 +605,24 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		this._onMouseUp = this.onMouseUp.bind(this);
 		this._onMouseMove = this.onMouseMove.bind(this);
 
-		Event.observe(this.inputs.background, "mousedown", this._onColorMouseDown);
-		Event.observe(this.inputs.selector, "mousedown", this._onColorMouseDown);
-		Event.observe(this.inputs.hue, "mousedown", this._onHueMouseDown);
-		Event.observe(this.inputs.slider, "mousedown", this._onHueMouseDown);
+		this.observe(this.inputs.background, "mousedown", this._onColorMouseDown);
+		this.observe(this.inputs.selector, "mousedown", this._onColorMouseDown);
+		this.observe(this.inputs.hue, "mousedown", this._onHueMouseDown);
+		this.observe(this.inputs.slider, "mousedown", this._onHueMouseDown);
 
-		Event.observe(document.body, "mouseup", this._onMouseUp);
+		this.observe(document.body, "mouseup", this._onMouseUp);
 
 		this.observeMouseMovement();
 
-		Event.observe(this.buttons.Cancel, "click", this.hide.bindEvent(this,this.options['Mode']));
-		Event.observe(this.buttons.OK, "click", this.onOKClicked.bind(this));
+		this.observe(this.buttons.Cancel, "click", jQuery.proxy(this.hide,this,this.options['Mode']));
+		this.observe(this.buttons.OK, "click", this.onOKClicked.bind(this));
 	},
 
 	observeMouseMovement : function()
 	{
 		if(!this._observingMouseMove)
 		{
-			Event.observe(document.body, "mousemove", this._onMouseMove);
+			this.observe(document.body, "mousemove", this._onMouseMove);
 			this._observingMouseMove = true;
 		}
 	},
@@ -613,21 +631,21 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 	{
 		this.isMouseDownOnColor = true;
 		this.onMouseMove(ev);
-		Event.stop(ev);
+		ev.stopPropagation();
 	},
 
 	onHueMouseDown : function(ev)
 	{
 		this.isMouseDownOnHue = true;
 		this.onMouseMove(ev);
-		Event.stop(ev);
+		ev.stopPropagation();
 	},
 
 	onMouseUp : function(ev)
 	{
 		this.isMouseDownOnColor = false;
 		this.isMouseDownOnHue = false;
-		Event.stop(ev);
+		ev.stopPropagation();
 	},
 
 	onMouseMove : function(ev)
@@ -636,17 +654,17 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 			this.changeSV(ev);
 		if(this.isMouseDownOnHue)
 			this.changeH(ev);
-		Event.stop(ev);
+		ev.stopPropagation();
 	},
 
 	changeSV : function(ev)
 	{
-		var px = Event.pointerX(ev);
-		var py = Event.pointerY(ev);
-		var pos = this.inputs.background.cumulativeOffset();
+		var px = ev.pageX;
+		var py = ev.pageY;
+		var pos = jQuery(this.inputs.background).offset();
 
-		var x = this.truncate(px - pos[0],0,255);
-		var y = this.truncate(py - pos[1],0,255);
+		var x = this.truncate(px - pos['left'],0,255);
+		var y = this.truncate(py - pos['top'],0,255);
 
 
 		var s = x/255;
@@ -673,9 +691,9 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 	changeH : function(ev)
 	{
-		var py = Event.pointerY(ev);
-		var pos = this.inputs.background.cumulativeOffset();
-		var y = this.truncate(py - pos[1],0,255);
+		var py = ev.pageY;
+		var pos = jQuery(this.inputs.background).offset();
+		var y = this.truncate(py - pos['top'],0,255);
 
 		var h = (255-y)/255;
 		var current_h = this.truncate(this.inputs.H.value,0,360);
@@ -750,8 +768,10 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 
 		var images = Prado.WebUI.TColorPicker.UIImages;
 
-		var changeCss = color.isBright() ? 'removeClassName' : 'addClassName';
-		Element[changeCss](this.inputs.selector, 'target_white');
+		if(color.isBright())
+			jQuery(this.inputs.selector).removeClass('target_white');
+		else
+			jQuery(this.inputs.selector).addClass('target_white');
 
 		if(update)
 			this.updateSelectors(color);
@@ -778,3 +798,32 @@ Object.extend(Prado.WebUI.TColorPicker.prototype,
 		return value < min ? min : value > max ? max : value;
 	}
 });
+
+jQuery.extend(Prado.WebUI.TColorPicker,
+{
+	palettes:
+	{
+		Small : [["fff", "fcc", "fc9", "ff9", "ffc", "9f9", "9ff", "cff", "ccf", "fcf"],
+				["ccc", "f66", "f96", "ff6", "ff3", "6f9", "3ff", "6ff", "99f", "f9f"],
+				["c0c0c0", "f00", "f90", "fc6", "ff0", "3f3", "6cc", "3cf", "66c", "c6c"],
+				["999", "c00", "f60", "fc3", "fc0", "3c0", "0cc", "36f", "63f", "c3c"],
+				["666", "900", "c60", "c93", "990", "090", "399", "33f", "60c", "939"],
+				["333", "600", "930", "963", "660", "060", "366", "009", "339", "636"],
+				["000", "300", "630", "633", "330", "030", "033", "006", "309", "303"]],
+
+		Tiny : [["ffffff"/*white*/, "00ff00"/*lime*/, "008000"/*green*/, "0000ff"/*blue*/],
+				["c0c0c0"/*silver*/, "ffff00"/*yellow*/, "ff00ff"/*fuchsia*/, "000080"/*navy*/],
+				["808080"/*gray*/, "ff0000"/*red*/, "800080"/*purple*/, "000000"/*black*/]]
+	},
+
+	UIImages :
+	{
+		'button.gif' : 'button.gif',
+//		'target_black.gif' : 'target_black.gif',
+//		'target_white.gif' : 'target_white.gif',
+//		'background.png' : 'background.png'
+//		'slider.gif' : 'slider.gif',
+//		'hue.gif' : 'hue.gif'
+	}
+});
+

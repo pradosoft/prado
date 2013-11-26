@@ -1,17 +1,17 @@
-Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
+Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{
 		this.options = options || {};
 		Prado.WebUI.TActiveFileUpload.register(this);
 		
-		this.input = $(options.inputID);
-		this.flag = $(options.flagID);
-		this.form = $(options.formID);
+		this.input = $('#'+options.inputID).get(0);
+		this.flag = $('#'+options.flagID).get(0);
+		this.form = $('#'+options.formID).get(0);
 		
-		this.indicator = $(options.indicatorID);
-		this.complete = $(options.completeID);
-		this.error = $(options.errorID);
+		this.indicator = $('#'+options.indicatorID).get(0);
+		this.complete = $('#'+options.completeID).get(0);
+		this.error = $('#'+options.errorID).get(0);
 		
 		// set up events
 		if (options.autoPostBack){
@@ -47,21 +47,21 @@ Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
 	finishUpload : function(options){
 
 		if (this.options.targetID == options.targetID)
-         		{
-				this.finishoptions = options;
-         			var e = this;
-         			var callback =
-         			{
-         				'CallbackParameter' : options || '',
-         				'onSuccess' : function() { e.finishCallBack(true); },
-					'onFailure' : function() { e.finishCallBack(false); }
-         			};
+		{
+			this.finishoptions = options;
+			var e = this;
+			var callback =
+			{
+				'CallbackParameter' : options || '',
+				'onSuccess' : function() { e.finishCallBack(true); },
+				'onFailure' : function() { e.finishCallBack(false); }
+			};
 
-         			Object.extend(callback, this.options);
+			jQuery.extend(callback, this.options);
 
-         			var request = new Prado.CallbackRequest(this.options.EventTarget, callback);
-         			request.dispatch();
-         		}
+			var request = new Prado.CallbackRequest(this.options.EventTarget, callback);
+			request.dispatch();
+		}
 		else
 			this.finishCallBack(true);
 
@@ -71,18 +71,18 @@ Prado.WebUI.TActiveFileUpload = Class.create(Prado.WebUI.Control,
 		// hide the display indicator.
 		this.flag.value = '';
 		this.indicator.style.display = 'none';
-       		// show the complete indicator.
-       		if ((this.finishoptions.errorCode == 0) && (success)) {
-       			this.complete.style.display = '';
-       			this.input.value = '';
-       		} else {
-       			this.error.style.display = '';
-       		}
+			// show the complete indicator.
+			if ((this.finishoptions.errorCode == 0) && (success)) {
+				this.complete.style.display = '';
+				this.input.value = '';
+			} else {
+				this.error.style.display = '';
+			}
 	}
 
 });
 
-Object.extend(Prado.WebUI.TActiveFileUpload, 
+jQuery.extend(Prado.WebUI.TActiveFileUpload, 
 {
 	//class methods
 
