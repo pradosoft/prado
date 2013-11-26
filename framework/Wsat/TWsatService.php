@@ -33,29 +33,33 @@
  * 
  * Warning: You should only use Wsat in development mode.
  */
-class TWsatService extends TPageService {
+class TWsatService extends TPageService
+{
 
     private $_pass = '';
 
 //-----------------------------------------------------------------------------    
-    public function init($config) {
-        if ($this->getApplication()->getMode() === TApplicationMode::Performance || $this->getApplication()->getMode() === TApplicationMode::Normal) {
+    public function init($config)
+    {
+        if ($this->getApplication()->getMode() === TApplicationMode::Performance || $this->getApplication()->getMode() === TApplicationMode::Normal)
             throw new TInvalidOperationException("You should not use Prado WSAT in any of the production modes.");
-        }
-        if (empty($this->_pass)) {
+
+        if (empty($this->_pass))
             throw new TConfigurationException("You need to specify the Password attribute.");
-        }
+
         $this->setDefaultPage("TWsatHome");
         $this->_startThemeManager();
         parent::init($config);
     }
 
-    public function getBasePath() {
+    public function getBasePath()
+    {
         $basePath = Prado::getPathOfNamespace("System.Wsat.pages");
         return realpath($basePath);
     }
 
-    private function _startThemeManager() {
+    private function _startThemeManager()
+    {
         $themeManager = new TThemeManager;
         $themeManager->BasePath = "System.Wsat.themes";
         $url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('System.Wsat'));
@@ -65,14 +69,14 @@ class TWsatService extends TPageService {
         $this->setThemeManager($themeManager);
     }
 
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->_pass;
     }
 
-    public function setPassword($_pass) {
+    public function setPassword($_pass)
+    {
         $this->_pass = $_pass;
     }
 
 }
-
-?>

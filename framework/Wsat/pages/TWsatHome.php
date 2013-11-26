@@ -9,12 +9,9 @@
  * @since 3.3
  * @package Wsat.pages
  */
-
 Prado::using("System.Wsat.TWsatARGenerator");
 
-class TWsatHome extends TPage {
-
-
+class TWsatHome extends TPage
+{
+    
 }
-
-?>

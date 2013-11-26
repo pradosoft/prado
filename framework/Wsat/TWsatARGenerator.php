@@ -9,7 +9,8 @@
  * @since 3.3
  * @package Wsat
  */
-class TWsatARGenerator {
+class TWsatARGenerator
+{
 
     /**
      * Gets the current Db connection, the connection object is obtained from
@@ -49,7 +50,8 @@ class TWsatARGenerator {
      */
     private $uq_chars = array('[', ']', '"', '`', "'");
 
-    function __construct() {
+    function __construct()
+    {
         $ar_manager = TActiveRecordManager::getInstance();
         $this->_conn = $ar_manager->getDbConnection();
         $this->_conn->Active = true;
@@ -60,37 +62,42 @@ class TWsatARGenerator {
      * Destructor.
      * Disconnect the db connection.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if ($this->_conn !== null)
             $this->_conn->Active = false;
     }
 
-    public function setOpFile($op_file_namespace) {
+    public function setOpFile($op_file_namespace)
+    {
         $op_file = Prado::getPathOfNamespace($op_file_namespace);
-        if (empty($op_file)) {
+        if (empty($op_file))
             throw new Exception("You need to fix your output folder namespace.");
-        }
-        if (!is_dir($op_file)) {
+        if (!is_dir($op_file))
             mkdir($op_file, 0777, true);
-        }
         $this->_op_file = $op_file;
     }
 
-    public function setClasPrefix($_clas_prefix) {
+    public function setClasPrefix($_clas_prefix)
+    {
         $this->_clas_prefix = $_clas_prefix;
     }
 
-    public function setClassSufix($_clas_sufix) {
+    public function setClassSufix($_clas_sufix)
+    {
         $this->_class_sufix = $_clas_sufix;
     }
 
 //-----------------------------------------------------------------------------    
     // <editor-fold defaultstate="collapsed" desc="Main APIs">
-    public function generate($tableName) {
+    public function generate($tableName)
+    {
         $tableInfo = $this->_gateway->getTableInfo($this->_conn, $tableName);
-        if (count($tableInfo->getColumns()) === 0) {
+        if (count($tableInfo->getColumns()) === 0)
+        {
             throw new Exception("Unable to find table or view $tableName in " . $this->_conn->getConnectionString() . ".");
-        } else {
+        } else
+        {
             $properties = array();
             foreach ($tableInfo->getColumns() as $field => $column)
                 $properties[] = $this->generateProperty($field, $column);
@@ -103,20 +110,26 @@ class TWsatARGenerator {
         file_put_contents($output, $class);
     }
 
-    public function generateAll() {
-        foreach ($this->_getAllTableNames() as $tableName) {
-            if ($tableName == "pradocache") {
+    public function generateAll()
+    {
+        foreach ($this->_getAllTableNames() as $tableName)
+        {
+            if ($tableName == "pradocache")
+            {
                 continue;
             }
             $this->generate($tableName);
         }
     }
 
-    public function buildRelations() {
+    public function buildRelations()
+    {
         $this->_relations = array();
-        foreach ($this->_getAllTableNames() as $table_name) {
+        foreach ($this->_getAllTableNames() as $table_name)
+        {
             $tableInfo = $this->_gateway->getTableInfo($this->_conn, $table_name);
-            foreach ($tableInfo->getForeignKeys() as $fk_data) {
+            foreach ($tableInfo->getForeignKeys() as $fk_data)
+            {
                 $owner_table = $fk_data["table"];
                 $slave_table = $table_name;
                 $fk_prop = key($fk_data["keys"]);
@@ -142,25 +155,28 @@ class TWsatARGenerator {
 //-----------------------------------------------------------------------------
     // <editor-fold defaultstate="collapsed" desc="Common Methods">
 
-    private function _getAllTableNames() {
+    private function _getAllTableNames()
+    {
         $command = $this->_conn->createCommand("Show Tables");
         $dataReader = $command->query();
         $dataReader->bindColumn(1, $table);
         $tables = array();
-        while ($dataReader->read()) {
+        while ($dataReader->read())
             $tables[] = $table;
-        }
         return $tables;
     }
 
-    private function _getProperClassName($tableName) {
+    private function _getProperClassName($tableName)
+    {
         $table_name_words = str_replace("_", " ", strtolower($tableName));
         $final_conversion = str_replace(" ", "", ucwords($table_name_words));
         return $this->_clas_prefix . $final_conversion . $this->_class_sufix;
     }
 
-    public function renderAllTablesInformation() {
-        foreach ($this->_getAllTableNames() as $table_name) {
+    public function renderAllTablesInformation()
+    {
+        foreach ($this->_getAllTableNames() as $table_name)
+        {
             echo $table_name . "<br>";
 
             $tableInfo = $this->_gateway->getTableInfo($this->_conn, $table_name);
@@ -173,7 +189,8 @@ class TWsatARGenerator {
 
 //-----------------------------------------------------------------------------
 
-    protected function generateProperty($field, $column) {
+    protected function generateProperty($field, $column)
+    {
         $prop = '';
         $name = '$' . $field;
 
@@ -184,40 +201,47 @@ class TWsatARGenerator {
         return $prop;
     }
 
-    private function _renderRelations($tablename) {
-        if (!isset($this->_relations[$tablename])) {
+    private function _renderRelations($tablename)
+    {
+        if (!isset($this->_relations[$tablename]))
             return "";
-        }
+
         $code = "\tpublic static \$RELATIONS = array (";
-        foreach ($this->_relations[$tablename] as $rel_data) {
+        foreach ($this->_relations[$tablename] as $rel_data)
             $code .= "\n\t\t'" . $rel_data["prop_name"] . "' => array(" . $rel_data["rel_type"] . ", '" . $rel_data["ref_class_name"] . "', '" . $rel_data["prop_ref"] . "'),";
-        }
+
         $code = substr($code, 0, -1);
         $code .= "\n\t);";
         return $code;
     }
 
-    private function _buildSmartToString($tableInfo) {
+    private function _buildSmartToString($tableInfo)
+    {
         $code = "\tpublic function __toString() {";
         $property = "throw new THttpException(500, 'Not implemented yet.');";
-        try {
-            foreach ($tableInfo->getColumns() as $column) {
-                if (isset($column->IsPrimaryKey) && $column->IsPrimaryKey) {
+        try
+        {
+            foreach ($tableInfo->getColumns() as $column)
+            {
+                if (isset($column->IsPrimaryKey) && $column->IsPrimaryKey)
                     $property = str_replace($this->uq_chars, "", $column->ColumnName);
-                } elseif ($column->PHPType == "string" && $column->DBType != "date") {
+                elseif ($column->PHPType == "string" && $column->DBType != "date")
+                {
                     $property = str_replace($this->uq_chars, "", $column->ColumnName);
                     break;
                 }
             }
-        } catch (Exception $ex) {
-            
+        } catch (Exception $ex)
+        {
+            Prado::trace($ex->getMessage());
         }
         $code .= "\n\t\treturn \$this->$property;";
         $code .= "\n\t}";
         return $code;
     }
 
-    protected function generateClass($properties, $tablename, $classname, $toString) {
+    protected function generateClass($properties, $tablename, $classname, $toString)
+    {
         $props = implode("\n", $properties);
         $relations = $this->_renderRelations($tablename);
         $date = date('Y-m-d h:i:s');
@@ -227,8 +251,8 @@ class TWsatARGenerator {
  * Auto generated by PRADO - WSAT on $date.
  * @author prado_user_name               
  */
-class $classname extends TActiveRecord {
-                
+class $classname extends TActiveRecord 
+{       
 	const TABLE='$tablename';
 
 $props
@@ -241,11 +265,8 @@ $relations
                 
 $toString
 }
-?>
 EOD;
     }
 
 // </editor-fold>
 }
-
-?>
