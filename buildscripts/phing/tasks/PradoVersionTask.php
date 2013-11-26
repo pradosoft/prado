@@ -38,17 +38,8 @@ class PradoVersionTask extends PropertyTask
 	 */
 	private function getPradoRevision()
 	{
-		$svnPath=dirname(__FILE__).'/../../../.svn';
-		if(is_file($svnPath.'/all-wcprops'))
-			$propFile=$svnPath.'/all-wcprops';
-		else if(is_file($svnPath.'/dir-wcprops'))
-			$propFile=$svnPath.'/dir-wcprops';
-		else
-			return 'unknown';
-		$contents=file_get_contents($propFile);
-		if(preg_match('/\\/svn\\/\\!svn\\/ver\\/(\d+)\\//ms',$contents,$matches)>0)
-			return $matches[1];
-		else
-			return 'unknown';
+		$rev=shell_exec("git log -1 --pretty=format:'%h'");
+		if($rev===null) $rev='unknown';
+		return $rev;
 	}
 }
