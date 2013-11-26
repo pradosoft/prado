@@ -1,4 +1,4 @@
-Version 3.2.3 to be released
+Version 3.2.3 Nov 26, 2013
 
 BUG: Issue #467 - TSafeHtml error on php 5.5 (ctrlaltca)
 BUG: Issue #470 - Problem escaping characters in TActiveDropDownList (ctrlaltca)
