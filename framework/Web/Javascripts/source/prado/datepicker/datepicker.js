@@ -627,8 +627,6 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 		if(this.showing)
 		{
 			this._calDiv.style.display = "none";
-			if(this.iePopUp)
-				this.iePopUp.style.display = "none";
 			this.showing = false;
 			this.stopObserving(document.body, "click", this.documentClickEvent);
 			this.stopObserving(document,"keydown", this.documentKeyDownEvent);
