@@ -315,7 +315,13 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		this.data = data;
 
 		if (this.options.onSuccess)
-			this.options.onSuccess(this,textStatus);
+		{
+			var customData=this.extractContent(Prado.CallbackRequestManager.DATA_HEADER);
+			if (typeof(customData) == "string" && customData.length > 0)
+				customData = jQuery.parseJSON(customData);
+
+			this.options.onSuccess(this,customData);
+		}
 
 		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
