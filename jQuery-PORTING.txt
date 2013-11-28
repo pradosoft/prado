@@ -1,0 +1,82 @@
+Get element by id
+OLD: $('element_id')
+NEW: $('#element_id') // for the extended element
+NEW: $('#element_id').get(0) // for the base DOM element
+---
+Get element by css selector
+OLD: $$('.class')
+NEW: $('.class')
+---
+Apply a function to multiple elements
+OLD: $$('.class').each(Element.remove);
+NEW: $('.class').remove();
+---
+Class creation/extension
+
+OLD: Class.create(Prado.WebUI.TActiveImageButton, { ... })
+OLD: Class.extend(Prado.WebUI.TActiveImageButton, { ... })
+NEW: jQuery.klass(Prado.WebUI.TActiveImageButton, { ... })
+---
+Extending an object
+OLD: Object.extend(...)
+NEW: jQuery.extend(...)
+---
+Bind an event to a callback event handler
+OLD: Event.observe(element, 'click', callback)
+NEW: $(element).on('click', callback)
+---
+Bind an event to a callback event handler
+OLD: Event.stopObserving(element, 'click', callback)
+NEW: $(element).off('click', callback)
+---
+Stopping event propagation
+OLD: Event.stop(event)
+NEW: event.stopPropagation() or event.preventDefault()
+---
+Detect keypress event: use the numeric codes
+OLD: if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR || kc == Event.KEY_TAB)
+NEW: if(kc == 13 || kc == 32 || kc == 9)
+---
+Implementing the postback handler for a PostBackControl; the function signature has changed (parameters are inverted):
+OLD: onPostBack : function(event, options)
+NEW: onPostBack : function(options, event)
+---
+Execute a function when the pagfe has finished loading
+OLD: document.observe("dom:loaded", function(event) { ... });
+NEW: $( document ).ready(function() { ... });
+---
+Create an animation effect with a "finish" callback
+OLD: new Effect.Fade(element, {duration: 400, afterFinish: function() { // Animation complete. });
+NEW: $(element).fadeOut( 400, function() { // Animation complete. });
+---
+Declare a function to be used as event handler binding its "this" property
+OLD: this.functionName.bindAsEventListener(this);
+NEW: this.functionName.bind(this);
+---
+Css class functions
+OLD: addClassName, removeClassName, hasClassName
+NEW: addClass, removeClass, hasClass
+---
+Get event target
+OLD: Event.element(event)
+NEW: event.target
+---
+Get event mouse position
+OLD: Event.pointerX(event), Event.pointerY(event);
+NEW: event.pageX, event.pageY;
+---
+Fire events
+OLD: Event.fireEvent(this.control, "change");
+NEW: $(element).trigger("change");
+---
+Test browser
+OLD: Prado.Browser().ie
+NEW: jQuery.support
+---
+Focus an element
+OLD: Prado.Element.focus(element);
+NEW: $(element).focus();
+---
+Get element size
+OLD: element.getWidth(), element.getHeight()
+NEW: element.width, element.height
