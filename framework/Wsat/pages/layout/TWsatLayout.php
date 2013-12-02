@@ -34,5 +34,3 @@ class TWsatLayout extends TTemplateControl
         }
 
 }
-
-?>

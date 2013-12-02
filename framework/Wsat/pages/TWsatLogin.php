@@ -18,12 +18,7 @@ class TWsatLogin extends TPage
                 {
                         $this->Session["wsat_password"] = $this->getService()->getPassword();
 
-                        $authManager = $this->Application->getModule('auth');
-                        $url = $authManager->ReturnUrl;
-                        if (empty($url))
-                        {
-                                $url = $this->Service->constructUrl('TWsatHome');
-                        }
+                        $url = $this->Service->constructUrl('TWsatHome');
                         $this->Response->redirect($url);
                 }
         }

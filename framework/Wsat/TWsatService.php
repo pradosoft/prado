@@ -37,7 +37,7 @@ class TWsatService extends TPageService
 {
 
         private $_pass = '';
-    
+
         public function init($config)
         {
                 if ($this->getApplication()->getMode() === TApplicationMode::Performance || $this->getApplication()->getMode() === TApplicationMode::Normal)

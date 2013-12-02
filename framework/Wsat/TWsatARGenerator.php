@@ -52,6 +52,8 @@ class TWsatARGenerator
 
         function __construct()
         {
+                if(!class_exists("TActiveRecordManager", false))
+                        throw new Exception("You need to enable the ActiveRecord module in your application configuration file.");
                 $ar_manager = TActiveRecordManager::getInstance();
                 $this->_conn = $ar_manager->getDbConnection();
                 $this->_conn->Active = true;
