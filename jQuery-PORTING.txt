@@ -1,3 +1,5 @@
+JAVASCRIPT
+
 Get element by id
 OLD: $('element_id')
 NEW: $('#element_id') // for the extended element
@@ -80,3 +82,14 @@ NEW: $(element).focus();
 Get element size
 OLD: element.getWidth(), element.getHeight()
 NEW: element.width, element.height
+
+
+
+CONTROLS
+
+TAutoCompleter doesn't exists anymore, use TJuiAutoCompleter instead, upgrading the code:
+ * No more Frequency property.
+ * minChars property is now minLength 
+ * only the ItemTemplate is supported for the Suggestions repeater;
+ * in the ItemTemplate you don't need to render the <li/> anymore, but only the content itself
+ * No Multiple selection support (by now, can be added in the future)

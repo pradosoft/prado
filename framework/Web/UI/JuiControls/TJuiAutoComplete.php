@@ -1,12 +1,12 @@
 <?php
 /**
- * TAutoComplete class file.
+ * TJuiAutoComplete class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2013 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJuiAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -15,14 +15,14 @@
  */
 Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
-
+Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
 /**
- * TAutoComplete class.
+ * TJuiAutoComplete class.
  *
- * TAutoComplete is a textbox that provides a list of suggestion on
+ * TJuiAutoComplete is a textbox that provides a list of suggestion on
  * the current partial word typed in the textbox. The suggestions are
  * requested using callbacks, and raises the {@link onSuggestion OnSuggestion}
- * event. The events of the TActiveText (from which TAutoComplete is extended from)
+ * event. The events of the TActiveText (from which TJuiAutoComplete is extended from)
  * and {@link onSuggestion OnSuggestion} are mutually exculsive. That is,
  * if {@link onTextChange OnTextChange} and/or {@link onCallback OnCallback}
  * events are raise, then {@link onSuggestion OnSuggestion} will not be raise, and
@@ -31,7 +31,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * The list of suggestions should be set in the {@link onSuggestion OnSuggestion}
  * event handler. The partial word to match the suggestion is in the
  * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
- * property. The datasource of the TAutoComplete must be set using {@link setDataSource}
+ * property. The datasource of the TJuiAutoComplete must be set using {@link setDataSource}
  * method. This sets the datasource for the suggestions repeater, available through
  * the {@link getSuggestions Suggestions} property. Header, footer templates and
  * other properties of the repeater can be access via the {@link getSuggestions Suggestions}
@@ -63,7 +63,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
  * property contains the index of the selected suggestion.
  *
- * TAutoComplete allows multiple suggestions within one textbox with each
+ * TJuiAutoComplete allows multiple suggestions within one textbox with each
  * word or phrase separated by any characters specified in the
  * {@link setSeparator Separator} property. The {@link setFrequency Frequency}
  * and {@link setMinChars MinChars} properties sets the delay and minimum number
@@ -77,11 +77,11 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * "informal" are ignored as text for suggestions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJuiAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
-class TAutoComplete extends TActiveTextBox implements INamingContainer
+class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
 	/**
 	 * @var ITemplate template for repeater items
@@ -93,52 +93,35 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	private $_resultPanel=null;
 
 	/**
-	 * @return string word or token separators (delimiters).
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter. If you override this class, be sure to set the
+	 * adapter appropriately by, for example, by calling this constructor.
 	 */
-	public function getSeparator()
+	public function __construct()
 	{
-		return $this->getViewState('tokens', '');
+		parent::__construct();
+		$this->setAdapter(new TJuiControlAdapter($this));
 	}
 
 	/**
-	 * @return string word or token separators (delimiters).
+	 * Object containing defined javascript options
+	 * @return TJuiControlOptions
 	 */
-	public function setSeparator($value)
+	public function getOptions()
 	{
-		$this->setViewState('tokens', TPropertyValue::ensureString($value), '');
+		static $options;
+		if($options===null)
+			$options=new TJuiControlOptions($this);
+		return $options;
 	}
 
 	/**
-	 * @return float maximum delay (in seconds) before requesting a suggestion.
+	 * Array containing valid javascript options
+	 * @return array()
 	 */
-	public function getFrequency()
+	public function getValidOptions()
 	{
-		return $this->getViewState('frequency', '');
-	}
-
-	/**
-	 * @param float maximum delay (in seconds) before requesting a suggestion.
-	 * Default is 0.4.
-	 */
-	public function setFrequency($value)
-	{
-		$this->setViewState('frequency', TPropertyValue::ensureFloat($value),'');
-	}
-
-	/**
-	 * @return integer minimum number of characters before requesting a suggestion.
-	 */
-	public function getMinChars()
-	{
-		return $this->getViewState('minChars','');
-	}
-
-	/**
-	 * @param integer minimum number of characters before requesting a suggestion.
-	 */
-	public function setMinChars($value)
-	{
-		$this->setViewState('minChars', TPropertyValue::ensureInteger($value), '');
+		return array('appendTo', 'autoFocus', 'delay', 'disabled', 'minLength', 'position', 'source');
 	}
 
 	/**
@@ -172,14 +155,14 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 		$token = $param->getCallbackParameter();
 		if(is_array($token) && count($token) == 2)
 		{
-			if($token[1] === '__TAutoComplete_onSuggest__')
+			if($token[1] === '__TJuiAutoComplete_onSuggest__')
 			{
-				$parameter = new TAutoCompleteEventParameter($this->getResponse(), $token[0]);
+				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), $token[0]);
 				$this->onSuggest($parameter);
 			}
-			else if($token[1] === '__TAutoComplete_onSuggestionSelected__')
+			else if($token[1] === '__TJuiAutoComplete_onSuggestionSelected__')
 			{
-				$parameter = new TAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
+				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
 				$this->onSuggestionSelected($parameter);
 			}
 		}
@@ -267,10 +250,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	protected function createRepeater()
 	{
 		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
-		$repeater->setHeaderTemplate(new TAutoCompleteTemplate('<ul>'));
-		$repeater->setFooterTemplate(new TAutoCompleteTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li><%# $this->DataItem %></li>',null));
-		$repeater->setEmptyTemplate(new TAutoCompleteTemplate('<ul></ul>'));
+		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>',null));
 		$this->getControls()->add($repeater);
 		return $repeater;
 	}
@@ -280,7 +260,6 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	public function renderEndTag($writer)
 	{
-		$this->getPage()->getClientScript()->registerPradoScript('effects');
 		parent::renderEndTag($writer);
 		$this->renderResultPanel($writer);
 	}
@@ -311,9 +290,17 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
-			$this->getSuggestions()->render($writer);
-			$boundary = $writer->getWriter()->getBoundary();
-			$this->getResponse()->getAdapter()->setResponseData($boundary);
+			$data=array();
+			$items=$this->getSuggestions()->getItems();
+			$writer = new TTextWriter;
+			for($i=0; $i<$items->Count; $i++)
+			{
+				$items->itemAt($i)->render($writer);
+				$item=$writer->flush();
+				$data[]=array( 'id' => $i, 'label' => $item);
+			}
+
+			$this->getResponse()->getAdapter()->setResponseData($data);
 		}
 	}
 
@@ -324,27 +311,25 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	{
 		//disallow page state update ?
 		//$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
-		$options = array();
+		$options = $this->getOptions()->toArray();
+		/*
 		if(strlen($string = $this->getSeparator()))
 		{
 			$string = strtr($string,array('\t'=>"\t",'\n'=>"\n",'\r'=>"\r"));
 			$token = preg_split('//', $string, -1, PREG_SPLIT_NO_EMPTY);
 			$options['tokens'] = $token;
 		}
+		*/
 		if($this->getAutoPostBack())
 		{
 			$options = array_merge($options,parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
-		if(strlen($select = $this->getTextCssClass()))
-			$options['select'] = $select;
-		$options['ResultPanel'] = $this->getResultPanel()->getClientID();
+		if(strlen($textCssClass = $this->getTextCssClass()))
+			$options['textCssClass'] = $textCssClass;
+		$options['appendTo'] = '#'.$this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
-		if(($minchars=$this->getMinChars())!=='')
-			$options['minChars'] = $minchars;
-		if(($frequency=$this->getFrequency())!=='')
-			$options['frequency'] = $frequency;
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		return $options;
@@ -363,7 +348,7 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
 	 */
 	protected function getClientClassName()
 	{
-		return 'Prado.WebUI.TAutoComplete';
+		return 'Prado.WebUI.TJuiAutoComplete';
 	}
 }
 
@@ -375,11 +360,11 @@ class TAutoComplete extends TActiveTextBox implements INamingContainer
  * suggestion selected by the user, -1 if not suggestion is selected.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJuiAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
-class TAutoCompleteEventParameter extends TCallbackEventParameter
+class TJuiAutoCompleteEventParameter extends TCallbackEventParameter
 {
 	private $_selectedIndex=-1;
 
@@ -410,17 +395,17 @@ class TAutoCompleteEventParameter extends TCallbackEventParameter
 }
 
 /**
- * TAutoCompleteTemplate class.
+ * TJuiAutoCompleteTemplate class.
  *
- * TAutoCompleteTemplate is the default template for TAutoCompleteTemplate
+ * TJuiAutoCompleteTemplate is the default template for TJuiAutoCompleteTemplate
  * item template.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
+ * @version $Id: TJuiAutoComplete.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
-class TAutoCompleteTemplate extends TComponent implements ITemplate
+class TJuiAutoCompleteTemplate extends TComponent implements ITemplate
 {
 	private $_template;
 
@@ -438,4 +423,3 @@ class TAutoCompleteTemplate extends TComponent implements ITemplate
 		$parent->getControls()->add($this->_template);
 	}
 }
-
