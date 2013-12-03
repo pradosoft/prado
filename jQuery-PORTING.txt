@@ -87,7 +87,7 @@ NEW: element.width, element.height
 
 CONTROLS
 
-TAutoCompleter doesn't exists anymore, use TJuiAutoCompleter instead, upgrading the code:
+TAutoCompleter doesn't exists anymore, use TJuiAutoComplete instead, upgrading the code:
  * No more Frequency property.
  * minChars property is now minLength 
  * only the ItemTemplate is supported for the Suggestions repeater;
