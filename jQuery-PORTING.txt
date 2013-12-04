@@ -93,3 +93,11 @@ TAutoCompleter doesn't exists anymore, use TJuiAutoComplete instead, upgrading t
  * only the ItemTemplate is supported for the Suggestions repeater;
  * in the ItemTemplate you don't need to render the <li/> anymore, but only the content itself
  * No Multiple selection support (by now, can be added in the future)
+---
+TDraggable doesn't exists anymore, use TJuiDraggable instead, upgrading the code:
+ * Use jQuery-ui's Draggable options.
+---
+TDropContainer doesn't exists anymore, use TJuiDroppable instead, upgrading the code:
+ * Use jQuery-ui's Droppable options.
+ * The event parameter format has changed a bit.
+---
