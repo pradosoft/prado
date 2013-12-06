@@ -1,0 +1,26 @@
+<com:TContent ID="body">
+    <h1>Web Site Administration Tool</h1>
+    <p class="block-content">Web Site Administration Tool (WSAT) allows you 
+    </p>
+
+    <h2>Requirements</h2>
+    <p class="block-content">
+        To use WSAT, you need to add in your project configuration file: <tt>application.xml</tt>, 
+        in the services section the wsat service like follows:
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<services> 
+    ...
+    <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
+</services>
+</com:TTextHighlighter>
+    </p>
+
+    <h2>Usage</h2>
+    <p class="block-content">
+        Then you are ready to go to: http://localhost/yoursite/index.php?wsat=TWsatLogin
+    </p>
+    <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
+
+    </com:TTextHighlighter>
+</com:TContent>

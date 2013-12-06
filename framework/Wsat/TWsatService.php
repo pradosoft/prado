@@ -62,7 +62,7 @@ class TWsatService extends TPageService
                 $themeManager = new TThemeManager;
                 $themeManager->BasePath = "System.Wsat.themes";
                 $url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('System.Wsat'));
-                $themeManager->BaseUrl = $url . "/themes";
+                $themeManager->BaseUrl = "$url/themes";
 
                 $themeManager->init(null);
                 $this->setThemeManager($themeManager);

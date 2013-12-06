@@ -25,7 +25,7 @@ class TWsatLogin extends TPage
 
         public function validatePassword($sender, $param)
         {
-                $config_pass = $this->getService()->getPassword();
+                $config_pass = $this->Service->Password;
                 $user_pass = $this->password->Text;
                 $param->IsValid = $user_pass === $config_pass;
         }

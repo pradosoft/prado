@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Instalacja</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Nowe możliwości</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Aktualizacja z wersji 2.x oraz 1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 
@@ -18,8 +20,7 @@
     <li><a href="?page=Fundamentals.Hangman">Przykład: gra wisielec</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Konwenter walut</a></li>
     <li><a href="?page=Tutorial.AddressBook">Książka adresowa</a></li>    
-	  <li><a href="?page=Tutorial.AjaxChat">AJAX-owy klient czat</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Narzędzie linii poleceń</a></li>
+    <li><a href="?page=Tutorial.AjaxChat">AJAX-owy klient czat</a></li>
 </ul>
 </div>
 

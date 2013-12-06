@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Nouvelles fonctionnalités</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Mise à jour de v2.x et v1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 
@@ -17,8 +19,7 @@
     <li><a href="?page=GettingStarted.HelloWorld">Créer sa première application PRADO</a></li>
     <li><a href="?page=Fundamentals.Hangman">Exemple : Jeu du pendu</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Convertisseur monétaire</a></li>
-	<li><a href="?page=Tutorial.AjaxChat">Chat AJAX</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Outil en ligne de commande</a></li>
+    <li><a href="?page=Tutorial.AjaxChat">Chat AJAX</a></li>
 </ul>
 </div>
 

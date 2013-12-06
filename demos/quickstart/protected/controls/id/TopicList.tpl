@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Instalasi</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Fitur Baru</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Meningkatkan dari v2.x dan v1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 
@@ -17,9 +19,8 @@
     <li><a href="?page=GettingStarted.HelloWorld">Membuat Aplikasi PRADO Pertama</a></li>
     <li><a href="?page=Fundamentals.Hangman">Contoh: Permainan Hangman</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Pengubah Kurs</a></li>
-	<li><a href="?page=Tutorial.AddressBook">Buku Alamat</a></li>
-	<li><a href="?page=Tutorial.AjaxChat">Klient Obrolan AJAX</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Piranti Baris Perintah</a></li>
+    <li><a href="?page=Tutorial.AddressBook">Buku Alamat</a></li>
+    <li><a href="?page=Tutorial.AjaxChat">Klient Obrolan AJAX</a></li>
 </ul>
 </div>
 
