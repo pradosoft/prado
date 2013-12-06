@@ -293,7 +293,7 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	onPostBack : function(event, options)
 	{
 		this.addXYInput(event,options);
-		Prado.PostBack(event, options);
+		new Prado.PostBack(event, options);
 		this.removeXYInput(event,options);
 	},
 
@@ -406,8 +406,13 @@ Prado.WebUI.TListControl = jQuery.klass(Prado.WebUI.PostBackControl,
 {
 	onInit : function(options)
 	{
-		this.observe(this.element, "change", jQuery.proxy(Prado.PostBack,this,options));
-	}
+			this.observe(this.element, "change", jQuery.proxy(this.doPostback,this,options));
+	},
+
+	doPostback : function(options, event)
+	{
+		new Prado.PostBack(options, event);
+	},
 });
 
 Prado.WebUI.TListBox = jQuery.klass(Prado.WebUI.TListControl);
