@@ -33,8 +33,8 @@
         </div>
 
         <div class="form_row">
-            <com:TLabel Text="Class Sufix:" ForControl="class_sufix" style="margin-right: 27px"/>
-            <com:TTextBox ID="class_sufix" CssClass="in_text" />
+            <com:TLabel Text="Class Suffix:" ForControl="class_suffix" style="margin-right: 27px"/>
+            <com:TTextBox ID="class_suffix" CssClass="in_text" />
         </div>
 
         <div class="form_row">

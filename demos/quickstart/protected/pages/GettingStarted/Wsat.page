@@ -1,6 +1,15 @@
 <com:TContent ID="body">
     <h1>Web Site Administration Tool</h1>
-    <p class="block-content">Web Site Administration Tool (WSAT) allows you 
+    <p class="block-content">
+        Web Site Administration Tool (WSAT) is a development tool which allows you to perform several
+        tedious tasks of a PRADO project in a GUI fashion. Its inspired in both Asp.Net - Web Site Administration Tool and Yii's Gii.
+        WSAT will continue gaining new features along the time, at the moment it bring you the followings:
+        
+        <ul>
+            <li>Generate one or all <a href="?page=Database.ActiveRecord">Active Record Classes.</a></li>
+            <li>Optionally generate all relationships in Active Record Classes.</li>
+            <li>Generate the magic __toString() method in all AR Classes.</li>
+        </ul>
     </p>
 
     <h2>Requirements</h2>
@@ -18,9 +27,38 @@
 
     <h2>Usage</h2>
     <p class="block-content">
-        Then you are ready to go to: http://localhost/yoursite/index.php?wsat=TWsatLogin
+        Then you are ready to go to: http://localhost/yoursite/index.php?wsat=TWsatLogin and doing so you should see
+        the following page:
     </p>
-    <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
-
-    </com:TTextHighlighter>
+    <img src="<%~wsat_login.png%>" style="width: 700px;" />
+    <p class="block-content">
+        Where in the text field you need to type the password previosly specified in the service inclusion. This 
+        is part of a basic security system to avoid undesirable persons to use this tool.
+    </p>
+    
+    <h2>Active Record classes generation</h2>
+    <p class="block-content">
+        In order to generate AR classes you need to go to: http://localhost/divermania/index.php?wsat=TWsatGenerateAR 
+        by clicking the proper links in the welcome page. Then you should see the following page:        
+    </p>
+    <img src="<%~wsat_generate_ar.png%>" style="width: 700px;" />
+    <p class="block-content">
+        In which you can find a basic usage documentation in a light green panel 
+        and then some proper fields in order to generate active record classes. These fields are:
+    </p>
+    
+    <ul>
+        <li><b>Table Name: </b> refers to the table name in your database for which you want to generate an AR class.
+        Let it as come by default with an * to generate them all.</li>
+        <li><b>Output Folder: </b> refers to the folder where you want to save your generated classes.
+        It only accepts namespace format which means that you need to specify your path separated with points in between.
+        It default value is: "Application.App_Data.AR_Classes" which references the protected/App_Data/AR_Classes
+        file of your project, if you haven't created them yet and you want to, don't bother, WSAT will do it for you.</li>
+        <li><b>Class Prefix: </b> refers to the prefix that you whish to specify in front of every class name. 
+            Clear the field to specify no prefix.</li>
+        <li><b>Class Suffix: </b> refers to the suffix that you whish to specify at the end of every class name.
+            Clear the field to specify no suffix.</li>
+        <li><b>Build Relations: </b> whether or not you want to add relationships to AR classes generation.</li>
+    </ul>
+    
 </com:TContent>

@@ -27,17 +27,17 @@ class TWsatARGenerator
         /**
          * Output folder where AR classes will be generated.
          */
-        private $_op_file;
+        private $_opFile;
 
         /**
          * Class name prefix
          */
-        private $_clas_prefix;
+        private $_clasPrefix;
 
         /**
          * Class name sufix
          */
-        private $_class_sufix;
+        private $_classSufix;
 
         /**
          * all table relations array
@@ -48,7 +48,7 @@ class TWsatARGenerator
          * unquote chars
          * @var array 
          */
-        private $uq_chars = array('[', ']', '"', '`', "'");
+        private $uqChars = array('[', ']', '"', '`', "'");
 
         function __construct()
         {
@@ -77,17 +77,17 @@ class TWsatARGenerator
                         throw new Exception("You need to fix your output folder namespace.");
                 if (!is_dir($op_file))
                         mkdir($op_file, 0777, true);
-                $this->_op_file = $op_file;
+                $this->_opFile = $op_file;
         }
 
         public function setClasPrefix($_clas_prefix)
         {
-                $this->_clas_prefix = $_clas_prefix;
+                $this->_clasPrefix = $_clas_prefix;
         }
 
         public function setClassSufix($_clas_sufix)
         {
-                $this->_class_sufix = $_clas_sufix;
+                $this->_classSufix = $_clas_sufix;
         }
 
 //-----------------------------------------------------------------------------    
@@ -185,7 +185,7 @@ class TWsatARGenerator
 
                 $clasName = $this->_getProperClassName($tableName);
                 $class = $this->generateClass($properties, $tableName, $clasName, $toString);
-                $output = $this->_op_file . DIRECTORY_SEPARATOR . $clasName . ".php";
+                $output = $this->_opFile . DIRECTORY_SEPARATOR . $clasName . ".php";
                 file_put_contents($output, $class);
         }
 
@@ -204,7 +204,7 @@ class TWsatARGenerator
         {
                 $table_name_words = str_replace("_", " ", strtolower($tableName));
                 $final_conversion = str_replace(" ", "", ucwords($table_name_words));
-                return $this->_clas_prefix . $final_conversion . $this->_class_sufix;
+                return $this->_clasPrefix . $final_conversion . $this->_classSufix;
         }
 
         public function renderAllTablesInformation()
@@ -258,10 +258,10 @@ class TWsatARGenerator
                         foreach ($tableInfo->getColumns() as $column)
                         {
                                 if (isset($column->IsPrimaryKey) && $column->IsPrimaryKey)
-                                        $property = str_replace($this->uq_chars, "", $column->ColumnName);
+                                        $property = str_replace($this->uqChars, "", $column->ColumnName);
                                 elseif ($column->PHPType == "string" && $column->DBType != "date")
                                 {
-                                        $property = str_replace($this->uq_chars, "", $column->ColumnName);
+                                        $property = str_replace($this->uqChars, "", $column->ColumnName);
                                         break;
                                 }
                         }

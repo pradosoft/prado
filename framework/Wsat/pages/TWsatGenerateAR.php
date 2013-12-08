@@ -18,23 +18,23 @@ class TWsatGenerateAR extends TPage
         {
                 if ($this->IsValid)
                 {
-                        $table_name = $this->table_name->Text;
-                        $output_folder_ns = $this->output_folder->Text;
-                        $class_prefix = $this->class_prefix->Text;
-                        $class_sufix = $this->class_sufix->Text;
+                        $tableName = $this->table_name->Text;
+                        $outputFolderNs = $this->output_folder->Text;
+                        $classPrefix = $this->class_prefix->Text;
+                        $classSuffix = $this->class_suffix->Text;
 
                         try
                         {
                                 $ar_generator = new TWsatARGenerator();
-                                $ar_generator->setOpFile($output_folder_ns);
-                                $ar_generator->setClasPrefix($class_prefix);
-                                $ar_generator->setClassSufix($class_sufix);
+                                $ar_generator->setOpFile($outputFolderNs);
+                                $ar_generator->setClasPrefix($classPrefix);
+                                $ar_generator->setClassSufix($classSuffix);
 
                                 if ($this->build_rel->Checked)
                                         $ar_generator->buildRelations();
 
-                                if ($table_name != "*")
-                                        $ar_generator->generate($table_name);
+                                if ($tableName != "*")
+                                        $ar_generator->generate($tableName);
                                 else
                                         $ar_generator->generateAll();
 
@@ -51,8 +51,6 @@ class TWsatGenerateAR extends TPage
 
         public function preview($sender)
         {
-//                $ar_generator = new TWsatARGenerator();
-//                $ar_generator->renderAllTablesInformation();
                 throw new THttpException(500, "Not implemented yet.");
         }
 
