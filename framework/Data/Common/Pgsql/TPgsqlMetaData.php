@@ -418,5 +418,33 @@ EOD;
 		}
 		return false;
 	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
+	public function findTableNames($schema='public')
+	{
+		if($schema==='')
+			$schema=self::DEFAULT_SCHEMA;
+		$sql=<<<EOD
+SELECT table_name, table_schema FROM information_schema.tables
+WHERE table_schema=:schema AND table_type='BASE TABLE'
+EOD;
+		$command=$this->getDbConnection()->createCommand($sql);
+		$command->bindParam(':schema',$schema);
+		$rows=$command->queryAll();
+		$names=array();
+		foreach($rows as $row)
+		{
+			if($schema===self::DEFAULT_SCHEMA)
+				$names[]=$row['table_name'];
+			else
+				$names[]=$row['table_schema'].'.'.$row['table_name'];
+		}
+		return $names;
+	}
 }
 

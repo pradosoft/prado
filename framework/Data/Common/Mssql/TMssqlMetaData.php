@@ -25,7 +25,7 @@ Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
  * @since 3.1
  */
 class TMssqlMetaData extends TDbMetaData
-{
+{    
 	/**
 	 * @return string TDbTableInfo class name.
 	 */
@@ -259,6 +259,34 @@ EOD;
 				return true;
 		}
 		return false;
+	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
+	public function findTableNames($schema='dbo')
+	{
+                $condition="TABLE_TYPE='BASE TABLE'";
+		$sql=<<<EOD
+SELECT TABLE_NAME, TABLE_SCHEMA FROM [INFORMATION_SCHEMA].[TABLES]
+WHERE TABLE_SCHEMA=:schema AND $condition
+EOD;
+		$command=$this->getDbConnection()->createCommand($sql);
+		$command->bindParam(":schema", $schema);
+		$rows=$command->queryAll();
+		$names=array();
+		foreach ($rows as $row)
+		{
+			if ($schema == self::DEFAULT_SCHEMA)
+				$names[]=$row['TABLE_NAME'];
+			else
+				$names[]=$schema.'.'.$row['TABLE_SCHEMA'].'.'.$row['TABLE_NAME'];
+		}
+
+		return $names;
 	}
 }
 

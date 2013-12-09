@@ -9,23 +9,20 @@
  * @since 3.3
  * @package Wsat
  */
+
+Prado::using('System.Data.Common.TDbMetaData');
+
 class TWsatARGenerator
 {
 
         /**
-         * Gets the current Db connection, the connection object is obtained from
-         * the TActiveRecordManager if connection is currently null.
-         * @return TDbConnection current db connection for this object.
+         * @return TDbMetaData for retrieving metadata information, such as
+         * table and columns information, from a database connection.
          */
-        private $_conn;
+        private $_dbMetaData;
 
         /**
-         * @return TActiveRecordGateway record table gateway.
-         */
-        private $_gateway;
-
-        /**
-         * Output folder where AR classes will be generated.
+         * Output folder where AR classes will be saved.
          */
         private $_opFile;
 
@@ -55,19 +52,9 @@ class TWsatARGenerator
                 if(!class_exists("TActiveRecordManager", false))
                         throw new Exception("You need to enable the ActiveRecord module in your application configuration file.");
                 $ar_manager = TActiveRecordManager::getInstance();
-                $this->_conn = $ar_manager->getDbConnection();
-                $this->_conn->Active = true;
-                $this->_gateway = $ar_manager->getRecordGateway();
-        }
-
-        /**
-         * Destructor.
-         * Disconnect the db connection.
-         */
-        public function __destruct()
-        {
-                if ($this->_conn !== null)
-                        $this->_conn->Active = false;
+                $_conn = $ar_manager->getDbConnection();
+                $_conn->Active = true;
+                $this->_dbMetaData = TDbMetaData::getInstance($_conn);
         }
 
         public function setOpFile($op_file_namespace)
@@ -94,17 +81,17 @@ class TWsatARGenerator
         // <editor-fold defaultstate="collapsed" desc="Main APIs">
         public function generate($tableName)
         {
-                $tableInfo = $this->_gateway->getTableInfo($this->_conn, $tableName);
+                $tableInfo = $this->_dbMetaData->getTableInfo($tableName);
                 $this->_commonGenerate($tableName, $tableInfo);
         }
 
         public function generateAll()
         {
-                foreach ($this->_getAllTableNames() as $tableName)
+                foreach ($this->_dbMetaData->findTableNames() as $tableName)
                 {
                         if ($tableName == "pradocache")
                                 continue;
-                        $tableInfo = $this->_gateway->getTableInfo($this->_conn, $tableName);
+                        $tableInfo = $this->_dbMetaData->getTableInfo($tableName);
                         if (!empty($this->_relations))
                         {
                                 // Cancel generation of M-M relationships middle table
@@ -118,9 +105,9 @@ class TWsatARGenerator
         public function buildRelations()
         {
                 $this->_relations = array();
-                foreach ($this->_getAllTableNames() as $table_name)
+                foreach ($this->_dbMetaData->findTableNames() as $table_name)
                 {
-                        $tableInfo = $this->_gateway->getTableInfo($this->_conn, $table_name);
+                        $tableInfo = $this->_dbMetaData->getTableInfo($table_name);
                         $pks = $tableInfo->getPrimaryKeys();
                         $fks = $tableInfo->getForeignKeys();
 
@@ -174,7 +161,7 @@ class TWsatARGenerator
         private function _commonGenerate($tableName, $tableInfo)
         {
                 if (count($tableInfo->getColumns()) === 0)
-                        throw new Exception("Unable to find table or view $tableName in " . $this->_conn->getConnectionString() . ".");
+                        throw new Exception("Unable to find table or view $tableName in " . $this->_dbMetaData->getDbConnection()->getConnectionString() . ".");
                 else
                 {
                         $properties = array();
@@ -189,17 +176,6 @@ class TWsatARGenerator
                 file_put_contents($output, $class);
         }
 
-        private function _getAllTableNames()
-        {
-                $command = $this->_conn->createCommand("Show Tables");
-                $dataReader = $command->query();
-                $dataReader->bindColumn(1, $table);
-                $tables = array();
-                while ($dataReader->read())
-                        $tables[] = $table;
-                return $tables;
-        }
-
         private function _getProperClassName($tableName)
         {
                 $table_name_words = str_replace("_", " ", strtolower($tableName));
@@ -209,11 +185,11 @@ class TWsatARGenerator
 
         public function renderAllTablesInformation()
         {
-                foreach ($this->_getAllTableNames() as $table_name)
+                foreach ($this->_dbMetaData->findTableNames() as $table_name)
                 {
                         echo $table_name . "<br>";
 
-                        $tableInfo = $this->_gateway->getTableInfo($this->_conn, $table_name);
+                        $tableInfo = $this->_dbMetaData->getTableInfo($table_name);
                         echo "Table info:" . "<br>";
                         echo "<pre>";
                         var_dump($tableInfo);
@@ -259,7 +235,7 @@ class TWsatARGenerator
                         {
                                 if (isset($column->IsPrimaryKey) && $column->IsPrimaryKey)
                                         $property = str_replace($this->uqChars, "", $column->ColumnName);
-                                elseif ($column->PHPType == "string" && $column->DBType != "date")
+                                elseif ($column->PdoType == PDO::PARAM_STR && $column->DBType != "date")
                                 {
                                         $property = str_replace($this->uqChars, "", $column->ColumnName);
                                         break;
