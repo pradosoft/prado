@@ -188,21 +188,15 @@ class TSqliteMetaData extends TDbMetaData
 		}
 		return false;
 	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. This is not used for sqlite database.
+	 * @return array all table names in the database.
+	 */
+	public function findTableNames($schema='')
+	{
+		$sql="SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
+		return $this->getDbConnection()->createCommand($sql)->queryColumn();
+	}
 }
-
-/**
-
-CREATE TABLE foo
-(
-	id INTEGER NOT NULL PRIMARY KEY,
-	id2 CHAR(2)
-);
-
-CREATE TABLE bar
-(
-	id INTEGER NOT NULL PRIMARY KEY,
-	foo_id INTEGER
-		CONSTRAINT fk_foo_id REFERENCES foo(id) ON DELETE CASCADE
-);
-*/
-

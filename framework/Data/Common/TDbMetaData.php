@@ -178,5 +178,15 @@ abstract class TDbMetaData extends TComponent
 
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * This method should be overridden by child classes in order to support this feature
+	 * because the default implementation simply throws an exception.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
+	abstract public function findTableNames($schema='');
 }
 
