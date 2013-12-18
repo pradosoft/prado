@@ -103,4 +103,34 @@ PostRecord#1
 )
 </com:TTextHighlighter>
 </p>
+
+<h2>Creating Active Record Classes</h2>
+<p>
+In the blog demo project, we need to create two <a href="?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and must define property names that matches with the field names of the corresponding table.
+</p>
+
+<p>
+To better organize our directories, we create a new directory <tt>protected/database</tt> to hold the class files. We also modify our application configuration by inserting the following lines. It is equivalent to adding the directory <tt>protected/database</tt> to PHP include_path, which allows us to use the classes without explicitly including them.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<paths>
+  <using namespace="Application.database.*" />
+</paths>
+</com:TTextHighlighter>
+
+<p>
+At the prompt, enter the following two commands to create <tt>UserRecord</tt> and <tt>PostRecord</tt> classes:
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+>> generate users Application.database.UserRecord
+
+>> generate posts Application.database.PostRecord
+</com:TTextHighlighter>
+
+<p>
+Here we used the <a href="?page=Fundamentals.Components">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
+</p>
+
 </com:TContent>
