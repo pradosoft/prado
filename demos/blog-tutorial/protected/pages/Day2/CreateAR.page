@@ -17,60 +17,55 @@ To better organize our directories, we create a new directory <tt>protected/data
 </com:TTextHighlighter>
 
 <p>
-Instead of writing the classes manually, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> again to generate the classes for us.
+Instead of writing the classes manually, we will use the <a href="?page=GettingStarted.Wsat">PRADO Web Site Administration Tool</a> to generate the classes for us.
+So we need to modify again our application configuration in the services section like follows:
 </p>
 
-<p>
-Under the <tt>blog</tt> directory, run the following command to enter into the interactive mode of the command line tool:
-</p>
-
-<com:TTextHighlighter CssClass="source cli" Language="text">
-php path/to/prado-cli.php shell .
+ <p class="block-content">
+<com:TTextHighlighter CssClass="source" Language="xml">
+<services> 
+    ...
+    <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
+</services>
 </com:TTextHighlighter>
-
-<p>
-We should see
 </p>
 
-<com:TTextHighlighter CssClass="source cli" Language="text">
-Command line tools for Prado 3.1.0.
-** Loaded PRADO appplication in directory "protected".
-PHP-Shell - Version 0.3.1
-(c) 2006, Jan Kneschke <jan@kneschke.de>
-
->> use '?' to open the inline help
-
->>
-</com:TTextHighlighter>
-
-<p>
-At the prompt, enter the following two commands to create <tt>UserRecord</tt> and <tt>PostRecord</tt> classes:
+<p class="block-content">
+        Then you are ready to go to: http://localhost/yoursite/index.php?wsat=TWsatLogin where you should see
+        the following page:
+</p>
+<img src="<%~wsat_login.png%>" style="width: 700px;" />
+<p class="block-content">
+    In the text field you need to type the password previosly specified in the service inclusion. This 
+    is part of a basic security system to avoid undesirable persons to use this tool.
 </p>
 
-<com:TTextHighlighter CssClass="source cli" Language="text">
->> generate users Application.database.UserRecord
-
->> generate posts Application.database.PostRecord
-</com:TTextHighlighter>
+ <p class="block-content">
+        In order to generate AR classes you need to go to: http://localhost/divermania/index.php?wsat=TWsatGenerateAR 
+        by clicking the proper links in the welcome page. Then you should see the following page:        
+</p>
+<img src="<%~blog_wsat_generate_ar.png%>" style="width: 700px;" />
 
 <p>
-Here we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
+    In the <tt>Output Folder</tt> field we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again, the path <tt>Application.database</tt> indicates that we want to put our class's files in the <tt>protected/database/</tt> folder.
+    The <tt>*</tt> in the <tt>Table Name</tt> field means that we want to generate all AR classes, you can specify a table name instead if you want to generate just a specific AR class.
 </p>
 
 <p>
-We should see the following directory structure with two new files under <tt>protected/database</tt>:
+Afterward we should see the following directory structure with two new files under <tt>protected/database</tt>:
 </p>
 
 <img src="<%~ directories2.gif %>" class="output" />
 
 <p>
-If we check the <tt>PostRecord</tt> class file, we should see the following content.
+If we check the <tt>PostRecord</tt> class file, we should see something similar to the following content:
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="php">
 class PostRecord extends TActiveRecord
 {
     const TABLE='posts';
+    
     public $post_id;
     public $author_id;
     public $create_time;
@@ -82,35 +77,21 @@ class PostRecord extends TActiveRecord
     {
         return parent::finder($className);
     }
+    
+    public static $RELATIONS = array (
+        'author' => array(self::BELONGS_TO, 'UserRecord', 'author_id')
+    );
+        
+    public function __toString() 
+    {
+        return $this->title;
+    }
 }
 </com:TTextHighlighter>
 
 <p>
 As we see, for each field in the <tt>posts</tt> table, the class has a corresponding data member. The constant <tt>TABLE</tt> specifies the table name for the <tt>PostRecord</tt>. The static method <tt>finder()</tt> allows us to perform query and retrieve post data in terms of <tt>PostRecord</tt> objects.
 </p>
-
-<p>
-We can use the command line tool to do some testing with our newly created Active Record classes. Still in the interactive mode of the command line tool, we enter a PHP statement and should see the following. Interested readers may try some other PHP statements, such as <tt>UserRecord::finder()->findAll()</tt>.
-</p>
-
-<com:TTextHighlighter CssClass="source cli" Language="text">
->> PostRecord::finder()->findAll()
-array
-(
-    [0] => PostRecord#1
-    (
-        [post_id] => '1'
-        [author_id] => 'admin'
-        [create_time] => '1175708482'
-        [title] => 'first post'
-        [content] => 'this is my first post'
-        [status] => '0'
-        [TActiveRecord:_readOnly] => false
-        [TActiveRecord:_connection] => null
-        [TComponent:_e] => array()
-    )
-)
-</com:TTextHighlighter>
 
 <h1>Relationship Between Posts and Users</h1>
 <p>
@@ -124,40 +105,8 @@ From the entity-relationship diagram above, we see that the <tt>posts</tt> table
 </p>
 
 <p>
-We can model the relationship between <tt>posts</tt> and <tt>users</tt> table in Active Record by modifying the <tt>PostRecord</tt> and <tt>UserRecord</tt> classes as follows.
+The static <tt>$RELATIONS</tt> property of <tt>PostRecord</tt> defines that the property <tt>$author</tt> belongs to an <tt>UserRecord</tt>. In <tt>array(self::BELONGS_TO, 'UserRecord')</tt>, the first element defines the relationship type, in this case <tt>self::BELONGS_TO</tt>. The second element is the name of related record, in this case an <tt>UserRecord</tt>.
 </p>
-
-<com:TTextHighlighter CssClass="source" Language="php">
-class PostRecord extends TActiveRecord
-{
-    //... properties and methods as before
-
-    public $author; //holds an UserRecord
-
-    public static $RELATIONS=array
-    (
-        'author' => array(self::BELONGS_TO, 'UserRecord'),
-    );
-}
-</com:TTextHighlighter>
-
-<p>
-The static <tt>$RELATIONS</tt> property of <tt>PostRecord</tt> defines that the property <tt>$author</tt> belongs to an <tt>UserRecord</tt>. In <tt>array(self::BELONGS_TO, 'UserRecord')</tt>, the first element defines the relationship type, in this case <tt>self::BELONGS_TO</tt>. The second element is the name of related record, in this case an <tt>UserRecord</tt>. The <tt>UserRecord</tt> is defined similarly below, the difference is that, the user record has many <tt>PostRecord</tt>s.
-</p>
-
-<com:TTextHighlighter CssClass="source" Language="php">
-class UserRecord extends TActiveRecord
-{
-    //... properties and methods as before
-
-    public $posts=array(); //holds an array of PostRecord
-
-    public static $RELATIONS=array
-    (
-        'posts' => array(self::HAS_MANY, 'PostRecord'),
-    );
-}
-</com:TTextHighlighter>
 
 <p>
 An array of <tt>UserRecord</tt> with and its corresponding posts may be fetched as follows.
