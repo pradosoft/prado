@@ -729,8 +729,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function flushScriptFiles($writer, $control=null)
 	{
-		$this->_page->ensureRenderInForm($control);
-		$this->renderAllPendingScriptFiles($writer);
+		if(!$this->_page->getIsCallback())
+		{
+			$this->_page->ensureRenderInForm($control);
+			$this->renderAllPendingScriptFiles($writer);
+		}
 	}
 
 	/**

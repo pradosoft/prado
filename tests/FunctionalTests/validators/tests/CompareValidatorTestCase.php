@@ -28,6 +28,7 @@ class CompareValidatorTestCase extends PradoGenericSeleniumTest
 
 		$this->type("{$base}text3", "12312");
 		$this->click("//input[@type='submit' and @value='Test']", "");
+		$this->pause(500);
 		$this->assertVisible("{$base}validator2");
 		
 		$this->type("{$base}text3", "13/1/2005");

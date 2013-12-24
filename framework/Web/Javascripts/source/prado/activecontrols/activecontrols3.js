@@ -92,22 +92,27 @@ Prado.WebUI.TActiveTextBox = jQuery.klass(Prado.WebUI.TTextBox,
 });
 
 /**
- * TAutoComplete control.
+ * TJuiAutoComplete control.
  */
- /*
-Prado.WebUI.TAutoComplete = jQuery.klass(Autocompleter.Base, Prado.WebUI.TActiveTextBox.prototype);
-Prado.WebUI.TAutoComplete = jQuery.klass(Prado.WebUI.TAutoComplete,
+
+Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 {
 	initialize : function(options)
 	{
 		this.options = options;
 		this.observers = new Array();
 		this.hasResults = false;
-		this.baseInitialize(options.ID, options.ResultPanel, options);
-		jQuery.extend(this.options,
-		{
-			onSuccess : this.onComplete.bind(this)
-		});
+		jQuery.extend(this.options, {
+			source: this.getUpdatedChoices.bind(this),
+			select: this.selectEntry.bind(this),
+		})
+		jQuery('#'+options.ID).autocomplete(this.options)
+		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
+			return $( "<li>" )
+			.attr( "data-value", item.value )
+			.append( $( "<a>" ).html( item.label ) )
+			.appendTo( ul );
+		};
 
 		if(options.AutoPostBack)
 			this.onInit(options);
@@ -125,56 +130,42 @@ Prado.WebUI.TAutoComplete = jQuery.klass(Prado.WebUI.TAutoComplete,
 		}
 	},
 
-	 //Overrides parent implementation, fires onchange event.
-	onClick: function(event)
+	getUpdatedChoices : function(request, callback)
 	{
-	    var element = jQuery(event.target).closest('LI');
-	    this.index = element.autocompleteIndex;
-	    this.selectEntry();
-	    this.hide();
-	    $(this.element).trigger( "change" );
-	},
-
-	getUpdatedChoices : function()
-	{
-		var options = new Array(this.getToken(),"__TAutoComplete_onSuggest__");
-		Prado.Callback(this.options.EventTarget, options, null, this.options);
+		var params = new Array(request.term,"__TJuiAutoComplete_onSuggest__");
+		var options = jQuery.extend(this.options, {
+			'autocompleteCallback' : callback,
+		})
+		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
 	},
 
 	/**
 	 * Overrides parent implements, don't update if no results.
-	 * /
-	selectEntry: function()
+	 */
+	selectEntry: function(event, ui)
 	{
-		if(this.hasResults)
-		{
-			this.active = false;
-			this.updateElement(this.getCurrentEntry());
-			var options = [this.index, "__TAutoComplete_onSuggestionSelected__"];
-			Prado.Callback(this.options.EventTarget, options, null, this.options);
-		}
+		var options = [ui.item.id, "__TJuiAutoComplete_onSuggestionSelected__"];
+		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
 
-	onComplete : function(request, boundary)
+	onComplete : function(request, result)
   	{
-  		var result = Prado.Element.extractContent(request.transport.responseText, boundary);
-  		if(typeof(result) == "string")
-		{
-			if(result.length > 0)
-			{
-				this.hasResults = true;
-				this.updateChoices(result);
-			}
-			else
-			{
-				this.active = false;
-				this.hasResults = false;
-				this.hide();
-			}
-		}
+  		var that = this;
+  		if(that.options.textCssClass===undefined)
+  		{
+			jQuery.each(result, function(idx, item) {
+				result[idx]['value']=jQuery.trim(jQuery(item['label']).text());
+			});
+  		} else {
+			jQuery.each(result, function(idx, item) {
+				result[idx]['value']=jQuery.trim(jQuery(item['label']).find('.'+that.options.textCssClass).text());
+			});
+  		}
+
+		request.options.autocompleteCallback(result);
 	}
 });
-*/
+
 /**
  * Time Triggered Callback class.
  */

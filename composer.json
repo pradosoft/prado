@@ -64,25 +64,6 @@
 		"ext-zlib" : "*"
 	},
 	"include-path": ["framework"],
-	"autoload": {
-		"psr-0" : {
-			"Prado"              : "framework",
-			"Prado\\Caching"     : "framework",
-			"Prado\\Collections" : "framework",
-			"Prado\\Exceptions"  : "framework",
-			"Prado\\I18N"        : "framework",
-			"Prado\\IO"          : "framework",
-			"Prado\\Security"    : "framework",
-			"Prado\\Util"        : "framework",
-			"Prado\\Web"         : "framework",
-			"Prado\\Web\\Javascripts"        : "framework",
-			"Prado\\Web\\Services"           : "framework",
-			"Prado\\Web\\UI"                 : "framework",
-			"Prado\\Web\\UI\\ActiveControls" : "framework",
-			"Prado\\Web\\UI\\WebControls"    : "framework",
-			"Prado\\Xml"                     : "framework"
-		}
-	},
 	"support" : {
 		"forum" : "http://www.pradosoft.com/forum",
 		"source" : "https://github.com/pradosoft/prado"

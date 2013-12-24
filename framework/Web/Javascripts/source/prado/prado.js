@@ -240,7 +240,7 @@ var Prado =
 	 * Version of Prado clientscripts
 	 * @var Version
 	 */
-	Version: '3.2.2',
+	Version: '3.2.3',
 	
 	/**
 	 * Registry for Prado components
@@ -388,7 +388,7 @@ Prado.Element =
 			try
 			{
 				eval("(func = function(event){"+value+"})");
-				el[attribute] = func;
+				el.get(0)[attribute] = func;
 			}
 			catch(e)
 			{
@@ -1023,18 +1023,6 @@ jQuery.extend(String.prototype, {
 								+ ((digits > 0) ? "." + m[7] : "");
 		var num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
-	},
-
-	/**
-	 * Converts the string to a date by finding values that matches the
-	 * date format pattern.
-	 * @function {Date} ?
-	 * @param {string} format - Date format pattern, e.g. MM-dd-yyyy
-	 * @returns Date extracted from the string
-	 */
-	toDate : function(format)
-	{
-		return Date.SimpleParse(this, format);
 	}
 });
 

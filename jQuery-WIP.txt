@@ -4,32 +4,36 @@ Targets:
  * Basic class/inheritance support to replace prototype's Class.create (done, using lowpro)
  * Glue prado PostBack/PostbackControl/Registry to jQuery (done)
  * port standard controls (done)
- * port features (defaultbutton, validators, ..) (started, wip)
+ * port features (defaultbutton, validators) (done)
  * port Prado.Element's functions (replace, setStyle, ..) (done)
  * port Effects (done)
  * port basic active controls (done)
- * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..)
- * port exotic active controls (autocomplete, ...)
+ * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..) (done)
+ * port exotic active controls (autocomplete, ...) (wip, using jquery-ui)
  * get tests running (started, wip)
  * ensure jQuery's compatibility mode with prototype (support old third party components from users? jQuery.noConflict(); by default?)
  * fix debug components (TJavascriptLogger) (done, but maybe dropping it is a good idea)
- * implement some Jui components (maybe substitute old components with new, jquery-ui based ones? eg: datepicker)
+ * implement some Jui components (maybe substitute old components with new, jquery-ui based ones?) (wip)
  * port demos
  * document everything
 
 
 DONE
-Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox)
-TTabPanel
-Validators
+Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox, ..)
+Js-based controls (TTabPanel, TDatePicker, TColorPicker, TSlider, THtmlArea)
+List, Data controls
+*Validators
 Basic callback controls
 
-TBD
-accordion
-htmlarea/4
-*picker
-drag&drop
+WIP
+TJuiAutoComplete
+TJuiDraggable,TJuiDroppable
 
-TBD-JQUERY-UI
-Effects: clip, explode, transfer, switchclass
-Methods: show, hide, toggle?
+TBD
+Implement Ajax queue 
+Port Scriptaculous-based controls (accordion, ...)
+Port *ratings
+Port inlineeditor
+Add JQuery-ui-Effects: clip, explode, transfer, switchclass
+Add JQuery-ui-Methods: show, hide, toggle?
+Add JQuery-ui-controls

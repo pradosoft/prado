@@ -1,4 +1,4 @@
-Version 3.2.3 to be released
+Version 3.2.3 Nov 26, 2013
 
 BUG: Issue #467 - TSafeHtml error on php 5.5 (ctrlaltca)
 BUG: Issue #470 - Problem escaping characters in TActiveDropDownList (ctrlaltca)
@@ -18,7 +18,7 @@ EHN: Issue #260 - TComponent Update: Behaviors, Class Behaviors, fx global event
 EHN: Issue #292 - Events should have priorities to allow event handler order to be specified (javalizard)
 BUG: TDatePicker can't render css attributes class "datepicker_year_options" (m_rizki_r)
 ENH: Added THtmlArea4 based on TinyMCE4 (ctrlaltca)
-
+BUG: TDatePicker renders a spurious TTextBox (ctrlaltca)
 
 Version 3.2.2 Jul 20, 2013
 

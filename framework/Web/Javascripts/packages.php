@@ -12,14 +12,11 @@ $packages = array(
 	'prototype' => array(
 		PROTOTYPE_DIR.'/prototype.js',
 		SCRIPTACULOUS_DIR.'/builder.js',
+		SCRIPTACULOUS_DIR.'/effects.js'
 	),
 	'prado' => array(
 		'prado/prado.js',
 		'prado/controls/controls.js'
-	),
-
-	'effects' => array(
-		SCRIPTACULOUS_DIR.'/effects.js'
 	),
 
 	'logger' => array(
@@ -106,7 +103,7 @@ $packages = array(
 
 //package names and their dependencies
 $dependencies = array(
-		//'prototype'			=> array('prototype'),
+		'prototype'			=> array('prototype'),
 		'jquery'			=> array('jquery'),
 		'prado'				=> array('jquery', 'prado'),
 		'validator'			=> array('jquery', 'prado', 'validator'),
@@ -122,6 +119,7 @@ $dependencies = array(
 		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
 		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
 		'slider'			=> array('jquery', 'prado', 'slider'),
+		'dragdrop' => array(),
 /*
 		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
 		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),

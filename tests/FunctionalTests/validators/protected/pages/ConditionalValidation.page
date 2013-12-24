@@ -16,7 +16,7 @@
 			ErrorMessage="*"
 			ControlCssClass="required">
 		<prop:ClientSide.OnValidate>
-			sender.enabled = $('<%= $this->check1->ClientID %>').checked;
+			sender.enabled = $('#<%= $this->check1->ClientID %>').get(0).checked;
 		</prop:ClientSide.OnValidate>
 
 		</com:TRequiredFieldValidator>

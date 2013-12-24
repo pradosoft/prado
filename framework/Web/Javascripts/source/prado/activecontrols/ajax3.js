@@ -75,7 +75,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	options : {},
 	data    : '',
 
-	initialize: function(target, options)
+	initialize: function(id, options)
 	{
 		this.options = {
 			RequestTimeOut : 30000, // 30 second timeout.
@@ -315,7 +315,13 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		this.data = data;
 
 		if (this.options.onSuccess)
-			this.options.onSuccess(this,textStatus);
+		{
+			var customData=this.extractContent(Prado.CallbackRequestManager.DATA_HEADER);
+			if (typeof(customData) == "string" && customData.length > 0)
+				customData = jQuery.parseJSON(customData);
+
+			this.options.onSuccess(this,customData);
+		}
 
 		var redirectUrl = this.extractContent(Prado.CallbackRequestManager.REDIRECT_HEADER);
 		if (redirectUrl)
@@ -811,30 +817,29 @@ jQuery(function()
 // 	}
 // });
 
-// /**
-//  * Create a new callback request using default settings.
-//  * @param string callback handler unique ID.
-//  * @param mixed parameter to pass to callback handler on the server side.
-//  * @param function client side onSuccess event handler.
-//  * @param object additional request options.
-//  * @return boolean always false.
-//  */
-// Prado.Callback = function(UniqueID, parameter, onSuccess, options)
-// {
-// 	var callback =
-// 	{
-// 		'CallbackParameter' : parameter || '',
-// 		'onSuccess' : onSuccess || Prototype.emptyFunction
-// 	};
+/**
+ * Create a new callback request using default settings.
+ * @param string callback handler unique ID.
+ * @param mixed parameter to pass to callback handler on the server side.
+ * @param function client side onSuccess event handler.
+ * @param object additional request options.
+ * @return boolean always false.
+ */
+Prado.Callback = function(UniqueID, parameter, onSuccess, options)
+{
+	var callback =
+	{
+		'EventTarget' : UniqueID || '',
+		'CallbackParameter' : parameter || '',
+		'onSuccess' : onSuccess || jQuery.noop()
+	};
 
-// 	Object.extend(callback, options || {});
+	jQuery.extend(callback, options || {});
 
-// 	var request = new Prado.CallbackRequest(UniqueID, callback);
-// 	request.dispatch();
-// 	return false;
-// };
-
-
+	var request = new Prado.CallbackRequest(UniqueID, callback);
+	request.dispatch();
+	return false;
+};
 
 /**
 * Asset manager classes for lazy loading of scripts and stylesheets

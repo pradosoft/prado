@@ -1134,7 +1134,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 					return value;
 				else
 				{
-					var value = string.toDate(string, this.options.DateFormat);
+					var value = Date.SimpleParse(string, this.options.DateFormat);
 					if(value && typeof(value.getTime) == "function")
 						return value.getTime();
 					else
