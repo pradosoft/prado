@@ -1,5 +1,4 @@
 <?php
-Prado::using('System.Web.UI.JuiControls.*');
 // $Id: Home.php 3189 2012-07-12 12:16:21Z ctrlaltca $
 class Home extends TPage
 {
@@ -8,7 +7,7 @@ class Home extends TPage
         $token=$param->getToken();
         // Sender is the Suggestions repeater
         $sender->DataSource=$this->getDummyData($token);
-        $sender->dataBind();                                                                                                     
+        $sender->dataBind();
     }
 
     public function suggestionSelected1($sender,$param) {
