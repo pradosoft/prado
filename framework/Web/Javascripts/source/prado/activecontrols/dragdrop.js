@@ -1,20 +1,22 @@
+jQuery.noConflict();
+
 /**
  * DropContainer control
  */
- 
-Prado.WebUI.DropContainer = jQuery.klass(Prado.WebUI.CallbackControl,
+
+Prado.WebUI.DropContainer = Class.create(Prado.WebUI.CallbackControl,
 {
 	onInit: function(options)
 	{
 		this.options = options;
-		Object.extend (this.options, 
+		Object.extend (this.options,
 		{
 			onDrop: this.onDrop.bind(this)
 		});
-		
+
 		Droppables.add (options.ID, this.options);
 	},
-	
+
 	onDrop: function(dragElement, dropElement, event)
 	{
 		var elementId=dragElement.id.replace(/clone_/,"");

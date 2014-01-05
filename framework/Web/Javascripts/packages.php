@@ -9,11 +9,7 @@ if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1
 
 //package names and its contents (files relative to the current directory)
 $packages = array(
-	'prototype' => array(
-		PROTOTYPE_DIR.'/prototype.js',
-		SCRIPTACULOUS_DIR.'/builder.js',
-		SCRIPTACULOUS_DIR.'/effects.js'
-	),
+	// base prado scripts
 	'prado' => array(
 		'prado/prado.js',
 		'prado/controls/controls.js'
@@ -40,15 +36,6 @@ $packages = array(
 		'prado/activecontrols/activecontrols3.js',
 	),
 
-	'dragdrop'=>array(
-		SCRIPTACULOUS_DIR.'/dragdrop.js',
-		'prado/activecontrols/dragdrop.js'
-	),
-
-	'dragdropextra'=>array(
-		'prado/activecontrols/dragdropextra.js',
-	),
-
 	'slider'=>array(
 		'prado/controls/slider.js'
 	),
@@ -60,17 +47,13 @@ $packages = array(
 	'tabpanel'=>array(
 		'prado/controls/tabpanel.js'
 	),
-	
+
 	'activedatepicker' => array(
 		'prado/activecontrols/activedatepicker.js'
 	),
-	
+
 	'activefileupload' => array(
 		'prado/activefileupload/activefileupload.js'
-	),
-
-	'accordion'=>array(
-		'prado/controls/accordion.js'
 	),
 
 	'htmlarea'=>array(
@@ -79,14 +62,6 @@ $packages = array(
 
 	'htmlarea4'=>array(
 		'prado/controls/htmlarea4.js'
-	),
-
-	'ratings' => array(
-		'prado/ratings/ratings.js',
-	),
-
-	'inlineeditor' => array(
-		'prado/activecontrols/inlineeditor.js'
 	),
 
 	// jquery
@@ -98,12 +73,43 @@ $packages = array(
 		JQUERY_DIR.'/jquery-ui-i18n.min.js',
 	),
 
+	// prototype + scriptaculous
+	'prototype' => array(
+		PROTOTYPE_DIR.'/prototype.js',
+		SCRIPTACULOUS_DIR.'/builder.js',
+		SCRIPTACULOUS_DIR.'/effects.js'
+	),
+
+	'dragdrop'=>array(
+		SCRIPTACULOUS_DIR.'/dragdrop.js',
+		'prado/activecontrols/dragdrop.js'
+	),
+
+	'dragdropextra'=>array(
+		'prado/activecontrols/dragdropextra.js',
+	),
+
+	'accordion'=>array(
+		'prado/controls/accordion.js'
+	),
+
+	'ratings' => array(
+		'prado/ratings/ratings.js',
+	),
+
+	'inlineeditor' => array(
+		'prado/activecontrols/inlineeditor.js'
+	),
+
+	'autocomplete' => array(
+		SCRIPTACULOUS_DIR.'/controls.js',
+		'prado/activecontrols/autocomplete.js'
+	),
 );
 
 
 //package names and their dependencies
 $dependencies = array(
-		'prototype'			=> array('prototype'),
 		'jquery'			=> array('jquery'),
 		'prado'				=> array('jquery', 'prado'),
 		'validator'			=> array('jquery', 'prado', 'validator'),
@@ -119,15 +125,15 @@ $dependencies = array(
 		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
 		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
 		'slider'			=> array('jquery', 'prado', 'slider'),
-		'dragdrop' => array(),
-/*
-		'dragdrop'			=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop'),
-		'dragdropextra'		=> array('prototype', 'prado', 'effects', 'ajax', 'dragdrop','dragdropextra'),
-		'accordion'			=> array('prototype', 'prado', 'effects', 'accordion'),
-		'ratings'			=> array('prototype', 'prado', 'effects', 'ajax', 'ratings'),
-		'inlineeditor'		=> array('prototype', 'prado', 'effects', 'ajax', 'inlineeditor'),
-		*/
+		'inlineeditor'		=> array('jquery', 'prado', 'ajax', 'inlineeditor'),
 		'jqueryui'			=> array('jquery', 'jqueryui'),
+
+		'prototype'			=> array('prototype'),
+		'dragdrop'			=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop'),
+		'dragdropextra'		=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
+		'accordion'			=> array('prototype', 'jquery', 'prado', 'accordion'),
+		'ratings'			=> array('prototype', 'jquery', 'prado', 'ajax', 'ratings'),
+		'autocomplete'		=> array('prototype', 'jquery', 'prado', 'ajax', 'autocomplete'),
 );
 
 return array($packages, $dependencies);

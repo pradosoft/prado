@@ -9,12 +9,12 @@ class Home extends TPage
 		parent::onInit($param);
 		if (!$this->getIsPostBack() && !$this->getIsCallBack())
 		{
-			
+
 			$this->populateProductList();
 			$this->populateShoppingList();
 		}
 	}
-	
+
 	private function getProductData ()
 	{
 		return array (
@@ -30,38 +30,41 @@ class Home extends TPage
 			)
 		);
 	}
-	
+
 	private function getProduct ($key)
 	{
 		foreach ($this->getProductData() as $product)
 			if ($product['ProductId']==$key) return $product;
-		return null;	
+		return null;
 	}
-	
+
 	protected function populateProductList ()
 	{
 		$this->ProductList->DataSource=$this->getProductData();
 		$this->ProductList->Databind();
 	}
-	
+
 	protected function populateShoppingList ()
 	{
 		$this->ShoppingList->DataSource=$this->getShoppingListData();
 		$this->ShoppingList->Databind();
-		
+
 	}
-	
-	
+
+
 	public function getShoppingListData ()
 	{
+		$a=$this->getViewState('ShoppingList', array ());
+		var_export($a);
 		return $this->getViewState('ShoppingList', array ());
 	}
-	
+
 	public function setShoppingListData ($value)
 	{
+		var_export($value);
 		$this->setViewState('ShoppingList', TPropertyValue::ensureArray($value), array ());
 	}
-	
+
 	public function addItemToCart ($sender, $param)
 	{
 		$control=$param->getDroppedControl();
@@ -82,9 +85,9 @@ class Home extends TPage
 			$shoppingList[$key]['ProductCount']=1;
 		}
 		$this->setShoppingListData($shoppingList);
-		
+
 	}
-	
+
 	public function removeItemFromCart ($sender, $param)
 	{
 		$control=$param->getDroppedControl();
@@ -99,13 +102,13 @@ class Home extends TPage
 				unset($shoppingList[$key]);
 		}
 		$this->setShoppingListData($shoppingList);
-		
+
 	}
-	
+
 	public function redrawCart ($sender, $param)
 	{
 		$this->populateShoppingList();
 		$this->cart->render($param->NewWriter);
-		
+
 	}
 }

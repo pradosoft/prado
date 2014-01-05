@@ -1,7 +1,7 @@
 <?php
 /**
  * TDropContainer class file
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
@@ -24,29 +24,29 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 /**
  * TDropContainer is a panel where TDraggable controls can be dropped.
  * When a TDraggable component is dropped into a TDropContainer, the {@link OnDrop OnDrop} event is raised.
- * The {@link TDropContainerEventParameter} param will contain the dropped control. 
- * 
+ * The {@link TDropContainerEventParameter} param will contain the dropped control.
+ *
  * Properties :
- * 
+ *
  * <b>{@link setAcceptCssClass AcceptCssClass}</b> : a coma delimited classname of elements that the drop container can accept.
  * <b>{@link setHoverCssClass HoverCssClass}</b>: CSS classname of the container when a draggable element hovers over the container.
- * 
+ *
  * Events:
- * 
+ *
  * <b>{@link OnDrop OnDrop}</b> : raised when a TDraggable control is dropped. The dropped control id is encapsulated in the event parameter,
  * as well as mouse coordinates and key modifiers status
  *
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @version $Id: TDropContainer.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
-class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler 
-{	
+class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler
+{
 	private $_container=null;
-	
+
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -91,7 +91,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		$this->setViewState('Accepts', TPropertyValue::ensureArray($value), '');
 	}
-	
+
 	/**
 	 * Sets the Css class name used when a draggble element is hovering
 	 * over this container.
@@ -111,8 +111,8 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		return $this->getViewState('HoverClass', '');
 	}
-	
-	
+
+
 	/**
 	 * Raises callback event. This method is required bu {@link ICallbackEventHandler}
 	 * interface.
@@ -125,19 +125,19 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		$this->onDrop($param->getCallbackParameter());
 		$this->onCallback($param);
 	}
-	
+
 	/**
-	 * Raises the onDrop event. 
+	 * Raises the onDrop event.
 	 * The drop parameters are encapsulated into a {@link TDropContainerEventParameter}
-	 * 
+	 *
 	 * @param object $dropControlId
 	 */
 	public function onDrop ($dropParams)
 	{
 		$this->raiseEvent('OnDrop', $this, new TDropContainerEventParameter ($dropParams));
-		
+
 	}
-	
+
 	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this
@@ -149,7 +149,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
-	
+
 	/**
 	 * Gets the post back options for this textbox.
 	 * @return array
@@ -163,7 +163,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		$options['hoverclass'] = $this->getHoverCssClass();
 		return $options;
 	}
-	
+
 	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
 	 * This method overrides the parent implementation.
@@ -172,7 +172,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.DropContainer';
-	}	
+	}
 
 	/**
 	 * Registers clientscripts
@@ -198,7 +198,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}
-	
+
 	/**
 	 * Creates child control
 	 * Override parent implementation to create a container which will contain all
@@ -214,7 +214,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 			parent::getControls()->add($this->_container);
 		}
 	}
-	
+
 	/**
 	 * Override parent implementation to return the container control collection.
 	 *
@@ -225,7 +225,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 		$this->ensureChildControls();
 		return $this->_container->getControls();
 	}
-	
+
 	/**
 	 * Renders and replaces the panel's content on the client-side.
 	 * When render() is called before the OnPreRender event, such as when render()
@@ -246,15 +246,15 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 			$this->getPage()->getAdapter()->registerControlToRender($this->_container,$writer);
 		}
 	}
-			
+
 }
 
 /**
  * TDropContainerEventParameter class
- * 
+ *
  * TDropContainerEventParameter encapsulate the parameter
  * data for <b>OnDrop</b> event of TDropContainer components
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
