@@ -126,12 +126,12 @@ $dependencies = array(
 		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
 		'slider'			=> array('jquery', 'prado', 'slider'),
 		'inlineeditor'		=> array('jquery', 'prado', 'ajax', 'inlineeditor'),
+		'accordion'			=> array('jquery', 'prado', 'accordion'),
 		'jqueryui'			=> array('jquery', 'jqueryui'),
 
 		'prototype'			=> array('prototype'),
 		'dragdrop'			=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop'),
 		'dragdropextra'		=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
-		'accordion'			=> array('prototype', 'jquery', 'prado', 'accordion'),
 		'ratings'			=> array('prototype', 'jquery', 'prado', 'ajax', 'ratings'),
 		'autocomplete'		=> array('prototype', 'jquery', 'prado', 'ajax', 'autocomplete'),
 );

@@ -1,8 +1,9 @@
-/* Simple Accordion Script 
+/* Simple Accordion Script
  * Requires Prototype and Script.aculo.us Libraries
  * By: Brian Crescimanno <brian.crescimanno@gmail.com>
  * http://briancrescimanno.com
  * Adapted to Prado & minor improvements: Gabor Berczi <gabor.berczi@devworx.hu>
+ * jQuery port by Bas Fabio <ctrlaltca@gmail.com>
  * This work is licensed under the Creative Commons Attribution-Share Alike 3.0
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */
@@ -11,9 +12,9 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 {
     	onInit : function(options)
 	{
-		this.accordion = $(options.ID);
+		this.accordion = jQuery('#'+options.ID).get(0);
 		this.options = options;
-		this.hiddenField = $(options.ID+'_1');
+		this.hiddenField = jQuery('#'+options.ID+'_1').get(0);
 
 		if (this.options.maxHeight)
 		{
@@ -29,15 +30,15 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 		var i = 0;
 		for(var view in this.options.Views)
 		{
-			var header = $(view+'_0');
+			var header = jQuery('#'+view+'_0').get(0);
 			if(header)
 			{
 				this.observe(header, "click", jQuery.proxy(this.elementClicked,this,view));
 				if(this.hiddenField.value == i)
 				{
 					this.currentView = view;
-					if($(this.currentView).getHeight() != this.maxHeight)
-						$(this.currentView).setStyle({height: this.maxHeight+"px"});
+					if(jQuery('#'+this.currentView).height() != this.maxHeight)
+						jQuery('#'+this.currentView).css({height: this.maxHeight+"px"});
 				}
 			}
 			i++;
@@ -48,38 +49,20 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 	{
 		for(var viewID in this.options.Views)
 		{
-			var view = $(viewID);
-			if(view.getHeight() > this.maxHeight)
- 				this.maxHeight = view.getHeight();
+			var view = jQuery('#'+viewID);
+			if(view.height() > this.maxHeight)
+ 				this.maxHeight = view.height();
 		}
 	},
 
-	elementClicked : function(event,viewID)
-	{
-		// dummy effect to force processing of click into the event queue
-		// is not actually supposed to change the appearance of the accordion
-		var obj = this;
-        	new Effect.Opacity(
-			this.element,
-			{ 
-				from: 1.0, to: 1.0, duration: 0.0, 
-            			queue: {
-		                	position: 'end',
-			                scope: 'accordion'
-			        },
-				afterFinish: function() { obj.processElementClick(event, viewID); } 
-			}
-		);
-	},
-
-	processElementClick : function(event,viewID)
+	elementClicked : function(viewID, event)
 	{
 		var i = 0;
 		for(var index in this.options.Views)
 		{
-			if ($(index))
+			if (jQuery('#'+index).get(0))
 			{
-				var header = $(index+'_0');
+				var header = jQuery('#'+index+'_0').get(0);
 				if(index == viewID)
 				{
 					this.oldView = this.currentView;
@@ -96,75 +79,31 @@ Prado.WebUI.TAccordion = jQuery.klass(Prado.WebUI.Control,
 			{
 				this.animate();
 			} else {
-				$(this.currentView).setStyle({ height: this.maxHeight+"px" });
-				$(this.currentView).show();
-				$(this.oldView).hide();
-				
-				var oldHeader = $(this.oldView+'_0');
-				var currentHeader = $(this.currentView+'_0');
-				oldHeader.className=this.options.HeaderCssClass;
-				currentHeader.className=this.options.ActiveHeaderCssClass;
+				jQuery('#'+this.currentView).css({ height: this.maxHeight+"px" });
+				jQuery('#'+this.currentView).show();
+				jQuery('#'+this.oldView).hide();
+
+				jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
+				jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
 			}
 		}
 	},
 
 	animate: function() {
-		var effects = new Array();
-		var options = {
-			sync: true,
-            		queue: {
-		                position: 'end',
-		                scope: 'accordion'
-		        },
-			scaleFrom: 0,
-			scaleContent: false,
-			transition: Effect.Transitions.sinoidal,
-			scaleMode: {
-				originalHeight: this.maxHeight,
-				originalWidth: this.accordion.getWidth()
-			},
-			scaleX: false,
-			scaleY: true
-		};
+		jQuery('#'+this.oldView+'_0').removeClass().addClass(this.options.HeaderCssClass);
+		jQuery('#'+this.currentView+'_0').removeClass().addClass(this.options.ActiveHeaderCssClass);
 
-		effects.push(new Effect.Scale(this.currentView, 100, options));
-
-		options = {
-			sync: true,
-            		queue: {
-                		position: 'end',
-		                scope: 'accordion'
-		        },
-			scaleContent: false,
-			transition: Effect.Transitions.sinoidal,
-			scaleX: false,
-			scaleY: true
-		};
-
-		effects.push(new Effect.Scale(this.oldView, 0, options));
-
-		var oldHeader = $(this.oldView+'_0');
-		var currentHeader = $(this.currentView+'_0');
-
-		new Effect.Parallel(effects, {
-			duration: this.options.Duration,
-			fps: 35,
-			queue: {
-				position: 'end',
-				scope: 'accordion'
-			},
-			beforeStart: function() {
-				$(this.currentView).setStyle({ height: "0px" });
-				$(this.currentView).show();
-
-				oldHeader.className=this.options.HeaderCssClass;
-				currentHeader.className=this.options.ActiveHeaderCssClass;
-			}.bind(this),
-			afterFinish: function() {
-				$(this.oldView).hide();
-				$(this.currentView).setStyle({ height: this.maxHeight+"px" });
-			}.bind(this)
-		});
+		jQuery('#'+this.oldView).animate(
+			{height: 0},
+			this.options.Duration,
+			function() {
+				jQuery(this).hide()
+			}
+		);
+		jQuery('#'+this.currentView).css({height: 0}).show().animate(
+			{height: this.maxHeight+'px'},
+			this.options.Duration
+		);
 	}
 });
 
