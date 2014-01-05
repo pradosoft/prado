@@ -108,9 +108,9 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 		})
 		jQuery('#'+options.ID).autocomplete(this.options)
 		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
-			return $( "<li>" )
+			return jQuery( "<li>" )
 			.attr( "data-value", item.value )
-			.append( $( "<a>" ).html( item.label ) )
+			.append( jQuery( "<a>" ).html( item.label ) )
 			.appendTo( ul );
 		};
 
@@ -283,7 +283,7 @@ Prado.WebUI.TEventTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	onInit : function(options)
 	{
 		this.options = options || {} ;
-		var element = $('#'+options['ControlID']).get(0);
+		var element = jQuery('#'+options['ControlID']).get(0);
 		if(element)
 			this.observe(element, this.getEventName(element), this.doCallback.bind(this));
 	},
@@ -328,7 +328,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 	{
 		this.options = options || {} ;
 		this.options.PropertyName = this.options.PropertyName || 'value';
-		var element = $('#'+options['ControlID']).get(0);
+		var element = jQuery('#'+options['ControlID']).get(0);
 		this.value = element ? element[this.options.PropertyName] : undefined;
 		Prado.WebUI.TValueTriggeredCallback.register(this);
 		this.startObserving();
@@ -347,7 +347,7 @@ Prado.WebUI.TValueTriggeredCallback = jQuery.klass(Prado.WebUI.Control,
 
 	checkChanges : function()
 	{
-		var element = $('#'+this.options.ControlID).get(0);
+		var element = jQuery('#'+this.options.ControlID).get(0);
 		if(element)
 		{
 			var value = element[this.options.PropertyName];
@@ -401,7 +401,7 @@ Prado.WebUI.TActiveTableCell = jQuery.klass(Prado.WebUI.CallbackControl);
 Prado.WebUI.TActiveTableRow = jQuery.klass(Prado.WebUI.CallbackControl);
 
 Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
-{	
+{
 	dispatchRequest : function(ev)
 	{
 		var requestOptions = jQuery.extend(
@@ -413,5 +413,5 @@ Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
 		if(request.dispatch()==false)
 			ev.preventDefault();
 	}
-	
+
 });

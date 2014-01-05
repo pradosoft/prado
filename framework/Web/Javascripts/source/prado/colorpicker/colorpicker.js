@@ -93,7 +93,7 @@ Rico.Color.prototype = {
    toColorPart: function(number) {
         number = (number > 255 ? 255 : (number < 0 ? 0 : number));
         var hex = number.toString(16);
-        return hex.length < 2 ? "0" + hex : hex;               
+        return hex.length < 2 ? "0" + hex : hex;
     }
 };
 
@@ -265,13 +265,13 @@ Prado.WebUI.TColorPicker = jQuery.klass(Prado.WebUI.Control, {
 
 		options = jQuery.extend(basics, options);
 		this.options = options;
-		this.input = $('#'+options['ID']).get(0);
-		this.button = $('#'+options['ID']+'_button').get(0);
+		this.input = jQuery('#'+options['ID']).get(0);
+		this.button = jQuery('#'+options['ID']+'_button').get(0);
 		this._buttonOnClick = jQuery.proxy(this.buttonOnClick, this);
 		if(options['ShowColorPicker'])
 			this.observe(this.button, "click", this._buttonOnClick);
 		this.observe(this.input, "change", jQuery.proxy(this.updatePicker, this));
-		
+
 		Prado.Registry[options.ID] = this;
 	},
 

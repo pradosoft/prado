@@ -1,4 +1,4 @@
-Prado.CallbackRequestManager = 
+Prado.CallbackRequestManager =
 {
 	/**
 	 * Callback request target POST field name.
@@ -202,7 +202,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 		if(this.options.onPreDispatch)
 			this.options.onPreDispatch(this,null);
-	
+
 		// jQuery don't have all these states.. simulate them to avoid breaking old scripts
 		if (this.options.onLoading)
 			this.options.onLoading(this,null);
@@ -352,7 +352,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	updatePageState : function(request, datain)
 	{
-		var pagestate = $("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
+		var pagestate = jQuery("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
 		var enabled = request.options.EnablePageStateUpdate;
 		var aborted = false; //typeof(self.currentRequest) == 'undefined' || self.currentRequest == null;
 		if(enabled && !aborted && pagestate)
@@ -408,7 +408,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	},
 
 	/*
-	 * Checks which assets are used by the response and ensures they're loaded 
+	 * Checks which assets are used by the response and ensures they're loaded
 	 */
 	loadAssets : function(request, datain, callback)
 	{
@@ -439,7 +439,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	},
 
 	/*
-	 * Checks which scripts are used by the response and ensures they're loaded 
+	 * Checks which scripts are used by the response and ensures they're loaded
 	 */
 	loadScripts : function(request, datain, callback)
 	{
@@ -473,10 +473,10 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			{
 				var url = this.ScriptsToLoad.shift(); var obj = this;
 				if (
-					Prado.ScriptManager.ensureAssetIsLoaded(url, 
-						function() { 
-							obj.loadNextScript(); 
-						} 
+					Prado.ScriptManager.ensureAssetIsLoaded(url,
+						function() {
+							obj.loadNextScript();
+						}
 					)
 				   )
 				   this.loadNextScript();
@@ -560,10 +560,10 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			{
 				var url = this.StyleSheetsToLoad.shift(); var obj = this;
 				if (
-					Prado.StyleSheetManager.ensureAssetIsLoaded(url, 
-						function() { 
-							obj.loadNextStyleSheet(); 
-						} 
+					Prado.StyleSheetManager.ensureAssetIsLoaded(url,
+						function() {
+							obj.loadNextStyleSheet();
+						}
 					)
 				   )
 				   this.loadNextStyleSheet();
@@ -591,8 +591,10 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				if(typeof(Logger) != "undefined")
 					Logger.warn("Invalid action:"+data);
 			} else {
-				for(var key in json)
-					this.__run(this, json[key]);
+				var that = this;
+				jQuery.each(json, function(idx, item){
+					that.__run(that, item);
+				});
 			}
 		}
 	},
@@ -659,7 +661,7 @@ jQuery(function()
 // /**
 //  * Prado Callback client-side request handler.
 //  */
-// Prado.CallbackRequestManager = 
+// Prado.CallbackRequestManager =
 // {
 
 // 	requestQueue : [],
@@ -795,11 +797,11 @@ jQuery(function()
 // 		this.Enabled = true;
 // 		this.id = id;
 // 		this.randomId = this.randomString();
-		
+
 // 		if(typeof(id)=="string"){
 // 			Prado.CallbackRequestManager.requests[id+"__"+this.randomId] = this;
 // 		}
-		
+
 // 		Prado.CallbackRequestManager.requests[id+"__"+this.randomId].ActiveControl = this.options;
 // 	},
 
@@ -864,7 +866,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		discoverLoadedAssets: function() {
 
 			// wait until document has finished loading to avoid javascript errors
-			if (!document.body) return; 
+			if (!document.body) return;
 
 			var assets = this.findAssetUrlsInMarkup();
 			for(var i=0;i<assets.length;i++)
@@ -873,11 +875,11 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		/**
 		 * Extend url to a fully qualified url.
-		 * @param string url 
+		 * @param string url
 		 */
 		makeFullUrl: function(url) {
 
-			// this is not intended to be a fully blown url "canonicalizator", 
+			// this is not intended to be a fully blown url "canonicalizator",
 			// just to handle the most common and basic asset paths used by Prado
 
 			if (!this.baseUri) this.baseUri = window.location;
@@ -906,7 +908,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		/**
 		 * Mark asset as being already loaded
-		 * @param string url of the asset 
+		 * @param string url of the asset
 		 */
 		markAssetAsLoaded: function(url) {
 			url = this.makeFullUrl(url);
@@ -987,7 +989,7 @@ Prado.ScriptManagerClass = jQuery.klass(Prado.AssetManagerClass, {
 		var urls = new Array();
 		var scripts = document.getElementsByTagName('script');
 		for(var i=0;i<scripts.length;i++)
-		{	
+		{
 			var e = scripts[i]; var src = e.src;
 			if (src!="")
 				urls.push(src);
@@ -1011,7 +1013,7 @@ Prado.StyleSheetManagerClass = jQuery.klass(Prado.AssetManagerClass, {
 		var urls = new Array();
 		var scripts = document.getElementsByTagName('link');
 		for(var i=0;i<scripts.length;i++)
-		{	
+		{
 			var e = scripts[i]; var href = e.href;
 			if ((e.rel=="stylesheet") && (href.length>0))
 				urls.push(href);

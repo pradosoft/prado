@@ -60,11 +60,11 @@ Prado.WebUI.Control = jQuery.klass({
 		// from the old wrapper to this new one (which then could live on, while the old
 		// one could get destroyed), or to copy the new, changed options to the old wrapper,
 		// (which could then left intact to keep working, while this new wrapper could be
-		// disposed of by exiting its initialization without installing any handlers or 
+		// disposed of by exiting its initialization without installing any handlers or
 		// leaving any references to it)
 		//
 
-		// for now this method is simply deinitializing and deregistering the old wrapper, 
+		// for now this method is simply deinitializing and deregistering the old wrapper,
 		// and then registering the new wrapper for the control id
 
 		if (oldwrapper.deinitialize)
@@ -74,7 +74,7 @@ Prado.WebUI.Control = jQuery.klass({
 	},
 
 	/**
-	 * Registers an event observer which will be automatically disposed of when the wrapper 
+	 * Registers an event observer which will be automatically disposed of when the wrapper
 	 * is deregistered
 	 * @param element DOM element reference or id to attach the event handler to
 	 * @param string event name to observe
@@ -99,7 +99,7 @@ Prado.WebUI.Control = jQuery.klass({
 		var e = { _element: element, _eventName: eventName, _handler: handler };
 		var idx = -1;
 		for(var i=0;i<this.observers.length;i++)
-		{	
+		{
 			var o = this.observers[i];
 			if ((o._element===element) && (o._eventName===eventName) && (o._handler===handler))
 			{
@@ -109,7 +109,7 @@ Prado.WebUI.Control = jQuery.klass({
 		}
 		return idx;
 	},
-	
+
 
 	/**
 	 * Degisters an event observer from the list of automatically disposed handlers
@@ -133,11 +133,11 @@ Prado.WebUI.Control = jQuery.klass({
 	 * wrapper hasn't been destroyed in the meantime
 	 * @param code function or code snippet to execute
 	 * @param int number of milliseconds to wait before executing
-	 * @return int unique ID that can be used to cancel the scheduled execution 
+	 * @return int unique ID that can be used to cancel the scheduled execution
 	 */
 	setTimeout: function(func, delay)
 	{
-		if (!jQuery.isFunction(func)) 
+		if (!jQuery.isFunction(func))
 		{
 			var expr = func;
 			func = function() { return eval(expr); }
@@ -209,11 +209,11 @@ Prado.WebUI.Control = jQuery.klass({
 					this.onDone();
 
 				// automatically stop all intervals
-				while (this.intervals.length>0)	
+				while (this.intervals.length>0)
 					window.clearInterval(this.intervals.pop());
 
 				// automatically deregister all installed observers
-				while (this.observers.length>0)	
+				while (this.observers.length>0)
 				{
 					var e = this.observers.pop();
 					jQuery(e._element).unbind(e._eventName, e._handler);
@@ -235,7 +235,7 @@ Prado.WebUI.PostBackControl = jQuery.klass(Prado.WebUI.Control, {
 	{
 		this._elementOnClick = null;
 
-		if (!this.element) 
+		if (!this.element)
 			debugger; // element not found
 		else
 			{
@@ -284,7 +284,7 @@ Prado.WebUI.TImageMap = jQuery.klass(Prado.WebUI.PostBackControl);
  * TImageButton client-side behaviour. With validation, Firefox needs
  * to capture the x,y point of the clicked image in hidden form fields.
  */
-Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl, 
+Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 {
 	/**
 	 * Override parent onPostBack function, tried to add hidden forms
@@ -351,7 +351,7 @@ Prado.WebUI.TRadioButton = jQuery.klass(Prado.WebUI.PostBackControl,
 {
 	initialize : function($super, options)
 	{
-		this.element = $("#" + options['ID']).get(0);
+		this.element = jQuery("#" + options['ID']).get(0);
 		if(this.element)
 		{
 			if(!this.element.checked)
@@ -386,14 +386,14 @@ Prado.WebUI.TTextBox = jQuery.klass(Prado.WebUI.PostBackControl,
 			{
 				if(this.options['AutoPostBack']==true)
 				{
-					$(target).trigger( "change" );
+					jQuery(target).trigger( "change" );
 					e.stopPropagation();
 				}
 				else
 				{
 					if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 					{
-						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $(this.options['ID'])))
+						if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery(this.options['ID'])))
 							return e.stopPropagation();
 					}
 				}
@@ -432,10 +432,10 @@ Prado.WebUI.DefaultButton = jQuery.klass(Prado.WebUI.Control,
 		var isTextArea = ev.target.tagName.toLowerCase() == "textarea";
 		var isHyperLink = ev.target.tagName.toLowerCase() == "a" && ev.target.hasAttribute("href");
 		var isValidButton = ev.target.tagName.toLowerCase() == "input" &&  ev.target.type.toLowerCase() == "submit";
-		
+
 		if(enterPressed && !isTextArea && !isValidButton && !isHyperLink)
 		{
-			var defaultButton = $('#'+this.options['Target']);
+			var defaultButton = jQuery('#'+this.options['Target']);
 			if(defaultButton)
 			{
 				this.triggered = true;

@@ -1,6 +1,6 @@
 
 /*
- * 
+ *
  * HtmlArea (tinyMCE) wrapper
  *
  * @author Gabor Berczi <gabor.berczi@devworx.hu>
@@ -24,7 +24,7 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 
 		this.registerInstance();
 	},
-	
+
 
 
 	registerInstance: function()
@@ -38,7 +38,7 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 							{
 								// we're in a callback
 								// try it again in some time, as tinyMCE is most likely still loading
-								this.setTimeout(this.registerInstance.bind(this), 50); 
+								this.setTimeout(this.registerInstance.bind(this), 50);
 								return;
 							}
 						throw "TinyMCE libraries must be loaded first";
@@ -62,7 +62,7 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 					}
 				}
 	},
-	
+
 	compressedScriptsLoaded: function()
 	{
 		Prado.WebUI.THtmlArea.tinyMCELoadState = 255;
@@ -119,14 +119,14 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 		if (prev)
 		try
 		{
-			tinyMCE.execCommand('mceFocus', false, this.ID); 
+			tinyMCE.execCommand('mceFocus', false, this.ID);
 			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
 			// updated in this same callback, it will be overwritten with the old content. Workaround this.
-			var curtext = $('#'+this.ID).get(0).value;
+			var curtext = jQuery('#'+this.ID).get(0).value;
 			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
-			$('#'+this.ID).get(0).value = curtext;
+			jQuery('#'+this.ID).get(0).value = curtext;
 		}
-		catch (e) 
+		catch (e)
 		{
 			// suppress error here in case editor can't be properly removed
 			// (happens when <textarea> has been removed from DOM tree without deinitialzing the tinyMCE editor first)
@@ -139,7 +139,7 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-jQuery.extend(Prado.WebUI.THtmlArea, 
+jQuery.extend(Prado.WebUI.THtmlArea,
 {
 	pendingRegistrations : [],
 	tinyMCELoadState : 0

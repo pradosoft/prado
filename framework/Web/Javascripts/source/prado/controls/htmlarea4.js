@@ -1,6 +1,6 @@
 
 /*
- * 
+ *
  * HtmlArea (tinyMCE 4) wrapper
  *
  * @author Gabor Berczi <gabor.berczi@devworx.hu>
@@ -39,14 +39,14 @@ Prado.WebUI.THtmlArea4 = jQuery.klass(Prado.WebUI.Control,
 		if (prev)
 		try
 		{
-			tinyMCE.execCommand('mceFocus', false, this.ID); 
+			tinyMCE.execCommand('mceFocus', false, this.ID);
 			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
 			// updated in this same callback, it will be overwritten with the old content. Workaround this.
-		//	var curtext = $(this.ID).html();
+		//	var curtext = jQuery(this.ID).html();
 			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
-		//	$(this.ID).html(curtext);
+		//	jQuery(this.ID).html(curtext);
 		}
-		catch (e) 
+		catch (e)
 		{
 			// suppress error here in case editor can't be properly removed
 			// (happens when <textarea> has been removed from DOM tree without deinitialzing the tinyMCE editor first)

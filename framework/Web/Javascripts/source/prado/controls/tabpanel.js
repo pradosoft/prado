@@ -4,7 +4,7 @@ Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
 	{
 		this.views = options.Views;
 		this.viewsvis = options.ViewsVis;
-		this.hiddenField = $("#"+options.ID+'_1').get(0);
+		this.hiddenField = jQuery("#"+options.ID+'_1').get(0);
 		this.activeCssClass = options.ActiveCssClass;
 		this.normalCssClass = options.NormalCssClass;
 		var length = options.Views.length;
@@ -18,10 +18,10 @@ Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
 				if (options.AutoSwitch)
 					this.observe(element, "mouseenter", jQuery.proxy(this.elementClicked,this,item));
 			}
-	
+
 			if(element)
 			{
-				var view = $("#"+options.Views[i]).get(0);
+				var view = jQuery("#"+options.Views[i]).get(0);
 				if (view)
 					if(this.hiddenField.value == i)
 					{

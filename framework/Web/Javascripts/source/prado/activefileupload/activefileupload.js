@@ -4,21 +4,21 @@ Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 	{
 		this.options = options || {};
 		Prado.WebUI.TActiveFileUpload.register(this);
-		
-		this.input = $('#'+options.inputID).get(0);
-		this.flag = $('#'+options.flagID).get(0);
-		this.form = $('#'+options.formID).get(0);
-		
-		this.indicator = $('#'+options.indicatorID).get(0);
-		this.complete = $('#'+options.completeID).get(0);
-		this.error = $('#'+options.errorID).get(0);
-		
+
+		this.input = jQuery('#'+options.inputID).get(0);
+		this.flag = jQuery('#'+options.flagID).get(0);
+		this.form = jQuery('#'+options.formID).get(0);
+
+		this.indicator = jQuery('#'+options.indicatorID).get(0);
+		this.complete = jQuery('#'+options.completeID).get(0);
+		this.error = jQuery('#'+options.errorID).get(0);
+
 		// set up events
 		if (options.autoPostBack){
 			this.observe(this.input,"change",this.fileChanged.bind(this));
 		}
 	},
-	
+
 	fileChanged : function(){
 		// show the upload indicator, and hide the complete and error indicators (if they areSn't already).
 		this.flag.value = '1';
@@ -43,7 +43,7 @@ Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 		this.form.method = this.oldFormMethod;
 		this.form.enctype = this.oldFormEnctype;
 	},
-	
+
 	finishUpload : function(options){
 
 		if (this.options.targetID == options.targetID)
@@ -82,7 +82,7 @@ Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 
 });
 
-jQuery.extend(Prado.WebUI.TActiveFileUpload, 
+jQuery.extend(Prado.WebUI.TActiveFileUpload,
 {
 	//class methods
 
@@ -92,12 +92,12 @@ jQuery.extend(Prado.WebUI.TActiveFileUpload,
 	{
 		Prado.WebUI.TActiveFileUpload.controls[control.options.ID] = control;
 	},
-	
+
 	onFileUpload : function(options)
 	{
 		Prado.WebUI.TActiveFileUpload.controls[options.clientID].finishUpload(options);
 	},
-	
+
 	fileChanged : function(controlID){
 		Prado.WebUI.TActiveFileUpload.controls[controlID].fileChanged();
 	}

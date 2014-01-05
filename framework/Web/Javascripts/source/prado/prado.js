@@ -1,11 +1,11 @@
 /*
  * Low Pro JQ
  * ----------
- * 
+ *
  * Author: Dan Webb (dan@danwebb.net)
  * GIT: github.com:danwrong/low-pro-for-jquery.git
  * Download: http://github.com/danwrong/low-pro-for-jquery/tree/master/src/lowpro.jquery.js?raw=true
- * 
+ *
  * A jQuery port of the Low Pro behavior framework that was originally written for Prototype.
  *
  * Prado actually uses it as a base to emulate OOP subclassing, inheritance and contructor events.
@@ -185,9 +185,9 @@
 
   Remote.Link = $.klass(Remote.Base, {
     onclick: function(e) {
-      var options = $.extend({ 
-        url: $(this).attr('href'), 
-        type: 'GET' 
+      var options = $.extend({
+        url: $(this).attr('href'),
+        type: 'GET'
       }, this.options);
       return e.data.behavior._makeRequest(e.data.behavior.options);
     }
@@ -203,9 +203,9 @@
     onsubmit: function(e) {
       var elm = $(this), data = elm.serializeArray();
 
-      if (e.data.behavior._submitButton) data.push({ 
-        name: e.data.behavior._submitButton.name, 
-        value: e.data.behavior._submitButton.value 
+      if (e.data.behavior._submitButton) data.push({
+        name: e.data.behavior._submitButton.name,
+        value: e.data.behavior._submitButton.value
       });
 
       var options = $.extend({
@@ -241,7 +241,7 @@ var Prado =
 	 * @var Version
 	 */
 	Version: '3.2.3',
-	
+
 	/**
 	 * Registry for Prado components
 	 * @var Registry
@@ -249,7 +249,7 @@ var Prado =
 	Registry: {},
 };
 
-Prado.RequestManager = 
+Prado.RequestManager =
 {
 	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
 
@@ -262,8 +262,8 @@ Prado.RequestManager =
  * @param event - Event that triggered this postback
  * @... {string} FormID - Form that should be posted back
  * @... {optional boolean} CausesValidation - Validate before PostBack if true
- * @... {optional string} ValidationGroup - Group to Validate 
- * @... {optional string} ID - Validation ID 
+ * @... {optional string} ValidationGroup - Group to Validate
+ * @... {optional string} ID - Validation ID
  * @... {optional string} PostBackUrl - Postback URL
  * @... {optional boolean} TrackFocus - Keep track of focused element if true
  * @... {string} EventTarget - Id of element that triggered PostBack
@@ -289,7 +289,7 @@ Prado.PostBack = jQuery.klass(
 		var form = this.getForm();
 		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 		{
-			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], $("#" + this.options['ID'])))
+			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery("#" + this.options['ID'])))
 				return event.preventDefault();
 		}
 
@@ -298,7 +298,7 @@ Prado.PostBack = jQuery.klass(
 
 		if(this.options['TrackFocus'])
 		{
-			var lastFocus = $('PRADO_LASTFOCUS');
+			var lastFocus = jQuery('#PRADO_LASTFOCUS');
 			if(lastFocus)
 			{
 				var active = document.activeElement; //where did this come from
@@ -356,7 +356,7 @@ Prado.Element =
 	 * @param {string} element - Element id
 	 * @param {string} method - Name of any {@link Prado.Element.Selection} method
 	 * @param {array|boolean|string} value - Values that should be selected
-	 * @param {int} total - Number of elements 
+	 * @param {int} total - Number of elements
 	 */
 	select : function(element, method, value, total)
 	{
@@ -407,16 +407,16 @@ Prado.Element =
 			offset : 50
 		};
 		jQuery.extend(op, options || {});
-		$('html, body').animate({
-			scrollTop: $("#"+element).offset().top - op.offset
+		jQuery('html, body').animate({
+			scrollTop: jQuery("#"+element).offset().top - op.offset
 		}, op.duration);
 	},
 
 	/**
-	 * Sets the options for a select element. 
+	 * Sets the options for a select element.
 	 * @function ?
 	 * @param {string} element - Element id
-	 * @param {array[]} options - Array of options, each an array of structure 
+	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 */
 	setOptions : function(element, options)
@@ -436,9 +436,9 @@ Prado.Element =
 	},
 
 	/**
-	 * Create opt-group options from an array of options. 
+	 * Create opt-group options from an array of options.
 	 * @function {array} ?
-	 * @param {array[]} options - Array of options, each an array of structure 
+	 * @param {array[]} options - Array of options, each an array of structure
 	 *   [ "optionText" , "optionValue" , "optionGroup" ]
 	 * @returns Array of option DOM elements
 	 */
@@ -599,7 +599,7 @@ Prado.Element.Selection =
 	/**
 	 * Set selected attribute for elements options by value.
 	 * If value is boolean, all elements options selected attribute will be set
-	 * to value. Otherwhise all options that have the given value will be selected. 
+	 * to value. Otherwhise all options that have the given value will be selected.
 	 * @function ?
 	 * @param {element[]} elements - Array of selectable DOM elements
 	 * @param {boolean|string} value - Value of options that should be selected or boolean value of selection status
@@ -735,7 +735,7 @@ Prado.Element.Selection =
 		var el;
 		for(var i = 0; i < total; i++)
 		{
-			el = $("#"+element+"_c"+i).get(0);
+			el = jQuery("#"+element+"_c"+i).get(0);
 			if(el)
 				elements.push(el);
 		}
@@ -744,12 +744,12 @@ Prado.Element.Selection =
 
 	/**
 	 * Set checked attribute of elements by value.
-	 * If value is boolean, checked attribute will be set to value. 
-	 * Otherwhise all elements that have the given value will be checked. 
+	 * If value is boolean, checked attribute will be set to value.
+	 * Otherwhise all elements that have the given value will be checked.
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 * @param {boolean|String} value - Value that should be checked or boolean value of checked status
-	 * 	 
+	 *
 	 */
 	checkValue : function(elements, value)
 	{
@@ -767,7 +767,7 @@ Prado.Element.Selection =
 	 * @function ?
 	 * @param {element[]} elements - Array of checkable DOM elements
 	 * @param {string[]} values - Values that should be checked
-	 * 	 
+	 *
 	 */
 	checkValues : function(elements, values)
 	{
@@ -928,7 +928,7 @@ jQuery.extend(String.prototype, {
 	/**
 	 * Convert period separated function names into a function reference.
 	 * <br />Example:
-	 * <pre> 
+	 * <pre>
 	 * "Prado.AJAX.Callback.Action.setValue".toFunction()
 	 * </pre>
 	 * @function {function} ?
