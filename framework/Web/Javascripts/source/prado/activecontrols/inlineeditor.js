@@ -8,13 +8,13 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.editField = null;
 		this.readOnly = options.ReadOnly;
 
-		this.options = Object.extend(
+		this.options = jQuery.extend(
 		{
 			LoadTextFromSource : false,
 			TextMode : 'SingleLine'
 
 		}, options || {});
-		this.element = $(this.options.ID);
+		this.element = jQuery('#'+this.options.ID).get(0);
 		Prado.WebUI.TInPlaceTextBox.register(this);
 		this.createEditorInput();
 		this.initializeListeners();
@@ -25,10 +25,10 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	 */
 	initializeListeners : function()
 	{
-		this.onclickListener = this.enterEditMode.bindAsEventListener(this);
+		this.onclickListener = this.enterEditMode.bind(this);
 		this.observe(this.element, 'click', this.onclickListener);
 		if (this.options.ExternalControl)
-			this.observe($(this.options.ExternalControl), 'click', this.onclickListener);
+			this.observe(jQuery('#'+this.options.ExternalControl).get(0), 'click', this.onclickListener);
 	},
 
 	/**
@@ -45,9 +45,9 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.editField.disabled = false;
 		if(this.options.LoadTextOnEdit)
 			this.loadExternalText();
-		Prado.Element.focus(this.editField);
+		jQuery(this.editField).focus();
 		if (evt)
-			Event.stop(evt);
+			evt.preventDefault();
     	return false;
 	},
 
@@ -62,14 +62,14 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 
 	showTextBox : function()
 	{
-		Element.hide(this.element);
-		Element.show(this.editField);
+		jQuery(this.element).hide();
+		jQuery(this.editField).show();
 	},
 
 	showLabel : function()
 	{
-		Element.show(this.element);
-		Element.hide(this.editField);
+		jQuery(this.element).show();
+		jQuery(this.editField).hide();
 	},
 
 	/**
@@ -91,8 +91,8 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCausesValidation(false);
 		request.setCallbackParameter(options);
-		request.ActiveControl.onSuccess = this.onloadExternalTextSuccess.bind(this);
-		request.ActiveControl.onFailure = this.onloadExternalTextFailure.bind(this);
+		request.options.onSuccess = this.onloadExternalTextSuccess.bind(this);
+		request.options.onFailure = this.onloadExternalTextFailure.bind(this);
 		request.dispatch();
 	},
 
@@ -103,41 +103,44 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	{
 		var cssClass= this.element.className || '';
 		var inputName = this.options.EventTarget;
-		var options = {'className' : cssClass, name : inputName, id : this.options.TextBoxID};
+
 		if(this.options.TextMode == 'SingleLine')
 		{
+			this.editField = document.createElement("input");
 			if(this.options.MaxLength > 0)
-				options['maxlength'] = this.options.MaxLength;
+				this.editField.maxlength = this.options.MaxLength;
 			if(this.options.Columns > 0)
-				options['size'] = this.options.Columns;
-			this.editField = INPUT(options);
+				this.editField.size = this.options.Columns;
 		}
 		else
 		{
+			this.editField = document.createElement("textarea");
 			if(this.options.Rows > 0)
-				options['rows'] = this.options.Rows;
+				this.editField.rows = this.options.Rows;
 			if(this.options.Columns > 0)
-				options['cols'] = this.options.Columns;
+				this.editField.cols = this.options.Columns;
 			if(this.options.Wrap)
-				options['wrap'] = 'off';
-			this.editField = TEXTAREA(options);
+				this.editField.wrap = 'off';
 		}
 
+		this.editField.className = cssClass;
+		this.editField.name = inputName;
+		this.editField.id = this.options.TextBoxID;
 		this.editField.style.display="none";
-		this.element.parentNode.insertBefore(this.editField,this.element)
-        
+		this.element.parentNode.insertBefore(this.editField, this.element)
+
 		//handle return key within single line textbox
 		if(this.options.TextMode == 'SingleLine')
 		{
 			this.observe(this.editField, "keydown", function(e)
 			{
-				 if(Event.keyCode(e) == Event.KEY_RETURN)
+				 if(e.keyCode == 13) //KEY_RETURN
 		        {
-					var target = Event.element(e);
+					var target = e.target;
 					if(target)
 					{
-						Event.fireEvent(target, "blur");
-						Event.stop(e);
+						jQuery(target).trigger("blur");
+						e.preventDefault();
 					}
 				}
 			});
@@ -183,15 +186,16 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 
 	onKeyPressed : function(e)
 	{
-		if (Event.keyCode(e) == Event.KEY_ESC)
+		if (e.keyCode == 27) //KEY_ESC
 		{
 			this.editField.value = this.getText();
 			this.isEditing = false;
 			if(this.options.AutoHide)
 				this.showLabel();
 		}
-		else if (Event.keyCode(e) == Event.KEY_RETURN && this.options.TextMode != 'MultiLine')
-			Event.stop(e);
+		else if (e.keyCode == 13 // KEY_RETURN
+			&& this.options.TextMode != 'MultiLine')
+			e.preventDefault()
 	},
 
 	/**
@@ -202,8 +206,8 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 	{
 		var request = new Prado.CallbackRequest(this.options.EventTarget, this.options);
 		request.setCallbackParameter(text);
-		request.ActiveControl.onSuccess = this.onTextChangedSuccess.bind(this);
-		request.ActiveControl.onFailure = this.onTextChangedFailure.bind(this);
+		request.options.onSuccess = this.onTextChangedSuccess.bind(this);
+		request.options.onFailure = this.onTextChangedFailure.bind(this);
 		if(request.dispatch())
 		{
 			this.isSaving = true;
@@ -224,7 +228,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 		this.isEditing = true;
 		this.editField.disabled = false;
 		this.editField.value = this.getText();
-		Prado.Element.focus(this.editField);
+		jQuery(this.editField).focus();
 		if(typeof(this.options.onSuccess)=="function")
 			this.options.onSuccess(sender,parameter);
 	},
@@ -266,7 +270,7 @@ Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 });
 
 
-Object.extend(Prado.WebUI.TInPlaceTextBox, 
+jQuery.extend(Prado.WebUI.TInPlaceTextBox,
 {
 	//class methods
 
