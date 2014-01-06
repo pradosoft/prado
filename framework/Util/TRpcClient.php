@@ -5,7 +5,6 @@
  * @link http://www.pradosoft.com/
  * @copyright 2010 Bigpoint GmbH
  * @license http://www.pradosoft.com/license/
- * @version $Id: TRpcClient.php 137 2010-03-27 22:13:36Z rrogge $
  * @since 3.2
  * @package System.Util
  */
@@ -158,7 +157,7 @@ class TRpcClient extends TApplicationComponent
  * @package System.Util
  * @since 3.2
  */
- 
+
 class TRpcClientTypesEnumerable extends TEnumerable
 {
 	const JSON = 'TJsonRpcClient';
@@ -176,7 +175,7 @@ class TRpcClientTypesEnumerable extends TEnumerable
  * @package System.Util
  * @since 3.2
  */
- 
+
 class TRpcClientRequestException extends TApplicationException
 {
 }
@@ -184,7 +183,7 @@ class TRpcClientRequestException extends TApplicationException
 /**
  * TRpcClientResponseException class
  *
- * This Exception is fired when the 
+ * This Exception is fired when the
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
@@ -323,7 +322,7 @@ class TXmlRpcClient extends TRpcClient
 		// skip response handling if the request was just a notification request
 		if($this->isNotification)
 			return true;
-	
+
 		// decode response
 		if(($_response = xmlrpc_decode($_response)) === null)
 			throw new TRpcClientResponseException('Empty response received');

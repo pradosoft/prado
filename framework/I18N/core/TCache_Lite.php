@@ -38,7 +38,6 @@
 * Mike BENOIT <ipso@snappymail.ca>
 *
 * @package System.I18N.core
-* @version $Id: TCache_Lite.php 3188 2012-07-12 12:13:23Z ctrlaltca $
 * @author Fabien MARTY <fab@php.net>
 * @copyright  1997-2005 The PHP Group
 * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL

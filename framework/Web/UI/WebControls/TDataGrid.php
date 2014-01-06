@@ -11,7 +11,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -145,7 +144,6 @@ Prado::using('System.Web.UI.WebControls.TDataGridPagerStyle');
  * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1680,7 +1678,6 @@ class TDataGrid extends TBaseDataList implements INamingContainer
  * The {@link getItem Item} property indicates the datagrid item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1718,7 +1715,6 @@ class TDataGridItemEventParameter extends TEventParameter
  * The {@link getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1759,7 +1755,6 @@ class TDataGridPagerEventParameter extends TEventParameter
  * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1815,7 +1810,6 @@ class TDataGridCommandEventParameter extends TCommandEventParameter
  * gives the sort expression carried with the sort command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1869,7 +1863,6 @@ class TDataGridSortCommandEventParameter extends TEventParameter
  * returns the new page index carried with the page command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1923,7 +1916,6 @@ class TDataGridPageChangedEventParameter extends TEventParameter
  * gives the index of the item from the bound data source.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2060,7 +2052,6 @@ class TDataGridItem extends TTableRow implements INamingContainer
  * TDataGridPager represents a datagrid pager.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2119,7 +2110,6 @@ class TDataGridPager extends TPanel implements INamingContainer
  * TDataGridItemCollection represents a collection of data grid items.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2147,7 +2137,6 @@ class TDataGridItemCollection extends TList
  * TDataGridColumnCollection represents a collection of data grid columns.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -2204,7 +2193,6 @@ class TDataGridColumnCollection extends TList
  * - Numeric: pager buttons are displayed as numeric page numbers
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -2224,7 +2212,6 @@ class TDataGridPagerMode extends TEnumerable
  * - PushButton: form submit buttons
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -2245,7 +2232,6 @@ class TDataGridPagerButtonType extends TEnumerable
  * - TopAndBottom: pager appears on both top and bottom of the data grid.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

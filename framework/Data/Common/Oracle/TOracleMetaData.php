@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TOracleMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  */
 
@@ -21,7 +20,6 @@ Prado::using('System.Data.Common.Oracle.TOracleTableColumn');
  * TOracleMetaData loads Oracle database table and column information.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
- * @version $Id: TOracleMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  * @since 3.1
  */

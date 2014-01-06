@@ -28,7 +28,6 @@
  * callback handler function) can be set using {@link setResponseData ResponseData} property.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Id: TActivePageAdapter.php 1648 2007-01-24 05:52:22Z wei $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

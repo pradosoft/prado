@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TUrlMapping.php 3290 2013-05-06 08:32:15Z ctrlaltca $
  * @package System.Web
  */
 
@@ -63,7 +62,6 @@ Prado::using('System.Collections.TAttributeCollection');
  * in the GET variables.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TUrlMapping.php 3290 2013-05-06 08:32:15Z ctrlaltca $
  * @package System.Web
  * @since 3.0.5
  */
@@ -486,7 +484,6 @@ class TUrlMapping extends TUrlManager
  * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TUrlMapping.php 3290 2013-05-06 08:32:15Z ctrlaltca $
  * @package System.Web
  * @since 3.0.5
  */
@@ -1003,7 +1000,6 @@ class TUrlMappingPattern extends TComponent
  * URL prefix behavior that can be used by {@link TUrlMappingPattern::constructUrl()}.
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @version $Id: TUrlMapping.php 3290 2013-05-06 08:32:15Z ctrlaltca $
  * @package System.Web
  * @since 3.2
  */

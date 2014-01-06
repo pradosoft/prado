@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -70,7 +69,6 @@ Prado::using('System.Web.UI.WebControls.TLabel');
  * override the method {@link evaluateIsValid}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -625,7 +623,6 @@ abstract class TBaseValidator extends TLabel implements IValidator
  * See the quickstart documentation for further details.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -715,7 +712,6 @@ class TValidatorClientSide extends TClientSideOptions
  * - Fixed: Similar to Dynamic except that the error message physically occupies the page layout (even though it may not be visible)
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -738,7 +734,6 @@ class TValidatorDisplayStyle extends TEnumerable
  * - String
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

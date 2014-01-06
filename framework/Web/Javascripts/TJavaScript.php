@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  */
 
@@ -17,7 +16,6 @@
  * functions.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  * @since 3.0
  */

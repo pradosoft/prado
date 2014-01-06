@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.ActiveControls
  * @since 3.1.9
- * @version $Id: TActiveRepeater.php 2707 2009-09-29 10:33:30Z Christophe.Boulain $
  */
 
 /**

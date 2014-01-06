@@ -7,7 +7,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TMemCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -77,7 +76,6 @@
  * NB : MemCache server(s) must be restarted to apply settings. Require (PECL memcache >= 2.0.0).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TMemCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.0
  */

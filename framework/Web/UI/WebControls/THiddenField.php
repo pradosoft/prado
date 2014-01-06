@@ -6,7 +6,6 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Id: THiddenField.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -19,7 +18,6 @@
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THiddenField.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

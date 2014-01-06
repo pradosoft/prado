@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: BlogErrorHandler.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  */
 
 Prado::using('System.Exceptions.TErrorHandler');

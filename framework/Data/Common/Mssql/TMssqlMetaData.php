@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
  * @package System.Data.Common.Mssql
  */
 
@@ -20,7 +19,6 @@ Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
  * TMssqlMetaData loads MSSQL database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TPgsqlMetaData.php 1866 2007-04-14 05:02:29Z wei $
  * @package System.Data.Common.Mssql
  * @since 3.1
  */

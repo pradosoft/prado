@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TCallbackOptions.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -17,7 +16,6 @@
  * to be attached to other active controls.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TCallbackOptions.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

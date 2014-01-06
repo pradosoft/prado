@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJsonService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  */
 
@@ -47,7 +46,6 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TJsonService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  * @since 3.1
  */
@@ -172,7 +170,6 @@ class TJsonService extends TService
  * will be empty if the returned content is null.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TJsonService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  * @since 3.1
  */

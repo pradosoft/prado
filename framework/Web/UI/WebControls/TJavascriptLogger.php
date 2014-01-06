@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJavascriptLogger.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -26,7 +25,6 @@
  * http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Id: TJavascriptLogger.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

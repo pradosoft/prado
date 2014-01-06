@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -42,7 +41,6 @@
  * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -508,7 +506,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
  * The <tt>OnChange</tt> event is raised when the slider value is changed (or at the end of a move)
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -561,7 +558,6 @@ class TSliderClientScript extends TClientSideOptions
  * - Vertical : Vertical slider
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */

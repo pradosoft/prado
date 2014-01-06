@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -41,7 +40,6 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  * @since 3.0b
  */

@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDropDownList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -39,7 +38,6 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * available item in the dropdown list will be selected.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDropDownList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: THeader3.php 2590 2008-12-10 11:34:24Z carlgmathisen $
  * @package System.Web.UI.WebControls
  */
 
@@ -18,7 +17,6 @@
  * This is also useful for the {@link TWebControlDecorator} (used by themes).
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: THeader3.php 2541 2008-10-21 15:05:13Z javalizard $
  * @package System.Web.UI.WebControls
  * @since 3.2a
  */

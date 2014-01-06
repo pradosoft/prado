@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TScaffoldBase.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  */
 
@@ -26,7 +25,6 @@ Prado::using('System.Data.ActiveRecord.TActiveRecord');
  * file explicitly.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TScaffoldBase.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  * @since 3.1
  */

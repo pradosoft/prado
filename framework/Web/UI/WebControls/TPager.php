@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -45,7 +44,6 @@
  * Multiple pagers can be associated with the same data-bound control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.2
  */
@@ -727,7 +725,6 @@ class TPager extends TWebControl implements INamingContainer
  * returns the new page index carried with the page command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.2
  */
@@ -781,7 +778,6 @@ class TPagerPageChangedEventParameter extends TEventParameter
  * - DropDownList: a dropdown list is used to select pages
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -802,7 +798,6 @@ class TPagerMode extends TEnumerable
  * - PushButton: form submit buttons
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

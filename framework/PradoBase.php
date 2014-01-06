@@ -9,7 +9,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: PradoBase.php 3325 2013-09-13 08:19:04Z ctrlaltca $
  * @package System
  */
 
@@ -34,7 +33,6 @@ if(!defined('PRADO_CHMOD'))
  * rewritten for customization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: PradoBase.php 3325 2013-09-13 08:19:04Z ctrlaltca $
  * @package System
  * @since 3.0
  */

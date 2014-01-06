@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  */
 
@@ -17,7 +16,6 @@
  * Use the {@link getTableInfo} method to retrieve a table information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  * @since 3.1
  */

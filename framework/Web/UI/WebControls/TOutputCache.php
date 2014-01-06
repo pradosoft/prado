@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -63,7 +62,6 @@
  * to determine whether the content is cached or not.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1
  */
@@ -503,7 +501,6 @@ class TOutputCache extends TControl implements INamingContainer
  * <b>OnCheckDependency</b> event of {@link TOutputCache} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -555,7 +552,6 @@ class TOutputCacheCheckDependencyEventParameter extends TEventParameter
  * <b>OnCalculateKey</b> event of {@link TOutputCache} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -591,7 +587,6 @@ class TOutputCacheCalculateKeyEventParameter extends TEventParameter
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */

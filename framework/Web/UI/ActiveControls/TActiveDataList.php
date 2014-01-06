@@ -1,12 +1,11 @@
 <?php
 /**
  * TActiveDataList class file
- * 
+ *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TActiveDataList.php 2706 2009-09-24 14:42:30Z rojaro $
  */
 
 /**
@@ -14,7 +13,7 @@
  *
  * TActiveDataList represents a data bound and updatable grid control which is the
  * active counterpart to the original {@link TDataList} control.
- * 
+ *
  * This component can be used in the same way as the regular datalist, the only
  * difference is that the active datalist uses callbacks instead of postbacks
  * for interaction.
@@ -25,10 +24,10 @@
  * @package System.Web.UI.ActiveControls
  */
 class TActiveDataList extends TDataList implements IActiveControl {
-  
+
   /**
    * Creates a new callback control, sets the adapter to
-   * TActiveControlAdapter. 
+   * TActiveControlAdapter.
    */
   public function __construct()
   {
@@ -43,7 +42,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
   {
     return $this->getAdapter()->getBaseActiveControl();
   }
-  
+
   /**
    * Sets the data source object associated with the repeater control.
    * In addition, the render method of all connected pagers is called so they
@@ -59,7 +58,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
       $this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
     }
   }
-  
+
   /**
    * Returns the id of the surrounding container (span).
    * @return string container id
@@ -68,7 +67,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
   {
     return $this->ClientID.'_Container';
   }
-  
+
   /**
    * Renders the repeater.
    * If the repeater did not pass the prerender phase yet, it will register itself for rendering later.
@@ -85,10 +84,10 @@ class TActiveDataList extends TDataList implements IActiveControl {
       $this->getPage()->getAdapter()->registerControlToRender($this,$writer);
     }
   }
-  
+
   /**
    * Loops through all {@link TActivePager} on the page and registers the ones which are set to paginate
-   * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the 
+   * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the
    * data source changed.
    */
   private function renderPager()
@@ -102,7 +101,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
       }
     }
   }
-  
+
   /**
    * Renders the repeater by writing a span tag with the container id obtained from {@link getContainerID()}
    * which will be called by the replacement method of the client script to update it's content.

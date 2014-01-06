@@ -24,7 +24,6 @@
 /**
 * Main parser components
 * @package    System.Security.SafeHtml
-* @version $Id: HTMLSax3.php 3188 2012-07-12 12:13:23Z ctrlaltca $
 */
 /**
 * Required classes
@@ -367,7 +366,7 @@ class TSax3_StateParser_Lt430 extends TSax3_StateParser {
     * @return void
     */
     function ignoreWhitespace() {
-        while ($this->position < $this->length && 
+        while ($this->position < $this->length &&
             strpos(" \n\r\t", $this->rawtext{$this->position}) !== FALSE) {
             $this->position++;
         }
@@ -536,7 +535,7 @@ class TSax3 {
     * <li>XML_OPTION_ENTITIES_UNPARSED: XML entities are returned as
     * seperate data handler calls in unparsed form</li>
     * <li>XML_OPTION_ENTITIES_PARSED: (PHP 4.3.0+ only) XML entities are
-    * returned as seperate data handler calls and are parsed with 
+    * returned as seperate data handler calls and are parsed with
     * PHP's html_entity_decode() function</li>
     * <li>XML_OPTION_STRIP_ESCAPES: strips out the -- -- comment markers
     * or CDATA markup inside an XML escape, if found.</li>
