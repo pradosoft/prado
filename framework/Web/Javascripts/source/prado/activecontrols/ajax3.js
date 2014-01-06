@@ -66,6 +66,55 @@ Prado.CallbackRequestManager =
 		}
 		msg += e.version+" "+e.time+"\n";
 		return msg;
+	},
+
+	/*! jQuery Ajax Queue - v0.1.2pre - 2013-03-19
+	* https://github.com/gnarf37/jquery-ajaxQueue
+	* Copyright (c) 2013 Corey Frang; Licensed MIT
+	* Slightly adapted for use within prado by Fabio Bas <ctrlaltca@gmail.com>
+	*/
+
+	// jQuery on an empty object, we are going to use this as our Queue
+	ajaxQueue : jQuery({}),
+
+	ajax : function( ajaxOpts ) {
+		var jqXHR,
+			dfd = jQuery.Deferred(),
+			promise = dfd.promise();
+
+		// run the actual query
+		function doRequest( next ) {
+			jqXHR = jQuery.ajax( ajaxOpts );
+			jqXHR.done( dfd.resolve )
+				.fail( dfd.reject )
+				.then( next, next );
+		}
+
+		// queue our ajax request
+		Prado.CallbackRequestManager.ajaxQueue.queue( doRequest );
+
+		// add the abort method
+		promise.abort = function( statusText ) {
+
+			// proxy abort to the jqXHR if it is active
+			if ( jqXHR ) {
+				return jqXHR.abort( statusText );
+			}
+
+			// if there wasn't already a jqXHR we need to remove from queue
+			var queue = Prado.CallbackRequestManager.ajaxQueue.queue(),
+				index = jQuery.inArray( doRequest, queue );
+
+			if ( index > -1 ) {
+				queue.splice( index, 1 );
+			}
+
+			// and then reject the deferred
+			dfd.rejectWith( ajaxOpts.context || ajaxOpts, [ promise, statusText, "" ] );
+			return promise;
+		};
+
+		return promise;
 	}
 };
 
@@ -215,7 +264,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		this.options.data = this.getParameters();
 		this.options.url = this.getCallbackUrl();
 
-		this.request = jQuery.ajax(this.options);
+		this.request = Prado.CallbackRequestManager.ajax(this.options);
 	},
 
 	abort : function()
@@ -239,7 +288,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		if(this.options.EventTarget)
 			data[Prado.CallbackRequestManager.FIELD_CALLBACK_TARGET] = this.options.EventTarget;
 
- 		if(this.options.PostInputs != false)
+		if(this.options.PostInputs != false)
 			return jQuery(form).serialize() + '&' + jQuery.param(data);
 		else
 			return jQuery.param(data);

@@ -23,6 +23,7 @@ Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox
 Js-based controls (TTabPanel, TDatePicker, TColorPicker, TSlider, THtmlArea, TAccordion)
 List, Data controls
 *Validators
+Ajax queue
 Basic callback controls (TActive*, TInPlaceTextBox)
 Badic jquery-ui controls
 
@@ -31,7 +32,6 @@ TJuiAutoComplete
 TJuiDraggable,TJuiDroppable
 
 TBD
-Implement Ajax queue
 Port *ratings
 Add JQuery-ui-Effects: clip, explode, transfer, switchclass
 Add JQuery-ui-Methods: show, hide, toggle?
