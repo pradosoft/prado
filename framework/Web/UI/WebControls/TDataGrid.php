@@ -9,7 +9,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TDataGrid.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -1233,7 +1233,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
-	 * @param mixed the container pager instance of TActiveDatagridPager 
+	 * @param mixed the container pager instance of TActiveDatagridPager
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
 	 * @param string caption of the button

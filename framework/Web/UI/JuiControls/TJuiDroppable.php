@@ -4,7 +4,7 @@
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2013-2013 PradoSoft
+ * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TJuiDroppable.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
@@ -23,7 +23,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * >
  * drag me
  * </com:TJuiDraggable>
- * 
+ *
  * <com:TJuiDroppable
  * 	ID="drop1"
  * 	Style="border: 1px solid blue; width:600px;height:600px; background-color: lime"
@@ -105,19 +105,19 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		$this->onDrop($param->getCallbackParameter());
 		$this->onCallback($param);
 	}
-	
+
 	/**
-	 * Raises the onDrop event. 
+	 * Raises the onDrop event.
 	 * The drop parameters are encapsulated into a {@link TDropContainerEventParameter}
-	 * 
+	 *
 	 * @param object $dropControlId
 	 */
 	public function onDrop ($dropParams)
 	{
 		$this->raiseEvent('OnDrop', $this, new TJuiDroppableEventParameter ($this->getResponse(), $dropParams));
-		
+
 	}
-	
+
 	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this
@@ -148,10 +148,10 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 /**
  * TJuiDroppableEventParameter class
- * 
+ *
  * TJuiDroppableEventParameter encapsulate the parameter
  * data for <b>OnDrop</b> event of TJuiDroppable components
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license

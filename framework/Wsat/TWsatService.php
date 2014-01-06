@@ -3,7 +3,7 @@
 /**
  * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @since 3.3
@@ -12,15 +12,15 @@
 
 /**
  * TWsatService class
- * 
+ *
  * Wsat is inspired in both Asp.Net - Web Site Administration Tool(WSAT) and Yii's Gii.
  * Wsat enables you to generate code saving your time in too many tedious tasks in a GUI fashion.
- * 
+ *
  * Current options:
  * 1- Generate one or all Active Record Classes from your DataBase.
  *  1.1- Automatically generate all relations between the AR Classes (new).
  *  1.2- Automatically generate the __toString() magic method in a smart way (new).
- * 
+ *
  * To use TWsatService, configure it in the application configuration file like following:
  * <code>
  *   <services>
@@ -30,7 +30,7 @@
  * </code>
  * ...and then you need to go to http://localhost/yoursite/index.php?wsat=TWsatLogin
  * and generate code and configure your site.
- * 
+ *
  * Warning: You should only use Wsat in development mode.
  */
 class TWsatService extends TPageService

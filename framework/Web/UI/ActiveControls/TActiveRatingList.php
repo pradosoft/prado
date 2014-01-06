@@ -5,7 +5,7 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Web.UI.ActiveControls
@@ -116,7 +116,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	public function setCaption($value)
 	{
 		parent::setCaption($value);
-		// if it's an active control, this should not be needed. 
+		// if it's an active control, this should not be needed.
 		$this->callClientFunction('setCaption',$value);
 	}
 

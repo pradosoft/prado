@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TDbConnection.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data
@@ -136,7 +136,7 @@ class TDbConnection extends TComponent
 	public function __sleep()
 	{
 //		$this->close(); - DO NOT CLOSE the current connection as serializing doesn't neccessarily mean we don't this connection anymore in the current session
-		return array_diff(parent::__sleep(),array("\0TDbConnection\0_pdo","\0TDbConnection\0_active")); 
+		return array_diff(parent::__sleep(),array("\0TDbConnection\0_pdo","\0TDbConnection\0_active"));
 	}
 
 	/**

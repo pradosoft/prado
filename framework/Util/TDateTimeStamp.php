@@ -4,7 +4,7 @@
 
  * @author Fabio Bas ctrlaltca[AT]gmail[DOT]com
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TDateTimeStamp.php 3246 2013-01-07 21:07:38Z ctrlaltca $
  * @package System.Util
@@ -194,8 +194,8 @@ class TDateTimeStamp
 		$dt = new DateTime();
 		if($is_gmt)
 			$dt->setTimeZone(new DateTimeZone('UTC'));
-		$dt->setDate($year!==false ? $year : date('Y'), 
-			$mon!==false ? $mon : date('m'), 
+		$dt->setDate($year!==false ? $year : date('Y'),
+			$mon!==false ? $mon : date('m'),
 			$day!==false ? $day : date('d'));
 		$dt->setTime($hr, $min, $sec);
 		return (int) $dt->format('U');

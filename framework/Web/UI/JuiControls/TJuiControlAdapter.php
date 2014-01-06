@@ -4,7 +4,7 @@
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2013-2013 PradoSoft
+ * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TJuiControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
@@ -84,7 +84,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 /**
  * IJuiOptions interface
  *
- * IJuiOptions is the interface that must be implemented by controls using 
+ * IJuiOptions is the interface that must be implemented by controls using
  * {@link TJuiControlOptions}.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>

@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TSqliteMetaData.php 1861 2007-04-12 08:05:03Z wei $
  * @package System.Data.Common.Sqlite
@@ -190,7 +190,7 @@ class TSqliteMetaData extends TDbMetaData
 		}
 		return false;
 	}
-        
+
         /**
 	 * Returns all table names in the database.
 	 * @param string $schema the schema of the tables. This is not used for sqlite database.

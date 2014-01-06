@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
@@ -29,7 +29,7 @@ Prado::using('System.Data.TDbConnection');
  * </code>
  * PHP configuration style:
  * <code>
- * 
+ *
  * </code>
  * You can specify multiple routes with different filtering conditions and different
  * targets, even if the routes are of the same type.
@@ -128,8 +128,8 @@ class TLogRouter extends TModule
 
 	/**
 	 * Adds a TLogRoute instance to the log router.
-	 * 
-	 * @param TLogRoute $route 
+	 *
+	 * @param TLogRoute $route
 	 * @throws TInvalidDataTypeException if the route object is invalid
 	 */
 	public function addRoute($route)
@@ -639,7 +639,7 @@ class TBrowserLogRoute extends TLogRoute
 	 * @var string css class for indentifying the table structure in the dom tree
 	 */
 	private $_cssClass=null;
-	
+
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
@@ -664,7 +664,7 @@ class TBrowserLogRoute extends TLogRoute
 		}
 		$response->write($this->renderFooter());
 	}
-	
+
 	/**
 	 * @param string the css class of the control
 	 */

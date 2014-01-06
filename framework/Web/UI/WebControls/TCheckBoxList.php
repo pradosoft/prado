@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TCheckBoxList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -256,7 +256,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	{
 		return false;
 	}
-	
+
 	/**
 	 * @param boolean whether the control is to be enabled.
 	 */
@@ -264,8 +264,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	{
 		parent::setEnabled($value);
 		$value = !TPropertyValue::ensureBoolean($value);
-		// if this is an active control, 
-		// and it's a callback, 
+		// if this is an active control,
+		// and it's a callback,
 		// and we can update clientside,
 		// then update the 'disabled' attribute of the items.
 		if(($this instanceof IActiveControl) &&
@@ -389,14 +389,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 
 	/**
 	 * Wether the list should be rendered inside a span or not
-	 * 
+	 *
 	 *@return boolean true if we need a span
 	 */
 	protected function getSpanNeeded ()
 	{
 		return $this->getRepeatLayout()===TRepeatLayout::Raw;
 	}
-	
+
 	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
@@ -459,7 +459,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 	/**
-	 * Returns true if this control validated successfully. 
+	 * Returns true if this control validated successfully.
 	 * Defaults to true.
 	 * @return bool wether this control validated successfully.
 	 */
@@ -498,6 +498,6 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 		$options['ItemCount'] = $this->getItemCount();
 		return $options;
 	}
-	
+
 }
 

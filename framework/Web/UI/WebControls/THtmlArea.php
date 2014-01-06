@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THtmlArea.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -491,7 +491,7 @@ class THtmlArea extends TTextBox
 			if(count($option) == 2)
 			{
 				$value=trim(trim($option[1]),"'\"");
-				if (($s=strtolower($value))==='false') 
+				if (($s=strtolower($value))==='false')
 					$value=false;
 				elseif ($s==='true')
 					$value=true;

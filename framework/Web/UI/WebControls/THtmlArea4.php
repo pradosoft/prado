@@ -4,7 +4,7 @@
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THtmlArea4.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -20,7 +20,7 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *
  * THtmlArea4 wraps the visual editing functionalities provided by the
  * version 4 of TinyMCE project {@link http://tinymce.com/}. It has been
- * developed as a plug'n'play substitute for {@link THtmlArea}, that is 
+ * developed as a plug'n'play substitute for {@link THtmlArea}, that is
  * based on the previous iteration (version 3) of the same project.
  * Please note that both components can't be used together in the same page.
  *
@@ -430,7 +430,7 @@ class THtmlArea4 extends TTextBox
 			if(count($option) == 2)
 			{
 				$value=trim(trim($option[1]),"'\"");
-				if (($s=strtolower($value))==='false') 
+				if (($s=strtolower($value))==='false')
 					$value=false;
 				elseif ($s==='true')
 					$value=true;

@@ -4,7 +4,7 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THeader3.php 2590 2008-12-10 11:34:24Z carlgmathisen $
  * @package System.Web.UI.WebControls
@@ -22,9 +22,9 @@
  * @package System.Web.UI.WebControls
  * @since 3.2a
  */
- 
-class THeader3 extends THtmlElement {	
-	
+
+class THeader3 extends THtmlElement {
+
 	/**
 	 * @return string tag name
 	 */
@@ -32,5 +32,5 @@ class THeader3 extends THtmlElement {
 	{
 		return 'h3';
 	}
-	
+
 }
