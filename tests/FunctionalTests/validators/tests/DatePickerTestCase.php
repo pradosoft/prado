@@ -27,8 +27,6 @@ class DatePickerTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator6", "");
 		$this->assertVisible("{$base}validator8", "");
 
-		$this->click("{$base}submit1");
-		$this->pause(250);
 		$this->type("{$base}picker1", "13/4/$year");
 		$this->select("{$base}picker2_month", "label=9");
 		$this->select("{$base}picker2_day", "label=10");
