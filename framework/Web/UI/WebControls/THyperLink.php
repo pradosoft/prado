@@ -6,7 +6,6 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -26,7 +25,6 @@
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

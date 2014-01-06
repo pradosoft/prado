@@ -6,18 +6,16 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: UserCreate.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  */
 
 /**
  * Create new user wizard page class. Validate that the usernames are unique and
  * set the new user credentials as the current application credentials.
- * 
+ *
  * If logged in as admin, the user role can be change during creation.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: UserCreate.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  * @since 3.1
  */
@@ -30,11 +28,11 @@ class UserCreate extends TPage
 	{
 		if(!$this->IsPostBack)
 		{
-			$this->role->SelectedValue = 	
+			$this->role->SelectedValue =
 				$this->Application->Parameters['NewUserRoles'];
 		}
 	}
-	
+
 	/**
 	 * Verify that the username is not taken.
 	 * @param TControl custom validator that created the event.
@@ -46,11 +44,11 @@ class UserCreate extends TPage
 		if($userDao->usernameExists($this->username->Text))
 		{
 			$param->IsValid = false;
-			$sender->ErrorMessage = 
+			$sender->ErrorMessage =
 				"The user name is already taken, try '{$this->username->Text}01'";
 		}
 	}
-	
+
 	/**
 	 * Skip the role assignment step if not admin.
 	 */
@@ -66,7 +64,7 @@ class UserCreate extends TPage
 			}
 		}
 	}
-	
+
 	/**
 	 * Create a new user if all data entered are valid.
 	 * The default user roles are obtained from "config.xml". The new user
@@ -84,11 +82,11 @@ class UserCreate extends TPage
 			$newUser->Name = $this->username->Text;
 			$newUser->IsGuest = false;
 			$newUser->Roles = $this->role->SelectedValue;
-	
+
 			//save the user
 			$userDao = $this->Application->Modules['daos']->getDao('UserDao');
 			$userDao->addNewUser($newUser, $this->password->Text);
-	
+
 			//update the user credentials if not admin
 			if(!$this->User->isInRole('admin'))
 			{
@@ -97,7 +95,7 @@ class UserCreate extends TPage
 			}
 		}
 	}
-	
+
 	/**
 	 * Continue with requested page.
 	 */

@@ -13,7 +13,6 @@
  * the {@link IDynamicMethods} class so that any 'dy' event calls can be caught
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: TCallChain.php 564 2009-01-21 22:07:10Z javalizard $
  * @package System.Util
  * @since 3.2.3
  */

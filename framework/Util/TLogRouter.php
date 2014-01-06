@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -36,7 +35,6 @@ Prado::using('System.Data.TDbConnection');
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -190,7 +188,6 @@ class TLogRouter extends TModule
  * satisfying both filter conditions will they be returned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -363,7 +360,6 @@ abstract class TLogRoute extends TApplicationComponent
  * specifies how many files to be kept.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -503,7 +499,6 @@ class TFileLogRoute extends TLogRoute
  * {@link setSentFrom SentFrom} address.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -629,7 +624,6 @@ class TEmailLogRoute extends TLogRoute
  * TBrowserLogRoute prints selected log messages in the response.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -816,7 +810,6 @@ EOD;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.2
  */
@@ -1022,7 +1015,6 @@ class TDbLogRoute extends TLogRoute
  * {@link http://www.getfirebug.com/ FireBug Website}
  *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.2
  */
@@ -1099,7 +1091,6 @@ EOD;
  * {@link http://www.firephp.org/ FirePHP Website}
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.5
  */

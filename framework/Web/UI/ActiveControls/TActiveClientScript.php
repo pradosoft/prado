@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveClientScript.php 3144 2012-05-19 10:07:03Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -30,7 +29,6 @@
  * This can potentially hurt compatibility and graceful fallback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActiveClientScript.php 3144 2012-05-19 10:07:03Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.2
  */

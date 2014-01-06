@@ -10,7 +10,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  */
 
@@ -277,7 +276,6 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1834,7 +1832,6 @@ class TClassBehaviorEventParameter extends TEventParameter
  * TTextAlign::Right.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1897,7 +1894,6 @@ class TEnumerable implements Iterator
  * - enum: enumerable type, represented by an array of strings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2050,7 +2046,6 @@ class TPropertyValue
  * TEventParameter is the base class for all event parameter classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2078,7 +2073,6 @@ class TEventResults extends TEnumerable {
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2371,7 +2365,6 @@ interface IInstanceCheck {
  * $raw=_js($js);
  * </code>
  *
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.2.0
  */
@@ -2399,7 +2392,6 @@ class TJavaScriptLiteral
  * TJavaScriptString class is an internal class that marks strings that will be
  * forcibly encoded when rendered inside a javascript block
  *
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.2.0
  */

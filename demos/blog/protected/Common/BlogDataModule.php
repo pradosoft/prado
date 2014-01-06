@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: BlogDataModule.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  */
 
 /**
@@ -236,7 +235,7 @@ class BlogDataModule extends TModule
 
 	public function queryPosts($postFilter,$categoryFilter,$orderBy,$limit)
 	{
-		//FIXME this is insecure by design since it misses proper escaping 
+		//FIXME this is insecure by design since it misses proper escaping
 		$filter='';
 		if($postFilter!=='')
 			$filter.=" AND $postFilter";
@@ -301,7 +300,7 @@ class BlogDataModule extends TModule
 
 	public function queryPostCount($postFilter,$categoryFilter)
 	{
-		//FIXME this is insecure by design since it misses proper escaping 
+		//FIXME this is insecure by design since it misses proper escaping
 		$filter='';
 		if($postFilter!=='')
 			$filter.=" AND $postFilter";
@@ -424,7 +423,7 @@ class BlogDataModule extends TModule
 
 	public function queryComments($filter,$orderBy,$limit)
 	{
-		//FIXME this is insecure by design since it misses proper escaping 
+		//FIXME this is insecure by design since it misses proper escaping
 		if($filter!=='')
 			$filter='WHERE '.$filter;
 		$sql="SELECT * FROM tblComments $filter $orderBy $limit";

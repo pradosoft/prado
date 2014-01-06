@@ -107,7 +107,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * It overrides the datagrid's original method to create active controls instead, thus
 	 * the pager will do callbacks instead of the regular postbacks.
-	 * @param mixed the container pager instance of TActiveDatagridPager 
+	 * @param mixed the container pager instance of TActiveDatagridPager
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
 	 * @param string caption of the button
@@ -786,7 +786,6 @@ class TActiveLiteralColumn extends TLiteralColumn {
  * TActiveDataGridPager represents a pager in an activedatagrid.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @version $Id: TDataGrid.php 3057 2011-11-09 12:35:57Z ctrlaltca@gmail.com $
  * @package System.Web.UI.ActiveControls
  * @since 3.2.1
  */
@@ -813,7 +812,6 @@ class TActiveDataGridPager extends TDataGridPager
  * The {@link getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @version $Id: TActiveDataGrid.php 3057 2011-11-09 12:35:57Z ctrlaltca@gmail.com $
  * @package System.Web.UI.ActiveControls
  * @since 3.2.1
  */

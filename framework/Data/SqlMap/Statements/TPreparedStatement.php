@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPreparedStatement.php 3261 2013-01-22 22:36:51Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
  */
 
@@ -14,7 +13,6 @@
  * TpreparedStatement class.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TPreparedStatement.php 3261 2013-01-22 22:36:51Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */

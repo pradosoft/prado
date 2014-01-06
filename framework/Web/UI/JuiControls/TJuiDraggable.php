@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJuiDraggable.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  */
 
@@ -27,7 +26,6 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @version $Id: TJuiDraggable.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */

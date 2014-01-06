@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPriorityList.php 2541 2008-10-21 15:05:13Z javalizard $
  * @package System.Collections
  */
 
@@ -43,7 +42,6 @@
  * override {@link insertAtIndexInPriority()} and {@link removeAtIndexInPriority()} and then call the parent.
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: TPriorityList.php 2541 2008-10-21 15:05:13Z javalizard $
  * @package System.Collections
  * @since 3.2a
  */

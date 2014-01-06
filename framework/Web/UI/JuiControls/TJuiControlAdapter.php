@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJuiControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  */
 
@@ -19,7 +18,6 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * derived from a jQuery-ui widget.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @version $Id: TJuiControlAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */
@@ -88,7 +86,6 @@ class TJuiControlAdapter extends TActiveControlAdapter
  * {@link TJuiControlOptions}.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @version $Id: TJuiControlAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */
@@ -109,7 +106,6 @@ interface IJuiOptions
  * The options array can then get retrieved using {@link toArray} and applied to the jQuery-ui widget.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @version $Id: TJuiControlAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */

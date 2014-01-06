@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
@@ -59,7 +58,6 @@
  * </code>
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
@@ -546,7 +544,6 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
  * {@link setNavigateUrl NavigateUrl} property to define the destination url.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
@@ -705,7 +702,6 @@ class TAccordionView extends TWebControl
  * TAccordionViewCollection is a collection of {@link TAccordionView} to be used inside a {@link TAccordion}.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @version $Id: TAccordion.php 2915 2011-05-15 16:26:11Z ctrlaltca@gmail.com $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */

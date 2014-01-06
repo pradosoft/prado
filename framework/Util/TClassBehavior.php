@@ -11,7 +11,6 @@
 /**
  * TClassBehavior is a convenient base class for whole class behaviors.
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: TClassBehavior.php 564 2009-01-21 22:07:10Z javalizard $
  * @package System.Util
  * @since 3.2.3
  */
@@ -25,7 +24,7 @@ class TClassBehavior extends TComponent implements IClassBehavior
 	public function attach($component)
 	{
 	}
-	
+
 	/**
 	 * Detaches the behavior object from the component.
 	 * @param TComponent the component that this behavior is to be detached from.

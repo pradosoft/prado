@@ -1,12 +1,11 @@
 <?php
 /**
- * This file contains the following classes: {@link SimpleCollector}, 
+ * This file contains the following classes: {@link SimpleCollector},
  * {@link SimplePatternCollector}.
- * 
+ *
  * @author Travis Swicegood <development@domain51.com>
  * @package SimpleTest
  * @subpackage UnitTester
- * @version $Id: collector.php 1398 2006-09-08 19:31:03Z xue $
  */
 
 /**
@@ -17,7 +16,7 @@
  * @subpackage UnitTester
  */
 class SimpleCollector {
-    
+
     /**
      * Strips off any kind of slash at the end so as to normalise the path
      *
@@ -25,12 +24,12 @@ class SimpleCollector {
      */
     function _removeTrailingSlash($path) {
         return preg_replace('|[\\/]$|', '', $path);
-        
+
        /**
         * @internal
         * Try benchmarking the following.  It's more code, but by not using the
-        * regex, it may be faster?  Also, shouldn't be looking for 
-        * DIRECTORY_SEPERATOR instead of a manual "/"? 
+        * regex, it may be faster?  Also, shouldn't be looking for
+        * DIRECTORY_SEPERATOR instead of a manual "/"?
         */
         if (substr($path, -1) == DIRECTORY_SEPERATOR) {
             return substr($path, 0, -1);
@@ -54,12 +53,12 @@ class SimpleCollector {
             closedir($handle);
         }
     }
-    
+
     /**
      * This method determines what should be done with a given file and adds
      * it via {@link GroupTest::addTestFile()} if necessary.
      *
-     * This method should be overriden to provide custom matching criteria, 
+     * This method should be overriden to provide custom matching criteria,
      * such as pattern matching, recursive matching, etc.  For an example, see
      * {@link SimplePatternCollector::_handle()}.
      *
@@ -85,8 +84,8 @@ class SimpleCollector {
  */
 class SimplePatternCollector extends SimpleCollector {
     protected $_pattern;
-    
-    
+
+
     /**
      *
      * @param string $pattern   Perl compatible regex to test name against
@@ -96,8 +95,8 @@ class SimplePatternCollector extends SimpleCollector {
     function SimplePatternCollector($pattern = '/php$/i') {
         $this->_pattern = $pattern;
     }
-    
-    
+
+
     /**
      * Attempts to add files that match a given pattern.
      *

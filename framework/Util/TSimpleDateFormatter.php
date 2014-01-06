@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSimpleDateFormatter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -40,7 +39,6 @@
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TSimpleDateFormatter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */

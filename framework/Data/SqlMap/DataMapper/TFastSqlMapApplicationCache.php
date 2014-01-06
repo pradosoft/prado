@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TFastSqlMapApplicationCache.php 2996 2011-06-20 15:24:57Z ctrlaltca@gmail.com $
  * @package System.Data.SqlMap
  */
 
@@ -16,7 +15,6 @@
  * Fast SqlMap result cache class with minimal-concurrency get/set and atomic flush operations
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @version $Id: TFastSqlMapApplicationCache.php 2996 2011-06-20 15:24:57Z ctrlaltca@gmail.com $
  * @package System.Data.SqlMap
  * @since 3.2
  */

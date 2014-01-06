@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJuiDroppable.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  */
 
@@ -45,7 +44,6 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @version $Id: TJuiDroppable.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */
@@ -155,7 +153,6 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
- * @version $Id: TDropContainer.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  * @package System.Web.UI.JuiControls
  */
 class TJuiDroppableEventParameter extends TCallbackEventParameter

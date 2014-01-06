@@ -24,7 +24,6 @@
 /**
 * Parsing states.
 * @package System.Security.SafeHtml
-* @version $Id: States.php 3188 2012-07-12 12:13:23Z ctrlaltca $
 */
 /**
 * Define parser states
@@ -133,7 +132,7 @@ class TSax3_OpeningTagState {
     */
     function parseAttributes(&$context) {
         $Attributes = array();
-    
+
         $context->ignoreWhitespace();
         $attributename = $context->scanUntilCharacters("=/> \n\r\t");
         while ($attributename != '') {
@@ -159,7 +158,7 @@ class TSax3_OpeningTagState {
                 $context->unscanCharacter();
             }
             $Attributes[$attributename] = $attributevalue;
-            
+
             $context->ignoreWhitespace();
             $attributename = $context->scanUntilCharacters("=/> \n\r\t");
         }
@@ -183,14 +182,14 @@ class TSax3_OpeningTagState {
                     $context->unscanCharacter();
                 }
                 $context->handler_object_element->
-                    {$context->handler_method_opening}($context->htmlsax, $tag, 
+                    {$context->handler_method_opening}($context->htmlsax, $tag,
                     $Attributes, TRUE);
                 $context->handler_object_element->
-                    {$context->handler_method_closing}($context->htmlsax, $tag, 
+                    {$context->handler_method_closing}($context->htmlsax, $tag,
                     TRUE);
             } else {
                 $context->handler_object_element->
-                    {$context->handler_method_opening}($context->htmlsax, $tag, 
+                    {$context->handler_method_opening}($context->htmlsax, $tag,
                     $Attributes, FALSE);
             }
         }

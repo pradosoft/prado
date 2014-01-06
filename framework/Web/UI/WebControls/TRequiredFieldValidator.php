@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TRequiredFieldValidator.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -29,7 +28,6 @@ Prado::using('System.Web.UI.WebControls.TBaseValidator');
  * set, it will be automatically considered as the validator's {@link setInitialValue InitialValue}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TRequiredFieldValidator.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

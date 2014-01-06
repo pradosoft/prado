@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPriorityMap.php 2817 2010-04-18 04:25:03Z javalizard $
  * @package System.Collections
  */
 
@@ -51,7 +50,6 @@
  * the decimal space.  See {@link round}.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id: TPriorityMap.php 2817 2010-04-18 04:25:03Z javalizard $
  * @package System.Collections
  * @since 3.2a
  */

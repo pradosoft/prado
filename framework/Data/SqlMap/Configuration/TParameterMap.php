@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TParameterMap.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  */
 
@@ -26,7 +25,6 @@
  * The <parameterMap> element accepts two attributes: id (required) and extends (optional).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TParameterMap.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */

@@ -12,7 +12,6 @@
  *
  * @author Marcus Nyeholt		<tanus@users.sourceforge.net>
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: WsdlOperation.php 3188 2012-07-12 12:13:23Z ctrlaltca $
  * @package System.Web.Services.SOAP
  */
 

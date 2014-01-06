@@ -2,7 +2,6 @@
 /**
  * Translation table cache.
  * @author $Author: weizhuo $
- * @version $Id: MessageCache.php 3188 2012-07-12 12:13:23Z ctrlaltca $
  * @package System.I18N.core
  */
 
@@ -16,9 +15,8 @@ require_once(dirname(__FILE__).'/TCache_Lite.php');
  * It can cache each cataloug+variant or just the whole section.
  * @package System.I18N.core
  * @author $Author: weizhuo $
- * @version $Id: MessageCache.php 3188 2012-07-12 12:13:23Z ctrlaltca $
  */
-class MessageCache 
+class MessageCache
 {
 
 	/**
@@ -31,16 +29,16 @@ class MessageCache
 	 * Caceh life time, default is 1 year.
 	 */
 	protected $lifetime = 3153600;
-	
+
 
 	/**
 	 * Create a new Translation cache.
 	 * @param string $cacheDir Directory to store the cache files.
 	 */
 	public function __construct($cacheDir)
-	{		
+	{
 		$cacheDir = $cacheDir.'/';
-		
+
 		if(!is_dir($cacheDir))
 			throw new Exception(
 				'The cache directory '.$cacheDir.' does not exists.'.
@@ -49,7 +47,7 @@ class MessageCache
 			throw new Exception(
 				'The cache directory '.$cacheDir.' must be writable '.
 				'by the server.');
-		
+
 		$options = array(
 			'cacheDir' => $cacheDir,
 			'lifeTime' => $this->getLifeTime(),
@@ -102,31 +100,31 @@ class MessageCache
 	 * @param string $catalogue The translation section.
 	 * @param string $culture The translation locale, e.g. "en_AU".
 	 * @param string $filename If the source is a file, this file's modified
-	 * time is newer than the cache's modified time, no cache hit. 
+	 * time is newer than the cache's modified time, no cache hit.
 	 * @return mixed Boolean FALSE if no cache hit. Otherwise, translation
 	 * table data for the specified section and locale.
 	 */
-	public function get($catalogue, $culture, $lastmodified=0) 
+	public function get($catalogue, $culture, $lastmodified=0)
 	{
 		$ID = $this->getID($catalogue, $culture);
-		$group = $this->getGroup($catalogue, $culture); 
+		$group = $this->getGroup($catalogue, $culture);
 
 		$this->cache->_setFileName($ID, $group);
 
 		$cache = $this->cache->getCacheFile();
-		
-		if(is_file($cache) == false) 
+
+		if(is_file($cache) == false)
 			return false;
 
 
 		$lastmodified = (int)$lastmodified;
-		
+
 		if($lastmodified <= 0 || $lastmodified > filemtime($cache))
-			return false;		
-		
+			return false;
+
 		//echo '@@ Cache hit: "'.$ID.'" : "'.$group.'"';
 		//echo "<br>\n";
-			
+
 		return $this->cache->get($ID, $group);
 	}
 
@@ -136,28 +134,28 @@ class MessageCache
 	 * @param string $catalogue The translation section.
 	 * @param string $culture The translation locale, e.g. "en_AU".
 	 */
-	public function save($data, $catalogue, $culture) 
-	{		
+	public function save($data, $catalogue, $culture)
+	{
 		$ID = $this->getID($catalogue, $culture);
-		$group = $this->getGroup($catalogue, $culture); 
-		
+		$group = $this->getGroup($catalogue, $culture);
+
 		//echo '## Cache save: "'.$ID.'" : "'.$group.'"';
 		//echo "<br>\n";
-		
+
 		return $this->cache->save($data, $ID, $group);
 	}
-	
+
 	/**
 	 * Clean up the cache for the specified section and locale.
 	 * @param string $catalogue The translation section.
 	 * @param string $culture The translation locale, e.g. "en_AU".
 	 */
-	public function clean($catalogue, $culture) 
+	public function clean($catalogue, $culture)
 	{
-		$group = $this->getGroup($catalogue, $culture); 
+		$group = $this->getGroup($catalogue, $culture);
 		$this->cache->clean($group);
 	}
-	
+
 	/**
 	 * Flush the cache. Deletes all the cache files.
 	 */

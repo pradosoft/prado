@@ -4,7 +4,6 @@
  * TSqlMapException is the base exception class for all SqlMap exceptions.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapException.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -63,7 +62,6 @@ class TSqlMapException extends TException
  * TSqlMapConfigurationException, raised during configuration file parsing.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapException.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -76,7 +74,6 @@ class TSqlMapConfigurationException extends TSqlMapException
  * TSqlMapUndefinedException, raised when mapped statemented are undefined.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapException.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -89,7 +86,6 @@ class TSqlMapUndefinedException extends TSqlMapException
  * TSqlMapDuplicateException, raised when a duplicate mapped statement is found.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapException.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -101,7 +97,6 @@ class TSqlMapDuplicateException extends TSqlMapException
  * TInvalidPropertyException, raised when setting or getting an invalid property.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapException.php 3187 2012-07-12 11:21:01Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */

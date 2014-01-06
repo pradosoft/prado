@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TWebControlDecorator.php 2541 2008-10-21 15:05:13Z qiang.xue $
  * @package System.Web.UI.WebControls
  */
 
@@ -51,7 +50,6 @@
  *
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: TWebControlDecorator.php 2541 2008-10-21 15:05:13Z qiang.xue $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
