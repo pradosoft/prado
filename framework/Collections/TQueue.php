@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @package System.Collections
@@ -161,7 +161,7 @@ class TQueue extends TComponent implements IteratorAggregate,Countable
 	{
 		return $this->_c;
 	}
-	
+
 	/**
 	 * Returns the number of items in the queue.
 	 * This method is required by Countable interface.

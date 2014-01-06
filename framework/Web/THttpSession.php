@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THttpSession.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web
@@ -159,7 +159,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			$this->_started=false;
 		}
 	}
-	
+
 	/**
 	 * Update the current session id with a newly generated one
 	 *

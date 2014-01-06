@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TCallbackClientScript.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
@@ -127,7 +127,7 @@ class TCallbackClientScript extends TApplicationComponent
 
 	/**
 	 * Client script to click on an element. <b>This client-side function is unpredictable.</b>
-	 * 
+	 *
 	 * @param TControl control element or element id
 	 */
 	public function click($control)
@@ -182,14 +182,14 @@ class TCallbackClientScript extends TApplicationComponent
 		{
 			$promptText		= $control->getPromptText();
 			$promptValue	= $control->getPromptValue();
-			
+
 			if($promptValue==='')
 				$promptValue = $promptText;
-	
+
 			if($promptValue!=='')
 				$options[] = array($promptText, $promptValue);
 		}
-		
+
 		foreach($items as $item)
 		{
 			if($item->getHasAttributes())
@@ -301,6 +301,7 @@ class TCallbackClientScript extends TApplicationComponent
 	/**
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
+	 *
 	 * @param TControl control element or element id
 	 */
 	public function scrollTo($element)
@@ -449,7 +450,7 @@ class TCallbackClientScript extends TApplicationComponent
 		{
 			$boundary = $this->getResponseContentBoundary($content);
 		}
-		
+
 		$this->callClientFunction('Prado.Element.appendScriptBlock', array($boundary));
 	}
 

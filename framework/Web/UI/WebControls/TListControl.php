@@ -6,7 +6,7 @@
  * @author Robin J. Rogge <rojaro@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TListControl.php 3288 2013-04-30 10:36:50Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -794,7 +794,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	public function renderContents($writer)
 	{
 		$this->renderPrompt($writer);
-		
+
 		if($this->_items)
 		{
 			$writer->writeLine();

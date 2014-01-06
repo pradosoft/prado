@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package System.I18N
@@ -32,7 +32,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 		parent::init($xml);
 
 		//set the culture according to browser language settings
-		$http = new HTTPNegotiator();		
+		$http = new HTTPNegotiator();
 		$languages = $http->getLanguages();
 		if(count($languages) > 0)
 		{

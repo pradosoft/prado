@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TOutputCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -481,7 +481,7 @@ class TOutputCache extends TControl implements INamingContainer
 			$textwriter = new TTextWriter();
 			$multiwriter = new TOutputCacheTextWriterMulti(array($writer->getWriter(),$textwriter));
 			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $multiwriter);
-			
+
 			$stack=$this->getPage()->getCachingStack();
 			$stack->push($this);
 			parent::render($htmlWriter);
@@ -604,7 +604,7 @@ class TOutputCacheTextWriterMulti extends TTextWriter
 		//parent::__construct();
 		$this->_writers = $writers;
 	}
-	
+
 	public function write($s)
 	{
 		foreach($this->_writers as $writer)

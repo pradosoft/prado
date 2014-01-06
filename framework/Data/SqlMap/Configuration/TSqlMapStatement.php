@@ -5,7 +5,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
@@ -295,7 +295,7 @@ class TSqlMapStatement extends TComponent
 
 	public function __sleep()
 	{
-		$cn = __CLASS__; 
+		$cn = __CLASS__;
 		$exprops = array("\0$cn\0_resultMap");
 		if (!$this->_parameterMapName) $exprops[] = "\0$cn\0_parameterMapName";
 		if (!$this->_parameterMap) $exprops[] = "\0$cn\0_parameterMap";

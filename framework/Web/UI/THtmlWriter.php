@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THtmlWriter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
@@ -87,7 +87,7 @@ class THtmlWriter extends TApplicationComponent implements ITextWriter
 	{
 		return $this->_writer;
 	}
-	
+
 	public function setWriter($writer)
 	{
 		$this->_writer = $writer;

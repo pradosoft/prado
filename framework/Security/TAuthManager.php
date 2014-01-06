@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TAuthManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
@@ -26,7 +26,7 @@ Prado::using('System.Security.IUserManager');
  * To login or logout a user, call {@link login} or {@link logout}, respectively.
  *
  * The {@link setAuthExpire AuthExpire} property can be used to define the time
- * in seconds after which the authentication should expire. 
+ * in seconds after which the authentication should expire.
  * {@link setAllowAutoLogin AllowAutoLogin} specifies if the login information
  * should be stored in a cookie to perform automatic login. Enabling this
  * feature will cause that {@link setAuthExpire AuthExpire} has no effect
@@ -290,7 +290,7 @@ class TAuthManager extends TModule
 		$user=$this->_userManager->getUser(null)->loadFromString($sessionInfo);
 
 		// check for authentication expiration
-		$isAuthExpired = $this->_authExpire>0 && !$user->getIsGuest() && 
+		$isAuthExpired = $this->_authExpire>0 && !$user->getIsGuest() &&
         ($expiretime=$session->itemAt('AuthExpireTime')) && $expiretime<time();
 
 		// try authenticating through cookie if possible
@@ -321,7 +321,7 @@ class TAuthManager extends TModule
 		if($this->hasEventHandler('OnAuthenticate'))
 			$this->raiseEvent('OnAuthenticate',$this,$application);
 	}
-	
+
 	/**
 	 * Performs user logout on authentication expiration.
 	 * An 'OnAuthExpire' event will be raised if there is any handler attached to it.
@@ -333,7 +333,7 @@ class TAuthManager extends TModule
 		if($this->hasEventHandler('OnAuthExpire'))
 			$this->raiseEvent('OnAuthExpire',$this,$param);
 	}
-	
+
 	/**
 	 * Performs the real authorization work.
 	 * Authorization rules obtained from the application will be used to check

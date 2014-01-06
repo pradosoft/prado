@@ -5,7 +5,7 @@
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TOracleCommandBuilder.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common
@@ -134,14 +134,14 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 				  "		SELECT rownum as {$pradoNUMLIN} {$aliasedFields} FROM ".
 				  " ($sql) {$fieldsALIAS} WHERE rownum <= {$limit} ".
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
-		
+
 		************************* */
 		$offset=(int)$offset;
 		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
-		if (empty ($sORDERBY)) 
+		if (empty ($sORDERBY))
 			$sORDERBY="ROWNUM";
-			
+
 		$newSql = 	" SELECT $fields FROM " .
 					"(					" .
 					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .

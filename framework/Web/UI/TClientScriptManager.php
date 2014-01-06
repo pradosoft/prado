@@ -5,7 +5,7 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
@@ -150,7 +150,7 @@ class TClientScriptManager extends TApplicationComponent
 				$this->_registeredPradoScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
-				
+
 			if(($packages=array_keys($this->_registeredPradoScripts))!==array())
 			{
 				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
@@ -466,7 +466,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerScriptFile($key, $url)
 	{
 		$this->_scriptFiles[$key]=$url;
-		
+
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerScriptFile',$params);
 	}
@@ -747,7 +747,7 @@ class TClientScriptManager extends TApplicationComponent
 			$writer->write("<div style=\"visibility:hidden;\">\n".$str."</div>\n");
 	}
 
-	public function getHiddenFields()	
+	public function getHiddenFields()
 	{
 		return $this->_hiddenFields;
 	}

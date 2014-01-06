@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: THtmlElement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -49,18 +49,18 @@ class THtmlElement extends TWebControl
 	{
 		$this->_tagName=TPropertyValue::ensureString($value);
 	}
-	
+
 	/**
 	 *	This is the default tag when no other is specified
-	 * @return string the default tag 
+	 * @return string the default tag
 	 */
 	public function getDefaultTagName() {
 		return 'span';
 	}
-	
+
 	/**
 	 * This tells you if this TagName has deviated from the original
-	 * @return boolean true if TagName has deviated from the default. 
+	 * @return boolean true if TagName has deviated from the default.
 	 */
 	public function getIsMutated() {
 		return $this->_tagName !== null && $this->_tagName != $this->getDefaultTagName();

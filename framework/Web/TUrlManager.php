@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id $
  * @package System.Web
@@ -50,7 +50,7 @@ class TUrlManager extends TModule
 	 * In order to use the 'HiddenPath' format you need proper url rewrite configuration;
 	 * here's an example for Apache's .htaccess:
 	 * <cdde>
-	 * Options +FollowSymLinks  
+	 * Options +FollowSymLinks
 	 * RewriteEngine On
 	 * RewriteCond %{REQUEST_FILENAME} !-d
 	 * RewriteCond %{REQUEST_FILENAME} !-f

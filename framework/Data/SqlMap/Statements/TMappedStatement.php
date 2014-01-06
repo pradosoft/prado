@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TMappedStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
@@ -924,10 +924,10 @@ class TMappedStatement extends TComponent implements IMappedStatement
 		parent::__wakeup();
 		if (is_null($this->_selectQueue)) $this->_selectQueue = array();
 	}
-	
+
 	public function __sleep()
 	{
-		$exprops = array(); $cn = __CLASS__; 
+		$exprops = array(); $cn = __CLASS__;
 		if (!count($this->_selectQueue)) $exprops[] = "\0$cn\0_selectQueue";
 		if (is_null($this->_groupBy)) $exprops[] = "\0$cn\0_groupBy";
 		if (!$this->_IsRowDataFound) $exprops[] = "\0$cn\0_IsRowDataFound";
@@ -1151,7 +1151,7 @@ class TSqlMapObjectCollectionTree extends TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = __CLASS__; 
+		$exprops = array(); $cn = __CLASS__;
 		if (!count($this->_tree)) $exprops[] = "\0$cn\0_tree";
 		if (!count($this->_entries)) $exprops[] = "\0$cn\0_entries";
 		if (!count($this->_list)) $exprops[] = "\0$cn\0_list";

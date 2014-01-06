@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TPager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -34,7 +34,7 @@
  *
  * Since Prado 3.2.1, you can use the {@link setButtonCssClass ButtonCssClass} property to specify a css class
  * that will be applied to each button created by the pager in NextPrev or Numeric mode.
- * 
+ *
  * TPager raises an {@link onPageIndexChanged OnPageIndexChanged} event when
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained

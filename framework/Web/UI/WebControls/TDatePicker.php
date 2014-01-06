@@ -4,7 +4,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -276,7 +276,7 @@ class TDatePicker extends TTextBox
 	{
 		return $this->getViewState('UpToYear', intval(@date('Y'))+10);
 	}
-	
+
 	/**
 	 * @param TDatePickerPositionMode calendar UI position
 	 */
@@ -902,7 +902,7 @@ class TDatePicker extends TTextBox
  * is changed.
  * The formatted date according to {@link TDatePicker::getDateFormat DateFormat} is sent
  * as parameter to this event
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls

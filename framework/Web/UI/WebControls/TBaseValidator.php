@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id: TBaseValidator.php 3319 2013-09-08 20:59:44Z ctrlaltca $
  * @package System.Web.UI.WebControls
@@ -513,7 +513,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$target=$this->getValidationTarget();
 			// if the target is not a disabled web control
 			if($target===null ||
-				($target!==null && 
+				($target!==null &&
 				!($target instanceof TWebControl && !$target->getEnabled(true))))
 			{
 				if($this->evaluateIsValid())
