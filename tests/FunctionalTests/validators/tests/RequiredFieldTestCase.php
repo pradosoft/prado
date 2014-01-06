@@ -48,7 +48,7 @@ class RequiredFieldTestCase extends PradoGenericSeleniumTest
 
 		$this->type("{$base}text1", "Hello");
 		$this->click("{$base}check1");
-		$this->click("{$base}submit2");
+		$this->clickAndWait("{$base}submit2");
 
 		$this->assertNotVisible("{$base}validator5");
 		$this->assertNotVisible("{$base}validator6");
