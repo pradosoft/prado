@@ -76,7 +76,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 */
 	protected function createRepeatedControl()
 	{
-		$control = new TActiveCheckBox;
+		$control = new TActiveCheckBoxListItem;
 		$control->getAdapter()->setBaseActiveControl($this->getActiveControl());
 		return $control;
 	}
@@ -123,6 +123,21 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	protected function getClientClassName()
 	{
 		return 'Prado.WebUI.TActiveCheckBoxList';
+	}
+}
+
+class TActiveCheckBoxListItem extends TActiveCheckBox
+{
+	/**
+	 * Override client implementation to avoid emitting the javascript
+	 *
+	 * @param THtmlWriter the writer for the rendering purpose
+	 * @param string checkbox id
+	 * @param string onclick js
+	 */
+	protected function renderInputTag($writer,$clientID,$onclick)
+	{
+		TCheckBox::renderInputTag($writer,$clientID,$onclick);
 	}
 }
 

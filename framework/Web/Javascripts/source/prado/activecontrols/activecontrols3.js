@@ -50,7 +50,7 @@ Prado.WebUI.TActiveCheckBox = jQuery.klass(Prado.WebUI.CallbackControl,
 Prado.WebUI.TActiveRadioButton = jQuery.klass(Prado.WebUI.TActiveCheckBox);
 
 
-Prado.WebUI.TActiveCheckBoxList = jQuery.extend(
+Prado.WebUI.TActiveCheckBoxList = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
 	{

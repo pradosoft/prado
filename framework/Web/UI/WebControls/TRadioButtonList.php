@@ -47,7 +47,7 @@ class TRadioButtonList extends TCheckBoxList
 	 */
 	protected function createRepeatedControl()
 	{
-		return new TRadioButton;
+		return new TRadioButtonItem;
 	}
 
 	/**
@@ -97,3 +97,11 @@ class TRadioButtonList extends TCheckBoxList
 	}
 }
 
+class TRadioButtonItem extends TRadioButton {
+	/**
+	 * Override client implementation to avoid emitting the javascript
+	 */
+	protected function renderClientControlScript($writer)
+	{
+	}
+}
