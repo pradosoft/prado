@@ -104,11 +104,6 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   </li>
 
   <li>
-  <a href="">TActiveRatingList</a>
-  is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
-  </li>
-
-  <li>
   <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
   represents a text input field on a Web page.
   It can collect single-line, multi-line or password text input from users.
@@ -143,6 +138,11 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
   is similar to TActiveCheckBoxList in every aspect except that each
   TActiveRadioButtonList displays a group of radiobuttons. Each radio button
   can perform a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveRatingList">TActiveRatingList</a>
+  is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
   </li>
 </ul>
 
@@ -201,9 +201,9 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	monitors (using a timer) an attribute of an HTML element and triggers a callback request
 	when the attribute value changes.
 	</li>
-	
+
 	<li>
-	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> represents drag and drop containers. 
+	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> represents drag and drop containers.
 	The former will make its child controls "draggable" while the latter will raise a callback when a draggable
 	control is dropped on it.
 	</li>
@@ -357,7 +357,7 @@ if Javascript was disabled on the client's browser.</p>
 	</td>
 	<td>Yes</td><td>No</td>
   </tr>
-  
+
   <tr><td>
   	<a href="?page=ActiveControls.DragDrop">TDropContainer</a>
   	</td>
@@ -370,7 +370,7 @@ if Javascript was disabled on the client's browser.</p>
   	<td>No</td><td>No</td>
   </tr>
 
-  
+
 </table>
 
 <h2 id="128036">Active Control Basic Infrastructure Classes</h2>

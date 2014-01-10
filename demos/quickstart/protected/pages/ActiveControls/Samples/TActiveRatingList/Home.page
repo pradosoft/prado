@@ -1,0 +1,71 @@
+<com:TContent ID="body">
+<h1>TActiveRatingList Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A simple TActiveRatingList and its caption:
+</td><td class="sampleaction">
+
+<com:TLabel ID="label1" Text="Rate it:" />
+<com:TActiveRatingList CaptionID="label1">
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+</com:TActiveRatingList>
+
+</td></tr>
+
+<tr><td class="samplenote">
+TActiveRatingList in vertical mode, SelectedIndex=2
+</td><td class="sampleaction">
+
+<com:TLabel ID="label2" Text="Rate it:" />
+<com:TActiveRatingList CaptionID="label2" SelectedIndex="2" RepeatDirection="Vertical" Style="caption-side: right;">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TActiveRatingList>
+
+</td></tr>
+
+<tr><td class="samplenote">
+TActiveRatingList with RatingStyle=blocks, AutoPostback=true, SelectedValue=Good
+</td><td class="sampleaction">
+
+<com:TLabel ID="label3" Text="Rate it:" />
+<com:TActiveRatingList ID="Rating3" CaptionID="label3" RatingStyle="blocks" SelectedValue="Good" AutoPostBack="true" OnSelectedIndexChanged="rating3_selectionChanged">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TActiveRatingList>
+<br/>
+A label to check callback results: <com:TActiveLabel ID="labelResult3" />
+
+</td></tr>
+
+<tr><td class="samplenote">
+TActiveRatingList with AllowInput=false, Rating=4.6
+</td><td class="sampleaction">
+
+<com:TLabel ID="label4" Text="Rate it:" />
+<com:TActiveRatingList CaptionID="label4" AllowInput="false" Rating="4.6">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TActiveRatingList>
+
+</td></tr>
+
+</table>
+</com:TContent>
