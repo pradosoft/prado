@@ -2,40 +2,46 @@
 <h1>TRatingList Examples</h1>
 
 <h2>Default TRatingList</h2>
-	<com:TRatingList RepeatDirection="Vertical" Style="caption-side: right;">
+	<com:TLabel ID="label1" Text="Rate it:" />
+	<com:TRatingList CaptionID="label1">
 		<com:TListItem Text="Fair" />
 		<com:TListItem Text="Average" />
 		<com:TListItem Text="Good" />
-		<com:TListItem Text="Execellent" />
+		<com:TListItem Text="Excellent" />
 	</com:TRatingList>
 
-<h2>TRatingList </h2>
-	<com:TRatingList SelectedIndex="2">
+<h2>TRatingList in vertical mode, SelectedIndex=2</h2>
+	<com:TLabel ID="label2" Text="Rate it:" />
+	<com:TRatingList CaptionID="label2" SelectedIndex="2" RepeatDirection="Vertical" Style="caption-side: right;">
 		<com:TListItem Text="Poor" />
 		<com:TListItem Text="Fair" />
 		<com:TListItem Text="Average" />
 		<com:TListItem Text="Good" />
-		<com:TListItem Text="Execellent" />
+		<com:TListItem Text="Excellent" />
 		<com:TListItem Text="Super" />
 	</com:TRatingList>
 
-<h2>TRatingList </h2>
-	<com:TRatingList RatingStyle="blocks" SelectedValue="Good">
+<h2>TRatingList with RatingStyle=blocks, AutoPostback=true, SelectedValue=Good</h2>
+	<com:TLabel ID="label3" Text="Rate it:" />
+	<com:TRatingList ID="Rating3" CaptionID="label3" RatingStyle="blocks" SelectedValue="Good" AutoPostBack="true" OnSelectedIndexChanged="rating3_selectionChanged">
 		<com:TListItem Text="Poor" />
 		<com:TListItem Text="Fair" />
 		<com:TListItem Text="Average" />
 		<com:TListItem Text="Good" />
-		<com:TListItem Text="Execellent" />
+		<com:TListItem Text="Excellent" />
 		<com:TListItem Text="Super" />
 	</com:TRatingList>
+	Postback result: <com:TLabel ID="labelResult3" />
 
-<h2>TRatingList </h2>
-	<com:TRatingList ID="Rating1" AllowInput="false" Caption="Rating:" Rating="4.6">
+<h2>TRatingList with AllowInput=false, Rating=4.6</h2>
+	<com:TLabel ID="label4" Text="Rate it:" />
+	<com:TRatingList CaptionID="label4" AllowInput="false" Rating="4.6">
 		<com:TListItem Text="Poor" />
 		<com:TListItem Text="Fair" />
 		<com:TListItem Text="Average" />
 		<com:TListItem Text="Good" />
-		<com:TListItem Text="Execellent" />
+		<com:TListItem Text="Excellent" />
 		<com:TListItem Text="Super" />
-	</com:TRatingList>		
+	</com:TRatingList>
+
 </com:TContent>
