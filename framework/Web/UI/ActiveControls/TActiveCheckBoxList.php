@@ -115,5 +115,14 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}
 
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TActiveCheckBoxList';
+	}
 }
 

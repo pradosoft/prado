@@ -52,16 +52,15 @@ Prado.WebUI.TActiveRadioButton = jQuery.klass(Prado.WebUI.TActiveCheckBox);
 
 Prado.WebUI.TActiveCheckBoxList = jQuery.extend(
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
-		Prado.Registry[options.ListID] = this;
 		for(var i = 0; i<options.ItemCount; i++)
 		{
-			var checkBoxOptions = jQuery.extend(
+			var checkBoxOptions = jQuery.extend({}, options,
 			{
-				ID : options.ListID+"_c"+i,
+				ID : options.ID+"_c"+i,
 				EventTarget : options.ListName+"$c"+i
-			}, options);
+			});
 			new Prado.WebUI.TActiveCheckBox(checkBoxOptions);
 		}
 	}

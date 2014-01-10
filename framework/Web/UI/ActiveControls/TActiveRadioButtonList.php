@@ -115,5 +115,16 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}
+
+	/**
+	 * Gets the name of the javascript class responsible for performing postback for this control.
+	 * This method overrides the parent implementation.
+	 * @return string the javascript class name
+	 */
+	protected function getClientClassName()
+	{
+		return 'Prado.WebUI.TActiveRadioButtonList';
+	}
+
 }
 
