@@ -489,7 +489,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 */
 	protected function getPostBackOptions()
 	{
-		$options['ListID'] = $this->getClientID();
+		$options['ID'] = $this->getClientID();
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['ListName'] = $this->getUniqueID();

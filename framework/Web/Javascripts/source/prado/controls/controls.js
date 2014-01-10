@@ -290,11 +290,11 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 * Override parent onPostBack function, tried to add hidden forms
 	 * inputs to capture x,y clicked point.
 	 */
-	onPostBack : function(event, options)
+	onPostBack : function(options, event)
 	{
-		this.addXYInput(event,options);
-		new Prado.PostBack(event, options);
-		this.removeXYInput(event,options);
+		this.addXYInput(options, event);
+		new Prado.PostBack(options, event);
+		this.removeXYInput(options, event);
 	},
 
 	/**
@@ -302,7 +302,7 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
-	addXYInput : function(event,options)
+	addXYInput : function(options, event)
 	{
 		var imagePos = jQuery(this.element).offset();
 		var clickedPos = [event.clientX, event.clientY];
@@ -335,7 +335,7 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 	 * @param event DOM click event.
 	 * @param array image button options.
 	 */
-	removeXYInput : function(event,options)
+	removeXYInput : function(options, event)
 	{
 		var id = this.element.id;
 		jQuery('#'+id+'_x').remove();
@@ -496,16 +496,15 @@ jQuery.klass(Prado.WebUI.TTextHighlighter,
 
 Prado.WebUI.TCheckBoxList = jQuery.klass(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
-		Prado.Registry.set(options.ListID, this);
 		for(var i = 0; i<options.ItemCount; i++)
 		{
-			var checkBoxOptions = jQuery.extend(
+			var checkBoxOptions = jQuery.extend({}, options,
 			{
-				ID : options.ListID+"_c"+i,
+				ID : options.ID+"_c"+i,
 				EventTarget : options.ListName+"$c"+i
-			}, options);
+			});
 			new Prado.WebUI.TCheckBox(checkBoxOptions);
 		}
 	}
@@ -513,16 +512,15 @@ Prado.WebUI.TCheckBoxList = jQuery.klass(Prado.WebUI.Control,
 
 Prado.WebUI.TRadioButtonList = jQuery.klass(Prado.WebUI.Control,
 {
-	constructor : function(options)
+	onInit : function(options)
 	{
-		Prado.Registry.set(options.ListID, this);
 		for(var i = 0; i<options.ItemCount; i++)
 		{
-			var radioButtonOptions = jQuery.extend(
+			var radioButtonOptions = jQuery.extend({}, options,
 			{
-				ID : options.ListID+"_c"+i,
+				ID : options.ID+"_c"+i,
 				EventTarget : options.ListName+"$c"+i
-			}, options);
+			});
 			new Prado.WebUI.TRadioButton(radioButtonOptions);
 		}
 	}
