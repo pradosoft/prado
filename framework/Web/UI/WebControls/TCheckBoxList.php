@@ -72,7 +72,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 */
 	protected function createRepeatedControl()
 	{
-		return new TCheckBox;
+		return new TCheckBoxItem;
 	}
 
 	/**
@@ -499,3 +499,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 
 }
 
+class TCheckBoxItem extends TCheckBox {
+	/**
+	 * Override client implementation to avoid emitting the javascript
+	 */
+	protected function renderClientControlScript($writer)
+	{
+	}
+}
