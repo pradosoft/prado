@@ -11,7 +11,7 @@ Targets:
  * create substitutes for exotic standard controls (date picker, accordion, colorpicker, slider, ..) (done)
  * port exotic active controls (autocomplete, ...) (wip, using jquery-ui)
  * get tests running (started, wip)
- * ensure jQuery's compatibility mode with prototype (support old third party components from users? (wip, using jQuery.noConflict() we can import the old prototype + scripaculous stack)
+ * ensure jQuery's compatibility mode with prototype (support old third party components from users? (done)
  * fix debug components (TJavascriptLogger) (done, but maybe dropping it is a good idea)
  * implement some Jui components (deprecate old scriptculous, create substituted based on jquery-ui) (wip)
  * port demos
@@ -20,7 +20,7 @@ Targets:
 
 DONE
 Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox, ..)
-Js-based controls (TTabPanel, TDatePicker, TColorPicker, TSlider, THtmlArea, TAccordion)
+Js-based controls (TTabPanel, TDatePicker, TColorPicker, TSlider, THtmlArea, TAccordion, TRatingList)
 List, Data controls
 *Validators
 Ajax queue
@@ -32,7 +32,6 @@ TJuiAutoComplete
 TJuiDraggable,TJuiDroppable
 
 TBD
-Port *ratings
 Add JQuery-ui-Effects: clip, explode, transfer, switchclass
 Add JQuery-ui-Methods: show, hide, toggle?
 Add JQuery-ui-controls

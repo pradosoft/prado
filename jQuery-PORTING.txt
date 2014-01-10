@@ -1,5 +1,6 @@
-JAVASCRIPT
-
+BASIC PROTOTYPE->JQUERY JAVASCRIPT
+Rule #1: look up the jQuery documentation at http://api.jquery.com/
+---
 Get element by id
 OLD: $('element_id')
 NEW: $('#element_id') // for the extended element
@@ -14,7 +15,6 @@ OLD: $$('.class').each(Element.remove);
 NEW: $('.class').remove();
 ---
 Class creation/extension
-
 OLD: Class.create(Prado.WebUI.TActiveImageButton, { ... })
 OLD: Class.extend(Prado.WebUI.TActiveImageButton, { ... })
 NEW: jQuery.klass(Prado.WebUI.TActiveImageButton, { ... })
@@ -39,11 +39,7 @@ Detect keypress event: use the numeric codes
 OLD: if(kc == Event.KEY_RETURN || kc == Event.KEY_SPACEBAR || kc == Event.KEY_TAB)
 NEW: if(kc == 13 || kc == 32 || kc == 9)
 ---
-Implementing the postback handler for a PostBackControl; the function signature has changed (parameters are inverted):
-OLD: onPostBack : function(event, options)
-NEW: onPostBack : function(options, event)
----
-Execute a function when the pagfe has finished loading
+Execute a function when the page has finished loading
 OLD: document.observe("dom:loaded", function(event) { ... });
 NEW: $( document ).ready(function() { ... });
 ---
@@ -71,33 +67,61 @@ Fire events
 OLD: Event.fireEvent(this.control, "change");
 NEW: $(element).trigger("change");
 ---
-Test browser
+Get element size
+OLD: element.getWidth(), element.getHeight()
+NEW: element.width, element.height
+---
+Hook on ajax events
+OLD: Ajax.Responders.register({"onLoading" : my_function });
+OLD: Ajax.Responders.register({"onSuccess" : my_function });
+NEW: $( document ).ajaxSend(my_function);
+NEW: $( document ).ajaxSuccess(my_function);
+
+
+
+PRADO SPECIFIC CHANGES
+---
+Implementing the postback handler for a PostBackControl; the function signature has changed (parameters are inverted):
+OLD: onPostBack : function(event, options)
+NEW: onPostBack : function(options, event)
+---
+Execute a postback: you need to create a new object
+OLD: Prado.PostBack(options, event);
+NEW: new Prado.PostBack(options, event);
+---
+Test browser: removed. Test for browser support for specific capabilities instead
 OLD: Prado.Browser().ie
 NEW: jQuery.support
 ---
 Focus an element
 OLD: Prado.Element.focus(element);
 NEW: $(element).focus();
+
+
+
+SPECIFIC CONTROLS
+
+Some Prado controls were based on specific extensions of the prototype+scriptaculous javascript framework, and they have been deprecated now that jQuery has become the primary js framework in prado.
+While we provide the jQuery-based counterpart for these controls and encourage everyone to port their code, the old controls are still supposed to work with some minor annoyance:
+ * prototype and scriptaculous will be loaded along jQuery;
+ * jQuery will be put in "no conflict" mode, so the $() helper won't call anymore jQuery but prototype.
+
+Following is the list of deprecated controls.
 ---
-Get element size
-OLD: element.getWidth(), element.getHeight()
-NEW: element.width, element.height
-
-
-
-CONTROLS
-
-TAutoCompleter doesn't exists anymore, use TJuiAutoComplete instead, upgrading the code:
+TAutoCompleter is deprecated, use TJuiAutoComplete instead.
+In the case you want to update your code:
  * No more Frequency property.
- * minChars property is now minLength 
- * only the ItemTemplate is supported for the Suggestions repeater;
+ * minChars property is now minLength
+ * only the ItemTemplate is supported for the Suggestions repeater (no HeaderTemplate, FooterTemplate, ...);
  * in the ItemTemplate you don't need to render the <li/> anymore, but only the content itself
  * No Multiple selection support (by now, can be added in the future)
 ---
-TDraggable doesn't exists anymore, use TJuiDraggable instead, upgrading the code:
- * Use jQuery-ui's Draggable options.
+TDraggable is deprecated, use TJuiDraggable instead.
+In the case you want to update your code:
+ * Check jQuery-ui's Draggable options.
 ---
-TDropContainer doesn't exists anymore, use TJuiDroppable instead, upgrading the code:
- * Use jQuery-ui's Droppable options.
+TDropContainer is deprecated, use TJuiDroppable instead.
+In the case you want to update your code:
+ * Check jQuery-ui's Droppable options.
  * The event parameter format has changed a bit.
 ---
