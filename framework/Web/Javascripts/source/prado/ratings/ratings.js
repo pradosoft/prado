@@ -1,20 +1,32 @@
-Prado.WebUI.TRatingList = Base.extend(
+Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 {
 	selectedIndex : -1,
 	rating: -1,
 	readOnly : false,
 
-	constructor : function(options)
+	onInit : function(options)
 	{
-		var cap = $(options.CaptionID);
-		this.options = Object.extend(
+		var cap = $('#'+options.CaptionID).get(0);
+		this.options = jQuery.extend(
 		{
 			caption : cap ? cap.innerHTML : ''
 		}, options || {});
 
-		Prado.WebUI.TRatingList.register(this);
-		this._init();
-		Prado.Registry.set(options.ListID, this);
+		this.radios = [];
+
+		$('#'+options.ID).addClass(options.Style);
+		for(var i = 0; i<options.ItemCount; i++)
+		{
+			var radio = $('#'+options.ID+"_c"+i).get(0);
+			var td = radio.parentNode.parentNode;
+
+			if(radio && td.tagName.toLowerCase()=='td')
+			{
+				this.radios.push(radio);
+				$(td).addClass("rating");
+			}
+		}
+
 		this.selectedIndex = options.SelectedIndex;
 		this.rating = options.Rating;
 		this.readOnly = options.ReadOnly
@@ -23,56 +35,33 @@ Prado.WebUI.TRatingList = Base.extend(
 		this.setReadOnly(this.readOnly);
 	},
 
-	_init: function(options)
-	{
-		Element.addClassName($(this.options.ListID),this.options.Style);
-		this.radios = new Array();
-		this._mouseOvers = new Array();
-		this._mouseOuts = new Array();
-		this._clicks = new Array();
-		var index=0;
-		for(var i = 0; i<this.options.ItemCount; i++)
-		{
-			var radio = $(this.options.ListID+'_c'+i);
-			var td = radio.parentNode.parentNode;
-			if(radio && td.tagName.toLowerCase()=='td')
-			{
-				this.radios.push(radio);
-				this._mouseOvers.push(this.hover.bindEvent(this,index));
-				this._mouseOuts.push(this.recover.bindEvent(this,index));
-				this._clicks.push(this.click.bindEvent(this,index));
-				index++;
-				Element.addClassName(td,"rating");
-			}
-		}
-	},
-
-	hover : function(ev,index)
+	hover : function(index, ev)
 	{
 		if(this.readOnly==true) return;
+
 		for(var i = 0; i<this.radios.length; i++)
 		{
 			var node = this.radios[i].parentNode.parentNode;
-			var action = i <= index ? 'addClassName' : 'removeClassName'
-			Element[action](node,"rating_hover");
-			Element.removeClassName(node,"rating_selected");
-			Element.removeClassName(node,"rating_half");
+			if(i <= index)
+				$(node).addClass('rating_hover');
+			else
+				$(node).removeClass('rating_hover');
+			$(node).removeClass("rating_selected");
+			$(node).removeClass("rating_half");
 		}
 		this.showCaption(this.getIndexCaption(index));
 	},
 
-	recover : function(ev,index)
+	recover : function(index, ev)
 	{
 		if(this.readOnly==true) return;
 		this.showRating(this.rating);
 		this.showCaption(this.options.caption);
 	},
 
-	click : function(ev, index)
+	click : function(index, ev)
 	{
 		if(this.readOnly==true) return;
-		for(var i = 0; i<this.radios.length; i++)
-			this.radios[i].checked = (i == index);
 		this.selectedIndex = index;
 		this.setRating(index+1);
 
@@ -83,13 +72,13 @@ Prado.WebUI.TRatingList = Base.extend(
 
 	dispatchRequest : function(ev)
 	{
-		var requestOptions = Object.extend(
+		var requestOptions =jQuery.extend({}, this.options,
 		{
-			ID : this.options.ListID+"_c"+this.selectedIndex,
+			ID : this.options.ID+"_c"+this.selectedIndex,
 			EventTarget : this.options.ListName+"$c"+this.selectedIndex
-		},this.options);
-		Prado.PostBack(ev, requestOptions);
-	},
+		});
+		new Prado.PostBack(requestOptions, ev);
+ 	},
 
 	setRating : function(value)
 	{
@@ -119,16 +108,19 @@ Prado.WebUI.TRatingList = Base.extend(
 		for(var i = 0; i<this.radios.length; i++)
 		{
 			var node = this.radios[i].parentNode.parentNode;
-			var action = i > index ? 'removeClassName' : 'addClassName';
-			Element[action](node, "rating_selected");
-			if(i==index+1 && hasHalf)
-				Element.addClassName(node, "rating_half");
+			if(i <= index)
+				$(node).addClass('rating_selected');
 			else
-				Element.removeClassName(node, "rating_half");
-			Element.removeClassName(node,"rating_hover");
+				$(node).removeClass('rating_selected');
+
+			if(i==index+1 && hasHalf)
+				$(node).addClass("rating_half");
+			else
+				$(node).removeClass("rating_half");
+			$(node).removeClass("rating_hover");
 		}
 	},
-	
+
 	getIndexCaption : function(index)
 	{
 		return index > -1 ? this.radios[index].value : this.options.caption;
@@ -136,9 +128,8 @@ Prado.WebUI.TRatingList = Base.extend(
 
 	showCaption : function(value)
 	{
-		var caption = $(this.options.CaptionID);
-		if(caption) caption.innerHTML = value;
-		$(this.options.ListID).title = value;
+		$('#'+this.options.CaptionID).html(value);
+		$('#'+this.options.ID).attr( "title", value);
 	},
 
 	setCaption : function(value)
@@ -152,55 +143,37 @@ Prado.WebUI.TRatingList = Base.extend(
 		this.readOnly = value;
 		for(var i = 0; i<this.radios.length; i++)
 		{
-			
-			var action = value ? 'addClassName' : 'removeClassName';
-			Element[action](this.radios[i].parentNode.parentNode, "rating_disabled");
-			
-			var action = value ? 'stopObserving' : 'observe';
-			var td = this.radios[i].parentNode.parentNode;
-			Event[action](td, "mouseover", this._mouseOvers[i]);
-			Event[action](td, "mouseout", this._mouseOuts[i]);
-			Event[action](td, "click", this._clicks[i]);
+			var node = this.radios[i].parentNode.parentNode;
+			if(value)
+			{
+				$(node).addClass('rating_disabled');
+				$(node).off('mouseover', jQuery.proxy(this.hover, this, i));
+				$(node).off('mouseout', jQuery.proxy(this.recover, this, i));
+				$(node).off('click', jQuery.proxy(this.click, this, i));
+			} else {
+				$(node).removeClass('rating_disabled');
+				$(node).on('mouseover', jQuery.proxy(this.hover, this, i));
+				$(node).on('mouseout', jQuery.proxy(this.recover, this, i));
+				$(node).on('click', jQuery.proxy(this.click, this, i));
+			}
 		}
 
 		this.showRating(this.rating);
 	}
-},
-{
-ratings : {},
-register : function(rating)
-{
-	Prado.WebUI.TRatingList.ratings[rating.options.ListID] = rating;
-},
-
-setReadOnly : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setReadOnly(value);
-},
-
-setRating : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setRating(value);
-},
-
-setCaption : function(id,value)
-{
-	Prado.WebUI.TRatingList.ratings[id].setCaption(value);
-}
 });
 
-Prado.WebUI.TActiveRatingList = Prado.WebUI.TRatingList.extend( 
-{	
+Prado.WebUI.TActiveRatingList = jQuery.klass(Prado.WebUI.TRatingList,
+{
 	dispatchRequest : function(ev)
 	{
-		var requestOptions = Object.extend(
+		var requestOptions =jQuery.extend({}, this.options,
 		{
-			ID : this.options.ListID+"_c"+this.selectedIndex,
+			ID : this.options.ID+"_c"+this.selectedIndex,
 			EventTarget : this.options.ListName+"$c"+this.selectedIndex
-		},this.options);
+		});
 		var request = new Prado.CallbackRequest(requestOptions.EventTarget, requestOptions);
 		if(request.dispatch()==false)
-			Event.stop(ev);
+			ev.preventDefault();
 	}
-	
+
 });

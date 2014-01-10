@@ -504,3 +504,5 @@ tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCo
 
 juioptions_control_invalid				= Control '{0}' must implement IJuiOptions.
 juioptions_option_invalid				= '{1}' is not a valid option for control '{0}'.
+
+ratinglist_invalid_caption_id			= '{0}' is not a valid caption control for TRatingList '{0}'.

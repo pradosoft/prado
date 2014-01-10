@@ -173,7 +173,7 @@ class TRatingList extends TRadioButtonList
 	{
 		if(($id=$this->getCaptionID())!=='')
 		{
-			if($control=$this->getParent()->findControl($id))
+			if($control=$this->getPage()->findControl($id))
 				return $control;
 		}
 		throw new TInvalidDataValueException(
