@@ -1023,6 +1023,29 @@ abstract class TActiveRecord extends TComponent
 	{
 		return isset(self::$_relations[get_class($this)][strtolower($property)]);
 	}
+	
+        /**
+        * Return record data as array
+        * @return array of column name and column values
+        * @since 3.2.4
+        */
+        public function toArray(){
+        	$result=array();
+        	foreach($this->getRecordTableInfo()->getLowerCaseColumnNames() as $columnName){
+            		$result[$columnName]=$this->getColumnValue($columnName);
+           	}
+        
+        	return $result;
+    	}
+    
+    	/**
+     	* Return record data as JSON
+     	* @return JSON
+     	* @since 3.2.4
+     	*/
+    	public function toJSON(){
+        	return json_encode($this->toArray());
+    	}
 }
 
 /**
