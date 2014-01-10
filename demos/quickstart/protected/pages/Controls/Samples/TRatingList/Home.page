@@ -1,0 +1,71 @@
+<com:TContent ID="body">
+<h1>TRatingList Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A simple TRatingList and its caption:
+</td><td class="sampleaction">
+
+<com:TLabel ID="label1" Text="Rate it:" />
+<com:TRatingList CaptionID="label1">
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+</com:TRatingList>
+
+</td></tr>
+
+<tr><td class="samplenote">
+TRatingList in vertical mode, SelectedIndex=2
+</td><td class="sampleaction">
+
+<com:TLabel ID="label2" Text="Rate it:" />
+<com:TRatingList CaptionID="label2" SelectedIndex="2" RepeatDirection="Vertical" Style="caption-side: right;">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TRatingList>
+
+</td></tr>
+
+<tr><td class="samplenote">
+TRatingList with RatingStyle=blocks, AutoPostback=true, SelectedValue=Good
+</td><td class="sampleaction">
+
+<com:TLabel ID="label3" Text="Rate it:" />
+<com:TRatingList ID="Rating3" CaptionID="label3" RatingStyle="blocks" SelectedValue="Good" AutoPostBack="true" OnSelectedIndexChanged="rating3_selectionChanged">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TRatingList>
+<br/>
+A label to check postback results: <com:TLabel ID="labelResult3" />
+
+</td></tr>
+
+<tr><td class="samplenote">
+TRatingList with AllowInput=false, Rating=4.6
+</td><td class="sampleaction">
+
+<com:TLabel ID="label4" Text="Rate it:" />
+<com:TRatingList CaptionID="label4" AllowInput="false" Rating="4.6">
+	<com:TListItem Text="Poor" />
+	<com:TListItem Text="Fair" />
+	<com:TListItem Text="Average" />
+	<com:TListItem Text="Good" />
+	<com:TListItem Text="Excellent" />
+	<com:TListItem Text="Super" />
+</com:TRatingList>
+
+</td></tr>
+
+</table>
+</com:TContent>

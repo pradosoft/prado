@@ -108,4 +108,6 @@ Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something li
 This is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
 </p>
 
+<com:RunBar PagePath="Controls.Samples.TRatingList.Home" />
+
 </com:TContent>
