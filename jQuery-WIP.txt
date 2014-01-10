@@ -25,7 +25,7 @@ List, Data controls
 *Validators
 Ajax queue
 Basic callback controls (TActive*, TInPlaceTextBox)
-Badic jquery-ui controls
+Basic jquery-ui controls
 
 WIP
 TJuiAutoComplete
