@@ -28,7 +28,7 @@
 <div>動作原理</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">アーキテクチャ</a></li>
-    <li><a href="?page=Fundamentals.Components">コンポーネント</a></li>
+    <li><a href="?page=Fundamentals.Components1">コンポーネント</a></li>
     <li><a href="?page=Fundamentals.Controls">コントロール</a></li>
     <li><a href="?page=Fundamentals.Pages">ページ</a></li>
     <li><a href="?page=Fundamentals.Modules">モジュール</a></li>

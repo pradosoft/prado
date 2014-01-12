@@ -28,7 +28,7 @@
 <div>Fundamental</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">Arsitektur</a></li>
-    <li><a href="?page=Fundamentals.Components">Komponen</a></li>
+    <li><a href="?page=Fundamentals.Components1">Komponen</a></li>
     <li><a href="?page=Fundamentals.Controls">Kontrol</a></li>
     <li><a href="?page=Fundamentals.Pages">Halaman</a></li>
     <li><a href="?page=Fundamentals.Modules">Modul</a></li>

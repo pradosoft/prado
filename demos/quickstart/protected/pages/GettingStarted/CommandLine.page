@@ -15,7 +15,7 @@ the command line.
 <h2 id="503">Usage</h2>
 <p id="70048" class="block-content">
 If you type <tt>php path/to/framework/prado-cli.php</tt>, you should see
-the following information. Alternatively, if you are not on Windows, 
+the following information. Alternatively, if you are not on Windows,
 you may try to change the <tt>prado-cli.php</tt> into an executable
 and execute it as a script</p>
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
@@ -85,7 +85,7 @@ we <b>leave out the semicolon</b> to show the results.
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70010">
 >> $db->queryPostByID(1)
 </com:TTextHighlighter>
-There should not be any errors and you should see the following. 
+There should not be any errors and you should see the following.
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70011">
 PostRecord#1
 (
@@ -130,7 +130,7 @@ At the prompt, enter the following two commands to create <tt>UserRecord</tt> an
 </com:TTextHighlighter>
 
 <p>
-Here we used the <a href="?page=Fundamentals.Components">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
+Here we used the <a href="?page=Fundamentals.Components1">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
 </p>
 
 </com:TContent>

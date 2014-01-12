@@ -1,7 +1,7 @@
 <div id="toc">
 
 <div class="topic">
-<div>Comenzar</div> 
+<div>Comenzar</div>
 <ul>
     <li><a href="?page=GettingStarted.Introduction">Introducción</a></li>
     <li><a href="?page=GettingStarted.AboutPrado">¿Que es PRADO?</a></li>
@@ -28,7 +28,7 @@
 <div>Básicos</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">Arquitectura</a></li>
-    <li><a href="?page=Fundamentals.Components">Componentes</a></li>
+    <li><a href="?page=Fundamentals.Components1">Componentes</a></li>
     <li><a href="?page=Fundamentals.Controls">Controles</a></li>
     <li><a href="?page=Fundamentals.Pages">Páginas</a></li>
     <li><a href="?page=Fundamentals.Modules">Mádulos</a></li>

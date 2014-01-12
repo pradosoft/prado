@@ -2,7 +2,7 @@
 <h1 id="138046">Rekord Aktywny (ang. Active Record)</h1>
 <com:SinceVersion Version="3.1a" />
 <p id="690478" class="block-content">Rekordy Aktywne są obiektami, które opakowują wiersz w bazie danych lub widoku,
-    obudowują (ang. encapsulate) dostęp do bazy danych oraz dziedziny logiki dla tych danych. 
+    obudowują (ang. encapsulate) dostęp do bazy danych oraz dziedziny logiki dla tych danych.
     Podstawą Rekordu Aktywnego są klasy biznesowe np. klasa
     <tt>Produkty</tt>, które są bardzo podobne do struktury rekordu należącego do bazy danych. Każdy Rekord Aktywny jest odpowiedzialny
     za zapisywanie i łądowanie danych do i z bazy danych.</p>
@@ -13,18 +13,18 @@
 
 <h2 id="138047">Kiedy używać?</h2>
     <p id="690479" class="block-content">Rekord Aktywne jest dobrym wyborem dla dziedziny logiki, która nie jest zbyt złożona, tak jak tworzenie, odczyty, aktualizacje oraz usuwanie.
-    Pochocne (ang. derivations) oraz sprawdzenia bazujące na pojedyńczym rekordzie sprawdzają się dobrze w tej konstrukcji. 
+    Pochocne (ang. derivations) oraz sprawdzenia bazujące na pojedyńczym rekordzie sprawdzają się dobrze w tej konstrukcji.
     Rekord Aktywne ma podstawową zaletę, którą jest prostota. Łatwo jest stworzyć Rekord Aktywny, łatwo go również zrozuieć.
     </p>
 
-    <p id="690480" class="block-content">Jednakże, jeśli twoja logika biznesowa staje się coraz bardziej złożona, wkrótce będziesz chciał 
+    <p id="690480" class="block-content">Jednakże, jeśli twoja logika biznesowa staje się coraz bardziej złożona, wkrótce będziesz chciał
     używać bezpośrednich relacji, zbiorów, dziedziczenia twojego obiektu i tak dalej. Nie da się tego łatwo odwzorować za pomocą Rekordu Aktywnego,
     a dodawanie ich po kawałku staje się bardzo kłopotliwe. Innym argumentem przeciw Rekordowi Aktywnemu jest fakt, że łączy model obiektowy z modelem baz danych.
     To czyni trudniejszym refaktoring, gdy projekt idzie naprzód.
     </p>
 
     <p id="690481" class="block-content">Alternatywą jest używanie wzorca Data Mapper (mapa danych), który odseparowuje role obiektu biznesowego od tego jak te obiekty są przechowywane.
-    Prado dostarcza 
+    Prado dostarcza
     Prado provides a darmowy wybór pomiędzy rekordem aktywnym a <a href="?page=Database.SqlMap">SqlMap Data Mapper</a>.
     SqlMap Data Mapper może być uzywany do wczytania obiektów Rekordu Aktywnego, i na odwrót, te Rekordy Aktywne mogą zostać użyte do aktualizacji bazy danych.
     Związek pomiędzy Rekordem Aktywnym a <a href="?page=Database.SqlMap">SqlMap</a> przedstawiony jest na kolejnym diagramie. Więcej informacji związanych z SqlMap Data Mapper można znaleźć w
@@ -33,7 +33,7 @@
     </p>
 
     <p id="690482" class="block-content">
-        Klasa Rekordu aktywnego posiada funkcjonalność do przeprowadzenia następujących zadań: 
+        Klasa Rekordu aktywnego posiada funkcjonalność do przeprowadzenia następujących zadań:
     </p>
     <ul id="u1" class="block-content">
         <li>Tworzenie, zwracanie, aktualizowani i usuwanie recordów (CRUD)</li>
@@ -51,16 +51,16 @@ zwróci fałsz, natomiast luźne porównianie (np. używając <tt>==</tt>) zwró
 <p>
 Jest to implikacja modelu wynikająca z następującego pytania:
 <i>"Czy myślisz o kliencie jako o obiekcie, którego któy jest tylko jeden, czy też myślisz o obiekcie na którym działasz jako o <b>kopii</b> bazy danych.</i>
-Inne mapowania O/R implikują, że istnieje tylko jeden obiekt Klienta z KlientID 100 
+Inne mapowania O/R implikują, że istnieje tylko jeden obiekt Klienta z KlientID 100
 Other O/R mappings will imply that there is only one Customer object with custID 100 i to dosłownie jest ten klient.
-Jeśli pobierzesz klienta i zmienisz pole w nim, wtedy masz zmienionego tego klienta. 
+Jeśli pobierzesz klienta i zmienisz pole w nim, wtedy masz zmienionego tego klienta.
 <i>"To kontroastuje z: zmieniłeś tą kopię klienta ale nie tamtą kopię.
 Jeśli dwóch ludzi zaktualizuje kleinta z dwóch kopii obiektu, kto zaktualizuje pierwszy lub być może ostanie wygrywa."</i> [A. Hejlsberg 2003]
 </p>
 
 <h2 id="142010">Wspierane bazy danych</h2>
 <p id="p1" class="block-content">
-Implementacja Aktywnego Rekordu wykorzystuje kalsy <a href="?page=Database.DAO">Prado DAO</a> by uzyskać dostęp do danych. Aktualna implementacja Aktywnego Rekordu wspiera następujace bazy danych 
+Implementacja Aktywnego Rekordu wykorzystuje kalsy <a href="?page=Database.DAO">Prado DAO</a> by uzyskać dostęp do danych. Aktualna implementacja Aktywnego Rekordu wspiera następujace bazy danych
 </p>
 <ul>
     <li><a href="http://www.mysql.com">MySQL 4.1 i wyższe</a></li>
@@ -104,7 +104,7 @@ class UserRecord extends TActiveRecord
 </p>
 <p id="690485" class="block-content">Każda kolumna tablicy "<tt>users</tt>" musi posiadać odpowiadającą jej właściwość o tej samej nazwie co kolumna w tablicy w klasie <tt>UserRecord</tt>.
     Oczywiście, możesz zdefiniować dodatkowe zmienne lub właściwości, które nie istnieją w strukturze tablicy.
-    Stała <tt>TABLE</tt> jest opcjonalna w klasie , kiedy nazwa klasy jest taka sama jak nazwa tablicy w bazie danych, w przeciwnym przypadku <tt>TABLE</tt> 
+    Stała <tt>TABLE</tt> jest opcjonalna w klasie , kiedy nazwa klasy jest taka sama jak nazwa tablicy w bazie danych, w przeciwnym przypadku <tt>TABLE</tt>
     musi określać nazwę tablicy, która odpowiada klasie Rekordu Aktywnego.
 </p>
 
@@ -114,7 +114,7 @@ Możesz określić kwalifikowane (ang. qualified) nazwy tablic np dla MySQL, <tt
 
 <p class="block-content" id="ar_as_component">
     Odkąd <tt>TActiveRecord</tt> rozszerza <tt>TComponent</tt>, metody setter i getter mogą zostać zdefiniowane
-    by umożliwić kontrolę nad tym jak zmienne są ustawiane i zwracane. Na przykłąd dodanie właściwości <tt>$level</tt> 
+    by umożliwić kontrolę nad tym jak zmienne są ustawiane i zwracane. Na przykłąd dodanie właściwości <tt>$level</tt>
     do klasy UserRecord:
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
@@ -130,13 +130,13 @@ class UserRecord extends TActiveRecord {
     }
 }
 </com:TTextHighlighter>
-<p id="710010" class="block-content">Więcej szczegółów dotyczących TComponent można znaleźć <a href="?page=Fundamentals.Components">dokumentacji komponentów</a>.
+<p id="710010" class="block-content">Więcej szczegółów dotyczących TComponent można znaleźć <a href="?page=Fundamentals.Components1">dokumentacji komponentów</a>.
 Później użyjemy metod getter/setters by umożliwić opóźnione ładowanie (ang. lazy loading) obiektów relacji.
 </p>
 
 <div class="info"><b class="note">Info:</b>
 <tt>TActiveRecord</tt> może również działać z widokami poprzez przypisanie do stałej <tt>TABLE</tt>
- odpowiedniej nazwy widoku. Jednakże obiektu zwracane przez widoki są tylko do odczytu, wywołanie metod <tt>save()</tt> lub <tt>delete()</tt> 
+ odpowiedniej nazwy widoku. Jednakże obiektu zwracane przez widoki są tylko do odczytu, wywołanie metod <tt>save()</tt> lub <tt>delete()</tt>
 spowoduje wywołanie wyjątku.
 </div>
 
@@ -149,7 +149,7 @@ spowoduje wywołanie wyjątku.
 <h2 id="138049">Ustanawianie połączenia z bazą danych</h2>
 <p id="690487" class="block-content">
     Domyślne połączenie z bazą dla Rekordu Aktywnego może zostać ustawione następujaco.
-    Zobacz <a href="?page=Database.DAO">Ustanawianie połączenia z bazą</a> 
+    Zobacz <a href="?page=Database.DAO">Ustanawianie połączenia z bazą</a>
     by uzyskać ogólnie dalsze szczegóły odnośnie tworzenia połączenia z bazą danych.
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690150">
@@ -160,7 +160,7 @@ TActiveRecordManager::getInstance()->setDbConnection($conn);
 </com:TTextHighlighter>
 
 <p id="710011" class="block-content">Alternatywnie, możesz stworzyć klasę bazową i nadpisać metodę <tt>getDbConnection()</tt>
-do zwracania połączenia z bazą. To jest prosty spodób, by umożliwić wielkokrotne połączenia do wielu baz danych. 
+do zwracania połączenia z bazą. To jest prosty spodób, by umożliwić wielkokrotne połączenia do wielu baz danych.
  Następujący kod demonstruje definiowanie połączenia z bazą danych w klasie bazowej (nie ma potrzeby by ustawiać połączenie DB gdziekolwiek indziej).
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
@@ -203,7 +203,7 @@ class MyDb2Record extends TActiveRecord
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Wskazówka:</b>
     Atrybut <tt>EnableCache</tt> gdy ustawiony na "true" będzie keszował metadane tablicy, to oznacza, że nazwy kolumn, indeksy i ograniczenia (ang. constraints)
-    są zapisywane w keszu i używane ponownie. Musisz wyczyścić lub wyłączyć kesz jeśli chcesz zobaczyć wprowadzone zmiany do definicji twoich tablic. 
+    są zapisywane w keszu i używane ponownie. Musisz wyczyścić lub wyłączyć kesz jeśli chcesz zobaczyć wprowadzone zmiany do definicji twoich tablic.
     <a href="?page=Advanced.Performance#6402">Moduł keszowania</a> musi być również zdefiniowany dla keszu by zadziałał.
 </div>
 </p>
@@ -229,14 +229,14 @@ class MyDb2Record extends TActiveRecord
 
 <h2 id="138050">Ładowanie danych z tablicy</h2>
 <p id="690490" class="block-content">
-    Klasa <tt>TActiveRecord</tt> dostarcza wielu wygodnych metod do wyszukiwania rekordów z bazy danych. 
+    Klasa <tt>TActiveRecord</tt> dostarcza wielu wygodnych metod do wyszukiwania rekordów z bazy danych.
     Najprostszym jest znajdowanie jednego rekordu poprzez dopasowanie klucza głównego lub klucza złożonego (ang. composite key)
     (klucz główny skłądający się z wielu kolumn).
     Zobacz  <com:DocLink ClassPath="System.Data.ActiveRecord.TActiveRecord" /> by dowiedzieć się więcej.
 </p>
 
 <div class="info"><b class="note">Info:</b>
-Wszystkie metody wyszukujące, które mogą zwrócić tylko 1 rekord zwrócą <tt>null</tt> jeśli nie znajdą pasujących danych. 
+Wszystkie metody wyszukujące, które mogą zwrócić tylko 1 rekord zwrócą <tt>null</tt> jeśli nie znajdą pasujących danych.
 Wszystkie metody wyszukujące, które zwracają tablicę rekordów zwrócą pustą tablicęm jeśli nie znajdą pasujących danych.
 </div>
 
@@ -352,8 +352,8 @@ Możesz również użyć połączenia <tt>AND</tt> oraz <tt>OR</tt> jako warunek
 </div>
 
 <h3 id="138060"><tt>findBySql()</tt> oraz <tt>findAllBySql()</tt></h3>
-<p id="690497" class="block-content">Znajdują rekordy używając pełnego zapytania SQL z tym, że <tt>findBySql()</tt> 
-zwraca Rekord Aktywny a <tt>findAllBySql()</tt>zwraca tablicę obiektów rekordów. 
+<p id="690497" class="block-content">Znajdują rekordy używając pełnego zapytania SQL z tym, że <tt>findBySql()</tt>
+zwraca Rekord Aktywny a <tt>findAllBySql()</tt>zwraca tablicę obiektów rekordów.
 Dla każdej zwróconej kolumny, odpowiadająca klasa Rekordu Aktywnego musi posiadać zdefiniowaną zmienną lub właściwość odpowiadającą nazwie kolumny.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class UserRecord2 extends UserRecord
@@ -382,7 +382,7 @@ $user2 = new UserRecord($data); //stwórz przekazując istniejące dane
 $user2->save(); //wstaw nowy rekord
 </com:TTextHighlighter>
 <div class="tip"><b class="note">Wskazówka:</b>
-Obiekty są aktualizowe automatycznie o wartość klucza głównego dla tych tablic, które zawierają definicję 
+Obiekty są aktualizowe automatycznie o wartość klucza głównego dla tych tablic, które zawierają definicję
 określającą automatyczne tworzenie klucza głównego dla nowo tworzonych rekordów (przyp. tłum. autoincrement).
 Na przykład jeśli wstawiasz nowy rekord do tablicy MySQL która posiada kolumnę zdefiniowaną jako to obiekt Rekordu Aktywnego
 zostanie zaktualizowant o nową zwiększoną wartość.</div>
@@ -403,10 +403,10 @@ Obiekt Rekordu Aktywnego posiada prosty cykl życia zilustrowany następujący d
 <img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
 <p id="690501" class="block-content">
 Widzimy, że nowe obiekty Rekordu Aktywnego są tworzone zarówno przez jedną z metod <tt>find*()</tt>
-lub poprzez stworzenie nowej instancji poprzez użycie polecenia PHP <tt>new</tt>. Obiekty stworzone przez metodę <tt>find*()</tt> 
+lub poprzez stworzenie nowej instancji poprzez użycie polecenia PHP <tt>new</tt>. Obiekty stworzone przez metodę <tt>find*()</tt>
 zaczynają ze stanem <tt>czysty (ang. clean)</tt>. Nowa instancja TActiveRecord stworzona inaczej niż za pomocą metod <tt>find*()</tt> zaczyna ze stanem <tt>nowy (ang. new)</tt>.
-Kiedykolwiek wywołasz metodę <tt>save()</tt> na obiekcie TActiveRecord, obiekt przyjmuje stan <tt>czysty</tt>. 
-Obiekty będące <tt>czystymi</tt> stają się <tt>brudne (ang. dirty)</tt> kiedy jeden lub więcej ze stwoich wewnętrznych stanów ulegnie zmianie. 
+Kiedykolwiek wywołasz metodę <tt>save()</tt> na obiekcie TActiveRecord, obiekt przyjmuje stan <tt>czysty</tt>.
+Obiekty będące <tt>czystymi</tt> stają się <tt>brudne (ang. dirty)</tt> kiedy jeden lub więcej ze stwoich wewnętrznych stanów ulegnie zmianie.
 Wywoałanie metody <tt>delete()</tt> obiektu kończy cykl życia, żadne inne akcje nie mogą być wywołane na obiekcie.
 </p>
 
@@ -451,7 +451,7 @@ $finder->deleteBy_Username_And_Password($name,$pass);
 </com:TTextHighlighter>
 
 <h2 id="138053">Tranzakcje</h2>
-<p id="690504" class="block-content">Wszystkie obiekkty Rekordu Aktywnego zawierają właściwość <tt>DbConnection</tt>, 
+<p id="690504" class="block-content">Wszystkie obiekkty Rekordu Aktywnego zawierają właściwość <tt>DbConnection</tt>,
  która może być używana by uzyskać obiekt tranzakcyjny.
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690165">
 $finder = UserRecord::finder();
@@ -486,8 +486,8 @@ Zdarzenie <tt>OnExecuteCommand</tt> jest wywoływane kiedy polecenie jest wykona
 </p>
 
 <h3 id="142016">Przykład z logowaniem</h3>
-<p id="710016" class="block-content">Używając <tt>OnExecuteCommand</tt> możemy przypiąć uchwyt zdarzenia by logować całe 
-zapytanie SQL wwywoływane dla danej instancji lub klasy TActiveRecord. Na przykład definiujemy klasę bazową i nadpisujemy 
+<p id="710016" class="block-content">Używając <tt>OnExecuteCommand</tt> możemy przypiąć uchwyt zdarzenia by logować całe
+zapytanie SQL wwywoływane dla danej instancji lub klasy TActiveRecord. Na przykład definiujemy klasę bazową i nadpisujemy
 metodę <tt>getDbConnection()</tt> lub konstruktor.
 </p>
 
@@ -537,12 +537,12 @@ W następnych sekcjach będziemy rozważać nastepujące relacje pomiędzy tabel
 <img src=<%~ ar_objects.png %> class="figure" />
 
 <p class="block-content">
-Istnieje rozbieżność pomiędzy relacjami w obiektach i relacjami w tablicach. 
+Istnieje rozbieżność pomiędzy relacjami w obiektach i relacjami w tablicach.
  Po pierwsze jest różnica w reprezentacji. Obiekty trzymają powiązanie poprzez przechowywanie referencji,
 które są trzymane poprzez zarządzające pamięcią środowiko uruchomieniowe. Bazy relacyjne trzymają powiązanie poprzez utworzenie klucza do innej tablicy.
- Po drugie, obiekty mogą łatwo uzywać kolekcji by trzymać wielokrotnie referencje z jednego pola, 
-to handle multiple references from a single field, gdyż normalizacja zmusza wszystkie powiązania relacji encji by były pojedyńczymi wartościami. 
-To prowadzi do odwrócenia struktury danych pomiędzy obiektami i tablicami. 
+ Po drugie, obiekty mogą łatwo uzywać kolekcji by trzymać wielokrotnie referencje z jednego pola,
+to handle multiple references from a single field, gdyż normalizacja zmusza wszystkie powiązania relacji encji by były pojedyńczymi wartościami.
+To prowadzi do odwrócenia struktury danych pomiędzy obiektami i tablicami.
 Podejście zastosowane w modelu Rekordu Aktywnego Prado uzywa ograniczeń kluczów obcych tablicy do wyprowadzenia relacji obiektów.
 To implikuje fakt wspierania ograniczeń kluczów obcych dla bazy danych.
 </p>
@@ -564,8 +564,8 @@ CREATE TABLE bar
 </com:TTextHighlighter>
 </div>
 
-<h2 id="142012">Mapowanie kluczów obcych</h2> 
-<p class="block-content">Relacja pól pomiędzy tablicami <tt>Teams</tt> and <tt>Players</tt> jest znana jako relacja jeden-do-wielu (ang. 1-M). Oznacza to, że jeden Team moze zawierać zero lub więcej Players. Z punktu widzenia relacji obiektów 
+<h2 id="142012">Mapowanie kluczów obcych</h2>
+<p class="block-content">Relacja pól pomiędzy tablicami <tt>Teams</tt> and <tt>Players</tt> jest znana jako relacja jeden-do-wielu (ang. 1-M). Oznacza to, że jeden Team moze zawierać zero lub więcej Players. Z punktu widzenia relacji obiektów
 powiemy, że obiekt <tt>TeamRecord</tt> <b>posiada wiele</b> (ang. has many) obiektów <tt>PlayerRecord</tt>.
 (Zauważ odwrócenie kierunku relacji pomiędzy tablicami a obiektami)
 </p>
@@ -1074,7 +1074,7 @@ class PlayerRecord extends BaseFkRecord
 <p id="710046" class="block-content">We first need to change the <tt>$skills=array()</tt> declaration to a private property
 <tt>$_skills</tt> (notice the underscore) and set it to null instead. This allows us
 to define the <tt>skills</tt> property using getter/setter methods
-(see <a href="?page=Fundamentals.Components">Components</a> for details). The <tt>getSkills()</tt>
+(see <a href="?page=Fundamentals.Components1">Components</a> for details). The <tt>getSkills()</tt>
 getter method for the <tt>skills</tt> property will lazy load the corresponding skills foreign record
 when it is used as follows. Notice that we only do a lazy load when its <tt>$player_id</tt> is
 not null (that is, when the record is already fetched from the database or player id was already set).
