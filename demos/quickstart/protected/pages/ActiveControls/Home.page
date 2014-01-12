@@ -6,7 +6,7 @@ Most active controls have a property of
 <a href="?page=ActiveControls.BaseActiveControl">ActiveControl</a> and
 a sub-property <a href="?page=ActiveControls.CallbackClientSide">ClientSide</a>
 that provides many properties to customize the controls. The
-<a href="?page=TCallbackClientScript">CallbackClient</a> property of the
+<a href="?page=CallbackClientScript">CallbackClient</a> property of the
 <tt>TPage</tt> class provides many methods to update and alter the client-side content
 during a callback request. Active controls is reliant on a collection
 of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.

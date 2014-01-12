@@ -7,12 +7,37 @@
 </p>
 
 <h2>Actions</h2>
-<com:TRadioButtonList ID="radio1">
+<com:TClientScript PradoScripts="jqueryui" />
+<com:TStyleSheet>
+  .red_background {
+    background-color: red;
+  }
+</com:TStyleSheet>
+
+<com:TRadioButtonList ID="radio1" RepeatColumns="2">
   <com:TListItem Value="1" Text="alert() me of something" />
   <com:TListItem Value="2" Text="toggle Checkbox 1" />
   <com:TListItem Value="3" Text="hide Label 1" />
   <com:TListItem Value="4" Text="show Label 1" />
-  <com:TListItem Value="5" Text="focus TextBox 1" />
+  <com:TListItem Value="5" Text="toggle Label 1 visibility" />
+  <com:TListItem Value="6" Text="toggle Label 1 (fade)" />
+  <com:TListItem Value="7" Text="toggle Label 1 (slide)" />
+  <com:TListItem Value="8" Text="highlight Label 1 (requires jQuery UI)" />
+  <com:TListItem Value="9" Text="focus TextBox 1" />
+  <com:TListItem Value="10" Text="scroll to CheckBox 1" />
+  <com:TListItem Value="11" Text="add red_background class to TextBox 1" />
+  <com:TListItem Value="12" Text="remove red_background class from TextBox 1" />
+  <com:TListItem Value="13" Text="animated resize TextBox 1" />
+  <com:TListItem Value="14" Text="set the 'disable' attribute on TextBox 1" />
+  <com:TListItem Value="15" Text="change the background color of Panel 1" />
+  <com:TListItem Value="16" Text="prepend and append some content inside Panel 1" />
+  <com:TListItem Value="17" Text="prepend and append some content outside Panel 1" />
+  <com:TListItem Value="18" Text="replace Panel 1 with some plain text" />
+  <com:TListItem Value="19" Text="remove TextBox 1" />
+  <com:TListItem Value="20" Text="fade out TextBox 1" />
+  <com:TListItem Value="21" Text="fade in TextBox 1" />
+  <com:TListItem Value="22" Text="trigger a click event on Panel 1" />
+  <com:TListItem Value="23" Text="call a specific effect on TextBox 1 (toggle)" />
 </com:TRadioButtonList>
 
 <br/><com:TActiveButton ID="button1" OnCallback="buttonCallback" Text="callback!" />
@@ -32,8 +57,17 @@
     <td>TextBox 1:</td>
     <td><com:TTextBox ID="txt1" Text="Sample text" /></td>
   </tr>
+  <tr>
+    <td>Panel 1:</td>
+    <td>
+      <com:TPanel ID="pan1" Style="width:100px;height:100px;background:green" Attributes.OnClick="alert('clicked on Panel1')" >
+      Panel contents
+      </com:TPanel>
+    </td>
+  </tr>
 </table>
 
-<com:TJavascriptLogger />
-
+<div style="height:900px">
+Thw following space is intentionally left blank for the scrolling test
+</div>
 </com:TContent>
