@@ -16,7 +16,7 @@ Developers may implement additional services for their applications. To make a s
 
 <h2 id="1102">Page Service</h2>
 <p id="150154" class="block-content">
-PRADO implements <tt>TPageService</tt> to process users' page requests. Pages are stored under a directory specified by the <tt>BasePath</tt> property of the page service. The property defaults to <tt>pages</tt> directory under the application base path. You may change this default by configuring the service in the application configuration.
+PRADO implements <tt>TPageService</tt> to process users' page requests. Pages are stored under a directory specified by the <tt>BasePath</tt> property of the page service. The property defaults to <tt>Pages</tt> directory under the application base path. You may change this default by configuring the service in the application configuration.
 </p>
 <p id="150155" class="block-content">
 Pages may be organized into subdirectories under the <tt>BasePath</tt>. In each directory, there may be a page configuration file named <tt>config.xml</tt>, which contains configurations effective only when a page under that directory or a sub-directory is requested. For more details, see the <a href="?page=Configurations.PageConfig">page configuration</a> section.
@@ -29,6 +29,9 @@ http://hostname/index.php?page=About
 http://hostname/index.php?page=Users.Register
 </com:TTextHighlighter>
 where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.
+</p>
+<p class="block-content">
+More advanced url routes, like masking real page names and permitting the use of dynamic parameters can be created using the <a href="?page=Configurations.UrlMapping">Url mapping</a> module.
 </p>
 
 </com:TContent>

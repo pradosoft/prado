@@ -2,6 +2,12 @@
 
 <h1 id="5001">Data Controls</h1>
 
+<p class="block-content">
+Data controls are used to display a repeated content like a list or a table. The content is generated from a collection of items containing the data, called the <tt>DataSource</tt>, and a template describing the appearance, called <tt>Renderer</tt>.
+<br/>
+The process of assigning a DataSource to a Data control and render the template for each item is called <tt>data binding</tt>.
+</p>
+
 <ul id="u1" class="block-content">
   <li>
   <a href="?page=Controls.DataList">TDataList</a> is used to display or modify a list of data items.

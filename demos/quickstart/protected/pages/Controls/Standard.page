@@ -1,7 +1,9 @@
 <com:TContent ID="body" >
 
 <h1 id="52001">Standard Controls</h1>
-<p id="260001" class="block-content">* the tutorial for this control is not completed yet.</p>
+<p class="block-content">
+  Standard controls are the most basic controls in PRADO. They can represent a simple html tag like an &lt;input&gt; or even more comple controls like a date picker or a WYSIWYG text area. Standard controls are in the <tt>System.Web.UI.WebControls</tt> namespace.
+</p>
 <ul id="u1" class="block-content">
   <li>
   <a href="?page=Controls.Accordion">TAccordion</a> displays an accordion consisting of multiple views. At any time, only one view is visible.
