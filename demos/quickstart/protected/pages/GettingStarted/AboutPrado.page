@@ -51,18 +51,24 @@ Most PHP frameworks mainly focuses on separating presentation and logic and prom
 
 <h2 id="4004">Is PRADO Stable Enough?</h2>
 <p id="20004" class="block-content">
-Yes. PRADO was initially released in August 2004. Many test suites have been written and conducted frequently to ensure its quality. It has been used by thousands of developers and many Web applications have been developed based on it. Bugs and feature requests are managed through TRAC system and we have a great user community and development team to ensure all questions are answered in a timely fashion.
+Yes. PRADO was initially released in August 2004. Many test suites have been written and conducted frequently to ensure its quality. It has been used by thousands of developers and many Web applications have been developed based on it. Bugs and feature requests are managed through GitHub and we have a great user community and development team to ensure all questions are answered in a timely fashion.
 </p>
 
 <h2 id="205">History of PRADO</h2>
 <p id="20014" class="block-content">
-The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, I borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, I rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning the highest votes from both the public and the judges' panel.
+The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, Qiang Xue borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, Qiang rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning the highest votes from both the public and the judges' panel.
 </p>
 <p id="20015" class="block-content">
 In August 2004, PRADO started to be hosted on SourceForge as an open source project. Soon after, the project site <a href="http://www.xisc.com/">xisc.com</a> was announced to public. With the fantastic support of PRADO developer team and PRADO users, PRADO evolved to version 2.0 in mid 2005. In this version, Wei Zhuo contributed to PRADO with the excellent I18N and L10N support.
 </p>
 <p id="20016" class="block-content">
 In May 2005, we decided to completely rewrite the PRADO framework to resolve a few fundamental issues found in version 2.0 and to catch up with some cool features available in Microsoft ASP.NET 2.0. After nearly a year's hard work with over 50,000 lines of new code, version 3.0 was finally made available in April 2006.
+</p>
+<p class="block-content">
+In October 2008, the original development team released a new framework called <a href="http://www.yiiframework.com/">Yii</a>. Inheriting most of the PRADO code, Yii left the pages/events concept, focusing on a pure MVC design pattern. Since 2009 a lot of people contributed to PRADO fixing issues, developing new features or backporting them from Yii.
+</p>
+<p class="block-content">
+To promote a model of community-driven development, the project repositories were moved first on <a href="http://code.google.com/p/prado3/">Google Code</a> and then, in September 2013, on <a href="http://github.com/pradosoft/prado">GitHub</a>.
 </p>
 <p id="20017" class="block-content">
 Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x has grown up to a project that is suitable for serious business application development.

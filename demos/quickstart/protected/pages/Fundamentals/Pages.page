@@ -5,13 +5,25 @@
 Pages are top-most controls that have no parent. The presentation of pages are directly displayed to end-users. Users access pages by sending  page service requests.
 </p>
 <p id="130138" class="block-content">
-Each page must have a <a href="?page=Configurations.Templates1">template</a> file. The file name suffix must be <tt>.page</tt>. The file name (without suffix) is the page name. PRADO will try to locate a page class file under the directory containing the page template file. Such a page class file must have the same file name (suffixed with <tt>.php</tt>) as the template file. If the class file is not found, the page will take class <tt>TPage</tt>.
+Each page can have a <a href="?page=Configurations.Templates1">template</a> file. The file name suffix must be <tt>.page</tt>. The file name (without suffix) is the page name. PRADO will try to locate a page class file under the directory containing the page template file. Such a page class file must have the same file name (suffixed with <tt>.php</tt>) as the template file. If the class file is not found, the page will take class <tt>TPage</tt>.
 </p>
 
 <h2 id="902">PostBack</h2>
 <p id="130139" class="block-content">
 A form submission is called <i>postback</i> if the submission is made to the page containing the form. Postback can be considered an event happened on the client side, raised by the user. PRADO will try to identify which control on the server side is responsible for a postback event. If one is determined, for example, a <tt>TButton</tt>, we call it the postback event sender which will translate the postback event into some specific server-side event (e.g. <tt>OnClick</tt> and <tt>OnCommand</tt> events for <tt>TButton</tt>).
 
+</p>
+
+<h2>CallBack</h2>
+<p class="block-content">
+A <i>callback</i> is a special form submission that, instead of requiring a full page reload on the browser, gets executed in the background through an ajax call. So, a callback is considered a postback too, but not vice versa.
+<br/>
+A callback is handled as a normal postback but, instead of re-rendering the entire page, only the specific changes occured on the page gets sent back to the client and merged with the current browser page. A typical callback response consists of:
+<ol>
+	<li>one or more pieces of html code that will replace existing content on the page;</li>
+	<li>the javascript instructions needed to update the page;</li>
+	<li>some specific fields used by prado to mantain the pagestate and add the needed external resources (stylesheets, javascript files, etc..).</li>
+</ol>
 </p>
 
 <h2 id="903">Page Lifecycles</h2>
