@@ -11,7 +11,8 @@ Each page can have a <a href="?page=Configurations.Templates1">template</a> file
 <h2 id="902">PostBack</h2>
 <p id="130139" class="block-content">
 A form submission is called <i>postback</i> if the submission is made to the page containing the form. Postback can be considered an event happened on the client side, raised by the user. PRADO will try to identify which control on the server side is responsible for a postback event. If one is determined, for example, a <tt>TButton</tt>, we call it the postback event sender which will translate the postback event into some specific server-side event (e.g. <tt>OnClick</tt> and <tt>OnCommand</tt> events for <tt>TButton</tt>).
-
+<br/>
+<tt>TPage</tt> has a <tt>IsPostBack</tt> property exposing whether the current request being handled is the first request for this page or the consequence of a postback.
 </p>
 
 <h2>CallBack</h2>
@@ -24,6 +25,7 @@ A callback is handled as a normal postback but, instead of re-rendering the enti
 	<li>the javascript instructions needed to update the page;</li>
 	<li>some specific fields used by prado to mantain the pagestate and add the needed external resources (stylesheets, javascript files, etc..).</li>
 </ol>
+<tt>TPage</tt> has a <tt>IsCallBack</tt> property exposing whether the current request being handled is the consequence of a callback. Since a callback is also a postback, both <tt>IsPostBack</tt> and <tt>IsCallBack</tt> are true during callback requests.
 </p>
 
 <h2 id="903">Page Lifecycles</h2>

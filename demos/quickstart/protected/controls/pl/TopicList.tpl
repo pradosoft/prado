@@ -17,7 +17,6 @@
     <li><a href="?page=GettingStarted.HelloWorld">Tworzenie pierwszej aplikacji PRADO</a></li>
     <li><a href="?page=Fundamentals.Hangman">Przykład: gra wisielec</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Konwenter walut</a></li>
-    <li><a href="?page=Tutorial.AddressBook">Książka adresowa</a></li>    
 	  <li><a href="?page=Tutorial.AjaxChat">AJAX-owy klient czat</a></li>
     <li><a href="?page=GettingStarted.CommandLine">Narzędzie linii poleceń</a></li>
 </ul>
@@ -27,7 +26,7 @@
 <div>Postawy</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">Architektura</a></li>
-    <li><a href="?page=Fundamentals.Components">Komponenty</a></li>
+    <li><a href="?page=Fundamentals.Components1">Komponenty</a></li>
     <li><a href="?page=Fundamentals.Controls">Kontrolki</a></li>
     <li><a href="?page=Fundamentals.Pages">Strony</a></li>
     <li><a href="?page=Fundamentals.Modules">Moduły</a></li>

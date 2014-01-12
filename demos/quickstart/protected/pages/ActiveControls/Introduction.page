@@ -1,7 +1,204 @@
 <com:TContent ID="body">
-<h1 id="130037">Overview of Active Controls</h1>
+<h1 id="130037">AJAX: Introduction</h1>
 
-TODO:
-
+<p class="block-content">
+A classic webpage can only transfer data back to the server using an http postback request that requires a full page reload. This is a problem for web applications, since a synchronous page reload breaks the user interaction: the user must wait for the response to arrive and the page will lose its current status (the scrolling position, the currently focused control, etc..).
+</p>
 <img src=<%~ postback-callback.png %> class="figure" />
+<p class="block-content">
+A common solution to this problem is the use of AJAX (Asynchronous JavaScript and XML) callbacks. After the first full page load, the web application can make subsequents requests using javascript. The callback requests are asynchronous, so the user can continue to interact with the page while the response is loading. The response contains a list of changes that will be applied to the page "on the fly", like replacing existing elements with new content or add some css style to an existing element.
+</p>
+
+<h2>Interacting with a page on callback</h2>
+
+<p class="block-content">
+PRADO has builtin support for AJAX callbacks in the form of <i>Active Controls</i>. These controls can trigger a callback request and have their properties (value, css style, attributes, ..) updated during a callback.
+Before digging inside the list of Active Controls, it's good to have a look to how a page can be aware if the current request is a callback and how to interact with the page rendered on the client browser.
+<br/>
+The <tt>IsCallBack</tt> property of the <tt>TPage</tt> class exposes whether the current request being handled is the consequence of a callback, and the <a href="?page=ActiveControls.CallbackClientScript">CallbackClient</a> property provides many methods to update and alter the client-side content during a callback request.
+</p>
+
+<com:TTextHighlighter CssClass="source block-content">
+public function onClick($sender, $param)
+{
+	if($this->IsCallback)
+	{
+		$this->getCallbackClient()->hide($this->TextBox1);
+	}
+}
+</com:TTextHighlighter>
+
+<h1>Active Controls (AJAX enabled Controls)</h1>
+<p class="block-content">
+Active controls extends standard PRADO controls adding the ability to automatically update themselves on callbacks without the need of ad-hoc javascript calls. Active controls are reliant on a collection of javascript classes that gets added to the page automatically when needed.
+</p>
+
+<p class="block-content">
+Most active controls have a <tt>ActiveControl.EnableUpdate</tt> property that determines whether the active control is allowed to update the contents of the client-side when the callback response returns. Depending on the control different properties can be updated.
+</p>
+
+<p class="block-content">
+Some active controls can trigger a callback as a consequence of a clientside event (a button click, a checkbox being checked, a DOM event). The callback will first raise the normal serverside event associated to the control (eg: OnClick for a <tt>TButton</tt> or OnSelectedIndexChanged for a <tt>TRadioButtonList</tt>) and then the <tt>OnCallBack</tt> event.
+The <tt>AutoPostBack</tt> property typically defaults to true for these controls.
+</p>
+</p>
+
+<p class="block-content">
+Active controls have a <a href="?page=ActiveControls.CallbackClientSide">ClientSide</a> property that provides many subproperties to customize the controls and to hook some javascript code to the callback lifecycle, like showing a "Loading" logo at the start of a callback and hide it at the end.
+</p>
+
+<h2 id="122027">TActiveButton Class Diagram</h2>
+<p id="610414" class="block-content">The class diagram for <tt>TActiveButton</tt> is illustrated in the figure below.
+Most active control that can perform callback request have a similar structure.
+</p>
+
+<img src=<%~ TActiveButtonClass.png %> class="figure"
+	alt="TActiveButton class diagram" title="TActiveButton class diagram" />
+
+<p id="610415" class="block-content"><tt>TActiveButton</tt> is an extension of <a href="?page=Controls.Button">TButton</a>
+and implements two additional interfaces <tt>ICallbackEventHandler</tt> and
+<tt>IActiveControl</tt>. The <tt>TActiveButton</tt> contains an instance of
+<a href="?page=ActiveControls.BaseActiveControl">TBaseActiveCallbackControl</a>
+available through the <tt>ActiveControl</tt> property of <tt>TActiveButton</tt>.
+The following example set the callback parameter of the <tt>TActiveButton</tt> when
+a callback request is dispatched.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code1">
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" /&gt;
+</com:TTextHighlighter>
+<p id="610416" class="block-content">In the <tt>OnCallback</tt> event handler method, the <tt>CallbackParameter</tt>
+is available in the <tt>$param</tt> object.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code2">
+public function button_callback($sender, $param)
+{
+	echo $param->CallbackParameter; //outputs "value"
+}
+</com:TTextHighlighter>
+
+<h2 id="122028">Adding Client Side Behaviour</h2>
+
+<p id="610417" class="block-content">With in the <tt>ActiveControl</tt> property is an instance of
+<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> available
+as a property <tt>ClientSide</tt> of <tt>TActiveButton</tt>.
+The <tt>ClientSide</tt> property contains sub-properties, such as <tt>RequestTimeOut</tt>,
+and client-side javascript event handler, such as <tt>OnLoading</tt>,
+that are used by the client-side when making a callback request.
+The following example demonstrates the toggling of a "loading" indicator
+when the client-side is making a callback request.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code3">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+<span id="callback_status">Loading...</span>
+
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" &gt;
+	&lt;prop:ClientSide
+		OnLoading="Element.show('callback_status')"
+		OnComplete="Element.hide('callback_status')" /&gt;
+&lt;/com:TActiveButton&gt;
+</com:TTextHighlighter>
+
+<p id="610418" class="block-content">The example loads the "effects" javascript library using the
+<a href="?page=Controls.ClientScript">TClientScript</a> component.
+The <tt>ClientSide.OnLoading</tt> property value contains
+javascript statement that uses the "effects" library to show the "Loading..."
+span tag. Similarly, <tt>ClientSide.OnComplete</tt> property
+value contains the javascript statement that hides the "Loading..." span tag.
+See <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> for
+further details on client-side property details.
+</p>
+
+<h2 id="128036">Active Control Basic Infrastructure Classes</h2>
+<p id="640427" class="block-content">The following classes provide the basic infrastructure classes required to
+realize the active controls. They can be useful to develop new active controls, but Prado users tipically don't need
+to use them.</p>
+<ul id="u4" class="block-content">
+	<li>
+	<h3 id="190038">TActiveControlAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveControlAdapter" />
+	<p class="block-content">
+		<tt>TActiveControlAdapter</tt> customizes the parent TControl class for active control classes.
+		It tracks changes in the viewstate values of the control and update
+		differences of the client-side HTML element attributes.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="190039">TActiveListControlAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveListControlAdapter" />
+	<p class="block-content">
+		<tt>TActiveListControlAdapter</tt> allows the adapted list controls to change the selections
+		on the client-side during a callback request.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="190040">TActivePageAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActivePageAdapter" />
+	<p class="block-content">
+		<tt>TActivePageAdapter</tt> process the page life-cycle for callback requests.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="190041">TBaseActiveControl</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TBaseActiveControl" />
+	<p class="block-content">
+		<tt>TBaseActiveControl</tt> class provided additional basic properties common for every
+		active control. An instance of <tt>TBaseActiveControl</tt> or its decendent
+		<tt>TBaseActiveCallbackControl</tt> is created by <tt>TActiveControlAdapter::getBaseActiveControl()</tt>
+		method.
+		The <tt>EnableUpdate</tt> property determines wether the active
+		control is allowed to update the contents of the client-side when the callback
+		response returns.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="190042">TCallbackResponseAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackResponseAdapter" />
+	<p class="block-content">
+		<tt>TCallbackResponseAdapter</tt> alters the <tt>THttpResponse</tt>'s outputs.
+		A <tt>TCallbackResponseWriter</tt> is used instead of the <tt>TTextWrite</tt> when
+		<tt>createHtmlWriter</tt> is called. Each call to createHtmlWriter will create
+		a new <tt>TCallbackResponseWriter</tt>. When <tt>flushContent()</tt> is called each
+		instance of <tt>TCallbackResponseWriter</tt>'s content is flushed.
+		The callback response data can be set using the <tt>ResponseData</tt> property.
+	</p>
+	</li>
+
+</ul>
+
+<h2 id="190037">Active Control Infrastructure Advanced Classes</h2>
+<p class="block-content">The following classes provide advanced properties and events needed to realize the active controls.
+A Prado user can use them to customize active controls behaviour and interact directly with the client side during a callback.
+</p>
+<ul class="block-content">
+	<li>
+	<a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	methods to manipulate the client-side HTML elements, also includes methods
+	to invoke javascript Effects on HTML elements.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	is used to specify client-side callback request options and client-side event handlers.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackEventParameter">TCallbackEventParameter</a>
+	provides the parameter passed during the callback request.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	allows a common set of callback client-side options to be attached to one or more active controls.
+	</li>
+</ul>
 </com:TContent>

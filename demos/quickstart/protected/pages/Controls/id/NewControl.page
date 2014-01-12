@@ -10,7 +10,7 @@ Secara umum, ada dua cara penulisan kontrol baru: komposisi kontrol yang sudah a
 
 <h2 id="5402">Komposisi Kontrol yang Sudah Ada</h2>
 <p id="660430" class="block-content">
-Komposisi adalah cara termudah membuat kontrol baru. Ia melibatkan terutama penurunan kontrol yang sudah ada, mengkonfigurasinya dan menjadikannya unsur komponen. Properti dari unsur komponen diperlihatkan melalui <a href="?page=Fundamentals.Components">subproperti</a>.
+Komposisi adalah cara termudah membuat kontrol baru. Ia melibatkan terutama penurunan kontrol yang sudah ada, mengkonfigurasinya dan menjadikannya unsur komponen. Properti dari unsur komponen diperlihatkan melalui <a href="?page=Fundamentals.Components1">subproperti</a>.
 </p>
 <p id="660431" class="block-content">
 Seseorang dapat menciptakan sebuah kontrol baru dalam dua cara. Pertama adalah memperluas <tt>TCompositeControl</tt> dan mengganti metode <tt>TControl::createChildControls()</tt>. Kedua adalah memperluas <tt>TTemplateControl</tt> (atau kelas anaknya) dan menulis template kontrol. Yang terakhir lebih mudah digunakan dan bisa mengatur tata letak unsur komponen lebih intuitif, sementara pembentuk lebih efisien karena ia tidak perlu menguraikan template.
