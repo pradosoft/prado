@@ -19,6 +19,4 @@
 		})
 	</script>
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

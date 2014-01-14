@@ -1,5 +1,5 @@
 <!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>Prado Chat Demo</title>
@@ -17,14 +17,14 @@
 	<com:TPlaceHolder ID="userList" />
 </div>
 <div class="message-input">
-	<com:TActiveTextBox ID="userinput" 
+	<com:TActiveTextBox ID="userinput"
 		Columns="40" Rows="2" TextMode="MultiLine" />
 
-	<com:TActiveImageButton ID="sendButton" CssClass="send-button" 
+	<com:TActiveImageButton ID="sendButton" CssClass="send-button"
 		ImageUrl=<%~ send.gif %> OnClick="processMessage"/>
 </div>
 
-<com:TTimeTriggeredCallback OnCallback="refresh" 
+<com:TTimeTriggeredCallback OnCallback="refresh"
 	Interval="2" StartTimerOnLoad="true" />
 
 <com:TClientScript>
@@ -39,7 +39,6 @@
 	});
 </com:TClientScript>
 </com:TForm>
-		<com:TJavascriptLogger Visible="false"/>
 
 <div id="footer">
 Copyright &copy; 2007 <a href="http://www.pradosoft.com">PradoSoft</a>.

@@ -12,6 +12,5 @@
 
 <com:TActivePanel ID="pnlB">bar</com:TActivePanel>
 
-<com:TJavascriptLogger />
 
 </com:TForm>

@@ -170,7 +170,7 @@ as <tt>App_Code/chat.db</tt>.
 class ChatUserRecord extends TActiveRecord
 {
     const TABLE='chat_users';
-    
+
     public $username;
     public $last_activity;
 
@@ -431,7 +431,6 @@ and a button to send the message.
         Text="Send" /&gt;
 </div>
 &lt;/com:TForm&gt;
-&lt;com:TJavascriptLogger /&gt;
 </body>
 </html>
 </com:TTextHighlighter>

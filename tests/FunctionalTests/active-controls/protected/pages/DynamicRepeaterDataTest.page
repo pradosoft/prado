@@ -11,6 +11,5 @@
 </com:TRepeater>
 </com:TActivePanel>
 
-<com:TJavascriptLogger />
 
 </com:TForm>

@@ -27,5 +27,4 @@
 	<div style="padding: 2em; border:1px solid #ccc; margin-top:2em">
 		<com:TActiveLabel ID="label1" Text="Label 1" />
 	</div>
-	<com:TJavascriptLogger />
 </com:TForm>

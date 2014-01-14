@@ -14,7 +14,6 @@
 	Maxlength="12"
 	ValidationGroup="post"
 	OnCallback="lookupZipCode"/>
-<com:TJavascriptLogger />
 
 <com:TActiveTextBox ID="City" Columns="60" Maxlength="128" />
 

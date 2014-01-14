@@ -37,6 +37,4 @@
 		AIP
 	</com:TActivePanel>
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

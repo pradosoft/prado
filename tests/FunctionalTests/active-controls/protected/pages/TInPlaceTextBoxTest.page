@@ -61,7 +61,7 @@
 	<com:TActiveLabel ID="status" Text="Status:" />
 
 
-	<com:TInPlaceTextBox 
+	<com:TInPlaceTextBox
 		id="lblNewPackageTitle"
 		OnTextChanged="NewPackageSubject"
 		CssClass="textbox"
@@ -71,7 +71,5 @@
 	</com:TInPlaceTextBox>
 
 	<com:TActiveButton Text="ad" OnCallback="button_clicked" />
-
-	<com:TJavascriptLogger />
 
 </com:TForm>

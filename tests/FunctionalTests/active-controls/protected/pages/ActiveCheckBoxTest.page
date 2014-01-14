@@ -25,5 +25,4 @@
 		position: absolute; right: 0; top: 0">
 		Loading...
 	</div>
-	<com:TJavascriptLogger />
 </com:TForm>

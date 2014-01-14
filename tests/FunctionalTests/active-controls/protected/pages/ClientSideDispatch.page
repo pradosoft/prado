@@ -7,21 +7,20 @@
 			var link1 = Prado.CallbackRequest.getRequestById('<%= $this->link1->ClientID %>');
 			Prado.Callback('<%= $this->callback1->UniqueID %>', link1.getCallbackParameter());
 		</prop:ClientSide.OnSuccess>
-		
+
 	</com:TCallbackOptions>
 
 
-	<com:TActiveLinkButton 
+	<com:TActiveLinkButton
 		ID="link1"
-		Text="Tab 1" 
-		OnCallback="method2"  
-		ActiveControl.CallbackParameter="test" 
+		Text="Tab 1"
+		OnCallback="method2"
+		ActiveControl.CallbackParameter="test"
 		ActiveControl.CallbackOptions="options1"/>
 
 <com:TActiveLabel ID="status1" />
 
 <com:TActiveLabel ID="status2" />
 
-<com:TJavascriptLogger />
 
 </com:TForm>

@@ -3,6 +3,5 @@
 
 <com:TActiveButton Text="Redirect to Default Page" OnClick="button_clicked" />
 
-<com:TJavascriptLogger />
 
 </com:TForm>

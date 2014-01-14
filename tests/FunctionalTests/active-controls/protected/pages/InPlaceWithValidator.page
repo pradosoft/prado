@@ -60,19 +60,18 @@
     ValidationGroup="Group"
     />
   <br />
-  <com:TActiveButton ID="active_button" 
-    Text="Active Submit" 
+  <com:TActiveButton ID="active_button"
+    Text="Active Submit"
     ValidationGroup="Group"
     CausesValidation="true"
     OnCallback="button_valid"
-    />  
-  <com:TButton ID="passive_button" 
-    Text="Passive Submit" 
+    />
+  <com:TButton ID="passive_button"
+    Text="Passive Submit"
     ValidationGroup="Group"
     CausesValidation="true"
     OnClick="button_valid"
-    />  
+    />
   <br />
   <com:TActiveLabel ID="status" Text="Status:" />
-  <com:TJavascriptLogger />
 </com:TForm>

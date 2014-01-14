@@ -17,6 +17,5 @@ here.
 
 <com:TActiveLabel ID="status" />
 
-<com:TJavascriptLogger />
 
 </com:TForm>

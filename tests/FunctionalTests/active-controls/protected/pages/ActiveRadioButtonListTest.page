@@ -17,6 +17,4 @@
 		<com:TActiveButton ID="button4" Text="Select Index 4" OnClick="select_index_4" />
 	</div>
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

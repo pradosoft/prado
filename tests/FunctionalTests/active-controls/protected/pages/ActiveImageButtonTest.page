@@ -19,6 +19,4 @@
 	<com:TActiveButton ID="button3" Text="Change Align" OnClick="change_align" />
 	<com:TActiveButton ID="button4" Text="Change Description" OnClick="change_description" />
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

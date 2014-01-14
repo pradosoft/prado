@@ -20,5 +20,4 @@ anyway since they are placed inside the active panel.
 </com:TActivePanel>
 </td></tr>
 </table>
-<com:TJavascriptLogger />
 </com:TContent>
