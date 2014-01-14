@@ -58,7 +58,7 @@
 				<li>
 					&lt;&lt;
 					<span class="select"><%# $this->Data %></span>
-					 &gt;&gt; 
+					 &gt;&gt;
 				</li>
 			</prop:Suggestions.ItemTemplate>
 		</com:TAutoComplete>
@@ -79,7 +79,7 @@
 			OnSuggest="suggestCountries"
 			OnCallback="callback_requested"
 			OnSuggestionSelected="suggestion_selected"
-			ResultPanel.CssClass="autocomplete" 
+			ResultPanel.CssClass="autocomplete"
 			MinChars="4" Frequency="2" />
 
 	<p><br /></p>
@@ -91,5 +91,4 @@
 	<p><br /></p>
 	<p><br /></p>
 	<p><br /></p>
-	<com:TJavascriptLogger />
 </com:TForm>

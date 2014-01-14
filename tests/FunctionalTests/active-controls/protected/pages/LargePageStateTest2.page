@@ -5,7 +5,6 @@
 
 <com:TActiveButton Text="Show Changes" OnClick="button_clicked"/>
 <com:TActiveLabel ID="status" />
-<com:TJavascriptLogger />
 <com:TPanel ID="Panel1">
 
 </com:TPanel>

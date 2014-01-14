@@ -19,6 +19,4 @@
 		<com:TActiveButton ID="button5" Text="Select Values 'value 2', 'value 5'" OnClick="select_values_25" />
 	</div>
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

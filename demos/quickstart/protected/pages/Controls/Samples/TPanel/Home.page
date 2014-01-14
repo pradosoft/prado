@@ -67,6 +67,5 @@ will be clicked because it is set as the default button of the panel.
 </com:TPanel>
 </td></tr>
 </table>
-<com:TJavascriptLogger />
 
 </com:TContent>

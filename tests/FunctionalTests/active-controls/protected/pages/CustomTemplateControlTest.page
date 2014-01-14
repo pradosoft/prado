@@ -10,7 +10,4 @@
 	<com:TActivePanel ID="placeholder" />
 
 	<com:TActiveLabel ID="label1" Text="Label 1" />
-
-
-	<com:TJavascriptLogger />
 </com:TForm>

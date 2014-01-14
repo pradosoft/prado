@@ -26,6 +26,4 @@
 		<com:TButton ID="button5" Text="Post Back" OnClick="do_postback"/>
 	</div>
 
-	<com:TJavascriptLogger />
-
 </com:TForm>

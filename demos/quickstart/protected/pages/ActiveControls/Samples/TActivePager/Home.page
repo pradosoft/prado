@@ -99,5 +99,4 @@ Choose page:
 			Element.hide('wait')
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
-<com:TJavascriptLogger/>
 </com:TContent>

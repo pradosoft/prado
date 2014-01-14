@@ -36,6 +36,5 @@
  This is the contents of panel C
 </com:TActivePanel>
 
-<com:TJavascriptLogger />
 
 </com:TForm>
