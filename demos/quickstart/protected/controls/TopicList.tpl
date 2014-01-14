@@ -59,6 +59,7 @@
     <li><a href="?page=Controls.Data">Data Controls</a></li>
     <li><a href="?page=ActiveControls.Introduction">AJAX: Introduction</a></li>
     <li><a href="?page=ActiveControls.Home">Active Controls (AJAX)</a></li>
+    <li><a href="?page=JuiControls.Home">Jui Controls (jQuery UI)</a></li>
     <li><a href="?page=Controls.NewControl">Writing New Controls</a></li>
 </ul>
 </div>

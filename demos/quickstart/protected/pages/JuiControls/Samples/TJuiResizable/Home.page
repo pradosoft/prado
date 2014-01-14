@@ -1,0 +1,25 @@
+<com:TContent ID="body">
+<h1>TJuiResizable Samples</h1>
+
+<com:TStyleSheet>
+	.resizable {
+		width: 150px;
+		height: 150px;
+		padding: 0.5em;
+		background: #fff;
+		border: 1px solid #000;
+	}
+	</com:TStyleSheet>
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options with a little css applied:
+</td><td class="sampleaction">
+	<com:TJuiResizable CssClass="resizable">
+	 Resize me!
+	</com:TJuiResizable>
+</td></tr>
+
+</table>
+
+</com:TContent>

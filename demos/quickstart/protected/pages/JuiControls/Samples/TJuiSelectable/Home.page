@@ -1,0 +1,38 @@
+<com:TContent ID="body">
+<h1>TJuiSelectable Samples</h1>
+
+<com:TStyleSheet>
+	.ui-selectable {
+		list-style: none;
+		cursor: pointer;
+	}
+	.ui-selectable li {
+		border: 1px solid transparent;
+		padding: 3px;
+		border-radius:3px;
+	}
+
+	.ui-selectable li:hover {
+		background: #FECA40;
+		border: 1px solid black;
+	}
+
+	.ui-selecting {
+		background: #FECA40;
+	}
+	.ui-selected {
+		background: #F39814; color: white;
+	}
+</com:TStyleSheet>
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options with a little css applied:
+</td><td class="sampleaction">
+	<com:TJuiSelectable ID="repeater1"  onSelectedIndexChanged="repeater1_onSelectedIndexChanged"/>
+	<com:TActiveLabel ID="label1" />
+</td></tr>
+
+</table>
+
+</com:TContent>

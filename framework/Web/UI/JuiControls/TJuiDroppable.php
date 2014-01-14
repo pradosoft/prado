@@ -106,7 +106,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 	/**
 	 * Raises the onDrop event.
-	 * The drop parameters are encapsulated into a {@link TDropContainerEventParameter}
+	 * The drop parameters are encapsulated into a {@link TJuiDroppableEventParameter}
 	 *
 	 * @param object $dropControlId
 	 */
@@ -150,8 +150,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
  * TJuiDroppableEventParameter encapsulate the parameter
  * data for <b>OnDrop</b> event of TJuiDroppable components
  *
- * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.JuiControls
  */

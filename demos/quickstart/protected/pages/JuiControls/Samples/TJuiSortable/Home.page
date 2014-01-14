@@ -1,0 +1,32 @@
+<com:TContent ID="body">
+<h1>TJuiSortable Samples</h1>
+
+<com:TStyleSheet>
+	.ui-sortable {
+		list-style: none;
+		cursor: pointer;
+	}
+
+	.ui-sortable li {
+		border: 1px solid transparent;
+		padding: 3px;
+		border-radius:3px;
+	}
+
+	.ui-sortable li:hover {
+		background: lime;
+		border: 1px solid black;
+	}
+</com:TStyleSheet>
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options with a little css applied:
+</td><td class="sampleaction">
+	<com:TJuiSortable ID="repeater1" onSort="repeater1_onSort"/>
+	<com:TActiveLabel ID="label1" />
+</td></tr>
+
+</table>
+
+</com:TContent>

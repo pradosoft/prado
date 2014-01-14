@@ -28,7 +28,7 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */
-class TJuiSortable extends TActivePanel implements IJuiOptions
+class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -68,6 +68,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions
 	protected function getPostBackOptions()
 	{
 		$options = $this->getOptions()->toArray();
+		$options['stop'] = new TJavaScriptLiteral("function( event, ui ) { Prado.Callback(".TJavascript::encode($this->getUniqueID()).", { 'order' : jQuery(this).sortable('toArray') }) }");
 		return $options;
 	}
 
@@ -86,33 +87,70 @@ class TJuiSortable extends TActivePanel implements IJuiOptions
 	}
 
 	/**
+	 * Raises callback event. This method is required bu {@link ICallbackEventHandler}
+	 * interface.
+	 * It raises the {@link onSort onSort} event, then, the {@link onCallback OnCallback} event
+	 * This method is mainly used by framework and control developers.
+	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 */
+	public function raiseCallbackEvent($param)
+	{
+		$this->onSort($param->getCallbackParameter());
+		$this->onCallback($param);
+	}
+
+	/**
+	 * Raises the onSort event.
+	 * The order parameters are encapsulated into a {@link TJuiSortableEventParameter}
+	 *
+	 * @param object $params
+	 */
+	public function onSort($params)
+	{
+		$this->raiseEvent('onSort', $this, new TJuiSortableEventParameter ($this->getResponse(), $params));
+
+	}
+
+	/**
+	 * This method is invoked when a callback is requested. The method raises
+	 * 'OnCallback' event to fire up the event handlers. If you override this
+	 * method, be sure to call the parent implementation so that the event
+	 * handler can be invoked.
+	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onCallback($param)
+	{
+		$this->raiseEvent('OnCallback', $this, $param);
+	}
+
+	/**
 	 * @var ITemplate template for repeater items
 	 */
 	private $_repeater=null;
 
 	/**
-	 * @param array data source for Selectables.
+	 * @param array data source for Sortables.
 	 */
 	public function setDataSource($data)
 	{
-		$this->getSelectables()->setDataSource($data);
+		$this->getSortables()->setDataSource($data);
 	}
 
 	/**
-	 * Overrides parent implementation. Callback {@link renderSelectables()} when
+	 * Overrides parent implementation. Callback {@link renderSortables()} when
 	 * page's IsCallback property is true.
 	 */
 	public function dataBind()
 	{
 		parent::dataBind();
 		if($this->getPage()->getIsCallback())
-			$this->renderSelectables($this->getResponse()->createHtmlWriter());
+			$this->renderSortables($this->getResponse()->createHtmlWriter());
 	}
 
 	/**
 	 * @return TRepeater suggestion list repeater
 	 */
-	public function getSelectables()
+	public function getSortables()
 	{
 		if($this->_repeater===null)
 			$this->_repeater = $this->createRepeater();
@@ -120,14 +158,14 @@ class TJuiSortable extends TActivePanel implements IJuiOptions
 	}
 
 	/**
-	 * @return TRepeater new instance of TRepater to render the list of Selectables.
+	 * @return TRepeater new instance of TRepater to render the list of Sortables.
 	 */
 	protected function createRepeater()
 	{
 		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
 		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="'.$this->getClientId().'_0'.'">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li><%# $this->DataItem %></li>',null));
+		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));
 		$repeater->setEmptyTemplate(new TJuiSortableTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;
@@ -162,4 +200,19 @@ class TJuiSortableTemplate extends TComponent implements ITemplate
 	{
 		$parent->getControls()->add($this->_template);
 	}
+}
+
+/**
+ * TJuiSortableEventParameter class
+ *
+ * TJuiSortableEventParameter encapsulate the parameter
+ * data for <b>OnSort</b> event of TJuiSortable components
+ *
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
+ * @license http://www.pradosoft.com/license
+ * @package System.Web.UI.JuiControls
+ */
+class TJuiSortableEventParameter extends TCallbackEventParameter
+{
+	public function getOrder()		{ return $this->getCallbackParameter()->order; }
 }

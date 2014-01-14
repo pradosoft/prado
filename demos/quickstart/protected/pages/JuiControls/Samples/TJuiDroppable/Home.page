@@ -1,0 +1,48 @@
+<com:TContent ID="body">
+<h1>TJuiDraggable Samples</h1>
+
+<com:TStyleSheet>
+	.ui-draggable {
+		width: 100px;
+		height:100px;
+		background-color: lime;
+		border: 1px solid black;
+		padding: 1em;
+	}
+	.ui-droppable {
+		width: 150px;
+		height:150px;
+		border: 1px solid black;
+		padding: 1em;
+		margin: 1em;
+	}
+	.drop-yellow {
+		background-color: yellow;
+	}
+	.drop-red {
+		background-color: red;
+	}
+</com:TStyleSheet>
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options with a little css applied:
+</td><td class="sampleaction" style="height:600px">
+	<com:TJuiDraggable>
+	Drag me around
+	</com:TJuiDraggable>
+
+	<com:TJuiDroppable OnDrop="drop1_ondrop" CssClass="drop-yellow">
+	Drop it here!
+	<br/><com:TActiveLabel ID="label1" />
+	</com:TJuiDroppable ID="drop1">
+
+	<com:TJuiDroppable OnDrop="drop2_ondrop" CssClass="drop-red">
+	Drop it here!
+	<br/><com:TActiveLabel ID="label2" />
+	</com:TJuiDroppable ID="drop1">
+</td></tr>
+
+</table>
+
+</com:TContent>

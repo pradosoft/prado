@@ -1,0 +1,49 @@
+<com:TContent ID="body" >
+<h1>Jui Controls (jQuery UI)</h1>
+<p class="block-content">
+Jui controls are the PRADO port of the standard <a href="http://jqueryui.com/">jQuery UI</a> widgets. They can be used as standard <a href="?page=ActiveControls.Introduction">Active Controls</a>, but will automatically load the needed jQuery UI javascript libraries. Jui controls have a <tt>Options</tt> property used to pass options to the underlying javascript object. For informations of the specific options of each widget, follow the <a href="http://api.jqueryui.com/category/widgets/">API Documentation</a> for the specific widget.
+</p>
+
+<h2>PRADO Jui interactions controls</h2>
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=JuiControls.TJuiDraggable">TJuiDraggable</a>
+  is an element that can be moved using the mouse.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiDraggable.Home" />
+  </li>
+
+  <li>
+  <a href="?page=JuiControls.TJuiDroppable">TJuiDroppable</a>
+  is an area where TJuiDraggable elements can be released.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiDroppable.Home" />
+  </li>
+
+  <li>
+  <a href="?page=JuiControls.TJuiResizable">TJuiResizable</a>
+  is an element that cna be resized using the mouse.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiResizable.Home" />
+  </li>
+
+  <li>
+  <a href="?page=JuiControls.TJuiSelectable">TJuiSelectable</a>
+  displays a list of elements that can be selected individually.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiSelectable.Home" />
+  </li>
+
+  <li>
+  <a href="?page=JuiControls.TJuiSortable">TJuiSortable</a>
+  displays a list of elements that can be selected individually.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiSortable.Home" />
+  </li>
+</ul>
+
+<h2>PRADO Jui controls</h2>
+<ul id="u2" class="block-content">
+  <li>
+  <a href="?page=JuiControls.TJuiAutocomplete">TJuiAutocomplete</a>
+  displays a textbox where the user can choose from a list of suggestions.
+  <com:RunBar PagePath="JuiControls.Samples.TJuiAutocomplete.Home" />
+  </li>
+</ul>
+
+</com:TContent>

@@ -1,0 +1,25 @@
+<com:TContent ID="body">
+<h1>TJuiDraggable Samples</h1>
+
+<com:TStyleSheet>
+	.ui-draggable {
+		width: 100px;
+		height:100px;
+		background-color: lime;
+		border: 1px solid black;
+		padding: 1em;
+	}
+</com:TStyleSheet>
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options with a little css applied:
+</td><td class="sampleaction" style="height:600px">
+	<com:TJuiDraggable>
+	Drag me around
+	</com:TJuiDraggable>
+</td></tr>
+
+</table>
+
+</com:TContent>
