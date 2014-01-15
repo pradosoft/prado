@@ -33,34 +33,34 @@ class TMemCacheTest extends PHPUnit_Framework_TestCase {
 	public function testInit() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testPrimaryCache() {
 		self::$cache->PrimaryCache = true;
 		self::assertEquals(true, self::$cache->PrimaryCache);
 		self::$cache->PrimaryCache = false;
 		self::assertEquals(false, self::$cache->PrimaryCache);
 	}
-	
+
 	public function testKeyPrefix() {
 		self::$cache->KeyPrefix = 'prefix';
 		self::assertEquals('prefix', self::$cache->KeyPrefix);
 	}
-	
+
 	public function testSetAndGet() {
 		self::$cache->set('key', 'value');
 		self::assertEquals('value', self::$cache->get('key'));
 	}
-	
+
 	public function testAdd() {
 		self::$cache->add('anotherkey', 'value');
 		self::assertEquals('value', self::$cache->get('anotherkey'));
 	}
-	
+
 	public function testDelete() {
 		self::$cache->delete('key');
 		self::assertEquals(false, self::$cache->get('key'));
 	}
-	
+
 	public function testFlush() {
 		$this->testSetAndGet();
 		self::assertEquals(true, self::$cache->flush());
@@ -68,4 +68,3 @@ class TMemCacheTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

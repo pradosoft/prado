@@ -171,5 +171,3 @@ class ForeignKeyTestCase extends UnitTestCase
 	}
 
 }
-
-?>

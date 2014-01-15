@@ -5,5 +5,3 @@ $test_cases = dirname(__FILE__)."/";
 
 $tester = new PradoUnitTester($test_cases);
 $tester->run(new HtmlReporter());
-
-?>

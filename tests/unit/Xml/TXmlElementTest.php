@@ -7,7 +7,7 @@ Prado::using('System.Xml.TXmlDocument');
  */
 class TXmlElementTest extends PHPUnit_Framework_TestCase {
 
-	public function setUp() {	
+	public function setUp() {
 	}
 
 	public function testConstruct() {
@@ -80,4 +80,3 @@ class TXmlElementTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals('<tag key="value">value</tag>', (string)$element);
 	}
 }
-?>

@@ -60,5 +60,3 @@ class FindByPksTestCase extends UnitTestCase
 		$this->assertEqual($dep->section_id, $sec_id);
 	}
 }
-
-?>

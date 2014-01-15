@@ -29,5 +29,3 @@ function print_funcs($props)
 		echo $getter.$setter."\n";
 	}
 }
-
-?>

@@ -504,4 +504,3 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	self::assertEquals('testService', $request->resolveRequest(array ('page', 'testService')));
   }
 }
-?>

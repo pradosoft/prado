@@ -19,5 +19,3 @@ class Other
 	public function getLong(){ return $this->_Long; }
 	public function setLong($value){ $this->_Long = $value; }
 }
-
-?>

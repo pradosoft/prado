@@ -216,5 +216,3 @@ class TDbCommandTest extends PHPUnit_Framework_TestCase
 		}
 	}
 }
-
-?>

@@ -29,5 +29,3 @@ class BaseActiveRecordTestCase extends UnitTestCase
 		}
 	}
 }
-
-?>

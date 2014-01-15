@@ -41,5 +41,3 @@ class MysqlMessageSourceTestCase extends UnitTestCase
 	}
 */
 }
-
-?>

@@ -20,7 +20,7 @@ class TTextWriterTest extends PHPUnit_Framework_TestCase {
 		$writer->write("more text\n");
 		self::assertEquals("some text\nmore text\n", $writer->flush());
 	}
-	
+
 	public function testWriteLine() {
 		$writer = new TTextWriter();
 		$writer->writeLine('some text');
@@ -28,4 +28,3 @@ class TTextWriterTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-?>

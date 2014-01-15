@@ -11,7 +11,7 @@
      */
     require_once(dirname(__FILE__) . '/url.php');
     /**#@-*/
-    
+
     /**
      *    Cookie data holder. Cookie rules are full of pretty
      *    arbitary stuff. I have used...
@@ -27,7 +27,7 @@
         protected $_path;
         protected $_expiry;
         protected $_is_secure;
-        
+
         /**
          *    Constructor. Sets the stored values.
          *    @param string $name            Cookie key.
@@ -49,7 +49,7 @@
             }
             $this->_is_secure = $is_secure;
         }
-        
+
         /**
          *    Sets the host. The cookie rules determine
          *    that the first two parts are taken for
@@ -67,7 +67,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Accessor for the truncated host to which this
          *    cookie applies.
@@ -77,7 +77,7 @@
         function getHost() {
             return $this->_host;
         }
-        
+
         /**
          *    Test for a cookie being valid for a host name.
          *    @param string $host    Host to test against.
@@ -87,7 +87,7 @@
         function isValidHost($host) {
             return ($this->_truncateHost($host) === $this->getHost());
         }
-        
+
         /**
          *    Extracts just the domain part that determines a
          *    cookie's host validity.
@@ -104,7 +104,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Accessor for name.
          *    @return string       Cookie key.
@@ -113,7 +113,7 @@
         function getName() {
             return $this->_name;
         }
-        
+
         /**
          *    Accessor for value. A deleted cookie will
          *    have an empty string for this.
@@ -123,7 +123,7 @@
         function getValue() {
             return $this->_value;
         }
-        
+
         /**
          *    Accessor for path.
          *    @return string       Valid cookie path.
@@ -132,7 +132,7 @@
         function getPath() {
             return $this->_path;
         }
-        
+
         /**
          *    Tests a path to see if the cookie applies
          *    there. The test path must be longer or
@@ -147,7 +147,7 @@
                     $this->getPath(),
                     strlen($this->getPath())) == 0);
         }
-        
+
         /**
          *    Accessor for expiry.
          *    @return string       Expiry string.
@@ -159,7 +159,7 @@
             }
             return gmdate("D, d M Y H:i:s", $this->_expiry) . " GMT";
         }
-        
+
         /**
          *    Test to see if cookie is expired against
          *    the cookie format time or timestamp.
@@ -180,7 +180,7 @@
             }
             return ($this->_expiry < $now);
         }
-        
+
         /**
          *    Ages the cookie by the specified number of
          *    seconds.
@@ -192,7 +192,7 @@
                 $this->_expiry -= $interval;
             }
         }
-        
+
         /**
          *    Accessor for the secure flag.
          *    @return boolean       True if cookie needs SSL.
@@ -201,7 +201,7 @@
         function isSecure() {
             return $this->_is_secure;
         }
-        
+
         /**
          *    Adds a trailing and leading slash to the path
          *    if missing.
@@ -218,7 +218,7 @@
             return $path;
         }
     }
-    
+
     /**
      *    Repository for cookies. This stuff is a
      *    tiny bit browser dependent.
@@ -227,7 +227,7 @@
      */
     class SimpleCookieJar {
         protected $_cookies;
-        
+
         /**
          *    Constructor. Jar starts empty.
          *    @access public
@@ -235,7 +235,7 @@
         function SimpleCookieJar() {
             $this->_cookies = array();
         }
-        
+
         /**
          *    Removes expired and temporary cookies as if
          *    the browser was closed and re-opened.
@@ -258,7 +258,7 @@
             }
             $this->_cookies = $surviving_cookies;
         }
-        
+
         /**
          *    Ages all cookies in the cookie jar.
          *    @param integer $interval     The old session is moved
@@ -272,7 +272,7 @@
                 $this->_cookies[$i]->agePrematurely($interval);
             }
         }
-        
+
         /**
          *    Sets an additional cookie. If a cookie has
          *    the same name and path it is replaced.
@@ -290,7 +290,7 @@
             }
             $this->_cookies[$this->_findFirstMatch($cookie)] = $cookie;
         }
-        
+
         /**
          *    Finds a matching cookie to write over or the
          *    first empty slot if none.
@@ -311,7 +311,7 @@
             }
             return count($this->_cookies);
         }
-        
+
         /**
          *    Reads the most specific cookie value from the
          *    browser cookies. Looks for the longest path that
@@ -335,7 +335,7 @@
             }
             return (isset($value) ? $value : false);
         }
-        
+
         /**
          *    Tests cookie for matching against search
          *    criteria.
@@ -359,7 +359,7 @@
             }
             return true;
         }
-        
+
         /**
          *    Uses a URL to sift relevant cookies by host and
          *    path. Results are list of strings of form "name=value".
@@ -377,4 +377,3 @@
             return $pairs;
         }
     }
-?>

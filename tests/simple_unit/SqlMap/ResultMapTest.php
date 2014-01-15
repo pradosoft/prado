@@ -269,5 +269,3 @@ class ResultMapTest extends BaseCase
 */
 
 }
-
-?>

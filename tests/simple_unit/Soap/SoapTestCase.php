@@ -35,7 +35,7 @@ class SoapTestCase extends UnitTestCase
 	{
 		try
 		{
-			$result = $this->getClient()->getContact(1);	
+			$result = $this->getClient()->getContact(1);
 			$this->fail();
 		}
 		catch (SoapFault $f)
@@ -88,4 +88,3 @@ class SoapTestCase extends UnitTestCase
 	}
 }
 
-?>

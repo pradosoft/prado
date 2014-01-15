@@ -22,39 +22,39 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		$sec->init(null);
 		self::assertEquals ($sec, self::$app->getSecurityManager());
 	}
-	
+
 	public function testValidationKey() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
 		// Random validation key
 		$valkey=$sec->getValidationKey ();
 		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
-		
+
 		$sec->setValidationKey ('aKey');
 		self::assertEquals('aKey',$sec->getValidationKey());
-		
+
 		try {
 			$sec->setValidationKey ('');
 			self::fail ('Expected TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {}
 	}
-	
+
 	public function testEncryptionKey() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
 		// Random encryption key
 		$valkey=$sec->getEncryptionKey ();
 		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
-		
+
 		$sec->setEncryptionKey ('aKey');
 		self::assertEquals('aKey',$sec->getEncryptionKey());
-		
+
 		try {
 			$sec->setEncryptionKey ('');
 			self::fail ('Expected TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {}
 	}
-	
+
 	public function testValidation() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
@@ -67,7 +67,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 			self::fail ('Expected TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {}
 	}
-	
+
 	public function testEncryption() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
@@ -79,7 +79,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 			self::assertEquals('NotExisting', $sec->getCryptAlgorithm());
 		}
 	}
-	
+
 	public function testEncryptDecrypt() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
@@ -101,13 +101,13 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 
 			self::assertEquals($plainText,$decrypted);
 
-			// try change key 
+			// try change key
 			$sec->setEncryptionKey ('anotherKey');
 			self::assertNotEquals($plainText, $sec->decrypt($encrypted));
 		}
 	}
-	
-	
+
+
 	public function testHashData() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
@@ -118,7 +118,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals (54, strlen($hashed));
 		// The initial text should be after the initial hash
 		self::assertEquals ('A text to hash', substr($hashed,40));
-		
+
 		// Same tests with MD5
 		$sec->setValidationKey('AnotherKey');
 		$sec->setValidation('MD5');
@@ -128,7 +128,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		// The initial text should be after the initial hash
 		self::assertEquals ('A text to hash', substr($hashed,32));
 	}
-	
+
 	public function testValidateData() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
@@ -142,8 +142,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		// and a test without tampered data
 		self::assertFalse($sec->validateData('bad'));
 	}
-	
+
 
 }
 
-?>

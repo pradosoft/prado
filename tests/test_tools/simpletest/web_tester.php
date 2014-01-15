@@ -14,7 +14,7 @@
     require_once(dirname(__FILE__) . '/page.php');
     require_once(dirname(__FILE__) . '/expectation.php');
     /**#@-*/
-    
+
     /**
      *    Test for an HTML widget value match.
 	 *	  @package SimpleTest
@@ -22,7 +22,7 @@
      */
     class FieldExpectation extends SimpleExpectation {
         protected $_value;
-        
+
         /**
          *    Sets the field value to compare against.
          *    @param mixed $value     Test value to match. Can be an
@@ -38,7 +38,7 @@
             }
             $this->_value = $value;
         }
-        
+
         /**
          *    Tests the expectation. True if it matches
          *    a string value or an array value in any order.
@@ -59,7 +59,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Tests for valid field comparisons with a single option.
          *    @param mixed $value       Value to type check.
@@ -69,7 +69,7 @@
         function _isSingle($value) {
             return is_string($value) || is_integer($value) || is_float($value);
         }
-        
+
         /**
          *    String comparison for simple field with a single option.
          *    @param mixed $compare    String to test against.
@@ -85,7 +85,7 @@
             }
             return ($this->_value == $compare);
         }
-        
+
         /**
          *    List comparison for multivalue field.
          *    @param mixed $compare    List in any order to test against.
@@ -102,7 +102,7 @@
             sort($compare);
             return ($this->_value === $compare);
         }
-        
+
         /**
          *    Returns a human readable test message.
          *    @param mixed $compare      Comparison value.
@@ -125,7 +125,7 @@
             }
         }
     }
-    
+
     /**
      *    Test for a specific HTTP header within a header block.
 	 *	  @package SimpleTest
@@ -134,7 +134,7 @@
     class HttpHeaderExpectation extends SimpleExpectation {
         protected $_expected_header;
         protected $_expected_value;
-        
+
         /**
          *    Sets the field and value to compare against.
          *    @param string $header   Case insenstive trimmed header name.
@@ -150,7 +150,7 @@
             $this->_expected_header = $this->_normaliseHeader($header);
             $this->_expected_value = $value;
         }
-        
+
         /**
          *    Accessor for aggregated object.
          *    @return mixed        Expectation set in constructor.
@@ -159,7 +159,7 @@
         function _getExpectation() {
             return $this->_expected_value;
         }
-        
+
         /**
          *    Removes whitespace at ends and case variations.
          *    @param string $header    Name of header.
@@ -170,7 +170,7 @@
         function _normaliseHeader($header) {
             return strtolower(trim($header));
         }
-        
+
         /**
          *    Tests the expectation. True if it matches
          *    a string value or an array value in any order.
@@ -181,7 +181,7 @@
         function test($compare) {
             return is_string($this->_findHeader($compare));
         }
-        
+
         /**
          *    Searches the incoming result. Will extract the matching
          *    line as text.
@@ -198,7 +198,7 @@
             }
             return false;
         }
-        
+
         /**
          *    Compares a single header line against the expectation.
          *    @param string $line      A single line to compare.
@@ -215,7 +215,7 @@
             }
             return $this->_testHeaderValue($value, $this->_expected_value);
         }
-        
+
         /**
          *    Tests the value part of the header.
          *    @param string $value        Value to test.
@@ -232,7 +232,7 @@
             }
             return (trim($value) == trim($expected));
         }
-        
+
         /**
          *    Returns a human readable test message.
          *    @param mixed $compare      Raw header block to search.
@@ -254,7 +254,7 @@
             }
         }
     }
-      
+
     /**
      *    Test for a specific HTTP header within a header block that
      *    should not be found.
@@ -264,7 +264,7 @@
     class NoHttpHeaderExpectation extends HttpHeaderExpectation {
         protected $_expected_header;
         protected $_expected_value;
-        
+
         /**
          *    Sets the field and value to compare against.
          *    @param string $unwanted   Case insenstive trimmed header name.
@@ -274,7 +274,7 @@
         function NoHttpHeaderExpectation($unwanted, $message = '%s') {
             $this->HttpHeaderExpectation($unwanted, false, $message);
         }
-        
+
         /**
          *    Tests that the unwanted header is not found.
          *    @param mixed $compare   Raw header block to search.
@@ -284,7 +284,7 @@
         function test($compare) {
             return ($this->_findHeader($compare) === false);
         }
-        
+
         /**
          *    Returns a human readable test message.
          *    @param mixed $compare      Raw header block to search.
@@ -301,7 +301,7 @@
             }
         }
     }
-    
+
     /**
      *    Test for a text substring.
 	 *	  @package SimpleTest
@@ -309,7 +309,7 @@
      */
     class TextExpectation extends SimpleExpectation {
         protected $_substring;
-        
+
         /**
          *    Sets the value to compare against.
          *    @param string $substring  Text to search for.
@@ -320,7 +320,7 @@
             $this->SimpleExpectation($message);
             $this->_substring = $substring;
         }
-        
+
         /**
          *    Accessor for the substring.
          *    @return string       Text to match.
@@ -329,7 +329,7 @@
         function _getSubstring() {
             return $this->_substring;
         }
-        
+
         /**
          *    Tests the expectation. True if the text contains the
          *    substring.
@@ -340,7 +340,7 @@
         function test($compare) {
             return (strpos($compare, $this->_substring) !== false);
         }
-        
+
         /**
          *    Returns a human readable test message.
          *    @param mixed $compare      Comparison value.
@@ -358,7 +358,7 @@
                         $dumper->describeValue($compare) . "]";
             }
         }
-        
+
         /**
          *    Describes a pattern match including the string
          *    found and it's position.
@@ -374,7 +374,7 @@
                     $dumper->clipString($subject, 100, $position) . "]";
         }
     }
-    
+
     /**
      *    Fail if a substring is detected within the
      *    comparison text.
@@ -382,7 +382,7 @@
 	 *	  @subpackage UnitTester
      */
     class NoTextExpectation extends TextExpectation {
-        
+
         /**
          *    Sets the reject pattern
          *    @param string $substring  Text to search for.
@@ -392,7 +392,7 @@
         function NoTextExpectation($substring, $message = '%s') {
             $this->TextExpectation($substring, $message);
         }
-        
+
         /**
          *    Tests the expectation. False if the substring appears
          *    in the text.
@@ -403,7 +403,7 @@
         function test($compare) {
             return ! parent::test($compare);
         }
-        
+
         /**
          *    Returns a human readable test message.
          *    @param string $compare      Comparison value.
@@ -422,7 +422,7 @@
             }
         }
     }
-    
+
     /**
      *    Test case for testing of web pages. Allows
      *    fetching of pages, parsing of HTML and
@@ -433,7 +433,7 @@
     class WebTestCase extends SimpleTestCase {
         protected $_browser;
         protected $_ignore_errors = false;
-        
+
         /**
          *    Creates an empty test case. Should be subclassed
          *    with test methods for a functional test case.
@@ -444,7 +444,7 @@
         function WebTestCase($label = false) {
             $this->SimpleTestCase($label);
         }
-        
+
         /**
          *    Announces the start of the test.
          *    @param string $method    Test method just started.
@@ -464,7 +464,7 @@
             $this->unsetBrowser();
             parent::after($method);
         }
-        
+
         /**
          *    Gets a current browser reference for setting
          *    special expectations or for detailed
@@ -475,7 +475,7 @@
         function &getBrowser() {
             return $this->_browser;
         }
-        
+
         /**
          *    Gets a current browser reference for setting
          *    special expectations or for detailed
@@ -486,7 +486,7 @@
         function setBrowser($browser) {
             return $this->_browser = $browser;
         }
-          
+
         /**
          *    Clears the current browser reference to help the
          *    PHP garbage collector.
@@ -495,7 +495,7 @@
         function unsetBrowser() {
             unset($this->_browser);
         }
-      
+
         /**
          *    Creates a new default web browser object.
          *    Will be cleared at the end of the test method.
@@ -506,7 +506,7 @@
             $browser = new SimpleBrowser();
             return $browser;
         }
-        
+
         /**
          *    Gets the last response error.
          *    @return string    Last low level HTTP error.
@@ -515,7 +515,7 @@
         function getTransportError() {
             return $this->_browser->getTransportError();
         }
-          
+
         /**
          *    Accessor for the currently selected URL.
          *    @return string        Current location or false if
@@ -525,7 +525,7 @@
         function getUrl() {
             return $this->_browser->getUrl();
         }
-        
+
         /**
          *    Dumps the current request for debugging.
          *    @access public
@@ -533,7 +533,7 @@
         function showRequest() {
             $this->dump($this->_browser->getRequest());
         }
-        
+
         /**
          *    Dumps the current HTTP headers for debugging.
          *    @access public
@@ -541,7 +541,7 @@
         function showHeaders() {
             $this->dump($this->_browser->getHeaders());
         }
-      
+
         /**
          *    Dumps the current HTML source for debugging.
          *    @access public
@@ -549,7 +549,7 @@
         function showSource() {
             $this->dump($this->_browser->getContent());
         }
-      
+
         /**
          *    Dumps the visible text only for debugging.
          *    @access public
@@ -557,7 +557,7 @@
         function showText() {
             $this->dump(wordwrap($this->_browser->getContentAsText(), 80));
         }
-        
+
         /**
          *    Simulates the closing and reopening of the browser.
          *    Temporary cookies will be discarded and timed
@@ -575,7 +575,7 @@
             }
             $this->_browser->restart($date);
         }
-        
+
         /**
          *    Moves cookie expiry times back into the past.
          *    Useful for testing timeouts and expiries.
@@ -585,7 +585,7 @@
         function ageCookies($interval) {
             $this->_browser->ageCookies($interval);
         }
-        
+
         /**
          *    Disables frames support. Frames will not be fetched
          *    and the frameset page will be used instead.
@@ -594,7 +594,7 @@
         function ignoreFrames() {
             $this->_browser->ignoreFrames();
         }
-        
+
         /**
          *    Switches off cookie sending and recieving.
          *    @access public
@@ -602,7 +602,7 @@
         function ignoreCookies() {
             $this->_browser->ignoreCookies();
         }
-        
+
         /**
          *    Skips errors for the next request only. You might
          *    want to confirm that a page is unreachable for
@@ -612,7 +612,7 @@
         function ignoreErrors() {
             $this->_ignore_errors = true;
         }
-        
+
         /**
          *    Issues a fail if there is a transport error anywhere
          *    in the current frameset. Only one such error is
@@ -640,7 +640,7 @@
         function addHeader($header) {
             $this->_browser->addHeader($header);
         }
-        
+
         /**
          *    Sets the maximum number of redirects before
          *    the web page is loaded regardless.
@@ -654,7 +654,7 @@
             }
             $this->_browser->setMaximumRedirects($max);
         }
-        
+
         /**
          *    Sets the socket timeout for opening a connection and
          *    receiving at least one byte of information.
@@ -664,7 +664,7 @@
         function setConnectionTimeout($timeout) {
             $this->_browser->setConnectionTimeout($timeout);
         }
-        
+
         /**
          *    Sets proxy to use on all requests for when
          *    testing from behind a firewall. Set URL
@@ -677,7 +677,7 @@
         function useProxy($proxy, $username = false, $password = false) {
             $this->_browser->useProxy($proxy, $username, $password);
         }
-        
+
         /**
          *    Fetches a page into the page buffer. If
          *    there is no base for the URL then the
@@ -691,7 +691,7 @@
         function get($url, $parameters = false) {
             return $this->_failOnError($this->_browser->get($url, $parameters));
         }
-        
+
         /**
          *    Fetches a page by POST into the page buffer.
          *    If there is no base for the URL then the
@@ -705,7 +705,7 @@
         function post($url, $parameters = false) {
             return $this->_failOnError($this->_browser->post($url, $parameters));
         }
-        
+
         /**
          *    Does a HTTP HEAD fetch, fetching only the page
          *    headers. The current base URL is unchanged by this.
@@ -717,7 +717,7 @@
         function head($url, $parameters = false) {
             return $this->_failOnError($this->_browser->head($url, $parameters));
         }
-        
+
         /**
          *    Equivalent to hitting the retry button on the
          *    browser. Will attempt to repeat the page fetch.
@@ -727,7 +727,7 @@
         function retry() {
             return $this->_failOnError($this->_browser->retry());
         }
-        
+
         /**
          *    Equivalent to hitting the back button on the
          *    browser.
@@ -738,7 +738,7 @@
         function back() {
             return $this->_failOnError($this->_browser->back());
         }
-        
+
         /**
          *    Equivalent to hitting the forward button on the
          *    browser.
@@ -749,7 +749,7 @@
         function forward() {
             return $this->_failOnError($this->_browser->forward());
         }
-        
+
         /**
          *    Retries a request after setting the authentication
          *    for the current realm.
@@ -764,7 +764,7 @@
             return $this->_failOnError(
                     $this->_browser->authenticate($username, $password));
         }
-        
+
         /**
          *    Gets the cookie value for the current browser context.
          *    @param string $name          Name of cookie.
@@ -774,7 +774,7 @@
         function getCookie($name) {
             return $this->_browser->getCurrentCookieValue($name);
         }
-        
+
         /**
          *    Sets a cookie in the current browser.
          *    @param string $name          Name of cookie.
@@ -787,7 +787,7 @@
         function setCookie($name, $value, $host = false, $path = "/", $expiry = false) {
             $this->_browser->setCookie($name, $value, $host, $path, $expiry);
         }
-        
+
         /**
          *    Accessor for current frame focus. Will be
          *    false if no frame has focus.
@@ -799,7 +799,7 @@
         function getFrameFocus() {
             return $this->_browser->getFrameFocus();
         }
-        
+
         /**
          *    Sets the focus by index. The integer index starts from 1.
          *    @param integer $choice    Chosen frame.
@@ -809,7 +809,7 @@
         function setFrameFocusByIndex($choice) {
             return $this->_browser->setFrameFocusByIndex($choice);
         }
-        
+
         /**
          *    Sets the focus by name.
          *    @param string $name    Chosen frame.
@@ -819,7 +819,7 @@
         function setFrameFocus($name) {
             return $this->_browser->setFrameFocus($name);
         }
-        
+
         /**
          *    Clears the frame focus. All frames will be searched
          *    for content.
@@ -828,7 +828,7 @@
         function clearFrameFocus() {
             return $this->_browser->clearFrameFocus();
         }
-        
+
         /**
          *    Clicks a visible text item. Will first try buttons,
          *    then links and then images.
@@ -839,7 +839,7 @@
         function click($label) {
             return $this->_failOnError($this->_browser->click($label));
         }
-        
+
         /**
          *    Clicks the submit button by label. The owning
          *    form will be submitted by this.
@@ -853,7 +853,7 @@
             return $this->_failOnError(
                     $this->_browser->clickSubmit($label, $additional));
         }
-        
+
         /**
          *    Clicks the submit button by name attribute. The owning
          *    form will be submitted by this.
@@ -866,7 +866,7 @@
             return $this->_failOnError(
                     $this->_browser->clickSubmitByName($name, $additional));
         }
-        
+
         /**
          *    Clicks the submit button by ID attribute. The owning
          *    form will be submitted by this.
@@ -879,7 +879,7 @@
             return $this->_failOnError(
                     $this->_browser->clickSubmitById($id, $additional));
         }
-        
+
         /**
          *    Clicks the submit image by some kind of label. Usually
          *    the alt tag or the nearest equivalent. The owning
@@ -897,7 +897,7 @@
             return $this->_failOnError(
                     $this->_browser->clickImage($label, $x, $y, $additional));
         }
-        
+
         /**
          *    Clicks the submit image by the name. Usually
          *    the alt tag or the nearest equivalent. The owning
@@ -915,7 +915,7 @@
             return $this->_failOnError(
                     $this->_browser->clickImageByName($name, $x, $y, $additional));
         }
-        
+
         /**
          *    Clicks the submit image by ID attribute. The owning
          *    form will be submitted by this. Clicking outside of
@@ -932,7 +932,7 @@
             return $this->_failOnError(
                     $this->_browser->clickImageById($id, $x, $y, $additional));
         }
-        
+
         /**
          *    Submits a form by the ID.
          *    @param string $id       Form ID. No button information
@@ -943,7 +943,7 @@
         function submitFormById($id) {
             return $this->_failOnError($this->_browser->submitFormById($id));
         }
-        
+
         /**
          *    Follows a link by name. Will click the first link
          *    found with this link text by default, or a later
@@ -957,7 +957,7 @@
         function clickLink($label, $index = 0) {
             return $this->_failOnError($this->_browser->clickLink($label, $index));
         }
-        
+
         /**
          *    Follows a link by id attribute.
          *    @param string $id        ID attribute value.
@@ -967,7 +967,7 @@
         function clickLinkById($id) {
             return $this->_failOnError($this->_browser->clickLinkById($id));
         }
-        
+
         /**
          *    Will trigger a pass if the two parameters have
          *    the same value only. Otherwise a fail. This
@@ -984,7 +984,7 @@
                     $second,
                     $message);
         }
-        
+
         /**
          *    Will trigger a pass if the two parameters have
          *    a different value. Otherwise a fail. This
@@ -1001,7 +1001,7 @@
                     $second,
                     $message);
         }
-        
+
         /**
          *    Tests for the presence of a link label. Match is
          *    case insensitive with normalised space.
@@ -1032,7 +1032,7 @@
                     $this->_browser->isLink($label),
                     sprintf($message, "Link [$label] should not exist"));
         }
-        
+
         /**
          *    Tests for the presence of a link id attribute.
          *    @param string $id        Id attribute value.
@@ -1061,7 +1061,7 @@
                     $this->_browser->isLinkById($id),
                     sprintf($message, "Link ID [$id] should not exist"));
         }
-        
+
         /**
          *    Sets all form fields with that label, or name if there
          *    is no label attached.
@@ -1073,7 +1073,7 @@
         function setField($label, $value) {
             return $this->_browser->setField($label, $value);
         }
-        
+
         /**
          *    Sets all form fields with that name.
          *    @param string $name    Name of field in forms.
@@ -1084,7 +1084,7 @@
         function setFieldByName($name, $value) {
             return $this->_browser->setFieldByName($name, $value);
         }
-          
+
         /**
          *    Sets all form fields with that name.
          *    @param string/integer $id   Id of field in forms.
@@ -1095,7 +1095,7 @@
         function setFieldById($id, $value) {
             return $this->_browser->setFieldById($id, $value);
         }
-        
+
         /**
          *    Confirms that the form element is currently set
          *    to the expected value. A missing form will always
@@ -1113,7 +1113,7 @@
             $value = $this->_browser->getField($label);
             return $this->_assertFieldValue($label, $value, $expected, $message);
         }
-        
+
         /**
          *    Confirms that the form element is currently set
          *    to the expected value. A missing form element will always
@@ -1131,7 +1131,7 @@
             $value = $this->_browser->getFieldByName($name);
             return $this->_assertFieldValue($name, $value, $expected, $message);
         }
-         
+
         /**
          *    Confirms that the form element is currently set
          *    to the expected value. A missing form will always
@@ -1149,7 +1149,7 @@
             $value = $this->_browser->getFieldById($id);
             return $this->_assertFieldValue($id, $value, $expected, $message);
         }
-        
+
         /**
          *    Tests the field value against the expectation.
          *    @param string $identifier      Name, ID or label.
@@ -1173,7 +1173,7 @@
             }
             return $this->assert($expected, $value, $message);
         }
-       
+
         /**
          *    Checks the response code against a list
          *    of possible values.
@@ -1190,7 +1190,7 @@
                     implode(", ", $responses) . "] got [$code]");
             return $this->assertTrue(in_array($code, $responses), $message);
         }
-        
+
         /**
          *    Checks the mime type against a list
          *    of possible values.
@@ -1206,7 +1206,7 @@
                     implode(", ", $types) . "] got [$type]");
             return $this->assertTrue(in_array($type, $types), $message);
         }
-        
+
         /**
          *    Attempt to match the authentication type within
          *    the security realm we are currently matching.
@@ -1230,7 +1230,7 @@
                         $message);
             }
         }
-        
+
         /**
          *    Checks that no authentication is necessary to view
          *    the desired page.
@@ -1243,7 +1243,7 @@
                     $this->_browser->getAuthentication() . "]");
             return $this->assertFalse($this->_browser->getAuthentication(), $message);
         }
-        
+
         /**
          *    Attempts to match the current security realm.
          *    @param string $realm     Name of security realm.
@@ -1260,7 +1260,7 @@
                     $this->_browser->getRealm(),
                     "Expected realm -> $message");
         }
-        
+
         /**
          *    Checks each header line for the required value. If no
          *    value is given then only an existence check is made.
@@ -1277,7 +1277,7 @@
                     $this->_browser->getHeaders(),
                     $message);
         }
-          
+
         /**
          *    @deprecated
          */
@@ -1303,14 +1303,14 @@
                     $this->_browser->getHeaders(),
                     $message);
         }
-          
+
         /**
          *    @deprecated
          */
         function assertNoUnwantedHeader($header, $message = '%s') {
             return $this->assertNoHeader($header, $message);
         }
-        
+
         /**
          *    Tests the text between the title tags.
          *    @param string $title      Expected title.
@@ -1324,7 +1324,7 @@
             }
             return $this->assert($title, $this->_browser->getTitle(), $message);
         }
-        
+
         /**
          *    Will trigger a pass if the text is found in the plain
          *    text form of the page.
@@ -1339,14 +1339,14 @@
                     $this->_browser->getContentAsText(),
                     $message);
         }
-        
+
         /**
          *	  @deprecated
          */
         function assertWantedText($text, $message = '%s') {
         	return $this->assertText($text, $message);
         }
-        
+
         /**
          *    Will trigger a pass if the text is not found in the plain
          *    text form of the page.
@@ -1361,14 +1361,14 @@
                     $this->_browser->getContentAsText(),
                     $message);
         }
-        
+
         /**
          *	  @deprecated
          */
         function assertNoUnwantedText($text, $message = '%s') {
         	return $this->assertNoText($text, $message);
         }
-        
+
         /**
          *    Will trigger a pass if the Perl regex pattern
          *    is found in the raw content.
@@ -1384,14 +1384,14 @@
                     $this->_browser->getContent(),
                     $message);
         }
-        
+
         /**
          *	  @deprecated
          */
         function assertWantedPattern($pattern, $message = '%s') {
         	return $this->assertPattern($pattern, $message);
         }
-        
+
         /**
          *    Will trigger a pass if the perl regex pattern
          *    is not present in raw content.
@@ -1407,14 +1407,14 @@
                     $this->_browser->getContent(),
                     $message);
         }
-        
+
         /**
          *	  @deprecated
          */
         function assertNoUnwantedPattern($pattern, $message = '%s') {
         	return $this->assertNoPattern($pattern, $message);
         }
-        
+
         /**
          *    Checks that a cookie is set for the current page
          *    and optionally checks the value.
@@ -1437,7 +1437,7 @@
             }
             return $this->assert($expected, $value, "Expecting cookie [$name] -> $message");
         }
-        
+
         /**
          *    Checks that no cookie is present or that it has
          *    been successfully cleared.
@@ -1452,4 +1452,3 @@
                     sprintf($message, "Not expecting cookie [$name]"));
         }
     }
-?>

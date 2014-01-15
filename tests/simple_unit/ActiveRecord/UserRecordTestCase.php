@@ -62,5 +62,3 @@ class UserRecordTestCase extends UnitTestCase
 			$this->assertEqual($user->$prop,$check->$prop);
 	}
 }
-
-?>

@@ -31,7 +31,7 @@ class TestWriter extends TComponent implements ITextWriter
 	{
 		$this->write($str."\n");
 	}
-	
+
 	// Accessors to get value of private vars during tests
 	public function getFlushedContent() { return $this->_flushedContent; }
 	public function getStr() { return $this->_str; }
@@ -77,7 +77,7 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer->addAttribute('value','Prado & Cie');
 		$result=self::readAttribute($writer, '_attributes');
 		self::assertEquals('text',$result['type']);
-		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);		
+		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);
 	}
 
 	public function testRemoveAttribute() {
@@ -129,21 +129,21 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 		$writer=new THtmlWriter(self::$output);
 		$writer->write('Some Text');;
 		self::assertEquals('Some Text', self::$output->flush());
-		
+
 	}
 
 	public function testWriteLine() {
 		$writer=new THtmlWriter(self::$output);
 		$writer->writeLine('Some Text');;
 		self::assertEquals("Some Text\n", self::$output->flush());
-		
+
 	}
 
 	public function testWriteBreak() {
 		$writer=new THtmlWriter(self::$output);
 		$writer->writeBreak();
 		self::assertEquals("<br/>", self::$output->flush());
-		
+
 	}
 
 	public function testRenderBeginTag() {
@@ -164,4 +164,3 @@ class THtmlWriterTest extends PHPUnit_Framework_TestCase {
 	}
 
 }
-?>

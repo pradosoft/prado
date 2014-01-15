@@ -6,18 +6,18 @@ Prado::using('System.Security.TUserManager');
  * @package System.Security
  */
 class TUserManagerTest extends PHPUnit_Framework_TestCase {
-	
+
 	public static $app=null;
 	public static $config=null;
-	
+
 
 	public function setUp() {
-		
+
 		if(self::$app === null) {
 			self::$app = new TApplication(dirname(__FILE__).'/app');
 			prado::setPathofAlias('App', dirname(__FILE__));
 		}
-		
+
 		if (self::$config === null) {
 			// Simulate a config file
 			self::$config=new TXmlDocument('1.0','utf8');
@@ -41,21 +41,21 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 			$userManager->init (new TXmlDocument()); // Empty config
 			self::assertEquals(array('joe'=>'demo','john'=>'demo', 'test' => 'test'), $userManager->getUsers());
 			unlink (dirname(__FILE__).'/users.xml');
-		} 
+		}
 	}
-	
+
 	public function testUsers() {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
 		self::assertEquals(array('joe'=>'demo','john'=>'demo', 'test' => 'test'), $userManager->getUsers());
 	}
-	
+
 	public function testRoles() {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
 		self::assertEquals(array('joe'=>array ('Writer'), 'john'=>array ('Administrator','Writer'), 'test' => array ('Reader', 'User')), $userManager->getRoles());
 	}
-	
+
 	public function testUserFile() {
 		$userManager=new TUserManager ();
 		try {
@@ -71,7 +71,7 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 			self::assertEquals(dirname(__FILE__).'/users.xml', $userManager->getUserFile());
 			unlink (dirname(__FILE__).'/users.xml');
 			$userManager=null;
-		} 
+		}
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
 		try {
@@ -79,14 +79,14 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 			self::fail ('Exception TInvalidOperationException not thrown');
 		} catch (TInvalidOperationException $e) {}
 	}
-	
+
 	public function testGuestName() {
 		$userManager=new TUserManager ();
 		self::assertEquals('Guest', $userManager->getGuestName());
 		$userManager->setGuestName('Invite');
 		self::assertEquals('Invite', $userManager->getGuestName());
 	}
-	
+
 	public function testPasswordMode() {
 		$userManager=new TUserManager ();
 		$userManager->setPasswordMode('Clear');
@@ -99,9 +99,9 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 			$userManager->setPasswordMode('Invalid');
 			self::fail ('Exception TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {}
-		
+
 	}
-	
+
 	public function testValidateUser() {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
@@ -109,7 +109,7 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertTrue($userManager->validateUser('Joe', 'demo'));
 		self::assertFalse($userManager->validateUser('John', 'bad'));
 	}
-	
+
 	public function testUser() {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
@@ -123,7 +123,7 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 		self::assertFalse($user->getIsGuest());
 		self::assertNull($userManager->getUser('badUser'));
 	}
-	
+
 	public function testSwitchToGuest() {
 		$userManager=new TUserManager ();
 		$userManager->init (self::$config);
@@ -134,4 +134,3 @@ class TUserManagerTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

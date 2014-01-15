@@ -28,4 +28,3 @@ class DeleteByPkTestCase extends UnitTestCase
 		$this->assertEqual($finder->deleteByPk(array(array(100, 101), array(102, 103))),0);
 	}
 }
-?>

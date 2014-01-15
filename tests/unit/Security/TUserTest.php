@@ -32,18 +32,18 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals('Guest', $user->getName());
 		self::assertEquals(self::$mgr, $user->getManager());
 	}
-	
+
 	public function testManager() {
 		$user = new TUser (self::$mgr);
 		self::assertEquals(self::$mgr, $user->getManager());
 	}
-	
+
 	public function testName() {
 		$user = new TUser (self::$mgr);
 		$user->setName('joe');
 		self::assertEquals('joe', $user->getName());
 	}
-	
+
 	public function testIsGuest() {
 		$user = new TUser (self::$mgr);
 		$user->setName('John');
@@ -54,7 +54,7 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 		self::assertTrue($user->getIsGuest());
 		self::assertEquals(array(),$user->getRoles());
 	}
-	
+
 	public function testRoles() {
 		$user=new TUser(self::$mgr);
 		$user->setRoles(array('Administrator','Writer'));
@@ -62,7 +62,7 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 		$user->setRoles('Reader,User');
 		self::assertEquals(array('Reader','User'), $user->getRoles());
 	}
-	
+
 	public function testIsInRole() {
 		$user=new TUser(self::$mgr);
 		$user->setRoles(array('Administrator','Writer'));
@@ -71,7 +71,7 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 		self::assertTrue($user->IsInRole('Writer'));
 		self::assertFalse($user->isInRole('Reader'));
 	}
-	
+
 	public function testSaveToString() {
 		$user = new TUser (self::$mgr);
 		$user->setName('John');
@@ -81,20 +81,20 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 		$assumedState=array ('Name' => 'John', 'IsGuest' => false, 'Roles' => array ('Administrator', 'Writer'));
 		self::assertEquals(serialize($assumedState), $user->saveToString());
 	}
-	
+
 	public function testLoadFromString() {
 		$user = new TUser (self::$mgr);
 		$user->setName('John');
 		$user->setIsGuest(false);
 		$user->setRoles('Administrator, Writer');
 		$save=$user->saveToString();
-		
+
 		$user2 = new TUser (self::$mgr);
 		$user2->loadFromString($save);
-		
+
 		self::assertEquals($user, $user2);
 	}
-	
+
 	/* getState & setState are protected methods, will be tested with other tests.
 	public function testState() {
 		throw new PHPUnit_Framework_IncompleteTestError();
@@ -111,4 +111,3 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

@@ -27,4 +27,3 @@ class Data_SqlMap_AllTests {
 if(PHPUnit_MAIN_METHOD == 'Data_SqlMap_AllTests::main') {
 	Data_SqlMap_AllTests::main();
 }
-?>

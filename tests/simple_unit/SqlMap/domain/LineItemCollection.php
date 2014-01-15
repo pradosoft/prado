@@ -4,5 +4,3 @@ class LineItemCollection extends TList
 {
 
 }
-
-?>

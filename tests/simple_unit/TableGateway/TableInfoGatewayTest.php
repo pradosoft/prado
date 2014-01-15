@@ -14,4 +14,3 @@ class TableInfoGatewayTest extends BaseGatewayTest
 		$this->assertEqual(count($table->findAll()->readAll()), 2);
 	}
 }
-?>

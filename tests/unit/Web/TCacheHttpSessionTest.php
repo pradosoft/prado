@@ -11,14 +11,14 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
     protected $app = null;
 	protected static $cache = null;
 	protected static $session = null;
-    
+
     protected function setUp()
     {
 		if(!extension_loaded('memcache'))
 		{
 			self::markTestSkipped('The memcache extension is not available');
 		}
-		else 
+		else
 		{
 			$basePath = dirname(__FILE__).'/app';
 			$runtimePath = $basePath.'/runtime';
@@ -33,14 +33,14 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
 			$this->app->setModule('MyCache',self::$cache);
 		}
 	}
-	
+
 	protected function tearDown()
     {
 		$this->app = null;
 		$this->cache = null;
 		$this->session = null;
 	}
-    
+
     public function testInit()
     {
         $session = new TCacheHttpSession();
@@ -53,7 +53,7 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
         {
         }
         unset($session);
-        
+
         $session = new TCacheHttpSession();
         try
         {
@@ -66,12 +66,12 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
         {
         }
         unset($session);
-        
+
         self::$session = new TCacheHttpSession();
         try
         {
             self::$session->setCacheModuleID('MyCache');
-            self::$session->init(null);                
+            self::$session->init(null);
         }
         catch(TConfigurationException $e)
         {
@@ -79,45 +79,45 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
             self::markTestSkipped('Cannot continue this test');
         }
     }
-    
+
     public function testGetCache()
     {
         $cache = self::$session->getCache();
         $this->assertEquals(true, $cache instanceof TMemCache);
     }
-    
+
     public function testCacheModuleID()
     {
         $id = 'value';
         self::$session->setCacheModuleID($id);
         self::assertEquals($id, self::$session->getCacheModuleID());
     }
-    
+
     public function testKeyPrefix()
     {
         $id = 'value';
         self::$session->setKeyPrefix($id);
         self::assertEquals($id, self::$session->getKeyPrefix());
     }
-    
+
     public function testSetAndGet()
     {
         self::$session['key'] = 'value';
 		self::assertEquals('value', self::$session['key']);
 	}
-	
+
 	public function testAdd()
 	{
 		self::$session->add('anotherkey', 'value');
 		self::assertEquals('value', self::$session['anotherkey']);
 	}
-	
+
 	public function testRemove()
 	{
 		self::$session->remove('key');
 		self::assertEquals(false, self::$session['key']);
 	}
-	
+
 	public function testDestroyAndIsStarted()
 	{
 		$this->testSetAndGet();
@@ -125,4 +125,3 @@ class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
 		self::assertEquals(false, self::$session->getIsStarted());
 	}
 }
-?>

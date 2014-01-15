@@ -174,5 +174,3 @@ class TDbDataReaderTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($name,'my name 2');
 	}
 }
-
-?>

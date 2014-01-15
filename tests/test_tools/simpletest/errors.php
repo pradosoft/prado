@@ -179,4 +179,3 @@
             set_error_handler('simpleTestErrorHandler');
         }
     }
-?>

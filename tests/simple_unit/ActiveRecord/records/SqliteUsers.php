@@ -12,5 +12,3 @@ class SqliteUsers extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

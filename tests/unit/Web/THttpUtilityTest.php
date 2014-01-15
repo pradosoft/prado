@@ -19,4 +19,3 @@ class THttpUtilityTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals('<tag key="value">', $html);
 	}
 }
-?>

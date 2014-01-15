@@ -78,5 +78,3 @@ class TDirectoryCacheDependencyTest extends PHPUnit_Framework_TestCase
 		@unlink($tempFile);
 	}
 }
-
-?>

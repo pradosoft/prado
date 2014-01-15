@@ -245,5 +245,3 @@ class ResultClassTest extends BaseCase
 /**/
 
 }
-
-?>

@@ -97,5 +97,3 @@ class ChoiceFormatTest extends PHPUnit_Framework_TestCase
 		}
 	}
 }
-
-?>

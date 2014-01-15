@@ -8,5 +8,3 @@ class Newspaper extends Document
 	public function setCity($value){ $this->_City = $value; }
 
 }
-
-?>

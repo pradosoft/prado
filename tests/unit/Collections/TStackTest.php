@@ -31,7 +31,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 		$stack->copyFrom($data);
 		self::assertEquals(array(4, 5, 6), $stack->toArray());
 	}
-	
+
 	public function testCanNotCopyFromNonTraversableTypes() {
 		$stack = new TStack();
 		$data = new stdClass();
@@ -42,7 +42,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 		}
 		self::fail('An expected TInvalidDataTypeException was not raised');
 	}
-	
+
 	public function testClear() {
 		$stack = new TStack(array(1, 2, 3));
 		$stack->clear();
@@ -59,7 +59,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 		$stack = new TStack(array(1));
 		self::assertEquals(1, $stack->peek());
 	}
-	
+
 	public function testCanNotPeekAnEmptyStack() {
 		$stack = new TStack();
 		try {
@@ -76,7 +76,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals(3, $last);
 		self::assertEquals(array(1, 2), $stack->toArray());
 	}
-	
+
 	public function testCanNotPopAnEmptyStack() {
 		$stack = new TStack();
 		try {
@@ -105,7 +105,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 				$found++;
 			}
 			if($index === 1 && $item === 2) {
-				$found++;	
+				$found++;
 			}
 		}
 		self::assertTrue($n == 2 && $found == 2);
@@ -117,7 +117,7 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 		$stack = new TStack(array(1, 2, 3));
 		self::assertEquals(3, $stack->getCount());
 	}
-	
+
 	public function testCount() {
 		$stack = new TStack();
 		self::assertEquals(0, count($stack));
@@ -127,4 +127,3 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

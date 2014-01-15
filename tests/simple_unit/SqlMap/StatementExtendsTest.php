@@ -25,5 +25,3 @@ class StatementExtendsTest extends UnitTestCase
 		$this->assertPattern('/img_progress/', $sql2);
 	}
 }
-
-?>

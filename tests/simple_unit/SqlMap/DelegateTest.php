@@ -60,5 +60,3 @@ class DelegateTest extends BaseCase
 }
 
 
-
-?>

@@ -11,13 +11,13 @@ class IO_AllTests {
 	public static function main() {
 		PHPUnit_TextUI_TestRunner::run(self::suite());
 	}
-  
+
 	public static function suite() {
 		$suite = new PHPUnit_Framework_TestSuite('System.IO');
-    
+
 		$suite->addTestSuite('TTarFileExtractorTest');
 		$suite->addTestSuite('TTextWriterTest');
-    
+
 		return $suite;
 	}
 }
@@ -25,4 +25,3 @@ class IO_AllTests {
 if(PHPUnit_MAIN_METHOD == 'IO_AllTests::main') {
 	IO_AllTests::main();
 }
-?>

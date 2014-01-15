@@ -23,5 +23,3 @@ class A
 	public function getF(){ return $this->_F; }
 	public function setF($value){ $this->_F = $value; }
 }
-
-?>

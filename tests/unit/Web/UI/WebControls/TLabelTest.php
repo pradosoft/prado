@@ -15,5 +15,3 @@ class TLabelTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Test', $label->getText());
   }
 }
-
-?>

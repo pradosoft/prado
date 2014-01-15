@@ -220,7 +220,7 @@
         function useFrames() {
             $this->_ignore_frames = false;
         }
-        
+
         /**
          *    Switches off cookie sending and recieving.
          *    @access public
@@ -228,7 +228,7 @@
         function ignoreCookies() {
             $this->_user_agent->ignoreCookies();
         }
-        
+
         /**
          *    Switches back on the cookie sending and recieving.
          *    @access public
@@ -257,7 +257,7 @@
             }
             return $frameset;
         }
-        
+
         /**
          *    Assembles the parsing machinery and actually parses
          *    a single page. Frees all of the builder memory and so
@@ -1054,4 +1054,3 @@
             return $raw;
         }
     }
-?>

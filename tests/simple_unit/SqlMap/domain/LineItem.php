@@ -28,5 +28,3 @@ class LineItem
 	public function setPictureData($value){ $this->_PictureData = $value; }
 
 }
-
-?>

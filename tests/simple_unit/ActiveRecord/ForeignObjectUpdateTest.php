@@ -238,5 +238,3 @@ class ForeignObjectUpdateTest extends UnitTestCase
 	}
 //*/
 }
-
-?>

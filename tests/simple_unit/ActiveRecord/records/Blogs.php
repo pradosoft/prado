@@ -10,5 +10,3 @@ class Blogs extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

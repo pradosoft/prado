@@ -73,4 +73,3 @@ class ViewRecordTestCase extends UnitTestCase
 		}
 	}
 }
-?>

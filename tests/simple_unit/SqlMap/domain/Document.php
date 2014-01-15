@@ -12,5 +12,3 @@ class Document
 	public function setTitle($value){ $this->_Title = $value; }
 
 }
-
-?>

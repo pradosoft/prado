@@ -160,5 +160,3 @@ class CacheTest extends BaseCase
 		$this->assertIdentical(0.5, $cache->getHitRatio());
 	}
 }
-
-?>
