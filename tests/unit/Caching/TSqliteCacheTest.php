@@ -15,7 +15,7 @@ class TSqliteCacheTest extends PHPUnit_Framework_TestCase {
 			self::markTestSkipped('The SQLite extension is not available');
 		} else {
 			if(self::$app === null) {
-				
+
 				$basePath = dirname(__FILE__).'/mockapp';
 				$runtimePath = $basePath.'/runtime';
 				if(!is_writable($runtimePath)) {
@@ -37,38 +37,38 @@ class TSqliteCacheTest extends PHPUnit_Framework_TestCase {
 	public function testInit() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testPrimaryCache() {
 		self::$cache->PrimaryCache = true;
 		self::assertEquals(true, self::$cache->PrimaryCache);
 		self::$cache->PrimaryCache = false;
 		self::assertEquals(false, self::$cache->PrimaryCache);
 	}
-	
+
 	public function testKeyPrefix() {
 		self::$cache->KeyPrefix = 'prefix';
 		self::assertEquals('prefix', self::$cache->KeyPrefix);
 	}
-	
+
 	public function testDbFile() {
 		self::assertEquals('sqlite.cache', basename(self::$cache->DbFile));
 	}
-	
+
 	public function testSetAndGet() {
 		self::$cache->set('key', 'value');
 		self::assertEquals('value', self::$cache->get('key'));
 	}
-	
+
 	public function testAdd() {
 		self::$cache->add('key', 'value');
 		self::assertEquals('value', self::$cache->get('key'));
 	}
-	
+
 	public function testDelete() {
 		self::$cache->delete('key');
 		self::assertEquals(false, self::$cache->get('key'));
 	}
-	
+
 	public function testFlush() {
 		$this->testAdd();
 		self::assertEquals(true, self::$cache->flush());
@@ -76,4 +76,3 @@ class TSqliteCacheTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

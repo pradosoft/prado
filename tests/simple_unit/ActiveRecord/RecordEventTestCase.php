@@ -33,5 +33,3 @@ class RecordEventTestCase extends UnitTestCase
 		//var_dump($param);
 	}
 }
-
-?>

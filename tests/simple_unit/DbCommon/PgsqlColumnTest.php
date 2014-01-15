@@ -135,5 +135,3 @@ class PgsqlColumnTest extends UnitTestCase
 		}
 	}
 }
-
-?>

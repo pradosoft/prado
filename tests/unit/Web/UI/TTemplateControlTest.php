@@ -15,34 +15,33 @@ class TTemplateControlTest extends PHPUnit_Framework_TestCase {
 	public function testGetIsSourceTemplateControl() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testGetTemplateDirectory() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testCreateChildControls() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testRegisterContent() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testRegisterContentPlaceHolder() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testSetAndGetMasterClass() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testGetMaster() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testInjectContent() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
 
 }
-?>

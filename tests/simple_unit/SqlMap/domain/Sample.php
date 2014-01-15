@@ -51,5 +51,3 @@ class Sample
 	public function getSequenceDate(){ return $this->_SequenceDate; }
 	public function setSequenceDate($value){ $this->_SequenceDate = $value; }
 }
-
-?>

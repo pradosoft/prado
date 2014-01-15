@@ -53,4 +53,3 @@ class TableGatewayPgsqlTest extends BaseGatewayTest
 	}
 
 }
-?>

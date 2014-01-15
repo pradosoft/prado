@@ -17,5 +17,3 @@ class SqliteTestCase extends UnitTestCase
 		$this->assertNotNull($user);
 	}
 }
-
-?>

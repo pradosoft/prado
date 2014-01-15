@@ -15,4 +15,3 @@ class ToggleTest extends TPage {
 		$this->lbl->Text=$sender->State;
 	}
 }
-?>

@@ -42,5 +42,3 @@ class FindBySqlTestCase extends UnitTestCase
 		var_dump($users);
 	}
 }
-
-?>

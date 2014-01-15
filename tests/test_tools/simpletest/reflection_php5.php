@@ -124,7 +124,7 @@
             }
             return array_unique($methods);
         }
-        
+
         /**
          *    Checks to see if the method signature has to be tightly
          *    specified.
@@ -207,7 +207,7 @@
         	}
         	return "function $name()";
         }
-        
+
         /**
          *    For a signature specified in an interface, full
          *    details must be replicated to be a valid implementation.
@@ -272,4 +272,3 @@
             return false;
         }
     }
-?>

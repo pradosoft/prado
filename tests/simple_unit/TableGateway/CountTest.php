@@ -13,4 +13,3 @@ class CountTest extends BaseGatewayTest
 		$this->assertEqual(4, $result);
 	}
 }
-?>

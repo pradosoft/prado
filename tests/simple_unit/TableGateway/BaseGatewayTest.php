@@ -91,4 +91,3 @@ class BaseGatewayTest extends UnitTestCase
 		$this->getGateway()->deleteAll('1=1');
 	}
 }
-?>

@@ -44,5 +44,3 @@ class MssqlColumnTest extends UnitTestCase
 		var_dump($result);
 	}*/
 }
-
-?>

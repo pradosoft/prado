@@ -9,5 +9,3 @@ class AccountBis
 	public $More;
 }
 
-
-?>

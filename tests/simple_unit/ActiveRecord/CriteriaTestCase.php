@@ -46,5 +46,3 @@ class CriteriaTestCase extends UnitTestCase
 		$this->assertEqual($criteria->getParameters()->toArray(), $expect);
 	}
 }
-
-?>

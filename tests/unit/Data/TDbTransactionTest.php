@@ -72,5 +72,3 @@ class TDbTransactionTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(count($result),2);
 	}
 }
-
-?>

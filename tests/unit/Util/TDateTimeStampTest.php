@@ -7,7 +7,7 @@ Prado::using('System.Util.TDateTimeStamp');
  * @package System.Util
  */
 class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
-	
+
 	public function testGetTimeStampAndFormat() {
 		$s = new TDateTimeStamp;
 		$t = $s->getTimeStamp(0,0,0);
@@ -126,4 +126,3 @@ class TDateTimeStampTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-?>

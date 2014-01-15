@@ -4,5 +4,3 @@ class DocumentCollection extends TList
 {
 
 }
-
-?>

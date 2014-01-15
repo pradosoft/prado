@@ -31,7 +31,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		$queue->copyFrom($data);
 		self::assertEquals(array(4, 5, 6), $queue->toArray());
 	}
-	
+
 	public function testCanNotCopyFromNonTraversableTypes() {
 		$queue = new TQueue();
 		$data = new stdClass();
@@ -42,7 +42,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		}
 		self::fail('An expected TInvalidDataTypeException was not raised');
 	}
-	
+
 	public function testClear() {
 		$queue = new TQueue(array(1, 2, 3));
 		$queue->clear();
@@ -59,7 +59,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		$queue = new TQueue(array(1,2,3));
 		self::assertEquals(1, $queue->peek());
 	}
-	
+
 	public function testCanNotPeekAnEmptyQueue() {
 		$queue = new TQueue();
 		try {
@@ -76,7 +76,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals(1, $first);
 		self::assertEquals(array(2, 3), $queue->toArray());
 	}
-	
+
 	public function testCanNotDequeueAnEmptyQueue() {
 		$queue = new TQueue();
 		try {
@@ -105,7 +105,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 				$found++;
 			}
 			if($index === 1 && $item === 2) {
-				$found++;	
+				$found++;
 			}
 		}
 		self::assertTrue($n == 2 && $found == 2);
@@ -117,7 +117,7 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 		$queue = new TQueue(array(1, 2, 3));
 		self::assertEquals(3, $queue->getCount());
 	}
-	
+
 	public function testCountable() {
 		$queue = new TQueue();
 		self::assertEquals(0, count($queue));
@@ -127,4 +127,3 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 
 }
 
-?>

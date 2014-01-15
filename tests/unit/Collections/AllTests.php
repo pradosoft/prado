@@ -16,10 +16,10 @@ class Collections_AllTests {
   public static function main() {
     PHPUnit_TextUI_TestRunner::run(self::suite());
   }
-  
+
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('System.Collections');
-    
+
     $suite->addTestSuite('TListTest');
 	$suite->addTestSuite('TMapTest');
 	$suite->addTestSuite('TQueueTest');
@@ -27,7 +27,7 @@ class Collections_AllTests {
 	$suite->addTestSuite('TAttributeCollectionTest');
 	$suite->addTestSuite('TPagedListTest');
 	$suite->addTestSuite('TPagedDataSourceTest');
-    
+
     return $suite;
   }
 }
@@ -35,4 +35,3 @@ class Collections_AllTests {
 if(PHPUnit_MAIN_METHOD == 'Collections_AllTests::main') {
   Collections_AllTests::main();
 }
-?>

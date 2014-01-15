@@ -45,5 +45,3 @@ class ItemRecord extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

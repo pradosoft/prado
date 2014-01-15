@@ -370,4 +370,3 @@
             return $this->assertError(new PatternExpectation($pattern), $message);
         }
     }
-?>

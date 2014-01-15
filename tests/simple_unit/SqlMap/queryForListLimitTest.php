@@ -36,5 +36,3 @@ class queryForListLimitTest extends BaseCase
 		$this->assertEqual($list1[1][2],'Dalton');
 	}
 }
-
-?>

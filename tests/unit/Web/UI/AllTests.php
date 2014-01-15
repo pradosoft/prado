@@ -23,10 +23,10 @@ class Web_UI_AllTests {
   public static function main() {
     PHPUnit_TextUI_TestRunner::run(self::suite());
   }
-  
+
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('System.Web.UI');
-    
+
 	$suite->addTestSuite('TClientScriptManagerTest');
 	$suite->addTestSuite('TControlAdapterTest');
     $suite->addTestSuite('TControlTest');
@@ -40,7 +40,7 @@ class Web_UI_AllTests {
 	$suite->addTestSuite('THtmlWriterTest');
 	$suite->addTestSuite('TPageStatePersisterTest');
 	$suite->addTestSuite('TSessionPageStatePersisterTest');
-	
+
     return $suite;
   }
 }
@@ -48,4 +48,3 @@ class Web_UI_AllTests {
 if(PHPUnit_MAIN_METHOD == 'Web_UI_AllTests::main') {
   Web_UI_AllTests::main();
 }
-?>

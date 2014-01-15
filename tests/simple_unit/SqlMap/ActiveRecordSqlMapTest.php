@@ -83,5 +83,3 @@ class ActiveRecordSqlMapTest extends BaseCase
 			$this->assertEqual($account1->{$prop}, $account2->{$prop});
 	}
 }
-
-?>

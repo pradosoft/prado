@@ -176,11 +176,10 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
 	}
-	
+
 	public function testToArray() {
 		$map = new TMap(array('key' => 'value'));
 		self::assertEquals(array('key' => 'value'), $map->toArray());
 	}
 }
 
-?>

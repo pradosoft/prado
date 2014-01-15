@@ -127,7 +127,7 @@
             $shell = $this->_getShell();
             return $shell->getOutputAsList();
 		}
-        
+
         /**
          *    Will trigger a pass if the two parameters have
          *    the same value only. Otherwise a fail. This
@@ -144,7 +144,7 @@
                     $second,
                     $message);
         }
-        
+
         /**
          *    Will trigger a pass if the two parameters have
          *    a different value. Otherwise a fail. This
@@ -303,4 +303,3 @@
             return $shell;
         }
     }
-?>

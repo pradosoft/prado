@@ -12,5 +12,3 @@ class D
 	public function setLibelle($value){ $this->_Libelle = $value; }
 
 }
-
-?>

@@ -13,5 +13,3 @@ class AccountCollection extends TList
 		$array->copyFrom($this);
 	}
 }
-
-?>

@@ -42,5 +42,3 @@ class CommandBuilderMssqlTest extends UnitTestCase
 	//	var_dump($sql);
 	}
 }
-
-?>

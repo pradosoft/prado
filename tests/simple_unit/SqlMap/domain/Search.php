@@ -19,5 +19,3 @@ class Search
 	public function getStartDateAnd(){ return $this->_StartDateAnd; }
 	public function setStartDateAnd($value){ $this->_StartDateAnd = $value; }
 }
-
-?>

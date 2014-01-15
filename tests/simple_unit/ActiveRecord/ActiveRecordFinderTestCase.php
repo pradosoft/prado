@@ -41,5 +41,3 @@ class ActiveRecordFinderTestCase extends UnitTestCase
 	}
 
 }
-
-?>

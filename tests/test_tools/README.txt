@@ -4,7 +4,7 @@ Functional tests are browser based that tests the overall functional of a Prado 
 
 
 === Writing Tests ===
-Lets test some part of a Prado application. Create a new php file, e.g. 
+Lets test some part of a Prado application. Create a new php file, e.g.
 
 testExample1.php
 
@@ -21,11 +21,10 @@ class testExample1 extends SeleniumTestCase
 	{
 		//using xpath to find the button with value "Click Me!"
 		$this->click('//input[@value="Click Me!"]');
-		
+
 		//..more commands and assertions
 	}
 }
-?>
 </php>
 
 === Tests as part of Example code ===
@@ -50,9 +49,9 @@ class testMyButtonExample extends SeleniumTestCase
 	{
 		//get the test page url
 		$page = Prado::getApplication()->getTestPage(__FILE__);
-		
+
 		//open MyButtonExample page
-		$this->open($page);				
+		$this->open($page);
 	}
 
 	function testButtonClick()
@@ -62,7 +61,6 @@ class testMyButtonExample extends SeleniumTestCase
 		$this->click('//input[@value="Hello World!"]');
 	}
 }
-?>
 </php>
 
 File: MyButtonExample.tpl
@@ -108,7 +106,7 @@ Select the element with the specified @id attribute.  If no match is found, sele
 Find an element using JavaScript traversal of the HTML Document Object Model. DOM locators ''must'' begin with "document.".
 * dom=document.forms['myForm'].myDropdown
 * dom=document.images[56]
-	
+
 ==== '''xpath='''''xpathExpression''====
 Locate an element using an XPath expression. XPath locators ''must'' begin with "//".
 * xpath=//img[@alt='The image alt text']
@@ -133,15 +131,15 @@ Select Option Specifiers provide different ways of specifying options of an HTML
 matches options based on their labels, i.e. the visible text.
 * label=regexp:^[Oo]ther
 
-==== value=valuePattern ==== 
+==== value=valuePattern ====
 matches options based on their values.
 * value=other
 
-==== id=id ==== 
+==== id=id ====
 matches options based on their ids.
 * id=option1
 
-==== index=index ==== 
+==== index=index ====
 matches an option based on its index (offset from zero).
 * index=2
 
@@ -174,8 +172,8 @@ Selenium Actions
 
         examples:
 
-            open 	/mypage 	 
-            open 	http://localhost/ 	 
+            open 	/mypage
+            open 	http://localhost/
 
     click( elementLocator )
 
@@ -183,9 +181,9 @@ Selenium Actions
 
         examples:
 
-            click 	aCheckbox 	 
-            clickAndWait 	submitButton 	 
-            clickAndWait 	anyLink 	 
+            click 	aCheckbox
+            clickAndWait 	submitButton
+            clickAndWait 	anyLink
 
         note:
             Selenium will always automatically click on a popup dialog raised by the alert() or confirm() methods. (The exception is those raised during 'onload', which are not yet handled by Selenium). You must use [verify|assert]Alert or [verify|assert]Confirmation to tell Selenium that you expect the popup dialog. You may use chooseCancelOnNextConfirmation to click 'cancel' on the next confirmation dialog instead of clicking 'OK'.
@@ -222,8 +220,8 @@ Selenium Actions
 
         examples:
 
-            selectWindow 	myPopupWindow 	 
-            selectWindow 	null 	 
+            selectWindow 	myPopupWindow
+            selectWindow 	null
 
     goBack()
 
@@ -231,7 +229,7 @@ Selenium Actions
 
         examples:
 
-            goBack 	  	 
+            goBack
 
     close()
 
@@ -239,7 +237,7 @@ Selenium Actions
 
         examples:
 
-            close 	  	 
+            close
 
     pause( milliseconds )
 
@@ -247,8 +245,8 @@ Selenium Actions
 
         examples:
 
-            pause 	5000 	 
-            pause 	2000 	 
+            pause 	5000
+            pause 	2000
 
     fireEvent( elementLocator, eventName )
 
@@ -310,7 +308,7 @@ Selenium Actions
 
         examples:
 
-            chooseCancelOnNextConfirmation 	  	 
+            chooseCancelOnNextConfirmation
 
     answerOnNextPrompt( answerString )
 
@@ -318,7 +316,7 @@ Selenium Actions
 
         examples:
 
-            answerOnNextPrompt 	Kangaroo 	 
+            answerOnNextPrompt 	Kangaroo
 
 Selenium Checks
 
@@ -330,8 +328,8 @@ Selenium Checks
 
         examples:
 
-            verifyLocation 	/mypage 	 
-            assertLocation 	/mypage 	 
+            verifyLocation 	/mypage
+            assertLocation 	/mypage
 
     assertTitle( titlePattern )
 
@@ -339,8 +337,8 @@ Selenium Checks
 
         examples:
 
-            verifyTitle 	My Page 	 
-            assertTitle 	My Page 	 
+            verifyTitle 	My Page
+            assertTitle 	My Page
 
     assertValue( inputLocator, valuePattern )
 
@@ -396,8 +394,8 @@ Selenium Checks
 
         examples:
 
-            verifyTextPresent 	You are now logged in. 	 
-            assertTextPresent 	You are now logged in. 	 
+            verifyTextPresent 	You are now logged in.
+            assertTextPresent 	You are now logged in.
 
     assertTextNotPresent( text )
 
@@ -409,8 +407,8 @@ Selenium Checks
 
         examples:
 
-            verifyElementPresent 	submitButton 	 
-            assertElementPresent 	//img[@alt='foo'] 	 
+            verifyElementPresent 	submitButton
+            assertElementPresent 	//img[@alt='foo']
 
     assertElementNotPresent( elementLocator )
 
@@ -418,8 +416,8 @@ Selenium Checks
 
         examples:
 
-            verifyElementNotPresent 	cancelButton 	 
-            assertElementNotPresent 	cancelButton 	 
+            verifyElementNotPresent 	cancelButton
+            assertElementNotPresent 	cancelButton
 
     assertTable( cellAddress, valuePattern )
 
@@ -436,8 +434,8 @@ Selenium Checks
 
         examples:
 
-            verifyVisible 	postcode 	 
-            assertVisible 	postcode 	 
+            verifyVisible 	postcode
+            assertVisible 	postcode
 
     assertNotVisible( elementLocator )
 
@@ -445,8 +443,8 @@ Selenium Checks
 
         examples:
 
-            verifyNotVisible 	postcode 	 
-            assertNotVisible 	postcode 	 
+            verifyNotVisible 	postcode
+            assertNotVisible 	postcode
 
     verifyEditable / assertEditable( inputLocator )
 
@@ -454,8 +452,8 @@ Selenium Checks
 
         examples:
 
-            verifyEditable 	shape 	 
-            assertEditable 	colour 	 
+            verifyEditable 	shape
+            assertEditable 	colour
 
     assertNotEditable( inputLocator )
 
@@ -473,8 +471,8 @@ Selenium Checks
 
         examples:
 
-            verifyAlert 	Invalid Phone Number 	 
-            assertAlert 	Invalid Phone Number 	 
+            verifyAlert 	Invalid Phone Number
+            assertAlert 	Invalid Phone Number
 
     assertConfirmation( messagePattern )
 
@@ -488,8 +486,8 @@ Selenium Checks
 
         examples:
 
-            assertConfirmation 	Remove this user? 	 
-            verifyConfirmation 	Are you sure? 	 
+            assertConfirmation 	Remove this user?
+            verifyConfirmation 	Are you sure?
 
     assertPrompt( messagePattern )
 
@@ -499,9 +497,9 @@ Selenium Checks
 
         examples:
 
-            answerOnNextPrompt 	Joe 	 
-            click 	id=delegate 	 
-            verifyPrompt 	Delegate to who? 	 
+            answerOnNextPrompt 	Joe
+            click 	id=delegate
+            verifyPrompt 	Delegate to who?
 
 Parameter construction and Variables
 

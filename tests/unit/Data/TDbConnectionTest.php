@@ -125,5 +125,3 @@ class TDbConnectionTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(TDbNullConversionMode::NullToEmptyString,$this->_connection1->NullConversion);
 	}
 }
-
-?>

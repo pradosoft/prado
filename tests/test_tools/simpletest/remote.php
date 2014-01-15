@@ -23,7 +23,7 @@
         protected $_url;
         protected $_dry_url;
         protected $_size;
-        
+
         /**
          *    Sets the location of the remote test.
          *    @param string $url       Test location.
@@ -35,7 +35,7 @@
             $this->_dry_url = $dry_url ? $dry_url : $url;
             $this->_size = false;
         }
-        
+
         /**
          *    Accessor for the test name for subclasses.
          *    @return string           Name of the test.
@@ -67,7 +67,7 @@
             }
             return true;
         }
-        
+
         /**
          *    Creates a new web browser object for fetching
          *    the XML report.
@@ -77,7 +77,7 @@
         function &_createBrowser() {
             return new SimpleBrowser();
         }
-        
+
         /**
          *    Creates the XML parser.
          *    @param SimpleReporter $reporter    Target of test results.
@@ -87,7 +87,7 @@
         function &_createParser($reporter) {
             return new SimpleTestXmlParser($reporter);
         }
-        
+
         /**
          *    Accessor for the number of subtests.
          *    @return integer           Number of test cases.
@@ -112,4 +112,3 @@
             return $this->_size;
         }
     }
-?>

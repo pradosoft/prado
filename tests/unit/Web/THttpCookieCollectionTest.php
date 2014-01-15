@@ -28,7 +28,7 @@ class THttpCookieCollectionTest extends PHPUnit_Framework_TestCase {
     	$coll->removeAt(0);
     	self::fail('Invalid Value exception not raised');
     } catch (TInvalidDataValueException $e) {}
-    
+
     $coll->insertAt(0, new THttpCookie('name','value'));
     self::assertEquals('value',$coll->removeAt(0)->getValue());
   }
@@ -47,4 +47,3 @@ class THttpCookieCollectionTest extends PHPUnit_Framework_TestCase {
     self::assertNull ($coll->findCookieByName('invalid'));
   }
 }
-?>
