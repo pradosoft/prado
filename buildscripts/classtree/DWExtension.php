@@ -252,4 +252,3 @@ class PradoTagChooser
 		return $this->_document->saveXML();
 	}
 }
-?>

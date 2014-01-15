@@ -129,5 +129,3 @@ class PradoPearTask extends Task
 			echo $e->getMessage();
 	}
 }
-
-?>

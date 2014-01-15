@@ -76,6 +76,3 @@ if($argv[1] == 'pdf')
 		echo " Unable to find pdfLatex executable $pdflatexExec";
 	}
 }
-
-
-?>

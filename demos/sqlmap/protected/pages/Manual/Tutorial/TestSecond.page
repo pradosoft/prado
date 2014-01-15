@@ -58,7 +58,6 @@ error_reporting(E_ALL);
 require_once('/path/to/prado/framework/prado.php');
 $application=new TApplication;
 $application->run();
-?>
 </com:TTextHighlighter>
 
 <p>Now we are ready to setup a page to display our list of people.
@@ -106,7 +105,6 @@ class Home extends TPage
             $this->loadData();
     }
 }
-?&gt;
 </com:TTextHighlighter>
 
 <p>If we run this now, we'll get a list like the one shown the figure below.</p>

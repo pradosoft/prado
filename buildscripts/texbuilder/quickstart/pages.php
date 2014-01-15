@@ -177,5 +177,3 @@ $pages['Client-side Scripting'] = array(
 
 return $pages;
 //-------------- END CONFIG ----------------
-
-?>

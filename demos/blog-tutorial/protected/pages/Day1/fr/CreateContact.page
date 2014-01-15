@@ -45,11 +45,11 @@ Nous utilisons un fichier gabarit pour organiser la présentation de notre formu
 <h1>Contact</h1>
 <p>Veuillez remplir le formulaire suivant pour me laisser vos impressions au sujet de mon blog. Merci !</p>
 
-&lt;com:TForm> 
+&lt;com:TForm>
 
 <span>Votre nom:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Name"
-    ErrorMessage="Veuillez indiquer votre nom." 
+    ErrorMessage="Veuillez indiquer votre nom."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Name" />
@@ -57,10 +57,10 @@ Nous utilisons un fichier gabarit pour organiser la présentation de notre formu
 <br/>
 <span>Votre email:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Email"
-    ErrorMessage="Veuillez indiquer votre email." 
+    ErrorMessage="Veuillez indiquer votre email."
     Display="Dynamic" />
 &lt;com:TEmailAddressValidator ControlToValidate="Email"
-    ErrorMessage="Vous avez saisi un email invalide." 
+    ErrorMessage="Vous avez saisi un email invalide."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
@@ -68,11 +68,11 @@ Nous utilisons un fichier gabarit pour organiser la présentation de notre formu
 <br/>
 <span>Commentaires:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
-    ErrorMessage="Veuillez saisir un commentaire." 
+    ErrorMessage="Veuillez saisir un commentaire."
     Display="Dynamic" />
 <br/>
-&lt;com:TTextBox ID="Feedback" 
-    TextMode="MultiLine" 
+&lt;com:TTextBox ID="Feedback"
+    TextMode="MultiLine"
     Rows="10"
     Columns="40" />
 
@@ -99,13 +99,13 @@ Avant le contrôle <tt>TTextBox</tt>, le gabarit utilise aussi plusieurs validat
 
 <com:TTextHighlighter CssClass="source" Language="prado">
 <span>Your Email:</span>
-&lt;com:TRequiredFieldValidator 
+&lt;com:TRequiredFieldValidator
     ControlToValidate="Email"
-    ErrorMessage="Veuillez indiquer votre email." 
+    ErrorMessage="Veuillez indiquer votre email."
     Display="Dynamic" />
-&lt;com:TEmailAddressValidator 
+&lt;com:TEmailAddressValidator
     ControlToValidate="Email"
-    ErrorMessage="Vous avez saisi un email invalide." 
+    ErrorMessage="Vous avez saisi un email invalide."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
@@ -152,28 +152,27 @@ class Contact extends TPage
     /**
      * Gestionnaire d'évènement pour OnClick (bouton submit).
      * @param TButton le bouton qui a générer l'évènement
-     * @param TEventParameter les paramètres de l'évènement (null dans ce cas)    
+     * @param TEventParameter les paramètres de l'évènement (null dans ce cas)
      */
     public function submitButtonClicked($sender, $param)
     {
         if ($this->IsValid)  // vérifie que les validations sont Ok
         {
             // récupère le nom de l'utilisateur, son email et son commentaire
-            $name = $this->Name->Text;  
+            $name = $this->Name->Text;
             $email = $this->Email->Text;
             $feedback = $this->Feedback->Text;
-            
-            // envoie un email à l'administrateur avec les informations 
+
+            // envoie un email à l'administrateur avec les informations
             $this->mailFeedback($name, $email, $feedback);
         }
     }
-    
+
     protected function mailFeedback($name, $email, $feedback)
     {
         // implémentation de l'envoi de l'email
     }
 }
-?>
 </com:TTextHighlighter>
 
 <p>

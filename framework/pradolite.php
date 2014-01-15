@@ -1248,7 +1248,7 @@ class TTextWriter extends TComponent implements ITextWriter
 		$this->write($str."\n");
 	}
 }
-class TPriorityList extends TList 
+class TPriorityList extends TList
 {
 	private $_d=array();
 	private $_o=false;
@@ -1483,7 +1483,7 @@ class TPriorityList extends TList
 		foreach($this->_d as $priority=>$items) {
 			if(($index=array_search($item,$items,true))!==false) {
 				$absindex+=$index;
-				return $withindex?array($priority,$index,$absindex, 
+				return $withindex?array($priority,$index,$absindex,
 						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex):$priority;
 			} else
 				$absindex+=count($items);
@@ -1500,7 +1500,7 @@ class TPriorityList extends TList
 			if($index>=($c=count($items)))
 				$index-=$c;
 			else
-				return $withindex?array($priority,$index,$absindex, 
+				return $withindex?array($priority,$index,$absindex,
 						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex):$priority;
 		}
 		return false;
@@ -3129,7 +3129,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 		if($this->getEnableCache())
 		{
 			$cache = $this->getApplication()->getCache();
-			if($cache !== null) 
+			if($cache !== null)
 			{
 				$dependencies = null;
 				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
@@ -4524,7 +4524,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	const IS_DISABLE_THEMING=0x10;
 	const IS_CHILD_CREATED=0x20;
 	const IS_CREATING_CHILD=0x40;
-	const RF_CONTROLS=0;				const RF_CHILD_STATE=1;				const RF_NAMED_CONTROLS=2;			const RF_NAMED_CONTROLS_ID=3;		const RF_SKIN_ID=4;					const RF_DATA_BINDINGS=5;			const RF_EVENTS=6;					const RF_CONTROLSTATE=7;			const RF_NAMED_OBJECTS=8;			const RF_ADAPTER=9;					const RF_AUTO_BINDINGS=10;		
+	const RF_CONTROLS=0;				const RF_CHILD_STATE=1;				const RF_NAMED_CONTROLS=2;			const RF_NAMED_CONTROLS_ID=3;		const RF_SKIN_ID=4;					const RF_DATA_BINDINGS=5;			const RF_EVENTS=6;					const RF_CONTROLSTATE=7;			const RF_NAMED_OBJECTS=8;			const RF_ADAPTER=9;					const RF_AUTO_BINDINGS=10;
 	private $_id='';
 	private $_uid;
 	private $_parent;
@@ -6385,7 +6385,7 @@ class TWebControlDecorator extends TComponent {
 			$this->_posttagtemplate = $value;
 	}
 	public function instantiate($outercontrol = null) {
-		if($this->getPreTagTemplate() || $this->getPreContentsTemplate() || 
+		if($this->getPreTagTemplate() || $this->getPreContentsTemplate() ||
 			$this->getPostContentsTemplate() || $this->getPostTagTemplate()) {
 			$this->_outercontrol = $outercontrol;
 			if($this->getUseState())
@@ -6684,7 +6684,7 @@ class TWebControl extends TControl implements IStyleable
 			$decorator->renderPostContentsText($writer);
 			$writer->renderEndTag();
 			$decorator->renderPostTagText($writer);
-		} else 
+		} else
 			$writer->renderEndTag($writer);
 	}
 }
@@ -7306,7 +7306,7 @@ class TClientScriptManager extends TApplicationComponent
 		if($str!=='')
 			$writer->write("<div style=\"visibility:hidden;\">\n".$str."</div>\n");
 	}
-	public function getHiddenFields()	
+	public function getHiddenFields()
 	{
 		return $this->_hiddenFields;
 	}
@@ -9672,7 +9672,7 @@ class TPageConfiguration extends TComponent
 			$this->loadFromPhp($fcontent,dirname($fname),$configPagePath);
 		}
 		else
-		{	
+		{
 			$dom=new TXmlDocument;
 			if($dom->loadFromFile($fname))
 				$this->loadFromXml($dom,dirname($fname),$configPagePath);
@@ -9759,7 +9759,7 @@ class TPageConfiguration extends TComponent
 				if(isset($page['properties']))
 				{
 					$properties=$page['properties'];
-					unset($page['properties']);	
+					unset($page['properties']);
 				}
 				$matching=false;
 				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
@@ -10173,7 +10173,7 @@ class TApplication extends TComponent
 	const STATE_PERFORMANCE='Performance';
 	const PAGE_SERVICE_ID='page';
 	const CONFIG_FILE_XML='application.xml';
-	const CONFIG_FILE_EXT_XML='.xml';	
+	const CONFIG_FILE_EXT_XML='.xml';
 	const CONFIG_TYPE_XML = 'xml';
 	const CONFIG_FILE_PHP='application.php';
 	const CONFIG_FILE_EXT_PHP='.php';
@@ -10822,7 +10822,7 @@ class TApplicationConfiguration extends TComponent
 				$this->_properties[$name]=$value;
 			}
 			$this->_empty = false;
-		}	
+		}
 		if(isset($config['paths']) && is_array($config['paths']))
 			$this->loadPathsPhp($config['paths'],$configPath);
 		if(isset($config['modules']) && is_array($config['modules']))
@@ -10946,7 +10946,7 @@ class TApplicationConfiguration extends TComponent
 			$properties['id'] = $id;
 			$this->_modules[$id]=array($type,$properties,$module);
 			$this->_empty=false;
-		}	
+		}
 	}
 	protected function loadModulesXml($modulesNode,$configPath)
 	{
@@ -10982,7 +10982,7 @@ class TApplicationConfiguration extends TComponent
 			$properties['id'] = $id;
 			$this->_services[$id] = array($type,$properties,$service);
 			$this->_empty = false;
-		}	
+		}
 	}
 	protected function loadServicesXml($servicesNode,$configPath)
 	{
@@ -11152,4 +11152,3 @@ class TShellApplication extends TApplication
 		$this->initApplication();
 	}
 }
-?>

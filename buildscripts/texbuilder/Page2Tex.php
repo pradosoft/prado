@@ -343,5 +343,3 @@ class Page2Tex
 		 return "<p id=\"".($page + (++self::$p_count))."\" class=\"block-content\">";
 	}
 }
-
-?>

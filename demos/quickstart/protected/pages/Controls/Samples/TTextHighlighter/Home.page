@@ -12,7 +12,6 @@ Highlighting PHP statements:
 $str = 'one|two|three|four';
 // will output an array
 print_r(explode('|', $str, 2));
-?>
 </com:TTextHighlighter>
 </td></tr>
 
