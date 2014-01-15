@@ -301,8 +301,7 @@ require_once($frameworkPath);
 
 $application=new TApplication;
 $application->run();
-
-?>';
+';
 	}
 
 	protected function renderConfigFile($appName)
@@ -426,8 +425,7 @@ $test_cases = dirname(__FILE__)."/unit";
 
 $tester = new PradoUnitTester($test_cases, $app_directory);
 $tester->run(new HtmlReporter());
-
-?>';
+';
 	}
 
 	protected function renderFunctionalTestFixture()
@@ -441,8 +439,7 @@ $test_cases = dirname(__FILE__)."/functional";
 
 $tester=new PradoFunctionalTester($test_cases);
 $tester->run(new SimpleReporter());
-
-?>';
+';
 	}
 
 }
@@ -729,7 +726,7 @@ $props
 		return parent::finder(\$className);
 	}
 }
-?>
+
 EOD;
 	}
 }
