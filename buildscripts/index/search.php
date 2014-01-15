@@ -11,7 +11,7 @@ require_once('Zend/Search/Lucene.php');
 
 if($keyword!=='')
 {
-	$search=new Zend_Search_Lucene(realpath(dirname(__FILE__)));		
+	$search=new Zend_Search_Lucene(realpath(dirname(__FILE__)));
 	$results=$search->find(strtolower($keyword));
 	$content='';
 	foreach($results as $entry)
@@ -32,5 +32,3 @@ $page=preg_replace('/<!-- content begin -->.*<!-- content end -->/ms',$content,$
 if($keyword!=='')
 	$page=preg_replace('/<input type="text" name="keyword"/','<input type="text" name="keyword" value="'.htmlentities($keyword).'"',$page);
 echo $page;
-
-?>

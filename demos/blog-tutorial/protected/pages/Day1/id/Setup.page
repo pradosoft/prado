@@ -52,7 +52,6 @@ require_once('path/to/prado.php');
 $application = new TApplication;
 // jalankan aplikasi dan tangani permintaan pengguna
 $application->run();
-?>
 </com:TTextHighlighter>
 
 <com:InfoBox>
@@ -148,8 +147,8 @@ Untuk membuat lokasi akar direktori halaman dan mengubah nama homepage, seseoran
 <?xml version="1.0" encoding="utf-8"?>
 <application id="blog" mode="Debug">
   <services>
-    <service id="page" 
-           class="TPageService" 
+    <service id="page"
+           class="TPageService"
            BasePath="path.to.pages"
            DefaultPage="NewHome"
            />

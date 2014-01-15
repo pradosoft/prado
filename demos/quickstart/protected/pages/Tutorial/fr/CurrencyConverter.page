@@ -133,7 +133,6 @@ class Home extends TPage
 {
 
 }
-?&gt;
 </com:TTextHighlighter>
 	<p id="1111" class="block-content">
 		Prado uses PHP's <tt>__autoload</tt> method to load classes. The convention

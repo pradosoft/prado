@@ -68,7 +68,6 @@ Le fichier de classe  <tt>MainLayout.php</tt> est très simple :
 class MainLayout extends TTemplateControl
 {
 }
-?>
 </com:TTextHighlighter>
 
 <com:InfoBox>
@@ -147,7 +146,6 @@ class Contact extends TPage
 
     // ...
 }
-?>
 </com:TTextHighlighter>
 
 <p>

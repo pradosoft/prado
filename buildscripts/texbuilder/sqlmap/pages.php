@@ -58,5 +58,3 @@ $pages['Advanced Topics'] = array(
 );
 
 return $pages;
-
-?>
