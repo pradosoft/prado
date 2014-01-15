@@ -294,7 +294,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Gets callback parameter. JSON encoding is assumed.
+	 * Gets callback parameter. 
 	 * @return string postback event parameter
 	 */
 	public function getCallbackEventParameter()
@@ -302,8 +302,7 @@ class TActivePageAdapter extends TControlAdapter
 		if($this->_callbackEventParameter===null)
 		{
 			$param = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
-			if(strlen($param) > 0)
-				$this->_callbackEventParameter=TJavaScript::jsonDecode((string)$param);
+			$this->_callbackEventParameter=$param;
 		}
 		return $this->_callbackEventParameter;
 	}
