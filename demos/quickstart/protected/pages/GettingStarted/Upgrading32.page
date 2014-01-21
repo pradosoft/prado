@@ -1,0 +1,234 @@
+<com:TContent ID="body" >
+
+<h1>Upgrading from v3.2</h1>
+
+<div class="block-content">
+<p class="block-content">
+Since version 3.3, PRADO uses <a href="http://jquery.com/">jQuery</a> as its default javascript framework.
+Previously, up to version 3.2, PRADO used <a href="http://prototypejs.org/">Prototype</a> and <a href="http://script.aculo.us/">Scriptaculous</a> as its default javascript framework.
+</p>
+<p class="block-content">
+PRADO relies a lot on clientside javascript code to implement its <a href="?page=Controls.Standard">standard controls</a>, to handle clientside <a href="?page=Controls.Validation">validators</a>, and to create a seamless <a href="?page=ActiveControls.Introduction">ajax</a> experience using <a href="?page=ActiveControls.Home">active controls</a>.
+All this javascript code, originally developed on Prototype, has been rewritten in order to use jQuery instead. The choice was mainly driven by the lack of development and decline of the Prototype community, while jQuery has become the de-facto standard library for javascript.
+</p>
+<p class="block-content">
+While the PRADO javascript code is ready to work with jQuery, legacy javascript code in existing applications can require some porting to make it work properly.
+We summarize in the following the most significant changes in v3.3 to help developers upgrade their v3.2 PRADO applications more easily, if needed.
+</p>
+</div>
+
+<h2>Basic Prototype to jQuery javascript porting</h2>
+<p class="block-content">
+The number one rule on writing jQuery javascript code is to read the <a href="http://api.jquery.com/">jQuery documentation</a>. Porting code from Prototype to jQuery needs some effort: here's a basic lookup table to port existing code:
+</p>
+<table class="tabular">
+	<tr>
+		<th></th>
+		<th>Prototype (OLD)</th>
+		<th>jQuery (NEW)</th>
+	</tr>
+	<tr>
+		<td>Get element by id</td>
+		<td>$('element_id')</td>
+		<td>// get the base DOM element
+			<br/>$('#element_id').get(0)
+			<br/>// get the the extended element
+			<br/>$('#element_id').eq(0)
+		</td>
+	</tr>
+	<tr>
+		<td>Get element by css selector</td>
+		<td>$$('.class')</td>
+		<td>$('.class')</td>
+	</tr>
+	<tr>
+		<td>Apply a function to multiple elements</td>
+		<td>$$('.class').each(Element.remove)</td>
+		<td>$('.class').remove()</td>
+	</tr>
+	<tr>
+		<td>Create or extend a class</td>
+		<td>Class.create(Prado.WebUI.Control, { ... })
+			<br/>Class.extend(Prado.WebUI.Control, { ... })
+		</td>
+		<td>jQuery.klass(Prado.WebUI.Control, { ... })</td>
+	</tr>
+	<tr>
+		<td>Extend an object</td>
+		<td>Object.extend(...)</td>
+		<td>jQuery.extend(...)</td>
+	</tr>
+	<tr>
+		<td>Bind an event to a callback event handler</td>
+		<td>Event.observe(element, 'click', callback)</td>
+		<td>$(element).on('click', callback)</td>
+	</tr>
+	<tr>
+		<td>Unbind an event from a callback event handler</td>
+		<td>Event.stopObserving(element, 'click', callback)</td>
+		<td>$(element).off('click', callback)</td>
+	</tr>
+	<tr>
+		<td>Stop event propagation</td>
+		<td>Event.stop(event)</td>
+		<td>// stop event bubbling chain
+			<br/>event.stopPropagation()
+			<br/>// prevent form submit
+			<br/>event.preventDefault()
+		</td>
+	</tr>
+	<tr>
+		<td>Detect keypress event</td>
+		<td>if(kc == Event.KEY_RETURN ||
+			<br/>kc == Event.KEY_SPACEBAR ||
+			<br/>kc == Event.KEY_TAB)</td>
+		<td>// use the numeric codes
+			<br/>if(kc == 13 ||
+			<br/>kc == 32 ||
+			<br/>kc == 9)
+		</td>
+	</tr>
+	<tr>
+		<td>Execute a function when the page has finished loading</td>
+		<td>document.observe("dom:loaded", function(event) { ... })</td>
+		<td>$( document ).ready(function() { ... })</td>
+	</tr>
+	<tr>
+		<td>Create an animation effect with a "finish" callback</td>
+		<td>new Effect.Fade(element, {
+			<br/>duration: 400,
+			<br/>afterFinish: function() {
+			<br/>// Animation complete.
+			<br/>});</td>
+		<td>$(element).fadeOut( 400, function() {
+		<br/>// Animation complete.
+		<br/>});</td>
+	</tr>
+	<tr>
+		<td>Declare a function to be used as event handler binding its "this" property</td>
+		<td>this.functionName.bindAsEventListener(this)</td>
+		<td>this.functionName.bind(this)</td>
+	</tr>
+	<tr>
+		<td>Css class functions (add, remove, test for css class)</td>
+		<td>addClassName()
+			<br/>removeClassName()
+			<br/>hasClassName()
+		</td>
+		<td>addClass()
+			<br/>removeClass()
+			<br/>hasClass()
+		</td>
+	</tr>
+	<tr>
+		<td>Get event target inside an event handler</td>
+		<td>Event.element(event)</td>
+		<td>event.target</td>
+	</tr>
+	<tr>
+		<td>Get event mouse position</td>
+		<td>Event.pointerX(event)
+			<br/>Event.pointerY(event)
+		</td>
+		<td>event.pageX
+			<br/>event.pageY
+		</td>
+	</tr>
+	<tr>
+		<td>Fire events</td>
+		<td>Event.fireEvent(this.control, "change")</td>
+		<td>$(element).trigger("change")</td>
+	</tr>
+	<tr>
+		<td>Get element size</td>
+		<td>element.getWidth()
+			<br/>element.getHeight()
+		</td>
+		<td>element.width
+			<br/>element.height
+		</td>
+	</tr>
+	<tr>
+		<td>Hook on ajax events</td>
+		<td>Ajax.Responders.register({
+			<br/>"onLoading" : my_function
+			<br/>});
+			<br/>Ajax.Responders.register({
+			<br/>"onSuccess" : my_function
+			<br/>});
+		</td>
+		<td>$( document ).ajaxSend(my_function);
+			<br/>$( document ).ajaxSuccess(my_function);
+		</td>
+	</tr>
+</table>
+
+<h2>PRADO specific code changes</h2>
+<p class="block-content">
+PRADO
+Porting prado to jQuery some method signatures has changed, or have been adapted:
+</p>
+<table class="tabular">
+	<tr>
+		<th></th>
+		<th>Prototype (OLD)</th>
+		<th>jQuery (NEW)</th>
+	</tr>
+	<tr>
+		<td>Implementing the postback handler for a PostBackControl;
+			<br/>the function signature has changed (parameters are inverted):</td>
+		<td>onPostBack : function(event, options)</td>
+		<td>onPostBack : function(options, event)</td>
+	</tr>
+	<tr>
+		<td>Execute a postback</td>
+		<td>Prado.PostBack(options, event);</td>
+		<td>// Create a new object
+			<br/>new Prado.PostBack(options, event);
+		</td>
+	</tr>
+	<tr>
+		<td>Test browser software method has been removed</td>
+		<td>Prado.Browser().ie</td>
+		<td>// Test for browser support for specific capabilities instead
+			<br/>jQuery.support
+			<br/>// or, better, use <a href="http://modernizr.com/">Modernizr</a>
+		</td>
+	</tr>
+	<tr>
+		<td>Focus an element</td>
+		<td>Prado.Element.focus(element)</td>
+		<td>$(element).focus()</td>
+	</tr>
+</table>
+
+<h2>Specific controls changes</h2>
+<p class="block-content">
+Some Prado controls were based on specific extensions of the Prototype + Scriptaculous javascript framework, and they have been deprecated now that jQuery has become the primary js framework in PRADO.
+PRADO 3.3 introduces jQuery-based counterpart for these controls and encourage everyone to port their code to the new controls, but the old controls are still supposed to work with some minor annoyance:
+<ul>
+	<li>Prototype and Scriptaculous will be loaded along jQuery</li>
+	<li>jQuery will execute in "no conflict" mode, so the $() helper won't call anymore jQuery but Prototype.</li>
+</ul>
+Following is the list of deprecated controls:
+</p>
+
+<h4>TAutoComplete</h4>
+<p class="block-content">
+<tt>TAutoComplete</tt> is deprecated, use <tt>TJuiAutoComplete</tt> instead. Main changes in porting existing code using TAutoComplete to TJuiAutoComplete:
+<ul>
+	<li>the <tt>Frequency</tt> property doesn't exists anymore</li>
+	<li>the <tt>minChars</tt> property is called <tt>minLength</tt></li>
+	<li>only the <tt>ItemTemplate</tt> is supported for the <tt>Suggestions</tt> repeater (no HeaderTemplate, FooterTemplate, etc..)</li>
+	<li><tt>ItemTemplate</tt> doesn't need to render the &lt;li&gt; tag anymore, but only the content itself</li>
+	<li>multiple selections are not supported</li>
+</ul>
+</p>
+
+<h4>TDraggable and TDropContainer</h4>
+<p class="block-content">
+<tt>TDraggable</tt> and <tt>TDropContainer</tt> have been deprecated and replaced respectively by <tt>TJuiDraggable</tt> and <tt>TJuiDroppable</tt>.
+The options for the new controls are available at <a href="http://api.jqueryui.com/">jQueryUI's API documentation</a>.
+</p>
+
+</com:TContent>

@@ -8,6 +8,7 @@
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">New Features</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Upgrading from v2.x and v1.x</a></li>
+    <li><a href="?page=GettingStarted.Upgrading32">Upgrading from v3.2</a></li>
     <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
     <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
