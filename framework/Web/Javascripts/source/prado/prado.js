@@ -412,6 +412,11 @@ Prado.Element =
 		}, op.duration);
 	},
 
+	focus : function(element)
+	{
+		jQuery("#"+element).focus();
+	},
+
 	/**
 	 * Sets the options for a select element.
 	 * @function ?

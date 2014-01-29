@@ -195,11 +195,6 @@ Porting prado to jQuery some method signatures has changed, or have been adapted
 			<br/>// or, better, use <a href="http://modernizr.com/">Modernizr</a>
 		</td>
 	</tr>
-	<tr>
-		<td>Focus an element</td>
-		<td>Prado.Element.focus(element)</td>
-		<td>$(element).focus()</td>
-	</tr>
 </table>
 
 <h2>Specific controls changes</h2>
