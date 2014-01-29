@@ -13,10 +13,6 @@
  * Using TCheckBox parent class
  */
 Prado::using('System.Web.UI.WebControls.TCheckBox');
-/**
- * Using TRadioButtonList class
- */
-Prado::using('System.Web.UI.WebControls.TRadioButtonList');
 
 /**
  * TRadioButton class
@@ -170,7 +166,7 @@ class TRadioButton extends TCheckBox
 				{
 					if($groupName!=='')
 						$groupName=substr($uniqueID,0,$pos+1).$groupName;
-					else if($this->getNamingContainer() instanceof TRadioButtonList)
+					else if(is_a($this->getNamingContainer(), 'TRadioButtonList'))
 						$groupName=substr($uniqueID,0,$pos);
 				}
 				if($groupName==='')
