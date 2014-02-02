@@ -571,10 +571,10 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 		{
 			var pos = jQuery(this.control).position();
 
-			pos[1] += this.getDatePickerOffsetHeight();
-			this._calDiv.style.top = (pos[1]-1) + "px";
+			pos['top'] += this.getDatePickerOffsetHeight();
+			this._calDiv.style.top = (pos['top']-1) + "px";
 			this._calDiv.style.display = "block";
-			this._calDiv.style.left = pos[0] + "px";
+			this._calDiv.style.left = pos['left'] + "px";
 
 			this.documentClickEvent = jQuery.bind(this.hideOnClick, this);
 			this.documentKeyDownEvent = jQuery.bind(this.keyPressed, this);
@@ -590,7 +590,7 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 
 			if(this.positionMode=='Top')
 			{
-				this._calDiv.style.top = ((pos[1]-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
+				this._calDiv.style.top = ((pos['top']-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
 			}
 		}
 	},
