@@ -293,7 +293,7 @@ EOS;
 	Options.fileType = '{$params->fileType}';
 	Options.errorCode = '{$params->errorCode}';
 	Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
-	parent.Prado.WebUI.TactiveFileUpload.onFileUpload(Options);
+	parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
 </script>
 EOS;
 		}
