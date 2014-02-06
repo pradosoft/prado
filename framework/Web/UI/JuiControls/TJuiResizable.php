@@ -10,10 +10,15 @@
  */
 
 Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
+Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 
 /**
  * TJuiResizable class.
  *
+ * TJuiResizable is an extension to {@link TActivePanel} based on jQuery-UI's
+ * {@link http://jqueryui.com/resizable/ Resizable} interaction.
+ * A small handle is shown on the bottom right corner of the panel, that permits
+ * the panel to be resized using the mouse.
  *
  * <code>
  * <com:TJuiResizable
@@ -34,6 +39,8 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  */
 class TJuiResizable extends TActivePanel implements IJuiOptions
 {
+	protected $_options;
+
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -51,10 +58,9 @@ class TJuiResizable extends TActivePanel implements IJuiOptions
 	 */
 	public function getOptions()
 	{
-		static $options;
-		if($options===null)
-			$options=new TJuiControlOptions($this);
-		return $options;
+		if($this->_options===null)
+			$this->_options=new TJuiControlOptions($this);
+		return $this->_options;
 	}
 
 	/**
@@ -64,6 +70,15 @@ class TJuiResizable extends TActivePanel implements IJuiOptions
 	public function getValidOptions()
 	{
 		return array('alsoResize', 'animate', 'animateDuration', 'animateEasing', 'aspectRatio', 'autoHide', 'cancel', 'containment', 'delay', 'disabled', 'distance', 'ghost', 'grid', 'handles', 'helper', 'maxHeight', 'maxWidth', 'minHeight', 'minWidth');
+	}
+
+	/**
+	 * Array containing valid javascript events
+	 * @return array()
+	 */
+	public function getValidEvents()
+	{
+		return array('create', 'resize', 'start', 'stop');
 	}
 
 	/**

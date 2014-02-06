@@ -893,6 +893,44 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 };
 
 /**
+ * Create a new callback request initiated by jQuery-UI elements.
+ * @param event object as sent by jQuery-UI events
+ * @param ui object as sent by jQuery-UI events
+ * @return boolean always false.
+ */
+Prado.JuiCallback = function(UniqueID, eventType, event, ui, target)
+{
+	// Retuns an array of all properties of the object received as parameter and their values.
+	// If a property represent a jQuery element, its id is returnet instead
+	var cleanUi = {};
+	jQuery.each( ui, function( key, value ) {
+		if(value instanceof jQuery)
+			cleanUi[key]=value[0].id;
+		else
+			cleanUi[key]=value;
+	});
+
+	target=jQuery(target);
+	cleanUi['target']= {
+		'position' : target.position(),
+		'offset' : target.offset()
+	};
+
+	var callback =
+	{
+		'EventTarget' : UniqueID,
+		'CallbackParameter' : {
+			'event' : eventType,
+			'ui' : cleanUi
+		},
+	};
+
+	var request = new Prado.CallbackRequest(UniqueID, callback);
+	request.dispatch();
+	return false;
+};
+
+/**
 * Asset manager classes for lazy loading of scripts and stylesheets
 * @author Gabor Berczi (gabor.berczi@devworx.hu)
 */

@@ -15,6 +15,13 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 /**
  * TJuiDroppable class.
  *
+ * TJuiDroppable is an extension to {@link TActivePanel} based on jQuery-UI's
+ * {@link http://jqueryui.com/droppable/ Droppable} interaction.
+ * When a {@link TJuiDraggable} is dropped over a TJuiDroppable panel, the
+ * {@link onDrop OnDrop} event will be triggered. An event hanler will receive
+ * a {@link TJuiEventParameter} object containing a reference to the dropped control
+ * in the <tt>DraggableControl</tt> property.
+ *
  * <code>
  * <com:TJuiDraggable
  * 	ID="drag1"
@@ -35,11 +42,12 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * <code>
  *	public function drop1_ondrop($sender, $param)
  *	{
- *		$draggable=$param->getDroppedControl()->ID;
- *		$this->drop1->Controls->clear();
- *		$this->drop1->Controls->add("Dropped ".$draggable." at: <br/>Top=".$param->getOffsetTop()." Left=".$param->getOffsetLeft());
- *		// it's still an active panel, after all
- *		$this->drop1->render($param->NewWriter);
+ * 		$draggable=$param->DraggableControl;
+ *		$offset=$param->getCallbackParameter()->offset;
+ *		$target=$param->getCallbackParameter()->target->offset;
+ *		$top=$offset->top - $target->top;
+ *		$left=$offset->left - $target->left;
+ *		$this->label1->Text="Dropped ".$draggable->ID." at: <br/>Top=".$top." Left=".$left;
  *	}
  * </code>
  *
@@ -49,6 +57,8 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  */
 class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
+	protected $_options;
+
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -66,10 +76,9 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getOptions()
 	{
-		static $options;
-		if($options===null)
-			$options=new TJuiControlOptions($this);
-		return $options;
+		if($this->_options===null)
+			$this->_options=new TJuiControlOptions($this);
+		return $this->_options;
 	}
 
 	/**
@@ -82,50 +91,20 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
+	 * Array containing valid javascript events
+	 * @return array()
+	 */
+	public function getValidEvents()
+	{
+		return array('activate', 'create', 'deactivate', 'drop', 'out', 'over');
+	}
+
+	/**
 	 * @return array list of callback options.
 	 */
 	protected function getPostBackOptions()
 	{
-		$options = $this->getOptions()->toArray();
-		$options['drop'] = new TJavaScriptLiteral("function( event, ui ) { Prado.Callback(".TJavascript::encode($this->getUniqueID()).", { 'offset' : { 'left' : ui.offset.left - $(this).offset().left, 'top' : ui.offset.top - $(this).offset().top }, 'position' : ui.position, 'draggable' : ui.draggable.get(0).id }) }");
-		return $options;
-	}
-
-	/**
-	 * Raises callback event. This method is required bu {@link ICallbackEventHandler}
-	 * interface.
-	 * It raises the {@link onDrop OnDrop} event, then, the {@link onCallback OnCallback} event
-	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
-	 */
-	public function raiseCallbackEvent($param)
-	{
-		$this->onDrop($param->getCallbackParameter());
-		$this->onCallback($param);
-	}
-
-	/**
-	 * Raises the onDrop event.
-	 * The drop parameters are encapsulated into a {@link TJuiDroppableEventParameter}
-	 *
-	 * @param object $dropControlId
-	 */
-	public function onDrop ($dropParams)
-	{
-		$this->raiseEvent('OnDrop', $this, new TJuiDroppableEventParameter ($this->getResponse(), $dropParams));
-
-	}
-
-	/**
-	 * This method is invoked when a callback is requested. The method raises
-	 * 'OnCallback' event to fire up the event handlers. If you override this
-	 * method, be sure to call the parent implementation so that the event
-	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
-	 */
-	public function onCallback($param)
-	{
-		$this->raiseEvent('OnCallback', $this, $param);
+		return $this->getOptions()->toArray();
 	}
 
 	/**
@@ -142,43 +121,81 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		$code="jQuery('#".$this->getClientId()."').droppable(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
-}
-
-/**
- * TJuiDroppableEventParameter class
- *
- * TJuiDroppableEventParameter encapsulate the parameter
- * data for <b>OnDrop</b> event of TJuiDroppable components
- *
- * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @license http://www.pradosoft.com/license
- * @package System.Web.UI.JuiControls
- */
-class TJuiDroppableEventParameter extends TCallbackEventParameter
-{
-	public function getDragElementId()		{ return $this->getCallbackParameter()->draggable; }
-	public function getPositionTop()		{ return $this->getCallbackParameter()->position->top; }
-	public function getPositionLeft()		{ return $this->getCallbackParameter()->position->left; }
-	public function getOffsetTop()			{ return $this->getCallbackParameter()->offset->top; }
-	public function getOffsetLeft()			{ return $this->getCallbackParameter()->offset->left; }
 
 	/**
-	 * GetDroppedControl
-	 *
-	 * Compatibility method to get the dropped control
-	 * @return TControl dropped control, or null if not found
+	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * interface.
+	 * @param TCallbackEventParameter the parameter associated with the callback event
 	 */
-	 public function getDroppedControl()
-	 {
-		 $control=null;
-		 $service=prado::getApplication()->getService();
-		 if ($service instanceof TPageService)
-		 {
-			// Find the control
-			// Warning, this will not work if you have a '_' in your control Id !
-			$dropControlId=str_replace(TControl::CLIENT_ID_SEPARATOR,TControl::ID_SEPARATOR,$this->getCallbackParameter()->draggable);
-			$control=$service->getRequestedPage()->findControl($dropControlId);
-		 }
-		 return $control;
-	 }
+	public function raiseCallbackEvent($param)
+	{
+		$this->getOptions()->raiseCallbackEvent($param);
+	}
+
+	/**
+	 * Raises the OnActivate event
+	 * @param object $params event parameters
+	 */
+	public function onActivate ($params)
+	{
+		$this->raiseEvent('OnActivate', $this, $params);
+	}
+
+	/**
+	 * Raises the OnCreate event
+	 * @param object $params event parameters
+	 */
+	public function onCreate ($params)
+	{
+		$this->raiseEvent('OnCreate', $this, $params);
+	}
+
+	/**
+	 * Raises the OnDeactivate event
+	 * @param object $params event parameters
+	 */
+	public function onDeactivate ($params)
+	{
+		$this->raiseEvent('OnDeactivate', $this, $params);
+	}
+
+	/**
+	 * Raises the OnDrop event
+	 * @param object $params event parameters
+	 */
+	public function onDrop ($params)
+	{
+		$this->raiseEvent('OnDrop', $this, $params);
+	}
+
+	/**
+	 * Raises the OnOut event
+	 * @param object $params event parameters
+	 */
+	public function OnOut ($params)
+	{
+		$this->raiseEvent('OnOut', $this, $params);
+	}
+
+	/**
+	 * Raises the OnOver event
+	 * @param object $params event parameters
+	 */
+	public function OnOver ($params)
+	{
+		$this->raiseEvent('OnOver', $this, $params);
+	}
+
+	/**
+	 * This method is invoked when a callback is requested. The method raises
+	 * 'OnCallback' event to fire up the event handlers. If you override this
+	 * method, be sure to call the parent implementation so that the event
+	 * handler can be invoked.
+	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 */
+
+	public function onCallback($param)
+	{
+		$this->raiseEvent('OnCallback', $this, $param);
+	}
 }

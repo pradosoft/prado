@@ -15,9 +15,13 @@
 <tr><td class="samplenote">
 Default options with a little css applied:
 </td><td class="sampleaction" style="height:600px">
-	<com:TJuiDraggable>
+	<com:TJuiDraggable
+		OnStart="drag1_start"
+		OnStop="drag1_stop"
+	>
 	Drag me around
 	</com:TJuiDraggable>
+	<com:TActiveLabel ID="label1" Text="Waiting.." />
 </td></tr>
 
 </table>

@@ -10,6 +10,7 @@
  */
 
 Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
+Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 
 /**
  * TJuiSelectable class.
@@ -33,6 +34,8 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  */
 class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
+	protected $_options;
+
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -50,10 +53,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getOptions()
 	{
-		static $options;
-		if($options===null)
-			$options=new TJuiControlOptions($this);
-		return $options;
+		if($this->_options===null)
+			$this->_options=new TJuiControlOptions($this);
+		return $this->_options;
 	}
 
 	/**
@@ -63,6 +65,15 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	public function getValidOptions()
 	{
 		return array('appendTo', 'autoRefresh', 'cancel', 'delay', 'disabled', 'distance', 'filter', 'tolerance');
+	}
+
+	/**
+	 * Array containing valid javascript events
+	 * @return array()
+	 */
+	public function getValidEvents()
+	{
+		return array('create', 'selected', 'selecting', 'start', 'stop', 'unselected', 'unselecting');
 	}
 
 	/**

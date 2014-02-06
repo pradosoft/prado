@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-<h1>TJuiDraggable Samples</h1>
+<h1>TJuiDroppable Samples</h1>
 
 <com:TStyleSheet>
 	.ui-draggable {
@@ -28,19 +28,19 @@
 <tr><td class="samplenote">
 Default options with a little css applied:
 </td><td class="sampleaction" style="height:600px">
-	<com:TJuiDraggable>
+	<com:TJuiDraggable ID="drag1">
 	Drag me around
 	</com:TJuiDraggable>
 
 	<com:TJuiDroppable OnDrop="drop1_ondrop" CssClass="drop-yellow">
 	Drop it here!
 	<br/><com:TActiveLabel ID="label1" />
-	</com:TJuiDroppable ID="drop1">
+	</com:TJuiDroppable>
 
 	<com:TJuiDroppable OnDrop="drop2_ondrop" CssClass="drop-red">
 	Drop it here!
 	<br/><com:TActiveLabel ID="label2" />
-	</com:TJuiDroppable ID="drop1">
+	</com:TJuiDroppable>
 </td></tr>
 
 </table>
