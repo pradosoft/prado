@@ -1,39 +1,76 @@
 <com:TContent ID="body" >
 <h1>Jui Controls (jQuery UI)</h1>
 <p class="block-content">
-Jui controls are the PRADO port of the standard <a href="http://jqueryui.com/">jQuery UI</a> widgets. They can be used as standard <a href="?page=ActiveControls.Introduction">Active Controls</a>, but will automatically load the needed jQuery UI javascript libraries. Jui controls have a <tt>Options</tt> property used to pass options to the underlying javascript object. For informations of the specific options of each widget, follow the <a href="http://api.jqueryui.com/category/widgets/">API Documentation</a> for the specific widget.
+Jui controls are the PRADO port of the standard <a href="http://jqueryui.com/">jQuery UI</a> widgets. They can be used as standard <a href="?page=ActiveControls.Introduction">Active Controls</a>, but will automatically load the needed jQuery-UI javascript libraries.
+</p>
+<h3>Options</h3>
+<p class="block-content">
+The <tt>Options</tt> property of PRADO Jui controls is used to pass options to the underlying javascript object. Each subproperty set on <tt>Options</tt> will be translated to a javascript property added to the object. The complete list of options available for each widget is availble at jQuery-UI's API Documentation.
 </p>
 
+<h4>Example</h4>
+<p class="block-content">
+jQuery-UI's <a href="http://jqueryui.com/resizable/">Resizable</a> adds an handle to a target element making it resizable. Its PRADO counterpart is <a href="?page=JuiControls.Interactions#TJuiResizable">TJuiResizable</a>. Resizable offers an <a href="http://api.jqueryui.com/resizable/#option-aspectRatio">aspectRatio</a> property to constrain the aspect ratio of the target element. The same property can be applied to TJuiResizable as a subproperty of the <tt>Options</tt> property:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+  &lt;com:TJuiResizable
+    ID="resize1"
+    Options.aspectRatio="true"
+    // Additional options being set
+    Options.maxHeight="250"
+    Options.maxWidth="350"
+    Options.minHeight="150"
+    Options.minWidth="200"
+ /&gt;
+</com:TTextHighlighter>
+
+<h3>Events</h3>
+<p class="block-content">
+jQuery-UI widgets offers a lot of events that PRADO can hook up and trasmit to the serverside using a <a href="?page=ActiveControls.Introduction">callback request</a>. Event available for PRADO Jui controls inherits their names from their jQuery-UI counterparts, prefixed with "On".
+Jui controls doesn't make use of the AutoPostback property anymore, but only triggers a callback when an event handler is associated to the corresponding event.
+</p>
+
+<h4>Example</h4>
+<p class="block-content">
+jQuery's <a href="http://jqueryui.com/draggable/">Draggable</a> allows a target element to the moved using the mouse. Its PRADO counterpart is <a href="?page=JuiControls.Interactions#TJuiDraggable">TJuiDraggable</a>. Draggable exposes two useful events: <a href="http://api.jqueryui.com/draggable/#event-start">start</a> and <a href="http://api.jqueryui.com/draggable/#event-stop">stop</a>, that gets triggered respectively when the element starts to move and when the movement stops. TJuiDraggable exposes these same events:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+  &lt;com:TJuiDraggable
+    ID="drag1"
+    OnStart="drag1_start"
+    OnStop="drag1_stop"
+ /&gt;
+</com:TTextHighlighter>
+
 <h2>PRADO Jui interactions controls</h2>
+<p class="block-content">
+Jui interactions adds basic mouse-based interactions to elements like moving, resizing or sorting. PRADO Jui interactions controls applies there interactions to a <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+For informations of the specific options of each interaction, follow jQuery-UI Interaction <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> for the specific interaction.
+</p>
 <ul id="u1" class="block-content">
   <li>
-  <a href="?page=JuiControls.TJuiDraggable">TJuiDraggable</a>
+  <a href="?page=JuiControls.Interactions#TJuiDraggable">TJuiDraggable</a>
   is an element that can be moved using the mouse.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiDraggable.Home" />
   </li>
 
   <li>
-  <a href="?page=JuiControls.TJuiDroppable">TJuiDroppable</a>
+  <a href="?page=JuiControls.Interactions#TJuiDroppable">TJuiDroppable</a>
   is an area where TJuiDraggable elements can be released.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiDroppable.Home" />
   </li>
 
   <li>
-  <a href="?page=JuiControls.TJuiResizable">TJuiResizable</a>
+  <a href="?page=JuiControls.Interactions#TJuiResizable">TJuiResizable</a>
   is an element that cna be resized using the mouse.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiResizable.Home" />
   </li>
 
   <li>
-  <a href="?page=JuiControls.TJuiSelectable">TJuiSelectable</a>
+  <a href="?page=JuiControls.Interactions#TJuiSelectable">TJuiSelectable</a>
   displays a list of elements that can be selected individually.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiSelectable.Home" />
   </li>
 
   <li>
-  <a href="?page=JuiControls.TJuiSortable">TJuiSortable</a>
+  <a href="?page=JuiControls.Interactions#TJuiSortable">TJuiSortable</a>
   displays a list of elements that can be selected individually.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiSortable.Home" />
   </li>
 </ul>
 

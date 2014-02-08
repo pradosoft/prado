@@ -1,0 +1,83 @@
+<com:TContent ID="body">
+<h1>Jui interactions controls</h1>
+<p class="block-content">
+Jui interactions adds basic mouse-based interactions to elements like moving, resizing or sorting. PRADO Jui interactions controls applies there interactions to a <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+For informations of the specific options of each interaction, follow jQuery-UI Interaction <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> for the specific interaction.
+</p>
+
+<a name="TJuiDraggable"></a>
+<h2>TJuiDraggable</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDraggable" /> - <a href="http://api.jqueryui.com/draggable/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiDraggable</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/draggable/">Draggable</a> interaction.
+</p>
+
+<p class="block-content">
+The panel can be moved using the mouse, and eventually dropped over a <a href="?page=JuiControls.Interactions#TJuiDroppable">TJuiDroppable</a>.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiDraggable.Home" />
+<br/>
+
+
+<a name="TJuiDroppable"></a>
+<h2>TJuiDroppable</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDroppable" /> - <a href="http://api.jqueryui.com/droppable/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiDroppable</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/draggable/">Draggable</a> interaction.
+</p>
+
+<p class="block-content">
+When a <a href="?page=JuiControls.Interactions#TJuiDroppable">TJuiDraggable</a> is dropped over a <tt>TJuiDroppable panel</tt>, the <tt>OnDrop</tt> event will be triggered. The event hanler will receive a <tt>TJuiEventParameter</tt> object containing a reference to the dropped control in the <tt>DraggableControl</tt> property.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiDroppable.Home" />
+<br/>
+
+<a name="TJuiResizable"></a>
+<h2>TJuiResizable</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiResizable" /> - <a href="http://api.jqueryui.com/resizable/">jQuery UI API</a>
+<p class="block-content">
+<tt>TJuiResizable</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/resizable/">Resizable</a> interaction.
+</p>
+
+<p class="block-content">
+A small handle is shown on the bottom right corner of the panel, that permits the panel to be resized using the mouse.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiResizable.Home" />
+<br/>
+
+
+<a name="TJuiSelectable"></a>
+<h2>TJuiSelectable</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiSelectable" /> - <a href="http://api.jqueryui.com/selectable/">jQuery UI API</a>
+<p class="block-content">
+<tt>TJuiSelectable</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/selectable/">Selectable</a> interaction.
+</p>
+
+<p class="block-content">
+<tt>TJuiSelectable</tt> can be feed a <tt>DataSource</tt> and will interally render a <a href="?page=Controls.Repeater">TRepeater</a> that displays items in an unordered list. Items can be selected by clicking on them, individually or in a group.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiSelectable.Home" />
+<br/>
+
+
+<a name="TJuiSortable"></a>
+<h2>TJuiSortable</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiSortable" /> - <a href="http://api.jqueryui.com/sortable/">jQuery UI API</a>
+<p class="block-content">
+<tt>TJuiSortable</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/sortable/">Sortable</a> interaction.
+</p>
+
+<p class="block-content">
+<tt>TJuiSortable</tt> can be feed a <tt>DataSource</tt> and will interally render a <a href="?page=Controls.Repeater">TRepeater</a> that displays items in an unordered list. Items can be sortered dragging and dropping them.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiSortable.Home" />
+<br/>
+
+</com:TContent>

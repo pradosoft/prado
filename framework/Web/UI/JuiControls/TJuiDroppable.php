@@ -18,7 +18,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * TJuiDroppable is an extension to {@link TActivePanel} based on jQuery-UI's
  * {@link http://jqueryui.com/droppable/ Droppable} interaction.
  * When a {@link TJuiDraggable} is dropped over a TJuiDroppable panel, the
- * {@link onDrop OnDrop} event will be triggered. An event hanler will receive
+ * {@link onDrop OnDrop} event will be triggered. The event hanler will receive
  * a {@link TJuiEventParameter} object containing a reference to the dropped control
  * in the <tt>DraggableControl</tt> property.
  *

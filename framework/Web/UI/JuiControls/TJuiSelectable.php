@@ -17,7 +17,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  *
  * TJuiSelectable is an extension to {@link TActivePanel} based on jQuery-UI's
  * {@link http://jqueryui.com/selectable/ Selectable} interaction.
- * The panel can be feed a {@link setDataSource DataSource} and will interally
+ * TJuiSelectable can be feed a {@link setDataSource DataSource} and will interally
  * render a {@link TRepeater} that displays items in an unordered list.
  * Items can be selected by clicking on them, individually or in a group.
  *
