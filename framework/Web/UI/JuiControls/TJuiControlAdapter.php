@@ -142,17 +142,16 @@ class TJuiControlOptions
 		if($this->_options===null)
 			$this->_options=array();
 
-		$tmpname=strtolower($name);
 		foreach($this->_control->getValidOptions() as $option)
 		{
-			if($tmpname == $option)
+			if(0 == strcasecmp($name, $option))
 			{
 				$this->_options[$option] = $value;
 				return;
 			}
 		}
 
-		throw new THttpException(500,'juioptions_option_invalid',$control->ID, $name);
+		throw new THttpException(500,'juioptions_option_invalid',$this->_control->ID, $name);
 	}
 
 	/**
@@ -166,9 +165,13 @@ class TJuiControlOptions
 		if($this->_options===null)
 			$this->_options=array();
 
-		$tmpname=strtolower($name);
-		if(isset($this->_options[$tmpname]))
-			return $this->_options[$tmpname];
+		foreach($this->_control->getValidOptions() as $option)
+		{
+			if(0 == strcasecmp($name, $option) && isset($this->_options[$option]))
+			{
+				return $this->_options[$option];
+			}
+		}
 
 		return null;
 	}
@@ -178,7 +181,7 @@ class TJuiControlOptions
 	 */
 	public function toArray()
 	{
-		$ret= ($this->_options===null) ? $this->_options : array();
+		$ret= ($this->_options===null) ? array() : $this->_options;
 
 		foreach($this->_control->getValidEvents() as $event)
 			if($this->_control->hasEventHandler('on'.$event))
