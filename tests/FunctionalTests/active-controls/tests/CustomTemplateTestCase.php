@@ -12,8 +12,8 @@ class CustomTemplateTestCase extends PradoGenericSeleniumTest
 		$this->click('button2');
 		$this->pause(800);
 
-		$this->assertVisible('ctl1_ThePanel');
-		$this->assertTextPresent('Client ID: ctl1_ThePanel');
+		$this->assertVisible('ctl0_ThePanel');
+		$this->assertTextPresent('Client ID: ctl0_ThePanel');
 
 		$this->assertText('label1', 'Button 1 was clicked Foo Bar! using callback!... and this is the textbox text: Foo Bar!');
 	}
