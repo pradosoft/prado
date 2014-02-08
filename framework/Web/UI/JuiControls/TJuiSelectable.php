@@ -15,6 +15,11 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 /**
  * TJuiSelectable class.
  *
+ * TJuiSelectable is an extension to {@link TActivePanel} based on jQuery-UI's
+ * {@link http://jqueryui.com/selectable/ Selectable} interaction.
+ * The panel can be feed a {@link setDataSource DataSource} and will interally
+ * render a {@link TRepeater} that displays items in an unordered list.
+ * Items can be selected by clicking on them, individually or in a group.
  *
  * <code>
  * <style>
@@ -82,7 +87,11 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	protected function getPostBackOptions()
 	{
 		$options = $this->getOptions()->toArray();
-		$options['stop'] = new TJavaScriptLiteral('function( event, ui ) { var selected = new Array(); jQuery(\'#'.$this->getClientID().' .ui-selected\').each(function(idx, item){ selected.push(item.id) }); Prado.Callback('.TJavascript::encode($this->getUniqueID()).', { \'indexes\' : selected }) }');
+		// overload the "OnStop" event to add information about the current selected items
+		if(isset($options['stop']))
+		{
+			$options['stop']=new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#'.$this->getClientID().' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback('.TJavascript::encode($this->getUniqueID()).', \'stop\', event, ui, this); }');
+		}
 		return $options;
 	}
 
@@ -101,40 +110,76 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 
 	/**
-	 * Raises callback event. This method is required bu {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * It raises the {@link onSelectedIndexChanged onSelectedIndexChanged} event, then, the {@link onCallback OnCallback} event
-	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		$this->onSelectedIndexChanged($param->getCallbackParameter());
-		$this->onCallback($param);
+		$this->getOptions()->raiseCallbackEvent($param);
 	}
 
 	/**
-	 * Raises the onSelect event.
-	 * The selection parameters are encapsulated into a {@link TJuiSelectableEventParameter}
-	 *
-	 * @param object $params
+	 * Raises the OnCreate event
+	 * @param object $params event parameters
 	 */
-	public function onSelectedIndexChanged($params)
+	public function onCreate ($params)
 	{
-		$this->raiseEvent('onSelectedIndexChanged', $this, new TJuiSelectableEventParameter ($this->getResponse(), $params));
-
+		$this->raiseEvent('OnCreate', $this, $params);
 	}
 
 	/**
-	 * This method is invoked when a callback is requested. The method raises
-	 * 'OnCallback' event to fire up the event handlers. If you override this
-	 * method, be sure to call the parent implementation so that the event
-	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * Raises the OnSelected event
+	 * @param object $params event parameters
 	 */
-	public function onCallback($param)
+	public function onSelected ($params)
 	{
-		$this->raiseEvent('OnCallback', $this, $param);
+		$this->raiseEvent('OnSelected', $this, $params);
+	}
+
+	/**
+	 * Raises the OnSelecting event
+	 * @param object $params event parameters
+	 */
+	public function onSelecting ($params)
+	{
+		$this->raiseEvent('OnSelecting', $this, $params);
+	}
+
+	/**
+	 * Raises the OnStart event
+	 * @param object $params event parameters
+	 */
+	public function onStart ($params)
+	{
+		$this->raiseEvent('OnStart', $this, $params);
+	}
+
+	/**
+	 * Raises the OnStop event
+	 * @param object $params event parameters
+	 */
+	public function onStop ($params)
+	{
+		$this->raiseEvent('OnStop', $this, $params);
+	}
+
+	/**
+	 * Raises the OnUnselected event
+	 * @param object $params event parameters
+	 */
+	public function onUnselected ($params)
+	{
+		$this->raiseEvent('OnUnselected', $this, $params);
+	}
+
+	/**
+	 * Raises the OnUnselecting event
+	 * @param object $params event parameters
+	 */
+	public function onUnselecting ($params)
+	{
+		$this->raiseEvent('OnUnselecting', $this, $params);
 	}
 
 	/**
@@ -186,7 +231,6 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 }
 
-
 /**
  * TJuiSelectableTemplate class.
  *
@@ -214,19 +258,4 @@ class TJuiSelectableTemplate extends TComponent implements ITemplate
 	{
 		$parent->getControls()->add($this->_template);
 	}
-}
-
-/**
- * TJuiSelectableEventParameter class
- *
- * TJuiSelectableEventParameter encapsulate the parameter
- * data for <b>OnSelectedIndexChanged</b> event of TJuiSelectable components
- *
- * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @license http://www.pradosoft.com/license
- * @package System.Web.UI.JuiControls
- */
-class TJuiSelectableEventParameter extends TCallbackEventParameter
-{
-	public function getSelectedIndexes()		{ return $this->getCallbackParameter()->indexes; }
 }

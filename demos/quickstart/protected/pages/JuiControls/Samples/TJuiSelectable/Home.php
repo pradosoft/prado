@@ -21,10 +21,10 @@ class Home extends TPage
 		}
 	}
 
-	public function repeater1_onSelectedIndexChanged($sender, $param)
+	public function repeater1_onStop($sender, $param)
 	{
 		$this->label1->Text="Selected items:";
-		$items = $param->getSelectedIndexes();
+		$items = $param->getCallbackParameter()->index;
 
 		foreach($items as $index)
 			$this->label1->Text.=' '.$this->data[$index];

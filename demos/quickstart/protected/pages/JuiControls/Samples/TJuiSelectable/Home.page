@@ -29,7 +29,10 @@
 <tr><td class="samplenote">
 Default options with a little css applied:
 </td><td class="sampleaction">
-	<com:TJuiSelectable ID="repeater1"  onSelectedIndexChanged="repeater1_onSelectedIndexChanged"/>
+	<com:TJuiSelectable
+		ID="repeater1"
+		OnStop="repeater1_onStop"
+	/>
 	<com:TActiveLabel ID="label1" />
 </td></tr>
 
