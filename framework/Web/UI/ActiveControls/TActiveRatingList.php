@@ -105,8 +105,8 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
 			$client = $this->getPage()->getCallbackClient();
-			$code = parent::getClientClassName().'.'.$func;
-			$client->callClientFunction($code,array($this,$value));
+			$code = 'Prado.Registry[\''.$this->ClientID.'\'].'.$func.'('.$value.')';
+			$client->evaluateScript($code,array($value));
 		}
 	}
 
