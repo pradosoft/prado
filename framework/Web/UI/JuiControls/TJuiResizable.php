@@ -37,7 +37,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * @package System.Web.UI.JuiControls
  * @since 3.3
  */
-class TJuiResizable extends TActivePanel implements IJuiOptions
+class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
 	protected $_options;
 
@@ -103,5 +103,51 @@ class TJuiResizable extends TActivePanel implements IJuiOptions
 		$cs=$this->getPage()->getClientScript();
 		$code="jQuery('#".$this->getClientId()."').resizable(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
+	}
+
+	/**
+	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * interface.
+	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 */
+	public function raiseCallbackEvent($param)
+	{
+		$this->getOptions()->raiseCallbackEvent($param);
+	}
+
+	/**
+	 * Raises the OnCreate event
+	 * @param object $params event parameters
+	 */
+	public function onCreate ($params)
+	{
+		$this->raiseEvent('OnCreate', $this, $params);
+	}
+
+	/**
+	 * Raises the OnResize event
+	 * @param object $params event parameters
+	 */
+	public function onResize ($params)
+	{
+		$this->raiseEvent('OnResize', $this, $params);
+	}
+
+	/**
+	 * Raises the OnStart event
+	 * @param object $params event parameters
+	 */
+	public function onStart ($params)
+	{
+		$this->raiseEvent('OnStart', $this, $params);
+	}
+
+	/**
+	 * Raises the OnStop event
+	 * @param object $params event parameters
+	 */
+	public function onStop ($params)
+	{
+		$this->raiseEvent('OnStop', $this, $params);
 	}
 }

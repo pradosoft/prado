@@ -15,8 +15,12 @@
 <tr><td class="samplenote">
 Default options with a little css applied:
 </td><td class="sampleaction">
-	<com:TJuiResizable CssClass="resizable">
-	 Resize me!
+	<com:TJuiResizable
+		CssClass="resizable"
+		OnStart="resize1_start"
+		OnStop="resize1_stop"
+	>
+		<com:TActiveLabel ID="label1" Text="Resize me!" />
 	</com:TJuiResizable>
 </td></tr>
 
