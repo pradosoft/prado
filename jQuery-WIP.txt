@@ -15,8 +15,8 @@ Targets:
  * fix debug components (TJavascriptLogger) (done, but maybe dropping it is a good idea)
  * implement some Jui components (deprecate old scriptculous, create substituted based on jquery-ui) (wip)
  * port demos using javascript
- * add demos for new controls
- * document everything
+ * add demos for new controls (wip)
+ * document everything (wip)
 
 DONE
 Basic postback controls (TButton, TCheckBox, TLinkButton, TRadioButton, TTextBox, ..)
@@ -25,11 +25,10 @@ List, Data controls
 *Validators
 Ajax queue
 Basic callback controls (TActive*, TInPlaceTextBox)
-Basic jquery-ui controls
+jQuery-UI interactions
 
 WIP
 TJuiAutoComplete
-TJuiDraggable,TJuiDroppable
 Add JQuery-ui-Effects: clip, explode, transfer, switchclass
 Add JQuery-ui-Methods: show, hide, toggle?
 Add JQuery-ui-controls

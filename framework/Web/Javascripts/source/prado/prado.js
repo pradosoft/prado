@@ -1,4 +1,35 @@
 /*
+ * Polyfill for ECMAScript5's bind() function.
+ * ----------
+ * Adds compatible .bind() function; needed for Internet Explorer < 9
+ * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+ */
+
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+
+    var aArgs = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        fNOP = function () {},
+        fBound = function () {
+          return fToBind.apply(this instanceof fNOP && oThis
+                                 ? this
+                                 : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+  };
+}
+
+/*
  * Low Pro JQ
  * ----------
  *
@@ -246,14 +277,14 @@ var Prado =
 	 * Registry for Prado components
 	 * @var Registry
 	 */
-	Registry: {},
+	Registry: {}
 };
 
 Prado.RequestManager =
 {
 	FIELD_POSTBACK_TARGET : 'PRADO_POSTBACK_TARGET',
 
-	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER',
+	FIELD_POSTBACK_PARAMETER : 'PRADO_POSTBACK_PARAMETER'
 };
 /**
  * Performs a PostBack using javascript.
@@ -276,6 +307,7 @@ Prado.PostBack = jQuery.klass(
 	initialize: function(options, event)
 	{
 		jQuery.extend(this.options, options || {});
+		this.event = event;
 		this.doPostBack();
 	},
 
@@ -290,7 +322,7 @@ Prado.PostBack = jQuery.klass(
 		if(this.options['CausesValidation'] && typeof(Prado.Validation) != "undefined")
 		{
 			if(!Prado.Validation.validate(this.options['FormID'], this.options['ValidationGroup'], jQuery("#" + this.options['ID'])))
-				return event.preventDefault();
+				return this.event.preventDefault();
 		}
 
 		if(this.options['PostBackUrl'] && this.options['PostBackUrl'].length > 0)
@@ -552,7 +584,7 @@ Prado.Element =
 				debugger;
 			throw e;
 		}
-	},
+	}
 };
 
 /**

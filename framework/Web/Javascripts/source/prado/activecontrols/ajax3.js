@@ -137,7 +137,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			context:  this,
 			success:  this.successHandler,
 			error:    this.errorHandler,
-			complete: this.completeHandler,
+			complete: this.completeHandler
 		};
 
 		jQuery.extend(this.options, options || {});
@@ -990,7 +990,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 
 		isAssetLoaded: function(url) {
 			url = this.makeFullUrl(url);
-			return (this.loadedAssets.indexOf(url)!=-1);
+			return (jQuery.inArray(url, this.loadedAssets)!=-1);
 		},
 
 		/**
@@ -999,7 +999,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		 */
 		markAssetAsLoaded: function(url) {
 			url = this.makeFullUrl(url);
-			if (this.loadedAssets.indexOf(url)==-1)
+			if (jQuery.inArray(url, this.loadedAssets)==-1)
 				this.loadedAssets.push(url);
 		},
 
@@ -1057,7 +1057,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		 */
 		ensureAssetIsLoaded: function(url, callback) {
 			url = this.makeFullUrl(url);
-			if (this.loadedAssets.indexOf(url)==-1)
+			if (jQuery.inArray(url, this.loadedAssets)==-1)
 			{
 				this.startAssetLoad(url,callback);
 				return false;

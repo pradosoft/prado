@@ -412,7 +412,7 @@ Prado.WebUI.TListControl = jQuery.klass(Prado.WebUI.PostBackControl,
 	doPostback : function(options, event)
 	{
 		new Prado.PostBack(options, event);
-	},
+	}
 });
 
 Prado.WebUI.TListBox = jQuery.klass(Prado.WebUI.TListControl);
