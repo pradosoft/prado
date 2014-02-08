@@ -21,10 +21,10 @@ class Home extends TPage
 		}
 	}
 
-	public function repeater1_onSort($sender, $param)
+	public function repeater1_onStop($sender, $param)
 	{
 		$this->label1->Text="Items order:";
-		$order = $param->getOrder();
+		$order = $param->getCallbackParameter()->index;
 		foreach($order as $index)
 			$this->label1->Text.=' '.$this->data[$index];
 	}

@@ -23,7 +23,10 @@
 <tr><td class="samplenote">
 Default options with a little css applied:
 </td><td class="sampleaction">
-	<com:TJuiSortable ID="repeater1" onSort="repeater1_onSort"/>
+	<com:TJuiSortable
+		ID="repeater1"
+		onStop="repeater1_onStop"
+		/>
 	<com:TActiveLabel ID="label1" />
 </td></tr>
 
