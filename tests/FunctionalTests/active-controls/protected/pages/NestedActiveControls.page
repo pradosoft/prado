@@ -14,14 +14,12 @@
 		Click Me!
 	</div>
 	<com:TActiveLabel ID="label2" Text="Label 2" />
-	<script type="text/javascript">
-		Event.OnLoad(function()
-		{
-			Event.observe($("div1"), "click", function()
-			{
-				Prado.Callback("<%= $this->callback1->UniqueID %>")
-			})
-		})
-	</script>
+	<com:TClientScript>
+		jQuery( document ).ready(function() {
+			jQuery("#div1").click(function() {
+				Prado.Callback("<%= $this->callback1->UniqueID %>");
+			});
+		});
+	</com:TClientScript>
 
 </com:TForm>

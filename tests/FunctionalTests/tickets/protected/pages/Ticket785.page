@@ -1,18 +1,18 @@
 <com:TContent ID="Content">
-<com:TDatePicker Id="datePicker" InputMode="DropDownList"> 
+<com:TDatePicker Id="datePicker" InputMode="DropDownList">
 		<prop:ClientSide.OnDateChanged>
-			$('selDate').innerHTML=parameter;
-		</prop:ClientSide.OnDateChanged>			
+			$('#selDate').html(parameter);
+		</prop:ClientSide.OnDateChanged>
 </com:TDatePicker>
 <p>
 Client Side Selected date : <span id="selDate"></span>
 </p>
 
 
-<com:TDatePicker Id="datePicker2" InputMode="TextBox" DateFormat="MM/dd/yyyy" Date="12/01/20007" > 
+<com:TDatePicker Id="datePicker2" InputMode="TextBox" DateFormat="MM/dd/yyyy" Date="12/01/20007" >
 		<prop:ClientSide.OnDateChanged>
-			$('selDate2').innerHTML=parameter;
-		</prop:ClientSide.OnDateChanged>			
+			$('#selDate2').html(parameter);
+		</prop:ClientSide.OnDateChanged>
 </com:TDatePicker>
 <p>
 Client Side Selected date : <span id="selDate2"></span>

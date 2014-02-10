@@ -149,6 +149,11 @@ The number one rule on writing jQuery javascript code is to read the <a href="ht
 		</td>
 	</tr>
 	<tr>
+		<td>Change element contents</td>
+		<td>$('div1').innerHTML='new content'</td>
+		<td>$('#div1').html('new content')</td>
+	</tr>
+	<tr>
 		<td>Hook on ajax events</td>
 		<td>Ajax.Responders.register({
 			<br/>"onLoading" : my_function
