@@ -200,6 +200,11 @@ Porting prado to jQuery some method signatures has changed, or have been adapted
 			<br/>// or, better, use <a href="http://modernizr.com/">Modernizr</a>
 		</td>
 	</tr>
+	<tr>
+		<td>Get a PRADO object from an object ID</td>
+		<td>Prado.Registry.get('id')</td>
+		<td>Prado.Registry.['id']</td>
+	</tr>
 </table>
 
 <h2>Specific controls changes</h2>

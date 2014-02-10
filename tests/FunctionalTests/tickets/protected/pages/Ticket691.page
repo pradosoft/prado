@@ -3,7 +3,7 @@
 <com:TCallbackOptions ID="RatingOption">
 
 	<prop:ClientSide.OnComplete>
-		$('<%=$this->Title->ClientID%>').innerHTML = 'Thanks';
+		$('#<%=$this->Title->ClientID%>').html('Thanks');
 	</prop:ClientSide.OnComplete>
 </com:TCallbackOptions>
 <com:TActiveLabel ID="Title" Text="Cast your vote:" />
@@ -16,7 +16,7 @@
 			<com:TListItem Value="5" Text="Five stars" />
 			<com:TListItem Value="6" Text="Six stars" />
 </com:TActiveRatingList>
-<com:TActiveLabel ID="Result"/>	
+<com:TActiveLabel ID="Result"/>
 
 
 </com:TContent>

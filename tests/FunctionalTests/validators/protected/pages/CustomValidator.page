@@ -2,7 +2,7 @@
 <h1>Prado CustomValidator Tests</h1>
 
 <script type="text/javascript">
-var MyCustomValidator = 
+var MyCustomValidator =
 {
 	validate : function(sender, value)
 	{
@@ -17,7 +17,7 @@ var MyCustomValidator =
 		ControlToValidate="text1"
 		ErrorMessage="Enter 'Prado'"
 		ControlCssClass="required"
-		ClientValidationFunction="MyCustomValidator.validate" 
+		ClientValidationFunction="MyCustomValidator.validate"
 		OnServerValidate="CustomValidation"
 		/>
 		<com:TButton ID="submit1" Text="Test" />

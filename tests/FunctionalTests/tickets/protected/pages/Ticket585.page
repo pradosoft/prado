@@ -5,12 +5,12 @@
 	ID="validator1"
 	ControlToValidate="test"
 	OnServerValidate="ChkDate"
-	ErrorMessage="*">		
+	ErrorMessage="*">
 	<prop:ClientSide
-		OnValidationError="$('error').innerHTML='Error'"
-		OnValidationSuccess="$('error').innerHTML='Success'"
+		OnValidationError="$('#error').html('Error')"
+		OnValidationSuccess="$('#error').html('Success')"
 		ObserveChanges="false"
-		
+
 	 />
 </com:TActiveCustomValidator>
 <span id="error"></span>

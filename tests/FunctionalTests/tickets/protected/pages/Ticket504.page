@@ -9,48 +9,48 @@
 
 <com:TCallbackOptions ID="LoadDataOptions">
 	<prop:ClientSide.OnSuccess>
-			$('status').innerHTML = sender.ActiveControl.CallbackParameter + " updated";
+			$('#status').html(sender.options.CallbackParameter + " updated");
 	</prop:ClientSide.OnSuccess>
 
 	<prop:ClientSide.OnLoading>
-			$('loading').show();
+			$('#loading').show();
 	</prop:ClientSide.OnLoading>
 
 	<prop:ClientSide.OnComplete>
-			$('loading').hide();
+			$('#loading').hide();
 	</prop:ClientSide.OnComplete>
 </com:TCallbackOptions>
 
 
-		
-<com:TActiveLinkButton 
+
+<com:TActiveLinkButton
 	Text="Tab A"
 	ID="linka"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelA"
-	/> 
+	/>
 <com:TActiveLinkButton
 	Text="Tab B"
 	ID="linkb"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelB"
-	/> 
+	/>
 <com:TActiveLinkButton
 	Text="Tab C"
 	ID="linkc"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelC"
-	/> 
+	/>
 <com:TActiveLinkButton
 	Text="Tab D"
 	ID="linkd"
 	OnCallback="changePanel"
 	ActiveControl.CallbackOptions="LoadDataOptions"
 	ActiveControl.CallbackParameter="panelD"
-	/> 
+	/>
 
 <com:TActivePanel ID="panelA">
 	<h1>Panel A</h1>

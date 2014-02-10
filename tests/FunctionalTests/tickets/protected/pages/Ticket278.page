@@ -21,7 +21,7 @@
 		OnPreRender="validate2_onPostValidate"
 		ErrorMessage="Text 2 is required">
 	<prop:ClientSide.OnValidate>
-		sender.enabled = $("<%= $this->check1->ClientID %>").checked;
+		sender.enabled = $("#<%= $this->check1->ClientID %>").get(0).checked;
 	</prop:ClientSide.OnValidate>
 	</com:TRequiredFieldValidator>
 
@@ -30,13 +30,11 @@
 	<com:TButton ID="button1" Text="Submit!" />
 
 	<com:TClientScript>
-	Event.OnLoad(function()
-	{
-		Event.observe("<%= $this->check1->ClientID %>", "click", function(ev)
-		{
-			$("<%= $this->panel1->ClientID %>").toggle();
+		jQuery( document ).ready(function() {
+			jQuery("#<%= $this->check1->ClientID %>").click(function() {
+				$("#<%= $this->panel1->ClientID %>").toggle();
+			});
 		});
-	});
 	</com:TClientScript>
 
 </com:TContent>

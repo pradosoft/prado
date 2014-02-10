@@ -2,7 +2,7 @@
 
 <h1>Custom Login</h1>
 
-<a id="showLogin" href="#" onclick="new Effect.Appear('loginBox')">Login</a>
+<a id="showLogin" href="#" onclick="$('#loginBox').fadeIn()">Login</a>
 <div id="loginBox" style="display: none;">
 
 	<div style="height:1em">
@@ -29,7 +29,7 @@
 	<br />
 
 	<com:TActiveLinkButton ID="checkLogin" OnCallback="doLogin" Text="Login" ValidationGroup="login" />
-	<a href="#" onclick="new Effect.Fade('loginBox')">Close</a>
+	<a href="#" onclick="$('#loginBox').fadeOut()">Close</a>
 
 </div>
 
