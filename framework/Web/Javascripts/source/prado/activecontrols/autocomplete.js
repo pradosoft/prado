@@ -3,8 +3,7 @@ jQuery.noConflict();
 /**
  * TAutoComplete control.
  */
-Prado.WebUI.TAutoComplete = Class.create(Autocompleter.Base, Prado.WebUI.TActiveTextBox.prototype);
-Prado.WebUI.TAutoComplete = Class.create(Prado.WebUI.TAutoComplete,
+Prado.WebUI.TAutoComplete = jQuery.klass(Autocompleter.Base, Prado.WebUI.TActiveTextBox.prototype,
 {
 	initialize : function(options)
 	{
@@ -23,13 +22,13 @@ Prado.WebUI.TAutoComplete = Class.create(Prado.WebUI.TAutoComplete,
 		Prado.Registry[options.ID] = this;
 	},
 
-	doCallback : function(event, options)
+	doCallback : function(options, event)
 	{
 		if(!this.active)
 		{
 			var request = new Prado.CallbackRequest(this.options.EventTarget, options);
 			request.dispatch();
-			Event.stop(event);
+			event.preventDefault();
 		}
 	},
 
@@ -40,7 +39,7 @@ Prado.WebUI.TAutoComplete = Class.create(Prado.WebUI.TAutoComplete,
 	    this.index = element.autocompleteIndex;
 	    this.selectEntry();
 	    this.hide();
-		Event.fire(this.element, "change");
+	    jQuery(this.element).trigger('change');
 	},
 
 	getUpdatedChoices : function()

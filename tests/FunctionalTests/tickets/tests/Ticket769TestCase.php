@@ -19,7 +19,7 @@ class Ticket769TestCase extends PradoGenericSeleniumTest
 
 		$this->click($base.'ctl2');
 		$this->pause(800);
-		$this->verifyTextPresent($base.'B', 'This is B');
+		$this->assertEquals($this->getText($base.'B'), 'This is B');
 		$this->click($base.'ctl3');
 		$this->pause(800);
 
