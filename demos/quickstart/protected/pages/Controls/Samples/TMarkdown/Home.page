@@ -1,0 +1,31 @@
+<com:TContent ID="body">
+
+<h1>TMarkdown Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Formatting text and code:
+</td><td class="sampleaction">
+<com:TMarkdown ShowLineNumbers="true">
+PRADO Markdown Test
+===================
+
+Some text and a list:
+* item 1
+* item 2
+
+Now, some code:
+
+```php
+public function test() {
+  // comment
+  echo "look me i'm colorful";
+}
+```
+</com:TMarkdown>
+</td></tr>
+
+</table>
+
+</com:TContent>
