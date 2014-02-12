@@ -1,0 +1,40 @@
+<com:TContent ID="body" >
+
+<h1>TMarkdown</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TMarkdown" />
+
+<p class="block-content">
+<tt>TMarkdown</tt> is a text formatter that produces html content from plain text. The formatter follows the <a href="http://www.wikipedia.org/wiki/Markdown">Markdown</a> syntax and the <a href="https://help.github.com/articles/github-flavored-markdown">GFM</a> (GitHub Flavored Markdown) extension.
+</p>
+<p class="block-content">
+Any content in the body of <tt>TMarkdown</tt>, including both static text and the rendering results of its child controls, is first converted using the Markdown syntax. Then, to any code block found in the html, syntax highlighting is applied. The code being highlighted follows the syntax of the specified <tt>Language</tt>, which can be 'php' (default), 'prado', 'css', 'html', etc. Here, 'prado' stands for the syntax of PRADO control templates. If the language is not specified in the <tt>Language</tt> property, it can be evinced from the Markdown syntax.
+</p>
+<p class="block-content">
+If line numbers are desired in front of each line, set <tt>ShowLineNumbers</tt> to true.
+</p>
+<p class="block-content">
+To use <tt>TMarkdown</tt>, simply enclose the contents to be formatted within the body of a <tt>TMarkdown</tt> control. The following example formats some text and piece of PHP code,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" >
+&lt;com:TMarkdown ShowLineNumbers="true" &gt;
+PRADO Markdown Test
+===================
+
+Some text and a list:
+* item 1
+* item 2
+
+Now, some code:
+
+```php
+public function test() {
+  // comment
+  echo "look me i'm colorful";
+}
+```
+&lt;/com:TMarkdown&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TMarkdown.Home" />
+
+</com:TContent>
