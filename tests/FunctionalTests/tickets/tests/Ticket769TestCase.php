@@ -15,7 +15,7 @@ class Ticket769TestCase extends PradoGenericSeleniumTest
 		$this->click($base.'ctl0');
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl1');
-		$this->verifyTextPresent($base.'ctl0', 'T1 clicked' );
+		$this->assertEquals($this->getValue($base.'ctl0'), 'T1 clicked' );
 		
 		$this->click($base.'ctl2');
 		$this->pause(800);
@@ -30,7 +30,6 @@ class Ticket769TestCase extends PradoGenericSeleniumTest
 		$this->click($base.'ctl0');
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl1');
-		$this->verifyTextPresent($base.'ctl0', 'T1 clicked clicked' );
-		
+		$this->assertEquals($this->getValue($base.'ctl0'), 'T1 clicked clicked' );
 	}
 }
