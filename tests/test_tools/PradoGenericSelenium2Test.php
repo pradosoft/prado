@@ -4,8 +4,8 @@ require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 // TODO: stub
 class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 {
-	static $browser='chrome';
-	static $baseurl='http://127.0.0.1/prado-3.2/tests/FunctionalTests/';
+	static $browser='firefox';
+	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
 	static $timeout=5; //seconds
 	static $wait=1000; //msecs
 
