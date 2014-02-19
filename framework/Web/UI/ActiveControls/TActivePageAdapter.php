@@ -148,7 +148,6 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage redirect()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->appendContentPart($this->getResponse(), self::CALLBACK_REDIRECT, $url);
-		//$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
 	}
 
 	/**
@@ -174,7 +173,6 @@ class TActivePageAdapter extends TControlAdapter
 				$data = TJavaScript::jsonEncode($responseData);
 
 				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
-				//$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
 			}
 		}
 
@@ -185,7 +183,6 @@ class TActivePageAdapter extends TControlAdapter
 			{
 				$pagestate = $this->getPage()->getClientState();
 				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
-				//$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
 			}
 		}
 
@@ -204,7 +201,6 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
-		//$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
 
 
 		$cs = $this->Page->getClientScript();
@@ -294,7 +290,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Gets callback parameter. 
+	 * Gets callback parameter.
 	 * @return string postback event parameter
 	 */
 	public function getCallbackEventParameter()
@@ -353,14 +349,22 @@ class TCallbackErrorHandler extends TErrorHandler
 		{
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);
+			// avoid error on non-utf8 strings
 			try {
 				$trace = TJavaScript::jsonEncode($trace);
 			} catch (Exception $e) {
 				// strip everythin not 7bit ascii
 				$trace = preg_replace('/[^(\x20-\x7F)]*/','', serialize($trace));
 			}
-			$response->setStatusCode(500, 'Internal Server Error');
-			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
+
+			// avoid exception loop if headers have already been sent
+			try {
+				$response->setStatusCode(500, 'Internal Server Error');
+			} catch (Exception $e) { }
+
+			$content = $response->createHtmlWriter();
+			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_ERROR_HEADER);
+			$content->write($trace);
 		}
 		else
 		{
