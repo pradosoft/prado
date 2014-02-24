@@ -4,14 +4,44 @@ require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 // TODO: stub
 class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 {
-	static $browser='firefox';
-	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $browsers = array(
+		/*
+		array(
+			'name'    => 'Firefox on OSX',
+			'browser' => '*firefox',
+			'host'    => '127.0.0.1',
+			'port'    => 4444,
+			'timeout' => 30000,
+		),
+		array(
+			'name'    => 'Chrome on OSX',
+			'browser' => '*chrome',
+			'host'    => '127.0.0.1',
+			'port'    => 4444,
+			'timeout' => 30000,
+		),
+		array(
+			'name'    => 'Internet Explorer 11 on Windows8.1',
+			'browser' => '*iexplore',
+			'host'    => '192.168.253.39',
+			'port'    => 4444,
+		),
+		*/
+		array(
+			'name'    => 'Internet Explorer 8 on WindowsXP',
+			'browserName' => '*iehta',
+			'host'    => '127.0.0.1',
+			'port'    => 4444,
+		)
+	);
+
+	static $baseurl='http://10.0.2.2/prado-master/tests/FunctionalTests/';
+
 	static $timeout=5; //seconds
 	static $wait=1000; //msecs
 
 	protected function setUp()
 	{
-		$this->setBrowser(static::$browser);
 		$this->setBrowserUrl(static::$baseurl);
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
 	}
