@@ -103,8 +103,8 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 		this.hasResults = false;
 		jQuery.extend(this.options, {
 			source: this.getUpdatedChoices.bind(this),
-			select: this.selectEntry.bind(this),
-		})
+			select: this.selectEntry.bind(this)
+		});
 		jQuery('#'+options.ID).autocomplete(this.options)
 		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
 			return jQuery( "<li>" )
@@ -133,8 +133,8 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 	{
 		var params = new Array(request.term,"__TJuiAutoComplete_onSuggest__");
 		var options = jQuery.extend(this.options, {
-			'autocompleteCallback' : callback,
-		})
+			'autocompleteCallback' : callback
+		});
 		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
 	},
 

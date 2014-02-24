@@ -661,8 +661,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				this.exceptionHandler(e);
 			}
 		}
-	},
-
+	}
 });
 
 //Add HTTP exception respones when logger is enabled.
@@ -922,7 +921,7 @@ Prado.JuiCallback = function(UniqueID, eventType, event, ui, target)
 		'CallbackParameter' : {
 			'event' : eventType,
 			'ui' : cleanUi
-		},
+		}
 	};
 
 	var request = new Prado.CallbackRequest(UniqueID, callback);
