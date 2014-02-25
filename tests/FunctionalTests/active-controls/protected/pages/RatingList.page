@@ -1,5 +1,4 @@
-<com:THead/>
-<com:TForm>
+<com:TContent ID="Content">
 <style>
 	.more td
 	{
@@ -94,4 +93,4 @@
 	</div>
 
 
-</com:TForm>
+</com:TContent>

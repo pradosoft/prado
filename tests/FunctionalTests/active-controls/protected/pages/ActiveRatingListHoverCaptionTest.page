@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList Hover Caption Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" CaptionID="Status"
 		OnSelectedIndexChanged="ratingChanged" Rating="3.5">
@@ -11,4 +10,4 @@
 		<com:TListItem Text="Super" />
 	</com:TActiveRatingList>
 	<com:TActiveLabel ID="Status" Text="CaptionID='Status'" />
-</com:TForm>
+</com:TContent>

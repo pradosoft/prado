@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <h1>Value Trigger Callback Test</h1>
 
 <com:TTextBox ID="text1" />
@@ -9,5 +9,4 @@
 
 <com:TActiveLabel ID="label1" Text="Label 1" />
 
-
-</com:TForm>
+</com:TContent>

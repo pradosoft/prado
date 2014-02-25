@@ -5,37 +5,39 @@ require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 {
 	public static $browsers = array(
-		/*
+/*
 		array(
 			'name'    => 'Firefox on OSX',
-			'browser' => '*firefox',
+			'browserName' => '*firefox',
 			'host'    => '127.0.0.1',
 			'port'    => 4444,
 			'timeout' => 30000,
 		),
+*/
 		array(
 			'name'    => 'Chrome on OSX',
-			'browser' => '*chrome',
+			'browserName' => '*googlechrome',
 			'host'    => '127.0.0.1',
 			'port'    => 4444,
 			'timeout' => 30000,
 		),
+/*
 		array(
-			'name'    => 'Internet Explorer 11 on Windows8.1',
-			'browser' => '*iexplore',
-			'host'    => '192.168.253.39',
-			'port'    => 4444,
+			'name'    => 'Firefox on WindowsXP',
+			'browserName' => '*firefox',
+			'host'    => '127.0.0.1',
+			'port'    => 4445,
 		),
-		*/
 		array(
 			'name'    => 'Internet Explorer 8 on WindowsXP',
 			'browserName' => '*iehta',
 			'host'    => '127.0.0.1',
-			'port'    => 4444,
+			'port'    => 4445,
 		)
+*/
 	);
 
-	static $baseurl='http://10.0.2.2/prado-master/tests/FunctionalTests/';
+	static $baseurl='http://192.168.44.82/prado-master/tests/FunctionalTests/';
 
 	static $timeout=5; //seconds
 	static $wait=1000; //msecs

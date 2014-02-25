@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TCallbackOptions Test</h1>
 
 	<com:TCallbackOptions ID="options1">
@@ -31,4 +31,4 @@
 	<div id="status" style="display:none; background-color: #c00; color:white; text-align:center; padding: 1em" >
 		Loading...
 	</div>
-</com:TForm>
+</com:TContent>

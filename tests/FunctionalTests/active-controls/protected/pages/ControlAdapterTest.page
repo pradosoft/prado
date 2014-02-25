@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Control Adapter - State Tracking Tests</h1>
 	<com:TActiveButton ID="button1" Text="Test Button 1" />
 	<com:TActiveButton ID="button2" Text="Test Button 2"
@@ -19,4 +19,4 @@
 		<com:TActiveButton ID="test8" Text="Change Button 1 Attributes" OnClick="change_attributes1"/>
 		<com:TActiveButton ID="test9" Text="Change Button 2 Attributes" OnClick="change_attributes2"/>
 	</div>
-</com:TForm>
+</com:TContent>

@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1 id="heading">TActiveFileUpload AutoPostBack Functional Test</h1>
 	<com:TActiveFileUpload ID='uploader' OnFileUpload="uploadComplete" AutoPostBack="false"/>
@@ -9,4 +9,4 @@
 
 	<com:TActiveLabel ID="label1" Text="Label 1" />
 
-</com:TForm>
+</com:TContent>

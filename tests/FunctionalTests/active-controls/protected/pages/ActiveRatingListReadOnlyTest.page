@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList ReadOnly Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" ReadOnly="true"
 		OnSelectedIndexChanged="ratingChanged">
@@ -14,4 +13,4 @@
 	<br />
 	<com:TActiveButton ID="Writable" Text="Writable" OnClick="writable" />
 	<com:TActiveButton ID="ReadOnly" Text="ReadOnly" OnClick="readOnly" />
-</com:TForm>
+</com:TContent>

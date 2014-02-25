@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
 	 <script type="text/javascript">
@@ -10,4 +10,4 @@
 	</script>
 	<div onclick="do_callback1()">Click Me!</div>
 
-</com:TForm>
+</com:TContent>

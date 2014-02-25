@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<style>
 	.autocomplete
@@ -91,4 +91,4 @@
 	<p><br /></p>
 	<p><br /></p>
 	<p><br /></p>
-</com:TForm>
+</com:TContent>

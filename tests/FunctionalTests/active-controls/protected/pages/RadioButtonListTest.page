@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
  <com:TRequiredFieldValidator
     ControlToValidate="rad_button_list"
@@ -26,4 +26,4 @@
     ValidationGroup="Group"  />
 
 
-</com:TForm>
+</com:TContent>

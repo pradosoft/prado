@@ -1,6 +1,5 @@
 <%@ Application.Globalization.Charset="UTF-8" %>
-<com:TForm ID="form1">
-
+<com:TContent ID="Content">
 <style>
 	.textbox
 	{
@@ -72,4 +71,4 @@
 
 	<com:TActiveButton Text="ad" OnCallback="button_clicked" />
 
-</com:TForm>
+</com:TContent>

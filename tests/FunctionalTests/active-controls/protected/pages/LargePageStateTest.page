@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Large Page State Test</h1>
 
@@ -8,4 +8,4 @@
 
 </com:TPanel>
 
-</com:TForm>
+</com:TContent>

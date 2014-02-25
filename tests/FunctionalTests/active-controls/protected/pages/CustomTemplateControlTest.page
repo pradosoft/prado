@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1>Add Dynamic Custom TTemplateControl Test</h1>
 	<com:TActivePanel ID="Foo">
@@ -10,4 +10,4 @@
 	<com:TActivePanel ID="placeholder" />
 
 	<com:TActiveLabel ID="label1" Text="Label 1" />
-</com:TForm>
+</com:TContent>

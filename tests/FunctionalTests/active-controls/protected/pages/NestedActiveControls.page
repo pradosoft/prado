@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Nested Active Controls Test</h1>
 	<com:TCallback ID="callback1" OnCallback="callback1_requested" />
 	<com:TActivePanel ID="panel1">
@@ -24,4 +24,4 @@
 		})
 	</script>
 
-</com:TForm>
+</com:TContent>

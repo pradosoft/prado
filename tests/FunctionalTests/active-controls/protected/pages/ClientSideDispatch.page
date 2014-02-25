@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <com:TCallback ID="callback1" OnCallback="method1" />
 
@@ -23,4 +23,4 @@
 <com:TActiveLabel ID="status2" />
 
 
-</com:TForm>
+</com:TContent>

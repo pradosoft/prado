@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <h1>Populate active list controls</h1>
 
 <com:TActiveListBox ID="list1" OnCallback="list_changed" />
@@ -13,4 +13,4 @@
 <com:TActiveButton ID="button2" Text="populate list 2" OnClick="populate_list2" />
 
 
-</com:TForm>
+</com:TContent>
