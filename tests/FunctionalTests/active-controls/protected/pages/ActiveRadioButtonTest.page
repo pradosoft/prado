@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Active Radio Button Test</h1>
 	<com:TActiveRadioButton ID="radio1"
 			GroupName="group1" Text="Radio Button 1"
@@ -34,4 +34,4 @@
 		position: absolute; right: 0; top: 0">
 		Loading...
 	</div>
-</com:TForm>
+</com:TContent>

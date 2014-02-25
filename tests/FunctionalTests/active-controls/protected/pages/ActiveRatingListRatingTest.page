@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList Rating Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" Rating="5"
 		OnSelectedIndexChanged="ratingChanged">
@@ -14,4 +13,4 @@
 	<br />
 	<com:TActiveButton ID="SetRating" Text="Set Rating=3"
 		OnClick="setRating" />
-</com:TForm>
+</com:TContent>

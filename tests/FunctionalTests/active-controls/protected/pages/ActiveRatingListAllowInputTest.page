@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList AllowInput Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" AllowInput="false"
 		OnSelectedIndexChanged="ratingChanged">
@@ -11,4 +10,4 @@
 		<com:TListItem Text="Super" />
 	</com:TActiveRatingList>
 	<com:TActiveLabel ID="Status" Text="AllowInput=false" />
-</com:TForm>
+</com:TContent>

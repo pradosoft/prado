@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Active Panel replacement tests </h1>
 	<com:TCallback ID="callback1" OnCallback="callback1_requested" />
 	<com:TActivePanel ID="panel1">
@@ -16,4 +16,4 @@
 			});
 		});
 	</com:TClientScript>
-</com:TForm>
+</com:TContent>

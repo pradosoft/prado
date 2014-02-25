@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <com:TLabel ForControl="DDropTurno" Text="Turno:"/>
 <com:TActiveDropDownList ID="DDropTurno"
@@ -12,4 +12,4 @@
 
 
 
-</com:TForm>
+</com:TContent>

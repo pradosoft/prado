@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Active Control With Expression Tag Test</h1>
 
@@ -23,4 +23,4 @@
 	OnCallback="button2_callback" />
 
 
-</com:TForm>
+</com:TContent>

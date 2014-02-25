@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 <style>
 	.loader
 	{
@@ -37,4 +37,4 @@
 
 	<span id="loader" style="display:none;" onfocus="alert('ok')" class="loader">Loading...</span>
 
-</com:TForm>
+</com:TContent>

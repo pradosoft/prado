@@ -1,5 +1,5 @@
 <%@ StatePersisterClass="System.Web.UI.TSessionPageStatePersister" %>
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Large Page State Test (using Session page state)</h1>
 
@@ -9,4 +9,4 @@
 
 </com:TPanel>
 
-</com:TForm>
+</com:TContent>

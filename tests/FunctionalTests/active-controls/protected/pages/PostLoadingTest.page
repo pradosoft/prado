@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 	<h1 id="heading">PostLoading Test</h1>
 	<com:TCallback ID="callback1" OnCallback="Page.callback1_requested" />
@@ -15,4 +15,4 @@
 			});
 		});
 	</com:TClientScript>
-</com:TForm>
+</com:TContent>

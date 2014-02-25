@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TTimeTriggeredCallback + ViewState Tests</h1>
 	<com:TActiveButton id="button1" Text="Start Timer" OnCallback="start_timer" />
 	<com:TActiveButton Text="Stop Timer" OnCallback="stop_timer" />
@@ -17,4 +17,4 @@
 		position: absolute; right: 0; top: 0">
 		Loading...
 	</div>
-</com:TForm>
+</com:TContent>

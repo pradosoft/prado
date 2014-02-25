@@ -1,17 +1,17 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Callback Enabled Calculator</h1>
-	
+
 	<com:TActiveTextBox id="a" />
 	+
 	<com:TActiveTextBox id="b" />
 	=
 	<com:TActiveTextBox id="c" />
-	
-	<com:TActiveButton id="sum" 
-		onclick="do_sum" 
+
+	<com:TActiveButton id="sum"
+		onclick="do_sum"
 		text="Calculate!" />
-	
-	<com:TRequiredFieldValidator 
+
+	<com:TRequiredFieldValidator
 			ControlToValidate="a"
 			ErrorMessage="left summand is required."
 			ControlCssClass="required"
@@ -27,5 +27,5 @@
 			ID="summary"
 			HeaderText="Unable to calculate because" />
 	</div>
-	
-</com:TForm>
+
+</com:TContent>

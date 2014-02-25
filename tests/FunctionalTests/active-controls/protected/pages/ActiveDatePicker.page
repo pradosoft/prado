@@ -1,7 +1,4 @@
-<html>
-<com:THead/>
-<body>
-<com:TForm>
+<com:TContent ID="Content">
 <h1>TActiveDatePicker test</h1>
 <p>
 <com:TActiveDatePicker ID="datepicker" DateFormat="MM-dd-yyyy" OnCallback="testDatePicker"/>
@@ -23,6 +20,4 @@ ShowCalendar=false
 <com:TActiveDatePicker ID="datepicker3" DateFormat="MMMM/yyyy" OnCallback="testDatePicker3" InputMode="DropDownList" ShowCalendar="true"/>
 <com:TActiveLabel ID="status3" /><br/>
 
-</com:TForm>
-</body>
-</html>
+</com:TContent>

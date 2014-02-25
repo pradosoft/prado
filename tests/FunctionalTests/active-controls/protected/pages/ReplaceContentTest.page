@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Callback Replace Content Test</h1>
 
@@ -27,4 +27,4 @@ Main Panel
 <com:TActiveButton id="btn_replace" Text="Replace" OnCallback="replaceContent"/>
 
 
-</com:TForm>
+</com:TContent>

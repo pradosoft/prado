@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Custom Login</h1>
 
@@ -34,4 +34,4 @@
 </div>
 
 
-</com:TForm>
+</com:TContent>

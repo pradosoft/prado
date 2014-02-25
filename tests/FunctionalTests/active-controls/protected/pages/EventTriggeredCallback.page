@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1>Event Triggered Callback Test</h1>
 
@@ -27,4 +27,4 @@
 	<div style="padding: 2em; border:1px solid #ccc; margin-top:2em">
 		<com:TActiveLabel ID="label1" Text="Label 1" />
 	</div>
-</com:TForm>
+</com:TContent>

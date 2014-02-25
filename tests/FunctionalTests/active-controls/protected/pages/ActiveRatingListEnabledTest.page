@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList Enabled Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" Enabled="false"
 		OnSelectedIndexChanged="ratingChanged">
@@ -14,4 +13,4 @@
 	<br />
 	<com:TActiveButton ID="Enable" Text="Enable" OnClick="enable" />
 	<com:TActiveButton ID="Disable" Text="Disable" OnClick="disable" />
-</com:TForm>
+</com:TContent>

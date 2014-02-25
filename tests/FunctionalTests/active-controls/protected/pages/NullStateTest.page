@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Null State Test</h1>
 
@@ -6,4 +6,4 @@
 <com:TActiveButton OnCallback="btnTest_OnCallback" Text="Clickme"/>
 
 
-</com:TForm>
+</com:TContent>
