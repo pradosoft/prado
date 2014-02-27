@@ -175,6 +175,8 @@ class TRatingList extends TRadioButtonList
 		{
 			if($control=$this->getPage()->findControl($id))
 				return $control;
+			if($control=$this->getNamingContainer()->findControl($id))
+				return $control;
 		}
 		throw new TInvalidDataValueException(
 			'ratinglist_invalid_caption_id',$id,$this->getID());
