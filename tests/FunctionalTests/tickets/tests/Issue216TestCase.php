@@ -1,12 +1,12 @@
 <?php
 
-class Issue216TestCase extends PradoGenericSeleniumTest
+class Issue216TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Issue216');
+		$this->url('tickets/index.php?page=Issue216');
 		$this->assertTextPresent('TTabPanel doesn\'t preserve active tab on callback request');
-		
+
 		$this->assertVisible('ctl0_Content_tab1');
 
 		$this->click("ctl0_Content_btn1");

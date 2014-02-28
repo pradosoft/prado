@@ -1,118 +1,119 @@
 <?php
-class ActiveDatePickerTestCase extends PradoGenericSeleniumTest
+class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ActiveDatePicker");
-		$this->verifyTextPresent("TActiveDatePicker test");
-		$this->verifyText("status", "");
-		$this->verifyValue("datepicker", date('m-d-Y'));
-		$this->click("increaseButton");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ActiveDatePicker");
+		$this->assertTextPresent("TActiveDatePicker test");
+		$this->assertText("{$base}status", "");
+		$this->assertValue("{$base}datepicker", date('m-d-Y'));
+		$this->click("{$base}increaseButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y', strtotime('+ 1 day')));
-		$this->verifyText("status", date('m-d-Y', strtotime('+ 1 day')));
-		$this->click("increaseButton");
+		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 1 day')));
+		$this->assertText("{$base}status", date('m-d-Y', strtotime('+ 1 day')));
+		$this->click("{$base}increaseButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y', strtotime('+ 2 day')));
-		$this->verifyText("status", date('m-d-Y', strtotime('+ 2 day')));
-		$this->click("todayButton");
+		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 2 day')));
+		$this->assertText("{$base}status", date('m-d-Y', strtotime('+ 2 day')));
+		$this->click("{$base}todayButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y'));
-		$this->verifyText("status", date('m-d-Y'));
-		$this->click("decreaseButton");
+		$this->assertValue("{$base}datepicker", date('m-d-Y'));
+		$this->assertText("{$base}status", date('m-d-Y'));
+		$this->click("{$base}decreaseButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y', strtotime('- 1 day')));
-		$this->verifyText("status", date('m-d-Y', strtotime('- 1 day')));
-		$this->click("datepicker");
+		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('- 1 day')));
+		$this->assertText("{$base}status", date('m-d-Y', strtotime('- 1 day')));
+		$this->click("{$base}datepicker");
 		$this->pause(800);
 		$this->click("css=input.todayButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y'));
-		$this->verifyText("status", date('m-d-Y'));
+		$this->assertValue("{$base}datepicker", date('m-d-Y'));
+		$this->assertText("{$base}status", date('m-d-Y'));
 		$this->click("css=input.nextMonthButton");
 		$this->pause(800);
-		$this->verifyValue("datepicker", date('m-d-Y', strtotime('+ 1 month')));
-		$this->verifyText("status", date('m-d-Y', strtotime('+1 month')));
-		
-		$this->click('toggleButton');
+		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 1 month')));
+		$this->assertText("{$base}status", date('m-d-Y', strtotime('+1 month')));
+
+		$this->click("{$base}toggleButton");
 		$this->pause(2000);
-		
-		$this->click("todayButton");
+
+		$this->click("{$base}todayButton");
 		$this->pause(800);
-		$this->assertSelected("datepicker_month", date('m'));
-		$this->verifyText("status", date('m-d-Y'));
-		
-		$this->click("increaseButton");
+		$this->assertSelected("{$base}datepicker_month", date('m'));
+		$this->assertText("{$base}status", date('m-d-Y'));
+
+		$this->click("{$base}increaseButton");
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 1 day');
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
-		$this->click("increaseButton");
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
+		$this->click("{$base}increaseButton");
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 2 day');
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
-		$this->click("todayButton");
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
+		$this->click("{$base}todayButton");
 		$this->pause(800);
 		$dateToCheck=time();
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
-		$this->click("decreaseButton");
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
+		$this->click("{$base}decreaseButton");
 		$this->pause(800);
 		$dateToCheck=strtotime('- 1 day');
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
-		$this->click("datepickerbutton");
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
+		$this->click("{$base}datepickerbutton");
 		$this->pause(800);
 		$this->click("css=input.todayButton");
 		$this->pause(800);
 		$dateToCheck=time();
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
 		$this->click("css=input.nextMonthButton");
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 1 month');
-		$this->assertSelected("datepicker_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker_year", date('Y', $dateToCheck));
-		$this->verifyText("status", date('m-d-Y', $dateToCheck));
-		
-		$this->click('ctl1');
+		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
+
+		$this->click('ctl0_ctl1');
 		$this->pause(800);
-		
-		$this->verifyText("status2", "");
+
+		$this->assertText("{$base}status2", "");
 		$dateToCheck=time();
-		$this->assertSelected("datepicker2_month", date('m', $dateToCheck));
-		$this->assertSelected("datepicker2_day", date('d', $dateToCheck));
-		$this->assertSelected("datepicker2_year", date('Y', $dateToCheck));
-		$this->select("datepicker2_year", date('Y')+1);
+		$this->assertSelected("{$base}datepicker2_month", date('m', $dateToCheck));
+		$this->assertSelected("{$base}datepicker2_day", date('d', $dateToCheck));
+		$this->assertSelected("{$base}datepicker2_year", date('Y', $dateToCheck));
+		$this->select("{$base}datepicker2_year", date('Y')+1);
 		$this->pause(800);
 		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
-		$this->verifyText("status2", date('m-d-Y', $dateToCheck));
+		$this->assertText("{$base}status2", date('m-d-Y', $dateToCheck));
 
 
-		$this->verifyText("status3", "");
+		$this->assertText("{$base}status3", "");
 		$dateToCheck=time();
-		$this->assertSelected("datepicker3_month", date('F', $dateToCheck));
-		$this->assertSelected("datepicker3_year", date('Y', $dateToCheck));
-		$this->select("datepicker3_year", date('Y')+1);
+		$this->assertSelected("{$base}datepicker3_month", date('F', $dateToCheck));
+		$this->assertSelected("{$base}datepicker3_year", date('Y', $dateToCheck));
+		$this->select("{$base}datepicker3_year", date('Y')+1);
 		$this->pause(800);
 		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
-		$this->verifyText("status3", date('m/Y', $dateToCheck));
+		$this->assertText("{$base}status3", date('m/Y', $dateToCheck));
 	}
 }

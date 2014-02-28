@@ -1,14 +1,14 @@
 <?php
 
 //New Test
-class RangeValidatorTestCase extends PradoGenericSeleniumTest
+class RangeValidatorTestCase extends PradoGenericSelenium2Test
 {
 	function testIntegerRange()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=RangeValidatorInteger", "");
-		$this->verifyTextPresent("Prado RangeValidator Tests Integer", "");
-		
+		$this->url("validators/index.php?page=RangeValidatorInteger");
+		$this->assertTextPresent("Prado RangeValidator Tests Integer", "");
+
 		//between 1 and 4
 		$this->type("{$base}text1", "ad");
 		$this->assertNotVisible("{$base}validator1", "");
@@ -21,8 +21,8 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");
-		
-		
+
+
 		// >= 2
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->type("{$base}text2", "1");
@@ -42,13 +42,13 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator3", "");
 
 	}
-	
+
 	function testFloatRange()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=RangeValidatorFloat", "");
-		$this->verifyTextPresent("Prado RangeValidator Tests Float", "");
-		
+		$this->url("validators/index.php?page=RangeValidatorFloat");
+		$this->assertTextPresent("Prado RangeValidator Tests Float", "");
+
 		//between 1 and 4
 		$this->type("{$base}text1", "ad");
 		$this->assertNotVisible("{$base}validator1", "");
@@ -61,8 +61,8 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");
-		
-		
+
+
 		// >= 2
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->type("{$base}text2", "1");
@@ -81,13 +81,13 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator3", "");
 	}
-	
+
 	function testDateRange()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=RangeValidatorDate", "");
-		$this->verifyTextPresent("Prado RangeValidator Tests Date", "");
-		
+		$this->url("validators/index.php?page=RangeValidatorDate");
+		$this->assertTextPresent("Prado RangeValidator Tests Date", "");
+
 		//between 22/1/2005 and 3/2/2005
 		$this->type("{$base}text1", "ad");
 		$this->assertNotVisible("{$base}validator1", "");
@@ -101,8 +101,8 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");
-		
-		
+
+
 		// >= 22/1/2005
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->type("{$base}text2", "1/1/2005");
@@ -122,14 +122,14 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->type("{$base}text3", "1/2/2005");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator3", "");
-	}	
-	
+	}
+
 	function testStringRange()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=RangeValidatorString", "");
-		$this->verifyTextPresent("Prado RangeValidator Tests String", "");
-		
+		$this->url("validators/index.php?page=RangeValidatorString");
+		$this->assertTextPresent("Prado RangeValidator Tests String", "");
+
 		//between 'd' and 'y'
 		$this->type("{$base}text1", "a");
 		$this->assertNotVisible("{$base}validator1", "");
@@ -142,8 +142,8 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator1", "");
-		
-		
+
+
 		// >= 'd'
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->type("{$base}text2", "a");
@@ -161,6 +161,6 @@ class RangeValidatorTestCase extends PradoGenericSeleniumTest
 		$this->type("{$base}text3", "t");
 		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
 		$this->assertNotVisible("{$base}validator3", "");
-	}		
+	}
 }
 

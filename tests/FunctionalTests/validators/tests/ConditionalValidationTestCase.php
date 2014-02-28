@@ -1,12 +1,12 @@
 <?php
 
-class ConditionalValidationTestCase extends PradoGenericSeleniumTest
+class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=ConditionalValidation", "");
-		$this->verifyTextPresent("Conditional Validation (clientside + server side)", "");
+		$this->url("validators/index.php?page=ConditionalValidation");
+		$this->assertTextPresent("Conditional Validation (clientside + server side)", "");
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->assertNotVisible("{$base}validator2", "");
 

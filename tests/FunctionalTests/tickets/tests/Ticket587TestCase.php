@@ -1,12 +1,12 @@
 <?php
 
-class Ticket587TestCase extends PradoGenericSeleniumTest
+class Ticket587TestCase extends PradoGenericSelenium2Test
 {
 	function testKeyPress()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket587_reopened');
-		$this->assertTitle("Verifying Ticket 587_reopened");
+		$this->url('tickets/index.php?page=Ticket587_reopened');
+		$this->assertEquals($this->title(), "Verifying Ticket 587_reopened");
 
 		$this->assertText($base."label1", "Label 1");
 		$this->select($base."list1", "item 3");
@@ -26,8 +26,8 @@ class Ticket587TestCase extends PradoGenericSeleniumTest
 	function testButtonClick()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket587_reopened');
-		$this->assertTitle("Verifying Ticket 587_reopened");
+		$this->url('tickets/index.php?page=Ticket587_reopened');
+		$this->assertEquals($this->title(), "Verifying Ticket 587_reopened");
 
 		$this->assertText($base."label1", "Label 1");
 		$this->select($base."list1", "item 3");

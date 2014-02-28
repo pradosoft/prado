@@ -1,11 +1,11 @@
 <?php
-class Ticket703TestCase extends PradoGenericSeleniumTest
+class Ticket703TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket703.Ticket703');
-		$this->assertTitle("Verifying Ticket703.Ticket703 703.703");
+		$this->url('tickets/index.php?page=Ticket703.Ticket703');
+		$this->assertEquals($this->title(), "Verifying Ticket703.Ticket703 703.703");
 		// Start with an empty log
 		$this->click($base.'ctl2');
 		// Wait for callback to be lanched
@@ -16,7 +16,7 @@ class Ticket703TestCase extends PradoGenericSeleniumTest
 		$this->click($base.'ctl0');
 		$this->pause(800);
 		$this->click($base.'ctl1');
-		$this->assertTextPresent($base.'logBox', "Test of prado logging system");			
+		$this->assertTextPresent($base.'logBox', "Test of prado logging system");
 
 		// Clean log for next run
 		$this->click($base.'ctl2');

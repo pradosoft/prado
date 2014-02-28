@@ -1,19 +1,20 @@
 <?php
 
-class TimeTriggeredCallbackTestCase extends PradoGenericSeleniumTest
+class TimeTriggeredCallbackTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=TimeTriggeredCallbackTest");
-		$this->verifyTextPresent("TimeTriggeredCallback + ViewState Tests");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=TimeTriggeredCallbackTest");
+		$this->assertTextPresent("TimeTriggeredCallback + ViewState Tests");
 
-		$this->assertText("label1", "ViewState Counter :");
+		$this->assertText("{$base}label1", "ViewState Counter :");
 
-		$this->click("button1");
+		$this->click("{$base}button1");
 
 		$this->pause(8000);
 
-		$this->assertText("label1", "ViewState Counter : 1 2 3 4 5 6 7 8 9 10");
+		$this->assertText("{$base}label1", "ViewState Counter : 1 2 3 4 5 6 7 8 9 10");
 
 	}
 }

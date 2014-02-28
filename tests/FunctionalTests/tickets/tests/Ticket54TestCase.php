@@ -1,10 +1,10 @@
 <?php
 
-class Ticket54TestCase extends PradoGenericSeleniumTest
+class Ticket54TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket54');
-		$this->verifyTextPresent("|A|a|B|b|C|", "");
+		$this->url('tickets/index.php?page=Ticket54');
+		$this->assertTextPresent("|A|a|B|b|C|", "");
 	}
 }

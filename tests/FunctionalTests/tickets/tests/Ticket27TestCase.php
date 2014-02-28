@@ -1,10 +1,10 @@
 <?php
 
-class Ticket27TestCase extends PradoGenericSeleniumTest
+class Ticket27TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket27');
+		$this->url('tickets/index.php?page=Ticket27');
 		$this->verifyTitle("Verifying Ticket 27", "");
 		$this->click("//input[@value='Agree']", "");
 		$this->assertVisible("ctl0_Content_validator1", "");

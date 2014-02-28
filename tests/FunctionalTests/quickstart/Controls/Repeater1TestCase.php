@@ -1,27 +1,27 @@
 <?php
 
-class QuickstartRepeater1TestCase extends PradoGenericSeleniumTest
+class QuickstartRepeater1TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample1&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->verifyTextPresent('ID','');
-		$this->verifyTextPresent('Name','');
-		$this->verifyTextPresent('Quantity','');
-		$this->verifyTextPresent('Price','');
-		$this->verifyTextPresent('Imported','');
-		$this->verifyTextPresent('ITN001','');
-		$this->verifyTextPresent('Motherboard','');
-		$this->verifyTextPresent('Yes','');
-		$this->verifyTextPresent('ITN019','');
-		$this->verifyTextPresent('Speaker','');
-		$this->verifyTextPresent('No','');
-		$this->verifyTextPresent('Computer Parts Inventory','');
+		$this->assertTextPresent('ID','');
+		$this->assertTextPresent('Name','');
+		$this->assertTextPresent('Quantity','');
+		$this->assertTextPresent('Price','');
+		$this->assertTextPresent('Imported','');
+		$this->assertTextPresent('ITN001','');
+		$this->assertTextPresent('Motherboard','');
+		$this->assertTextPresent('Yes','');
+		$this->assertTextPresent('ITN019','');
+		$this->assertTextPresent('Speaker','');
+		$this->assertTextPresent('No','');
+		$this->assertTextPresent('Computer Parts Inventory','');
 
 		// verify specific table tags
-		$this->verifyElementPresent("//td[@colspan='5']");
-		$this->verifyElementPresent("//table[@cellpadding='2']");
+		$this->assertElementPresent("//td[@colspan='5']");
+		$this->assertElementPresent("//table[@cellpadding='2']");
 	}
 }

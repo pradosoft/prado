@@ -1,15 +1,16 @@
 <?php
 
-class TextBoxCallbackTestCase extends PradoGenericSeleniumTest
+class TextBoxCallbackTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ActiveTextBoxCallback");
-		$this->verifyTextPresent("ActiveTextBox Callback Test");
-		$this->assertText("label1", "Label 1");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ActiveTextBoxCallback");
+		$this->assertTextPresent("ActiveTextBox Callback Test");
+		$this->assertText("{$base}label1", "Label 1");
 
-		$this->type("textbox1", "hello!");
+		$this->type("{$base}textbox1", "hello!");
 		$this->pause(800);
-		$this->assertText("label1", "Label 1: hello!");
+		$this->assertText("{$base}label1", "Label 1: hello!");
 	}
 }

@@ -1,29 +1,30 @@
 <?php
 
-class CallbackOptionsTestCase extends PradoGenericSeleniumTest
+class CallbackOptionsTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=CallbackOptionsTest");
-		$this->verifyTextPresent("TCallbackOptions Test");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=CallbackOptionsTest");
+		$this->assertTextPresent("TCallbackOptions Test");
 
 		$this->assertText("label1", "Label 1");
 		$this->assertText("label2", "Label 2");
 		$this->assertText("label3", "Label 3");
 
-		$this->click("button1");
+		$this->click("{$base}button1");
 		$this->pause(800);
 		$this->assertText("label1", "Button 1 has returned");
 		$this->assertText("label2", "Label 2");
 		$this->assertText("label3", "Label 3");
 
-		$this->click("button2");
+		$this->click("{$base}button2");
 		$this->pause(800);
 		$this->assertText("label1", "Button 1 has returned");
 		$this->assertText("label2", "Button 2 has returned");
 		$this->assertText("label3", "Label 3");
 
-		$this->click("button3");
+		$this->click("{$base}button3");
 		$this->pause(800);
 		$this->assertText("label1", "Button 1 has returned");
 		$this->assertText("label2", "Button 2 has returned");

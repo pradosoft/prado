@@ -22,5 +22,4 @@ if (!@include_once VENDOR_DIR.'/autoload.php') {
 require_once(PRADO_FRAMEWORK_DIR.'/prado.php');
 
 // for FunctionalTests
-require_once(__DIR__.'/PradoGenericSeleniumTest.php');
 require_once(__DIR__.'/PradoGenericSelenium2Test.php');

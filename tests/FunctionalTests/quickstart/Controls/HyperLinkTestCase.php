@@ -1,15 +1,15 @@
 <?php
 
-class QuickstartHyperLinkTestCase extends PradoGenericSeleniumTest
+class QuickstartHyperLinkTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.THyperLink.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.THyperLink.Home&amp;notheme=true&amp;lang=en");
 		$this->verifyTitle("PRADO QuickStart Sample", "");
-		$this->verifyElementPresent("//a[@href=\"http://www.pradosoft.com/\" and @target=\"_blank\"]");
-		$this->verifyTextPresent("Welcome to", "");
-		$this->verifyTextPresent("Body contents", "");
-		$this->verifyElementPresent("//a[img/@alt='Hello World']");
-		$this->verifyElementPresent("//a[contains(text(),'Body contents')]");
+		$this->assertElementPresent("//a[@href=\"http://www.pradosoft.com/\" and @target=\"_blank\"]");
+		$this->assertTextPresent("Welcome to", "");
+		$this->assertTextPresent("Body contents", "");
+		$this->assertElementPresent("//a[img/@alt='Hello World']");
+		$this->assertElementPresent("//a[contains(text(),'Body contents')]");
 	}
 }

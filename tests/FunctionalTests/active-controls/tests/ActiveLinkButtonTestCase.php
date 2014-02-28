@@ -1,14 +1,15 @@
 <?php
 
-class ActiveLinkButtonTestCase extends PradoGenericSeleniumTest
+class ActiveLinkButtonTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ActiveLinkButtonTest");
-		$this->verifyTextPresent("TActiveLinkButton Functional Test");
-		$this->assertText("label1", "Label 1");
-		$this->click("button2");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ActiveLinkButtonTest");
+		$this->assertTextPresent("TActiveLinkButton Functional Test");
+		$this->assertText("{$base}label1", "Label 1");
+		$this->click("{$base}button2");
 		$this->pause(800);
-		$this->assertText("label1", "Button 1 was clicked using callback!");
+		$this->assertText("{$base}label1", "Button 1 was clicked using callback!");
 	}
 }

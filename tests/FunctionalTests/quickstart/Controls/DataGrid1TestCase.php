@@ -1,29 +1,29 @@
 <?php
 
-class QuickstartDataGrid1TestCase extends PradoGenericSeleniumTest
+class QuickstartDataGrid1TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->verifyTextPresent('id','');
-		$this->verifyTextPresent('name','');
-		$this->verifyTextPresent('quantity','');
-		$this->verifyTextPresent('price','');
-		$this->verifyTextPresent('imported','');
-		$this->verifyTextPresent('ITN001','');
-		$this->verifyTextPresent('Motherboard','');
-		$this->verifyTextPresent('100','');
-		$this->verifyTextPresent('true','');
-		$this->verifyTextPresent('ITN019','');
-		$this->verifyTextPresent('Speaker','');
-		$this->verifyTextPresent('35','');
-		$this->verifyTextPresent('65','');
-		$this->verifyTextPresent('false','');
+		$this->assertTextPresent('id','');
+		$this->assertTextPresent('name','');
+		$this->assertTextPresent('quantity','');
+		$this->assertTextPresent('price','');
+		$this->assertTextPresent('imported','');
+		$this->assertTextPresent('ITN001','');
+		$this->assertTextPresent('Motherboard','');
+		$this->assertTextPresent('100','');
+		$this->assertTextPresent('true','');
+		$this->assertTextPresent('ITN019','');
+		$this->assertTextPresent('Speaker','');
+		$this->assertTextPresent('35','');
+		$this->assertTextPresent('65','');
+		$this->assertTextPresent('false','');
 
 		// verify specific table tags
-		$this->verifyElementPresent("ctl0_body_DataGrid");
+		$this->assertElementPresent("ctl0_body_DataGrid");
 		$this->verifyAttribute("ctl0_body_DataGrid@cellpadding","2");
 	}
 }

@@ -1,11 +1,11 @@
 <?php
 
-class Ticket719TestCase extends PradoGenericSeleniumTest
+class Ticket719TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("tickets/index.php?page=Ticket719");
-		$this->verifyTextPresent("Verifying Ticket 719");
+		$this->url("tickets/index.php?page=Ticket719");
+		$this->assertTextPresent("Verifying Ticket 719");
 		
 		$base="ctl0_Content_";
 		
@@ -17,17 +17,17 @@ class Ticket719TestCase extends PradoGenericSeleniumTest
 		$this->type("${base}autocomplete", 'f');
 		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
 		$this->pause(500);
-		$this->verifyTextPresent('Finland');
+		$this->assertTextPresent('Finland');
 
 		$this->type("${base}autocomplete", 'fr');
 		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
 		$this->pause(500);
-		$this->verifyTextPresent('French');
+		$this->assertTextPresent('French');
 
 		$this->type("${base}autocomplete", 'fra');
 		$this->runScript("Prado.Registry.get('${base}autocomplete').onKeyPress({})");
 		$this->pause(500);
-		$this->verifyTextPresent('France');
+		$this->assertTextPresent('France');
 	
 		$this->click("css=#${base}autocomplete_result ul li");
 		$this->pause(800);

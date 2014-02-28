@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartLinkButtonTestCase extends PradoGenericSeleniumTest
+class QuickstartLinkButtonTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLinkButton.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TLinkButton.Home&amp;notheme=true&amp;lang=en");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 
@@ -21,12 +21,12 @@ class QuickstartLinkButtonTestCase extends PradoGenericSeleniumTest
 		$this->clickAndWait("//a[contains(text(),'Name: test, Param: value')]", "");
 
 		// a button causing validation
-		$this->verifyNotVisible('ctl0_body_ctl4');
+		$this->assertNotVisible('ctl0_body_ctl4');
 		$this->click("link=submit", "");
 //		$this->pause(1000);
-		$this->verifyVisible('ctl0_body_ctl4');
+		$this->assertVisible('ctl0_body_ctl4');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->clickAndWait("link=submit", "");
-		$this->verifyNotVisible('ctl0_body_ctl4');
+		$this->assertNotVisible('ctl0_body_ctl4');
 	}
 }

@@ -1,18 +1,18 @@
 <?php
 
-class QuickstartDataGrid3TestCase extends PradoGenericSeleniumTest
+class QuickstartDataGrid3TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample3&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample3&amp;notheme=true&amp;lang=en");
 
 		// verify the 2nd row of data
-		$this->verifyTextPresent("Design Patterns: Elements of Reusable Object-Oriented Software", "");
-		$this->verifyTextPresent("Addison-Wesley Professional", "");
-		$this->verifyTextPresent("$47.04", "");
+		$this->assertTextPresent("Design Patterns: Elements of Reusable Object-Oriented Software", "");
+		$this->assertTextPresent("Addison-Wesley Professional", "");
+		$this->assertTextPresent("$47.04", "");
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl4@checked','regexp:true|checked');
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl4@disabled','regexp:true|disabled');
-		//$this->verifyElementPresent("//img[@src='images/star5.gif']",'');
+		//$this->assertElementPresent("//img[@src='images/star5.gif']",'');
 
 		// edit the 2nd row
 		$this->clickAndWait("id=ctl0_body_DataGrid_ctl2_ctl7", "");
@@ -24,27 +24,26 @@ class QuickstartDataGrid3TestCase extends PradoGenericSeleniumTest
 		$this->clickAndWait("link=Save", "");
 
 		// verify the 2nd row is saved
-		$this->verifyTextPresent("Design Pattern: Elements of Reusable Object-Oriented Software", "");
-		$this->verifyTextPresent("Addison Wesley Professional", "");
-		$this->verifyTextPresent("$57.04", "");
-		$this->assertEquals($this->getEval('this.browserbot.findElement("ctl0_body_DataGrid_ctl2_ctl4").hasAttribute("checked")'), 'false');
+		$this->assertTextPresent("Design Pattern: Elements of Reusable Object-Oriented Software", "");
+		$this->assertTextPresent("Addison Wesley Professional", "");
+		$this->assertTextPresent("$57.04", "");
+		$this->verifyAttribute("ctl0_body_DataGrid_ctl2_ctl4@checked", null);
 		$this->verifyAttribute('ctl0_body_DataGrid_ctl2_ctl4@disabled','regexp:true|disabled');
-		//$this->verifyElementPresent("//img[@src='images/star1.gif']",'');
+		//$this->assertElementPresent("//img[@src='images/star1.gif']",'');
 
 		// verify cancel editting the 3rd row
 		$this->clickAndWait("id=ctl0_body_DataGrid_ctl3_ctl7", "");
 		$this->clickAndWait("link=Cancel", "");
-		$this->verifyTextPresent("Design Patterns Explained : A New Perspective on Object-Oriented Design", "");
+		$this->assertTextPresent("Design Patterns Explained : A New Perspective on Object-Oriented Design", "");
 
 		// verify deleting
 		$this->clickAndWait("id=ctl0_body_DataGrid_ctl3_ctl9", "");
 		$this->verifyConfirmation("Are you sure?");
-		$this->verifyTextNotPresent("Design Patterns Explained : A New Perspective on Object-Oriented Design", "");
+		$this->assertTextNotPresent("Design Patterns Explained : A New Perspective on Object-Oriented Design", "");
 
-		$this->verifyTextPresent("Extreme Programming Explained : Embrace Change",'');
-		$this->chooseCancelOnNextConfirmation();
+		$this->assertTextPresent("Extreme Programming Explained : Embrace Change",'');
 		$this->click("id=ctl0_body_DataGrid_ctl6_ctl9", "");
-		$this->verifyConfirmation("Are you sure?");
-		$this->verifyTextPresent("Extreme Programming Explained : Embrace Change",'');
+		$this->verifyConfirmationDismiss("Are you sure?");
+		$this->assertTextPresent("Extreme Programming Explained : Embrace Change",'');
 	}
 }

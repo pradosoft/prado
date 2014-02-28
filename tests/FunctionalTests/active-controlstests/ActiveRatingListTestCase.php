@@ -1,240 +1,248 @@
 <?php
 /**
  * ActiveRatingListTestCase.php
- * 
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @version Creation Date: Oct 22, 2008
  */
 
 /**
  * ActiveRatingListTestCase.php class
- * 
- * 
- * 
+ *
+ *
+ *
  * Properties
  * -
- * 
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @version Modified Date: Oct 22, 2008
- * 
+ *
  * Modifications:
  */
-class ActiveRatingListTestCase extends PradoGenericSeleniumTest
+class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 {
 	function testCheckBoxes()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListCheckBoxesTest");
-		$this->verifyTextPresent("TActiveRatingList Check Boxes Test Case");
-		$this->assertCheckBoxes("RatingList", array(2), 6);
-		
+		$this->url("active-controls/index.php?page=ActiveRatingListCheckBoxesTest");
+		$this->assertTextPresent("TActiveRatingList Check Boxes Test Case");
+		$this->assertCheckBoxes("{$base}RatingList", array(2), 6);
+
 		// Change the list and make sure the radio buttons get updated properly.
-		$this->clickTD("RatingList_c4");
+		$this->clickTD("{$base}RatingList_c4");
 		$this->pause(800);
-		$this->assertCheckBoxes("RatingList", array(4), 6);
-		
-		$this->clickTD("RatingList_c2");
+		$this->assertCheckBoxes("{$base}RatingList", array(4), 6);
+
+		$this->clickTD("{$base}RatingList_c2");
 		$this->pause(800);
-		$this->assertCheckBoxes("RatingList", array(2), 6);
+		$this->assertCheckBoxes("{$base}RatingList", array(2), 6);
 	}
 
 	function testRating()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListRatingTest");
-		$this->verifyTextPresent("TActiveRatingList Rating Test Case");
-		
+		$this->url("active-controls/index.php?page=ActiveRatingListRatingTest");
+		$this->assertTextPresent("TActiveRatingList Rating Test Case");
+
 		// Check the list, make sure it starts out with 5 stars.
-		$this->assertText("Status", "Rating: 5");
-		
+		$this->assertText("{$base}Status", "Rating: 5");
+
 		// Click on 1 star and make sure the Rating property updates.
-		$this->clickTD("RatingList_c0");
+		$this->clickTD("{$base}RatingList_c0");
 		$this->pause(800);
-		$this->assertText("Status", "Rating: 1");
-		
+		$this->assertText("{$base}Status", "Rating: 1");
+
 		// Then set Rating to three on the server side and make sure it's correct.
-		$this->click("SetRating");
+		$this->click("{$base}SetRating");
 		$this->pause(800);
-		$this->assertText("Status", "Rating: 3");
+		$this->assertText("{$base}Status", "Rating: 3");
 	}
 
 	function testSelectedIndex()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListSelectedIndexTest");
-		$this->verifyTextPresent("TActiveRatingList SelectedIndex Test Case");
-		$this->assertText("Status", " SelectedIndex: 1");
-		
+		$this->url("active-controls/index.php?page=ActiveRatingListSelectedIndexTest");
+		$this->assertTextPresent("TActiveRatingList SelectedIndex Test Case");
+		$this->assertText("{$base}Status", "SelectedIndex: 1");
+
 		// Click on 5 stars and make sure the SelectedIndex property updates.
-		$this->clickTD("RatingList_c4");
+		$this->clickTD("{$base}RatingList_c4");
 		$this->pause(800);
-		$this->assertText("Status", " SelectedIndex: 4");
-		
+		$this->assertText("{$base}Status", "SelectedIndex: 4");
+
 		// Then set SelectedIndex to 5 on the server side and make sure it's correct.
-		$this->click("SetSelectedIndex");
+		$this->click("{$base}SetSelectedIndex");
 		$this->pause(800);
-		$this->assertText("Status", " SelectedIndex: 5");
+		$this->assertText("{$base}Status", "SelectedIndex: 5");
 	}
 
 	function testAutoPostBack()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListAutoPostBackTest");
-		$this->verifyTextPresent("TActiveRatingList AutoPostBack Test Case");
-		$this->assertText("Status", "AutoPostback=false");
-		
+		$this->url("active-controls/index.php?page=ActiveRatingListAutoPostBackTest");
+		$this->assertTextPresent("TActiveRatingList AutoPostBack Test Case");
+		$this->assertText("{$base}Status", "AutoPostback=false");
+
 		// Make sure that it doesn't auto post when clicked.
-		$this->clickTD("RatingList_c3");
+		$this->clickTD("{$base}RatingList_c3");
 		$this->pause(800);
-		$this->assertText("Status", "AutoPostback=false");
-		
+		$this->assertText("{$base}Status", "AutoPostback=false");
+
 		// Then submit with an active button and make sure it updates.
-		$this->click("Submit");
+		$this->click("{$base}Submit");
 		$this->pause(800);
-		$this->assertText("Status", "4 : Good");
+		$this->assertText("{$base}Status", "4 : Good");
 	}
 
 	function testAllowInput()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListAllowInputTest");
-		$this->verifyTextPresent("TActiveRatingList AllowInput Test Case");
-		$this->assertText("Status", "AllowInput=false");
-		$this->assertCheckBoxes("RatingList", array(3), 6);
+		$this->url("active-controls/index.php?page=ActiveRatingListAllowInputTest");
+		$this->assertTextPresent("TActiveRatingList AllowInput Test Case");
+		$this->assertText("{$base}Status", "AllowInput=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
 
 		// Make sure that clicking doesn't change anything.
-		$this->clickTD("RatingList_c5");
+		$this->clickTD("{$base}RatingList_c5");
 		$this->pause(800);
-		$this->assertText("Status", "AllowInput=false");
-		$this->assertCheckBoxes("RatingList", array(3), 6);
+		$this->assertText("{$base}Status", "AllowInput=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
 	}
 
 	function testReadOnly()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListReadOnlyTest");
-		$this->verifyTextPresent("TActiveRatingList ReadOnly Test Case");
-		$this->assertText("Status", "ReadOnly=true");
-		$this->assertCheckBoxes("RatingList", array(0), 6);
+		$this->url("active-controls/index.php?page=ActiveRatingListReadOnlyTest");
+		$this->assertTextPresent("TActiveRatingList ReadOnly Test Case");
+		$this->assertText("{$base}Status", "ReadOnly=true");
+		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
 
-		$this->clickTD("RatingList_c4");
+		$this->clickTD("{$base}RatingList_c4");
 		$this->pause(800);
-		$this->assertText("Status", "ReadOnly=true");
-		$this->assertCheckBoxes("RatingList", array(0), 6);
-		
+		$this->assertText("{$base}Status", "ReadOnly=true");
+		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
+
 		// Then set ReadOnly to false, and make sure it works.
-		$this->click("Writable");
+		$this->click("{$base}Writable");
 		$this->pause(800);
-		$this->assertText("Status", "ReadOnly=false");
-		$this->assertCheckBoxes("RatingList", array(0), 6);
-		
-		
-		$this->clickTD("RatingList_c1");
+		$this->assertText("{$base}Status", "ReadOnly=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
+
+
+		$this->clickTD("{$base}RatingList_c1");
 		$this->pause(800);
-		$this->assertText("Status", "2 : Fair");
-		$this->assertCheckBoxes("RatingList", array(1), 6);
-		
+		$this->assertText("{$base}Status", "2 : Fair");
+		$this->assertCheckBoxes("{$base}RatingList", array(1), 6);
+
 		// Then set ReadOnly to true, and make sure it doesn't work anymore.
-		$this->click("ReadOnly");
+		$this->click("{$base}ReadOnly");
 		$this->pause(800);
-		$this->assertText("Status", "ReadOnly=true");
-		$this->assertCheckBoxes("RatingList", array(1), 6);
-		
-		
-		$this->clickTD("RatingList_c2");
+		$this->assertText("{$base}Status", "ReadOnly=true");
+		$this->assertCheckBoxes("{$base}RatingList", array(1), 6);
+
+
+		$this->clickTD("{$base}RatingList_c2");
 		$this->pause(800);
-		$this->assertText("Status", "ReadOnly=true");
-		$this->assertCheckBoxes("RatingList", array(1), 6);
+		$this->assertText("{$base}Status", "ReadOnly=true");
+		$this->assertCheckBoxes("{$base}RatingList", array(1), 6);
 	}
 
 	function testEnabled()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListEnabledTest");
-		$this->verifyTextPresent("TActiveRatingList Enabled Test Case");
-		$this->assertText("Status", "Enabled=false");
-		$this->assertCheckBoxes("RatingList", array(5), 6);
+		$this->url("active-controls/index.php?page=ActiveRatingListEnabledTest");
+		$this->assertTextPresent("TActiveRatingList Enabled Test Case");
+		$this->assertText("{$base}Status", "Enabled=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
 
-		$this->clickTD("RatingList_c4");
+		$this->clickTD("{$base}RatingList_c4");
 		$this->pause(800);
-		$this->assertText("Status", "Enabled=false");
-		$this->assertCheckBoxes("RatingList", array(5), 6);
-		
+		$this->assertText("{$base}Status", "Enabled=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
+
 		// Then set Enable to true, and make sure it works.
-		$this->click("Enable");
+		$this->click("{$base}Enable");
 		$this->pause(800);
-		$this->assertText("Status", "Enabled=true");
-		$this->assertCheckBoxes("RatingList", array(5), 6);
-		
-		
-		$this->clickTD("RatingList_c3");
+		$this->assertText("{$base}Status", "Enabled=true");
+		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
+
+
+		$this->clickTD("{$base}RatingList_c3");
 		$this->pause(800);
-		$this->assertText("Status", "4 : Good");
-		$this->assertCheckBoxes("RatingList", array(3), 6);
-		
+		$this->assertText("{$base}Status", "4 : Good");
+		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
+
 		// Then set Enable to false, and make sure it doesn't work anymore.
-		$this->click("Disable");
+		$this->click("{$base}Disable");
 		$this->pause(800);
-		$this->assertText("Status", "Enabled=false");
-		$this->assertCheckBoxes("RatingList", array(3), 6);
-		
-		
-		$this->clickTD("RatingList_c5");
+		$this->assertText("{$base}Status", "Enabled=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
+
+
+		$this->clickTD("{$base}RatingList_c5");
 		$this->pause(800);
-		$this->assertText("Status", "Enabled=false");
-		$this->assertCheckBoxes("RatingList", array(3), 6);
+		$this->assertText("{$base}Status", "Enabled=false");
+		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
 	}
-	
+
 	function testHoverCaption()
 	{
+		$base='ctl0_Content_';
 		// Verify we're on the right page.
-		$this->open("active-controls/index.php?page=ActiveRatingListHoverCaptionTest");
-		$this->verifyTextPresent("TActiveRatingList Hover Caption Test Case");
-		$this->assertText("Status", "CaptionID='Status'");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating_half')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
-		
-		$this->mouseOver("//input[@id='RatingList_c4']/../../");
-		$this->assertText("Status", "Excellent");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating_hover')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[not(contains(@class, 'rating_hover'))]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
-		
-		$this->mouseOut("//input[@id='RatingList_c4']/../../");
-		$this->assertText("Status", "CaptionID='Status'");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[not(contains(@class, 'rating_selected'))]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
-		
-		
-		$this->mouseOver("//input[@id='RatingList_c1']/../../");
-		$this->assertText("Status", "Fair");
-		
-		$this->click("//input[@id='RatingList_c1']/../../");
+		$this->url("active-controls/index.php?page=ActiveRatingListHoverCaptionTest");
+		$this->assertTextPresent("TActiveRatingList Hover Caption Test Case");
+		$this->assertText("{$base}Status", "CaptionID='Status'");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[contains(@class, 'rating_half')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
+
+		$this->mouseOver("//input[@id='{$base}RatingList_c4']/../..");
+		$this->assertText("{$base}Status", "Excellent");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c2']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c4']/../../../td[contains(@class, 'rating_hover')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[not(contains(@class, 'rating_hover'))]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
+
+		$this->mouseOut("//input[@id='{$base}RatingList_c4']/../..");
+		$this->assertText("{$base}Status", "CaptionID='Status'");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c2']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[not(contains(@class, 'rating_selected'))]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
+
+
+		$this->mouseOver("//input[@id='{$base}RatingList_c1']/../..");
+		$this->assertText("{$base}Status", "Fair");
+
+		$this->click("//input[@id='{$base}RatingList_c1']/../..");
 		$this->pause(800);
-		$this->assertText("Status", "2 : Fair");
-		$this->assertElementPresent("//input[@id='RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[not(contains(@class, 'rating_selected'))]");
-		$this->assertElementPresent("//input[@id='RatingList_c2']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c3']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c4']/../../../td[contains(@class, 'rating')]");
-		$this->assertElementPresent("//input[@id='RatingList_c5']/../../../td[contains(@class, 'rating')]");
+		$this->assertText("{$base}Status", "2 : Fair");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c2']/../../../td[not(contains(@class, 'rating_selected'))]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c2']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c3']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c4']/../../../td[contains(@class, 'rating')]");
+		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
 	}
-	
+
 	function clickTD($clientID){
 		$this->click("//input[@id='{$clientID}']/../..");
 	}
