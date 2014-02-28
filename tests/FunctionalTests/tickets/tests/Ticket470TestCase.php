@@ -1,11 +1,11 @@
 <?php
 
-class Ticket470TestCase extends PradoGenericSeleniumTest
+class Ticket470TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket470');
+		$this->url('tickets/index.php?page=Ticket470');
 		$this->verifyTitle("Verifying Ticket 470");
 		$this->assertText("{$base}counter", "0");
 		$this->assertText("{$base}Results", "");
@@ -38,7 +38,7 @@ class Ticket470TestCase extends PradoGenericSeleniumTest
 		$this->assertText("{$base}counter", "1");
 		$this->assertText("{$base}Results", "");
 		$this->assertVisible("{$base}validator1");
-	
+
 		$this->type("{$base}TextBox", "test");
 		$this->click("{$base}button1");
 		$this->pause(800);

@@ -3,13 +3,13 @@
  * Created on 24/04/2006
  */
 
-class ListControlTestCase extends PradoGenericSeleniumTest
+class ListControlTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=ListControl", "");
-		$this->verifyTextPresent("List Control Required Field Validation Test", "");
+		$this->url("validators/index.php?page=ListControl");
+		$this->assertTextPresent("List Control Required Field Validation Test", "");
 		$this->click("//input[@type='submit' and @value='Submit!']", "");
 
 		$this->assertVisible("{$base}validator1");
@@ -28,7 +28,8 @@ class ListControlTestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator3");
 		$this->assertNotVisible("{$base}validator4");
 
-		$this->select("{$base}list3", "label=Don't select this one");
+		//invalid selector: Unable to locate an element with the xpath expression .//option[.='Don\'t select this one'] because of the following error: SyntaxError: Failed to execute 'evaluate' on 'Document': The string './/option[.='Don\'t select this one']' is not a valid XPath expression.
+		$this->select("{$base}list3", "label=Dont select this one");
 		$this->click("{$base}list4_c0");
 		$this->select("{$base}list2", "label=--- Select a color ---");
 		$this->click("//input[@type='submit' and @value='Submit!']", "");

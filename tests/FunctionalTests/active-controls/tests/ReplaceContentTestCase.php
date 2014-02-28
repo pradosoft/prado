@@ -1,90 +1,90 @@
 <?php
 
-class ReplaceContentTestCase extends PradoGenericSeleniumTest
+class ReplaceContentTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-
-		$this->open('active-controls/index.php?page=ReplaceContentTest');
+		$base='ctl0_Content_';
+		$this->url('active-controls/index.php?page=ReplaceContentTest');
 		$this->assertTextPresent('Callback Replace Content Test');
 
-		$this->assertText('subpanel', 'Sub Panel');
-		$this->assertText('panel1', 'Main Panel Sub Panel');
+		$this->assertText("{$base}subpanel", 'Sub Panel');
+		$this->assertText("{$base}panel1", "Main Panel\nSub Panel");
 
-		$this->type('content', 'something');
+		$this->type("{$base}content", 'something');
 
-		$this->click('btn_append');
+		$this->click("{$base}btn_append");
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'Sub Panel something');
-		$this->assertText('panel1', 'Main Panel Sub Panel something');
+		$this->assertText("{$base}subpanel", 'Sub Panel something');
+		$this->assertText("{$base}panel1", "Main Panel\nSub Panel something");
 
-		$this->type('content', 'more');
-		$this->click('btn_prepend');
+		$this->type("{$base}content", 'more');
+		$this->click("{$base}btn_prepend");
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'more Sub Panel something');
-		$this->assertText('panel1', 'Main Panel more Sub Panel something');
+		$this->assertText("{$base}subpanel", 'more Sub Panel something');
+		$this->assertText("{$base}panel1", "Main Panel\nmore Sub Panel something");
 
 
-		$this->type('content', 'prado');
-		$this->click('btn_before');
+		$this->type("{$base}content", 'prado');
+		$this->click("{$base}btn_before");
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'more Sub Panel something');
-		$this->assertText('panel1', 'Main Panel pradomore Sub Panel something');
+		$this->assertText("{$base}subpanel", 'more Sub Panel something');
+		$this->assertText("{$base}panel1", "Main Panel prado\nmore Sub Panel something");
 
-		$this->type('content', ' php ');
-		$this->click('btn_after');
+		$this->type("{$base}content", ' php ');
+		$this->click("{$base}btn_after");
 		$this->pause(800);
 
-		$this->type('content', 'mauahahaha');
-		$this->click('btn_replace');
+		$this->type("{$base}content", 'mauahahaha');
+		$this->click("{$base}btn_replace");
 		$this->pause(1000);
 
-		$this->assertText('panel1', 'Main Panel pradomauahahahaphp');
+		$this->assertText("{$base}panel1", 'Main Panel pradomauahahaha php');
 	}
 /*
 	function testIE()
 	{
-		$this->open('active-controls/index.php?page=ReplaceContentTest');
+		$this->url('active-controls/index.php?page=ReplaceContentTest');
 		$this->assertTextPresent('Callback Replace Content Test');
 
-		$this->assertText('subpanel', 'Sub Panel');
-		$this->assertText('panel1', 'regexp:Main Panel\s*Sub Panel');
+		$this->assertText("{$base}subpanel", 'Sub Panel');
+		$this->assertText("{$base}panel1", 'regexp:Main Panel\s*Sub Panel');
 
-		$this->type('content', 'something');
+		$this->type("{$base}content", 'something');
 
 		$this->click('btn_append');
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'Sub Panel something');
-		$this->assertText('panel1', 'regexp:Main Panel\s*Sub Panel\s*something');
+		$this->assertText("{$base}subpanel", 'Sub Panel something');
+		$this->assertText("{$base}panel1", 'regexp:Main Panel\s*Sub Panel\s*something');
 
-		$this->type('content', 'more');
+		$this->type("{$base}content", 'more');
 		$this->click('btn_prepend');
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'regexp:more\s*Sub Panel\s*something');
-		$this->assertText('panel1', 'regexp:Main Panel\s*moreSub Panel\s*something');
+		$this->assertText("{$base}subpanel", 'regexp:more\s*Sub Panel\s*something');
+		$this->assertText("{$base}panel1", 'regexp:Main Panel\s*moreSub Panel\s*something');
 
 
-		$this->type('content', 'prado');
+		$this->type("{$base}content", 'prado');
 		$this->click('btn_before');
 		$this->pause(800);
 
-		$this->assertText('subpanel', 'regexp:more\s*Sub Panel\s*something');
-		$this->assertText('panel1', 'regexp:Main Panel\s*prado\s*more\s*Sub Panel\s*something');
+		$this->assertText("{$base}subpanel", 'regexp:more\s*Sub Panel\s*something');
+		$this->assertText("{$base}panel1", 'regexp:Main Panel\s*prado\s*more\s*Sub Panel\s*something');
 
-		$this->type('content', ' php ');
+		$this->type("{$base}content", ' php ');
 		$this->click('btn_after');
 		$this->pause(800);
 
-		$this->type('content', 'mauahahaha');
+		$this->type("{$base}content", 'mauahahaha');
 		$this->click('btn_replace');
 		$this->pause(1000);
 
-		$this->assertText('panel1', 'Main Panel pradomauahahahaphp');
+		$this->assertText("{$base}panel1", 'Main Panel pradomauahahahaphp');
 	}
 */
 }

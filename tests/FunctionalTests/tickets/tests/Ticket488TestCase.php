@@ -1,40 +1,41 @@
 <?php
 
-class Ticket488TestCase extends PradoGenericSeleniumTest
+class Ticket488TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('active-controls/index.php?page=CustomValidatorByPass');
+		$base='ctl0_Content_';
+		$this->url('active-controls/index.php?page=CustomValidatorByPass');
 		$this->assertTextPresent('Custom Login');
 		$this->assertNotVisible('loginBox');
 		$this->click("showLogin");
 		$this->assertVisible("loginBox");
-		$this->assertNotVisible("validator1");
-		$this->assertNotVisible("validator2");
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");
 
-		$this->click("checkLogin");
+		$this->click("{$base}checkLogin");
 		$this->pause(800);
-		$this->assertVisible("validator1");
-		$this->assertNotVisible("validator2");
+		$this->assertVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");
 
-		$this->type('Username', 'tea');
-		$this->type('Password', 'mmama');
+		$this->type("{$base}Username", 'tea');
+		$this->type("{$base}Password", 'mmama');
 
-		$this->click("checkLogin");
+		$this->click("{$base}checkLogin");
 		$this->pause(800);
-		$this->assertNotVisible("validator1");
-		$this->assertVisible("validator2");
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertVisible("{$base}validator2");
 
-		$this->type('Password', 'test');
-		$this->click("checkLogin");
+		$this->type("{$base}Password", 'test');
+		$this->click("{$base}checkLogin");
 		$this->pause(800);
-		$this->assertNotVisible("validator1");
-		$this->assertNotVisible("validator2");
+		$this->assertNotVisible("{$base}validator1");
+		$this->assertNotVisible("{$base}validator2");
 	}
 
 	function test_more()
 	{
-		$this->open('tickets/index.php?page=Ticket488');
+		$this->url('tickets/index.php?page=Ticket488');
 		//add test assertions here.
 	}
 }

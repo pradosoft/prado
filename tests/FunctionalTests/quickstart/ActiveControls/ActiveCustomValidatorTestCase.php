@@ -1,10 +1,10 @@
 <?php
 //$Id: ActiveButtonTestCase.php 1405 2006-09-10 01:03:56Z wei $
-class QuickstartActiveCustomValidatorTestCase extends PradoGenericSeleniumTest
+class QuickstartActiveCustomValidatorTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCustomValidator.Home&amp;notheme=true&amp;lang=en");
+		$this->url("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCustomValidator.Home&amp;notheme=true&amp;lang=en");
 
 		$this->verifyTitle("PRADO QuickStart Sample", "");
 

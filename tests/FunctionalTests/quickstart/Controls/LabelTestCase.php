@@ -1,16 +1,16 @@
 <?php
 
 //New Test
-class QuickstartLabelTestCase extends PradoGenericSeleniumTest
+class QuickstartLabelTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true&amp;lang=en");
 		$this->verifyTitle("PRADO QuickStart Sample", "");
-		$this->verifyTextPresent("This is a label with customized color and font.", "");
-		$this->verifyTextPresent("This is a form label associated with the TTextBox control below", "");
-		$this->verifyTextPresent("This is a label with empty Text property and nonempty body", "");
-		$this->verifyTextPresent("This is a disabled label", "");
+		$this->assertTextPresent("This is a label with customized color and font.", "");
+		$this->assertTextPresent("This is a form label associated with the TTextBox control below", "");
+		$this->assertTextPresent("This is a label with empty Text property and <b>nonempty body</b>", "");
+		$this->assertTextPresent("This is a disabled label", "");
 
 		$this->verifyAttribute("ctl0_body_Label2@disabled","regexp:true|disabled");
 

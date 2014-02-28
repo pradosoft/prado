@@ -1,24 +1,24 @@
 <?php
 
-class QuickstartDataList1TestCase extends PradoGenericSeleniumTest
+class QuickstartDataList1TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample1&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->verifyTextPresent('ITN001','');
-		$this->verifyTextPresent('$100','');
-		$this->verifyTextPresent('Motherboard','');
-		$this->verifyTextPresent('ITN018','');
-		$this->verifyTextPresent('Surge protector','');
-		$this->verifyTextPresent('45','');
-		$this->verifyTextPresent('$15','');
-		$this->verifyTextPresent('Total 19 products.','');
-		$this->verifyTextPresent('Computer Parts','');
+		$this->assertTextPresent('ITN001','');
+		$this->assertTextPresent('$100','');
+		$this->assertTextPresent('Motherboard','');
+		$this->assertTextPresent('ITN018','');
+		$this->assertTextPresent('Surge protector','');
+		$this->assertTextPresent('45','');
+		$this->assertTextPresent('$15','');
+		$this->assertTextPresent('Total 19 products.','');
+		$this->assertTextPresent('Computer Parts','');
 
 		// verify specific table tags
-		$this->verifyElementPresent("ctl0_body_DataList");
-		$this->verifyElementPresent("//td[@align='right']");
+		$this->assertElementPresent("ctl0_body_DataList");
+		$this->assertElementPresent("//td[@align='right']");
 	}
 }

@@ -1,29 +1,29 @@
 <?php
 
-class CallbackAdapterTestCase extends PradoGenericSeleniumTest
+class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-
-		$this->open("active-controls/index.php?page=ControlAdapterTest");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ControlAdapterTest");
 		$this->assertTextPresent('Control Adapter - State Tracking Tests');
 
-		$this->click('button2');
+		$this->click("{$base}button2");
 		$this->assertAlert('ok');
 
-		$this->click('test6');
+		$this->click("{$base}test6");
 		$this->pause(800);
-		$this->click('test7');
+		$this->click("{$base}test7");
 		$this->pause(800);
-		$this->click('test8');
+		$this->click("{$base}test8");
 		$this->pause(800);
-		$this->click('test9');
+		$this->click("{$base}test9");
 		$this->pause(800);
 
-		$this->click('button1');
+		$this->click("{$base}button1");
 		$this->assertAlert('haha!');
 
-		$this->click('button2');
+		$this->click("{$base}button2");
 		$this->assertAlert('ok');
 		$this->assertAlert('baz!');
 
@@ -31,10 +31,10 @@ class CallbackAdapterTestCase extends PradoGenericSeleniumTest
 /*
 	function testIE()
 	{
-		$this->open("active-controls/index.php?page=ControlAdapterTest");
+		$this->url("active-controls/index.php?page=ControlAdapterTest");
 		$this->assertTextPresent('Control Adapter - State Tracking Tests');
 
-		$this->click('button2');
+		$this->click("{$base}button2");
 		$this->assertAlert('ok');
 
 		$this->click('test6');
@@ -46,11 +46,11 @@ class CallbackAdapterTestCase extends PradoGenericSeleniumTest
 		$this->click('test9');
 		$this->pause(800);
 
-		$this->click('button1');
+		$this->click("{$base}button1");
 		$this->assertAlert('haha!');
 
 		//IE alerts in diffrent order
-		$this->click('button2');
+		$this->click("{$base}button2");
 		$this->assertAlert('baz!');
 		$this->assertAlert('ok');
 	}

@@ -1,20 +1,21 @@
 <?php
 
-class ValueTriggerTestCase extends PradoGenericSeleniumTest
+class ValueTriggerTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ValueTriggerCallbackTest");
-		$this->verifyTextPresent("Value Trigger Callback Test");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ValueTriggerCallbackTest");
+		$this->assertTextPresent("Value Trigger Callback Test");
 
-		$this->assertText('label1', 'Label 1');
+		$this->assertText("{$base}label1", 'Label 1');
 
-		$this->type('text1', 'test');
+		$this->type("{$base}text1", 'test');
 		$this->pause(2000);
-		$this->assertText('label1', 'Old = : New Value = test');
+		$this->assertText("{$base}label1", 'Old = : New Value = test');
 
-		$this->type('text1', 'more');
+		$this->type("{$base}text1", 'more');
 		$this->pause(3000);
-		$this->assertText('label1', 'Old = test : New Value = more');
+		$this->assertText("{$base}label1", 'Old = test : New Value = more');
 	}
 }

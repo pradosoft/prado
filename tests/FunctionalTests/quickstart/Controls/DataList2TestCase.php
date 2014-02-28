@@ -1,22 +1,22 @@
 <?php
 
-class QuickstartDataList2TestCase extends PradoGenericSeleniumTest
+class QuickstartDataList2TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify initial presentation
-		$this->verifyTextPresent("Motherboard ", "");
-		$this->verifyTextPresent("Monitor ", "");
+		$this->assertTextPresent("Motherboard", "");
+		$this->assertTextPresent("Monitor", "");
 
 		// verify selecting an item
 		$this->clickAndWait("link=ITN003", "");
-		$this->verifyTextPresent("Quantity", "");
-		$this->verifyTextPresent("Price", "");
-		$this->verifyTextPresent("\$80", "");
+		$this->assertTextPresent("Quantity", "");
+		$this->assertTextPresent("Price", "");
+		$this->assertTextPresent("\$80", "");
 		$this->clickAndWait("link=ITN005", "");
-		$this->verifyTextPresent("\$150", "");
+		$this->assertTextPresent("\$150", "");
 
 		// verify editting an item
 		$this->clickAndWait("id=ctl0_body_DataList_ctl5_ctl0", "");
@@ -27,8 +27,8 @@ class QuickstartDataList2TestCase extends PradoGenericSeleniumTest
 
 		// verify item is saved
 		$this->clickAndWait("link=ITN005", "");
-		$this->verifyTextPresent("\$140.99", "");
-		$this->verifyTextPresent("11", "");
+		$this->assertTextPresent("\$140.99", "");
+		$this->assertTextPresent("11", "");
 
 		// verify editting another item
 		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
@@ -39,21 +39,20 @@ class QuickstartDataList2TestCase extends PradoGenericSeleniumTest
 
 		// verify item is canceled
 		$this->clickAndWait("link=ITN003", "");
-		$this->verifyTextPresent("2", "");
-		$this->verifyTextPresent("Harddrive 	", "");
+		$this->assertTextPresent("2", "");
+		$this->assertTextPresent("Harddrive", "");
 
 		// verify item deletion
 		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
 		$this->verifyConfirmation("Are you sure?");
-		$this->chooseCancelOnNextConfirmation();
 		$this->click("id=ctl0_body_DataList_ctl5_ctl2", "");
-		$this->verifyConfirmation("Are you sure?");
-		$this->verifyTextPresent("Motherboard ", "");
-		$this->verifyTextPresent("CPU ", "");
-		$this->verifyTextNotPresent("Harddrive","");
-		$this->verifyTextPresent("Sound card", "");
-		$this->verifyTextPresent("Video card", "");
-		$this->verifyTextPresent("Keyboard","");
-		$this->verifyTextPresent("Monitor ", "");
+		$this->verifyConfirmationDismiss("Are you sure?");
+		$this->assertTextPresent("Motherboard", "");
+		$this->assertTextPresent("CPU", "");
+		$this->assertTextNotPresent("Harddrive","");
+		$this->assertTextPresent("Sound card", "");
+		$this->assertTextPresent("Video card", "");
+		$this->assertTextPresent("Keyboard","");
+		$this->assertTextPresent("Monitor", "");
 	}
 }

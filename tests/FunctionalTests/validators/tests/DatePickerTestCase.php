@@ -1,14 +1,14 @@
 <?php
 
-class DatePickerTestCase extends PradoGenericSeleniumTest
+class DatePickerTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$year=2012;
 		$year2=2013;
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=DatePicker", "");
-		$this->verifyTextPresent("Date Picker validation Test", "");
+		$this->url("validators/index.php?page=DatePicker");
+		$this->assertTextPresent("Date Picker validation Test", "");
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->assertNotVisible("{$base}validator4", "");

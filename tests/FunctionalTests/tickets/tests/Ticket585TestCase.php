@@ -1,11 +1,11 @@
 <?php
 
-class Ticket585TestCase extends PradoGenericSeleniumTest
+class Ticket585TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket585');
+		$this->url('tickets/index.php?page=Ticket585');
 		$this->verifyTitle("Verifying Ticket 585", "");
 
 		$this->assertText("error", "");

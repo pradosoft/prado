@@ -1,14 +1,14 @@
 <?php
 
-class Ticket21TestCase extends PradoGenericSeleniumTest
+class Ticket21TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket21');
-		$this->assertTitle("Verifying Ticket 21");
+		$this->url('tickets/index.php?page=Ticket21');
+		$this->assertEquals($this->title(), "Verifying Ticket 21");
 		$this->clickAndWait("ctl0_Content_button1");
-		$this->verifyTextPresent("Radio button clicks: 1", "");
+		$this->assertTextPresent("Radio button clicks: 1", "");
 		$this->click("ctl0_Content_button1");
-		$this->verifyTextPresent("Radio button clicks: 1", "");
+		$this->assertTextPresent("Radio button clicks: 1", "");
 	}
 }

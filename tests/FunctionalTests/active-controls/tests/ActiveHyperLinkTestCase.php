@@ -1,16 +1,17 @@
 <?php
 
-class ActiveHyperLinkTestCase extends PradoGenericSeleniumTest
+class ActiveHyperLinkTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ActiveHyperLinkTest");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ActiveHyperLinkTest");
 		$this->assertTextPresent("Active HyperLink Test Case");
 
-		$this->assertText("link1", "Link 1");
+		$this->assertText("{$base}link1", "Link 1");
 
-		$this->click("button1");
+		$this->click("{$base}button1");
 		$this->pause(800);
-		$this->assertText("link1", "Pradosoft.com");
+		$this->assertText("{$base}link1", "Pradosoft.com");
 	}
 }

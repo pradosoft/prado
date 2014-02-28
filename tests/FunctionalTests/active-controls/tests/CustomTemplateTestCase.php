@@ -1,20 +1,21 @@
 <?php
 
-class CustomTemplateTestCase extends PradoGenericSeleniumTest
+class CustomTemplateTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('active-controls/index.php?page=CustomTemplateControlTest');
+		$base='ctl0_Content_';
+		$this->url('active-controls/index.php?page=CustomTemplateControlTest');
 		$this->assertTextPresent('Add Dynamic Custom TTemplateControl Test');
-		$this->assertText('label1', 'Label 1');
+		$this->assertText("{$base}label1", 'Label 1');
 
-		$this->type('foo', 'Foo Bar!');
-		$this->click('button2');
+		$this->type("{$base}foo", 'Foo Bar!');
+		$this->click("{$base}button2");
 		$this->pause(800);
 
-		$this->assertVisible('ctl0_ThePanel');
-		$this->assertTextPresent('Client ID: ctl0_ThePanel');
+		$this->assertVisible("{$base}ctl0_ThePanel");
+		$this->assertTextPresent("Client ID: {$base}ctl0_ThePanel");
 
-		$this->assertText('label1', 'Button 1 was clicked Foo Bar! using callback!... and this is the textbox text: Foo Bar!');
+		$this->assertText("{$base}label1", 'Button 1 was clicked Foo Bar! using callback!... and this is the textbox text: Foo Bar!');
 	}
 }

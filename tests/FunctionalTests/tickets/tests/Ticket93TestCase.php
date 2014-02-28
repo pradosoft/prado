@@ -4,12 +4,12 @@
  *
  */
 
-class Ticket93TestCase extends PradoGenericSeleniumTest
+class Ticket93TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket93');
-		$this->verifyTextPresent("ValidationGroups without any inputs with grouping");
+		$this->url('tickets/index.php?page=Ticket93');
+		$this->assertTextPresent("ValidationGroups without any inputs with grouping");
 	}
-	
+
 }

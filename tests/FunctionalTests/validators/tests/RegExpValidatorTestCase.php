@@ -1,13 +1,13 @@
 <?php
 
 //New Test
-class RegExpValidatorTestCase extends PradoGenericSeleniumTest
+class RegExpValidatorTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = "ctl0_Content_";
-		$this->open("validators/index.php?page=RegularExpressionValidator", "");
-		$this->verifyTextPresent("Prado RegularExpressionValidator Tests", "");
+		$this->url("validators/index.php?page=RegularExpressionValidator");
+		$this->assertTextPresent("Prado RegularExpressionValidator Tests", "");
 		$this->assertNotVisible("{$base}validator1", "");
 		$this->assertNotVisible("{$base}validator2", "");
 		$this->type("{$base}text1", "1");
