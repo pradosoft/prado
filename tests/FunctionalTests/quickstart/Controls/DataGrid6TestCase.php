@@ -7,42 +7,42 @@ class QuickstartDataGrid6TestCase extends PradoGenericSelenium2Test
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true&amp;lang=en");
 
 		// verify column headers
-		$this->assertTextPresent('id','');
-		$this->assertTextPresent('name','');
-		$this->assertTextPresent('quantity','');
-		$this->assertTextPresent('price','');
-		$this->assertTextPresent('imported','');
+		$this->assertContains('id', $this->source());
+		$this->assertContains('name', $this->source());
+		$this->assertContains('quantity', $this->source());
+		$this->assertContains('price', $this->source());
+		$this->assertContains('imported', $this->source());
 
-		$this->assertTextPresent('ITN001','');
-		$this->assertTextPresent('ITN002','');
-		$this->assertTextPresent('ITN003','');
-		$this->assertTextPresent('ITN004','');
-		$this->assertTextPresent('ITN005','');
-		$this->assertTextNotPresent('ITN006','');
+		$this->assertContains('ITN001', $this->source());
+		$this->assertContains('ITN002', $this->source());
+		$this->assertContains('ITN003', $this->source());
+		$this->assertContains('ITN004', $this->source());
+		$this->assertContains('ITN005', $this->source());
+		$this->assertNotContains('ITN006', $this->source());
 
 		// verify paging
-		$this->clickAndWait("link=2", "");
-		$this->assertTextPresent('ITN006','');
-		$this->assertTextPresent('ITN007','');
-		$this->assertTextPresent('ITN008','');
-		$this->assertTextPresent('ITN009','');
-		$this->assertTextPresent('ITN010','');
-		$this->assertTextNotPresent('ITN011','');
-		$this->assertTextNotPresent('ITN005','');
+		$this->byLinkText("2")->click();
+		$this->assertContains('ITN006', $this->source());
+		$this->assertContains('ITN007', $this->source());
+		$this->assertContains('ITN008', $this->source());
+		$this->assertContains('ITN009', $this->source());
+		$this->assertContains('ITN010', $this->source());
+		$this->assertNotContains('ITN011', $this->source());
+		$this->assertNotContains('ITN005', $this->source());
 
-		$this->clickAndWait("link=4", "");
-		$this->assertTextPresent('ITN016','');
-		$this->assertTextPresent('ITN017','');
-		$this->assertTextPresent('ITN018','');
-		$this->assertTextPresent('ITN019','');
-		$this->assertTextNotPresent('ITN015','');
+		$this->byLinkText("4")->click();
+		$this->assertContains('ITN016', $this->source());
+		$this->assertContains('ITN017', $this->source());
+		$this->assertContains('ITN018', $this->source());
+		$this->assertContains('ITN019', $this->source());
+		$this->assertNotContains('ITN015', $this->source());
 
-		$this->clickAndWait("link=1", "");
-		$this->assertTextPresent('ITN001','');
-		$this->assertTextPresent('ITN002','');
-		$this->assertTextPresent('ITN003','');
-		$this->assertTextPresent('ITN004','');
-		$this->assertTextPresent('ITN005','');
-		$this->assertTextNotPresent('ITN006','');
+		$this->byLinkText("1")->click();
+		$this->assertContains('ITN001', $this->source());
+		$this->assertContains('ITN002', $this->source());
+		$this->assertContains('ITN003', $this->source());
+		$this->assertContains('ITN004', $this->source());
+		$this->assertContains('ITN005', $this->source());
+		$this->assertNotContains('ITN006', $this->source());
 	}
 }

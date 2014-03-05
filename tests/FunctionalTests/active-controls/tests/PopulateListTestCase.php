@@ -6,16 +6,16 @@ class PopulateListTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=PopulateActiveList");
-		$this->assertTextPresent("Populate active list controls");
+		$this->assertContains("Populate active list controls", $this->source());
 		$this->assertText("{$base}label1", "");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->select("{$base}list1", "World");
 		$this->pause(800);
 		$this->assertText("{$base}label1", "list1: World");
 
-		$this->click("{$base}button2");
+		$this->byId("{$base}button2")->click();
 		$this->pause(800);
 		$this->select("{$base}list2", "Prado");
 		$this->pause(800);

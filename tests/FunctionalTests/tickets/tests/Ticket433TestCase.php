@@ -9,7 +9,7 @@ class Ticket433TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 433");
 		$this->assertText("{$base}VoteClick", "BEFORE click");
 
-		$this->click("{$base}VoteClick");
+		$this->byId("{$base}VoteClick")->click();
 		$this->pause(800);
 		$this->assertText("{$base}VoteClick", "AFTER click CALLBACK DONE");
 	}

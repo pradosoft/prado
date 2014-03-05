@@ -9,27 +9,27 @@ class Ticket671_reopenedTestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 671_reopened");
 		// Type wrong value
 		$this->type($base.'testField', 'abcd');
-		$this->click($base.'ctl4');
+		$this->byId($base.'ctl4')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'ctl2');
 		$this->assertText($base.'Result', 'Check callback called (1) --- Save callback called DATA NOK');
 
 		// Reclick, should not have any callback
-		$this->click($base.'ctl4');
+		$this->byId($base.'ctl4')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'ctl2');
 		$this->assertText($base.'Result', 'Check callback called (2) --- Save callback called DATA NOK');
 
 		// Type right value
 		$this->type($base.'testField', 'Test');
-		$this->click($base.'ctl4');
+		$this->byId($base.'ctl4')->click();
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl2');
 		$this->assertText($base.'Result', 'Check callback called (3) --- Save callback called DATA OK');
 
 		// Type empty value
 		$this->type($base.'testField', '');
-		$this->click($base.'ctl4');
+		$this->byId($base.'ctl4')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'ctl1');
 		$this->assertNotVisible($base.'ctl2');
@@ -37,7 +37,7 @@ class Ticket671_reopenedTestCase extends PradoGenericSelenium2Test
 
 		// Type right value
 		$this->type($base.'testField', 'Test');
-		$this->click($base.'ctl4');
+		$this->byId($base.'ctl4')->click();
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl1');
 		$this->assertNotVisible($base.'ctl2');

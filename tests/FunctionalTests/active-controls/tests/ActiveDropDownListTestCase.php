@@ -6,19 +6,19 @@ class ActiveDropDownListTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveDropDownList");
-		$this->assertTextPresent('Active Drop Down List Test Case');
+		$this->assertContains('Active Drop Down List Test Case', $this->source());
 
 		$this->assertText("{$base}label1", "Label 1");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertSelected("{$base}list1", "item 4");
 
-		$this->click("{$base}button2");
+		$this->byId("{$base}button2")->click();
 		$this->pause(800);
 		$this->assertSelectedValue("{$base}list1", 'value 1');
 
-		$this->click("{$base}button3");
+		$this->byId("{$base}button3")->click();
 		$this->pause(800);
 		$this->assertSelected("{$base}list1", "item 2");
 
@@ -36,7 +36,7 @@ class ActiveDropDownListTestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertText("{$base}label2", "Selection 2: value 3 - item 5");
 
-		$this->click("{$base}button4");
+		$this->byId("{$base}button4")->click();
 		$this->pause(800);
 		$this->assertSelected("{$base}list1", 'item 3');
 		$this->pause(300);

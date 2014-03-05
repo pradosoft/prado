@@ -5,45 +5,45 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveDatePicker");
-		$this->assertTextPresent("TActiveDatePicker test");
+		$this->assertContains("TActiveDatePicker test", $this->source());
 		$this->assertText("{$base}status", "");
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
-		$this->click("{$base}increaseButton");
+		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 1 day')));
 		$this->assertText("{$base}status", date('m-d-Y', strtotime('+ 1 day')));
-		$this->click("{$base}increaseButton");
+		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 2 day')));
 		$this->assertText("{$base}status", date('m-d-Y', strtotime('+ 2 day')));
-		$this->click("{$base}todayButton");
+		$this->byId("{$base}todayButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
 		$this->assertText("{$base}status", date('m-d-Y'));
-		$this->click("{$base}decreaseButton");
+		$this->byId("{$base}decreaseButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('- 1 day')));
 		$this->assertText("{$base}status", date('m-d-Y', strtotime('- 1 day')));
-		$this->click("{$base}datepicker");
+		$this->byId("{$base}datepicker")->click();
 		$this->pause(800);
-		$this->click("css=input.todayButton");
+		$this->byCssSelector("input.todayButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
 		$this->assertText("{$base}status", date('m-d-Y'));
-		$this->click("css=input.nextMonthButton");
+		$this->byCssSelector("input.nextMonthButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 1 month')));
 		$this->assertText("{$base}status", date('m-d-Y', strtotime('+1 month')));
 
-		$this->click("{$base}toggleButton");
+		$this->byId("{$base}toggleButton")->click();
 		$this->pause(2000);
 
-		$this->click("{$base}todayButton");
+		$this->byId("{$base}todayButton")->click();
 		$this->pause(800);
 		$this->assertSelected("{$base}datepicker_month", date('m'));
 		$this->assertText("{$base}status", date('m-d-Y'));
 
-		$this->click("{$base}increaseButton");
+		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 1 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -51,7 +51,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click("{$base}increaseButton");
+		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 2 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -59,7 +59,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click("{$base}todayButton");
+		$this->byId("{$base}todayButton")->click();
 		$this->pause(800);
 		$dateToCheck=time();
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -67,7 +67,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click("{$base}decreaseButton");
+		$this->byId("{$base}decreaseButton")->click();
 		$this->pause(800);
 		$dateToCheck=strtotime('- 1 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -75,9 +75,9 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click("{$base}datepickerbutton");
+		$this->byId("{$base}datepickerbutton")->click();
 		$this->pause(800);
-		$this->click("css=input.todayButton");
+		$this->byCssSelector("input.todayButton")->click();
 		$this->pause(800);
 		$dateToCheck=time();
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -85,7 +85,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click("css=input.nextMonthButton");
+		$this->byCssSelector("input.nextMonthButton")->click();
 		$this->pause(800);
 		$dateToCheck=strtotime('+ 1 month');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
@@ -93,7 +93,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
-		$this->click('ctl0_ctl1');
+		$this->byId('ctl0_ctl1')->click();
 		$this->pause(800);
 
 		$this->assertText("{$base}status2", "");

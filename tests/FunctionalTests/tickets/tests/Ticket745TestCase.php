@@ -8,10 +8,9 @@ class Ticket745TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 745");
 
 		$this->select($base.'Wizard1_DropDownList1', 'Green');
-		$this->click($base.'Wizard1_ctl4_ctl1');
+		$this->byId($base.'Wizard1_ctl4_ctl1')->click();
 		$this->pause(800);
-		$this->assertTextPresent ('Step 3 of 3');
-
+		$this->assertContains('Step 3 of 3', $this->source());
 	}
 
 }

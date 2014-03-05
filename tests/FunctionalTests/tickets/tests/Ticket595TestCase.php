@@ -8,30 +8,30 @@ class Ticket595TestCase extends PradoGenericSelenium2Test
 		$this->url('tickets/index.php?page=Ticket595');
 		$this->assertEquals($this->title(), "Verifying Ticket 595");
 
-		$this->click($base.'ctl2');
-        $this->verifyAttribute($base.'A@class','errorclassA');
+		$this->byId($base.'ctl2')->click();
+        $this->assertAttribute($base.'A@class','errorclassA');
 
 		$this->type($base.'A', 'Prado');
-		$this->click($base.'ctl2');
-        $this->verifyAttribute($base.'A@class','errorclassA');
+		$this->byId($base.'ctl2')->click();
+        $this->assertAttribute($base.'A@class','errorclassA');
 
 		$this->type($base.'A', 'test@pradosoft.com');
-		$this->click($base.'ctl2');
+		$this->byId($base.'ctl2')->click();
 		$this->pause(800);
-        $this->verifyAttribute($base.'A@class','');
+        $this->assertAttribute($base.'A@class','');
 
-		$this->click($base.'ctl5');
+		$this->byId($base.'ctl5')->click();
 		$this->pause(800);
-        $this->verifyAttribute($base.'B@class',' errorclassB');
+        $this->assertAttribute($base.'B@class',' errorclassB');
 
 		$this->type($base.'B', 'Prado');
-		$this->click($base.'ctl5');
+		$this->byId($base.'ctl5')->click();
 		$this->pause(800);
-        $this->verifyAttribute($base.'B@class',' errorclassB');
+        $this->assertAttribute($base.'B@class',' errorclassB');
 
 		$this->type($base.'B', 'test@pradosoft.com');
-		$this->click($base.'ctl5');
+		$this->byId($base.'ctl5')->click();
 		$this->pause(800);
-        $this->verifyAttribute($base.'B@class','');
+        $this->assertAttribute($base.'B@class','');
 	}
 }

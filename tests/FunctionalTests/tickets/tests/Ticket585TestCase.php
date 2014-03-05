@@ -6,18 +6,18 @@ class Ticket585TestCase extends PradoGenericSelenium2Test
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket585');
-		$this->verifyTitle("Verifying Ticket 585", "");
+		$this->assertEquals("Verifying Ticket 585", $this->title());
 
 		$this->assertText("error", "");
 		$this->assertNotVisible("{$base}validator1");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("error", "Success");
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->type("{$base}test", "15-03-2007");
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("error", "Error");
 		$this->assertVisible("{$base}validator1");

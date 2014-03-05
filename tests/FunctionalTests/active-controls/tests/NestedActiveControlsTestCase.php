@@ -6,17 +6,17 @@ class NestedActiveControlsTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=NestedActiveControls");
-		$this->assertTextPresent("Nested Active Controls Test");
+		$this->assertContains("Nested Active Controls Test", $this->source());
 		$this->assertText("{$base}label1", "Label 1");
 		$this->assertText("{$base}label2", "Label 2");
-		$this->assertTextNotPresent("Label 3");
+		$this->assertNotContains("Label 3", $this->source());
 
-		$this->click("div1");
+		$this->byId("div1")->click();
 		$this->pause(800);
-		$this->assertTextPresent("Something lalala");
+		$this->assertContains("Something lalala", $this->source());
 		$this->assertText("{$base}label3", "Label 3");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}label1", "Label 1: Button 1 Clicked");
 		$this->assertText("{$base}label2", "Label 2: Button 1 Clicked");

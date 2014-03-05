@@ -6,27 +6,27 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 	{
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TTextBox.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// a normal textbox
 		$this->type("ctl0\$body\$ctl0", "test");
 
 		// textbox with maxlength set
-		$this->verifyAttribute("ctl0\$body\$ctl1@size","4");
-		$this->verifyAttribute("ctl0\$body\$ctl1@maxlength","6");
+		$this->assertAttribute("ctl0\$body\$ctl1@size","4");
+		$this->assertAttribute("ctl0\$body\$ctl1@maxlength","6");
 		$this->type("ctl0\$body\$ctl1", "textte");
 
 		// vCard textboxes
-		$this->verifyAttribute("ctl0\$body\$ctl2@vcard_name","vCard.FirstName");
+		$this->assertAttribute("ctl0\$body\$ctl2@vcard_name","vCard.FirstName");
 		$this->type("ctl0\$body\$ctl2", "first");
-		$this->verifyAttribute("ctl0\$body\$ctl3@vcard_name","vCard.LastName");
+		$this->assertAttribute("ctl0\$body\$ctl3@vcard_name","vCard.LastName");
 		$this->type("ctl0\$body\$ctl3", "last");
 
 		// a disabled textbox
-		$this->verifyAttribute("ctl0\$body\$ctl4@disabled","regexp:true|disabled");
+		$this->assertAttribute("ctl0\$body\$ctl4@disabled","regexp:true|disabled");
 
 		// a read-only textbox
-		$this->verifyAttribute("ctl0\$body\$ctl5@readonly","regexp:true|readonly");
+		$this->assertAttribute("ctl0\$body\$ctl5@readonly","regexp:true|readonly");
 
 		// auto postback textbox, CausesValidation=false
 		$this->assertValue("ctl0\$body\$ctl6", "change me");
@@ -43,7 +43,7 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 
 		// submitting textbox with a button
 		$this->type("ctl0\$body\$TextBox1", "texttext");
-		$this->clickAndWait("//input[@type='submit' and @value='Submit']", "");
+		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
 		$this->assertValue("ctl0\$body\$TextBox1", "You just entered 'texttext'.");
 
 		// SafeText
@@ -52,7 +52,7 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 		$this->assertText("ctl0_body_Output","malicious code");
 
 		// password
-		$this->verifyAttribute("ctl0\$body\$ctl9@type","password");
+		$this->assertAttribute("ctl0\$body\$ctl9@type","password");
 
 		// ------------------multiline textbox----------------------
 
@@ -64,11 +64,11 @@ End of message
 ");
 
 		// a disabled multiline textbox
-		$this->verifyAttribute("ctl0\$body\$ctl12@disabled","regexp:true|disabled");
+		$this->assertAttribute("ctl0\$body\$ctl12@disabled","regexp:true|disabled");
 
 		// a read-only multiline textbox
-		$this->verifyAttribute("ctl0\$body\$ctl13@readonly","regexp:true|readonly");
-		$this->verifyAttribute("ctl0\$body\$ctl13@wrap","off");
+		$this->assertAttribute("ctl0\$body\$ctl13@readonly","regexp:true|readonly");
+		$this->assertAttribute("ctl0\$body\$ctl13@wrap","off");
 
 		// auto postback textbox
 		$this->assertValue("ctl0\$body\$ctl14", "change me");

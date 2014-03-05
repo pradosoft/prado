@@ -9,7 +9,7 @@ class Ticket671TestCase extends PradoGenericSelenium2Test
 
 		$this->assertNotVisible($base.'ctl0');
 		// Click submit
-		$this->click($base.'ctl1');
+		$this->byId($base.'ctl1')->click();
 		$this->pause(800);
 		$this->assertText($base.'ctl0', 'Please Select Test 3');
 		$this->assertVisible($base.'ctl0');
@@ -21,18 +21,18 @@ class Ticket671TestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl0');
 		$this->assertText($base."lblResult", "You have selected 'Test 3'.");
-		$this->click($base.'ctl1');
+		$this->byId($base.'ctl1')->click();
 		$this->pause(800);
 		$this->assertText($base."lblResult", "You have successfully validated the form");
 
 		$this->type($base.'testTextBox', 'test');
 		$this->pause(800);
-		$this->click($base.'ctl3');
+		$this->byId($base.'ctl3')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'ctl2');
 		$this->type($base.'testTextBox',"Prado");
 		$this->pause(800);
-		$this->click($base.'ctl3');
+		$this->byId($base.'ctl3')->click();
 		$this->pause(800);
 		$this->assertNotVisible($base.'ctl2');
 		$this->assertText($base.'lblResult2', 'Thanks !');
