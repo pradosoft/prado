@@ -8,17 +8,17 @@ class Ticket722TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 722");
 
 		$this->assertText($base.'InPlaceTextBox__label', 'Editable Text');
-		$this->click($base.'InPlaceTextBox__label');
+		$this->byId($base.'InPlaceTextBox__label')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'InPlaceTextBox');
 		$this->type($base.'InPlaceTextBox',"Prado");
 		$this->pause(800);
 		$this->assertNotVisible($base.'InPlaceTextBox');
 		$this->assertText($base.'InPlaceTextBox__label', 'Prado');
-		$this->click($base.'ctl0');
+		$this->byId($base.'ctl0')->click();
 		$this->pause(800);
 		$this->assertText($base.'InPlaceTextBox__label', 'Prado [Read Only]');
-		$this->click($base.'InPlaceTextBox__label');
+		$this->byId($base.'InPlaceTextBox__label')->click();
 		$this->pause(800);
 		$this->assertNotVisible($base.'InPlaceTextBox');
 

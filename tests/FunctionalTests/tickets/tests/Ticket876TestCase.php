@@ -8,14 +8,14 @@ class Ticket876TestCase extends PradoGenericSelenium2Test {
 		$base = 'ctl0_Content_';
 
 		$this->assertElementPresent('xpath=//link[@rel="stylesheet"]');
-		$this->clickAndWait($base.'Button');
+		$this->byId($base.'Button')->click();
 		$this->assertElementNotPresent('xpath=//link[@rel="stylesheet"]');
 
 		/*$this->select($base.'Date_month', 10);
 		$this->select($base.'Date_day', 22);
 
-		$this->clickAndWait($base.'SendButton');
-		$this->assertTextPresent('2008-10-22');*/
+		$this->byId($base.'SendButton')->click();
+		$this->assertContains('2008-10-22', $this->source());*/
 	}
 
 }

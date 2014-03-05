@@ -6,9 +6,9 @@ class Ticket191TestCase extends PradoGenericSelenium2Test
 	{
 		$this->url('tickets/index.php?page=Ticket191');
 		$this->type("ctl0\$Content\$TextBox2", "test");
-		$this->clickAndWait("name=ctl0\$Content\$ctl0");
+		$this->byName("ctl0\$Content\$ctl0")->click();
 		$this->type("ctl0\$Content\$TextBox", "test");
-		$this->clickAndWait("name=ctl0\$Content\$ctl1");
+		$this->byName("ctl0\$Content\$ctl1")->click();
 		$this->assertNotVisible('ctl0_Content_ctl2');
 	}
 }

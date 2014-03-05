@@ -10,12 +10,15 @@ class Ticket205TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->type("{$base}textbox1", "test");
-		$this->click("{$base}button1");
-		$this->assertAlert("error");
+		$this->byId("{$base}button1")->click();
+
+		$this->assertEquals("error", $this->alertText());
+		$this->acceptAlert();
+
 		$this->assertVisible("{$base}validator1");
 
 		$this->type("{$base}textbox1", "Prado");
-		$this->clickAndWait("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->assertNotVisible("{$base}validator1");
 	}
 }

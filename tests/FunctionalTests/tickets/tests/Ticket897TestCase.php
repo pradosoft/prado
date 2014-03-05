@@ -11,8 +11,8 @@ class Ticket897TestCase extends PradoGenericSelenium2Test
 		$this->select($base.'Date_month', 10);
 		$this->select($base.'Date_day', 22);
 
-		$this->clickAndWait($base.'SendButton');
-		$this->assertTextPresent(date('Y').'-10-22');
+		$this->byId($base.'SendButton')->click();
+		$this->assertContains(date('Y').'-10-22', $this->source());
 	}
 }
 

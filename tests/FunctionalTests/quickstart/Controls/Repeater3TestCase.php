@@ -9,21 +9,21 @@ class QuickstartRepeater3TestCase extends PradoGenericSelenium2Test
 		// verify product name is required
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl0');
 		$this->type("ctl0_body_Repeater_ctl0_ProductName", "");
-		$this->click("//input[@type='submit' and @value='Save']", "");
+		$this->byXPath("//input[@type='submit' and @value='Save']")->click();
 		$this->assertVisible('ctl0_body_Repeater_ctl0_ctl0');
 
 		// verify product price is of proper format
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl1');
 		$this->type("ctl0_body_Repeater_ctl0_ProductPrice", "abc");
-		$this->click("//input[@type='submit' and @value='Save']", "");
+		$this->byXPath("//input[@type='submit' and @value='Save']")->click();
 		$this->assertVisible('ctl0_body_Repeater_ctl0_ctl1');
 
 		// perform postback
-		$this->click("ctl0_body_Repeater_ctl0_ProductImported",'');
+		$this->byId("ctl0_body_Repeater_ctl0_ProductImported",'')->click();
 		$this->type("ctl0_body_Repeater_ctl0_ProductName", "Mother Board");
 		$this->type("ctl0_body_Repeater_ctl0_ProductPrice", "99.01");
-		$this->select("ctl0_body_Repeater_ctl3_ProductCategory", "label=Accessories");
-		$this->clickAndWait("//input[@type='submit' and @value='Save']", "");
+		$this->select("ctl0_body_Repeater_ctl3_ProductCategory", "Accessories");
+		$this->byXPath("//input[@type='submit' and @value='Save']")->click();
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl0');
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl1');
 

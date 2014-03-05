@@ -8,7 +8,7 @@ class Ticket656TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 656");
 
 		// First test, current date
-		$this->click($base."btnUpdate");
+		$this->byId($base."btnUpdate")->click();
 		$this->pause(800);
 		$this->assertText($base."lblStatus",date("d-m-Y"));
 
@@ -17,7 +17,7 @@ class Ticket656TestCase extends PradoGenericSelenium2Test
 		$this->select($base."datePicker_day",20);
 		$this->select($base."datePicker_month", 10);
 		$this->select($base."datePicker_year", $year);
-		$this->click($base."btnUpdate");
+		$this->byId($base."btnUpdate")->click();
 		$this->pause(800);
 		$this->assertText($base."lblStatus",date("d-m-Y", mktime(0,0,0,10,20,$year)));
 	}

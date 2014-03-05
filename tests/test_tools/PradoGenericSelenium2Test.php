@@ -39,7 +39,6 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
 
 	static $timeout=5; //seconds
-	static $wait=1000; //msecs
 
 	protected function setUp()
 	{
@@ -48,22 +47,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
 	}
 
-	protected function verifyTitle($txt)
-	{
-		$this->assertEquals($txt, $this->title());
-	}
-
-	protected function assertTextPresent($txt)
-	{
-		if(strpos($txt, 'regexp:')===0)
-		{
-			$this->assertRegExp('/'.substr($txt, 7).'/', $this->source());
-		} else {
-			$this->assertContains($txt, $this->source());
-		}
-	}
-
-	protected function verifyAttribute($idattr, $txt)
+	protected function assertAttribute($idattr, $txt)
 	{
 		list($id, $attr) = explode('@', $idattr);
 
@@ -76,21 +60,6 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		} else {
 			$this->assertEquals($txt, $value);
 		}
-	}
-
-	protected function assertTextNotPresent($txt)
-	{
-		$this->assertNotContains($txt, $this->source());
-	}
-
-	protected function assertChecked($id)
-	{
-		$this->assertTrue($this->getElement($id)->selected());
-	}
-
-	protected function assertNotChecked($id)
-	{
-		$this->assertFalse($this->getElement($id)->selected());
 	}
 
 	protected function getElement($id)
@@ -140,23 +109,6 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$this->assertTrue($this->getElement($id)!==null);
 	}
 
-	protected function assertAlert($txt)
-	{
-		$this->assertEquals($txt, $this->alertText());
-		$this->acceptAlert();
-	}
-
-	protected function verifyConfirmation($txt)
-	{
-		$this->assertAlert($txt);
-	}
-
-	protected function verifyConfirmationDismiss($txt)
-	{
-		$this->assertEquals($txt, $this->alertText());
-		$this->dismissAlert();
-	}
-
 	protected function assertElementNotPresent($id)
 	{
 		try {
@@ -193,24 +145,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 		$element->value($txt);
 		// trigger onblur() event
-		$this->clickAt('css=body', '1,1');
-	}
-
-	protected function click($id, $foo='bar')
-	{
-		$this->getElement($id)->click();
-	}
-
-	protected function clickAt($id, $coords)
-	{
-//		list($x, $y) = explode(',', $coords);
-		$this->moveto(array(
-			'element' => $this->getElement($id),
-//			'xoffset' => intval($x),
-//			'yoffset' => intval($y),
-		));
-
-		parent::click();
+		$this->byCssSelector('body')->click();
 	}
 
 	protected function mouseOver($id)
@@ -231,22 +166,12 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		));
 	}
 
-	protected function clickAndWait($id, $foo='bar')
-	{
-		$this->click($id, $foo);
-	}
-
 	protected function select($id, $value)
 	{
 		$select = parent::select($this->getElement($id));
 		$select->clearSelectedOptions();
 
-		if(strpos($value, 'label=')===0)
-		{
-			$select->selectOptionByLabel(substr($value, 6));
-		} else {
-			$select->selectOptionByLabel($value);
-		}
+		$select->selectOptionByLabel($value);
 	}
 
 	protected function selectAndWait($id, $value)
@@ -256,14 +181,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function addSelection($id, $value)
 	{
-		$select = parent::select($this->getElement($id));
-
-		if(strpos($value, 'label=')===0)
-		{
-			$select->selectOptionByLabel(substr($value, 6));
-		} else {
-			$select->selectOptionByLabel($value);
-		}
+		parent::select($this->getElement($id))->selectOptionByLabel($value);
 	}
 
 	protected function getSelectedLabels($id)

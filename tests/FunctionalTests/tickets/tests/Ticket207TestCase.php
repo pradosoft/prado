@@ -10,8 +10,11 @@ class Ticket207TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
-		$this->click("{$base}button1");
-		$this->assertAlert('error on text1 fired');
+		$this->byId("{$base}button1")->click();
+
+		$this->assertEquals('error on text1 fired', $this->alertText());
+		$this->acceptAlert();
+
 		$this->assertVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 
@@ -19,7 +22,7 @@ class Ticket207TestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 
@@ -27,8 +30,11 @@ class Ticket207TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 
-		$this->click("{$base}button1");
-		$this->assertAlert('error on text1 fired');
+		$this->byId("{$base}button1")->click();
+
+		$this->assertEquals('error on text1 fired', $this->alertText());
+		$this->acceptAlert();
+
 		$this->assertVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 	}

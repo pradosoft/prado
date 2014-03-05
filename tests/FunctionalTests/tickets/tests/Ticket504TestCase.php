@@ -6,7 +6,7 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket504');
-		$this->verifyTitle("Verifying Ticket 504", "");
+		$this->assertEquals("Verifying Ticket 504", $this->title());
 
 		$this->assertText("status", "");
 
@@ -15,7 +15,7 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("{$base}panelC");
 		$this->assertVisible("{$base}panelD");
 
-		$this->click("{$base}linka");
+		$this->byId("{$base}linka")->click();
 		$this->pause(800);
 		$this->assertVisible("{$base}panelA");
 		$this->assertNotVisible("{$base}panelB");
@@ -23,7 +23,7 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}panelD");
 		$this->assertText("status", "panelA updated");
 
-		$this->click("{$base}linkb");
+		$this->byId("{$base}linkb")->click();
 		$this->pause(800);
 		$this->assertNotVisible("{$base}panelA");
 		$this->assertVisible("{$base}panelB");
@@ -31,7 +31,7 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}panelD");
 		$this->assertText("status", "panelB updated");
 
-		$this->click("{$base}linkc");
+		$this->byId("{$base}linkc")->click();
 		$this->pause(800);
 		$this->assertNotVisible("{$base}panelA");
 		$this->assertNotVisible("{$base}panelB");
@@ -39,7 +39,7 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}panelD");
 		$this->assertText("status", "panelC updated");
 
-		$this->click("{$base}linkd");
+		$this->byId("{$base}linkd")->click();
 		$this->pause(800);
 		$this->assertNotVisible("{$base}panelA");
 		$this->assertNotVisible("{$base}panelB");

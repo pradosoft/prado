@@ -26,7 +26,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListCheckBoxesTest");
-		$this->assertTextPresent("TActiveRatingList Check Boxes Test Case");
+		$this->assertContains("TActiveRatingList Check Boxes Test Case", $this->source());
 		$this->assertCheckBoxes("{$base}RatingList", array(2), 6);
 
 		// Change the list and make sure the radio buttons get updated properly.
@@ -44,7 +44,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListRatingTest");
-		$this->assertTextPresent("TActiveRatingList Rating Test Case");
+		$this->assertContains("TActiveRatingList Rating Test Case", $this->source());
 
 		// Check the list, make sure it starts out with 5 stars.
 		$this->assertText("{$base}Status", "Rating: 5");
@@ -55,7 +55,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}Status", "Rating: 1");
 
 		// Then set Rating to three on the server side and make sure it's correct.
-		$this->click("{$base}SetRating");
+		$this->byId("{$base}SetRating")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "Rating: 3");
 	}
@@ -65,7 +65,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListSelectedIndexTest");
-		$this->assertTextPresent("TActiveRatingList SelectedIndex Test Case");
+		$this->assertContains("TActiveRatingList SelectedIndex Test Case", $this->source());
 		$this->assertText("{$base}Status", "SelectedIndex: 1");
 
 		// Click on 5 stars and make sure the SelectedIndex property updates.
@@ -74,7 +74,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}Status", "SelectedIndex: 4");
 
 		// Then set SelectedIndex to 5 on the server side and make sure it's correct.
-		$this->click("{$base}SetSelectedIndex");
+		$this->byId("{$base}SetSelectedIndex")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "SelectedIndex: 5");
 	}
@@ -84,7 +84,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListAutoPostBackTest");
-		$this->assertTextPresent("TActiveRatingList AutoPostBack Test Case");
+		$this->assertContains("TActiveRatingList AutoPostBack Test Case", $this->source());
 		$this->assertText("{$base}Status", "AutoPostback=false");
 
 		// Make sure that it doesn't auto post when clicked.
@@ -93,7 +93,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}Status", "AutoPostback=false");
 
 		// Then submit with an active button and make sure it updates.
-		$this->click("{$base}Submit");
+		$this->byId("{$base}Submit")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "4 : Good");
 	}
@@ -103,7 +103,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListAllowInputTest");
-		$this->assertTextPresent("TActiveRatingList AllowInput Test Case");
+		$this->assertContains("TActiveRatingList AllowInput Test Case", $this->source());
 		$this->assertText("{$base}Status", "AllowInput=false");
 		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
 
@@ -119,7 +119,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListReadOnlyTest");
-		$this->assertTextPresent("TActiveRatingList ReadOnly Test Case");
+		$this->assertContains("TActiveRatingList ReadOnly Test Case", $this->source());
 		$this->assertText("{$base}Status", "ReadOnly=true");
 		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
 
@@ -129,7 +129,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
 
 		// Then set ReadOnly to false, and make sure it works.
-		$this->click("{$base}Writable");
+		$this->byId("{$base}Writable")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "ReadOnly=false");
 		$this->assertCheckBoxes("{$base}RatingList", array(0), 6);
@@ -141,7 +141,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertCheckBoxes("{$base}RatingList", array(1), 6);
 
 		// Then set ReadOnly to true, and make sure it doesn't work anymore.
-		$this->click("{$base}ReadOnly");
+		$this->byId("{$base}ReadOnly")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "ReadOnly=true");
 		$this->assertCheckBoxes("{$base}RatingList", array(1), 6);
@@ -158,7 +158,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListEnabledTest");
-		$this->assertTextPresent("TActiveRatingList Enabled Test Case");
+		$this->assertContains("TActiveRatingList Enabled Test Case", $this->source());
 		$this->assertText("{$base}Status", "Enabled=false");
 		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
 
@@ -168,7 +168,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
 
 		// Then set Enable to true, and make sure it works.
-		$this->click("{$base}Enable");
+		$this->byId("{$base}Enable")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "Enabled=true");
 		$this->assertCheckBoxes("{$base}RatingList", array(5), 6);
@@ -180,7 +180,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
 
 		// Then set Enable to false, and make sure it doesn't work anymore.
-		$this->click("{$base}Disable");
+		$this->byId("{$base}Disable")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "Enabled=false");
 		$this->assertCheckBoxes("{$base}RatingList", array(3), 6);
@@ -197,7 +197,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$base='ctl0_Content_';
 		// Verify we're on the right page.
 		$this->url("active-controls/index.php?page=ActiveRatingListHoverCaptionTest");
-		$this->assertTextPresent("TActiveRatingList Hover Caption Test Case");
+		$this->assertContains("TActiveRatingList Hover Caption Test Case", $this->source());
 		$this->assertText("{$base}Status", "CaptionID='Status'");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
@@ -231,7 +231,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->mouseOver("//input[@id='{$base}RatingList_c1']/../..");
 		$this->assertText("{$base}Status", "Fair");
 
-		$this->click("//input[@id='{$base}RatingList_c1']/../..");
+		$this->byXPath("//input[@id='{$base}RatingList_c1']/../..")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Status", "2 : Fair");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
@@ -244,7 +244,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 	}
 
 	function clickTD($clientID){
-		$this->click("//input[@id='{$clientID}']/../..");
+		$this->byXPath("//input[@id='{$clientID}']/../..")->click();
 	}
 
 	function assertCheckBoxes($clientID, $checks, $total = 5)
@@ -252,9 +252,9 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		for($i = 0; $i < $total; $i++)
 		{
 			if(in_array($i, $checks))
-				$this->assertChecked("{$clientID}_c{$i}");
+				$this->assertTrue($this->byId("{$clientID}_c{$i}")->selected());
 			else
-				$this->assertNotChecked("{$clientID}_c{$i}");
+				$this->assertFalse($this->byId("{$clientID}_c{$i}")->selected());
 		}
 	}
 }

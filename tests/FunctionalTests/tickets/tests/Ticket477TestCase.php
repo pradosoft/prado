@@ -10,12 +10,12 @@ class Ticket477TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
-		$this->clickAndWait("{$base}list1_c1");
+		$this->byId("{$base}list1_c1")->click();
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
 
-		$this->clickAndWait("{$base}list2_c1");
+		$this->byId("{$base}list2_c1")->click();
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 	}

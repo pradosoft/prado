@@ -6,27 +6,27 @@ class QuickstartLinkButtonTestCase extends PradoGenericSelenium2Test
 	{
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TLinkButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// regular buttons
-		$this->clickAndWait("link=link button", "");
-		$this->clickAndWait("//a[contains(text(),'body content')]", "");
+		$this->byLinkText("link button")->click();
+		$this->byXPath("//a[contains(text(),'body content')]")->click();
 
 		// a click button
-		$this->clickAndWait("link=click me", "");
-		$this->clickAndWait("link=I'm clicked", "");
+		$this->byLinkText("click me")->click();
+		$this->byLinkText("I'm clicked")->click();
 
 		// a command button
-		$this->clickAndWait("link=click me", "");
-		$this->clickAndWait("//a[contains(text(),'Name: test, Param: value')]", "");
+		$this->byLinkText("click me")->click();
+		$this->byXPath("//a[contains(text(),'Name: test, Param: value')]")->click();
 
 		// a button causing validation
 		$this->assertNotVisible('ctl0_body_ctl4');
-		$this->click("link=submit", "");
+		$this->byLinkText("submit")->click();
 //		$this->pause(1000);
 		$this->assertVisible('ctl0_body_ctl4');
 		$this->type("ctl0\$body\$TextBox", "test");
-		$this->clickAndWait("link=submit", "");
+		$this->byLinkText("submit")->click();
 		$this->assertNotVisible('ctl0_body_ctl4');
 	}
 }

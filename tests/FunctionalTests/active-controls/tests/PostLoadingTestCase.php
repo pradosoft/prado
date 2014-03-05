@@ -6,16 +6,16 @@ class PostLoadingTestCase extends PradoGenericSelenium2Test
 	{
 		$base="ctl0_Content_";
 		$this->url('active-controls/index.php?page=PostLoadingTest');
-		$this->assertTextPresent('PostLoading Test');
+		$this->assertContains('PostLoading Test', $this->source());
 
-		$this->assertTextNotPresent('Hello World');
+		$this->assertNotContains('Hello World', $this->source());
 
-		$this->click('div1');
+		$this->byId('div1')->click();
 		$this->pause(800);
 		$this->type("{$base}MyTextBox", 'Hello World');
-		$this->click("{$base}MyButton");
+		$this->byId("{$base}MyButton")->click();
 
 		$this->pause(800);
-		$this->assertTextPresent('Result is Hello World');
+		$this->assertContains('Result is Hello World', $this->source());
 	}
 }

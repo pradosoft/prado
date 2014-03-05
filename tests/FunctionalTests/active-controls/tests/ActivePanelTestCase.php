@@ -6,10 +6,10 @@ class ActivePanelTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActivePanelTest");
-		$this->assertTextPresent("Active Panel replacement tests");
-		$this->assertTextNotPresent('Something lalala');
-		$this->click("div1");
+		$this->assertContains("Active Panel replacement tests", $this->source());
+		$this->assertNotContains('Something lalala', $this->source());
+		$this->byId("div1")->click();
 		$this->pause(800);
-		$this->assertTextPresent("Something lalala");
+		$this->assertContains("Something lalala", $this->source());
 	}
 }

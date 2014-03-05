@@ -8,7 +8,7 @@ class Ticket679TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 679");
 
 		// First part of ticket : Repeater bug
-		$this->click($base."ctl0");
+		$this->byId($base."ctl0")->click();
 		$this->pause(800);
 		$this->assertText($base."myLabel",'outside');
 		$this->assertVisible($base."myLabel");
@@ -17,19 +17,19 @@ class Ticket679TestCase extends PradoGenericSelenium2Test
 		$this->refresh();
 		$this->pause(800);
 
-		$this->click($base."Repeater_ctl0_ctl0");
+		$this->byId($base."Repeater_ctl0_ctl0")->click();
 		$this->pause(800);
 		$this->assertText($base."myLabel",'inside');
 		$this->assertVisible($base."myLabel");
 
 		// Second part of ticket : ARB bug
-		$this->assertNotChecked($base."myRadioButton");
-		$this->click($base."ctl1");
+		$this->assertFalse($this->byId("{$base}myRadioButton")->selected());
+		$this->byId($base."ctl1")->click();
 		$this->pause(800);
-		$this->assertChecked($base."myRadioButton");
-		$this->click($base."ctl2");
+		$this->assertTrue($this->byId("{$base}myRadioButton")->selected());
+		$this->byId($base."ctl2")->click();
 		$this->pause(800);
-		$this->assertNotChecked($base."myRadioButton");
+		$this->assertFalse($this->byId("{$base}myRadioButton")->selected());
 		$this->pause(800);
 	}
 

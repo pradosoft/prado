@@ -7,10 +7,10 @@ class CustomValidatorTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=CustomValidator");
-		$this->assertTextPresent("Prado CustomValidator Tests", "");
+		$this->assertContains("Prado CustomValidator Tests", $this->source());
 		$this->assertNotVisible("{$base}validator1");
 
-		$this->click("//input[@type='submit' and @value='Test']", "");
+		$this->byXPath("//input[@type='submit' and @value='Test']")->click();
 		$this->assertVisible("{$base}validator1");
 
 		$this->type("{$base}text1", "Prado");
@@ -22,7 +22,7 @@ class CustomValidatorTestCase extends PradoGenericSelenium2Test
 		$this->type("{$base}text1", "Prado");
 		$this->pause(250);
 		$this->assertNotVisible("{$base}validator1");
-		$this->clickAndWait("//input[@type='submit' and @value='Test']", "");
+		$this->byXPath("//input[@type='submit' and @value='Test']")->click();
 		$this->assertNotVisible("{$base}validator1");
 
 	}

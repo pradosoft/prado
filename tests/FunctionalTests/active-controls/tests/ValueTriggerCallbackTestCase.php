@@ -6,7 +6,7 @@ class ValueTriggerTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ValueTriggerCallbackTest");
-		$this->assertTextPresent("Value Trigger Callback Test");
+		$this->assertContains("Value Trigger Callback Test", $this->source());
 
 		$this->assertText("{$base}label1", 'Label 1');
 

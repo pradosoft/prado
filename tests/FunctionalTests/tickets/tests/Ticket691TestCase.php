@@ -7,7 +7,7 @@ class Ticket691TestCase extends PradoGenericSelenium2Test
 		$this->url('tickets/index.php?page=Ticket691');
 		$this->assertEquals($this->title(), "Verifying Ticket 691");
 
-		$this->click("//input[@id='{$base}List_c2']/../..");
+		$this->byXPath("//input[@id='{$base}List_c2']/../..")->click();
 		$this->pause(800);
 		$this->assertText("{$base}Title", "Thanks");
 		$this->assertText("{$base}Result", "You vote 3");
