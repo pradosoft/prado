@@ -14,7 +14,12 @@ class Ticket578TestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", "Button 1 was clicked :");
 
 		$text="helloworld";
-		$this->runScript("tinyMCE.get('{$base}text1').setContent('{$text}')");
+
+		$this->execute(array(
+			'script' => "tinyMCE.get('{$base}text1').setContent('{$text}')",
+			'args'   => array()
+		));
+
 		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}label1", "Button 1 was clicked : <p>{$text}</p>");

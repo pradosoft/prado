@@ -14,18 +14,17 @@ class Ticket719TestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("${base}ctl0", 'Required');
 		$this->assertVisible("${base}ctl1", 'Required');
 
-		$this->type("${base}autocomplete", 'f');
-		$this->runScript("Prado.Registry['${base}autocomplete'].onKeyPress({})");
+		$this->byId("${base}autocomplete")->click();
+
+		$this->keys('f');
 		$this->pause(500);
 		$this->assertContains('Finland', $this->source());
 
-		$this->type("${base}autocomplete", 'fr');
-		$this->runScript("Prado.Registry['${base}autocomplete'].onKeyPress({})");
+		$this->keys('r');
 		$this->pause(500);
 		$this->assertContains('French', $this->source());
 
-		$this->type("${base}autocomplete", 'fra');
-		$this->runScript("Prado.Registry['${base}autocomplete'].onKeyPress({})");
+		$this->keys('a');
 		$this->pause(500);
 		$this->assertContains('France', $this->source());
 
@@ -33,7 +32,11 @@ class Ticket719TestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertNotVisible("${base}ctl1");
 
-		$this->type("${base}textbox", "Prado");
+		$this->byId("${base}textbox")->clear();
+		$this->byId("${base}textbox")->value('Prado');
+		// trigger onblur() event
+		$this->byCssSelector('body')->click();
+
 		$this->assertNotVisible("${base}ctl0");
 
 		$this->byId("${base}ctl2")->click();

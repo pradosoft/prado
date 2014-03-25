@@ -30,15 +30,15 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 
 		// auto postback textbox, CausesValidation=false
 		$this->assertValue("ctl0\$body\$ctl6", "change me");
-		$this->type("ctl0\$body\$ctl6", "change mes");
+		$this->typeSpecial("ctl0\$body\$ctl6", "change mes");
 		$this->assertValue("ctl0\$body\$ctl6", "text changed");
 
 		// auto postback textbox, CausesValidation=true
 		$this->assertNotVisible('ctl0_body_ctl7');
-		$this->type("ctl0\$body\$TextBox3", "test");
+		$this->typeSpecial("ctl0\$body\$TextBox3", "test");
 //		$this->pause(1000);
 		$this->assertVisible('ctl0_body_ctl7');
-		$this->type("ctl0\$body\$TextBox3", "non test");
+		$this->typeSpecial("ctl0\$body\$TextBox3", "non test");
 		$this->assertNotVisible('ctl0_body_ctl7');
 
 		// submitting textbox with a button
@@ -48,7 +48,7 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 
 		// SafeText
 		$this->assertText("ctl0_body_Output","test");
-		$this->type("ctl0\$body\$TextBox2","<a href=javascript:xxx>malicious code</a>");
+		$this->typeSpecial("ctl0\$body\$TextBox2","<a href=javascript:xxx>malicious code</a>");
 		$this->assertText("ctl0_body_Output","malicious code");
 
 		// password
@@ -72,7 +72,7 @@ End of message
 
 		// auto postback textbox
 		$this->assertValue("ctl0\$body\$ctl14", "change me");
-		$this->type("ctl0\$body\$ctl14", "change mes");
+		$this->typeSpecial("ctl0\$body\$ctl14", "change mes");
 		$this->assertValue("ctl0\$body\$ctl14", "text changed");
 		$this->assertValue("ctl0\$body\$ctl10", "This is a\nmultiline\ntextbox.");
 		$this->assertValue("ctl0\$body\$ctl11", "This is a multiline text box.
@@ -82,10 +82,10 @@ End of message
 
 		// textbox associated with a validator
 		$this->assertNotVisible('ctl0_body_ctl15');
-		$this->type("ctl0\$body\$MultiTextBox3", "demo");
+		$this->typeSpecial("ctl0\$body\$MultiTextBox3", "demo");
 //		$this->pause(1000);
 		$this->assertVisible('ctl0_body_ctl15');
-		$this->type("ctl0\$body\$MultiTextBox3", "non demo");
+		$this->typeSpecial("ctl0\$body\$MultiTextBox3", "non demo");
 		$this->assertNotVisible('ctl0_body_ctl15');
 	}
 }
