@@ -229,12 +229,7 @@ class TPanel extends TWebControl
 
 		if(($butt=$this->getDefaultButton())!=='')
 		{
-			$buttons = $this->findControlsByID($butt);
-			if (count($buttons)>0)
-				$button = reset($buttons);
-			else
-				$button = null;
-			if($button===null)
+			if(($button=$this->findControl($butt))===null)
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
 			else
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
