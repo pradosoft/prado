@@ -64,15 +64,8 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function getElement($id)
 	{
-		if(strpos($id, 'xpath=')===0)
-		{
-			return $this->byXPath(substr($id, 6));
-		} elseif(strpos($id, 'css=')===0) {
-			return $this->byCssSelector(substr($id, 4));
-		} elseif(strpos($id, 'id=')===0) {
+		if(strpos($id, 'id=')===0) {
 			return $this->byId(substr($id, 3));
-		} elseif(strpos($id, 'link=')===0) {
-			return $this->byLinkText(substr($id, 5));
 		} elseif(strpos($id, 'name=')===0) {
 			return $this->byName(substr($id, 5));
 		} elseif(strpos($id, '//')===0) {
@@ -123,6 +116,15 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	protected function type($id, $txt='')
 	{
 		$element = $this->getElement($id);
+		$element->clear();
+		$element->value($txt);
+		// trigger onblur() event
+		$this->byCssSelector('body')->click();
+	}
+
+	protected function typeSpecial($id, $txt='')
+	{
+		$element = $this->getElement($id);
 		// clear the textbox without using clear() that triggers onchange()
 		// the idea is to focus the input, move to the end of the text and hit
 		// backspace until the input is empty.
@@ -146,24 +148,6 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$element->value($txt);
 		// trigger onblur() event
 		$this->byCssSelector('body')->click();
-	}
-
-	protected function mouseOver($id)
-	{
-		$this->moveto(array(
-			'element' => $this->getElement($id),
-//			'xoffset' => 1,
-//			'yoffset' => 1,
-		));
-	}
-
-	protected function mouseOut($id)
-	{
-		$this->moveto(array(
-			'element' => $this->getElement('css=body'),
-//			'xoffset' => 0,
-//			'yoffset' => 0,
-		));
 	}
 
 	protected function select($id, $value)
@@ -225,14 +209,6 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	protected function assertSelectedValue($id, $index)
 	{
 		$this->assertSame($index, parent::select($this->getElement($id))->selectedValue());
-	}
-
-	protected function runScript($script)
-	{
-		$this->execute(array(
-			'script' => $script,
-			'args'   => array()
-		));
 	}
 
 	protected function assertAlertNotPresent()

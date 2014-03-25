@@ -207,7 +207,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c4']/../../../td[contains(@class, 'rating')]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
 
-		$this->mouseOver("//input[@id='{$base}RatingList_c4']/../..");
+		$this->moveto($this->byXPath("//input[@id='{$base}RatingList_c4']/../.."));
 		$this->assertText("{$base}Status", "Excellent");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_hover')]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_hover')]");
@@ -217,7 +217,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[not(contains(@class, 'rating_hover'))]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
 
-		$this->mouseOut("//input[@id='{$base}RatingList_c4']/../..");
+		$this->moveto($this->byCssSelector('body'));
 		$this->assertText("{$base}Status", "CaptionID='Status'");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c0']/../../../td[contains(@class, 'rating_selected')]");
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c1']/../../../td[contains(@class, 'rating_selected')]");
@@ -228,7 +228,7 @@ class ActiveRatingListTestCase extends PradoGenericSelenium2Test
 		$this->assertElementPresent("//input[@id='{$base}RatingList_c5']/../../../td[contains(@class, 'rating')]");
 
 
-		$this->mouseOver("//input[@id='{$base}RatingList_c1']/../..");
+		$this->moveto($this->byXPath("//input[@id='{$base}RatingList_c1']/../.."));
 		$this->assertText("{$base}Status", "Fair");
 
 		$this->byXPath("//input[@id='{$base}RatingList_c1']/../..")->click();

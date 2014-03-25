@@ -1,5 +1,4 @@
 <com:TContent id="Content">
-<h3>Needs manual testing</h3>
 <style>
 .autocomplete
 {
@@ -45,7 +44,7 @@ ul.different
 		OnSuggest="suggestCountries" Separator=", "
 		OnSuggestionSelected="suggestion_selected"
 		ResultPanel.CssClass="autocomplete" CausesValidation="false" />
-	
+
 </p>
 <p>
 	<com:TButton OnClick="validForm" Text="Validate Form" /><br/>
