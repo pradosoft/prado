@@ -1,0 +1,14 @@
+ <com:TContent ID="Content">
+ 	<h1>Issue 504 Test</h1>
+
+    <com:TPanel ID="dlg" DefaultButton="subPanel.buttonOk" >
+    <com:TTextBox ID="textbox1" />
+    <com:TButton ID="buttonDummy" OnCommand="buttonDummyClick" Text="Dummy button" />
+    Panel Content
+    <com:TLabel ID="label1" />
+    <com:TPanel ID="subPanel" >
+        <com:TButton ID="buttonOk" OnCommand="buttonOkClick" Text="Ok button" />
+    </com:TPanel>
+    </com:TPanel>
+ </com:TContent>
+
