@@ -109,18 +109,13 @@ class TLiteralColumn extends TDataGridColumn
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
 		{
 			if($this->getDataField()!=='')
-				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-			else
 			{
-				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-				else
-				{
-					$text=$this->getText();
-					if($this->getEncode())
-						$text=THttpUtility::htmlEncode($text);
-					$cell->setText($text);
-				}
+				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+			} else {
+				$text=$this->getText();
+				if($this->getEncode())
+					$text=THttpUtility::htmlEncode($text);
+				$cell->setText($text);
 			}
 		}
 		else
