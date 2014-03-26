@@ -18,17 +18,9 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 		this.maximum   = this.options.maximum || this.range[1];
 		this.minimum   = this.options.minimum || this.range[0];
 		this.hiddenField=jQuery('#'+this.options.ID+'_1').get(0);
+		this.trackInitialized=false;
 
-		// Will be used to align the handle onto the track, if necessary
-		this.alignX = parseInt(this.options.alignX || - this.track.offsetLeft);
-		this.alignY = parseInt(this.options.alignY || - this.track.offsetTop);
-
-		this.trackLength = this.maximumOffset() - this.minimumOffset();
-		this.handleLength = this.isVertical() ?
-			(this.handle.offsetHeight != 0 ?
-				this.handle.offsetHeight : this.handles.style.height.replace(/px$/,"")) :
-				(this.handle.offsetWidth != 0 ? this.handle.offsetWidth :
-					this.handle.style.width.replace(/px$/,""));
+		this.initializeTrack();
 
 		this.active   = false;
 		this.dragging = false;
@@ -61,6 +53,24 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 
 		if(this.options['AutoPostBack']==true)
 			this.observe(this.hiddenField, "change", jQuery.proxy(this.doPostback,this,options));
+	},
+
+	initializeTrack : function()
+	{
+		if(this.trackInitialized || !$(this.track).is(":visible"))
+			return;
+
+		// Will be used to align the handle onto the track, if necessary
+		this.alignX = parseInt(this.options.alignX || - this.track.offsetLeft);
+		this.alignY = parseInt(this.options.alignY || - this.track.offsetTop);
+
+		this.trackLength = this.maximumOffset() - this.minimumOffset();
+		this.handleLength = this.isVertical() ?
+			(this.handle.offsetHeight != 0 ?
+				this.handle.offsetHeight : this.handles.style.height.replace(/px$/,"")) :
+				(this.handle.offsetWidth != 0 ? this.handle.offsetWidth :
+					this.handle.style.width.replace(/px$/,""));
+		this.trackInitialized=true;
 	},
 
 	doPostback : function(options, event)
@@ -149,6 +159,7 @@ Prado.WebUI.TSlider = jQuery.klass(Prado.WebUI.PostBackControl,
 
 	startDrag: function(event) {
 		if (event.which === 1) {
+			this.initializeTrack();
 			// left click
 			if(!this.disabled){
 				this.active = true;
