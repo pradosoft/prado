@@ -25,10 +25,10 @@ Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
 				if (view)
 					if(this.hiddenField.value == i)
 					{
-						element.className=this.activeCssClass;
+						jQuery(element).addClass(this.activeCssClass).removeClass(this.normalCssClass);
 						jQuery(view).show();
 					} else {
-						element.className=this.normalCssClass;
+						jQuery(element).addClass(this.normalCssClass).removeClass(this.activeCssClass);
 						jQuery(view).hide();
 					}
 			}
