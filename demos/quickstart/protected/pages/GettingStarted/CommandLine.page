@@ -1,6 +1,12 @@
 <com:TContent ID="body" >
 <h1 id="501">Command Line Tool</h1>
-<p id="70046" class="block-content">The optional <tt>prado-cli.php</tt> PHP script file in the <tt>framework</tt>
+
+<div class="Note">
+<b class="tip">Note:</b> With Prado version 3.2.3 prado-cli.php location changed from framework 
+to bin directory. If you're using Prado 3.2.2 or earlier, replace bin with framework in examples below.
+</div>
+
+<p id="70046" class="block-content">The optional <tt>prado-cli.php</tt> PHP script file in the <tt>bin</tt>
 directory provides command line tools to perform various tedious takes in Prado.
 The <tt>prado-cli.php</tt> can be used to create Prado project skeletons, create
 initial test fixtures, and access to an interactive PHP shell.
@@ -14,7 +20,7 @@ the command line.
 
 <h2 id="503">Usage</h2>
 <p id="70048" class="block-content">
-If you type <tt>php path/to/framework/prado-cli.php</tt>, you should see
+If you type <tt>php path/to/bin/prado-cli.php</tt>, you should see
 the following information. Alternatively, if you are not on Windows,
 you may try to change the <tt>prado-cli.php</tt> into an executable
 and execute it as a script</p>
@@ -43,9 +49,9 @@ are optional parameters. </p>
 <p id="70050" class="block-content">To create a Prado project skeleton, do the following:</p>
 <ol>
 	<li>Change to the directory where you want to create the project skeleton.</li>
-	<li>Type, <tt>php ../prado/framework/prado-cli.php -c helloworld</tt>, where
+	<li>Type, <tt>php ../prado/bin/prado-cli.php -c helloworld</tt>, where
 	<tt>helloworld</tt> is the directory name that you want to create the project skeleton files.</li>
-	<li>Type, <tt>php ../prado/framework/prado-cli.php <b>-t</b> helloworld</tt> to create
+	<li>Type, <tt>php ../prado/bin/prado-cli.php <b>-t</b> helloworld</tt> to create
 	the test fixtures for the <tt>helloworld</tt> project.</li>
 </ol>
 
@@ -58,7 +64,7 @@ command line is in the <tt>prado</tt> distribution directory and you type.
 </p>
 <p id="70052" class="block-content">
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70007">
-$: php framework/prado-cli.php shell demos/blog
+$: php bin/prado-cli.php shell demos/blog
 </com:TTextHighlighter>
 The output should be
 <com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70008">
