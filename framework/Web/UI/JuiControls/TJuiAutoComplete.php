@@ -123,6 +123,15 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
+	 * Array containing valid javascript events
+	 * @return array()
+	 */
+	public function getValidEvents()
+	{
+		return array();
+	}
+
+	/**
 	 * @param string Css class name of the element to use for suggestion.
 	 */
 	public function setTextCssClass($value)
