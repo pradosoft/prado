@@ -475,7 +475,7 @@ class TXmlDocument extends TXmlElement
 	 * @param DOMXmlNode the node to be converted
 	 * @return TXmlElement the converted TXmlElement
 	 */
-	private function buildElement($node)
+	protected function buildElement($node)
 	{
 		$element=new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
