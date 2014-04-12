@@ -116,8 +116,7 @@ class TReCaptchaValidator extends TBaseValidator
 				// this function will be used to update the validator
 				'function '.$fn.'(valid)',
 				'{',
-				'  var v = $('.TJavaScript::quoteString($this->getClientID()).');',
-				'  $('.TJavaScript::quoteString($this->getClientID().'_1').').value = valid;',
+				'  jQuery('.TJavaScript::quoteString('#'.$this->getClientID().'_1').').val(valid);',
 				'  Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).'); ',
 				'}',
 				'',
@@ -126,9 +125,9 @@ class TReCaptchaValidator extends TBaseValidator
 				$this->Page->IsCallback ? $fn.'('.$value.');' : '',
 				'',
 				// wait for the captcha to be constructed
-				'Event.observe(document,"captchaready:'.$control->getClientID().'",function() { ',
+				'jQuery(document).on("captchaready:'.$control->getClientID().'",function() { ',
 					// install event handler that clears the validation error when user changes the captcha response field
-					'Event.observe('.TJavaScript::quoteString($control->getResponseFieldName()).',"keyup",function() { ',
+					'jQuery('.TJavaScript::quoteString('#'.$control->getResponseFieldName()).').on("keyup",function() { ',
 						$fn.'("1");',
 					'});',
 				'});',

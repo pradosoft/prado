@@ -227,7 +227,7 @@ class TReCaptcha extends TWebControl implements IValidatable
 
 	public function renderContents($writer)
 	{
-		$readyscript = 'Event.fire(document, '.TJavaScript::quoteString('captchaready:'.$this->getClientID()).')';
+		$readyscript = 'jQuery(document).trigger('.TJavaScript::quoteString('captchaready:'.$this->getClientID()).')';
 		$cs = $this->Page->ClientScript;
 		$id = $this->getClientID();
 		$divid = $id.'_1_recaptchadiv';
@@ -250,7 +250,7 @@ class TReCaptcha extends TWebControl implements IValidatable
 				*/
 				$writer->write($html);
 
-				$cs->registerEndScript('ReCaptcha::EventScript', 'Event.observe(document, "dom:loaded", function() { '.$readyscript.'; } );');
+				$cs->registerEndScript('ReCaptcha::EventScript', 'jQuery(document).ready(function() { '.$readyscript.'; } );');
 			}
 		else
 			{
@@ -258,7 +258,7 @@ class TReCaptcha extends TWebControl implements IValidatable
 				$options['callback'] = new TJavaScriptLiteral('function() { '.$readyscript.'; '.$this->getCallbackScript().'; }');
 				$cs->registerScriptFile('ReCaptcha::AjaxScript', 'http://www.google.com/recaptcha/api/js/recaptcha_ajax.js');
 				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', array(
-					'if (!$('.TJavaScript::quoteString($this->getResponseFieldName()).'))',
+					'if (!jQuery('.TJavaScript::quoteString('#'.$this->getResponseFieldName()).'))',
 					'{',
 					'Recaptcha.destroy();',
 					'Recaptcha.create(',
