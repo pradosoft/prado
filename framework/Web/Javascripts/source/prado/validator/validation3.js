@@ -1,24 +1,24 @@
 /**
  * Prado client-side javascript validation fascade.
  *
- * <p>There are 4 basic classes: {@link Prado.Validation}, 
+ * <p>There are 4 basic classes: {@link Prado.Validation},
  * {@link Prado.ValidationManager}, {@link Prado.WebUI.TValidationSummary}
- * and {@link Prado.WebUI.TBaseValidator}, 
+ * and {@link Prado.WebUI.TBaseValidator},
  * that interact together to perform validation.
  * The {@link Prado.Validation} class co-ordinates together the
  * validation scheme and is responsible for maintaining references
  * to ValidationManagers.</p>
  *
- * <p>The {@link Prado.ValidationManager} class is responsible for 
+ * <p>The {@link Prado.ValidationManager} class is responsible for
  * maintaining refereneces
  * to individual validators, validation summaries and their associated
  * groupings.</p>
  *
- * <p>The {@link Prado.WebUI.TValidationSummary} takes care of displaying 
+ * <p>The {@link Prado.WebUI.TValidationSummary} takes care of displaying
  * the validator error messages
  * as html output or an alert output.</p>
  *
- * <p>The {@link Prado.WebUI.TBaseValidator} is the base class for all 
+ * <p>The {@link Prado.WebUI.TBaseValidator} is the base class for all
  * validators and contains
  * methods to interact with the actual inputs, data type conversion.</p>
  *
@@ -57,15 +57,15 @@
  * &lt;/div&gt;
  * &lt;/form&gt;
  * </pre>
- * 
+ *
  * @module validation
  */
- 
+
 Prado.Validation =  jQuery.klass();
 
 /**
  * Global Validation Object.
- * 
+ *
  * <p>To validate the inputs of a particular form, call
  * <code>{@link Prado.Validation.validate}(formID, groupID)</code>
  * where <tt>formID</tt> is the HTML form ID, and the optional
@@ -73,7 +73,7 @@ Prado.Validation =  jQuery.klass();
  * in a particular group.</p>
  * <p>Use <code>{@link Prado.Validation.validateControl}(controlClientID)</code>
  * to trigger validation for a single control.</p>
- * 
+ *
  * @object {static} Prado.Validation
  */
 jQuery.extend(Prado.Validation,
@@ -111,10 +111,10 @@ jQuery.extend(Prado.Validation,
 	/**
 	 * Validate all validators of a specific control.
 	 * @function {boolean} ?
-	 * @param {string} id - ID of DOM element to validate 
+	 * @param {string} id - ID of DOM element to validate
 	 * @return true if all validators are valid or no validators present, false otherwise.
 	 */
-    validateControl : function(id) 
+    validateControl : function(id)
     {
         var formId=this.getForm();
 
@@ -215,7 +215,7 @@ jQuery.extend(Prado.Validation,
 			});
 		});
 	},
-	
+
 	updateActiveCustomValidator : function(validatorID, isValid)
 	{
 		jQuery.each(Prado.Validation.managers, function(idx, manager)
@@ -233,12 +233,12 @@ jQuery.extend(Prado.Validation,
 
 /**
  * Manages validators for a particular HTML form.
- *  
+ *
  * <p>The manager contains references to all the validators
  * summaries, and their groupings for a particular form.
  * Generally, {@link Prado.Validation} methods should be called rather
  * than calling directly the ValidationManager.</p>
- * 
+ *
  * @class Prado.ValidationManager
  */
 Prado.ValidationManager = jQuery.klass();
@@ -264,20 +264,20 @@ Prado.ValidationManager.prototype =
 			 * List of validators
 			 * @var {TBaseValidator[]} validators
 			 */
-			this.validators = []; 
+			this.validators = [];
 			/**
 			 * List of validation summaries
 			 * @var {TValidationSummary[]} summaries
 			 */
-			this.summaries = []; 
+			this.summaries = [];
 			/**
 			 * List of ValidationGroups
 			 * @var {string[]} groups
 			 */
-			this.groups = []; 
+			this.groups = [];
 			/**
 			 * Options of this ValidationManager
-			 * @var {object} options 
+			 * @var {object} options
 			 */
 			this.options = {};
 
@@ -336,10 +336,10 @@ Prado.ValidationManager.prototype =
 	/**
 	 * Perform validation for all validators of a single control.
 	 * @function {boolean} ?
-	 * @param {string} id - ID of DOM element to validate 
+	 * @param {string} id - ID of DOM element to validate
 	 * @return true if all validators are valid or no validators present, false otherwise.
 	 */
-    validateControl : function (id) 
+    validateControl : function (id)
     {
         return this.controls[id] ? this.controls[id].invoke('validate',null).all() : true;
     },
@@ -360,8 +360,8 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Get all validators in a group and all other validators.
-	 * Returns an array with two arrays of validators. The first 
-	 * array contains all validators in the group if group is given, 
+	 * Returns an array with two arrays of validators. The first
+	 * array contains all validators in the group if group is given,
 	 * otherwhise all validators without a group. The second array
 	 * contains all other validators.
 	 * @function {[ TBaseValidator[] , TBaseValidator[] ]} ?
@@ -375,7 +375,7 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Get all validators in a group.
-	 * Returns an array with two arrays of validators. The first 
+	 * Returns an array with two arrays of validators. The first
 	 * array contains all validators in the group. The second array
 	 * contains all other validators.
 	 * @function {[ TBaseValidator[] , TBaseValidator[] ]} ?
@@ -401,8 +401,8 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Get all validators without a group.
-	 * Returns an array with two arrays of validators. The first 
-	 * array contains all validators without a group. The second 
+	 * Returns an array with two arrays of validators. The first
+	 * array contains all validators without a group. The second
 	 * array contains all other validators.
 	 * @function {[ TBaseValidator[] , TBaseValidator[] ]} ?
 	 * @return Array with two arrays of validators: Array[0] has all
@@ -422,7 +422,7 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Get the state of validators.
-	 * If group is set, only validators in that group are checked. 
+	 * If group is set, only validators in that group are checked.
 	 * Otherwhise only validators without a group are checked.
 	 * @function {booelan} ?
 	 * @param {optional string} group - ID of ValidationGroup
@@ -490,7 +490,7 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Gets validators with errors.
-	 * If group is set, only validators in that group are returned. 
+	 * If group is set, only validators in that group are returned.
 	 * Otherwhise only validators without a group are returned.
 	 * @function {TBaseValidator[]} ?
 	 * @param {optional string} group - ID of ValidationGroup
@@ -506,8 +506,8 @@ Prado.ValidationManager.prototype =
 
 	/**
 	 * Update the summary of a particular group.
-	 * If group is set, only the summary for validators in that 
-	 * group is updated. Otherwhise only the summary for validators 
+	 * If group is set, only the summary for validators in that
+	 * group is updated. Otherwhise only the summary for validators
 	 * without a group is updated.
 	 * @function ?
 	 * @param {optional string} group - ID of ValidationGroup
@@ -530,7 +530,7 @@ Prado.ValidationManager.prototype =
 
 /**
  * TValidationSummary displays a summary of validation errors.
- * 
+ *
  * <p>The summary is displayed inline on a Web page,
  * in a message box, or both. By default, a validation summary will collect
  * <tt>ErrorMessage</tt> of all failed validators on the page. If
@@ -544,7 +544,7 @@ Prado.ValidationManager.prototype =
  * <p>The summary can be displayed on the Web page and in a message box by setting
  * the <tt>ShowSummary</tt> and <tt>ShowMessageBox</tt>
  * options, respectively.</p>
- * 
+ *
  * @class Prado.WebUI.TValidationSummary
  */
 Prado.WebUI.TValidationSummary = jQuery.klass();
@@ -571,7 +571,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		/**
 		 * Validator options
-		 * @var {object} options 
+		 * @var {object} options
 		 */
 		this.options = options;
 		/**
@@ -588,8 +588,8 @@ Prado.WebUI.TValidationSummary.prototype =
 		if(this.messages)
 		{
 			/**
-			 * Current visibility state of summary 
-			 * @var {boolean} visible 
+			 * Current visibility state of summary
+			 * @var {boolean} visible
 			 */
 			this.visible = this.messages.style.visibility != "hidden"
 			this.visible = this.visible && this.messages.style.display != "none";
@@ -667,7 +667,7 @@ Prado.WebUI.TValidationSummary.prototype =
 
 	/**
 	 * Get messages from validators.
-	 * @function {string[]} ? 
+	 * @function {string[]} ?
 	 * @param {TBaseValidator[]} validators - Array of validators.
 	 * @return Array of validator error messages.
 	 */
@@ -775,7 +775,7 @@ Prado.WebUI.TValidationSummary.prototype =
 	{
 		if(this.options.DisplayMode == 'HeaderOnly' && this.options.HeaderText)
 			return this.options.HeaderText;
-		
+
 		var output = this.options.HeaderText ? this.options.HeaderText + "\n" : "";
 		for(var i = 0; i < messages.length; i++)
 		{
@@ -805,7 +805,7 @@ Prado.WebUI.TValidationSummary.prototype =
  * the page and its <tt>CausesValidation</tt> option is true.
  * The input control to be validated is specified by <tt>ControlToValidate</tt>
  * option.</p>
- * 
+ *
  * @class Prado.WebUI.TBaseValidator
  */
 Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
@@ -871,7 +871,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 
 		/**
 		 * Validator options
-		 * @var {object} options 
+		 * @var {object} options
 		 */
 		this.options = options;
 		/**
@@ -1071,7 +1071,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 
 	/**
 	 * Add control to observe for changes.
-	 * Re-validates upon change. If the validator is not visible, 
+	 * Re-validates upon change. If the validator is not visible,
 	 * no updates are propagated.
 	 * @function ?
 	 * @param {element} control - DOM element of control to observe
@@ -1151,7 +1151,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 * The ControlType property comes from TBaseValidator::getClientControlClass()
 	 * Be sure to update the TBaseValidator::$_clientClass if new cases are added.
 	 * @function {mixed} ?
-	 * @param {optional element} control - Control to get value from (default: this.control) 
+	 * @param {optional element} control - Control to get value from (default: this.control)
 	 * @return Control value to validate
 	 */
 	 getRawValidationValue : function(control)
@@ -1163,11 +1163,11 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
 	 			{
-	 				var value = this.trim(jQuery("#" + control).get(0).val());
+	 				var value = this.trim(jQuery(control).val());
 
 					if(this.options.DateFormat)
 	 				{
-	 					var date = value.toDate(this.options.DateFormat);
+	 					var date = Date.SimpleParse(value, this.options.DateFormat);
 	 					return date == null ? value : date;
 	 				}
 	 				else
@@ -1198,7 +1198,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		 			return jQuery(control).val();
 	 	}
 	 },
-	
+
 	/**
 	 * Get a trimmed value that should be validated.
 	 * The ControlType property comes from TBaseValidator::getClientControlClass()
@@ -1289,7 +1289,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	/**
 	 * Get list elements of TCheckBoxList or TListBox.
 	 * Gets an array of the list control item input elements, for TCheckBoxList
-	 * checkbox input elements are returned, for TListBox HTML option elements 
+	 * checkbox input elements are returned, for TListBox HTML option elements
 	 * are returned.
 	 * @function {element[]} ?
 	 * @return Array of list control option DOM elements.
@@ -1368,10 +1368,10 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 
 /**
  * TRequiredFieldValidator makes the associated input control a required field.
- * 
+ *
  * <p>The input control fails validation if its value does not change from
  * the <tt>InitialValue</tt> option upon losing focus.</p>
- * 
+ *
  * @class Prado.WebUI.TRequiredFieldValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1394,7 +1394,7 @@ Prado.WebUI.TRequiredFieldValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 /**
  * TCompareValidator compares the value entered by the user into an input
  * control with the value entered into another input control or a constant value.
- * 
+ *
  * <p>To compare the associated input control with another input control,
  * set the <tt>ControlToCompare</tt> option to the ID path
  * of the control to compare with. To compare the associated input control with
@@ -1412,7 +1412,7 @@ Prado.WebUI.TRequiredFieldValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * Use the <tt>Operator</tt> property to specify the type of comparison
  * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
  * LessThan and LessThanEqual.
- * 
+ *
  * @class Prado.WebUI.TCompareValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1503,7 +1503,7 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * <p>To create a client-side validation function, add the client-side
  * validation javascript function to the page template.
  * The function should have the following signature:</p>
- * 
+ *
  * <pre>
  * &lt;script type="text/javascript"&gt;
  * function ValidationFunctionName(sender, parameter)
@@ -1515,11 +1515,11 @@ Prado.WebUI.TCompareValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * }
  * &lt;/script&gt;
  * </pre>
- * 
+ *
  * <p>Use the <tt>ClientValidationFunction</tt> option
  * to specify the name of the client-side validation script function associated
  * with the TCustomValidator.</p>
- * 
+ *
  * @class Prado.WebUI.TCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1553,7 +1553,7 @@ Prado.WebUI.TCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 
 /**
  * Uses callback request to perform validation.
- * 
+ *
  * @class Prado.WebUI.TActiveCustomValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1622,21 +1622,21 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
  * TRangeValidator tests whether an input value is within a specified range.
  *
  * <p>TRangeValidator uses three key properties to perform its validation.</p>
- * 
+ *
  * <p>The <tt>MinValue</tt> and <tt>MaxValue</tt> options specify the minimum
- * and maximum values of the valid range.</p> 
+ * and maximum values of the valid range.</p>
  * <p>The <tt>DataType</tt> option is
  * used to specify the data type of the value and the minimum and maximum range values.
  * The values are converted to this data type before the validation
  * operation is performed. The following value types are supported:</p>
- * 
+ *
  * - <b>Integer</b> A 32-bit signed integer data type.<br />
  * - <b>Float</b> A double-precision floating point number data type.<br />
  * - <b>Date</b> A date data type. The date format can be specified by<br />
  *   setting <tt>DateFormat</tt> option, which must be recognizable
  *   by <tt>Date.SimpleParse</tt> javascript function.
  * - <b>String</b> A string data type.
- * 
+ *
  * @class Prado.WebUI.TRangeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1655,7 +1655,7 @@ Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value is in range or value is empty, 
+	 * @return True if value is in range or value is empty,
 	 * false otherwhise and when type conversion failed.
 	 */
 	evaluateIsValid : function()
@@ -1695,7 +1695,7 @@ Prado.WebUI.TRangeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 /**
  * TRegularExpressionValidator validates whether the value of an associated
  * input component matches the pattern specified by a regular expression.
- * 
+ *
  * @class Prado.WebUI.TRegularExpressionValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1712,7 +1712,7 @@ Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidato
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value matches regular expression or value is empty. 
+	 * @return True if value matches regular expression or value is empty.
 	 */
 	evaluateIsValid : function()
 	{
@@ -1729,7 +1729,7 @@ Prado.WebUI.TRegularExpressionValidator = jQuery.klass(Prado.WebUI.TBaseValidato
 /**
  * TEmailAddressValidator validates whether the value of an associated
  * input component is a valid email address.
- * 
+ *
  * @class Prado.WebUI.TEmailAddressValidator
  * @extends Prado.WebUI.TRegularExpressionValidator
  */
@@ -1739,7 +1739,7 @@ Prado.WebUI.TEmailAddressValidator = Prado.WebUI.TRegularExpressionValidator;
 /**
  * TListControlValidator checks the number of selection and their values
  * for a TListControl that allows multiple selections.
- * 
+ *
  * @class Prado.WebUI.TListControlValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1748,7 +1748,7 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if number of selections and/or their values match requirements. 
+	 * @return True if number of selections and/or their values match requirements.
 	 */
 	evaluateIsValid : function()
 	{
@@ -1830,17 +1830,17 @@ Prado.WebUI.TListControlValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 /**
  * TDataTypeValidator verifies if the input data is of the type specified
  * by <tt>DataType</tt> option.
- * 
+ *
  * <p>The following data types are supported:</p>
- * 
+ *
  * - <b>Integer</b> A 32-bit signed integer data type.<br />
  * - <b>Float</b> A double-precision floating point number data type.<br />
  * - <b>Date</b> A date data type.<br />
  * - <b>String</b> A string data type.<br />
- * 
+ *
  * <p>For <b>Date</b> type, the option <tt>DateFormat</tt>
  * will be used to determine how to parse the date string.</p>
- * 
+ *
  * @class Prado.WebUI.TDataTypeValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1857,7 +1857,7 @@ Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value matches required data type. 
+	 * @return True if value matches required data type.
 	 */
 	evaluateIsValid : function()
 	{
@@ -1869,9 +1869,9 @@ Prado.WebUI.TDataTypeValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 });
 
 /**
- * TCaptchaValidator verifies if the input data is the same as 
+ * TCaptchaValidator verifies if the input data is the same as
  * the token shown in the associated CAPTCHA control.
- * 
+ *
  * @class Prado.WebUI.TCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
  */
@@ -1880,7 +1880,7 @@ Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	/**
 	 * Evaluate validation state
 	 * @function {boolean} ?
-	 * @return True if value matches captcha text 
+	 * @return True if value matches captcha text
 	 */
 	evaluateIsValid : function()
 	{
@@ -1942,7 +1942,7 @@ Prado.WebUI.TCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 
 /**
  * TReCaptchaValidator client-side control.
- * 
+ *
  * @class Prado.WebUI.TReCaptchaValidator
  * @extends Prado.WebUI.TBaseValidator
  */
