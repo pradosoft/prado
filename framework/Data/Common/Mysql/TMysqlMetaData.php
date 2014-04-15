@@ -76,6 +76,9 @@ class TMysqlMetaData extends TDbMetaData
 	{
 		list($schemaName,$tableName) = $this->getSchemaTableName($table);
 		$find = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
+		$colCase = $this->getDbConnection()->getColumnCase();
+		if($colCase != TDbColumnCaseMode::Preserved)
+			$this->getDbConnection()->setColumnCase('Preserved');
 		$this->getDbConnection()->setActive(true);
 		$sql = "SHOW FULL FIELDS FROM {$find}";
 		$command = $this->getDbConnection()->createCommand($sql);
@@ -88,6 +91,8 @@ class TMysqlMetaData extends TDbMetaData
 		}
 		if($index===0)
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
+		if($colCase != TDbColumnCaseMode::Preserved)
+			$this->getDbConnection()->setColumnCase($colCase);
 		return $tableInfo;
 	}
 
