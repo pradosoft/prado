@@ -29,13 +29,19 @@ THtmlArea4 with manually set options
 </td></tr>
 
 <tr><td class="samplenote">
-THtmlArea4 with visual editting disabled:
+THtmlArea4 with visual editing disabled:
 </td><td class="sampleaction">
 <com:THtmlArea4 ID="HtmlArea3" EnableVisualEdit="false" />
 <br/>
 <com:TButton Text="Submit" OnClick="button3Clicked" />
 <br/>
 <com:TLiteral Encode="true" ID="Result3" />
+</td></tr>
+
+<tr><td class="samplenote">
+Read-only THtmlArea:
+</td><td class="sampleaction">
+<com:THtmlArea4 ID="HtmlArea4" ReadOnly="true" Text="Sample html text: <b>bold</b> <i>italic</i>" />
 </td></tr>
 
 </table>

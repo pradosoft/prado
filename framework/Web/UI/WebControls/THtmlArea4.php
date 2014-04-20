@@ -406,6 +406,13 @@ class THtmlArea4 extends TTextBox
 		$options['height'] = $this->getHeight();
 		$options['resize'] = 'both';
 		$options['menubar'] = false;
+		if($this->getReadOnly())
+		{
+			$options['readonly'] = true;
+			$options['toolbar'] = false;
+			$options['menubar'] = false;
+			$options['statusbar'] = false;
+		}
 
 		$options['extended_valid_elements'] = 'a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
 
