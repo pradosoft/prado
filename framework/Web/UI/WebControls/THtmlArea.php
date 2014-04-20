@@ -469,6 +469,8 @@ class THtmlArea extends TTextBox
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
 		$options['extended_valid_elements'] = 'a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
+		if($this->getReadOnly())
+			$options['readonly'] = true;
 
 		$options = array_merge($options, $this->parseEditorOptions($this->getOptions()));
 		return $options;
