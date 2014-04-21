@@ -14,7 +14,7 @@ class EventTriggerTestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertText("{$base}label1", 'button 1 clicked');
 
-		$this->type("{$base}text1", 'test');
+		$this->byId("{$base}text1")->value('test');
 		$this->pause(800);
 		$this->assertText("{$base}label1", 'text 1 focused');
 	}
