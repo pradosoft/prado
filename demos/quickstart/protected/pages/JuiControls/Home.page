@@ -74,12 +74,11 @@ For informations of the specific options of each interaction, follow jQuery-UI I
   </li>
 </ul>
 
-<h2>PRADO Jui controls</h2>
+<h2>PRADO Jui widgets controls</h2>
 <ul id="u2" class="block-content">
   <li>
-  <a href="?page=JuiControls.TJuiAutocomplete">TJuiAutocomplete</a>
-  displays a textbox where the user can choose from a list of suggestions.
-  <com:RunBar PagePath="JuiControls.Samples.TJuiAutocomplete.Home" />
+  <a href="?page=JuiControls.Widgets#TJuiProgressbar">TJuiProgressbar</a>
+  displays a progress bar.
   </li>
 </ul>
 

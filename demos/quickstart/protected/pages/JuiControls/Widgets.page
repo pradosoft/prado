@@ -1,0 +1,28 @@
+<com:TContent ID="body">
+<h1>Jui widgets controls</h1>
+<p class="block-content">
+Jui widgets are complex controls built on the foundations of jQuery effects and jQueryUI interactions.
+PRADO Jui widgets controls can be divided in two groups:
+<ol>
+	<li>Standard Widgets, extend a control affecting its aspect and functionality: eg. <tt>TJuiProgressbar</tt> transforms an <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> into a Progressbar</li>
+	<li>List Widgets, take a repeated list of items and relayout their presentation: eg. ...
+</ol>
+For informations of the specific options of each widget, follow jQuery-UI Widget <a href="http://api.jqueryui.com/category/widgets/">API Documentation</a> for the specific interaction.
+</p>
+
+<a name="TJuiProgressbar"></a>
+<h2>TJuiProgressbar</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiProgressbar" /> - <a href="http://api.jqueryui.com/progressbar/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiProgressbar</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/progressbar/">Progressbar</a> widget.
+</p>
+
+<p class="block-content">
+The panel takes the aspect of a progressbar ranging from a value of 0 to the value of the <tt>Max</tt> property. The current value can be set using the <tt>Value</tt> property; setting it to <tt>false</tt> will create an undefined progressbar.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiProgressbar.Home" />
+<br/>
+
+</com:TContent>

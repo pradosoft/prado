@@ -1,0 +1,55 @@
+<com:TContent ID="body">
+<h1>TJuiProgressbar Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Default options, Max=100, Value=50:
+</td><td class="sampleaction">
+	<com:TJuiProgressbar
+		Options.Max="100"
+		Options.Value="50"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+Undefined progressbar, Value=false:
+</td><td class="sampleaction">
+	<com:TJuiProgressbar
+		Options.Value="false"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+Undefined progresbar, value changed from javascript:
+</td><td class="sampleaction">
+	<com:TJuiProgressbar
+		ID="pbar1"
+		Options.Max="100"
+		Options.Value="false"
+		OnChange="pbar1_changed"
+		OnComplete="pbar1_complete"
+	/>
+	<com:TActiveLabel ID="label1" Text="Waiting.." />
+	<com:TButton ID="button1" Text="Start example" Attributes.OnClick="startExample1(); return false" />
+	<com:TClientScript>
+	function progress() {
+		var pbar = $('#<%= $this->pbar1->ClientID %>');
+	    var val = pbar.progressbar('value') || 0;
+	    pbar.progressbar('value', val + 10);
+	    if (val < 99) {
+	        setTimeout(progress, 500);
+	    }
+	}
+
+	function startExample1()
+	{
+		$('#<%= $this->pbar1->ClientID %>').progressbar('value', false)
+		progress();
+	}
+	</com:TClientScript/>
+</td></tr>
+
+</table>
+
+</com:TContent>

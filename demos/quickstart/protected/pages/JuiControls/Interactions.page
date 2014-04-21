@@ -1,7 +1,7 @@
 <com:TContent ID="body">
 <h1>Jui interactions controls</h1>
 <p class="block-content">
-Jui interactions adds basic mouse-based interactions to elements like moving, resizing or sorting. PRADO Jui interactions controls applies there interactions to a <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+Jui interactions adds basic mouse-based interactions to elements like moving, resizing or sorting. PRADO Jui interactions controls applies these interactions to a <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
 For informations of the specific options of each interaction, follow jQuery-UI Interaction <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> for the specific interaction.
 </p>
 
