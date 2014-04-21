@@ -146,7 +146,20 @@ class TJuiControlOptions
 		{
 			if(0 == strcasecmp($name, $option))
 			{
-				$this->_options[$option] = $value;
+				$low = strtolower($value);
+				if($low === 'null')
+				{
+					$this->_options[$option] = null;
+				} elseif($low === 'true') {
+					$this->_options[$option] = true;
+				} elseif($low === 'false') {
+					$this->_options[$option] = false;
+				} elseif(is_numeric($value)) {
+					// trick to get float or integer automatically when needed
+					$this->_options[$option] = $value + 0;
+				} else {
+					$this->_options[$option] = $value;
+				}
 				return;
 			}
 		}
