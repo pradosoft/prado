@@ -7,21 +7,26 @@ class Ticket722TestCase extends PradoGenericSelenium2Test
 		$this->url('tickets/index.php?page=Ticket722');
 		$this->assertEquals($this->title(), "Verifying Ticket 722");
 
-		$this->assertText($base.'InPlaceTextBox__label', 'Editable Text');
-		$this->byId($base.'InPlaceTextBox__label')->click();
+		$label = $this->byID("{$base}InPlaceTextBox__label");
+		$this->assertEquals('Editable Text', $label->text());
+		$label->click();
 		$this->pause(800);
-		$this->assertVisible($base.'InPlaceTextBox');
+
+		$textbox = $this->byID("{$base}InPlaceTextBox");
+		$this->assertTrue($textbox->displayed());
+
 		$this->type($base.'InPlaceTextBox',"Prado");
 		$this->pause(800);
-		$this->assertNotVisible($base.'InPlaceTextBox');
-		$this->assertText($base.'InPlaceTextBox__label', 'Prado');
-		$this->byId($base.'ctl0')->click();
-		$this->pause(800);
-		$this->assertText($base.'InPlaceTextBox__label', 'Prado [Read Only]');
-		$this->byId($base.'InPlaceTextBox__label')->click();
-		$this->pause(800);
-		$this->assertNotVisible($base.'InPlaceTextBox');
+		$this->assertFalse($textbox->displayed());
+		$this->assertEquals('Prado', $label->text());
 
+		$this->byId("{$base}ctl0")->click();
+		$this->pause(800);
+		$this->assertEquals('Prado [Read Only]', $label->text());
+
+		$label->click();
+		$this->pause(800);
+		$this->assertFalse($textbox->displayed());
 	}
 
 }
