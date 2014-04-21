@@ -979,7 +979,7 @@ Prado.WebUI.TBaseValidator = Class.create(Prado.WebUI.Control,
 		if(!this.control)
 			this.control = $(this.options.ControlToValidate);
 
-		if(!this.control || this.control.disabled)
+		if(!this.control || this.control.disabled || !this.control.descendantOf(document))
 		{
 			this.isValid = true;
 			return this.isValid;
