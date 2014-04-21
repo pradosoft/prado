@@ -1011,7 +1011,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 		if(!this.control)
 			this.control = jQuery("#" + this.options.ControlToValidate).get(0);
 
-		if(!this.control || this.control.disabled)
+		if(!this.control || this.control.disabled || !jQuery.contains(document, this.control))
 		{
 			this.isValid = true;
 			return this.isValid;

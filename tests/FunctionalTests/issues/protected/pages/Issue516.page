@@ -1,0 +1,50 @@
+ <com:TContent ID="Content">
+
+<h1>Issue 516 Test</h1>
+
+<com:TActiveDataGrid
+	Width="800px"
+	CellPadding="2"
+	ID="DataGrid"
+	DataKeyField="ISBN"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	EditItemStyle.BackColor="lightyellow"
+	OnEditCommand="editItem"
+	OnUpdateCommand="saveItem"
+	OnCancelCommand="cancelItem"
+	>
+	<com:TTemplateColumn
+		ID="BookTitleColumn"
+		HeaderText="Book Title"
+		HeaderStyle.Width="400px"
+	>
+		<prop:ItemTemplate>
+			<com:TLiteral Text="<%# $this->Parent->Data['title'] %>" Encode="true" />
+		</prop:ItemTemplate>
+		<prop:EditItemTemplate>
+			<com:TTextBox ID="TextBox" Text="<%# $this->Parent->Data['title'] %>" />
+			<com:TRequiredFieldValidator
+				ControlToValidate="TextBox"
+				Display="Dynamic"
+				ErrorMessage="<br/>Please provide a title."
+				ValidationGroup = "Group1"
+			/>
+		</prop:EditItemTemplate>
+	</com:TTemplateColumn>
+	<com:TActiveEditCommandColumn
+		HeaderText="Edit"
+		HeaderStyle.Width="100px"
+		UpdateText="Save"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Font.Italic="false"
+		ValidationGroup = "Group1"
+		/>
+</com:TActiveDataGrid>
+
+ </com:TContent>
+
