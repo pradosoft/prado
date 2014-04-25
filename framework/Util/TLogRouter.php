@@ -319,7 +319,7 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	protected function formatLogMessage($message,$level,$category,$time)
 	{
-		return @gmdate('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
 	}
 
 	/**
