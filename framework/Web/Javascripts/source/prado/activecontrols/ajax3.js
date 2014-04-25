@@ -1120,7 +1120,13 @@ Prado.StyleSheetManagerClass = jQuery.klass(Prado.AssetManagerClass, {
 	createStyleSheetCode: function(code) {
 		var asset = document.createElement('style');
 		asset.setAttribute('type', 'text/css');
-		asset.innerText = code;
+		
+		if(asset.styleSheet) 
+			asset.styleSheet.cssText = code; // IE7+IE8
+		else {
+			var cssCodeNode = document.createTextNode(code);
+			asset.appendChild(cssCodeNode);
+		}
 
 		var head = document.getElementsByTagName('head')[0];
 		head.appendChild(asset);
