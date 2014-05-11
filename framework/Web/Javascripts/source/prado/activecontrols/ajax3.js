@@ -156,7 +156,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	getForm: function()
 	{
-		return jQuery('#PRADO_PAGESTATE').get(0).form;
+		return jQuery('#'+this.options.ID).parents('form:first').get(0);
 	},
 
 	/**
@@ -165,7 +165,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	getCallbackUrl : function()
 	{
-		return jQuery('#PRADO_PAGESTATE').get(0).form.action;
+		return jQuery('#'+this.options.ID).parents('form:first').get(0).action;
 	},
 
 	/**
