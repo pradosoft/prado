@@ -156,7 +156,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	getForm: function()
 	{
-		return jQuery('#'+this.options.ID).parents('form:first').get(0);
+		return jQuery('#'+this.options.ID).parents('form:first').get(0) || jQuery('#PRADO_PAGESTATE').get(0).form;
 	},
 
 	/**
@@ -165,7 +165,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	getCallbackUrl : function()
 	{
-		return jQuery('#'+this.options.ID).parents('form:first').get(0).action;
+		return this.getForm().action;
 	},
 
 	/**
@@ -1120,8 +1120,8 @@ Prado.StyleSheetManagerClass = jQuery.klass(Prado.AssetManagerClass, {
 	createStyleSheetCode: function(code) {
 		var asset = document.createElement('style');
 		asset.setAttribute('type', 'text/css');
-		
-		if(asset.styleSheet) 
+
+		if(asset.styleSheet)
 			asset.styleSheet.cssText = code; // IE7+IE8
 		else {
 			var cssCodeNode = document.createTextNode(code);
