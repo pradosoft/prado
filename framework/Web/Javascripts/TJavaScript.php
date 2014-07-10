@@ -204,7 +204,6 @@ class TJavaScript
 		else
 			return '';
 	}
-
 	/**
 	 * Encodes a PHP variable into javascript string.
 	 * This method invokes json_encode to perform the encoding.
@@ -213,13 +212,29 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value, $options = 0)
 	{
-		if (is_string($value) &&
-			($g=Prado::getApplication()->getGlobalization(false))!==null &&
-			strtoupper($enc=$g->getCharset())!='UTF-8')
-			$value=iconv($enc, 'UTF-8', $value);
+		if (($g=Prado::getApplication()->getGlobalization(false))!==null &&
+			strtoupper($enc=$g->getCharset())!='UTF-8') {
+			self::convertToUtf8($value, $enc);
+		}
+
 		$s = @json_encode($value,$options);
 		self::checkJsonError();
 		return $s;
+	}
+
+	/**
+	 * Encodes an string or the content of an array to UTF8
+	 * @param string|array|mixed $value
+	 * @param string $sourceEncoding
+	 */
+	private static function convertToUtf8(&$value, $sourceEncoding) {
+		if(is_string($value))
+			$value=iconv($sourceEncoding, 'UTF-8', $value);
+		else if (is_array($value))
+		{
+			foreach($value as &$element)
+				self::convertToUtf8($element, $sourceEncoding);
+		}
 	}
 
 	/**
