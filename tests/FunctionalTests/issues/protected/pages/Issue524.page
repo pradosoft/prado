@@ -1,0 +1,7 @@
+<com:TContent ID="Content">
+  <h1>Issue 524 Test</h1>
+    <com:TTextBox ID="textbox1" />
+    <com:TActiveButton ID="buttonOk" Text="Ok button" />
+      <com:TActiveCustomValidator ID="Validator" ControlToValidate="textbox1" OnServerValidate="validateText" Text="Input is invalid." />
+</com:TContent>
+
