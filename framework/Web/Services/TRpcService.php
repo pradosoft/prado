@@ -488,7 +488,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					return $this->encode(array(
 						'jsonrpc' => '2.0',
 						'id' => $this->_id,
-						'result' => $this->callApiMethod($_request['method'], $parameters);
+						'result' => $this->callApiMethod($_request['method'], $parameters),
 					));
 				} else {
 					return $this->encode(array(
