@@ -341,7 +341,13 @@ Prado.ValidationManager.prototype =
 	 */
     validateControl : function (id)
     {
-        return this.controls[id] ? this.controls[id].invoke('validate',null).all() : true;
+        var valid = true;
+        jQuery.each(this.controls[id], function (idx, element) {
+          if(!element.validate(null))
+            valid = false;
+        });
+
+        return valid;
     },
 
 	/**
