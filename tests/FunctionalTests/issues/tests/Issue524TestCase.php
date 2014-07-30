@@ -14,7 +14,7 @@ class Issue524TestCase extends PradoGenericSelenium2Test
     $base='ctl0_Content_';
 
     $this->byID("{$base}buttonOk")->click();
-
+		$this->pause(800);
     $this->assertText("{$base}Validator", "fünf");
   }
 }
