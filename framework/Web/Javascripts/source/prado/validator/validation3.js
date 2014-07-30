@@ -203,9 +203,9 @@ jQuery.extend(Prado.Validation,
 
 	setErrorMessage : function(validatorID, message)
 	{
-		jQuery.each(Prado.Validation.managers, function(manager)
+		jQuery.each(Prado.Validation.managers, function(idx, manager)
 		{
-			jQuery.each(manager.validators, function(validator)
+			jQuery.each(manager.validators, function(idx, validator)
 			{
 				if(validator.options.ID == validatorID)
 				{
