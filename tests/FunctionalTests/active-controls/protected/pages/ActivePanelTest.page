@@ -9,13 +9,13 @@
 	<div id="div1" style="border:1px solid #666; background-color: #ffe; text-align: center; padding:3em">
 		Click Me!
 	</div>
-	<script type="text/javascript">
+	<com:TClientScript>
 		Event.OnLoad(function()
 		{
 			Event.observe($("div1"), "click", function()
 			{
 				Prado.Callback("<%= $this->callback1->UniqueID %>")
 			})
-    })
-  </script>
+    });
+  </com:TClientScript>
 </com:TContent>
