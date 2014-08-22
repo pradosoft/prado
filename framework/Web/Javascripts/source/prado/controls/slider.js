@@ -55,7 +55,8 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		
 		if(this.options['AutoPostBack']==true)
 			this.observe(this.hiddenField, "change", Prado.PostBack.bindEvent(this,options));
-    
+	},
+
 	initializeTrack : function()
 	{
 		if(this.trackInitialized || !$(this.track).is(":visible"))
@@ -74,7 +75,6 @@ Prado.WebUI.TSlider = Class.extend(Prado.WebUI.PostBackControl,
 		this.trackInitialized=true;
 	},
 
-	},
   
 	setDisabled: function(){
 		this.disabled = true;
