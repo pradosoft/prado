@@ -28,6 +28,7 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}button2")->click();
 		$this->assertEquals('ok', $this->alertText());
 		$this->acceptAlert();
+    $this->pause(500);
 		$this->assertEquals('baz!', $this->alertText());
 		$this->acceptAlert();
 	}

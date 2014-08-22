@@ -12,30 +12,30 @@ class AutoCompleteTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}textbox3")->click();
 		$this->keys('a');
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertContains('Andorra', $this->source());
 		$this->assertText("{$base}label1", "suggestion for a");
 
 		$this->keys('u');
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertContains('Australia', $this->source());
 		$this->assertText("{$base}label1", "suggestion for au");
 
 		$this->byCssSelector("#{$base}textbox3_result ul li")->click();
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertText("{$base}label1", "Label 1: Austria");
 
 
 		$this->byId("{$base}textbox2")->click();
 		$this->keys('cu');
-		$this->pause(500);
+		$this->pause(800);
 		$this->byCssSelector("#{$base}textbox2_result ul li")->click();
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertText("{$base}label1", "Label 1: Cuba");
 
 		$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
 		$this->keys(',me');
-		$this->pause(500);
+		$this->pause(800);
 		$this->byCssSelector("#{$base}textbox2_result ul li")->click();
 		$this->pause(500);
 		$this->assertText("{$base}label1", "Label 1: Cuba,Mexico");

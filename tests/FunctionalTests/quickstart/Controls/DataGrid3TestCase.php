@@ -42,6 +42,7 @@ class QuickstartDataGrid3TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals("Are you sure?", $this->alertText());
 		$this->acceptAlert();
 
+		$this->pause(500);
 		$this->assertNotContains("Design Patterns Explained : A New Perspective on Object-Oriented Design", $this->source());
 
 		$this->assertContains("Extreme Programming Explained : Embrace Change", $this->source());
