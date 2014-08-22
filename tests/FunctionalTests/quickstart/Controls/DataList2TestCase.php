@@ -48,6 +48,7 @@ class QuickstartDataList2TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals("Are you sure?", $this->alertText());
 		$this->acceptAlert();
 
+		$this->pause(300); // wait for reload
 		$this->byId("ctl0_body_DataList_ctl5_ctl2")->click();
 
 		$this->assertEquals("Are you sure?", $this->alertText());
