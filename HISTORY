@@ -19,7 +19,6 @@ BUG: Issue #524 - JSON error (5): Malformed UTF-8 characters when encoding callb
 BUG: Issue #526 - TJsonRpcProtocol::callMethod, requested method is called twice (jojoinside)
 BUG: Issue #527 - TJsonRpcProtocol::callMethod, semicolon must be removed (jojoinside)
 ENH: Ported tests to Selenium2
-ENH: avoid duplicate creation of T*CheckBoxList, T*RadioButtonList js items (ctraltca)
 BUG: Avoid an exception loop on callback error when headers have already been sent (ctrlaltca)
 BUG: Avoid rendering <script> blocks in callbacks (ctrlaltca)
 BUG: Avoid dependency loop between TRadioButton and TRadioButtonList (ctrlaltca)
