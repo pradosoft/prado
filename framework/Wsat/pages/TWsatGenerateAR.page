@@ -1,0 +1,56 @@
+<com:TContent ID="Content">
+    <div style="margin: 10px; font-size: 16px; font-weight: bold">Active Record Classes Generator</div>
+    <div class="green_panel" style="text-align: left; font-size: 14px; margin: 15px 5px">
+        <label>This generator generates an AR class for the specified database table.</label><br/>
+        <label>Fields with <b style="color: red">*</b> are required.</label>
+        <hr/>
+        <div style="font-size: 12px; font-style: italic">
+            <ul>
+                <li>If you want to generate all AR Classes, keep the "Table Name" field as appears by default.</li>
+                <li>"Output Folder" field refers to the directory that the new AR class file should be generated under... where Application refers to the protected folder of your project. You can let this default field value and PRADO will create the proper folders for you.</li>
+            </ul>
+        </div>        
+    </div>
+    
+    <div style="font-size: 14px">
+        <div class="form_row">
+            <com:TLabel Text="Table Name:" ForControl="table_name" style="margin-right: 24px" />
+            <com:TTextBox ID="table_name" Text="*" CssClass="in_text" />
+            <label style="color: red">*</label>
+            <com:TRequiredFieldValidator ControlToValidate="table_name" Text="Table name cannot be blank." Display="Dynamic" />
+        </div>
+
+        <div class="form_row">
+            <com:TLabel Text="Output Folder:" ForControl="output_folder" style="margin-right: 8px"/>
+            <com:TTextBox ID="output_folder" Text="Application.App_Data.AR_Classes" CssClass="in_text" />
+            <label style="color: red">*</label>
+            <com:TRequiredFieldValidator ControlToValidate="output_folder" Text="Output folder cannot be blank." Display="Dynamic" />
+        </div>
+
+        <div class="form_row">
+            <com:TLabel Text="Class Prefix:" ForControl="class_prefix" style="margin-right: 25px"/>
+            <com:TTextBox ID="class_prefix" Text="AR_" CssClass="in_text" />
+        </div>
+
+        <div class="form_row">
+            <com:TLabel Text="Class Suffix:" ForControl="class_suffix" style="margin-right: 27px"/>
+            <com:TTextBox ID="class_suffix" CssClass="in_text" />
+        </div>
+
+        <div class="form_row">
+            <com:TLabel Text="Build Relations:" ForControl="build_rel"/>
+            <com:TCheckBox ID="build_rel" Checked="true" />
+        </div>
+
+        <com:TPanel ID="feedback_panel" Visible="false" style="width: 400px">
+            <com:TLabel ID="generation_msg" />
+        </com:TPanel>
+
+        <br/> 
+        <div style="text-align: center; width: 400px">
+            <com:TButton Text="Preview" OnClick="preview" Visible="false" />
+            <com:TButton Text="Generate" OnClick="generate" />
+        </div>        
+    </div>    
+
+</com:TContent>

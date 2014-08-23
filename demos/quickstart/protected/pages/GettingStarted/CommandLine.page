@@ -109,8 +109,6 @@ PostRecord#1
 )
 </com:TTextHighlighter>
 </p>
-<<<<<<< HEAD
-=======
 
 <h2>Creating Active Record Classes</h2>
 <p>
@@ -141,5 +139,4 @@ At the prompt, enter the following two commands to create <tt>UserRecord</tt> an
 Here we used the <a href="?page=Fundamentals.Components1">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
 </p>
 
->>>>>>> ef81c44... Quickstart Doc overhaul, pt. 2: active controls + minor fixes
 </com:TContent>
