@@ -27,7 +27,7 @@
   </services>
 
   <parameters>
-		<parameter id="languages" value="('en'=>'English','es'=>'Español','fr'=>'Français', 'id'=>'Indonesian', 'zh' => '中文（简体）', 'pl'=>'Polski', 'ja'=>'日本語')" />
+		<parameter id="languages" value="('en'=>'English', 'de'=>'Deutsch','es'=>'Español','fr'=>'Français', 'id'=>'Indonesian', 'zh' => '中文（简体）', 'pl'=>'Polski', 'ja'=>'日本語')" />
   </parameters>
 
 </application>
