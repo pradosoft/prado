@@ -13,7 +13,7 @@ The minimum requirement by PRADO is that the Web server support PHP 5.3.3. PRADO
 PRADO can be installed as a standalone package or using <a href="http://getcomposer.org/">composer</a>
 </p>
 <div id="install-steps" class="block-content">
-<h3>Standalone package</h3>
+<h3 id="6001">Standalone package</h3>
 <ol>
 <li>Go to <a href="http://www.pradosoft.com/download/">pradosoft.com</a> to grab the latest version of PRADO.</li>
 <li>Unpack the PRADO release file to a Web-accessible directory.
@@ -28,7 +28,7 @@ If you encounter any problems with the demo applications, please use the PRADO r
 </p>
 
 <div id="install-steps" class="block-content">
-<h3>Composer install</h3>
+<h3 id="6002">Composer install</h3>
 <ol>
 <li>If you don't have installed composer already, install it globally:
 <com:TTextHighlighter CssClass="source block-content">
