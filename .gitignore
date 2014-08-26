@@ -34,3 +34,4 @@ bin/dbunit.php
 
 #OSX
 .DS_Store
+bin/dbunit
