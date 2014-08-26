@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">インストール</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">新機能</a></li>
     <li><a href="?page=GettingStarted.Upgrading">v2.x v1.x からのバージョンアップ</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">コマンドラインツール</a></li>
 </ul>
 </div>
 
@@ -19,7 +21,6 @@
     <li><a href="?page=Tutorial.CurrencyConverter">通貨コンバーター</a></li>
 	<li><a href="?page=Tutorial.AddressBook">アドレス帳</a></li>
 	<li><a href="?page=Tutorial.AjaxChat">Ajax チャット</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">コマンドラインツール</a></li>
 </ul>
 </div>
 

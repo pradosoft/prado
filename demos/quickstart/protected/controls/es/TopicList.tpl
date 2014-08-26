@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Instalación</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Nuevas Funcionalidades</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Actualizar desde la version v2.x y v1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 
@@ -19,7 +21,6 @@
     <li><a href="?page=Tutorial.CurrencyConverter">Convertidor de Monedas</a></li>
 	<li><a href="?page=Tutorial.AddressBook">Libreta de direcciones</a></li>
 	<li><a href="?page=Tutorial.AjaxChat">Cliente Chat en AJAX </a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Command Line Tool</a></li>
 </ul>
 </div>
 
