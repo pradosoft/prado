@@ -12,6 +12,8 @@ for both A and B.
 Upgrading from v3.2.3
 ---------------------
 
+- TMarkdown is using Parsedown instead of Markdown, adding GitHub Flavored Markdown support.
+
 Upgrading from v3.2.1
 ---------------------
 - TEmailAddressValidator's CheckMXRecord property now defaults to false.

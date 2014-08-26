@@ -1,4 +1,4 @@
-Version 3.2.4 Aug XX, 2014
+Version 3.2.4 Aug 26, 2014
 
 BUG: Issue #492 - Prado generates json_error when encoding an exception with non UTF-8 data (david0)
 ENH: Issue #494 - Adding toArray() and toJSON() to TActiveRecord (dmarko484)
