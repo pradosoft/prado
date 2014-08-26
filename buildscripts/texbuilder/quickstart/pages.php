@@ -9,13 +9,14 @@ $pages['Getting Started'] = array(
 	'GettingStarted/AboutPrado.page',
 	'GettingStarted/Installation.page',
 	'GettingStarted/NewFeatures.page',
-	'GettingStarted/Upgrading.page'
+	'GettingStarted/Upgrading.page',
+	'GettingStarted/Wsat.page',
+	'GettingStarted/CommandLine.page'
 	);
 
 $pages['Tutorials'] = array(
 	'GettingStarted/HelloWorld.page',
 	'Fundamentals/Hangman.page',
-	'GettingStarted/CommandLine.page'
 	);
 
 $pages['Tutorial: Currency Converter'] = array(
@@ -26,13 +27,10 @@ $pages['Tutorial: Building an AJAX Chat Application'] = array(
 	'Tutorial/AjaxChat.page'
 	);
 
-$pages['Tutorial: Addressbook'] = array(
-	'Tutorial/AddressBook.page'
-	);
-
 $pages['Fundamentals'] = array(
 	'Fundamentals/Architecture.page',
-	'Fundamentals/Components.page',
+	'Fundamentals/Components1.page',
+	'Fundamentals/Components2.page',
 	'Fundamentals/Controls.page',
 	'Fundamentals/Pages.page',
 	'Fundamentals/Modules.page',
@@ -66,6 +64,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Head.page',
 	'Controls/HiddenField.page',
 	'Controls/HtmlArea.page',
+	'Controls/HtmlArea4.page',
 	'Controls/HyperLink.page',
 	'Controls/Image.page',
 	'Controls/ImageButton.page',
@@ -76,6 +75,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Label.page',
 	'Controls/LinkButton.page',
 	'Controls/Literal.page',
+	'Controls/Markdown.page',
 	'Controls/MultiView.page',
 	'Controls/OutputCache.page',
 	'Controls/Pager.page',
