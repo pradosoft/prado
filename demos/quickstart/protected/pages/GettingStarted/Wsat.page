@@ -38,7 +38,7 @@
     
     <h2>Active Record classes generation</h2>
     <p class="block-content">
-        In order to generate AR classes you need to go to: http://localhost/divermania/index.php?wsat=TWsatGenerateAR 
+        In order to generate AR classes you need to go to: http://localhost/yoursite/index.php?wsat=TWsatGenerateAR 
         by clicking the proper links in the welcome page. Then you should see the following page:        
     </p>
     <img src="<%~wsat_generate_ar.png%>" style="width: 700px;" />
