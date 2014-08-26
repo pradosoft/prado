@@ -12,12 +12,12 @@ class Data_DataGateway_AllTests {
 	public static function main() {
 		PHPUnit_TextUI_TestRunner::run(self::suite());
 	}
-  
+
 	public static function suite() {
 		$suite = new PHPUnit_Framework_TestSuite('System.Data.DataGateway');
-    
+
 		$suite->addTestSuite('TSqlCriteriaTest');
-		
+
 		return $suite;
 	}
 }
@@ -25,4 +25,3 @@ class Data_DataGateway_AllTests {
 if(PHPUnit_MAIN_METHOD == 'Data_DataGateway_AllTests::main') {
 	Data_DataGateway_AllTests::main();
 }
-?>

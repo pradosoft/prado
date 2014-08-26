@@ -1,58 +1,66 @@
 <?php
 
-class CallbackAdapterTestCase extends PradoGenericSeleniumTest
+class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ControlAdapterTest");
+		$this->assertContains('Control Adapter - State Tracking Tests', $this->source());
 
-		$this->open("active-controls/index.php?page=ControlAdapterTest");
-		$this->assertTextPresent('Control Adapter - State Tracking Tests');
+		$this->byId("{$base}button2")->click();
+		$this->assertEquals('ok', $this->alertText());
+		$this->acceptAlert();
 
-		$this->click('button2');
-		$this->assertAlert('ok');
-
-		$this->click('test6');
+		$this->byId("{$base}test6")->click();
 		$this->pause(800);
-		$this->click('test7');
+		$this->byId("{$base}test7")->click();
 		$this->pause(800);
-		$this->click('test8');
+		$this->byId("{$base}test8")->click();
 		$this->pause(800);
-		$this->click('test9');
+		$this->byId("{$base}test9")->click();
 		$this->pause(800);
 
-		$this->click('button1');
-		$this->assertAlert('haha!');
+		$this->byId("{$base}button1")->click();
+		$this->assertEquals('haha!', $this->alertText());
+		$this->acceptAlert();
 
-		$this->click('button2');
-		$this->assertAlert('ok');
-		$this->assertAlert('baz!');
-
+		$this->byId("{$base}button2")->click();
+		$this->assertEquals('ok', $this->alertText());
+		$this->acceptAlert();
+    $this->pause(500);
+		$this->assertEquals('baz!', $this->alertText());
+		$this->acceptAlert();
 	}
 /*
 	function testIE()
 	{
-		$this->open("active-controls/index.php?page=ControlAdapterTest");
-		$this->assertTextPresent('Control Adapter - State Tracking Tests');
+		$this->url("active-controls/index.php?page=ControlAdapterTest");
+		$this->assertContains('Control Adapter - State Tracking Tests', $this->source());
 
-		$this->click('button2');
-		$this->assertAlert('ok');
+		$this->byId("{$base}button2")->click();
+		$this->assertEquals('ok', $this->alertText());
+		$this->acceptAlert();
 
-		$this->click('test6');
+		$this->byId('test6')->click();
 		$this->pause(800);
-		$this->click('test7');
+		$this->byId('test7')->click();
 		$this->pause(800);
-		$this->click('test8');
+		$this->byId('test8')->click();
 		$this->pause(800);
-		$this->click('test9');
+		$this->byId('test9')->click();
 		$this->pause(800);
 
-		$this->click('button1');
-		$this->assertAlert('haha!');
+		$this->byId("{$base}button1")->click();
+		$this->assertEquals('haha!', $this->alertText());
+		$this->acceptAlert();
 
 		//IE alerts in diffrent order
-		$this->click('button2');
-		$this->assertAlert('baz!');
-		$this->assertAlert('ok');
+		$this->byId("{$base}button2")->click();
+		$this->assertEquals('baz!', $this->alertText());
+		$this->acceptAlert();
+		$this->assertEquals('ok', $this->alertText());
+		$this->acceptAlert();
 	}
 */
 }

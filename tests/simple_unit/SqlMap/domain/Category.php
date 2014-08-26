@@ -15,5 +15,3 @@ class Category
 	public function getGuidString(){ return $this->_Guid; }
 	public function setGuidString($value){ $this->_Guid = $value; }
 }
-
-?>

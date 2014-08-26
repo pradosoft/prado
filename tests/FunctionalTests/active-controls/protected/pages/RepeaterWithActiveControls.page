@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <style>
 	.textbox
 	{
@@ -56,6 +56,5 @@
 
 <com:TActiveLabel ID="label1" />
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

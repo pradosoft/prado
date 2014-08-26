@@ -480,7 +480,6 @@ class TJsonRpcProtocol extends TRpcProtocol
 			if(!is_array($parameters))
 				$parameters = array($parameters);
 
-			$ret = $this->callApiMethod($_request['method'], $parameters);
 			// a request without an id is a notification that doesn't need a response
 			if($this->_id !== null)
 			{
@@ -489,7 +488,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					return $this->encode(array(
 						'jsonrpc' => '2.0',
 						'id' => $this->_id,
-						'result' => $ret
+						'result' => $this->callApiMethod($_request['method'], $parameters),
 					));
 				} else {
 					return $this->encode(array(

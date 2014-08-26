@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -146,7 +145,6 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * complex data may also have serializing problem if saved in viewstate.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1499,7 +1497,6 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
  * The {@link getItem Item} property indicates the DataList item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1540,7 +1537,6 @@ class TDataListItemEventParameter extends TEventParameter
  * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1595,7 +1591,6 @@ class TDataListCommandEventParameter extends TCommandEventParameter
  * is given by {@link getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -1742,7 +1737,6 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
  * TDataListItemCollection represents a collection of data list items.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

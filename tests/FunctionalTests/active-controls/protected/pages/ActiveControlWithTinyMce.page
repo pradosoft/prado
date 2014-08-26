@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <h1>Active Control with TinyMCE</h1>
 
 <com:THtmlArea ID="text1" />
@@ -7,5 +7,4 @@
 
 <com:TActiveLabel ID="label1" />
 
-<com:TJavascriptLogger />
-</com:TForm>
+</com:TContent>

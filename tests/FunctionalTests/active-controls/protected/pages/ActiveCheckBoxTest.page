@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Active CheckBox Test</h1>
 	<com:TActiveCheckBox ID="checkbox1" Text="CheckBox 1" OnCallback="checkbox_requested" />
 	<com:TActiveCheckBox ID="checkbox2" Text="CheckBox 2" OnCallback="checkbox_requested">
@@ -25,5 +25,4 @@
 		position: absolute; right: 0; top: 0">
 		Loading...
 	</div>
-	<com:TJavascriptLogger />
-</com:TForm>
+</com:TContent>

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  */
 
@@ -16,7 +15,6 @@
  * This interface must be implemented by application modules.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -43,7 +41,6 @@ interface IModule
  * This interface must be implemented by services.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -82,7 +79,6 @@ interface IService
  * This interface must be implemented by writers.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -106,7 +102,6 @@ interface ITextWriter
  * This interface must be implemented by user objects.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -159,7 +154,6 @@ interface IUser
  * {@link TPageStatePersister}, {@link TApplicationStatePersister}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -184,7 +178,6 @@ interface IStatePersister
  * This interface must be implemented by cache managers.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -240,7 +233,6 @@ interface ICache
  * Classes implementing this interface must support serialization and unserialization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -259,7 +251,6 @@ interface ICacheDependency
  * to end-users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -278,7 +269,6 @@ interface IRenderable
  * This interface must be implemented by classes that are capable of performing databinding.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -296,7 +286,6 @@ interface IBindable
  * This interface should be implemented by classes that support CSS styles.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.1.0
  */
@@ -322,7 +311,6 @@ interface IStyleable
  * Active controls must implement IActiveControl interface.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.1
  */
@@ -341,7 +329,6 @@ interface IActiveControl
  * interface.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.1
  */
@@ -363,7 +350,6 @@ interface ICallbackEventHandler
  * this interface must be implemented.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: interfaces.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.1
  */

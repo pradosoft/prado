@@ -22,6 +22,16 @@
 			"role" : "Developer"
 		},
 		{
+			"name": "Daniel Sampedro Bello",
+			"email": "darthdaniel85@gmail.com",
+			"role" : "Developer"
+		},
+		{
+			"name": "David Otto",
+			"email": "ottodavid@gmx.net",
+			"role" : "Developer"
+		},
+		{
 			"name": "Ciro Mattia Gonano",
 			"email": "ciromattia@gmail.com",
 			"role" : "Github/Packagist Maintainer"
@@ -47,7 +57,7 @@
 		"satooshi/php-coveralls": "dev-master"
 	},
 	"provide" : {
-		"pradosoft/prado" : "3.2.3"
+		"pradosoft/prado" : "3.2.4"
 	},
 	"suggest" : {
 		"ext-apc" : "*",

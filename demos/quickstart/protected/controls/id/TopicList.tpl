@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Instalasi</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Fitur Baru</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Meningkatkan dari v2.x dan v1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Piranti Baris Perintah</a></li>
 </ul>
 </div>
 
@@ -19,7 +21,6 @@
     <li><a href="?page=Tutorial.CurrencyConverter">Pengubah Kurs</a></li>
 	<li><a href="?page=Tutorial.AddressBook">Buku Alamat</a></li>
 	<li><a href="?page=Tutorial.AjaxChat">Klient Obrolan AJAX</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Piranti Baris Perintah</a></li>
 </ul>
 </div>
 
@@ -27,7 +28,7 @@
 <div>Fundamental</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">Arsitektur</a></li>
-    <li><a href="?page=Fundamentals.Components">Komponen</a></li>
+    <li><a href="?page=Fundamentals.Components1">Komponen</a></li>
     <li><a href="?page=Fundamentals.Controls">Kontrol</a></li>
     <li><a href="?page=Fundamentals.Pages">Halaman</a></li>
     <li><a href="?page=Fundamentals.Modules">Modul</a></li>

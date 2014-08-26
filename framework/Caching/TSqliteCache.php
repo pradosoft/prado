@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqliteCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -67,7 +66,6 @@
  * SQLite DB file (in the namespace format).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TSqliteCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.0
  */

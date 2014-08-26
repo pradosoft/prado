@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  */
 
@@ -17,7 +16,6 @@
  * functions.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Id: TJavaScript.php 3291 2013-05-09 17:44:58Z ctrlaltca $
  * @package System.Web.Javascripts
  * @since 3.0
  */
@@ -206,7 +204,6 @@ class TJavaScript
 		else
 			return '';
 	}
-
 	/**
 	 * Encodes a PHP variable into javascript string.
 	 * This method invokes json_encode to perform the encoding.
@@ -215,13 +212,29 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value, $options = 0)
 	{
-		if (is_string($value) &&
-			($g=Prado::getApplication()->getGlobalization(false))!==null &&
-			strtoupper($enc=$g->getCharset())!='UTF-8')
-			$value=iconv($enc, 'UTF-8', $value);
+		if (($g=Prado::getApplication()->getGlobalization(false))!==null &&
+			strtoupper($enc=$g->getCharset())!='UTF-8') {
+			self::convertToUtf8($value, $enc);
+		}
+
 		$s = @json_encode($value,$options);
 		self::checkJsonError();
 		return $s;
+	}
+
+	/**
+	 * Encodes an string or the content of an array to UTF8
+	 * @param string|array|mixed $value
+	 * @param string $sourceEncoding
+	 */
+	private static function convertToUtf8(&$value, $sourceEncoding) {
+		if(is_string($value))
+			$value=iconv($sourceEncoding, 'UTF-8', $value);
+		else if (is_array($value))
+		{
+			foreach($value as &$element)
+				self::convertToUtf8($element, $sourceEncoding);
+		}
 	}
 
 	/**
@@ -238,7 +251,7 @@ class TJavaScript
 		self::checkJsonError();
 		return $s;
 	}
-	
+
 	private static function checkJsonError()
 	{
 		switch ($err = json_last_error())
@@ -271,7 +284,7 @@ class TJavaScript
 	/**
 	 * Minimize the size of a javascript script.
 	 * This method is based on Douglas Crockford's JSMin.
-	 * @param string code that you want to minimzie 
+	 * @param string code that you want to minimzie
 	 * @return minimized version of the code
 	 */
 	public static function JSMin($code)

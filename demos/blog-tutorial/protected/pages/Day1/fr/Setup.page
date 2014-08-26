@@ -49,11 +49,10 @@ require_once('path/to/prado.php');
 $application = new TApplication;
 // run the application and handle user requests
 $application->run();
-?>
 </com:TTextHighlighter>
 
 <com:InfoBox>
-Le nom du script ne doit pas être obligatoirement <tt>index.php</tt>. Il peut porter n'importe quel nom à partir du moment ou le serveur peut l'interpréter comme étant un script PHP5. Par exemple, sur certains hébergements mutualisés, le script devra porter le nom <tt>index.php5</tt>, ce qui permettra au serveur Web de le traiter correctement. 
+Le nom du script ne doit pas être obligatoirement <tt>index.php</tt>. Il peut porter n'importe quel nom à partir du moment ou le serveur peut l'interpréter comme étant un script PHP5. Par exemple, sur certains hébergements mutualisés, le script devra porter le nom <tt>index.php5</tt>, ce qui permettra au serveur Web de le traiter correctement.
 </com:InfoBox>
 
 <h3>Le fichier de configuration de l'application</h3>
@@ -145,8 +144,8 @@ Pour changer l'emplacement du dossier racine des pages et le nom de la page d'ac
 <?xml version="1.0" encoding="utf-8"?>
 <application id="blog" mode="Debug">
   <services>
-    <service id="page" 
-           class="TPageService" 
+    <service id="page"
+           class="TPageService"
            BasePath="path.to.pages"
            DefaultPage="NewHome"
            />

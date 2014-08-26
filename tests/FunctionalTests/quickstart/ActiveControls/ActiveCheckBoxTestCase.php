@@ -1,58 +1,57 @@
 <?php
 
 //$Id: ActiveCheckBoxTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
-class QuickstartActiveCheckBoxTestCase extends PradoGenericSeleniumTest
+class QuickstartActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->setSpeed(500);
-		$this->open("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCheckBox.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCheckBox.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertTextPresent('TActiveCheckBox Samples (AJAX)');
+		$this->assertContains('TActiveCheckBox Samples (AJAX)', $this->source());
 
 
 		// an auto postback checkbox
-		$this->verifyTextNotPresent("ctl0_body_ctl0 clicked using callback");
-		$this->click("//input[@name='ctl0\$body\$ctl0']");
+		$this->assertNotContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
 		$this->pause(800);
-		$this->assertChecked("//input[@name='ctl0\$body\$ctl0']");
-		$this->verifyTextPresent("ctl0_body_ctl0 clicked using callback");
-		$this->click("//input[@name='ctl0\$body\$ctl0']");
+		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
+		$this->assertContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
 		$this->pause(800);
-		$this->verifyTextPresent("ctl0_body_ctl0 clicked using callback");
-		$this->assertNotChecked("//input[@name='ctl0\$body\$ctl0']");
+		$this->assertContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->assertFalse($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
 
 		// a checkbox causing validation on a textbox
-		$this->verifyNotVisible('ctl0_body_ctl1');
-		$this->click("//input[@name='ctl0\$body\$ctl2']");
-		$this->verifyVisible('ctl0_body_ctl1');
-		$this->click("//input[@name='ctl0\$body\$ctl2']", "");
-		$this->verifyVisible('ctl0_body_ctl3');
+		$this->assertNotVisible('ctl0_body_ctl1');
+		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
+		$this->assertVisible('ctl0_body_ctl1');
+		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
+		$this->assertVisible('ctl0_body_ctl3');
 		$this->type("ctl0\$body\$TextBox", "test");
-		$this->click("//input[@name='ctl0\$body\$ctl2']", "");
+		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
 		$this->pause(800);
-		$this->verifyNotVisible('ctl0_body_ctl1');
-		$this->assertTextPresent("ctl0_body_ctl2 clicked using callback");
+		$this->assertNotVisible('ctl0_body_ctl1');
+		$this->assertContains("ctl0_body_ctl2 clicked using callback", $this->source());
 
 		// a checkbox validated by a required field validator
-		$this->assertNotChecked("//input[@name='ctl0\$body\$CheckBox']");
-		$this->verifyNotVisible('ctl0_body_ctl4');
-		$this->click("//input[@type='submit' and @value='Submit']", "");
-		$this->verifyVisible('ctl0_body_ctl4');
-		$this->click("//input[@name='ctl0\$body\$CheckBox']", "");
-		$this->assertChecked("//input[@name='ctl0\$body\$CheckBox']");
-		$this->click("//input[@type='submit' and @value='Submit']", "");
-		$this->verifyNotVisible('ctl0_body_ctl4');
-		$this->assertTextPresent("ctl0_body_CheckBox clicked");
+		$this->assertFalse($this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->selected());
+		$this->assertNotVisible('ctl0_body_ctl4');
+		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
+		$this->assertVisible('ctl0_body_ctl4');
+		$this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->click();
+		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->selected());
+		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
+		$this->pause(800);
+		$this->assertNotVisible('ctl0_body_ctl4');
+		$this->assertContains("ctl0_body_CheckBox clicked", $this->source());
 
 		// a checkbox validated by a required field validator using AutoPostBack
-		$this->assertChecked("//input[@name='ctl0\$body\$CheckBox2']");
-		$this->verifyNotVisible('ctl0_body_ctl5');
-		$this->click("//input[@name='ctl0\$body\$CheckBox2']", "");
-		$this->verifyVisible('ctl0_body_ctl5');
-		$this->assertChecked("//input[@name='ctl0\$body\$CheckBox2']");
-		$this->setSpeed(0);
+		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$CheckBox2']")->selected());
+		$this->assertNotVisible('ctl0_body_ctl5');
+		$this->byXPath("//input[@name='ctl0\$body\$CheckBox2']")->click();
+		$this->assertVisible('ctl0_body_ctl5');
+		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$CheckBox2']")->selected());
 	}
 }

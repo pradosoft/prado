@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveRecordConfig.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord
  */
 
@@ -66,7 +65,6 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
  * </code>
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TActiveRecordConfig.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord
  * @since 3.1
  */

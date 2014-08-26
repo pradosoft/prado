@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
  <com:TRequiredFieldValidator
     ControlToValidate="rad_button_list"
@@ -6,8 +6,8 @@
     Display="Dynamic"
     ValidationGroup="Group"
     />
-  <br /> 
-  <com:TActiveRadioButtonList 
+  <br />
+  <com:TActiveRadioButtonList
     ID="rad_button_list"
     OnCallback="radChange">
     <com:TListItem Value="yes" Text="Yes" />
@@ -16,15 +16,14 @@
   </com:TActiveRadioButtonList>
   <br />
   <com:TActiveLabel
-    ID="label" 
+    ID="label"
     Text="Choice : "  />
   <br /><br /><br />
   <com:TActiveButton
     ID="action_button"
     Text="action"
     OnCallback="action"
-    ValidationGroup="Group"  />        		
+    ValidationGroup="Group"  />
 
 
-<com:TJavascriptLogger />
-</com:TForm>
+</com:TContent>

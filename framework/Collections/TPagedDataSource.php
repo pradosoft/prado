@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPagedDataSource.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  */
 
@@ -24,7 +23,6 @@
  * within the specified page will be returned and traversed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPagedDataSource.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */
@@ -277,7 +275,6 @@ class TPagedDataSource extends TComponent implements IteratorAggregate,Countable
  * to return a new iterator for traversing the items in a {@link TList} object.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPagedDataSource.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */
@@ -363,7 +360,6 @@ class TPagedListIterator implements Iterator
  * to return a new iterator for traversing the items in a {@link TMap} object.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPagedDataSource.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */

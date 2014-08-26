@@ -5,9 +5,8 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TMemCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -77,7 +76,6 @@
  * NB : MemCache server(s) must be restarted to apply settings. Require (PECL memcache >= 2.0.0).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TMemCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Caching
  * @since 3.0
  */
@@ -109,11 +107,11 @@ class TMemCache extends TCache
     private $_persistence = true;
     /**
      * @var integer number of buckets to create for this server which in turn control its
-     * probability of it being selected. The probability is relative to the total weight 
+     * probability of it being selected. The probability is relative to the total weight
      * of all servers.
      */
     private $_weight = 1;
-    
+
     private $_timeout = 360;
 
     private $_retryInterval = 15;
@@ -126,9 +124,9 @@ class TMemCache extends TCache
 	* @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
 	*/
     private $_minSavings=0.0;
-    
+
     private $_status = true;
-    
+
     private $_failureCallback = null;
 
 	/**
@@ -176,13 +174,13 @@ class TMemCache extends TCache
             Prado::trace('Adding server '.$this->_host, 'System.Caching.TMemCache');
             if($this->_cache->addServer($this->_host,$this->_port)===false)
                 throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
-        }	
+        }
 		if($this->_threshold!==0)
-            $this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);		
+            $this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);
 		$this->_initialized=true;
 		parent::init($config);
 	}
-	
+
     /**
 	 * Loads configuration from an XML element
 	 * @param TXmlElement configuration node
@@ -209,7 +207,7 @@ class TMemCache extends TCache
         		);
         		foreach($checks as $property=>$exception)
         		{
-        		    $value=$properties->remove($property); 
+        		    $value=$properties->remove($property);
         		    if($value!==null && is_numeric($value))
         		        $server[$property]=$value;
         		    else if($value!==null)
@@ -268,7 +266,7 @@ class TMemCache extends TCache
 	{
 		return $this->_threshold;
 	}
-	
+
 	/**
 	 * @param integer minimum value length before attempting to compress
 	 * @throws TInvalidOperationException if the module is already initialized
@@ -280,7 +278,7 @@ class TMemCache extends TCache
 		else
 			$this->_threshold=TPropertyValue::ensureInteger($value);
 	}
-	
+
 	/**
 	 * @return float minimum amount of savings to actually store the value compressed
 	 */
@@ -288,7 +286,7 @@ class TMemCache extends TCache
 	{
 		return $this->_minSavings;
 	}
-	
+
 	/**
 	 * @param float minimum amount of savings to actually store the value compressed
 	 * @throws TInvalidOperationException if the module is already initialized
@@ -300,7 +298,7 @@ class TMemCache extends TCache
 		else
 			$this->_minSavings=TPropertyValue::ensureFloat($value);
 	}
-	
+
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TUser.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  */
 
@@ -27,7 +26,6 @@ Prado::using('System.Security.IUserManager');
  * TUser is meant to be used together with {@link IUserManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TUser.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */

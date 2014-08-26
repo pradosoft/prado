@@ -4,9 +4,8 @@
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -26,10 +25,10 @@
  * You can also provide the allowed values by setting the {@link SetValues Values} array.
  *
  * A 'Progress Indicator' can be displayed within the track with the {@link SetProgressIndicator ProgressIndicator} property.
- * 
+ *
  * The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the
  * {@link SetCssUrl CssUrl} property.
- * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Default value is "Slider HorizontalSlider" 
+ * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Default value is "Slider HorizontalSlider"
  * for an horizontal slider, and "Slider VerticalSlider" for a vertical one.
  *
  * If {@link SetAutoPostBack AutoPostBack} property is true, postback is sent as soon as the value changed.
@@ -42,7 +41,6 @@
  * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -145,7 +143,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	{
 		$this->setViewState('StepSize', $value, 1.0);
 	}
-	
+
 	/**
 	 * @return boolean wether to display a progress indicator or not. Defaults to true.
 	 */
@@ -219,7 +217,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 	{
 		$this->setViewState('Values', TPropertyValue::ensureArray($value), array());
 	}
-	
+
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
 	 * will occur whenever the user modifies the slider value. Defaults to false.
@@ -351,7 +349,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 			$class=($this->getDirection()==TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
 			$writer->addAttribute('class', 'Slider '.$class);
 		}
-		
+
 	}
 
 	/**
@@ -387,9 +385,9 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 		}
 		$writer->renderEndTag();
 		*/
-		
+
 		$writer->renderEndTag();
-		
+
 		// Render the 'Handle'
 		$writer->addAttribute('class', 'Handle');
 		$writer->addAttribute('id', $this->getClientID().'_handle');
@@ -508,7 +506,6 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
  * The <tt>OnChange</tt> event is raised when the slider value is changed (or at the end of a move)
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */
@@ -561,7 +558,6 @@ class TSliderClientScript extends TClientSideOptions
  * - Vertical : Vertical slider
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TSlider.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.1
  */

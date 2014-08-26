@@ -4,27 +4,26 @@
  *
  * @author Brad Anderson <javalizard@mac.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPriorityMap.php 2817 2010-04-18 04:25:03Z javalizard $
  * @package System.Collections
  */
 
 /**
  * TPriorityMap class
  *
- * TPriorityMap implements a collection that takes key-value pairs with 
- * a priority to allow key-value pairs to be ordered.  This ordering is 
+ * TPriorityMap implements a collection that takes key-value pairs with
+ * a priority to allow key-value pairs to be ordered.  This ordering is
  * important when flattening the map. When flattening the map, if some
- * key-value pairs are required to be before or after others, use this 
+ * key-value pairs are required to be before or after others, use this
  * class to keep order to your map.
  *
  * You can access, add or remove an item with a key by using
- * {@link itemAt}, {@link add}, and {@link remove}.  These functions 
- * can optionally take a priority parameter to allow access to specific 
- * priorities.  TPriorityMap is functionally backward compatible 
+ * {@link itemAt}, {@link add}, and {@link remove}.  These functions
+ * can optionally take a priority parameter to allow access to specific
+ * priorities.  TPriorityMap is functionally backward compatible
  * with {@link TMap}.
- * 
+ *
  * To get the number of the items in the map, use {@link getCount}.
  * TPriorityMap can also be used like a regular array as follows,
  * <code>
@@ -39,19 +38,18 @@
  *
  * An item that doesn't specify a priority will receive the default
  * priority.  The default priority is set during the instantiation
- * of a new TPriorityMap. If no custom default priority is specified, 
+ * of a new TPriorityMap. If no custom default priority is specified,
  * the standard default priority of 10 is used.
  *
  * Priorities with significant digits below precision will be rounded.
  *
- * A priority may also be a numeric with decimals.  This is set 
- * during the instantiation of a new TPriorityMap. 
+ * A priority may also be a numeric with decimals.  This is set
+ * during the instantiation of a new TPriorityMap.
  * The default is 8 decimal places for a priority.  If a negative number
  * is used, rounding occurs into the integer space rather than in
  * the decimal space.  See {@link round}.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id: TPriorityMap.php 2817 2010-04-18 04:25:03Z javalizard $
  * @package System.Collections
  * @since 3.2a
  */
@@ -121,7 +119,7 @@ class TPriorityMap extends TMap
 	{
 		$this->_r=TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	/**
 	 * @return numeric gets the default priority of inserted items without a specified priority
 	 */
@@ -129,7 +127,7 @@ class TPriorityMap extends TMap
 	{
 		return $this->_dp;
 	}
-	
+
 	/**
 	 * This must be called internally or when instantiated.
 	 * @param numeric sets the default priority of inserted items without a specified priority
@@ -138,7 +136,7 @@ class TPriorityMap extends TMap
 	{
 		$this->_dp = (string)round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
-	
+
 	/**
 	 * @return integer The precision of numeric priorities, defaults to 8
 	 */
@@ -146,7 +144,7 @@ class TPriorityMap extends TMap
 	{
 		return $this->_p;
 	}
-	
+
 	/**
 	 * This must be called internally or when instantiated.
 	 * @param integer The precision of numeric priorities.
@@ -165,8 +163,8 @@ class TPriorityMap extends TMap
 	{
 		return new ArrayIterator($this->flattenPriorities());
 	}
-	
-	
+
+
 	/**
 	 * Orders the priority list internally.
 	 */
@@ -184,7 +182,7 @@ class TPriorityMap extends TMap
 	protected function flattenPriorities() {
 		if(is_array($this->_fd))
 			return $this->_fd;
-		
+
 		$this->sortPriorities();
 		$this->_fd = array();
 		foreach($this->_d as $priority => $itemsatpriority)
@@ -209,10 +207,10 @@ class TPriorityMap extends TMap
 	{
 		return $this->_c;
 	}
-	
+
 	/**
 	 * Gets the number of items at a priority within the map.
-	 * @param numeric optional priority at which to count items.  if no parameter, 
+	 * @param numeric optional priority at which to count items.  if no parameter,
 	 * it will be set to the default {@link getDefaultPriority}
 	 * @return integer the number of items in the map at the specified priority
 	 */
@@ -221,12 +219,12 @@ class TPriorityMap extends TMap
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
 		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
-		
+
 		if(!isset($this->_d[$priority])||!is_array($this->_d[$priority]))
 			return false;
 		return count($this->_d[$priority]);
 	}
-	
+
 	/**
 	 * This returns a list of the priorities within this map, ordered lowest to highest.
 	 * @return array the array of priority numerics in decreasing priority order
@@ -250,7 +248,7 @@ class TPriorityMap extends TMap
 	 * Returns the item with the specified key.  If a priority is specified, only items
 	 * within that specific priority will be selected
 	 * @param mixed the key
-	 * @param mixed the priority.  null is the default priority, false is any priority, 
+	 * @param mixed the priority.  null is the default priority, false is any priority,
 	 * and numeric is a specific priority.  default: false, any priority.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -279,7 +277,7 @@ class TPriorityMap extends TMap
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
 		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
-		
+
 		$oldpriority=$this->priorityAt($key);
 		if($oldpriority!==false&&$oldpriority!=$priority) {
 			$value=$this->remove($key,$oldpriority);
@@ -298,7 +296,7 @@ class TPriorityMap extends TMap
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
 		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
-		
+
 		return isset($this->_d[$priority])?$this->_d[$priority]:null;
 	}
 
@@ -348,7 +346,7 @@ class TPriorityMap extends TMap
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
 		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
-		
+
 		if(!$this->_r)
 		{
 			foreach($this->_d as $innerpriority=>$items)
@@ -376,11 +374,11 @@ class TPriorityMap extends TMap
 	/**
 	 * Removes an item from the map by its key. If no priority, or false, is specified
 	 * then priority is irrelevant. If null is used as a parameter for priority, then
-	 * the priority will be the default priority.  If a priority is specified, or 
+	 * the priority will be the default priority.  If a priority is specified, or
 	 * the default priority is specified, only key-value pairs in that priority
 	 * will be affected.
 	 * @param mixed the key of the item to be removed
-	 * @param numeric|false|null priority.  False is any priority, null is the 
+	 * @param numeric|false|null priority.  False is any priority, null is the
 	 * default priority, and numeric is a specific priority
 	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the map is read-only
@@ -391,7 +389,7 @@ class TPriorityMap extends TMap
 		{
 			if($priority===null)
 				$priority=$this->getDefaultPriority();
-		
+
 			if($priority===false)
 			{
 				$this->sortPriorities();
@@ -455,8 +453,8 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * When the map is flattened into an array, the priorities are taken into 
-	 * account and elements of the map are ordered in the array according to 
+	 * When the map is flattened into an array, the priorities are taken into
+	 * account and elements of the map are ordered in the array according to
 	 * their priority.
 	 * @return array the list of items in array
 	 */
@@ -469,7 +467,7 @@ class TPriorityMap extends TMap
 	 * Combines the map elements which have a priority below the parameter value
 	 * @param numeric the cut-off priority.  All items of priority less than this are returned.
 	 * @param boolean whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
-	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.  
+	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
 	public function toArrayBelowPriority($priority,$inclusive=false)
@@ -489,7 +487,7 @@ class TPriorityMap extends TMap
 	 * Combines the map elements which have a priority above the parameter value
 	 * @param numeric the cut-off priority.  All items of priority greater than this are returned.
 	 * @param boolean whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
-	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.  
+	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
 	public function toArrayAbovePriority($priority,$inclusive=true)
@@ -508,7 +506,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param mixed the data to be copied from, must be an array, object implementing 
+	 * @param mixed the data to be copied from, must be an array, object implementing
 	 * Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
@@ -538,7 +536,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param mixed the data to be merged with, must be an array, object implementing 
+	 * @param mixed the data to be merged with, must be an array, object implementing
 	 * Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */

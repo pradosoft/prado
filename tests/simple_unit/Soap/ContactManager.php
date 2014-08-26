@@ -23,12 +23,12 @@ class ContactManager{
 		$Contact->email = "me@you.com";
 		$Contact->id = 1;
 		$Contact->name ="me";
-		
+
 		$ret[] = $Contact;
 		//debugObject("Contacten: ",$ret);
 		return $ret;
 	}
-	
+
 	/**
 	  * Gets the Contact with the given id.
 	  * @param int $id The id
@@ -48,7 +48,7 @@ class ContactManager{
 	public function newContact() {
 		return new Contact();
 	}
-	
+
 	/**
 	  * Saves a given Contact
 	  * @param Contact $Contact
@@ -60,7 +60,7 @@ class ContactManager{
 		//$Contact->save();
 		return true;
 	}
-	
+
 	/**
 	 * @return mixed
 	 * @soapmethod
@@ -69,7 +69,7 @@ class ContactManager{
 	{
 		return array(array(1,2), array("12", 1.2));
 	}
-	
+
 	/**
 	 * @return array
 	 * @soapmethod
@@ -92,13 +92,13 @@ class ContactManager{
   */
 class Contact{
 
-	/** 
+	/**
 	 * @var int $id
 	 * @soapproperty
 	 */
 	public $id;
-	
-	/** 
+
+	/**
 	* @var string $name
 	 * @soapproperty
 	*/
@@ -110,10 +110,10 @@ class Contact{
 	public $address;
 
 	/** @var string $email
-	 * @soapproperty	
+	 * @soapproperty
 	*/
 	public $email;
-	
+
 	/**
 	  * saves a Contact
 	  *
@@ -134,24 +134,22 @@ class Contact{
   */
 class Address{
 	/** @var string $street
-	 * @soapproperty	
+	 * @soapproperty
 	*/
 	public $street;
-	
+
 	/** @var string $nr
 	 * @soapproperty
 	*/
 	public $nr;
-	
+
 	/** @var string $zipcode
 	 * @soapproperty
 	*/
-	public $zipcode;	
-	
+	public $zipcode;
+
 	/** @var string $city
 	 * @soapproperty
 	*/
-	public $city;	
+	public $city;
 }
-
-?>

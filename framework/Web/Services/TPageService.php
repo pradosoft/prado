@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPageService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  */
 
@@ -70,7 +69,6 @@ Prado::using('System.Web.UI.TThemeManager');
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TPageService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  * @since 3.0
  */
@@ -547,7 +545,6 @@ class TPageService extends TService
  * Configurations along this path are merged together to be provided for the page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPageService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  * @since 3.0
  */
@@ -657,14 +654,14 @@ class TPageConfiguration extends TComponent
 		Prado::trace("Loading page configuration file $fname",'System.Web.Services.TPageService');
 		if(empty($fname) || !is_file($fname))
 			return;
-		
+
 		if(Prado::getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
 			$fcontent = include $fname;
 			$this->loadFromPhp($fcontent,dirname($fname),$configPagePath);
 		}
 		else
-		{	
+		{
 			$dom=new TXmlDocument;
 			if($dom->loadFromFile($fname))
 				$this->loadFromXml($dom,dirname($fname),$configPagePath);
@@ -692,7 +689,7 @@ class TPageConfiguration extends TComponent
 		$this->loadApplicationConfigurationFromXml($dom,$configPath);
 		$this->loadPageConfigurationFromXml($dom,$configPath,$configPagePath);
 	}
-	
+
 	public function loadApplicationConfigurationFromPhp($config,$configPath)
 	{
 		$appConfig=new TApplicationConfiguration;
@@ -775,7 +772,7 @@ class TPageConfiguration extends TComponent
 				if(isset($page['properties']))
 				{
 					$properties=$page['properties'];
-					unset($page['properties']);	
+					unset($page['properties']);
 				}
 				$matching=false;
 				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
@@ -787,7 +784,7 @@ class TPageConfiguration extends TComponent
 					$this->_properties=array_merge($this->_properties,$properties);
 			}
 		}
-		
+
 		// external configurations
 		if(isset($config['includes']) && is_array($config['includes']))
 		{

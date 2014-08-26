@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">Installation</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">Nouvelles fonctionnalités</a></li>
     <li><a href="?page=GettingStarted.Upgrading">Mise à jour de v2.x et v1.x</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">Outil en ligne de commande</a></li>
 </ul>
 </div>
 
@@ -18,7 +20,6 @@
     <li><a href="?page=Fundamentals.Hangman">Exemple : Jeu du pendu</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">Convertisseur monétaire</a></li>
 	<li><a href="?page=Tutorial.AjaxChat">Chat AJAX</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">Outil en ligne de commande</a></li>
 </ul>
 </div>
 
@@ -26,7 +27,7 @@
 <div>Fundamentaux</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">Architecture</a></li>
-    <li><a href="?page=Fundamentals.Components">Composants</a></li>
+    <li><a href="?page=Fundamentals.Components1">Composants</a></li>
     <li><a href="?page=Fundamentals.Controls">Contrôles</a></li>
     <li><a href="?page=Fundamentals.Pages">Pages</a></li>
     <li><a href="?page=Fundamentals.Modules">Modules</a></li>

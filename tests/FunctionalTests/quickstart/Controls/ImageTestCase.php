@@ -1,18 +1,18 @@
 <?php
 
 //New Test
-class QuickstartImageTestCase extends PradoGenericSeleniumTest
+class QuickstartImageTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TImage.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		//$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='']");
-		$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='Hello World!']");
-		$this->verifyTextPresent("Hello World! Hello World! Hello World!", "");
-		//$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and @align='baseline']");
-		//$this->verifyElementPresent("//img[contains(@src,'/hello_world.gif') and contains(@longdesc,'HelloWorld.html')]");
+		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='']");
+		$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='Hello World!']");
+		$this->assertContains("Hello World! Hello World! Hello World!", $this->source());
+		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @align='baseline']");
+		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and contains(@longdesc,'HelloWorld.html')]");
 	}
 }

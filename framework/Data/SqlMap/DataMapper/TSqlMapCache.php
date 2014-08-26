@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqlMapCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  */
 
@@ -16,7 +15,6 @@
  * a least-recently-used cache implementation.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TSqlMapCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -89,7 +87,6 @@ abstract class TSqlMapCache implements ICache
  * object that was first added when the cache is full.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TSqlMapCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -126,7 +123,6 @@ class TSqlMapFifoCache extends TSqlMapCache
  * object that was accessed last when the cache is full.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TSqlMapCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */
@@ -168,7 +164,6 @@ class TSqlMapLruCache extends TSqlMapCache
  * caching SqlMap results.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapCache.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap
  * @since 3.1
  */

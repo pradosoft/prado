@@ -49,4 +49,3 @@ class DeleteByPkTest extends BaseGatewayTest
 		$this->assertEqual(2, $deleted);
 	}
 }
-?>

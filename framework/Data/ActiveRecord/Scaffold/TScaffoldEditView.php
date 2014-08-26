@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TScaffoldEditView.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  */
 
@@ -43,7 +42,6 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
  * xxx is the property name).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TScaffoldEditView.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  * @since 3.1
  */
@@ -294,7 +292,6 @@ class TScaffoldEditView extends TScaffoldBase
  * that is called before the save() method is called on the TActiveRecord.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TScaffoldEditView.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  * @since 3.1
  */

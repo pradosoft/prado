@@ -522,4 +522,3 @@
             return 'com|edu|net|org|gov|mil|int|biz|info|name|pro|aero|coop|museum';
         }
     }
-?>

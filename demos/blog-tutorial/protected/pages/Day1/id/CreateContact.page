@@ -45,11 +45,11 @@ Kita menggunakan template untuk menghatur tata letak penyajian terhadap formulir
 <h1>Contact</h1>
 <p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
 
-&lt;com:TForm> 
+&lt;com:TForm>
 
 <span>Your Name:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Name"
-    ErrorMessage="Please provide your name." 
+    ErrorMessage="Please provide your name."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Name" />
@@ -57,10 +57,10 @@ Kita menggunakan template untuk menghatur tata letak penyajian terhadap formulir
 <br/>
 <span>Your Email:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Email"
-    ErrorMessage="Please provide your email address." 
+    ErrorMessage="Please provide your email address."
     Display="Dynamic" />
 &lt;com:TEmailAddressValidator ControlToValidate="Email"
-    ErrorMessage="You entered an invalid email address." 
+    ErrorMessage="You entered an invalid email address."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
@@ -68,11 +68,11 @@ Kita menggunakan template untuk menghatur tata letak penyajian terhadap formulir
 <br/>
 <span>Feedback:</span>
 &lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
-    ErrorMessage="Please provide your feedback." 
+    ErrorMessage="Please provide your feedback."
     Display="Dynamic" />
 <br/>
-&lt;com:TTextBox ID="Feedback" 
-    TextMode="MultiLine" 
+&lt;com:TTextBox ID="Feedback"
+    TextMode="MultiLine"
     Rows="10"
     Columns="40" />
 
@@ -99,13 +99,13 @@ Selain kontrol <tt>TTextBox</tt>, template juga menggunakan banyak kontrol valid
 
 <com:TTextHighlighter CssClass="source" Language="prado">
 <span>Your Email:</span>
-&lt;com:TRequiredFieldValidator 
+&lt;com:TRequiredFieldValidator
     ControlToValidate="Email"
-    ErrorMessage="Please provide your email address." 
+    ErrorMessage="Please provide your email address."
     Display="Dynamic" />
-&lt;com:TEmailAddressValidator 
+&lt;com:TEmailAddressValidator
     ControlToValidate="Email"
-    ErrorMessage="You entered an invalid email address." 
+    ErrorMessage="You entered an invalid email address."
     Display="Dynamic" />
 <br/>
 &lt;com:TTextBox ID="Email" />
@@ -152,28 +152,27 @@ class Contact extends TPage
     /**
      * Pengendali event untuk event OnClick pada tombol submit.
      * @param TButton tombol yang memicu event
-     * @param TEventParameter parameter event (null di sini)    
+     * @param TEventParameter parameter event (null di sini)
      */
     public function submitButtonClicked($sender, $param)
     {
         if ($this->IsValid)  // memeriksa apakan validasi input berhasil
         {
             // mendapatkan nama pengguna, email, umpan balik dari kotak teks
-            $name = $this->Name->Text;  
+            $name = $this->Name->Text;
             $email = $this->Email->Text;
             $feedback = $this->Feedback->Text;
-            
+
             // mengirimkan email ke administrator dengan informasi di atas
             $this->mailFeedback($name, $email, $feedback);
         }
     }
-    
+
     protected function mailFeedback($name, $email, $feedback)
     {
         // implementasi pengiriman email umpan balik
     }
 }
-?>
 </com:TTextHighlighter>
 
 <p>

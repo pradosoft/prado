@@ -1,24 +1,25 @@
 <?php
 
-class NestedActiveControlsTestCase extends PradoGenericSeleniumTest
+class NestedActiveControlsTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=NestedActiveControls");
-		$this->verifyTextPresent("Nested Active Controls Test");
-		$this->assertText("label1", "Label 1");
-		$this->assertText("label2", "Label 2");
-		$this->assertTextNotPresent("Label 3");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=NestedActiveControls");
+		$this->assertContains("Nested Active Controls Test", $this->source());
+		$this->assertText("{$base}label1", "Label 1");
+		$this->assertText("{$base}label2", "Label 2");
+		$this->assertNotContains("Label 3", $this->source());
 
-		$this->click("div1");
+		$this->byId("div1")->click();
 		$this->pause(800);
-		$this->assertTextPresent("Something lalala");
-		$this->assertText("label3", "Label 3");
+		$this->assertContains("Something lalala", $this->source());
+		$this->assertText("{$base}label3", "Label 3");
 
-		$this->click("button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
-		$this->assertText("label1", "Label 1: Button 1 Clicked");
-		$this->assertText("label2", "Label 2: Button 1 Clicked");
-		$this->assertText("label3", "Label 3: Button 1 Clicked");
+		$this->assertText("{$base}label1", "Label 1: Button 1 Clicked");
+		$this->assertText("{$base}label2", "Label 2: Button 1 Clicked");
+		$this->assertText("{$base}label3", "Label 3: Button 1 Clicked");
 	}
 }

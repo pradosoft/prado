@@ -15,22 +15,21 @@ class TFormTest extends PHPUnit_Framework_TestCase {
 	public function testRender() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testSetAndGetDefaultButton() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testSetAndGetMethod() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testSetAndGetEnctype() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testGetName() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
 
 }
-?>

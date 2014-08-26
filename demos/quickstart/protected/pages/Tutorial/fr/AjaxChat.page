@@ -58,7 +58,6 @@ php prado/framework/prado-cli.php -c chat
 class Login extends TPage
 {
 }
-?&gt;
 </com:TTextHighlighter>
 <com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90029">
 <!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -430,7 +429,6 @@ and a button to send the message.
         Text="Send" /&gt;
 </div>
 &lt;/com:TForm&gt;
-&lt;com:TJavascriptLogger /&gt;
 </body>
 </html>
 </com:TTextHighlighter>

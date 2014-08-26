@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAuthorizationRule.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  */
 /**
@@ -25,7 +24,6 @@
  * IP rules are separated by comma ',' and can contain wild card in the rules (e.g. '192.132.23.33, 192.122.*.*')
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TAuthorizationRule.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */
@@ -249,7 +247,6 @@ class TAuthorizationRule extends TComponent
  * To check if a user is allowed, call {@link isUserAllowed}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TAuthorizationRule.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */

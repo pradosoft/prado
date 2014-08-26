@@ -19,6 +19,10 @@ class TDbConnectionTest extends PHPUnit_Framework_TestCase
 	{
 		@unlink(TEST_DB_FILE);
 		@unlink(TEST_DB_FILE2);
+
+		// create application just to provide application mode
+		new TApplication(__DIR__, false ,TApplication::CONFIG_TYPE_PHP);
+
 		$this->_connection1=new TDbConnection('sqlite:'.TEST_DB_FILE);
 		$this->_connection1->Active=true;
 		$this->_connection1->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
@@ -121,5 +125,3 @@ class TDbConnectionTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals(TDbNullConversionMode::NullToEmptyString,$this->_connection1->NullConversion);
 	}
 }
-
-?>

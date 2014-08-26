@@ -136,4 +136,3 @@
             $this->_invoker->after($method);
         }
     }
-?>

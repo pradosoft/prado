@@ -5,9 +5,8 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActivePageAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -25,7 +24,6 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @version $Id: TActivePageAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -150,7 +148,6 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage redirect()",'System.Web.UI.ActiveControls.TActivePageAdapter');
 		$this->appendContentPart($this->getResponse(), self::CALLBACK_REDIRECT, $url);
-		//$this->getResponse()->appendHeader(self::CALLBACK_REDIRECT.': '.$url);
 	}
 
 	/**
@@ -176,7 +173,6 @@ class TActivePageAdapter extends TControlAdapter
 				$data = TJavaScript::jsonEncode($responseData);
 
 				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
-				//$response->appendHeader(self::CALLBACK_DATA_HEADER.': '.$data);
 			}
 		}
 
@@ -187,7 +183,6 @@ class TActivePageAdapter extends TControlAdapter
 			{
 				$pagestate = $this->getPage()->getClientState();
 				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
-				//$response->appendHeader(self::CALLBACK_PAGESTATE_HEADER.': '.$pagestate);
 			}
 		}
 
@@ -206,7 +201,6 @@ class TActivePageAdapter extends TControlAdapter
 		$executeJavascript = $this->getCallbackClientHandler()->getClientFunctionsToExecute();
 		$actions = TJavaScript::jsonEncode($executeJavascript);
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
-		//$response->appendHeader(self::CALLBACK_ACTION_HEADER.': '.$actions);
 
 
 		$cs = $this->Page->getClientScript();
@@ -296,7 +290,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * Gets callback parameter. JSON encoding is assumed.
+	 * Gets callback parameter.
 	 * @return string postback event parameter
 	 */
 	public function getCallbackEventParameter()
@@ -304,8 +298,7 @@ class TActivePageAdapter extends TControlAdapter
 		if($this->_callbackEventParameter===null)
 		{
 			$param = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
-			if(strlen($param) > 0)
-				$this->_callbackEventParameter=TJavaScript::jsonDecode((string)$param);
+			$this->_callbackEventParameter=$param;
 		}
 		return $this->_callbackEventParameter;
 	}
@@ -340,7 +333,6 @@ class TActivePageAdapter extends TControlAdapter
  * the error stack trace.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActivePageAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -357,14 +349,22 @@ class TCallbackErrorHandler extends TErrorHandler
 		{
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);
+			// avoid error on non-utf8 strings
 			try {
 				$trace = TJavaScript::jsonEncode($trace);
 			} catch (Exception $e) {
 				// strip everythin not 7bit ascii
 				$trace = preg_replace('/[^(\x20-\x7F)]*/','', serialize($trace));
 			}
-			$response->setStatusCode(500, 'Internal Server Error');
-			$response->appendHeader(TActivePageAdapter::CALLBACK_ERROR_HEADER.': '.$trace);
+
+			// avoid exception loop if headers have already been sent
+			try {
+				$response->setStatusCode(500, 'Internal Server Error');
+			} catch (Exception $e) { }
+
+			$content = $response->createHtmlWriter();
+			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_ERROR_HEADER);
+			$content->write($trace);
 		}
 		else
 		{
@@ -406,7 +406,6 @@ class TCallbackErrorHandler extends TErrorHandler
  * TInvalidCallbackException class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActivePageAdapter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

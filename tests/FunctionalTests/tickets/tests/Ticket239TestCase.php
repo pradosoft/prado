@@ -1,53 +1,53 @@
 <?php
 
-class Ticket239TestCase extends PradoGenericSeleniumTest
+class Ticket239TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket239');
+		$this->url('tickets/index.php?page=Ticket239');
 
 		// view1
-		$this->verifyTextPresent('view1 is activated','');
-		$this->verifyTextNotPresent('view1 is deactivated','');
-		$this->verifyTextNotPresent('view2 is activated','');
-		$this->verifyTextNotPresent('view2 is deactivated','');
-		$this->verifyTextNotPresent('view3 is activated','');
-		$this->verifyTextNotPresent('view3 is deactivated','');
+		$this->assertContains('view1 is activated', $this->source());
+		$this->assertNotContains('view1 is deactivated', $this->source());
+		$this->assertNotContains('view2 is activated', $this->source());
+		$this->assertNotContains('view2 is deactivated', $this->source());
+		$this->assertNotContains('view3 is activated', $this->source());
+		$this->assertNotContains('view3 is deactivated', $this->source());
 
 		// goto view2
-		$this->clickAndWait('name=ctl0$Content$ctl1');
-		$this->verifyTextNotPresent('view1 is activated','');
-		$this->verifyTextPresent('view1 is deactivated','');
-		$this->verifyTextPresent('view2 is activated','');
-		$this->verifyTextNotPresent('view2 is deactivated','');
-		$this->verifyTextNotPresent('view3 is activated','');
-		$this->verifyTextNotPresent('view3 is deactivated','');
+		$this->byName('ctl0$Content$ctl1')->click();
+		$this->assertNotContains('view1 is activated', $this->source());
+		$this->assertContains('view1 is deactivated', $this->source());
+		$this->assertContains('view2 is activated', $this->source());
+		$this->assertNotContains('view2 is deactivated', $this->source());
+		$this->assertNotContains('view3 is activated', $this->source());
+		$this->assertNotContains('view3 is deactivated', $this->source());
 
 		// goto view3
-		$this->clickAndWait('name=ctl0$Content$ctl3');
-		$this->verifyTextNotPresent('view1 is activated','');
-		$this->verifyTextNotPresent('view1 is deactivated','');
-		$this->verifyTextNotPresent('view2 is activated','');
-		$this->verifyTextPresent('view2 is deactivated','');
-		$this->verifyTextPresent('view3 is activated','');
-		$this->verifyTextNotPresent('view3 is deactivated','');
+		$this->byName('ctl0$Content$ctl3')->click();
+		$this->assertNotContains('view1 is activated', $this->source());
+		$this->assertNotContains('view1 is deactivated', $this->source());
+		$this->assertNotContains('view2 is activated', $this->source());
+		$this->assertContains('view2 is deactivated', $this->source());
+		$this->assertContains('view3 is activated', $this->source());
+		$this->assertNotContains('view3 is deactivated', $this->source());
 
 		// goto view2
-		$this->clickAndWait('name=ctl0$Content$ctl4');
-		$this->verifyTextNotPresent('view1 is activated','');
-		$this->verifyTextNotPresent('view1 is deactivated','');
-		$this->verifyTextPresent('view2 is activated','');
-		$this->verifyTextNotPresent('view2 is deactivated','');
-		$this->verifyTextNotPresent('view3 is activated','');
-		$this->verifyTextPresent('view3 is deactivated','');
+		$this->byName('ctl0$Content$ctl4')->click();
+		$this->assertNotContains('view1 is activated', $this->source());
+		$this->assertNotContains('view1 is deactivated', $this->source());
+		$this->assertContains('view2 is activated', $this->source());
+		$this->assertNotContains('view2 is deactivated', $this->source());
+		$this->assertNotContains('view3 is activated', $this->source());
+		$this->assertContains('view3 is deactivated', $this->source());
 
 		// goto view1
-		$this->clickAndWait('name=ctl0$Content$ctl2');
-		$this->verifyTextPresent('view1 is activated','');
-		$this->verifyTextNotPresent('view1 is deactivated','');
-		$this->verifyTextNotPresent('view2 is activated','');
-		$this->verifyTextPresent('view2 is deactivated','');
-		$this->verifyTextNotPresent('view3 is activated','');
-		$this->verifyTextNotPresent('view3 is deactivated','');
+		$this->byName('ctl0$Content$ctl2')->click();
+		$this->assertContains('view1 is activated', $this->source());
+		$this->assertNotContains('view1 is deactivated', $this->source());
+		$this->assertNotContains('view2 is activated', $this->source());
+		$this->assertContains('view2 is deactivated', $this->source());
+		$this->assertNotContains('view3 is activated', $this->source());
+		$this->assertNotContains('view3 is deactivated', $this->source());
 	}
 }

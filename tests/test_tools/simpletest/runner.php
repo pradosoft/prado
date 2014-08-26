@@ -5,7 +5,7 @@
      *	@subpackage	UnitTester
      *	@version	$Id: runner.php 1398 2006-09-08 19:31:03Z xue $
      */
-    
+
     /**#@+
      * Includes SimpleTest files and defined the root constant
      * for dependent libraries.
@@ -19,7 +19,7 @@
         define('SIMPLE_TEST', dirname(__FILE__) . '/');
     }
     /**#@-*/
-    
+
     /**
      *    This is called by the class runner to run a
      *    single test method. Will also run the setUp()
@@ -29,7 +29,7 @@
      */
     class SimpleInvoker {
         protected $_test_case;
-        
+
         /**
          *    Stashes the test case for later.
          *    @param SimpleTestCase $test_case  Test case to run.
@@ -37,7 +37,7 @@
         function SimpleInvoker($test_case) {
             $this->_test_case = $test_case;
         }
-        
+
         /**
          *    Accessor for test case being run.
          *    @return SimpleTestCase    Test case.
@@ -46,7 +46,7 @@
         function getTestCase() {
             return $this->_test_case;
         }
-        
+
         /**
          *    Invokes a test method and buffered with setUp()
          *    and tearDown() calls.
@@ -59,7 +59,7 @@
             $this->_test_case->tearDown();
         }
     }
-    
+
     /**
      *    Do nothing decorator. Just passes the invocation
      *    straight through.
@@ -68,7 +68,7 @@
      */
     class SimpleInvokerDecorator {
         protected $_invoker;
-        
+
         /**
          *    Stores the invoker to wrap.
          *    @param SimpleInvoker $invoker  Test method runner.
@@ -76,7 +76,7 @@
         function SimpleInvokerDecorator($invoker) {
             $this->_invoker = $invoker;
         }
-        
+
         /**
          *    Accessor for test case being run.
          *    @return SimpleTestCase    Test case.
@@ -85,7 +85,7 @@
         function getTestCase() {
             return $this->_invoker->getTestCase();
         }
-        
+
         /**
          *    Invokes a test method and buffered with setUp()
          *    and tearDown() calls.
@@ -103,7 +103,7 @@
 	 *	  @subpackage UnitTester
      */
     class SimpleErrorTrappingInvoker extends SimpleInvokerDecorator {
-        
+
         /**
         /**
          *    Stores the invoker to wrap.
@@ -112,7 +112,7 @@
         function SimpleErrorTrappingInvoker($invoker) {
             $this->SimpleInvokerDecorator($invoker);
         }
-        
+
         /**
          *    Invokes a test method and dispatches any
          *    untrapped errors. Called back from
@@ -142,7 +142,7 @@
     class SimpleRunner {
         protected $_test_case;
         protected $_scorer;
-        
+
         /**
          *    Takes in the test case and reporter to mediate between.
          *    @param SimpleTestCase $test_case  Test case to run.
@@ -152,7 +152,7 @@
             $this->_test_case = $test_case;
             $this->_scorer = $scorer;
         }
-        
+
         /**
          *    Accessor for test case being run.
          *    @return SimpleTestCase    Test case.
@@ -161,7 +161,7 @@
         function getTestCase() {
             return $this->_test_case;
         }
-        
+
         /**
          *    Runs the test methods in the test case.
          *    @param SimpleTest $test_case    Test case to run test on.
@@ -185,7 +185,7 @@
                 $this->_scorer->paintMethodEnd($method);
             }
         }
-        
+
         /**
          *    Tests to see if the method is the constructor and
          *    so should be ignored.
@@ -198,7 +198,7 @@
                     $this->_test_case,
                     strtolower($method));
         }
-        
+
         /**
          *    Tests to see if the method is a test that should
          *    be run. Currently any method that starts with 'test'
@@ -219,7 +219,7 @@
         function paintMethodStart($test_name) {
             $this->_scorer->paintMethodStart($test_name);
         }
-        
+
         /**
          *    Paints the end of a test method.
          *    @param string $test_name     Name of test or other label.
@@ -228,7 +228,7 @@
         function paintMethodEnd($test_name) {
             $this->_scorer->paintMethodEnd($test_name);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $message        Message is ignored.
@@ -237,7 +237,7 @@
         function paintPass($message) {
             $this->_scorer->paintPass($message);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $message        Message is ignored.
@@ -246,7 +246,7 @@
         function paintFail($message) {
             $this->_scorer->paintFail($message);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $message    Text of error formatted by
@@ -256,7 +256,7 @@
         function paintError($message) {
             $this->_scorer->paintError($message);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param Exception $exception     Object thrown.
@@ -265,7 +265,7 @@
         function paintException($exception) {
             $this->_scorer->paintException($exception);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $message        Text to display.
@@ -274,7 +274,7 @@
         function paintMessage($message) {
             $this->_scorer->paintMessage($message);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $message        Text to display.
@@ -283,7 +283,7 @@
         function paintFormattedMessage($message) {
             $this->_scorer->paintFormattedMessage($message);
         }
-        
+
         /**
          *    Chains to the wrapped reporter.
          *    @param string $type        Event type as text.
@@ -297,4 +297,3 @@
             $this->_scorer->paintSignal($type, $payload);
         }
     }
-?>

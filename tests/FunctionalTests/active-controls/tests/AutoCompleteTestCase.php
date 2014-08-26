@@ -1,42 +1,43 @@
 <?php
 
-class AutoCompleteTestCase extends PradoGenericSeleniumTest
+class AutoCompleteTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=AutoCompleteTest");
-		$this->verifyTextPresent("TAutoComplete Test");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=AutoCompleteTest");
+		$this->assertContains("TAutoComplete Test", $this->source());
 
-		$this->assertText("label1", "Label 1");
+		$this->assertText("{$base}label1", "Label 1");
 
-		$this->type("textbox3", 'a');
-		$this->runScript('Prado.Registry.get(\'textbox3\').onKeyPress({})');
-		$this->pause(500);
-		$this->verifyTextPresent('Andorra');
-		$this->assertText("label1", "suggestion for a");
+		$this->byId("{$base}textbox3")->click();
+		$this->keys('a');
+		$this->pause(800);
+		$this->assertContains('Andorra', $this->source());
+		$this->assertText("{$base}label1", "suggestion for a");
 
-		$this->type("textbox3", 'au');
-		$this->runScript('Prado.Registry.get(\'textbox3\').onKeyPress({})');
-		$this->pause(500);
-		$this->verifyTextPresent('Australia');
-		$this->assertText("label1", "suggestion for au");
+		$this->keys('u');
+		$this->pause(800);
+		$this->assertContains('Australia', $this->source());
+		$this->assertText("{$base}label1", "suggestion for au");
 
-		$this->click("css=#textbox3_result ul li");
-		$this->pause(500);
-		$this->assertText("label1", "Label 1: Austria");
+		$this->byCssSelector("#{$base}textbox3_result ul li")->click();
+		$this->pause(800);
+		$this->assertText("{$base}label1", "Label 1: Austria");
 
-		$this->type("textbox2", "cu");
-		$this->runScript('Prado.Registry.get(\'textbox2\').onKeyPress({})');
-		$this->pause(500);
-		$this->click('css=#textbox2_result ul li');
-		$this->pause(500);
-		$this->assertText("label1", "Label 1: Cuba");
 
-		$this->type("textbox2", "Cuba,me");
-		$this->runScript('Prado.Registry.get(\'textbox2\').onKeyPress({})');
+		$this->byId("{$base}textbox2")->click();
+		$this->keys('cu');
+		$this->pause(800);
+		$this->byCssSelector("#{$base}textbox2_result ul li")->click();
+		$this->pause(800);
+		$this->assertText("{$base}label1", "Label 1: Cuba");
+
+		$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
+		$this->keys(',me');
+		$this->pause(800);
+		$this->byCssSelector("#{$base}textbox2_result ul li")->click();
 		$this->pause(500);
-		$this->click('css=#textbox2_result ul li');
-		$this->pause(500);
-		$this->assertText("label1", "Label 1: Cuba,Mexico");
+		$this->assertText("{$base}label1", "Label 1: Cuba,Mexico");
 	}
 }

@@ -8,16 +8,16 @@ Prado::using('System.I18N.core.CultureInfo');
  */
 class CultureInfoTest extends PHPUnit_Framework_TestCase {
   protected $culture;
- 
+
   function setUp() {
     $this->culture = CultureInfo::getInvariantCulture();
   }
-  
+
   function testCultureName() {
     $name = 'en';
-    
+
     $this->assertEquals($name, $this->culture->Name);
-    
+
     //the default/invariant culture should be neutral
     $this->assertTrue($this->culture->IsNeutralCulture);
   }
@@ -26,18 +26,18 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
     $allCultures = CultureInfo::getCultures();
     $neutralCultures = CultureInfo::getCultures(CultureInfo::NEUTRAL);
     $specificCultures = CultureInfo::getCultures(CultureInfo::SPECIFIC);
-    
+
     //there should be 246 cultures all together.
     $this->assertEquals(count($allCultures),246);
     $this->assertEquals(count($neutralCultures),76);
-    $this->assertEquals(count($specificCultures),170);  
+    $this->assertEquals(count($specificCultures),170);
   }
 
   function testParentCultures() {
     $zh_CN = new CultureInfo('zh_CN');
     $parent = $zh_CN->Parent;
     $grandparent = $parent->Parent;
-    
+
     $this->assertEquals($zh_CN->Name, 'zh_CN');
     $this->assertEquals($parent->Name, 'zh');
     $this->assertEquals($grandparent->Name, 'en');
@@ -54,17 +54,17 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
     $au = array('$', 'Australian Dollar');
     $this->assertEquals($au, $culture->Currencies['AUD']);
   }
-  
+
   function testLanguages() {
     $culture = new CultureInfo('fr_BE');
     $this->assertEquals($culture->Languages['fr'], 'français');
   }
-  
+
   function testScripts() {
     $culture = new CultureInfo('fr');
     $this->assertEquals($culture->Scripts['Armn'], 'arménien');
   }
-  
+
   function testTimeZones() {
     $culture = new CultureInfo('fi');
     $zone = array(
@@ -83,5 +83,3 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($culture->getEnglishName(), 'iw');
   }
 }
-
-?>

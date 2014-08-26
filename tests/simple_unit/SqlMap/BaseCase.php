@@ -258,5 +258,3 @@ class TDateTime
 		$this->_datetime = $value;
 	}
 }
-
-?>

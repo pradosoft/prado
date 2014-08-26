@@ -99,5 +99,21 @@ Choose page:
 			Element.hide('wait')
 		</prop:ClientSide.OnComplete>
 </com:TActivePager>
-<com:TJavascriptLogger/>
+<br/>
+Use of a css class for buttons:
+<com:TStyleSheet>
+.greenbold_button {
+	background-color: #0f0;
+	font-weight: bold;
+}
+</com:TStyleSheet>
+<com:TActivePager ID="Pager4"
+	ControlToPaginate="DataList"
+	PageButtonCount="3"
+	Mode="Numeric"
+	ButtonType="PushButton"
+	OnPageIndexChanged="pageChanged"
+	OnCallBack="RenderCallback"
+	ButtonCssClass="greenbold_button"
+	/>
 </com:TContent>

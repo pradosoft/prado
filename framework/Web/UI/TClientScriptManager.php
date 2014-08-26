@@ -5,9 +5,8 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  */
 
@@ -18,7 +17,6 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -150,7 +148,7 @@ class TClientScriptManager extends TApplicationComponent
 				$this->_registeredPradoScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
-				
+
 			if(($packages=array_keys($this->_registeredPradoScripts))!==array())
 			{
 				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
@@ -347,7 +345,7 @@ class TClientScriptManager extends TApplicationComponent
 		if($target instanceof TControl)
 			$target=$target->getClientID();
 		$id = TJavaScript::quoteString($target);
-		$this->_endScripts['prado:focus'] = 'new Effect.ScrollTo('.$id.'); Prado.Element.focus('.$id.');';
+		$this->_endScripts['prado:focus'] = 'Prado.Element.focus('.$id.');';
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
@@ -369,7 +367,6 @@ class TClientScriptManager extends TApplicationComponent
 	 *     $this->Page->ClientScript->registerStyleSheetFile($url, $url);
 	 *   }
 	 * }
-	 * ?>
 	 * </code>
 	 *
 	 * @param string a unique key identifying the file
@@ -466,7 +463,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function registerScriptFile($key, $url)
 	{
 		$this->_scriptFiles[$key]=$url;
-		
+
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerScriptFile',$params);
 	}
@@ -717,8 +714,11 @@ class TClientScriptManager extends TApplicationComponent
 	 */
 	public function flushScriptFiles($writer, $control=null)
 	{
-		$this->_page->ensureRenderInForm($control);
-		$this->renderAllPendingScriptFiles($writer);
+		if(!$this->_page->getIsCallback())
+		{
+			$this->_page->ensureRenderInForm($control);
+			$this->renderAllPendingScriptFiles($writer);
+		}
 	}
 
 	/**
@@ -747,7 +747,7 @@ class TClientScriptManager extends TApplicationComponent
 			$writer->write("<div style=\"visibility:hidden;\">\n".$str."</div>\n");
 	}
 
-	public function getHiddenFields()	
+	public function getHiddenFields()
 	{
 		return $this->_hiddenFields;
 	}
@@ -770,7 +770,6 @@ class TClientScriptManager extends TApplicationComponent
  * between ActiveControls and validators.
  *
  * @author <weizhuo[at]gmail[dot]com>
- * @version $Id: TClientScriptManager.php 3280 2013-03-13 20:19:30Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */

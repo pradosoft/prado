@@ -72,6 +72,5 @@ The same TCallbackOptions can be shared among different controls, even of differ
 </td></tr>
 </table>
 
-<com:TJavascriptLogger />
 
 </com:TContent>

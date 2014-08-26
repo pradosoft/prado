@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 	<h1 id="heading">PostLoading Test</h1>
 	<com:TCallback ID="callback1" OnCallback="Page.callback1_requested" />
@@ -9,7 +9,7 @@
 		Click Me!
 	</div>
 
-	<script type="text/javascript">
+	<com:TClientScript>
 		Event.OnLoad(function()
 		{
 			Event.observe($("div1"), "click", function()
@@ -17,8 +17,5 @@
 				Prado.Callback("<%= $this->callback1->UniqueID %>")
 			})
 		})
-	</script>
-
-	<com:TJavascriptLogger />
-
-</com:TForm>
+	</com:TClientScript>
+</com:TContent>

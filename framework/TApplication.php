@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  */
 
@@ -105,7 +104,6 @@ Prado::using('System.I18N.TGlobalization');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -131,7 +129,7 @@ class TApplication extends TComponent
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT_XML='.xml';	
+	const CONFIG_FILE_EXT_XML='.xml';
 	/**
 	 * Configuration file type, application.xml and config.xml
 	 */
@@ -296,7 +294,7 @@ class TApplication extends TComponent
 	 * @var TApplicationMode application mode
 	 */
 	private $_mode=TApplicationMode::Debug;
-	
+
 	/**
 	 * @var string Customizable page service ID
 	 */
@@ -334,7 +332,7 @@ class TApplication extends TComponent
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new TMap;
 		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
-		
+
 		Prado::setPathOfAlias('Application',$this->_basePath);
 	}
 
@@ -521,7 +519,7 @@ class TApplication extends TComponent
 	{
 		$this->_id=$value;
 	}
-	
+
 	/**
 	 * @return string page service ID
 	 */
@@ -609,7 +607,7 @@ class TApplication extends TComponent
 	{
 		$this->_configType = $value;
 	}
-	
+
 	/**
 	 * @return string the application configuration type. default is 'xml'
 	 */
@@ -628,7 +626,7 @@ class TApplication extends TComponent
 		}
 		return $this->_configFileExt;
 	}
-	
+
 	/**
 	 * @return string the default configuration file name
 	 */
@@ -999,7 +997,7 @@ class TApplication extends TComponent
 			foreach($config->getProperties() as $name=>$value)
 				$this->setSubProperty($name,$value);
 		}
-		
+
 		if(empty($this->_services))
 			$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 
@@ -1081,7 +1079,7 @@ class TApplication extends TComponent
 
 		if(($serviceID=$this->getRequest()->resolveRequest(array_keys($this->_services)))===null)
 			$serviceID=$this->getPageServiceID();
-		
+
 		$this->startService($serviceID);
 	}
 
@@ -1280,7 +1278,6 @@ class TApplication extends TComponent
  * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0.4
  */
@@ -1300,7 +1297,6 @@ class TApplicationMode extends TEnumerable
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1382,7 +1378,7 @@ class TApplicationConfiguration extends TComponent
 				$this->_properties[$name]=$value;
 			}
 			$this->_empty = false;
-		}	
+		}
 
 		if(isset($config['paths']) && is_array($config['paths']))
 			$this->loadPathsPhp($config['paths'],$configPath);
@@ -1395,7 +1391,7 @@ class TApplicationConfiguration extends TComponent
 
 		if(isset($config['parameters']) && is_array($config['parameters']))
 			$this->loadParametersPhp($config['parameters'], $configPath);
-		
+
 		if(isset($config['includes']) && is_array($config['includes']))
 			$this->loadExternalXml($config['includes'],$configPath);
 	}
@@ -1541,7 +1537,7 @@ class TApplicationConfiguration extends TComponent
 			$properties['id'] = $id;
 			$this->_modules[$id]=array($type,$properties,$module);
 			$this->_empty=false;
-		}	
+		}
 	}
 
 	/**
@@ -1589,7 +1585,7 @@ class TApplicationConfiguration extends TComponent
 			$properties['id'] = $id;
 			$this->_services[$id] = array($type,$properties,$service);
 			$this->_empty = false;
-		}	
+		}
 	}
 
 	/**
@@ -1809,7 +1805,6 @@ class TApplicationConfiguration extends TComponent
  * Cache will be exploited if it is enabled.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TApplication.php 3317 2013-09-03 10:19:09Z ctrlaltca $
  * @package System
  * @since 3.0
  */

@@ -21,7 +21,7 @@
 		{
 			element = $("<%= $this->label1->ClientID %>");
 			if(element)
-				element.innerHTML = "Label 1: "+inspect(ClientScriptInfo);
+				element.innerHTML = "Label 1: "+ClientScriptInfo.join('; ');
 			else
 				alert("failed");
 		});

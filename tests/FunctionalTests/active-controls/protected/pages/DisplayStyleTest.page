@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <h1>Display Style Test</h1>
 
 <div>
@@ -17,6 +17,5 @@ here.
 
 <com:TActiveLabel ID="status" />
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

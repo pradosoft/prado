@@ -17,7 +17,6 @@ Untuk menggunakan <tt>TTextHighlighter</tt>, cukup kurung konten yang sintaksnya
 <?php
 $str = 'one|two|three|four';
 print_r(explode('|', $str, 2)); // akan mengeluarkan array
-?>
 &lt;/com:TTextHighlighter&gt;
 </com:TTextHighlighter>
 

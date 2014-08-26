@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -20,13 +19,12 @@
  * the alignment of the image displayed is set by the
  * {@link setImageAlign ImageAlign} property and {@link getText Text} is
  * displayed as the alternate text of the image.
- * 
+ *
  * The link target is specified via the {@link setTarget Target} property.
  * If both {@link getImageUrl ImageUrl} and {@link getText Text} are empty,
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THyperLink.php 3286 2013-04-18 06:09:19Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -145,7 +143,7 @@ class THyperLink extends TWebControl implements IDataRenderer
 	{
 		return $this->getViewState('ImageHeight','');
 	}
-	
+
 	/**
 	 * Sets the height of the image in the THyperLink
 	 * @param string height of the image in the THyperLink
@@ -171,7 +169,7 @@ class THyperLink extends TWebControl implements IDataRenderer
 	{
 		$this->setViewState('ImageUrl',$value,'');
 	}
-	
+
 	/**
 	 * @return string width of the image in the THyperLink
 	 */
@@ -179,7 +177,7 @@ class THyperLink extends TWebControl implements IDataRenderer
 	{
 		return $this->getViewState('ImageWidth','');
 	}
-	
+
 	/**
 	 * Sets the width of the image in the THyperLink
 	 * @param string width of the image

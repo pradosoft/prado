@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration> 
+    <modules>
+        <module id="session" class="THttpSession" CookieMode="Allow" UseCustomStorage="false" 
+                AutoStart="true" GCProbability="1" UseTransparentSessionID="true" TimeOut="3600" />
+    </modules>
+    <pages Theme="PradoSoft" MasterClass="System.Wsat.pages.layout.TWsatLayout" />
+</configuration>

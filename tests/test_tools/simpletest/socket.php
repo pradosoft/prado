@@ -213,4 +213,3 @@
             return parent::_openSocket("tls://$host", $port, $error_number, $error, $timeout);
         }
     }
-?>

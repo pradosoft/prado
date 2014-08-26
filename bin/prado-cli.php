@@ -5,9 +5,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  */
 
 if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')
@@ -58,7 +57,6 @@ PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
  * Command line interface, configures the action classes and dispatches the command actions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineInterpreter
@@ -136,7 +134,6 @@ class PradoCommandLineInterpreter
  * Base class for command line actions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 abstract class PradoCommandLineAction
@@ -227,7 +224,6 @@ EOD;
  * Create a Prado project skeleton, including directories and files.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineCreateProject extends PradoCommandLineAction
@@ -305,8 +301,7 @@ require_once($frameworkPath);
 
 $application=new TApplication;
 $application->run();
-
-?>';
+';
 	}
 
 	protected function renderConfigFile($appName)
@@ -379,7 +374,6 @@ EOD;
  * Creates test fixtures for a Prado application.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineCreateTests extends PradoCommandLineAction
@@ -431,8 +425,7 @@ $test_cases = dirname(__FILE__)."/unit";
 
 $tester = new PradoUnitTester($test_cases, $app_directory);
 $tester->run(new HtmlReporter());
-
-?>';
+';
 	}
 
 	protected function renderFunctionalTestFixture()
@@ -446,8 +439,7 @@ $test_cases = dirname(__FILE__)."/functional";
 
 $tester=new PradoFunctionalTester($test_cases);
 $tester->run(new SimpleReporter());
-
-?>';
+';
 	}
 
 }
@@ -456,7 +448,6 @@ $tester->run(new SimpleReporter());
  * Creates and run a Prado application in a PHP Shell.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLinePhpShell extends PradoCommandLineAction
@@ -478,7 +469,6 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
  * Runs unit test cases.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.0.5
  */
 class PradoCommandLineUnitTest extends PradoCommandLineAction
@@ -594,7 +584,6 @@ class PradoCommandLineUnitTest extends PradoCommandLineAction
  * Create active record skeleton
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.1
  */
 class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
@@ -737,7 +726,7 @@ $props
 		return parent::finder(\$className);
 	}
 }
-?>
+
 EOD;
 	}
 }
@@ -747,7 +736,6 @@ EOD;
  *
  * @author Matthias Endres <me[at]me23[dot]de>
  * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com>
- * @version $Id: prado-cli.php 3316 2013-08-20 13:51:25Z ctrlaltca $
  * @since 3.2
  */
 class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {

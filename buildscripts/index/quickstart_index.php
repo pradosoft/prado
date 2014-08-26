@@ -104,4 +104,3 @@ class quickstart_index
 		echo "\nSaving search index ({$count}) to {$this->_dir}\n\n";
 	}
 }
-?>

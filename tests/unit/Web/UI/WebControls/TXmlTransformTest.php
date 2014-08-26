@@ -51,7 +51,7 @@ class TXmlTransformTest extends PHPUnit_Framework_TestCase {
     $transform->setTransformContent($expected);
     $this->assertEquals($expected, $transform->getTransformContent());
   }
-  
+
   public function testSetTransformPathAsFile() {
     $expected = $this->transformPath;
     $transform = new TXmlTransform();
@@ -120,10 +120,9 @@ class TXmlTransformTest extends PHPUnit_Framework_TestCase {
     $actual = $textWriter->flush();
     self::assertEquals($expected, $actual);
   }
-  
+
   public function testRenderWithBodyAsDocumentAndTransformPath() {
     throw new PHPUnit_Framework_IncompleteTestError();
   }
 }
 
-?>

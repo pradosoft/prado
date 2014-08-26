@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: DaoManager.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  */
 
@@ -18,7 +17,6 @@ Prado::using('System.Data.SqlMap.TSqlMapConfig');
  * A Registry for Dao and an implementation of that type.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: DaoManager.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  * @since 3.1
  */

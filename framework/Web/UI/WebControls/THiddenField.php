@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version $Id: THiddenField.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -19,7 +18,6 @@
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: THiddenField.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -113,7 +111,7 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * Returns true if this control validated successfully. 
+	 * Returns true if this control validated successfully.
 	 * Defaults to true.
 	 * @return bool wether this control validated successfully.
 	 */

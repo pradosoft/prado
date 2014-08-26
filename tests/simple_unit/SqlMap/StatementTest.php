@@ -1131,5 +1131,3 @@ class StatementTest extends BaseCase
 	#endregion
 	/**/
 }
-
-?>

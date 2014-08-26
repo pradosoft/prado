@@ -1,11 +1,11 @@
 <?php
 
-if (!defined('T_ML_COMMENT')) 
+if (!defined('T_ML_COMMENT'))
 	define('T_ML_COMMENT', T_COMMENT);
-else 
+else
 	define('T_DOC_COMMENT', T_ML_COMMENT);
 
-class HtmlReporterWithCoverage extends HtmlReporter 
+class HtmlReporterWithCoverage extends HtmlReporter
 {
 	protected $coverage = array();
 
@@ -19,7 +19,7 @@ class HtmlReporterWithCoverage extends HtmlReporter
 		$this->base_dir = $base_dir;
 	}
 
-	function paintHeader($test_name, $charset="UTF-8") 
+	function paintHeader($test_name, $charset="UTF-8")
 	{
 		$this->sendNoCacheHeaders();
 		header('Content-Type: text/html; Charset='.$charset);
@@ -31,30 +31,30 @@ class HtmlReporterWithCoverage extends HtmlReporter
 		print "</head>\n<body>\n";
 		print "<h1>$test_name</h1>\n";
 		flush();
-	
-		if (extension_loaded('xdebug')) 
+
+		if (extension_loaded('xdebug'))
 			xdebug_start_code_coverage(XDEBUG_CC_UNUSED);
 
-	}	
+	}
 
 	/**
 	 *
 	 */
-	function _getCss() 
+	function _getCss()
 	{
 		$contents = parent::_getCss()."\n ";
 		$contents .= '
-	 .bar { float: left; display: inline;  border: 1px solid #eee; width: 300px; white-space: nowrap;} 
-	.percentage { float: left; background-color: #eef;  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;  font-size: 0.65em;  padding: 5px;  margin-right: } 
-	.coverage {margin: 0.4em; } 
+	 .bar { float: left; display: inline;  border: 1px solid #eee; width: 300px; white-space: nowrap;}
+	.percentage { float: left; background-color: #eef;  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;  font-size: 0.65em;  padding: 5px;  margin-right: }
+	.coverage {margin: 0.4em; }
 	.coverage a {
 		padding-left: 0.5em;
 	}
-	.coverage:after { 
-	content: "."; 
-	display: block; 
-	height: 0; 
-	clear: both; 
+	.coverage:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
 	visibility: hidden;
 	}
 	.coverage {display: inline-block;}
@@ -66,9 +66,9 @@ class HtmlReporterWithCoverage extends HtmlReporter
 		Return $contents;
 	}
 
-	function paintFooter($test_name) 
+	function paintFooter($test_name)
 	{
-		if (extension_loaded('xdebug')) 
+		if (extension_loaded('xdebug'))
 		{
 			$this->coverage = xdebug_get_code_coverage();
 			xdebug_stop_code_coverage();
@@ -93,10 +93,10 @@ class HtmlReporterWithCoverage extends HtmlReporter
 		$dir = dirname(__FILE__);
 		if(count($this->coverage) > 0)
 			print '<h2>Code Coverage</h2>';
-	
-		
-		ksort($this->coverage);		
-		
+
+
+		ksort($this->coverage);
+
 		$details = array();
 		foreach($this->coverage as $file => $coverage)
 		{
@@ -110,7 +110,7 @@ class HtmlReporterWithCoverage extends HtmlReporter
 				$width = $percentage * 3;
 				$filename = str_replace($this->base_dir, '',$file);
 				$link = $this->constructURL($filename, $coverage);
-				
+
 				$detail['total'] = $total;
 				$detail['executed'] = $executed;
 				$detail['width'] = $width;
@@ -150,7 +150,7 @@ class HtmlReporterWithCoverage extends HtmlReporter
 }
 
 
-class HTMLCoverageReport extends HtmlReporter 
+class HTMLCoverageReport extends HtmlReporter
 {
 	protected $file;
 	protected $lines;
@@ -184,7 +184,7 @@ class HTMLCoverageReport extends HtmlReporter
 		$this->paintFooter();
 	}
 
-	function paintHeader($file, $charset="UTF-8") 
+	function paintHeader($file, $charset="UTF-8")
 	{
 		$total = $this->codelines($this->file);
 		$executed = count($this->lines);
@@ -218,21 +218,21 @@ class HTMLCoverageReport extends HtmlReporter
 
 		$lines = '';
 
-		foreach ($tokens as $token) 
+		foreach ($tokens as $token)
 		{
-			if (is_string($token)) 
+			if (is_string($token))
 			{
 				// simple 1-character token
 				$lines .= $token;
-			} 
-			else 
+			}
+			else
 			{
 					// token array
 				list($id, $text) = $token;
 
-				switch ($id) 
-				{ 
-					case T_COMMENT: 
+				switch ($id)
+				{
+					case T_COMMENT:
 					case T_ML_COMMENT: // we've defined this
 					case T_DOC_COMMENT: // and this
 					// no action on comments
@@ -265,4 +265,3 @@ class HTMLCoverageReport extends HtmlReporter
 	}
 }
 
-?>

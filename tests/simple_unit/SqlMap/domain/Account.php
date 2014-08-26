@@ -32,5 +32,3 @@ class Account
 	public function setCartOptions($value){ $this->_CartOptions = $value; }
 
 }
-
-?>

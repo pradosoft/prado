@@ -4,7 +4,6 @@
  * a string token saved in the cookie.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TrackerAuthManager.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  * @since 3.1
  */
@@ -14,24 +13,24 @@ class TrackerAuthManager extends TAuthManager
 	 * @const string signon token cookie name.
 	 */
 	const SignonCookieName = 'time-tracker-signon';
-	
+
 	/**
 	 * Performs the real authentication work. Overrides and calls parent
-	 * implementation. Trys to authenticate using token saved in cookie. 
+	 * implementation. Trys to authenticate using token saved in cookie.
 	 * @param mixed parameter to be passed to OnAuthenticate event
 	 */
 	public function onAuthenticate($param)
 	{
 		parent::onAuthenticate($param);
-		$currentUser = $this->Application->User; 
+		$currentUser = $this->Application->User;
 		if(!$currentUser || $currentUser->IsGuest)
 			$this->authenticateFromCookie($param);
 	}
-	
+
 	/**
 	 * If the user is not set or is still a guest, try to authenticate the user
 	 * using a string token saved in the cookie if any.
-	 * @param mixed parameter to be passed to OnAuthenticate event 
+	 * @param mixed parameter to be passed to OnAuthenticate event
 	 */
 	protected function authenticateFromCookie($param)
 	{
@@ -45,7 +44,7 @@ class TrackerAuthManager extends TAuthManager
 				$this->updateCredential($user);
 		}
 	}
-	
+
 	/**
 	 * Changes the user credentials.
 	 * @param TUser new user details.
@@ -54,9 +53,9 @@ class TrackerAuthManager extends TAuthManager
 	{
 		$user->IsGuest = false;
 		$this->updateSessionUser($user);
-		$this->Application->User = $user;		
+		$this->Application->User = $user;
 	}
-	
+
 	/**
 	 * Generate a token to be saved in the cookie for later authentication.
 	 * @param TimeTrackerUser user details.
@@ -70,7 +69,7 @@ class TrackerAuthManager extends TAuthManager
 		$cookie->Expire = strtotime('+1 month');
 		$this->Response->Cookies[] = $cookie;
 	}
-	
+
 	/**
 	 * Logs out the user and delete the token from cookie.
 	 */

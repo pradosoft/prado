@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1>Active List Box Functional Test</h1>
 
@@ -22,6 +22,4 @@
 		<com:TActiveButton ID="button6" Text="Change to Multi-Select" OnClick="change_to_multiple" />
 		<com:TActiveButton ID="button7" Text="Change to Single-Select" OnClick="change_to_single" />
 	</div>
-
-	<com:TJavascriptLogger />
-</com:TForm>
+</com:TContent>

@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm>
+<com:TContent ID="Content">
 
 <com:TActiveButton ID="button1"
 	CustomData="0"
@@ -41,7 +40,4 @@
 		Loading...
 	</div>
 
-
-<com:TJavascriptLogger />
-
-</com:TForm>
+</com:TContent>

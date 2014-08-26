@@ -6,7 +6,6 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: index.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package prado
  */
 
@@ -291,5 +290,3 @@ function getPradoVersion()
 	}
 	return '';
 }
-
-?>

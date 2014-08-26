@@ -6,17 +6,17 @@ Prado::using('System.Web.THttpRequest');
  * @package System.Web
  */
 class TUriTest extends PHPUnit_Framework_TestCase {
-  
+
   const URISTR='http://login:p@ssw0rd:compl3x@www.pradosoft.com:80/demos/quickstart/index.php?page=test&param1=test2#anchor';
-			
+
   public function setUp () {
     $this->uri=new TUri(self::URISTR);
   }
-  
+
   public function tearDown() {
     $this->uri=null;
   }
-  
+
   public function testConstruct() {
     $url="http://www.pradosoft.com/";
     $uri=new TUri ($url);
@@ -27,7 +27,7 @@ class TUriTest extends PHPUnit_Framework_TestCase {
 	  $url=new TUri($url);
 	  self::fail ('exception not raised with an invalid URL');
 	} catch (TInvalidDataValueException $e) {
-	  
+
 	}
   }
 
@@ -67,4 +67,3 @@ class TUriTest extends PHPUnit_Framework_TestCase {
     self::assertEquals('anchor', $this->uri->getFragment());
   }
 }
-?>

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDataBoundControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -39,7 +38,6 @@ Prado::using('System.Collections.TPagedDataSource');
  * custom paging, set {@link setAllowCustomPaging AllowCustomPaging} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataBoundControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -527,7 +525,6 @@ abstract class TDataBoundControl extends TWebControl
  * - Pager: pager
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataBoundControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -553,7 +550,6 @@ class TListItemType extends TEnumerable
  * {@link getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataBoundControl.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1.0
  */

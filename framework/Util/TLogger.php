@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TLogger.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -18,7 +17,6 @@
  * log categories, and by control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogger.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -82,14 +80,14 @@ class TLogger extends TComponent
 	 * Messages may be filtered by log levels and/or categories and/or control client ids and/or timestamp.
 	 * A level filter is specified by an integer, whose bits indicate the levels interested.
 	 * For example, (TLogger::INFO | TLogger::WARNING) specifies INFO and WARNING levels.
-	 * A category filter is specified by an array of categories to filter. 
+	 * A category filter is specified by an array of categories to filter.
 	 * A message whose category name starts with any filtering category
 	 * will be returned. For example, a category filter array('System.Web','System.IO')
 	 * will return messages under categories such as 'System.Web', 'System.IO',
 	 * 'System.Web.UI', 'System.Web.UI.WebControls', etc.
 	 * A control client id filter is specified by an array of control client id
 	 * A message whose control client id starts with any filtering naming panels
-	 * will be returned. For example, a category filter array('ctl0_body_header', 
+	 * will be returned. For example, a category filter array('ctl0_body_header',
 	 * 'ctl0_body_content_sidebar')
 	 * will return messages under categories such as 'ctl0_body_header', 'ctl0_body_content_sidebar',
 	 * 'ctl0_body_header_title', 'ctl0_body_content_sidebar_savebutton', etc.
@@ -135,14 +133,14 @@ class TLogger extends TComponent
 	 * Messages may be filtered by log levels and/or categories and/or control client ids and/or timestamp.
 	 * A level filter is specified by an integer, whose bits indicate the levels interested.
 	 * For example, (TLogger::INFO | TLogger::WARNING) specifies INFO and WARNING levels.
-	 * A category filter is specified by an array of categories to filter. 
+	 * A category filter is specified by an array of categories to filter.
 	 * A message whose category name starts with any filtering category
 	 * will be deleted. For example, a category filter array('System.Web','System.IO')
 	 * will delete messages under categories such as 'System.Web', 'System.IO',
 	 * 'System.Web.UI', 'System.Web.UI.WebControls', etc.
 	 * A control client id filter is specified by an array of control client id
 	 * A message whose control client id starts with any filtering naming panels
-	 * will be deleted. For example, a category filter array('ctl0_body_header', 
+	 * will be deleted. For example, a category filter array('ctl0_body_header',
 	 * 'ctl0_body_content_sidebar')
 	 * will delete messages under categories such as 'ctl0_body_header', 'ctl0_body_content_sidebar',
 	 * 'ctl0_body_header_title', 'ctl0_body_content_sidebar_savebutton', etc.

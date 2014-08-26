@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDataGridColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -58,7 +57,6 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * which is the major logic for managing the data and presentation of cells in the column.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGridColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -554,7 +552,6 @@ abstract class TDataGridColumn extends TApplicationComponent
  * - ImageButton: image buttons
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataGridColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

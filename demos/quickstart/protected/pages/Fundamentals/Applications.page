@@ -7,7 +7,11 @@ An application is an instance of <tt>TApplication</tt> or its derived class. It 
 <p id="160158" class="block-content">
 Applications are configured via <a href="?page=Configurations.AppConfig">application configurations</a>. They are usually created in entry scripts like the following,
 <com:TTextHighlighter CssClass="source block-content" id="code_160071">
+// load the prado entry script
 require_once('/path/to/prado.php');
+// or, if using composer:
+require_once('vendor/autoload.php');
+
 $application = new TApplication;
 $application->run();
 </com:TTextHighlighter>

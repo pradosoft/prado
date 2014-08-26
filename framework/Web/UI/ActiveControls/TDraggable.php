@@ -1,17 +1,16 @@
 <?php
 /**
  * TDraggable class file
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 
 /**
  * TDraggable is a control which can be dragged
- * 
+ *
  * This control will make "draggable" control.
  * Properties :
  *
@@ -21,14 +20,13 @@
  * <b>{@link setRevert Revert}</b>: Set to True if you want your dragged element to revert to its initial position if not dropped on a valid area.
  * <b>{@link setConstraint Constraint}</b>: Set this to Horizontal or Vertical if you want to constraint your move in one direction.
  * <b>{@link setHandle Handle}</b>:
- * 
+ *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
-class TDraggable extends TPanel 
+class TDraggable extends TPanel
 {
 	/**
 	 * Set the handle id or css class
@@ -38,7 +36,7 @@ class TDraggable extends TPanel
 	{
 		$this->setViewState('DragHandle', TPropertyValue::ensureString($value), null);
 	}
-	
+
 	/**
 	 * Get the handle id or css class
 	 * @return string
@@ -47,7 +45,7 @@ class TDraggable extends TPanel
 	{
 		return $this->getViewState('DragHandle', null);
 	}
-	
+
 	/**
 	 * Determine if draggable element should revert to it orginal position
 	 * upon release in an non-droppable container.
@@ -61,7 +59,7 @@ class TDraggable extends TPanel
 	{
 		return $this->getViewState('Revert', TDraggableRevertOptions::Revert);
 	}
-	
+
 	/**
 	 * Sets whether the draggable element should revert to it orginal position
 	 * upon release in an non-droppable container.
@@ -79,7 +77,7 @@ class TDraggable extends TPanel
 			$value=TDraggableRevertOptions::None;
 		$this->setViewState('Revert', TPropertyValue::ensureEnum($value, 'TDraggableRevertOptions'), true);
 	}
-	
+
 	/**
 	 * Determine if the element should be cloned when dragged
 	 * If true, Clones the element and drags the clone, leaving the original in place until the clone is dropped.
@@ -96,7 +94,7 @@ class TDraggable extends TPanel
 	{
 		return $this->getViewState('Ghosting', TDraggableGhostingOptions::None);
 	}
-	
+
 	/**
 	 * Sets wether the element should be cloned when dragged
 	 * If true, Clones the element and drags the clone, leaving the original in place until the clone is dropped.
@@ -117,7 +115,7 @@ class TDraggable extends TPanel
 			$value=TDraggableGhostingOptions::None;
 		$this->setViewState('Ghosting', TPropertyValue::ensureEnum($value, 'TDraggableGhostingOptions'), TDraggableGhostingOptions::None);
 	}
-	
+
 	/**
 	 * Determine if the element should be constrainted in one direction or not
 	 * @return CDraggableConstraint
@@ -126,7 +124,7 @@ class TDraggable extends TPanel
 	{
 		return $this->getViewState('Constraint', TDraggableConstraint::None);
 	}
-	
+
 	/**
 	 * Set wether the element should be constrainted in one direction
 	 * @param CDraggableConstraint
@@ -135,7 +133,7 @@ class TDraggable extends TPanel
 	{
 		$this->setViewState('Constraint', TPropertyValue::ensureEnum($value, 'TDraggableConstraint'), TDraggableConstraint::None);
 	}
-	
+
 	/**
 	 * Registers clientscripts
 	 *
@@ -166,7 +164,7 @@ class TDraggable extends TPanel
 		$code="new {$class}('{$this->getClientId()}', {$options}) ";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
-		
+
 	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.
 	 * This method overrides the parent implementation.
@@ -176,7 +174,7 @@ class TDraggable extends TPanel
 	{
 		return 'Draggable';
 	}
-	
+
 	/**
 	 * Gets the post back options for this textbox.
 	 * @return array
@@ -193,7 +191,7 @@ class TDraggable extends TPanel
 		else
 			$options['revert']=strtolower($revert);
 		if (($constraint=$this->getConstraint())!==TDraggableConstraint::None) $options['constraint']=strtolower($constraint);
-		switch ($this->getGhosting()) 
+		switch ($this->getGhosting())
 		{
 			case TDraggableGhostingOptions::SuperGhosting:
 				$options['superghosting']=true;
@@ -205,7 +203,7 @@ class TDraggable extends TPanel
 
 		return $options;
 	}
-	
+
 }
 
 /**
@@ -213,7 +211,6 @@ class TDraggable extends TPanel
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggableConstraint extends TEnumerable
 {
@@ -227,7 +224,6 @@ class TDraggableConstraint extends TEnumerable
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggableGhostingOptions extends TEnumerable
 {
@@ -241,7 +237,6 @@ class TDraggableGhostingOptions extends TEnumerable
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license http://www.pradosoft.com/license
  * @package System.Web.UI.ActiveControls
- * @version $Id: TDraggable.php 3285 2013-04-11 07:28:07Z ctrlaltca $
  */
 class TDraggableRevertOptions extends TEnumerable
 {

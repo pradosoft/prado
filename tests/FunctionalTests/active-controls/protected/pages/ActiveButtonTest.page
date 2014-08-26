@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1>TActiveButton Functional Test</h1>
 	<com:TActiveButton ID="button2" Text="Button 1"
@@ -6,6 +6,4 @@
 
 	<com:TActiveLabel ID="label1" Text="Label 1" />
 
-	<com:TJavascriptLogger />
-
-</com:TForm>
+</com:TContent>

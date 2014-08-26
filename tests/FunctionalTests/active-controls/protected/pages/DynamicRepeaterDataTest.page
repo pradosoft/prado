@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 <h1>Dynamic Repeater Data Test</h1>
 <com:TActiveButton Text="Click Me!" OnClick="button_clicked" OnCallback="button_callback"/>
 
@@ -11,6 +11,5 @@
 </com:TRepeater>
 </com:TActivePanel>
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

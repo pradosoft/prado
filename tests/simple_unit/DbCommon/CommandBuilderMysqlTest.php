@@ -15,5 +15,3 @@ class CommandBuilderMysqlTest extends UnitTestCase
 		$this->mysql_meta_data()->getTableInfo("tests.table1");
 	}
 }
-
-?>

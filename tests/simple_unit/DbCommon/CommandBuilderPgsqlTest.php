@@ -72,5 +72,3 @@ class CommandBuilderPgsqlTest extends UnitTestCase
 		$this->assertEqual($expect, $limit);
 	}
 }
-
-?>

@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveClientScript.php 3144 2012-05-19 10:07:03Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -15,13 +14,13 @@
  *
  * This is the active counterpart of the {@link TClientScript} class.
  *
- * TActiveClientScript has the ability to render itself on ajax 
+ * TActiveClientScript has the ability to render itself on ajax
  * callbacks. This means that every variable or function declared in javascript
  * code will be available to the page.
  *
  * Beware that when rendered on normal (postback) or ajax callbacks, some
- * javascript code won't behave in the same way. 
- * When rendered as part of a normal/postback response, scripts will execute instantly 
+ * javascript code won't behave in the same way.
+ * When rendered as part of a normal/postback response, scripts will execute instantly
  * where they are in the page and in a synchronous fashion.
  * Instead, when they are rendered as part of a callback response,
  * they will be executed when all DOM modifications are complete and any dynamic
@@ -30,7 +29,6 @@
  * This can potentially hurt compatibility and graceful fallback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActiveClientScript.php 3144 2012-05-19 10:07:03Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.2
  */

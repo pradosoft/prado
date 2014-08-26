@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDataFieldAccessor.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -26,7 +25,6 @@
  *   then field 'MyValue.MySubValue' will return that method call result.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDataFieldAccessor.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -36,7 +34,7 @@ class TDataFieldAccessor
 	 * Evaluates the data value at the specified field.
 	 * - If the data is an array, then the field is treated as an array index
 	 *   and the corresponding element value is returned; the field name can also include
-	 *   dots to access subarrays. For example a field named 'MyField.MySubField' will 
+	 *   dots to access subarrays. For example a field named 'MyField.MySubField' will
 	 *   first try to access $data['MyField.MySubField'], then try $data['MyField']['MySubField'].
 	 * - If the data is a TMap or TList object, then the field is treated as a key
 	 *   into the map or list, and the corresponding value is returned.

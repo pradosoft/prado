@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: THtmlArea.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -72,7 +71,6 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: THtmlArea.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -471,6 +469,8 @@ class THtmlArea extends TTextBox
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
 		$options['extended_valid_elements'] = 'a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
+		if($this->getReadOnly())
+			$options['readonly'] = true;
 
 		$options = array_merge($options, $this->parseEditorOptions($this->getOptions()));
 		return $options;
@@ -491,7 +491,7 @@ class THtmlArea extends TTextBox
 			if(count($option) == 2)
 			{
 				$value=trim(trim($option[1]),"'\"");
-				if (($s=strtolower($value))==='false') 
+				if (($s=strtolower($value))==='false')
 					$value=false;
 				elseif ($s==='true')
 					$value=true;

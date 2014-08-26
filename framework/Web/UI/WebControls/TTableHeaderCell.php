@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TTableHeaderCell.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -22,7 +21,6 @@ Prado::using('System.Web.UI.WebControls.TTableCell');
  * TTableHeaderCell displays a table header cell on a Web page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TTableHeaderCell.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -111,7 +109,6 @@ class TTableHeaderCell extends TTableCell
  * - Column: the scope is column-wise
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TTableHeaderCell.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

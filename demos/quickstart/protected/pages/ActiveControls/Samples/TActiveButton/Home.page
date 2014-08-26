@@ -43,5 +43,4 @@ A button causing validation with <tt>OnCallback</tt>:
 
 </table>
 
-<com:TJavascriptLogger />
 </com:TContent>

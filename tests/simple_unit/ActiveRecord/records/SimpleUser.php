@@ -10,5 +10,3 @@ class SimpleUser extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

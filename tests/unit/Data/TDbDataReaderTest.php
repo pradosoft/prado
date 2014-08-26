@@ -37,6 +37,10 @@ class TDbDataReaderTest extends PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		@unlink(TEST_DB_FILE);
+
+		// create application just to provide application mode
+		new TApplication(__DIR__, false ,TApplication::CONFIG_TYPE_PHP);
+
 		$this->_connection=new TDbConnection('sqlite:'.TEST_DB_FILE);
 		$this->_connection->Active=true;
 		$this->_connection->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
@@ -174,5 +178,3 @@ class TDbDataReaderTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($name,'my name 2');
 	}
 }
-
-?>

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TTemplateManager.php 3251 2013-01-15 18:37:04Z ctrlaltca $
  * @package System.Web.UI
  */
 
@@ -32,7 +31,6 @@ Prado::using('System.Web.UI.WebControls.TOutputCache');
  * template manager module that can be accessed via {@link TPageService::getTemplateManager()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TTemplateManager.php 3251 2013-01-15 18:37:04Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -162,7 +160,6 @@ class TTemplateManager extends TModule
  * set their parent as $control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TTemplateManager.php 3251 2013-01-15 18:37:04Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */

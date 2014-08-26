@@ -4,9 +4,8 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: THeader6.php 2590 2008-12-10 11:34:24Z carlgmathisen $
  * @package System.Web.UI.WebControls
  */
 
@@ -18,13 +17,12 @@
  * This is also useful for the {@link TWebControlDecorator} (used by themes).
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: THeader6.php 2541 2008-10-21 15:05:13Z javalizard $
  * @package System.Web.UI.WebControls
  * @since 3.2
  */
- 
-class THeader6 extends THtmlElement {	
-	
+
+class THeader6 extends THtmlElement {
+
 	/**
 	 * @return string tag name
 	 */
@@ -32,5 +30,5 @@ class THeader6 extends THtmlElement {
 	{
 		return 'h6';
 	}
-	
+
 }

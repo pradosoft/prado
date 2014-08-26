@@ -28,4 +28,3 @@ class MagicCallTest extends BaseGatewayTest
 		$this->assertEqual(0, count($result));
 	}
 }
-?>

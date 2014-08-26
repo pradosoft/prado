@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 	<h3 class="ContentAlternating">Some AJAX Tests</h3>
 	<com:TPanel CssClass="Content">
 
@@ -37,6 +37,4 @@
 		AIP
 	</com:TActivePanel>
 
-	<com:TJavascriptLogger />
-
-</com:TForm>
+</com:TContent>

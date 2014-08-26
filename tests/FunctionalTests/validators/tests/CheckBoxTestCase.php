@@ -1,65 +1,65 @@
 <?php
 
-class CheckBoxTestCase extends PradoGenericSeleniumTest
+class CheckBoxTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('validators/index.php?page=CheckBox');
+		$this->url('validators/index.php?page=CheckBox');
 
 
 		// verify all error messages are invisible
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
 
 		// verify the first validator shows the error
-		$this->click("ctl0_Content_ctl1");
-		$this->verifyVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
+		$this->byId("ctl0_Content_ctl1")->click();
+		$this->assertVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
 
 		// verify the first validation is passed
 		$this->pause(500);
-		$this->verifyTextNotPresent('Button1 is clicked');
+		$this->assertNotContains('Button1 is clicked', $this->source());
 		$this->type("ctl0_Content_TextBox1", "test");
-		$this->clickAndWait("ctl0_Content_ctl1");
-		$this->clickAndWait("ctl0_Content_ctl1");
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
-		$this->verifyTextPresent('Button1 is clicked and valid');
+		$this->byId("ctl0_Content_ctl1")->click();
+		$this->byId("ctl0_Content_ctl1")->click();
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
+		$this->assertContains('Button1 is clicked and valid', $this->source());
 
 		// verify the second validator shows the error
-		$this->click("ctl0_Content_ctl3");
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
+		$this->byId("ctl0_Content_ctl3")->click();
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
 
 		// verify the second validation is passed
 		$this->pause(500);
-		$this->verifyTextNotPresent('Button2 is clicked');
+		$this->assertNotContains('Button2 is clicked', $this->source());
 		$this->type("ctl0_Content_TextBox2", "test");
-		$this->clickAndWait("ctl0_Content_ctl3");
-		$this->clickAndWait("ctl0_Content_ctl3");
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
-		$this->verifyTextPresent('Button2 is clicked and valid');
+		$this->byId("ctl0_Content_ctl3")->click();
+		$this->byId("ctl0_Content_ctl3")->click();
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
+		$this->assertContains('Button2 is clicked and valid', $this->source());
 
 		// verify the third validator shows the error
-		$this->clickAndWait("ctl0_Content_ctl5");
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyVisible('ctl0_Content_ctl4');
+		$this->byId("ctl0_Content_ctl5")->click();
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertVisible('ctl0_Content_ctl4');
 
 		// verify the third validation is passed
-		$this->verifyTextPresent('Button3 is clicked');
-		$this->verifyTextNotPresent('Button3 is clicked and valid');
+		$this->assertContains('Button3 is clicked', $this->source());
+		$this->assertNotContains('Button3 is clicked and valid', $this->source());
 		$this->type("ctl0_Content_TextBox3", "test");
-		$this->clickAndWait("ctl0_Content_ctl5");
-		$this->verifyNotVisible('ctl0_Content_ctl0');
-		$this->verifyNotVisible('ctl0_Content_ctl2');
-		$this->verifyNotVisible('ctl0_Content_ctl4');
-		$this->verifyTextPresent('Button3 is clicked and valid');
+		$this->byId("ctl0_Content_ctl5")->click();
+		$this->assertNotVisible('ctl0_Content_ctl0');
+		$this->assertNotVisible('ctl0_Content_ctl2');
+		$this->assertNotVisible('ctl0_Content_ctl4');
+		$this->assertContains('Button3 is clicked and valid', $this->source());
 	}
 }

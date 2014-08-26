@@ -1,3 +1,30 @@
+Version 3.2.4 Aug 26, 2014
+
+BUG: Issue #492 - Prado generates json_error when encoding an exception with non UTF-8 data (david0)
+ENH: Issue #494 - Adding toArray() and toJSON() to TActiveRecord (dmarko484)
+BUG: Issue #498 - Typo in TActiveFileUpload (Jens-mB)
+BUG: Issue #499 - Avoid scrolling when calling TControl::focus() (david0)
+BUG: Issue #502 - TSlider behaves strangely in TTabView (ctrlaltca)
+BUG: Issue #504 - Default Button cannot be referenced by <subControlId>.<controlId> (ctrlaltca)
+BUG: Issue #506 - Unused lines of code in TLiteralColumn::initializeCell (cross)
+BUG: Issue #511 - TActivePager's ButtonCssClass property is not rendered in buttons (ctrlaltca)
+BUG: Issue #515 - THtmlArea should override Readonly property (ctrlaltca)
+BUG: Issue #516 - Check Validators in TActiveEditCommandColumn (ctrlaltca)
+BUG: Issue #517 - TXmlDocument adjustment (gnit)
+BUG: Issue #518 - Runtime Notice in Gettext::factory() (ctrlaltca)
+BUG: Issue #519 - For MySQL in case PDO::CASE_LOWER creating table info does not work (ganiuszka)
+BUG: Issue #246 - Refix: User date() instead of gmdate() in TLogRoute (drigolin)
+BUG: Issue #520 - Unknown runtime error with Internet Explorer 8 (david0)
+BUG: Issue #524 - JSON error (5): Malformed UTF-8 characters when encoding callback response (david0)
+BUG: Issue #526 - TJsonRpcProtocol::callMethod, requested method is called twice (jojoinside)
+BUG: Issue #527 - TJsonRpcProtocol::callMethod, semicolon must be removed (jojoinside)
+ENH: Ported tests to Selenium2
+BUG: Avoid an exception loop on callback error when headers have already been sent (ctrlaltca)
+BUG: Avoid rendering <script> blocks in callbacks (ctrlaltca)
+BUG: Avoid dependency loop between TRadioButton and TRadioButtonList (ctrlaltca)
+ENH: Dropped Markdown for Parsedown (ctrlaltca)
+ENH: Web site administration tool (WSAT) (Daniel Sampedro) 
+
 Version 3.2.3 Nov 26, 2013
 
 BUG: Issue #467 - TSafeHtml error on php 5.5 (ctrlaltca)

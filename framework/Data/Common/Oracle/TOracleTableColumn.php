@@ -4,9 +4,8 @@
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TOracleTableColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  */
 
@@ -19,14 +18,13 @@ Prado::using('System.Data.Common.TDbTableColumn');
  * Describes the column metadata of the schema for a PostgreSQL database table.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
- * @version $Id: TOracleTableColumn.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  * @since 3.1
  */
 class TOracleTableColumn extends TDbTableColumn
 {
 	private static $types=array(
-		'numeric' => array( 'numeric' )		
+		'numeric' => array( 'numeric' )
 //		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
 //		'boolean' => array('boolean'),
 //		'float' => array('bigint', 'bigserial', 'double precision', 'money', 'numeric')

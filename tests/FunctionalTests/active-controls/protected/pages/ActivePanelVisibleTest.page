@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>ActivePanel Visible Test</h1>
 
@@ -12,6 +12,5 @@
 
 <com:TActivePanel ID="pnlB">bar</com:TActivePanel>
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

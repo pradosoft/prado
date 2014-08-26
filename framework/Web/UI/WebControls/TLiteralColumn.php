@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TLiteralColumn.php 1397 2006-09-07 07:55:53Z wei $
  * @package System.Web.UI.WebControls
  */
 
@@ -29,7 +28,6 @@ Prado::using('System.Web.UI.WebControls.TDataGridColumn');
  * If {@link setEncode Encode} is true, the static texts will be HTML-encoded.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLiteralColumn.php 1397 2006-09-07 07:55:53Z wei $
  * @package System.Web.UI.WebControls
  * @since 3.0.5
  */
@@ -111,18 +109,13 @@ class TLiteralColumn extends TDataGridColumn
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
 		{
 			if($this->getDataField()!=='')
-				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-			else
 			{
-				if(($dataField=$this->getDataField())!=='')
-					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
-				else
-				{
-					$text=$this->getText();
-					if($this->getEncode())
-						$text=THttpUtility::htmlEncode($text);
-					$cell->setText($text);
-				}
+				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+			} else {
+				$text=$this->getText();
+				if($this->getEncode())
+					$text=THttpUtility::htmlEncode($text);
+				$cell->setText($text);
 			}
 		}
 		else

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  */
 
@@ -64,7 +63,6 @@ Prado::using('System.Security.TUser');
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl Mathisen <carl@kamikazemedia.no>
- * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0
  */
@@ -108,7 +106,7 @@ class TUserManager extends TModule implements IUserManager
 	 */
 	public function init($config)
 	{
-		$this->loadUserData($config);	
+		$this->loadUserData($config);
 		if($this->_userFile!==null)
 		{
 			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
@@ -125,7 +123,7 @@ class TUserManager extends TModule implements IUserManager
 		}
 		$this->_initialized=true;
 	}
-	
+
 	/*
 	 * Loads user/role information
 	 * @param mixed the variable containing the user information
@@ -389,7 +387,6 @@ class TUserManager extends TModule implements IUserManager
  * - SHA1: the password is recorded as the SHA1 hash value of the original password
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TUserManager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Security
  * @since 3.0.4
  */

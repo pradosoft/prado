@@ -1,20 +1,21 @@
 <?php
 
-class DelayedCallbackTestCase extends PradoGenericSeleniumTest
+class DelayedCallbackTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=DelayedCallback");
-		$this->verifyTextPresent("Delayed Callback Test");
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=DelayedCallback");
+		$this->assertContains("Delayed Callback Test", $this->source());
 
-		$this->assertText("status", "");
-		$this->click("button1");
-		$this->click("button2");
+		$this->assertText("{$base}status", "");
+		$this->byId("{$base}button1")->click();
+		$this->byId("{$base}button2")->click();
 
 		$this->pause("5000");
-		$this->assertText("status", "Callback 1 returned after 4s");
+		$this->assertText("{$base}status", "Callback 1 returned after 4s");
 		$this->pause("3000");
-		$this->assertText("status", "Callback 2 delayed 2s");
+		$this->assertText("{$base}status", "Callback 2 delayed 2s");
 
 	}
 }

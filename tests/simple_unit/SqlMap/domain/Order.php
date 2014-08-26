@@ -67,5 +67,3 @@ class Order
 	public function setFavouriteLineItem($value){ $this->_FavouriteLineItem = $value; }
 
 }
-
-?>

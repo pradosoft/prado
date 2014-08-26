@@ -1,13 +1,12 @@
 <?php
 /**
  * TActiveDatePicker class file
- * 
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveDatePicker.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -18,20 +17,19 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveDatePicker class
- * 
+ *
  * The active control counter part to date picker control.
  * When the date selection is changed, the {@link onCallback OnCallback} event is
  * raised.
- * 
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TActiveDatePicker.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1.3
  */
 class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, IActiveControl
 {
-	
+
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
      * will occur whenever the user modifies the text in the TActiveDatePicker control and
@@ -67,7 +65,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 		$options['AutoPostBack'] = $this->getAutoPostBack();
 		return $options;
 	}
-	
+
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
@@ -78,7 +76,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
@@ -103,21 +101,21 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $date['mday'], 'select');
 				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'month', 'Value', $date['mon']-1, 'select');
 				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'year', 'Value', $date['year'], 'select');
-				
+
 			}
 		}
 	}
-	
+
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
  	public function raiseCallbackEvent($param){
 		$this->onCallback($param);
-	}	
-	
+	}
+
 	/**
 	 * This method is invoked when a callback is requested. The method raises
 	 * 'OnCallback' event to fire up the event handlers. If you override this
@@ -128,7 +126,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	public function onCallback($param){
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
-	
+
 	/**
 	 * Registers the javascript code to initialize the date picker.
 	 */
@@ -174,9 +172,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
  * is changed.
  * The formatted date according to {@link TDatePicker::getDateFormat DateFormat} is sent
  * as parameter to this event
- * 
+ *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @version $Id: TActiveDatePicker.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.2.1
  */

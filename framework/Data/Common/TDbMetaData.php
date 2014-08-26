@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  */
 
@@ -17,7 +16,6 @@
  * Use the {@link getTableInfo} method to retrieve a table information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TDbMetaData.php 3284 2013-04-11 07:14:59Z ctrlaltca $
  * @package System.Data.Common
  * @since 3.1
  */
@@ -180,5 +178,15 @@ abstract class TDbMetaData extends TComponent
 
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * This method should be overridden by child classes in order to support this feature
+	 * because the default implementation simply throws an exception.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
+	abstract public function findTableNames($schema='');
 }
 

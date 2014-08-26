@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  */
 
@@ -29,14 +28,13 @@ Prado::using('System.Data.TDbConnection');
  * </code>
  * PHP configuration style:
  * <code>
- * 
+ *
  * </code>
  * You can specify multiple routes with different filtering conditions and different
  * targets, even if the routes are of the same type.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -128,8 +126,8 @@ class TLogRouter extends TModule
 
 	/**
 	 * Adds a TLogRoute instance to the log router.
-	 * 
-	 * @param TLogRoute $route 
+	 *
+	 * @param TLogRoute $route
 	 * @throws TInvalidDataTypeException if the route object is invalid
 	 */
 	public function addRoute($route)
@@ -190,7 +188,6 @@ class TLogRouter extends TModule
  * satisfying both filter conditions will they be returned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -322,7 +319,7 @@ abstract class TLogRoute extends TApplicationComponent
 	 */
 	protected function formatLogMessage($message,$level,$category,$time)
 	{
-		return @gmdate('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
 	}
 
 	/**
@@ -363,7 +360,6 @@ abstract class TLogRoute extends TApplicationComponent
  * specifies how many files to be kept.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -503,7 +499,6 @@ class TFileLogRoute extends TLogRoute
  * {@link setSentFrom SentFrom} address.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -629,7 +624,6 @@ class TEmailLogRoute extends TLogRoute
  * TBrowserLogRoute prints selected log messages in the response.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.0
  */
@@ -639,7 +633,7 @@ class TBrowserLogRoute extends TLogRoute
 	 * @var string css class for indentifying the table structure in the dom tree
 	 */
 	private $_cssClass=null;
-	
+
 	public function processLogs($logs)
 	{
 		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
@@ -664,7 +658,7 @@ class TBrowserLogRoute extends TLogRoute
 		}
 		$response->write($this->renderFooter());
 	}
-	
+
 	/**
 	 * @param string the css class of the control
 	 */
@@ -816,7 +810,6 @@ EOD;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.2
  */
@@ -1022,7 +1015,6 @@ class TDbLogRoute extends TLogRoute
  * {@link http://www.getfirebug.com/ FireBug Website}
  *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.2
  */
@@ -1099,7 +1091,6 @@ EOD;
  * {@link http://www.firephp.org/ FirePHP Website}
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @version $Id: TLogRouter.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Util
  * @since 3.1.5
  */

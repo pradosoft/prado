@@ -14,5 +14,3 @@ class DepartmentRecord extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

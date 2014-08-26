@@ -245,5 +245,3 @@ class ParameterMapTest extends BaseCase
 	}
 /**/
 }
-
-?>

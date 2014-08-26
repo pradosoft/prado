@@ -1,25 +1,26 @@
 <?php
-class Ticket703TestCase extends PradoGenericSeleniumTest
+class Ticket703TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket703.Ticket703');
-		$this->assertTitle("Verifying Ticket703.Ticket703 703.703");
+		$this->url('tickets/index.php?page=Ticket703.Ticket703');
+		$this->assertEquals($this->title(), "Verifying Ticket703.Ticket703 703.703");
 		// Start with an empty log
-		$this->click($base.'ctl2');
+		$this->byId($base.'ctl2')->click();
 		// Wait for callback to be lanched
 		$this->pause(1000);
 		$this->assertText($base.'logBox', "");
 
 		$this->type($base.'logMessage', "Test of prado logging system");
-		$this->click($base.'ctl0');
+		$this->byId($base.'ctl0')->click();
 		$this->pause(800);
-		$this->click($base.'ctl1');
-		$this->assertTextPresent($base.'logBox', "Test of prado logging system");			
+		$this->byId($base.'ctl1')->click();
+		$this->pause(1000);
+		$this->assertContains("Test of prado logging system", $this->byId($base.'logBox')->value());
 
 		// Clean log for next run
-		$this->click($base.'ctl2');
+		$this->byId($base.'ctl2')->click();
 		// Wait for callback to be lanched
 		$this->pause(1000);
 		$this->assertText($base.'logBox', "");

@@ -1,42 +1,42 @@
 <?php
 
-class QuickstartWizard4TestCase extends PradoGenericSeleniumTest
+class QuickstartWizard4TestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample4&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample4&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// step 1
-		$this->verifyTextPresent('Step 1 of 3');
-		$this->select('ctl0_body_Wizard1_DropDownList1', "label=Cyan");
-		$this->clickAndWait('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton');
+		$this->assertContains('Step 1 of 3', $this->source());
+		$this->select('ctl0_body_Wizard1_DropDownList1', "Cyan");
+		$this->byId('ctl0_body_Wizard1_SideBarList_ctl2_SideBarButton')->click();
 
 		// step 3
-		$this->verifyTextPresent('Step 3 of 3');
-		$this->verifyTextPresent('Thank you for completing this survey.');
-		$this->clickAndWait('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
+		$this->assertContains('Step 3 of 3', $this->source());
+		$this->assertContains('Thank you for completing this survey.', $this->source());
+		$this->byId('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton')->click();
 
 		// step 1
 		$this->assertSelected('ctl0_body_Wizard1_DropDownList1', "Cyan");
-		$this->select('ctl0_body_Wizard1_DropDownList1', "label=Black");
-		$this->clickAndWait('ctl0_body_Wizard1_ctl4_ctl0');
+		$this->select('ctl0_body_Wizard1_DropDownList1', "Black");
+		$this->byId('ctl0_body_Wizard1_ctl4_ctl0')->click();
 
 		// step 2
-		$this->verifyTextPresent('Step 2 of 3');
-		$this->verifyTextPresent('Your favorite color is: Black');
-		$this->clickAndWait('ctl0_body_Wizard1_ctl5_ctl0');
+		$this->assertContains('Step 2 of 3', $this->source());
+		$this->assertContains('Your favorite color is: Black', $this->source());
+		$this->byId('ctl0_body_Wizard1_ctl5_ctl0')->click();
 
 		// step 1
-		$this->verifyTextPresent('Step 1 of 3');
+		$this->assertContains('Step 1 of 3', $this->source());
 		$this->assertSelected('ctl0_body_Wizard1_DropDownList1', "Black");
-		$this->clickAndWait('ctl0_body_Wizard1_ctl4_ctl0');
+		$this->byId('ctl0_body_Wizard1_ctl4_ctl0')->click();
 
 		// step 2
-		$this->clickAndWait('ctl0_body_Wizard1_ctl5_ctl1');
+		$this->byId('ctl0_body_Wizard1_ctl5_ctl1')->click();
 
 		// step 3
-		$this->verifyTextPresent('Step 3 of 3');
+		$this->assertContains('Step 3 of 3', $this->source());
 	}
 }

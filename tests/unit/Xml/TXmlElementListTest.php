@@ -23,7 +23,7 @@ class TXmlElementListTest extends PHPUnit_Framework_TestCase {
 		$newElement=new TXmlElement('newTag');
 		$list->insertAt(0,$newElement);
 		self::assertEquals($newElement,$list->itemAt(0));
-		
+
 	}
 
 	public function testRemoveAt() {
@@ -34,4 +34,3 @@ class TXmlElementListTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals($newElement,$list->removeAt(0));
 	}
 }
-?>

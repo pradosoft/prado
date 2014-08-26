@@ -18,5 +18,3 @@ class Ticket589Test extends UnitTestCase
 		}
 	}
 }
-
-?>

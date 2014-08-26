@@ -8,6 +8,8 @@
     <li><a href="?page=GettingStarted.Installation">安装</a></li>
     <li><a href="?page=GettingStarted.NewFeatures">版本新功能</a></li>
     <li><a href="?page=GettingStarted.Upgrading">从v2.x和v1.x升级</a></li>
+    <li><a href="?page=GettingStarted.Wsat">Web Site Administration Tool</a></li>
+    <li><a href="?page=GettingStarted.CommandLine">命令行工具</a></li>
 </ul>
 </div>
 
@@ -18,7 +20,6 @@
     <li><a href="?page=Fundamentals.Hangman">Hangman游戏</a></li>
     <li><a href="?page=Tutorial.CurrencyConverter">货币转换程序</a></li>
 	<li><a href="?page=Tutorial.AjaxChat">AJAX聊天程序</a></li>
-    <li><a href="?page=GettingStarted.CommandLine">命令行工具</a></li>
 </ul>
 </div>
 
@@ -26,7 +27,7 @@
 <div>基础概念</div>
 <ul>
     <li><a href="?page=Fundamentals.Architecture">框架结构</a></li>
-    <li><a href="?page=Fundamentals.Components">部件</a></li>
+    <li><a href="?page=Fundamentals.Components1">部件</a></li>
     <li><a href="?page=Fundamentals.Controls">控件</a></li>
     <li><a href="?page=Fundamentals.Pages">页面</a></li>
     <li><a href="?page=Fundamentals.Modules">模块</a></li>

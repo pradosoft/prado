@@ -1,8 +1,8 @@
 <com:TContent ID="body">
 	<h1 id="16001">Membangun Pengubah Kurs Sederhana</h1>
 	<p id="80053" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado dan mengajarkan Anda bagaimana untuk
-		membangun aplikasi web sederhana dalam beberapa langkah sederhana. Tutorial 
-		ini menganggap bahwa Anda terbiasa dengan PHP dan Anda telah mengakses 
+		membangun aplikasi web sederhana dalam beberapa langkah sederhana. Tutorial
+		ini menganggap bahwa Anda terbiasa dengan PHP dan Anda telah mengakses
 		server web yang dapat melayani naskah PHP5.
 	</p>
 
@@ -82,7 +82,7 @@ php prado/framework/prado-cli.php -c currency-converter
 		<com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" Text="TTextBox" />
 		yang pada dasarnya mendefinisikan sebuah label dan kotak teks bagi pengguna aplikasi
 		untuk memasukan nilai pertukaran kurs.
-		Nilai properti <tt>ForControl</tt> property menentukan komponen mana label 
+		Nilai properti <tt>ForControl</tt> property menentukan komponen mana label
 		diperuntukan. Ini membolehkan pengguna aplikasi mengklik pada label
 		untuk memfokuskan pada field (hal yang baik). Anda mungkin telah menggunakan elemen
 		biasa HTML <tt>&lt;label&gt;</tt> untuk melakukan hal yang sama, tapi
@@ -117,7 +117,6 @@ class Home extends TPage
 {
 
 }
-?&gt;
 </com:TTextHighlighter>
 	<p id="1111" class="block-content">
 		Prado menggunakan metode PHP <tt>__autoload</tt> untuk mengambil kelas. Konvensi
@@ -249,7 +248,7 @@ $this->total->Text = $rate * $dollars;
 </com:TTextHighlighter>
 	</p>
 
-	<p id="80072" class="block-content">Sekarang jika Anda mencoba memasukan beberapa data tidak benar dalam aplikasi atau membiarkan field kosong 
+	<p id="80072" class="block-content">Sekarang jika Anda mencoba memasukan beberapa data tidak benar dalam aplikasi atau membiarkan field kosong
 		validators akan diaktifkan dan menyajikan pesan kesalahan kepada pengguna. Catatan bahwa pesan kesalahan disajikan tanpa mengambil ulang halaman. Validator Prado standarnya memvalidasi javascript dan di dalam server. Validasi di dalam server <b>selalu dilakukan</b>. Untuk sisi server, kita harus melewati perhitungan jika validator tidak memuaskan. Ini dapat dilakukan seperti berikut.
 	</p>
 <com:TTextHighlighter Language="php" CssClass="source block-content" id="code10" >
@@ -337,7 +336,7 @@ Prado::using('System.Web.UI.ActiveControls.*');
 </com:TTextHighlighter>
 	<p id="4334" class="block-content">
 		Baris pertama <tt>&lt;%@ Theme="Basic" %&gt;</tt> mendefinisikan tema
-		yang dipakai untuk halaman ini. 
+		yang dipakai untuk halaman ini.
 		<com:DocLink ClassPath="System.Web.UI.WebControls.THead" Text="THead" />
 		merujuk ke elemen HTML <tt>&lt;head&gt;</tt>. Sebagai tambahan terhadap
 		tampilan properti <tt>Title</tt> pada <tt>THead</tt>, semua file CSS

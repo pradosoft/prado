@@ -31,5 +31,3 @@ class CountRecordsTestCase extends UnitTestCase
 		$this->assertEqual($finder->count(), 8);
 	}
 }
-
-?>

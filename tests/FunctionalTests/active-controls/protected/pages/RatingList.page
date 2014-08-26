@@ -1,5 +1,4 @@
-<com:THead/>
-<com:TForm>
+<com:TContent ID="Content">
 <style>
 	.more td
 	{
@@ -93,6 +92,5 @@
 		Loading...
 	</div>
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

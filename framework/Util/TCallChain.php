@@ -4,16 +4,15 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2008-2013 Pradosoft
+ * @copyright Copyright &copy; 2008-2014 Pradosoft
  * @license http://www.pradosoft.com/license/
  */
 
 /**
  * TCallChain is a recursive event calling mechanism.  This class implements
  * the {@link IDynamicMethods} class so that any 'dy' event calls can be caught
- * and patched through to the intended recipient 
+ * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
- * @version $Id: TCallChain.php 564 2009-01-21 22:07:10Z javalizard $
  * @package System.Util
  * @since 3.2.3
  */
@@ -23,12 +22,12 @@ class TCallChain extends TList implements IDynamicMethods
 	 *	@var {@link TListIterator} for moving through the chained method calls
 	 */
 	private $_iterator=null;
-	
+
 	/**
 	 *	@var string the method name of the call chain
 	 */
 	private $_method=null;
-	
+
 	/**
 	 * This initializes the list and the name of the method to be called
 	 *	@param string the name of the function call
@@ -37,11 +36,11 @@ class TCallChain extends TList implements IDynamicMethods
 		$this->_method=$method;
 		parent::__construct();
 	}
-	
-	
+
+
 	/**
 	 * This initializes the list and the name of the method to be called
-	 *	@param string|array this is a callable function as a string or array with 
+	 *	@param string|array this is a callable function as a string or array with
 	 *			the object and method name as string
 	 *  @param array The array of arguments to the function call chain
 	 */
@@ -49,12 +48,12 @@ class TCallChain extends TList implements IDynamicMethods
 	{
 		$this->add(array($method,$args));
 	}
-	
+
 	/**
 	 * This method calls the next Callable in the list.  All of the method arguments
-	 * coming into this method are substituted into the original method argument of 
+	 * coming into this method are substituted into the original method argument of
 	 * call in the chain.
-	 * 
+	 *
 	 * If the original method call has these parameters
 	 * <code>
 	 * $originalobject->dyExampleMethod('param1', 'param2', 'param3')
@@ -71,7 +70,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 * list in 'dy' event calls is always the object containing the behavior.  This modifies
 	 * the parameter replacement mechanism slightly to leave the object containing the behavior
 	 * alone and only replacing the other parameters in the argument list.  As per {@link __call},
-	 * any calls to a 'dy' event do not need the object containing the behavior as the addition of 
+	 * any calls to a 'dy' event do not need the object containing the behavior as the addition of
 	 * the object to the argument list as the first element is automatic for IClassBehaviors.
 	 *
 	 * The last parameter of the method parameter list for any callable in the call chain
@@ -87,14 +86,14 @@ class TCallChain extends TList implements IDynamicMethods
 	 *
 	 * When there are no handlers or no handlers left, it returns the first parameter of the
 	 * argument list.
-	 * 
+	 *
 	 */
 	public function call()
 	{
 		$args=func_get_args();
 		if($this->getCount()===0)
 			return isset($args[0])?$args[0]:null;
-		
+
 		if(!$this->_iterator)
 		{
 			$chain_array=array_reverse($this->toArray());
@@ -115,12 +114,12 @@ class TCallChain extends TList implements IDynamicMethods
 			$result = $args[0];
 		return $result;
 	}
-	
-	
+
+
 	/**
 	 * This catches all the unpatched dynamic events.  When the method call matches the
-	 * call chain method, it passes the arguments to the original __call (of the dynamic 
-	 * event being unspecified in TCallChain) and funnels into the method {@link call}, 
+	 * call chain method, it passes the arguments to the original __call (of the dynamic
+	 * event being unspecified in TCallChain) and funnels into the method {@link call},
 	 * so the next dynamic event handler can be called.
 	 * If the original method call has these parameters
 	 * <code>

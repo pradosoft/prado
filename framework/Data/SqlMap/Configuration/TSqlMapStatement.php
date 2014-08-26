@@ -5,9 +5,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  */
 
@@ -24,7 +23,6 @@
  * statement can return a database-generated key.)
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */
@@ -295,7 +293,7 @@ class TSqlMapStatement extends TComponent
 
 	public function __sleep()
 	{
-		$cn = __CLASS__; 
+		$cn = __CLASS__;
 		$exprops = array("\0$cn\0_resultMap");
 		if (!$this->_parameterMapName) $exprops[] = "\0$cn\0_parameterMapName";
 		if (!$this->_parameterMap) $exprops[] = "\0$cn\0_parameterMap";
@@ -319,7 +317,6 @@ class TSqlMapStatement extends TComponent
  * TSqlMapSelect class file.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Statements
  * @since 3.1
  */
@@ -338,7 +335,6 @@ class TSqlMapSelect extends TSqlMapStatement
  * to generate a key to be used for the insert command.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */
@@ -367,7 +363,6 @@ class TSqlMapInsert extends TSqlMapStatement
  * TSqlMapUpdate class corresponds to <update> element.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */
@@ -379,7 +374,6 @@ class TSqlMapUpdate extends TSqlMapStatement
  * TSqlMapDelete class corresponds to the <delete> element.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */
@@ -391,7 +385,6 @@ class TSqlMapDelete extends TSqlMapUpdate
  * TSqlMapSelect corresponds to the <selectKey> element.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqlMapStatement.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.SqlMap.Configuration
  * @since 3.1
  */

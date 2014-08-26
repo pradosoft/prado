@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>Active Drop Down List Test Case</h1>
 
 	<com:TActiveDropDownList ID="list1" AutoPostBack="true" SelectedIndex="0" OnSelectedIndexChanged="list1_changed">
@@ -26,6 +26,4 @@
 		<com:TButton ID="button5" Text="Post Back" OnClick="do_postback"/>
 	</div>
 
-	<com:TJavascriptLogger />
-
-</com:TForm>
+</com:TContent>

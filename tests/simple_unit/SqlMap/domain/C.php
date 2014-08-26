@@ -11,5 +11,3 @@ class C
 	public function getLibelle(){ return $this->_Libelle; }
 	public function setLibelle($value){ $this->_Libelle = $value; }
 }
-
-?>

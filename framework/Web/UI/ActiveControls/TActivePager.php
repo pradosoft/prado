@@ -4,9 +4,8 @@
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActivePager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -17,15 +16,14 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActivePager is the active control counter part of TPager.
- * 
+ *
  * When a page change is requested, TActivePager raises a callback instead of the
  * traditional postback.
  *
  * The {@link onCallback OnCallback} event is raised during a callback request
  * and it is raise <b>after</b> the {@link onPageIndexChanged OnPageIndexChanged} event.
- * 
+ *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
- * @version $Id: TActivePager.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1.2
  */
@@ -41,7 +39,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
-	
+
 	/**
 	 * @return TBaseActiveControl standard active control options.
 	 */
@@ -60,11 +58,11 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 
 	/**
 	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. 
+	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
-	 
+
  	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
@@ -82,7 +80,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
-	
+
 	/**
 	 * Builds a dropdown list pager
 	 * Override parent implementation to build Active dropdown lists.
@@ -90,25 +88,25 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	protected function buildListPager()
 	{
 		$list=new TActiveDropDownList;
-		
+
 		$list->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
-		
+
 		$this->getControls()->add($list);
 		$list->setDataSource(range(1,$this->getPageCount()));
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
 		$list->attachEventHandler('OnSelectedIndexChanged',array($this,'listIndexChanged'));
-		$list->attachEventHandler('OnCallback', array($this, 'handleCallback'));				
-	}	
-		
+		$list->attachEventHandler('OnCallback', array($this, 'handleCallback'));
+	}
+
 	/**
 	 * Creates a pager button.
 	 * Override parent implementation to create, depending on the button type, a TActiveLinkButton,
 	 * a TActiveButton or a TActiveImageButton may be created.
-	 * 
+	 *
 	 * @param string button type, either LinkButton or PushButton
 	 * @param boolean whether the button should be enabled
 	 * @param string caption of the button
@@ -126,6 +124,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			{
 				$button=new TLabel;
 				$button->setText($text);
+				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
 		}
@@ -144,28 +143,29 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			if(!$enabled)
 				$button->setEnabled(false);
 		}
-		
+
 		if($buttonType===TPagerButtonType::ImageButton)
 		{
 			$button->ImageUrl = $text;
 		}
-		
+
 		$button->setText($text);
 		$button->setCommandName($commandName);
 		$button->setCommandParameter($commandParameter);
 		$button->setCausesValidation(false);
-		
-		$button->attachEventHandler('OnCallback', array($this, 'handleCallback'));		
+		$button->setCssClass($this->getButtonCssClass());
+
+		$button->attachEventHandler('OnCallback', array($this, 'handleCallback'));
 		$button->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
-		
+
 		return $button;
 	}
-	
+
 	/**
 	 * Event handler to the OnCallback active buttons or active dropdownlist.
-	 * This handler will raise the {@link onCallback OnCallback} event 
+	 * This handler will raise the {@link onCallback OnCallback} event
 	 *
 	 * @param mixed $sender
 	 * @param TCallbackEventParameter $param
@@ -181,14 +181,14 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			{
 				$control->render($param->getNewWriter());
 				// FIXME : With some very fast machine, the getNewWriter() consecutive calls are in the same microsecond, resulting
-				// of getting the same boundaries in ajax response. Wait 1 microsecond to avoid this. 
+				// of getting the same boundaries in ajax response. Wait 1 microsecond to avoid this.
 				usleep(1);
 			}
 		}
 		// Raise callback event
 		$this->onCallback($param);
-	}	
-	
+	}
+
 	public function render ($writer)
 	{
 		if($this->getHasPreRendered())

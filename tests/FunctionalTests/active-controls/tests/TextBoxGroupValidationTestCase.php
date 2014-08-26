@@ -1,22 +1,23 @@
 <?php
 
-class TextBoxGroupValidationTestCase extends PradoGenericSeleniumTest
+class TextBoxGroupValidationTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=TextBoxValidationCallback");
-		$this->assertTextPresent('TextBox AutoPostBack With Group Validation');
-		$this->assertNotVisible('validator1');
+		$base="ctl0_Content_";
+		$this->url("active-controls/index.php?page=TextBoxValidationCallback");
+		$this->assertContains('TextBox AutoPostBack With Group Validation', $this->source());
+		$this->assertNotVisible("{$base}validator1");
 
-		$this->type('ZipCode', 'test');
-		$this->assertVisible('validator1');
+		$this->type("{$base}ZipCode", 'test');
+		$this->assertVisible("{$base}validator1");
 
-		$this->type('Address', 'Sydney');
-		$this->type('ZipCode', '2000');
+		$this->type("{$base}Address", 'Sydney');
+		$this->type("{$base}ZipCode", '2000');
 
-		$this->assertNotVisible('validator1');
+		$this->assertNotVisible("{$base}validator1");
 
 		$this->pause(800);
-		$this->assertValue('City', 'City: Sydney Zip: 2000');
+		$this->assertValue("{$base}City", 'City: Sydney Zip: 2000');
 	}
 }

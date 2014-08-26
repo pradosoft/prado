@@ -1,19 +1,19 @@
 <?php
 //$Id: ActiveButtonTestCase.php 1405 2006-09-10 01:03:56Z wei $
-class QuickstartActiveCustomValidatorTestCase extends PradoGenericSeleniumTest
+class QuickstartActiveCustomValidatorTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCustomValidator.Home&amp;notheme=true&amp;lang=en");
+		$this->url("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCustomValidator.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertTextPresent('TActiveCustomValidator Samples (AJAX)');
+		$this->assertContains('TActiveCustomValidator Samples (AJAX)', $this->source());
 
 		$base = 'ctl0_body_';
 
 		$this->assertNotVisible($base.'validator1');
-		$this->click($base.'button1');
+		$this->byId($base.'button1')->click();
 		$this->pause(800);
 		$this->assertVisible($base.'validator1');
 
@@ -25,7 +25,7 @@ class QuickstartActiveCustomValidatorTestCase extends PradoGenericSeleniumTest
 		$this->pause(800);
 		$this->assertVisible($base.'validator1');
 
-		$this->click($base.'button1');
+		$this->byId($base.'button1')->click();
 		$this->pause(800);
 		$this->assertNotVisible($base.'validator1');
 	}

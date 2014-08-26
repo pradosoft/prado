@@ -144,5 +144,3 @@ function unfold_file($fileName)
 	}
 	return $content;
 }
-
-?>

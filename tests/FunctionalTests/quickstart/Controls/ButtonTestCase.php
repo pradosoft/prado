@@ -1,33 +1,33 @@
 <?php
 
-class QuickstartButtonTestCase extends PradoGenericSeleniumTest
+class QuickstartButtonTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TButton.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// a regular button
-		$this->clickAndWait("//input[@type='submit' and @value='text']", "");
+		$this->byXPath("//input[@type='submit' and @value='text']")->click();
 
 		// a click button
-		$this->verifyElementNotPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
-		$this->clickAndWait("//input[@type='submit' and @value='click me']", "");
-		$this->verifyElementPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
+		$this->assertElementNotPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
+		$this->byXPath("//input[@type='submit' and @value='click me']")->click();
+		$this->assertElementPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
 
 		// a command button
-		$this->verifyElementNotPresent("//input[@type='submit' and @value=\"Name: test, Param: value\"]");
-		$this->clickAndWait("//input[@type='submit' and @value='click me']", "");
-		$this->verifyElementPresent("//input[@type='submit' and @value=\"Name: test, Param: value\"]");
+		$this->assertElementNotPresent("//input[@type='submit' and @value=\"Name: test, Param: value\"]");
+		$this->byXPath("//input[@type='submit' and @value='click me']")->click();
+		$this->assertElementPresent("//input[@type='submit' and @value=\"Name: test, Param: value\"]");
 
 		// a button causing validation
-		$this->verifyNotVisible('ctl0_body_ctl3');
-		$this->click("//input[@type='submit' and @value='submit']", "");
+		$this->assertNotVisible('ctl0_body_ctl3');
+		$this->byXPath("//input[@type='submit' and @value='submit']")->click();
 //		$this->pause(1000);
-		$this->verifyVisible('ctl0_body_ctl3');
+		$this->assertVisible('ctl0_body_ctl3');
 		$this->type("ctl0\$body\$TextBox", "test");
-		$this->clickAndWait("//input[@type='submit' and @value='submit']", "");
-		$this->verifyNotVisible('ctl0_body_ctl3');
+		$this->byXPath("//input[@type='submit' and @value='submit']")->click();
+		$this->assertNotVisible('ctl0_body_ctl3');
 	}
 }

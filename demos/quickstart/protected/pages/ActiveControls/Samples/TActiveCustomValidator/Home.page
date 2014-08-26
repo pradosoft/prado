@@ -16,6 +16,5 @@ Custom validator using callbacks:
 </td></tr>
 </table>
 
-<com:TJavascriptLogger />
 
 </com:TContent>

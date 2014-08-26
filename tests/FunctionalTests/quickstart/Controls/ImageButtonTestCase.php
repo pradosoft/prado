@@ -1,28 +1,28 @@
 <?php
 
-class QuickstartImageButtonTestCase extends PradoGenericSeleniumTest
+class QuickstartImageButtonTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TImageButton.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TImageButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// a click button
-		$this->clickAndWait("//input[@type='image' and @alt='hello world']", "");
-		$this->verifyTextPresent("You clicked at ","");
+		$this->byXPath("//input[@type='image' and @alt='hello world']")->click();
+		$this->assertContains("You clicked at ", $this->source());
 
 		// a command button
-		$this->clickAndWait("ctl0\$body\$ctl1", "");
-		$this->verifyTextPresent("Command name: test, Command parameter: value","");
+		$this->byName("ctl0\$body\$ctl1")->click();
+		$this->assertContains("Command name: test, Command parameter: value", $this->source());
 
 		// a button causing validation
-		$this->verifyNotVisible('ctl0_body_ctl2');
-		$this->click("id=ctl0_body_ctl3", "");
+		$this->assertNotVisible('ctl0_body_ctl2');
+		$this->byId("ctl0_body_ctl3")->click();
 //		$this->pause(1000);
-		$this->verifyVisible('ctl0_body_ctl2');
+		$this->assertVisible('ctl0_body_ctl2');
 		$this->type("ctl0\$body\$TextBox", "test");
-		$this->clickAndWait("id=ctl0_body_ctl3", "");
-		$this->verifyNotVisible('ctl0_body_ctl2');
+		$this->byId("ctl0_body_ctl3")->click();
+		$this->assertNotVisible('ctl0_body_ctl2');
 	}
 }

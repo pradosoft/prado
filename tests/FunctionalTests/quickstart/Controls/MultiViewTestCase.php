@@ -1,35 +1,35 @@
 <?php
 
-class QuickstartMultiViewTestCase extends PradoGenericSeleniumTest
+class QuickstartMultiViewTestCase extends PradoGenericSelenium2Test
 {
 	function test ()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en");
 
-		$this->verifyTitle("PRADO QuickStart Sample", "");
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// view 1 : type in a string
-		$this->verifyElementNotPresent('ctl0_body_Result1');
-		$this->verifyElementNotPresent('ctl0_body_Result2');
+		$this->assertElementNotPresent('ctl0_body_Result1');
+		$this->assertElementNotPresent('ctl0_body_Result2');
 		$this->type('ctl0_body_Memo','test');
-		$this->clickAndWait('ctl0$body$ctl0'); // view 2 to select the dropdown
-		$this->clickAndWait('ctl0$body$ctl4');
+		$this->byName('ctl0$body$ctl0')->click(); // view 2 to select the dropdown
+		$this->byName('ctl0$body$ctl4')->click();
 
 		// view 3 : check if the output is updated
-		$this->verifyTextPresent('Your text input is: test');
-		$this->verifyTextPresent('Your color choice is: Red');
-		$this->clickAndWait('ctl0$body$ctl7');
+		$this->assertContains('Your text input is: test', $this->source());
+		$this->assertContains('Your color choice is: Red', $this->source());
+		$this->byName('ctl0$body$ctl7')->click();
 
 		// view 2 : update dropdownlist
-		$this->verifyElementNotPresent('ctl0_body_Result1');
-		$this->verifyElementNotPresent('ctl0_body_Result2');
-		$this->select('ctl0$body$DropDownList', "label=Blue");
-		$this->clickAndWait('ctl0$body$ctl4');
+		$this->assertElementNotPresent('ctl0_body_Result1');
+		$this->assertElementNotPresent('ctl0_body_Result2');
+		$this->select('ctl0$body$DropDownList', "Blue");
+		$this->byName('ctl0$body$ctl4')->click();
 
 		// view 3 : check if the output is updated
-		$this->verifyTextPresent('Your text input is: test');
-		$this->verifyTextPresent('Your color choice is: Blue');
-		$this->clickAndWait('ctl0$body$ctl7');
+		$this->assertContains('Your text input is: test', $this->source());
+		$this->assertContains('Your color choice is: Blue', $this->source());
+		$this->byName('ctl0$body$ctl7')->click();
 
 		// view 2 : check if dropdownlist maintains state
 		$this->assertSelected('ctl0$body$DropDownList', "Blue");

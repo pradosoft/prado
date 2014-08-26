@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TEmailAddressValidator.php 3283 2013-03-24 10:19:08Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -24,7 +23,6 @@ Prado::using('System.Web.UI.WebControls.TRegularExpressionValidator');
  * checkdnsrr() is available in the installed PHP.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TEmailAddressValidator.php 3283 2013-03-24 10:19:08Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */

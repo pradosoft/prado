@@ -26,4 +26,3 @@ class SqliteColumnTest extends UnitTestCase
 //		var_dump($table->findAll()->readAll());
 	}
 }
-?>

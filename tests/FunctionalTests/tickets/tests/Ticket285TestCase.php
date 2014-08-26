@@ -1,11 +1,11 @@
 <?php
 
-class Ticket285TestCase extends PradoGenericSeleniumTest
+class Ticket285TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket285');
-		$this->assertTextPresent('350.00');
-		$this->assertTextPresent('349.99');
+		$this->url('tickets/index.php?page=Ticket285');
+		$this->assertContains('350.00', $this->source());
+		$this->assertContains('349.99', $this->source());
 	}
 }

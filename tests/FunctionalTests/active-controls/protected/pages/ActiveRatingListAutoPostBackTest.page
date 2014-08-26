@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList AutoPostBack Test Case</h1>
 	<com:TActiveRatingList ID="RatingList" AutoPostback="false"
 		OnSelectedIndexChanged="ratingChanged">
@@ -13,4 +12,4 @@
 	<com:TActiveLabel ID="Status" Text="AutoPostback=false" />
 	<br />
 	<com:TActiveButton ID="Submit" Text="Submit" />
-</com:TForm>
+</com:TContent>

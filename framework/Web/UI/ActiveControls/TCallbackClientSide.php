@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TCallbackClientSide.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -28,8 +27,8 @@
  *
  * * Note that theses 2 events are not fired correctly by Opera. To make
  *   them work in this browser, Prado will fire them just after onPreDispatch.
- * 
- * In a general way, onUninitialized, onLoading, onLoaded and onInteractive events 
+ *
+ * In a general way, onUninitialized, onLoading, onLoaded and onInteractive events
  * are not implemented consistently in all browsers.When cross browser compatibility is
  * needed, it is best to avoid use them
  *
@@ -46,7 +45,6 @@
  *   viewstate update. This will automatically set HasPriority to true when enabled.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @version $Id: TCallbackClientSide.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */

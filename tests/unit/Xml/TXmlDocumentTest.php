@@ -34,7 +34,7 @@ class TXmlDocumentTest extends PHPUnit_Framework_TestCase {
 			$xmldoc->loadFromFile('unexistentXmlFile.xml');
 			self::fail('Expected TIOException not thrown');
 		} catch (TIOException $e) {}
-		
+
 		self::assertTrue($xmldoc->loadFromFile($file));
 		self::assertEquals('1.0', $xmldoc->getVersion());
 		self::assertEquals('UTF-8',$xmldoc->getEncoding());
@@ -61,9 +61,9 @@ class TXmlDocumentTest extends PHPUnit_Framework_TestCase {
 		// Result string should be :
 		$resultString="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<root>\n    <node param=\"attribute1\"\n</root>";
 		self::assertEquals($xmlString, $magicString);
-		
+
 	}
-	
+
 	public function testSaveToFile() {
 		$file=dirname(__FILE__).'/data/tmp.xml';
 		if (!is_writable(dirname($file))) self::markTestSkipped(dirname($file).' must be writable for this test');
@@ -77,4 +77,3 @@ class TXmlDocumentTest extends PHPUnit_Framework_TestCase {
 		if (is_file($file)) unlink ($file);
 	}
 }
-?>

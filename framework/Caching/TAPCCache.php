@@ -4,9 +4,8 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  */
 
@@ -41,7 +40,6 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @version $Id: TAPCCache.php 3281 2013-03-13 21:01:40Z ctrlaltca $
  * @package System.Caching
  * @since 3.0b
  */
@@ -57,10 +55,10 @@ class TAPCCache extends TCache
 	{
 		if(!extension_loaded('apc'))
 			throw new TConfigurationException('apccache_extension_required');
-				
+
 		if(ini_get('apc.enabled') == false)
-			throw new TConfigurationException('apccache_extension_not_enabled');	
-			
+			throw new TConfigurationException('apccache_extension_not_enabled');
+
 		if(substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false)
 			throw new TConfigurationException('apccache_extension_not_enabled_cli');
 

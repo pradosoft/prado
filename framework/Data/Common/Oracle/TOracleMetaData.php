@@ -4,9 +4,8 @@
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TOracleMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  */
 
@@ -21,7 +20,6 @@ Prado::using('System.Data.Common.Oracle.TOracleTableColumn');
  * TOracleMetaData loads Oracle database table and column information.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
- * @version $Id: TOracleMetaData.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.Common.Oracle
  * @since 3.1
  */
@@ -29,7 +27,7 @@ class TOracleMetaData extends TDbMetaData
 {
 	private $_defaultSchema = 'system';
 
-	
+
 	/**
 	 * @return string TDbTableInfo class name.
 	 */
@@ -336,5 +334,41 @@ EOD;
 		}
 		return false;
 	}
-}
+        
+        /**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
+	public function findTableNames($schema='')
+	{
+		if($schema==='')
+		{
+			$sql=<<<EOD
+SELECT table_name, '{$schema}' as table_schema FROM user_tables
+EOD;
+			$command=$this->getDbConnection()->createCommand($sql);
+		}
+		else
+		{
+			$sql=<<<EOD
+SELECT object_name as table_name, owner as table_schema FROM all_objects
+WHERE object_type = 'TABLE' AND owner=:schema
+EOD;
+			$command=$this->getDbConnection()->createCommand($sql);
+			$command->bindParam(':schema',$schema);
+		}
 
+		$rows=$command->queryAll();
+		$names=array();
+		foreach($rows as $row)
+		{
+			if($schema===$this->getDefaultSchema() || $schema==='')
+				$names[]=$row['TABLE_NAME'];
+			else
+				$names[]=$row['TABLE_SCHEMA'].'.'.$row['TABLE_NAME'];
+		}
+		return $names;
+	}
+}

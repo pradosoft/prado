@@ -1,17 +1,17 @@
 <?php
 
-class Ticket121TestCase extends PradoGenericSeleniumTest
+class Ticket121TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket121');
+		$this->url('tickets/index.php?page=Ticket121');
 		$this->type("ctl0\$Content\$FooTextBox", "");
-		$this->verifyNotVisible('ctl0_Content_ctl1');
-		$this->click("//input[@type='image' and @id='ctl0_Content_ctl0']", "");
-		$this->verifyVisible('ctl0_Content_ctl1');
+		$this->assertNotVisible('ctl0_Content_ctl1');
+		$this->byXPath("//input[@type='image' and @id='ctl0_Content_ctl0']")->click();
+		$this->assertVisible('ctl0_Content_ctl1');
 		$this->type("ctl0\$Content\$FooTextBox", "content");
-		$this->clickAndWait("//input[@type='image' and @id='ctl0_Content_ctl0']", "");
-		$this->verifyNotVisible('ctl0_Content_ctl1');
-		$this->verifyTextPresent("clicked at", "");
+		$this->byXPath("//input[@type='image' and @id='ctl0_Content_ctl0']")->click();
+		$this->assertNotVisible('ctl0_Content_ctl1');
+		$this->assertContains("clicked at", $this->source());
 	}
 }

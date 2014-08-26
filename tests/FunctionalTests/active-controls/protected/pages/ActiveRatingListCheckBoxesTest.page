@@ -1,5 +1,4 @@
-<com:THead />
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 	<h1>TActiveRatingList Check Boxes Test Case</h1>
 	<com:TActiveRatingList ID="RatingList">
 		<com:TListItem Text="Poor" />
@@ -9,4 +8,4 @@
 		<com:TListItem Text="Excellent" />
 		<com:TListItem Text="Super" />
 	</com:TActiveRatingList>
-</com:TForm>
+</com:TContent>

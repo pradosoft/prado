@@ -279,4 +279,3 @@
             return Simpletest::getDefaultProxyPassword();
         }
     }
-?>

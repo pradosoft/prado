@@ -6,6 +6,13 @@
 This page summarizes the main new features that are introduced in each PRADO release.
 </p>
 
+<h2 id="8001">Version 3.2.4</h2>
+<ul>
+<li>Added Adding toArray() and toJSON() to TActiveRecord</li>
+<li>Dropped Markdown for Parsedown, supporting GitHub Flavored Markdown's extension</li>
+<li>Web site administration tool (<a href="?page=GettingStarted.Wsat">WSAT</a>)</li>
+</ul>
+
 <h2 id="8001">Version 3.2.3</h2>
 <ul>
 <li>Added <a href="?page=Controls.HtmlArea4">THtmlArea4 control</a> based on TinyMCE4</li>

@@ -1,17 +1,16 @@
 <?php
-class Ticket745TestCase extends PradoGenericSeleniumTest
+class Ticket745TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket745');
-		$this->assertTitle("Verifying Ticket 745");
-		
+		$this->url('tickets/index.php?page=Ticket745');
+		$this->assertEquals($this->title(), "Verifying Ticket 745");
+
 		$this->select($base.'Wizard1_DropDownList1', 'Green');
-		$this->click($base.'Wizard1_ctl4_ctl1');
+		$this->byId($base.'Wizard1_ctl4_ctl1')->click();
 		$this->pause(800);
-		$this->assertTextPresent ('Step 3 of 3');
-		
+		$this->assertContains('Step 3 of 3', $this->source());
 	}
 
 }

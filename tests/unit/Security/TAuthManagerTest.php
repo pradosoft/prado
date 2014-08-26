@@ -8,7 +8,7 @@ Prado::using('System.Xml.TXmlDocument');
  * @package System.Security
  */
 class TAuthManagerTest extends PHPUnit_Framework_TestCase {
-	
+
 	public static $app = null;
 	public static $usrMgr = null;
 
@@ -18,7 +18,7 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 		if(self::$app === null) {
 			self::$app = new TApplication(dirname(__FILE__).'/app');
 		}
-		
+
 		// Make a fake user manager module
 		if (self::$usrMgr === null) {
 			self::$usrMgr=new TUserManager ();
@@ -39,26 +39,26 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 			$authManager->init(null);
 			self::fail ('Expected TConfigurationException not thrown');
 		} catch (TConfigurationException $e) {}
-		
+
 		$authManager->setUserManager('users');
 		$authManager->init (null);
 		self::assertEquals(self::$usrMgr, $authManager->getUserManager());
 	}
-	
+
 	public function testUserManager() {
 		$authManager=new TAuthManager ();
 		$authManager->setUserManager('users');
 		$authManager->init(null);
 		self::assertEquals(self::$usrMgr, $authManager->getUserManager());
-		
+
 		// test change
 		try {
 			$authManager->setUserManager('invalid');
 			self::fail ('Expected TInvalidOperationException not thrown');
 		} catch (TInvalidOperationException $e) {}
-		
+
 	}
-	
+
 	public function testLoginPage() {
 		$authManager=new TAuthManager ();
 		$authManager->setUserManager('users');
@@ -66,7 +66,7 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 		$authManager->setLoginPage ('LoginPage');
 		self::assertEquals('LoginPage', $authManager->getLoginPage());
 	}
-	
+
 	public function testDoAuthentication() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 		// Not yet finished, Session won't start because of headers :( :(
@@ -76,41 +76,40 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 		$authManager->init(null);
 		$authManager->setLoginPage ('LoginPage');
 		self::$app->raiseEvent ('onAuthentication', self::$app, null);
-		
+
 	}
-	
+
 	public function testDoAuthorization() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testLeave() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testReturnUrl() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testOnAuthenticate() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testOnAuthorize() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testUpdateSessionUser() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testLogin() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testLogout() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
 
 }
 
-?>

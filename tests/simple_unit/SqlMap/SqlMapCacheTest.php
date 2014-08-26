@@ -73,5 +73,3 @@ class SqlMapCacheTest extends UnitTestCase
 	}
 }
 
-
-?>

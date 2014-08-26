@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPage.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  */
 
@@ -22,7 +21,6 @@ Prado::using('System.Web.UI.TClientScriptManager');
  * TPage class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPage.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.0
  */
@@ -297,7 +295,7 @@ class TPage extends TTemplateControl
 			return $data;
 		}
 	}
-	
+
 	/**
 	 * Sets Adapter to TActivePageAdapter and calls apter to process the
 	 * callback request.
@@ -307,6 +305,10 @@ class TPage extends TTemplateControl
 		Prado::using('System.Web.UI.ActiveControls.TActivePageAdapter');
 
 		$this->setAdapter(new TActivePageAdapter($this));
+
+        $callbackEventParameter = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
+        if(strlen($callbackEventParameter) > 0)
+            $this->_postData[TPage::FIELD_CALLBACK_PARAMETER]=TJavaScript::jsonDecode((string)$callbackEventParameter);
 
         // Decode Callback postData from UTF-8 to current Charset
         if (($g=$this->getApplication()->getGlobalization(false))!==null &&
@@ -1245,7 +1247,6 @@ class TPage extends TTemplateControl
  * classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPage.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI
  * @since 3.1
  */

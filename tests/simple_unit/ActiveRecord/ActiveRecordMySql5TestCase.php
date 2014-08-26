@@ -43,4 +43,3 @@ class ActiveRecordMySql5TestCase extends UnitTestCase
 	}
 
 }
-?>

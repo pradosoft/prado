@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqliteTableInfo.php 1861 2007-04-12 08:05:03Z wei $
  * @package System.Data.Common.Sqlite
  */
 
@@ -20,7 +19,6 @@ Prado::using('System.Data.Common.Sqlite.TSqliteTableColumn');
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqliteTableInfo.php 1861 2007-04-12 08:05:03Z wei $
  * @package System.Data.Common.Sqlite
  * @since 3.1
  */

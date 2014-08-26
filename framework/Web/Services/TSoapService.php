@@ -5,9 +5,8 @@
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSoapService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  */
 
@@ -156,7 +155,7 @@ class TSoapService extends TService
 	 * @throws TConfigurationException if soap server id is not specified or duplicated
 	 */
 	private function loadConfig($config)
-	{	
+	{
 		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
 			if(is_array($config))
@@ -296,7 +295,6 @@ class TSoapService extends TService
  * It also manages the URI for the SOAP service and WSDL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TSoapService.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.Services
  * @since 3.1
  */

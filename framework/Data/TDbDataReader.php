@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDbDataReader.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data
  */
 
@@ -30,7 +29,6 @@
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDbDataReader.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data
  * @since 3.0
  */

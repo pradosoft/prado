@@ -3,14 +3,13 @@
  * TComponent, TPropertyValue classes
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * 
+ *
  * Global Events, intra-object events, Class behaviors, expanded behaviors
  * @author Brad Anderson <javalizard@mac.com>
- * 
+ *
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  */
 
@@ -56,7 +55,7 @@
  * </code>
  * Js-friendly properties can be accessed using both their Js-less name and their Js-enabled name:
  * <code>
- * // set some simple text as property value 
+ * // set some simple text as property value
  * $component->Text = 'text';
  * // set some javascript code as property value
  * $component->JsText = 'raw javascript';
@@ -65,7 +64,7 @@
  * clientside inside a javascript block.
  * In the second case, the property will be 'marked' as being a safe javascript
  * statement and will not be encoded when rendered inside a javascript block.
- * This special handling makes use of the {@link TJavaScriptLiteral} class. 
+ * This special handling makes use of the {@link TJavaScriptLiteral} class.
  *
  * Events
  *
@@ -100,40 +99,40 @@
  * - array($object,'buttonClicked') : $object->buttonClicked($sender,$param);
  * - array($object,'MainContent.SubmitButton.buttonClicked') :
  *   $object->MainContent->SubmitButton->buttonClicked($sender,$param);
- * 
- * With the addition of behaviors, a more expansive event model is needed.  There 
- * are two new event types (global and dynamic events) as well as a more comprehensive 
+ *
+ * With the addition of behaviors, a more expansive event model is needed.  There
+ * are two new event types (global and dynamic events) as well as a more comprehensive
  * behavior model that includes class wide behaviors.
  *
  * A global event is defined by all events whose name starts with 'fx'.
- * The event name is potentially a method name and is thus case-insensitive. All 'fx' events 
+ * The event name is potentially a method name and is thus case-insensitive. All 'fx' events
  * are valid as the whole 'fx' event/method space is global in nature. Any object may patch into
- * any global event by defining that event as a method. Global events have priorities 
- * just like 'on' events; so as to be able to order the event execution. Due to the 
- * nature of all events which start with 'fx' being valid, in effect, every object 
- * has every 'fx' global event. It is simply an issue of tapping into the desired 
+ * any global event by defining that event as a method. Global events have priorities
+ * just like 'on' events; so as to be able to order the event execution. Due to the
+ * nature of all events which start with 'fx' being valid, in effect, every object
+ * has every 'fx' global event. It is simply an issue of tapping into the desired
  * global event.
  *
  * A global event that starts with 'fx' can be called even if the object does not
  * implement the method of the global event.  A call to a non-existing 'fx' method
- * will, at minimal, function and return null.  If a method argument list has a first 
+ * will, at minimal, function and return null.  If a method argument list has a first
  * parameter, it will be returned instead of null.  This allows filtering and chaining.
  * 'fx' methods do not automatically install and uninstall. To install and uninstall an
- * object's global event listeners, call the object's {@link listen} and 
+ * object's global event listeners, call the object's {@link listen} and
  * {@link unlisten} methods, respectively.  An object may auto-install its global event
  * during {@link __construct} by overriding {@link getAutoGlobalListen} and returning true.
- * 
+ *
  * As of PHP version 5.3, nulled objects without code references will still continue to persist
  * in the global event queue because {@link __destruct} is not automatically called.  In the common
  * __destruct method, if an object is listening to global events, then {@link unlisten} is called.
  * {@link unlisten} is required to be manually called before an object is
- * left without references if it is currently listening to any global events. This includes 
+ * left without references if it is currently listening to any global events. This includes
  * class wide behaviors.
  *
- * An object that contains a method that starts with 'fx' will have those functions 
+ * An object that contains a method that starts with 'fx' will have those functions
  * automatically receive those events of the same name after {@link listen} is called on the object.
  *
- * An object may listen to a global event without defining an 'fx' method of the same name by 
+ * An object may listen to a global event without defining an 'fx' method of the same name by
  * adding an object method to the global event list.  For example
  * <code>
  * $component->fxGlobalCheck=$callback;  // or $component->OnClick->add($callback);
@@ -142,27 +141,27 @@
  *
  * Events between Objects and their behaviors, Dynamic Events
  *
- * An intra-object/behavior event is defined by methods that start with 'dy'.  Just as with 
+ * An intra-object/behavior event is defined by methods that start with 'dy'.  Just as with
  * 'fx' global events, every object has every dynamic event.  Any call to a method that
- * starts with 'dy' will be handled, regardless of whether it is implemented.  These 
+ * starts with 'dy' will be handled, regardless of whether it is implemented.  These
  * events are for communicating with attached behaviors.
- * 
+ *
  * Dynamic events can be used in a variety of ways.  They can be used to tell behaviors
  * when a non-behavior method is called.  Dynamic events could be used as data filters.
- * They could also be used to specify when a piece of code is to be run, eg. should the 
+ * They could also be used to specify when a piece of code is to be run, eg. should the
  * loop process be performed on a particular piece of data.  In this way, some control
  * is handed to the behaviors over the process and/or data.
- * 
+ *
  * If there are no handlers for an 'fx' or 'dy' event, it will return the first
  * parameter of the argument list.  If there are no arguments, these events
  * will return null.  If there are handlers an 'fx' method will be called directly
  * within the object.  Global 'fx' events are triggered by calling {@link raiseEvent}.
- * For dynamic events where there are behaviors that respond to the dynamic events, a 
+ * For dynamic events where there are behaviors that respond to the dynamic events, a
  * {@link TCallChain} is developed.  A call chain allows the behavior dynamic event
  * implementations to call further implementing behaviors within a chain.
- * 
- * If an object implements {@link IDynamicMethods}, all global and object dynamic 
- * events will be sent to {@link __dycall}.  In the case of global events, all 
+ *
+ * If an object implements {@link IDynamicMethods}, all global and object dynamic
+ * events will be sent to {@link __dycall}.  In the case of global events, all
  * global events will trigger this method.  In the case of behaviors, all undefined
  * dynamic events  which are called will be passed through to this method.
  *
@@ -171,29 +170,29 @@
  *
  * There are two types of behaviors.  There are individual object behaviors and
  * there are class wide behaviors.  Class behaviors depend upon object behaviors.
- * 
+ *
  * When a new class implements {@link IBehavior} or {@link IClassBehavior} or
- * extends {@link TBehavior} or {@link TClassBehavior}, it may be added to an 
+ * extends {@link TBehavior} or {@link TClassBehavior}, it may be added to an
  * object by calling the object's {@link attachBehavior}.  The behaviors associated
- * name can then be used to {@link enableBehavior} or {@link disableBehavior} 
+ * name can then be used to {@link enableBehavior} or {@link disableBehavior}
  * the specific behavior.
  *
- * All behaviors may be turned on and off via {@link enableBehaviors} and 
+ * All behaviors may be turned on and off via {@link enableBehaviors} and
  * {@link disableBehaviors}, respectively.  To check if behaviors are on or off
  * a call to {@link getBehaviorsEnabled} will provide the variable.
- * 
- * Attaching and detaching whole sets of behaviors is done using 
+ *
+ * Attaching and detaching whole sets of behaviors is done using
  * {@link attachBehaviors} and {@link detachBehaviors}.  {@link clearBehaviors}
  * removes all of an object's behaviors.
  *
  * {@link asa} returns a behavior of a specific name.  {@link isa} is the
  * behavior inclusive function that acts as the PHP operator {@link instanceof}.
  * A behavior could provide the functionality of a specific class thus causing
- * the host object to act similarly to a completely different class.  A behavior 
- * would then implement {@link IInstanceCheck} to provide the identity of the 
+ * the host object to act similarly to a completely different class.  A behavior
+ * would then implement {@link IInstanceCheck} to provide the identity of the
  * different class.
  *
- * Class behaviors are similar to object behaviors except that the class behavior 
+ * Class behaviors are similar to object behaviors except that the class behavior
  * is the implementation for all instances of the class.  A class behavior
  * will have the object upon which is being called be prepended to the parameter
  * list.  This way the object is known across the class behavior implementation.
@@ -202,12 +201,12 @@
  * using {@link detachClassBehavior}.  Class behaviors are important in that
  * they will be applied to all new instances of a particular class.  In this way
  * class behaviors become default behaviors to a new instances of a class in
- * {@link __construct}.  Detaching a class behavior will remove the behavior 
+ * {@link __construct}.  Detaching a class behavior will remove the behavior
  * from the default set of behaviors created for an object when the object
  * is instanced.
  *
- * Class behaviors are also added to all existing instances via the global 'fx' 
- * event mechanism.  When a new class behavior is added, the event 
+ * Class behaviors are also added to all existing instances via the global 'fx'
+ * event mechanism.  When a new class behavior is added, the event
  * {@link fxAttachClassBehavior} is raised and all existing instances that are
  * listening to this global event (primarily after {@link listen} is called)
  * will have this new behavior attached.  A similar process is used when
@@ -218,8 +217,8 @@
  *
  * Dynamic events start with 'dy'.  This mechanism is used to allow objects
  * to communicate with their behaviors directly.  The entire 'dy' event space
- * is valid.  All attached, enabled behaviors that implement a dynamic event 
- * are called when the host object calls the dynamic event.  If there is no 
+ * is valid.  All attached, enabled behaviors that implement a dynamic event
+ * are called when the host object calls the dynamic event.  If there is no
  * implementation or behaviors, this returns null when no parameters are
  * supplied and will return the first parameter when there is at least one
  * parameter in the dynamic event.
@@ -228,7 +227,7 @@
  *	 5 == $this->dyBehaviorEvent(5); //when no behaviors implement this dynamic event
  * </code>
  *
- * Dynamic events can be chained together within behaviors to allow for data 
+ * Dynamic events can be chained together within behaviors to allow for data
  * filtering. Dynamic events are implemented within behaviors by defining the
  * event as a method.
  * <code>
@@ -239,8 +238,8 @@
  *     }
  * }
  * </code>
- * This implementation of a behavior and dynamic event will flow through to the 
- * next behavior implementing the dynamic event.  The first parameter is always 
+ * This implementation of a behavior and dynamic event will flow through to the
+ * next behavior implementing the dynamic event.  The first parameter is always
  * return when it is supplied.  Otherwise a dynamic event returns null.
  *
  * In the case of a class behavior, the object is also prepended to the dynamic
@@ -258,26 +257,25 @@
  *
  * Global Event and Dynamic event catching
  *
- * Given that all global 'fx' events and dynamic 'dy' events are valid and 
+ * Given that all global 'fx' events and dynamic 'dy' events are valid and
  * operational, there is a mechanism for catching events called that are not
  * implemented (similar to the built-in PHP method {@link __call}).  When
- * a dynamic or global event is called but a behavior does not implement it, 
- * yet desires to know when an undefined dynamic event is run, the behavior 
+ * a dynamic or global event is called but a behavior does not implement it,
+ * yet desires to know when an undefined dynamic event is run, the behavior
  * implements the interface {@link IDynamicMethods} and method {@link __dycall}.
  *
- * In the case of dynamic events, {@link __dycall} is supplied with the method 
+ * In the case of dynamic events, {@link __dycall} is supplied with the method
  * name and its parameters.  When a global event is raised, via {@link raiseEvent},
  * the method is the event name and the parameters are supplied.
  *
  * When implemented, this catch-all mechanism is called for event global event event
  * when implemented outside of a behavior.  Within a behavior, it will also be called
- * when the object to which the behavior is attached calls any unimplemented dynamic 
- * event.  This is the fall-back mechanism for informing a class and/or behavior 
+ * when the object to which the behavior is attached calls any unimplemented dynamic
+ * event.  This is the fall-back mechanism for informing a class and/or behavior
  * of when an global and/or undefined dynamic event is executed.
- * 
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -287,18 +285,18 @@ class TComponent
 	 * @var array event handler lists
 	 */
 	private $_e=array();
-	
+
 	/**
-	 * @var boolean if listening is enabled.  Automatically turned on or off in 
+	 * @var boolean if listening is enabled.  Automatically turned on or off in
 	 * constructor according to {@link getAutoGlobalListen}.  Default false, off
 	 */
 	private $_listeningenabled=false;
-	
+
 	/**
 	 * @var array static registered global event handler lists
 	 */
 	private static $_ue=array();
-	
+
 	/**
 	 * @var boolean if object behaviors are on or off.  default true, on
 	 */
@@ -308,13 +306,13 @@ class TComponent
 	 * @var TPriorityMap list of object behaviors
 	 */
 	private $_m=null;
-	
+
 	/**
 	 * @var array static global class behaviors, these behaviors are added upon instantiation of a class
 	 */
 	private static $_um=array();
-	
-	
+
+
 	/**
 	 * @const string the name of the global {@link raiseEvent} listener
 	 */
@@ -323,7 +321,7 @@ class TComponent
 
 	/**
 	 * The common __construct
-	 * If desired by the new object, this will auto install and listen to global event functions 
+	 * If desired by the new object, this will auto install and listen to global event functions
 	 * as defined by the object via 'fx' methods. This also attaches any predefined behaviors.
 	 * This function installs all class behaviors in a class hierarchy from the deepest subclass
 	 * through each parent to the top most class, TComponent.
@@ -331,22 +329,22 @@ class TComponent
 	public function __construct() {
 		if($this->getAutoGlobalListen())
 			$this->listen();
-		
+
 		$classes=array_reverse($this->getClassHierarchy(true));
 		foreach($classes as $class) {
 			if(isset(self::$_um[$class]))
 				$this->attachBehaviors(self::$_um[$class]);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Tells TComponent whether or not to automatically listen to global events.
 	 * Defaults to false because PHP variable cleanup is affected if this is true.
 	 * When unsetting a variable that is listening to global events, {@link unlisten}
 	 * must explicitly be called when cleaning variables allocation or else the global
 	 * event registry will contain references to the old object. This is true for PHP 5.4
-	 * 
+	 *
 	 * Override this method by a subclass to change the setting.  When set to true, this
 	 * will enable {@link __construct} to call {@link listen}.
 	 *
@@ -368,19 +366,19 @@ class TComponent
 		if($this->_listeningenabled)
 			$this->unlisten();
 	}
-	
-	
+
+
 	/**
-	 * This utility function is a private array filter method.  The array values 
+	 * This utility function is a private array filter method.  The array values
 	 * that start with 'fx' are filtered in.
 	 */
 	private function filter_prado_fx($name) {
 		return strncasecmp($name,'fx',2)===0;
 	}
-	
-	
+
+
 	/**
-	 * This returns an array of the class name and the names of all its parents.  The base object first, 
+	 * This returns an array of the class name and the names of all its parents.  The base object first,
 	 * {@link TComponent}, and the deepest subclass is last.
 	 * @param boolean optional should the names be all lowercase true/false
 	 * @return array array of strings being the class hierarchy of $this.
@@ -394,10 +392,10 @@ class TComponent
 			return array_map('strtolower',$classes);
 		return $classes;
 	}
-	
-	
+
+
 	/**
-	 * This adds an object's fx event handlers into the global broadcaster to listen into any 
+	 * This adds an object's fx event handlers into the global broadcaster to listen into any
 	 * broadcast global events called through {@link raiseEvent}
 	 *
 	 * Behaviors may implement the function:
@@ -413,24 +411,24 @@ class TComponent
 	public function listen() {
 		if($this->_listeningenabled)
 			return;
-		
+
 		$fx=array_filter(get_class_methods($this),array($this,'filter_prado_fx'));
-		
+
 		foreach($fx as $func)
 			$this->attachEventHandler($func,array($this,$func));
-		
+
 		if(is_a($this,'IDynamicMethods')) {
 			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER,array($this,'__dycall'));
 			array_push($fx,TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
-		
+
 		$this->_listeningenabled=true;
-		
+
 		$this->dyListen($fx);
-		
+
 		return count($fx);
 	}
-	
+
 	/**
 	 * this removes an object's fx events from the global broadcaster
 	 *
@@ -447,24 +445,24 @@ class TComponent
 	public function unlisten() {
 		if(!$this->_listeningenabled)
 			return;
-		
+
 		$fx=array_filter(get_class_methods($this),array($this,'filter_prado_fx'));
-			
+
 		foreach($fx as $func)
 			$this->detachEventHandler($func,array($this,$func));
-			
+
 		if(is_a($this,'IDynamicMethods')) {
 			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER,array($this,'__dycall'));
 			array_push($fx,TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
-		
+
 		$this->_listeningenabled=false;
-		
+
 		$this->dyUnlisten($fx);
-		
+
 		return count($fx);
 	}
-	
+
 	/**
 	 * Gets the state of listening to global events
 	 * @return boolean is Listening to global broadcast enabled
@@ -473,12 +471,12 @@ class TComponent
 	{
 		return $this->_listeningenabled;
 	}
-	
+
 
 	/**
 	 * Calls a method.
 	 * Do not call this method directly. This is a PHP magic method that we override
-	 * to allow behaviors, dynamic events (intra-object/behavior events), 
+	 * to allow behaviors, dynamic events (intra-object/behavior events),
 	 * undefined dynamic and global events, and
 	 * to allow using the following syntax to call a property setter or getter.
 	 * <code>
@@ -495,7 +493,7 @@ class TComponent
 	 * @param mixed method parameters
 	 * @throws TInvalidOperationException If the property is not defined or read-only or
 	 * 		method is undefined
-	 * @return mixed result of the method call, or false if 'fx' or 'dy' function but 
+	 * @return mixed result of the method call, or false if 'fx' or 'dy' function but
 	 *		is not found in the class, otherwise it runs
 	 */
 	public function __call($method, $args)
@@ -516,7 +514,7 @@ class TComponent
 			if (($getset=='set')&&method_exists($this,'getjs'.$propname))
 				throw new TInvalidOperationException('component_property_readonly',get_class($this),$method);
 		}
-		
+
 		if($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			if(strncasecmp($method,'dy',2)===0)
@@ -531,7 +529,7 @@ class TComponent
 							array_unshift($behavior_args,$this);
 						$callchain->addCall(array($behavior,$method),$behavior_args);
 					}
-					
+
 				}
 				if($callchain->getCount()>0)
 					return call_user_func_array(array($callchain,'call'),$args);
@@ -549,14 +547,14 @@ class TComponent
 				}
 			}
 		}
-		
+
 		if(strncasecmp($method,'dy',2)===0||strncasecmp($method,'fx',2)===0)
 		{
 			if($this instanceof IDynamicMethods)
 				return $this->__dycall($method,$args);
 			return isset($args[0])?$args[0]:null;
 		}
-		
+
 		throw new TApplicationException('component_method_undefined',get_class($this),$method);
 	}
 
@@ -675,9 +673,9 @@ class TComponent
 				}
 			}
 			if($sets)return $value;
-			
+
 		}
-		
+
 		if(method_exists($this,'get'.$name)||method_exists($this,'getjs'.$name))
 		{
 			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
@@ -690,12 +688,12 @@ class TComponent
 
 	/**
 	 * Checks if a property value is null, there are no events in the object
-	 * event list or global event list registered under the name, and, if 
-	 * behaviors are enabled, 
+	 * event list or global event list registered under the name, and, if
+	 * behaviors are enabled,
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using isset() to detect if a component property is set or not.
-	 * This also works for global events.  When behaviors are enabled, it 
-	 * will check for a behavior of the specified name, and also check 
+	 * This also works for global events.  When behaviors are enabled, it
+	 * will check for a behavior of the specified name, and also check
 	 * the behavior for events and properties.
 	 * @param string the property name or the event name
 	 * @since 3.2.3
@@ -725,7 +723,7 @@ class TComponent
 				if((!($behavior instanceof IBehavior)||$behavior->getEnabled()))
 					return isset($behavior->$name);
 			}
-			
+
 		}
 		else
 			return false;
@@ -733,7 +731,7 @@ class TComponent
 
 	/**
 	 * Sets a component property to be null.  Clears the object or global
-	 * events. When enabled, loops through all behaviors and unsets the 
+	 * events. When enabled, loops through all behaviors and unsets the
 	 * property or event.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using unset() to set a component property to be null.
@@ -874,9 +872,9 @@ class TComponent
 
 	/**
 	 * Determines whether an event is defined.
-	 * An event is defined if the class has a method whose name is the event name 
+	 * An event is defined if the class has a method whose name is the event name
 	 * prefixed with 'on', 'fx', or 'dy'.
-	 * Every object responds to every 'fx' and 'dy' event as they are in a universally 
+	 * Every object responds to every 'fx' and 'dy' event as they are in a universally
 	 * accepted event space.  'on' event must be declared by the object.
 	 * When enabled, this will loop through all active behaviors for 'on' events
 	 * defined by the behavior.
@@ -888,7 +886,7 @@ class TComponent
 	{
 		if((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0||strncasecmp($name,'dy',2)===0)
 			return true;
-			
+
 		else if($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			foreach($this->_m->toArray() as $behavior)
@@ -901,9 +899,9 @@ class TComponent
 	}
 
 	/**
-	 * Checks if an event has any handlers.  This function also checks through all 
+	 * Checks if an event has any handlers.  This function also checks through all
 	 * the behaviors for 'on' events when behaviors are enabled.
-	 * 'dy' dynamic events are not handled by this function.  
+	 * 'dy' dynamic events are not handled by this function.
 	 * @param string the event name
 	 * @return boolean whether an event has been attached one or several handlers
 	 */
@@ -928,7 +926,7 @@ class TComponent
 	}
 
 	/**
-	 * Returns the list of attached event handlers for an 'on' or 'fx' event.   This function also 
+	 * Returns the list of attached event handlers for an 'on' or 'fx' event.   This function also
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
 	 * @return TPriorityList list of attached event handlers for an event
 	 * @throws TInvalidOperationException if the event is not defined
@@ -976,7 +974,7 @@ class TComponent
 	 * function handlerName($sender, $param, $name) {}
 	 * </code>
 	 * where $sender represents the object that raises the event,
-	 * and $param is the event parameter. $name refers to the event name 
+	 * and $param is the event parameter. $name refers to the event name
 	 * being handled.
 	 *
 	 * This is a convenient method to add an event handler.
@@ -1001,7 +999,7 @@ class TComponent
 	 *
 	 * @param string the event name
 	 * @param callback the event handler
-	 * @param numeric|null the priority of the handler, defaults to null which translates into the 
+	 * @param numeric|null the priority of the handler, defaults to null which translates into the
 	 * default priority of 10.0 within {@link TPriorityList}
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
@@ -1012,11 +1010,11 @@ class TComponent
 
 	/**
 	 * Detaches an existing event handler.
-	 * This method is the opposite of {@link attachEventHandler}.  It will detach 
+	 * This method is the opposite of {@link attachEventHandler}.  It will detach
 	 * any 'on' events definedb by an objects active behaviors as well.
 	 * @param string event name
 	 * @param callback the event handler to be removed
-	 * @param numeric|false|null the priority of the handler, defaults to false which translates 
+	 * @param numeric|false|null the priority of the handler, defaults to false which translates
 	 * to an item of any priority within {@link TPriorityList}; null means the default priority
 	 * @return boolean if the removal is successful
 	 */
@@ -1041,10 +1039,10 @@ class TComponent
 	 * This method represents the happening of an event and will
 	 * invoke all attached event handlers for the event in {@link TPriorityList} order.
 	 * This method does not handle intra-object/behavior dynamic 'dy' events.
-	 * 
-	 * There are ways to handle event responses.  By defailt {@link EVENT_RESULT_FILTER}, 
-	 * all event responses are stored in an array, filtered for null responses, and returned.  
-	 * If {@link EVENT_RESULT_ALL} is specified, all returned results will be stored along 
+	 *
+	 * There are ways to handle event responses.  By defailt {@link EVENT_RESULT_FILTER},
+	 * all event responses are stored in an array, filtered for null responses, and returned.
+	 * If {@link EVENT_RESULT_ALL} is specified, all returned results will be stored along
 	 * with the sender and param in an array
 	 * <code>
 	 * 		$result[] = array('sender'=>$sender,'param'=>$param,'response'=>$response);
@@ -1054,14 +1052,14 @@ class TComponent
 	 * fed forward as the parameters for the next event.  This allows for events to filter data
 	 * directly by affecting the event parameters
 	 *
-	 * If a callable function is set in the response type or the post function filter is specified then the 
+	 * If a callable function is set in the response type or the post function filter is specified then the
 	 * result of each called event handler is post processed by the callable function.  Used in
 	 * combination with {@link EVENT_RESULT_FEED_FORWARD}, any event (and its result) can be chained.
 	 *
-	 * When raising a global 'fx' event, registered handlers in the global event list for 
+	 * When raising a global 'fx' event, registered handlers in the global event list for
 	 * {@link GLOBAL_RAISE_EVENT_LISTENER} are always added into the set of event handlers.  In this way,
-	 * these global events are always raised for every global 'fx' event.  The registered handlers for global 
-	 * raiseEvent events have priorities.  Any registered global raiseEvent event handlers with a priority less than zero 
+	 * these global events are always raised for every global 'fx' event.  The registered handlers for global
+	 * raiseEvent events have priorities.  Any registered global raiseEvent event handlers with a priority less than zero
 	 * are added before the main event handlers being raised and any registered global raiseEvent event handlers
 	 * with a priority equal or greater than zero are added after the main event handlers being raised.  In this way
 	 * all {@link GLOBAL_RAISE_EVENT_LISTENER} handlers are always called for every raised 'fx' event.
@@ -1087,22 +1085,22 @@ class TComponent
 	 * dyPreRaiseEvent has the effect of being able to change the event being raised.  This intra
 	 * object/behavior event returns the name of the desired event to be raised.  It will pass through
 	 * if no dynamic event is specified, or if the original event name is returned.
-	 * dyIntraRaiseEventTestHandler returns true or false as to whether a specific handler should be 
+	 * dyIntraRaiseEventTestHandler returns true or false as to whether a specific handler should be
 	 * called for a specific raised event (and associated event arguments)
 	 * dyIntraRaiseEventPostHandler does not return anything.  This allows behaviors to access the results
 	 * of an event handler in the per handler loop.
 	 * dyPostRaiseEvent returns the responses.  This allows for any post processing of the event
 	 * results from the sum of all event handlers
 	 *
-	 * When handling a catch-all {@link __dycall}, the method name is the name of the event 
+	 * When handling a catch-all {@link __dycall}, the method name is the name of the event
 	 * and the parameters are the sender, the param, and then the name of the event.
-	 * 
+	 *
 	 * @param string the event name
 	 * @param mixed the event sender object
 	 * @param TEventParameter the event parameter
 	 * @param numeric how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
 	 *		null responses. optional
-	 * @param function any per handler filtering of the response result needed is passed through 
+	 * @param function any per handler filtering of the response result needed is passed through
 	 *		this if not null. default: null.  optional
 	 * @return mixed the results of the event
 	 * @throws TInvalidOperationException if the event is undefined
@@ -1116,15 +1114,15 @@ class TComponent
 			$postfunction=$responsetype;
 			$responsetype=null;
 		}
-		
+
 		if($responsetype===null)
 			$responsetype=TEventResults::EVENT_RESULT_FILTER;
-		
+
 		$name=strtolower($name);
 		$responses=array();
-		
+
 		$name=$this->dyPreRaiseEvent($name,$sender,$param,$responsetype,$postfunction);
-		
+
 		if($this->hasEventHandler($name)||$this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER))
 		{
 			$handlers=$this->getEventHandlers($name);
@@ -1139,7 +1137,7 @@ class TComponent
 			{
 				if($this->dyIntraRaiseEventTestHandler($handler,$sender,$param,$name)===false)
 					continue;
-				
+
 				if(is_string($handler))
 				{
 					if(($pos=strrpos($handler,'.'))!==false)
@@ -1184,30 +1182,30 @@ class TComponent
 				}
 				else
 					throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,gettype($handler));
-				
+
 				$this->dyIntraRaiseEventPostHandler($name,$sender,$param,$handler,$response);
-				
+
 				if($postfunction)
 					$response=call_user_func_array($postfunction,array($sender,$param,$this,$response));
-				
+
 				if($responsetype&TEventResults::EVENT_RESULT_ALL)
 					$responses[]=array('sender'=>$sender,'param'=>$param,'response'=>$response);
 				else
 					$responses[]=$response;
-				
+
 				if($response!==null&&($responsetype&TEventResults::EVENT_RESULT_FEED_FORWARD))
 					$param=$response;
-				
+
 			}
 		}
 		else if(strncasecmp($name,'on',2)===0&&!$this->hasEvent($name))
 			throw new TInvalidOperationException('component_event_undefined',get_class($this),$name);
-		
+
 		if($responsetype&TEventResults::EVENT_RESULT_FILTER)
 			$responses=array_filter($responses);
-			
+
 		$responses=$this->dyPostRaiseEvent($responses,$name,$sender,$param,$responsetype,$postfunction);
-		
+
 		return $responses;
 	}
 
@@ -1220,7 +1218,7 @@ class TComponent
 	 * 		return $chain->dyEvaluateExpressionFilter(str_replace('foo', 'bar', $expression)); //example
 	 * }
 	 * </code>
-	 * to be executed when evaluateExpression is called.  All attached behaviors are notified through 
+	 * to be executed when evaluateExpression is called.  All attached behaviors are notified through
 	 * dyEvaluateExpressionFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
 	 *
@@ -1252,7 +1250,7 @@ class TComponent
 	 * 		return $chain->dyEvaluateStatementsFilter(str_replace('foo', 'bar', $statements)); //example
 	 * }
 	 * </code>
-	 * to be executed when evaluateStatements is called.  All attached behaviors are notified through 
+	 * to be executed when evaluateStatements is called.  All attached behaviors are notified through
 	 * dyEvaluateStatementsFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
 	 *
@@ -1291,7 +1289,7 @@ class TComponent
 	 * 		return $chain->dyCreatedOnTemplate($parent); //example
 	 *  }
 	 * </code>
-	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through 
+	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through
 	 * dyCreatedOnTemplate.
 	 *
 	 * @param TComponent potential parent of this control
@@ -1314,7 +1312,7 @@ class TComponent
 	 *	public function dyAddParsedObject($object[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when addParsedObject is called.  All attached behaviors are notified through 
+	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
 	 * dyAddParsedObject.
 	 *
 	 * @param string|TComponent text string or component parsed and instantiated in template
@@ -1324,10 +1322,10 @@ class TComponent
 	{
 		$this->dyAddParsedObject($object);
 	}
-	
-	
+
+
 	/**
-	 *	This is the method registered for all instanced objects should a class behavior be added after 
+	 *	This is the method registered for all instanced objects should a class behavior be added after
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior added to this instance.
 	 * @param $sender the application
@@ -1338,10 +1336,10 @@ class TComponent
 		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
 			return $this->attachBehavior($param->getName(),$param->getBehavior(),$param->getPriority());
 	}
-	
-	
+
+
 	/**
-	 *	This is the method registered for all instanced objects should a class behavior be removed after 
+	 *	This is the method registered for all instanced objects should a class behavior be removed after
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior removed from this instance.
 	 * @param $sender the application
@@ -1352,17 +1350,17 @@ class TComponent
 		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
 			return $this->detachBehavior($param->getName(),$param->getPriority());
 	}
-	
-	
+
+
 	/**
-	 *	This will add a class behavior to all classes instanced (that are listening) and future newly instanced objects.  
-	 * This registers the behavior for future instances and pushes the changes to all the instances that are listening as well. 
+	 *	This will add a class behavior to all classes instanced (that are listening) and future newly instanced objects.
+	 * This registers the behavior for future instances and pushes the changes to all the instances that are listening as well.
 	 * The universal class behaviors are stored in an inverted stack with the latest class behavior being at the first position in the array.
 	 * This is done so class behaviors are added last first.
 	 * @param string name the key of the class behavior
 	 * @param object|string class behavior or name of the object behavior per instance
 	 * @param string|class string of class or class on which to attach this behavior.  Defaults to null which will error
-	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class 
+	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
@@ -1377,7 +1375,7 @@ class TComponent
 			$class=get_called_class();
 		if(!$class)
 			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		
+
 		if(!is_string($name))
 			$name=get_class($name);
 		$class=strtolower($class);
@@ -1392,16 +1390,16 @@ class TComponent
 		$behaviorObject=is_string($behavior)?new $behavior:$behavior;
 		return $behaviorObject->raiseEvent('fxAttachClassBehavior',null,$param);
 	}
-	
-	
+
+
 	/**
 	 *	This will remove a behavior from a class.  It unregisters it from future instances and
 	 * pulls the changes from all the instances that are listening as well.
 	 * PHP 5.3 uses Late Static Binding to derive the static class upon which this method is called.
 	 * @param $name the key of the class behavior
-	 * @param $class string class on which to attach this behavior.  Defaults to null.  
-	 * @param $priority numeric|null|false priority.  false is any priority, null is default 
-	 *		{@link TPriorityList} priority, and numeric is a specific priority.  
+	 * @param $class string class on which to attach this behavior.  Defaults to null.
+	 * @param $priority numeric|null|false priority.  false is any priority, null is default
+	 *		{@link TPriorityList} priority, and numeric is a specific priority.
 	 * @throws Exception if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
 	 * @since 3.2.3
@@ -1411,7 +1409,7 @@ class TComponent
 			$class=get_called_class();
 		if(!$class)
 			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
-		
+
 		$class=strtolower($class);
 		if(!is_string($name))
 			$name=get_class($name);
@@ -1443,8 +1441,8 @@ class TComponent
 	 * then the behavior can determine what it is an instanceof.  If this behavior function returns true,
 	 * then this method returns true.  If the behavior instance checking function returns false,
 	 * then no further checking is performed as it is assumed to be correct.
-	 * 
-	 * If the behavior instance check function returns nothing or null or the behavior 
+	 *
+	 * If the behavior instance check function returns nothing or null or the behavior
 	 * doesn't implement the {@link IInstanceCheck} interface, then the default instanceof occurs.
 	 * The default isa behavior is to check if the behavior is an instanceof the class.
 	 *
@@ -1463,7 +1461,7 @@ class TComponent
 			foreach($this->_m->toArray() as $behavior){
 				if(($behavior instanceof IBehavior)&&!$behavior->getEnabled())
 					continue;
-				
+
 				$check = null;
 				if(($behavior->isa('IInstanceCheck'))&&$check=$behavior->isinstanceof($class,$this))
 					return true;
@@ -1535,7 +1533,7 @@ class TComponent
 	 *	public function dyAttachBehavior($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when attachBehavior is called.  All attached behaviors are notified through 
+	 * to be executed when attachBehavior is called.  All attached behaviors are notified through
 	 * dyAttachBehavior.
 	 *
 	 * @param string the behavior's name. It should uniquely identify this behavior.
@@ -1569,7 +1567,7 @@ class TComponent
 	 *	public function dyDetachBehavior($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when detachBehavior is called.  All attached behaviors are notified through 
+	 * to be executed when detachBehavior is called.  All attached behaviors are notified through
 	 * dyDetachBehavior.
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
@@ -1597,7 +1595,7 @@ class TComponent
 	 *	public function dyEnableBehaviors($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when enableBehaviors is called.  All attached behaviors are notified through 
+	 * to be executed when enableBehaviors is called.  All attached behaviors are notified through
 	 * dyEnableBehaviors.
 	 * @since 3.2.3
 	 */
@@ -1618,7 +1616,7 @@ class TComponent
 	 *	public function dyDisableBehaviors($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when disableBehaviors is called.  All attached behaviors are notified through 
+	 * to be executed when disableBehaviors is called.  All attached behaviors are notified through
 	 * dyDisableBehaviors.
 	 * @since 3.2.3
 	 */
@@ -1630,7 +1628,7 @@ class TComponent
 			$this->_behaviorsenabled=false;
 		}
 	}
-	
+
 
 	/**
 	 * Returns if all the behaviors are turned on or off for the object.
@@ -1652,7 +1650,7 @@ class TComponent
 	 *	public function dyEnableBehavior($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when enableBehavior is called.  All attached behaviors are notified through 
+	 * to be executed when enableBehavior is called.  All attached behaviors are notified through
 	 * dyEnableBehavior.
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
@@ -1680,7 +1678,7 @@ class TComponent
 	 *	public function dyDisableBehavior($name,$behavior[, $chain]) {
 	 *  }
 	 * </code>
-	 * to be executed when disableBehavior is called.  All attached behaviors are notified through 
+	 * to be executed when disableBehavior is called.  All attached behaviors are notified through
 	 * dyDisableBehavior.
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
@@ -1718,11 +1716,11 @@ class TComponent
 	{
 		$a = (array)$this;
 		$a = array_keys($a);
-		$exprops = array(); 
+		$exprops = array();
 		if($this->_listeningenabled===false)
-			$exprops[] = "\0TComponent\0_listeningenabled";			
+			$exprops[] = "\0TComponent\0_listeningenabled";
 		if($this->_behaviorsenabled===true)
-			$exprops[] = "\0TComponent\0_behaviorsenabled";			
+			$exprops[] = "\0TComponent\0_behaviorsenabled";
 		if ($this->_e===array())
 			$exprops[] = "\0TComponent\0_e";
 		if ($this->_m===null)
@@ -1763,7 +1761,7 @@ class TClassBehaviorEventParameter extends TEventParameter
 	private $_name;
 	private $_behavior;
 	private $_priority;
-	
+
 	/**
 	 * Holds the parameters for the Class Behavior Events
 	 *	@param string $class this is the class to get the behavior
@@ -1777,7 +1775,7 @@ class TClassBehaviorEventParameter extends TEventParameter
 		$this->_behavior=$behavior;
 		$this->_priority=$priority;
 	}
-	
+
 	/**
 	 * This is the class to get the behavior
 	 * @return string the class to get the behavior
@@ -1786,7 +1784,7 @@ class TClassBehaviorEventParameter extends TEventParameter
 	{
 		return $this->_class;
 	}
-	
+
 	/**
 	 * name of the behavior
 	 * @return string the name to get the behavior
@@ -1795,19 +1793,19 @@ class TClassBehaviorEventParameter extends TEventParameter
 	{
 		return $this->_name;
 	}
-	
+
 	/**
 	 * This is the behavior which the class is to get
-	 * @return object the behavior to implement 
+	 * @return object the behavior to implement
 	 */
 	public function getBehavior()
 	{
 		return $this->_behavior;
 	}
-	
+
 	/**
 	 * This is the priority which the behavior is to get
-	 * @return numeric the priority of the behavior 
+	 * @return numeric the priority of the behavior
 	 */
 	public function getPriority()
 	{
@@ -1834,7 +1832,6 @@ class TClassBehaviorEventParameter extends TEventParameter
  * TTextAlign::Right.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -1897,7 +1894,6 @@ class TEnumerable implements Iterator
  * - enum: enumerable type, represented by an array of strings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2050,7 +2046,6 @@ class TPropertyValue
  * TEventParameter is the base class for all event parameter classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2078,7 +2073,6 @@ class TEventResults extends TEnumerable {
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.0
  */
@@ -2247,9 +2241,9 @@ class TComponentReflection extends TComponent
 }
 
 /**
- * IBaseBehavior interface is the base behavior class from which all other 
+ * IBaseBehavior interface is the base behavior class from which all other
  * behaviors types are derived
- * 
+ *
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
  * @package System
@@ -2272,7 +2266,7 @@ interface IBaseBehavior {
  * IBehavior interfaces is implemented by instance behavior classes.
  *
  * A behavior is a way to enhance a component with additional methods and
- * events that are defined in the behavior class and not available in the 
+ * events that are defined in the behavior class and not available in the
  * class.  Objects may signal behaviors through dynamic events.
  *
  * @author Brad Anderson <javalizard@mac.com>
@@ -2294,11 +2288,11 @@ interface IBehavior extends IBaseBehavior
 
 
 /**
- * IClassBehavior interface is implements behaviors across all instances of 
+ * IClassBehavior interface is implements behaviors across all instances of
  * a particular class
  *
- * Any calls to functions not present in the original object but to behaviors 
- * derived from this class, will have inserted as the first argument parameter 
+ * Any calls to functions not present in the original object but to behaviors
+ * derived from this class, will have inserted as the first argument parameter
  * the object containing the behavior.
  *
  * For example:
@@ -2329,9 +2323,9 @@ interface IClassBehavior extends IBaseBehavior {
 
 
 /**
- * IInstanceCheck This interface allows objects to determine their own 
- * 'instanceof' results when {@link TComponent::isa} is called.  This is 
- * important with behaviors because behaviors may want to look like 
+ * IInstanceCheck This interface allows objects to determine their own
+ * 'instanceof' results when {@link TComponent::isa} is called.  This is
+ * important with behaviors because behaviors may want to look like
  * particular objects other than themselves.
  *
  * @author Brad Anderson <javalizard@mac.com>
@@ -2341,20 +2335,20 @@ interface IClassBehavior extends IBaseBehavior {
  */
 interface IInstanceCheck {
 	/**
-	 * The method checks $this or, if needed, the parameter $instance is of type 
-	 * class.  In the case of a Class Behavior, the instance to which the behavior 
+	 * The method checks $this or, if needed, the parameter $instance is of type
+	 * class.  In the case of a Class Behavior, the instance to which the behavior
 	 * is attached may be important to determine if $this is an instance
 	 * of a particular class.
 	 * @param class|string the component that this behavior is checking if it is an instanceof.
 	 * @param object the object which the behavior is attached to.  default: null
-	 * @return boolean|null if the this or the instance is of type class.  When null, no information could be derived and 
+	 * @return boolean|null if the this or the instance is of type class.  When null, no information could be derived and
 	 * the default mechanisms take over.
 	 */
 	public function isinstanceof($class,$instance=null);
 }
 
 /**
- * TJavaScriptLiteral class that encloses string literals that are not 
+ * TJavaScriptLiteral class that encloses string literals that are not
  * supposed to be escaped by {@link TJavaScript::encode() }
  *
  * Since Prado 3.2 all the data that gets sent clientside inside a javascript statement
@@ -2371,7 +2365,6 @@ interface IInstanceCheck {
  * $raw=_js($js);
  * </code>
  *
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.2.0
  */
@@ -2397,9 +2390,8 @@ class TJavaScriptLiteral
 
 /**
  * TJavaScriptString class is an internal class that marks strings that will be
- * forcibly encoded when rendered inside a javascript block 
+ * forcibly encoded when rendered inside a javascript block
  *
- * @version $Id: TComponent.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System
  * @since 3.2.0
  */

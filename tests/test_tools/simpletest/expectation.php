@@ -717,4 +717,3 @@
                     "] should contain method [$method]";
         }
     }
-?>

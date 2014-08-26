@@ -14,10 +14,9 @@ class TTarFileExtractorTest extends PHPUnit_Framework_TestCase {
 	public function testDestruct() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
-	
+
 	public function testExtract() {
 		throw new PHPUnit_Framework_IncompleteTestError();
 	}
 
 }
-?>

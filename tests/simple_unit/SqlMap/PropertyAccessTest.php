@@ -73,5 +73,3 @@ class PropertyAccessTest extends BaseCase
 
 }
 
-
-?>

@@ -5,7 +5,6 @@
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @link http://www.pradosoft.com/
  * @license http://www.pradosoft.com/license/
- * @version $Id: TFlushOutput.php $
  * @package System.Web.UI.WebControls
  */
 
@@ -23,17 +22,16 @@
  * <com:TFlushOutput />
  * </code>
  *
- * You can specify whether you want to keep buffering of the output 
+ * You can specify whether you want to keep buffering of the output
  * (if it was enabled) till the next occourence of a <com: TFlushOutput />
- * or the end of the page rendering, or stop buffering, by using the 
+ * or the end of the page rendering, or stop buffering, by using the
  * {@link setContinueBuffering ContinueBuffering}.
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @version $Id: TFlushOutput.php  $
  * @package System.Web.UI.WebControls
  * @since 3.1
  */
-class TFlushOutput extends TControl 
+class TFlushOutput extends TControl
 {
 	/**
 	 * @var boolean whether to continue buffering of output
@@ -73,7 +71,7 @@ class TFlushOutput extends TControl
 	public function render($writer)
 	{
 //$writer->write('<!-- flush -->');
-		// ajax responses can't be parsed by the client side before loaded and returned completely, 
+		// ajax responses can't be parsed by the client side before loaded and returned completely,
 		// so don't bother with flushing output somewhere mid-page if refreshing in a callback
 		if (!$this->Page->IsCallback)
 		{

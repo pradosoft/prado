@@ -39,5 +39,3 @@ class TestQueryForMap extends BaseCase
 	}
 
 }
-
-?>

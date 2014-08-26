@@ -142,4 +142,3 @@ class CustomInheritance extends TSqlMapTypeHandler
 		throw new TDataMapperException('can not create');
 	}
 }
-?>

@@ -71,6 +71,5 @@ A checkbox validated by a required field validator:
 
 </table>
 
-<com:TJavascriptLogger />
 
 </com:TContent>

@@ -188,5 +188,3 @@ class MultipleForeignKeyTestCase extends UnitTestCase
 		$this->assertNotIdentical($arr, $arr->state2[0]->object2);
 	}
 }
-
-?>

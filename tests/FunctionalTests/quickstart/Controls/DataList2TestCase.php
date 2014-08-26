@@ -1,59 +1,65 @@
 <?php
 
-class QuickstartDataList2TestCase extends PradoGenericSeleniumTest
+class QuickstartDataList2TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify initial presentation
-		$this->verifyTextPresent("Motherboard ", "");
-		$this->verifyTextPresent("Monitor ", "");
+		$this->assertContains("Motherboard", $this->source());
+		$this->assertContains("Monitor", $this->source());
 
 		// verify selecting an item
-		$this->clickAndWait("link=ITN003", "");
-		$this->verifyTextPresent("Quantity", "");
-		$this->verifyTextPresent("Price", "");
-		$this->verifyTextPresent("\$80", "");
-		$this->clickAndWait("link=ITN005", "");
-		$this->verifyTextPresent("\$150", "");
+		$this->byLinkText("ITN003")->click();
+		$this->assertContains("Quantity", $this->source());
+		$this->assertContains("Price", $this->source());
+		$this->assertContains("\$80", $this->source());
+		$this->byLinkText("ITN005")->click();
+		$this->assertContains("\$150", $this->source());
 
 		// verify editting an item
-		$this->clickAndWait("id=ctl0_body_DataList_ctl5_ctl0", "");
+		$this->byId("ctl0_body_DataList_ctl5_ctl0")->click();
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductQuantity", "11");
 		$this->type("ctl0\$body\$DataList\$ctl5\$ProductPrice", "140.99");
-		$this->click("//input[@name='ctl0\$body\$DataList\$ctl5\$ProductImported']", "");
-		$this->clickAndWait("link=Save", "");
+		$this->byXPath("//input[@name='ctl0\$body\$DataList\$ctl5\$ProductImported']")->click();
+		$this->byLinkText("Save")->click();
 
 		// verify item is saved
-		$this->clickAndWait("link=ITN005", "");
-		$this->verifyTextPresent("\$140.99", "");
-		$this->verifyTextPresent("11", "");
+		$this->byLinkText("ITN005")->click();
+		$this->assertContains("\$140.99", $this->source());
+		$this->assertContains("11", $this->source());
 
 		// verify editting another item
-		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
+		$this->byId("ctl0_body_DataList_ctl3_ctl1")->click();
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductName", "Hard Drive");
 		$this->type("ctl0\$body\$DataList\$ctl3\$ProductQuantity", "23");
-		$this->click("//input[@name='ctl0\$body\$DataList\$ctl3\$ProductImported']", "");
-		$this->clickAndWait("link=Cancel", "");
+		$this->byXPath("//input[@name='ctl0\$body\$DataList\$ctl3\$ProductImported']")->click();
+		$this->byLinkText("Cancel")->click();
 
 		// verify item is canceled
-		$this->clickAndWait("link=ITN003", "");
-		$this->verifyTextPresent("2", "");
-		$this->verifyTextPresent("Harddrive 	", "");
+		$this->byLinkText("ITN003")->click();
+		$this->assertContains("2", $this->source());
+		$this->assertContains("Harddrive", $this->source());
 
 		// verify item deletion
-		$this->clickAndWait("id=ctl0_body_DataList_ctl3_ctl1", "");
-		$this->verifyConfirmation("Are you sure?");
-		$this->chooseCancelOnNextConfirmation();
-		$this->click("id=ctl0_body_DataList_ctl5_ctl2", "");
-		$this->verifyConfirmation("Are you sure?");
-		$this->verifyTextPresent("Motherboard ", "");
-		$this->verifyTextPresent("CPU ", "");
-		$this->verifyTextNotPresent("Harddrive","");
-		$this->verifyTextPresent("Sound card", "");
-		$this->verifyTextPresent("Video card", "");
-		$this->verifyTextPresent("Keyboard","");
-		$this->verifyTextPresent("Monitor ", "");
+		$this->byId("ctl0_body_DataList_ctl3_ctl1")->click();
+
+		$this->assertEquals("Are you sure?", $this->alertText());
+		$this->acceptAlert();
+
+		$this->pause(300); // wait for reload
+		$this->byId("ctl0_body_DataList_ctl5_ctl2")->click();
+
+		$this->assertEquals("Are you sure?", $this->alertText());
+		$this->dismissAlert();
+
+		$this->assertContains("Motherboard", $this->source());
+		$this->assertContains("CPU", $this->source());
+		$this->assertNotContains("Harddrive", $this->source());
+		$this->assertContains("Sound card", $this->source());
+		$this->assertContains("Video card", $this->source());
+		$this->assertContains("Keyboard", $this->source());
+		$this->assertContains("Monitor", $this->source());
 	}
 }

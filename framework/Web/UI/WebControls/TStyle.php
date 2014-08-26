@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -21,7 +20,6 @@ Prado::using('System.Web.UI.WebControls.TFont');
  * TStyle encapsulates the CSS style applied to a control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -418,7 +416,6 @@ class TStyle extends TComponent
  * - Hidden: the control is not displayed and is included in the layout.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.1
  */
@@ -435,7 +432,6 @@ class TDisplayStyle extends TEnumerable
  * TTableStyle represents the CSS style specific for HTML table.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -676,7 +672,6 @@ class TTableStyle extends TStyle
  * TTableItemStyle represents the CSS style specific for HTML table item.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -831,7 +826,6 @@ class TTableItemStyle extends TStyle
  * - Justify: the begin and end are justified
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -855,7 +849,6 @@ class THorizontalAlign extends TEnumerable
  * - Middle: middle aligned
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -879,7 +872,6 @@ class TVerticalAlign extends TEnumerable
  * - Both: both horizontal and vertical grid lines are shown
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

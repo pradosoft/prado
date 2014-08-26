@@ -11,7 +11,6 @@
 /**
  * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TBehaviour.php 3211 2012-10-31 02:35:01Z javalizard@gmail.com $
  * @package System.Util
  * @since 3.2.3
  */

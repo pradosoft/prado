@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -73,7 +72,6 @@ Prado::using('System.Web.UI.WebControls.TTextBox');
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -276,7 +274,7 @@ class TDatePicker extends TTextBox
 	{
 		return $this->getViewState('UpToYear', intval(@date('Y'))+10);
 	}
-	
+
 	/**
 	 * @param TDatePickerPositionMode calendar UI position
 	 */
@@ -902,9 +900,8 @@ class TDatePicker extends TTextBox
  * is changed.
  * The formatted date according to {@link TDatePicker::getDateFormat DateFormat} is sent
  * as parameter to this event
- * 
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -938,7 +935,6 @@ class TDatePickerClientScript extends TClientSideOptions
  * - DropDownList: dropdown lists are used to pick up date values
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -960,7 +956,6 @@ class TDatePickerInputMode extends TEnumerable
  * - ImageButton: Shows an image next to the text input, clicking on the image shows the date picker,
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TDatePicker.php 3318 2013-09-04 14:04:51Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

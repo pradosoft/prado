@@ -116,5 +116,3 @@ class SelectKeyTest extends BaseCase
 		$this->initScript('line-item-init.sql');
 	}
 }
-
-?>

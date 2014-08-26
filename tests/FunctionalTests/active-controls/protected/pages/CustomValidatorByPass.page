@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Custom Login</h1>
 
@@ -10,19 +10,19 @@
 	</div>
 	<span>Username:</span><br />
 	<com:TActiveTextBox ID="Username" />
-	<com:TRequiredFieldValidator 
+	<com:TRequiredFieldValidator
 		ID="validator1"
-		ControlToValidate="Username" 
-		ValidationGroup="login" 
+		ControlToValidate="Username"
+		ValidationGroup="login"
 		Text="...is required" Display="Dynamic"/>
 
 	<br />
 
 	<span>Password:</span><br />
 	<com:TActiveTextBox TextMode="Password" ID="Password" />
-	<com:TActiveCustomValidator 
-		ID="validator2" 
-		ControlToValidate="Password" 
+	<com:TActiveCustomValidator
+		ID="validator2"
+		ControlToValidate="Password"
 		Text="*"
 		OnServerValidate="validateUser" ValidationGroup="login" />
 
@@ -33,6 +33,5 @@
 
 </div>
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

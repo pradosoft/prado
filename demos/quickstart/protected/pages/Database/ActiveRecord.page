@@ -129,7 +129,7 @@ You may specify qualified table names. E.g. for MySQL, <tt>TABLE = "`database1`.
 </div>
 
 <div class="note"><b class="note">Note:</b>
-Since version <b>3.1.3</b> you can also use a method <tt>table()</tt> to define the table name. 
+Since version <b>3.1.3</b> you can also use a method <tt>table()</tt> to define the table name.
 This allows you to dynamically specify which table should be used by the ActiveRecord.
 <com:TTextHighlighter Language="php" CssClass="source block-content">
 class TeamRecord extends TActiveRecord
@@ -159,7 +159,7 @@ class UserRecord extends TActiveRecord {
     }
 }
 </com:TTextHighlighter>
-<p id="710010" class="block-content">More details regarding TComponent can be found in the <a href="?page=Fundamentals.Components">Components documentation</a>.
+<p id="710010" class="block-content">More details regarding TComponent can be found in the <a href="?page=Fundamentals.Components1">Components documentation</a>.
 Later we shall use the getter/setters to allow for lazy loading of relationship objects.
 </p>
 
@@ -1128,7 +1128,7 @@ class PlayerRecord extends BaseFkRecord
 <p id="710046" class="block-content">We first need to change the <tt>$skills=array()</tt> declaration to a private property
 <tt>$_skills</tt> (notice the underscore) and set it to null instead. This allows us
 to define the <tt>skills</tt> property using getter/setter methods
-(see <a href="?page=Fundamentals.Components">Components</a> for details). The <tt>getSkills()</tt>
+(see <a href="?page=Fundamentals.Components1">Components</a> for details). The <tt>getSkills()</tt>
 getter method for the <tt>skills</tt> property will lazy load the corresponding skills foreign record
 when it is used as follows. Notice that we only do a lazy load when its <tt>$player_id</tt> is
 not null (that is, when the record is already fetched from the database or player id was already set).

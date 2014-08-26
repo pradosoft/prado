@@ -1,56 +1,56 @@
 <?php
 
-class QuickstartPagerTestCase extends PradoGenericSeleniumTest
+class QuickstartPagerTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify datalist content
-		$this->verifyTextPresent('ITN001','');
-		$this->verifyTextPresent('ITN002','');
-		$this->verifyTextNotPresent('ITN003','');
+		$this->assertContains('ITN001', $this->source());
+		$this->assertContains('ITN002', $this->source());
+		$this->assertNotContains('ITN003', $this->source());
 
 		// verify numeric paging
-		$this->clickAndWait("ctl0_body_Pager_ctl1", ""); // 2nd page
-		$this->verifyTextPresent('ITN003','');
-		$this->verifyTextPresent('ITN004','');
-		$this->verifyTextNotPresent('ITN002','');
-		$this->verifyTextNotPresent('ITN005','');
-		$this->clickAndWait("ctl0_body_Pager_ctl3", ""); // 4rd page
-		$this->verifyTextPresent('ITN007','');
-		$this->verifyTextPresent('ITN008','');
-		$this->verifyTextNotPresent('ITN006','');
-		$this->verifyTextNotPresent('ITN009','');
-		$this->clickAndWait("ctl0_body_Pager_ctl6", ""); // last page
-		$this->verifyTextPresent('ITN019','');
-		$this->verifyTextNotPresent('ITN018','');
-		$this->verifyTextNotPresent('ITN001','');
+		$this->byId("ctl0_body_Pager_ctl1")->click(); // 2nd page
+		$this->assertContains('ITN003', $this->source());
+		$this->assertContains('ITN004', $this->source());
+		$this->assertNotContains('ITN002', $this->source());
+		$this->assertNotContains('ITN005', $this->source());
+		$this->byId("ctl0_body_Pager_ctl3")->click(); // 4rd page
+		$this->assertContains('ITN007', $this->source());
+		$this->assertContains('ITN008', $this->source());
+		$this->assertNotContains('ITN006', $this->source());
+		$this->assertNotContains('ITN009', $this->source());
+		$this->byId("ctl0_body_Pager_ctl6")->click(); // last page
+		$this->assertContains('ITN019', $this->source());
+		$this->assertNotContains('ITN018', $this->source());
+		$this->assertNotContains('ITN001', $this->source());
 
 		// verify next-prev paging
-		$this->clickAndWait("ctl0_body_Pager2_ctl1", ""); // prev page
-		$this->verifyTextPresent('ITN017','');
-		$this->verifyTextPresent('ITN018','');
-		$this->verifyTextNotPresent('ITN019','');
-		$this->verifyTextNotPresent('ITN016','');
-		$this->clickAndWait("ctl0_body_Pager2_ctl0", ""); // first page
-		$this->verifyTextPresent('ITN001','');
-		$this->verifyTextPresent('ITN002','');
-		$this->verifyTextNotPresent('ITN003','');
-		$this->clickAndWait("ctl0_body_Pager2_ctl2", ""); // next page
-		$this->verifyTextPresent('ITN003','');
-		$this->verifyTextPresent('ITN004','');
-		$this->verifyTextNotPresent('ITN002','');
-		$this->verifyTextNotPresent('ITN005','');
+		$this->byId("ctl0_body_Pager2_ctl1")->click(); // prev page
+		$this->assertContains('ITN017', $this->source());
+		$this->assertContains('ITN018', $this->source());
+		$this->assertNotContains('ITN019', $this->source());
+		$this->assertNotContains('ITN016', $this->source());
+		$this->byId("ctl0_body_Pager2_ctl0")->click(); // first page
+		$this->assertContains('ITN001', $this->source());
+		$this->assertContains('ITN002', $this->source());
+		$this->assertNotContains('ITN003', $this->source());
+		$this->byId("ctl0_body_Pager2_ctl2")->click(); // next page
+		$this->assertContains('ITN003', $this->source());
+		$this->assertContains('ITN004', $this->source());
+		$this->assertNotContains('ITN002', $this->source());
+		$this->assertNotContains('ITN005', $this->source());
 
 		$this->assertSelected("ctl0_body_Pager3_ctl0","2");
-		$this->selectAndWait("ctl0_body_Pager3_ctl0", "label=5");
-		$this->verifyTextPresent('ITN009','');
-		$this->verifyTextPresent('ITN010','');
-		$this->verifyTextNotPresent('ITN008','');
-		$this->verifyTextNotPresent('ITN011','');
-		$this->selectAndWait("ctl0_body_Pager3_ctl0", "label=10");
-		$this->verifyTextPresent('ITN019','');
-		$this->verifyTextNotPresent('ITN018','');
+		$this->selectAndWait("ctl0_body_Pager3_ctl0", "5");
+		$this->assertContains('ITN009', $this->source());
+		$this->assertContains('ITN010', $this->source());
+		$this->assertNotContains('ITN008', $this->source());
+		$this->assertNotContains('ITN011', $this->source());
+		$this->selectAndWait("ctl0_body_Pager3_ctl0", "10");
+		$this->assertContains('ITN019', $this->source());
+		$this->assertNotContains('ITN018', $this->source());
 	}
 }

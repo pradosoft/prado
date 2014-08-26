@@ -1,31 +1,31 @@
 <?php
 
-class Ticket470TestCase extends PradoGenericSeleniumTest
+class Ticket470TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
 		$base = 'ctl0_Content_';
-		$this->open('tickets/index.php?page=Ticket470');
-		$this->verifyTitle("Verifying Ticket 470");
+		$this->url('tickets/index.php?page=Ticket470');
+		$this->assertEquals("Verifying Ticket 470", $this->title());
 		$this->assertText("{$base}counter", "0");
 		$this->assertText("{$base}Results", "");
 		$this->assertNotVisible("{$base}validator1");
 
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}counter", "0");
 		$this->assertText("{$base}Results", "");
 		$this->assertVisible("{$base}validator1");
 
 		$this->type("{$base}TextBox", "hello");
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}counter", "0");
 		$this->assertText("{$base}Results", "OK!!!");
 		$this->assertNotVisible("{$base}validator1");
 
 		//reload
-		$this->click("{$base}reloadButton");
+		$this->byId("{$base}reloadButton")->click();
 		$this->pause(800);
 		$this->assertValue("{$base}TextBox", "hello");
 		$this->assertText("{$base}counter", "1");
@@ -33,14 +33,14 @@ class Ticket470TestCase extends PradoGenericSeleniumTest
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->type("{$base}TextBox", "");
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}counter", "1");
 		$this->assertText("{$base}Results", "");
 		$this->assertVisible("{$base}validator1");
-	
+
 		$this->type("{$base}TextBox", "test");
-		$this->click("{$base}button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}counter", "1");
 		$this->assertText("{$base}Results", "OK!!!");

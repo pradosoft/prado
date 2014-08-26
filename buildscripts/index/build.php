@@ -61,5 +61,3 @@ else
 {
 	echo "Usage: 'php build.php quickstart' or 'php build.php api'\n";
 }
-
-?>

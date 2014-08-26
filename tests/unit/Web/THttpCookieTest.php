@@ -50,4 +50,3 @@ class THttpCookieTest extends PHPUnit_Framework_TestCase {
     self::assertTrue($cookie->getSecure());
   }
 }
-?>

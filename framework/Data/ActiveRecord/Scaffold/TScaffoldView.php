@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TScaffoldView.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  */
 
@@ -35,7 +34,6 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldSearch');
  * the Active Record class to be displayed/edited/added.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TScaffoldView.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Data.ActiveRecord.Scaffold
  * @since 3.0
  */

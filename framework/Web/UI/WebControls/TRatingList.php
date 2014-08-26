@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TRatingList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -22,7 +21,6 @@ Prado::using('System.Web.UI.WebControls.TRadioButtonList');
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
- * @version $Id: TRatingList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -125,7 +123,7 @@ class TRatingList extends TRadioButtonList
 		$index = $this->getRatingIndex($value);
 		parent::setSelectedIndex($index);
 	}
-	
+
 	public function setSelectedIndex($value)
 	{
 		$this->setRating($value+1);
@@ -213,7 +211,7 @@ class TRatingList extends TRadioButtonList
  	{
 	   return $this->getViewState('RatingStyle', 'default');
  	}
- 
+
  	/**
 	 * @return string rating style css class name.
  	 */

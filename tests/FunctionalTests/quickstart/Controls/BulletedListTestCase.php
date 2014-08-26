@@ -1,36 +1,36 @@
 <?php
 
-class QuickstartBulletedListTestCase extends PradoGenericSeleniumTest
+class QuickstartBulletedListTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("../../demos/quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true&amp;lang=en", "");
+		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->verifyTextPresent('item 1','');
-		$this->verifyTextPresent('item 2','');
-		$this->verifyTextPresent('item 3','');
-		$this->verifyTextPresent('item 4','');
-		$this->verifyTextPresent('google','');
-		$this->verifyTextPresent('yahoo','');
-		$this->verifyTextPresent('amazon','');
+		$this->assertContains('item 1', $this->source());
+		$this->assertContains('item 2', $this->source());
+		$this->assertContains('item 3', $this->source());
+		$this->assertContains('item 4', $this->source());
+		$this->assertContains('google', $this->source());
+		$this->assertContains('yahoo', $this->source());
+		$this->assertContains('amazon', $this->source());
 
 		// verify order list starting from 5
-		$this->verifyElementPresent("//ol[@start='5']");
+		$this->assertElementPresent("//ol[@start='5']");
 
 		// unable to verify styles
 
 		// verify hyperlink list
-		$this->verifyElementPresent("//a[@href='http://www.google.com/']");
-		$this->verifyElementPresent("//a[@href='http://www.yahoo.com/']");
-		$this->verifyElementPresent("//a[@href='http://www.amazon.com/']");
+		$this->assertElementPresent("//a[@href='http://www.google.com/']");
+		$this->assertElementPresent("//a[@href='http://www.yahoo.com/']");
+		$this->assertElementPresent("//a[@href='http://www.amazon.com/']");
 
 		// verify linkbutton list
-		$this->clickAndWait("id=ctl0_body_ctl40", "");
-		$this->verifyTextPresent("You clicked google : http://www.google.com/.", "");
-		$this->clickAndWait("id=ctl0_body_ctl41", "");
-		$this->verifyTextPresent("You clicked yahoo : http://www.yahoo.com/.", "");
-		$this->clickAndWait("id=ctl0_body_ctl42", "");
-		$this->verifyTextPresent("You clicked amazon : http://www.amazon.com/.", "");
+		$this->byId("ctl0_body_ctl40")->click();
+		$this->assertContains("You clicked google : http://www.google.com/.", $this->source());
+		$this->byId("ctl0_body_ctl41")->click();
+		$this->assertContains("You clicked yahoo : http://www.yahoo.com/.", $this->source());
+		$this->byId("ctl0_body_ctl42")->click();
+		$this->assertContains("You clicked amazon : http://www.amazon.com/.", $this->source());
 	}
 }

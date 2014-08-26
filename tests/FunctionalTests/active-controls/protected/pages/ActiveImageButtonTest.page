@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 	<h1>TActiveImageButton Functional Test</h1>
 
@@ -19,6 +19,4 @@
 	<com:TActiveButton ID="button3" Text="Change Align" OnClick="change_align" />
 	<com:TActiveButton ID="button4" Text="Change Description" OnClick="change_description" />
 
-	<com:TJavascriptLogger />
-
-</com:TForm>
+</com:TContent>

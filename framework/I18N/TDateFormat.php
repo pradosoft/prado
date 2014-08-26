@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TDateFormat.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.I18N
  */
 
@@ -165,7 +164,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	{
 		$this->setViewState('Value',$value,'');
 	}
-	
+
 	/**
 	 * Get the default text value for this control.
 	 * @return string default text value
@@ -174,7 +173,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 	{
 		return $this->getViewState('DefaultText','');
 	}
-	
+
 	/**
 	 * Set the default text value for this control.
 	 * @param string default text value
@@ -222,7 +221,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 		$defaultText = $this->getDefaultText();
 		if(empty($value) && !empty($defaultText))
 			return $this->getDefaultText();
-		
+
 		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter

@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  */
 
@@ -32,7 +31,6 @@
  * operation, override {@link insertAt()}, and {@link removeAt()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */
@@ -252,7 +250,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	}
 
 	/**
-	 * Finds the base item.  If found, the item is inserted before it.  
+	 * Finds the base item.  If found, the item is inserted before it.
 	 * @param mixed the base item which will be pushed back by the second parameter
 	 * @param mixed the item
 	 * @return int the index where the item is inserted
@@ -266,9 +264,9 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 		{
 			if(($index = $this->indexOf($baseitem)) == -1)
 				throw new TInvalidDataValueException('list_item_inexistent');
-			
+
 			$this->insertAt($index, $item);
-			
+
 			return $index;
 		}
 		else
@@ -276,7 +274,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	}
 
 	/**
-	 * Finds the base item.  If found, the item is inserted after it.  
+	 * Finds the base item.  If found, the item is inserted after it.
 	 * @param mixed the base item which comes before the second parameter when added to the list
 	 * @param mixed the item
 	 * @return int the index where the item is inserted
@@ -290,9 +288,9 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 		{
 			if(($index = $this->indexOf($baseitem)) == -1)
 				throw new TInvalidDataValueException('list_item_inexistent');
-			
+
 			$this->insertAt($index + 1, $item);
-			
+
 			return $index + 1;
 		}
 		else
@@ -402,10 +400,9 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
  *
  * TListIterator is used by TList. It allows TList to return a new iterator
  * for traversing the items in the list.
- * 
- * @deprecated Issue 264 : ArrayIterator should be used instead 
+ *
+ * @deprecated Issue 264 : ArrayIterator should be used instead
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TList.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Collections
  * @since 3.0
  */

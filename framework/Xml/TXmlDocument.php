@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TXmlDocument.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Xml
  */
 
@@ -22,7 +21,6 @@
  * TBD: xpath
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TXmlDocument.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Xml
  * @since 3.0
  */
@@ -300,7 +298,6 @@ class TXmlElement extends TComponent
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TXmlDocument.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Xml
  * @since 3.0
  */
@@ -478,7 +475,7 @@ class TXmlDocument extends TXmlElement
 	 * @param DOMXmlNode the node to be converted
 	 * @return TXmlElement the converted TXmlElement
 	 */
-	private function buildElement($node)
+	protected function buildElement($node)
 	{
 		$element=new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
@@ -502,7 +499,6 @@ class TXmlDocument extends TXmlElement
  * You may manipulate the collection with the operations defined in {@link TList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TXmlDocument.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Xml
  * @since 3.0
  */

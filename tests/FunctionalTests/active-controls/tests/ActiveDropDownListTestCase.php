@@ -1,45 +1,46 @@
 <?php
 
-class ActiveDropDownListTestCase extends PradoGenericSeleniumTest
+class ActiveDropDownListTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open("active-controls/index.php?page=ActiveDropDownList");
-		$this->assertTextPresent('Active Drop Down List Test Case');
+		$base='ctl0_Content_';
+		$this->url("active-controls/index.php?page=ActiveDropDownList");
+		$this->assertContains('Active Drop Down List Test Case', $this->source());
 
-		$this->assertText("label1", "Label 1");
+		$this->assertText("{$base}label1", "Label 1");
 
-		$this->click("button1");
+		$this->byId("{$base}button1")->click();
 		$this->pause(800);
-		$this->assertSelected("list1", "item 4");
+		$this->assertSelected("{$base}list1", "item 4");
 
-		$this->click("button2");
+		$this->byId("{$base}button2")->click();
 		$this->pause(800);
-		$this->assertSelectedIndex("list1", 0);
+		$this->assertSelectedValue("{$base}list1", 'value 1');
 
-		$this->click("button3");
+		$this->byId("{$base}button3")->click();
 		$this->pause(800);
-		$this->assertSelected("list1", "item 2");
+		$this->assertSelected("{$base}list1", "item 2");
 
-		$this->assertText("label1", "Selection 1: value 1");
+		$this->assertText("{$base}label1", "Selection 1: value 1");
 
-		$this->select("list1", "item 1");
+		$this->select("{$base}list1", "item 1");
 		$this->pause(800);
-		$this->select("list2", "value 1 - item 4");
+		$this->select("{$base}list2", "value 1 - item 4");
 		$this->pause(800);
-		$this->assertText("label2", "Selection 2: value 1 - item 4");
+		$this->assertText("{$base}label2", "Selection 2: value 1 - item 4");
 
-		$this->select("list1", "item 3");
+		$this->select("{$base}list1", "item 3");
 		$this->pause(800);
-		$this->select("list2", "value 3 - item 5");
+		$this->select("{$base}list2", "value 3 - item 5");
 		$this->pause(800);
-		$this->assertText("label2", "Selection 2: value 3 - item 5");
+		$this->assertText("{$base}label2", "Selection 2: value 3 - item 5");
 
-		$this->click('button4');
+		$this->byId("{$base}button4")->click();
 		$this->pause(800);
-		$this->assertSelected('list1', 'item 3');
+		$this->assertSelected("{$base}list1", 'item 3');
 		$this->pause(300);
-		$this->assertSelected('list2', 'value 3 - item 3');
+		$this->assertSelected("{$base}list2", 'value 3 - item 3');
 
 	}
 }

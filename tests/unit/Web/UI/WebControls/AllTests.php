@@ -14,15 +14,15 @@ class Web_UI_WebControls_AllTests {
   public static function main() {
     PHPUnit_TextUI_TestRunner::run(self::suite());
   }
-  
+
   public static function suite() {
     $suite = new PHPUnit_Framework_TestSuite('System.Web.UI.WebControls');
-    
+
 	$suite->addTestSuite('TDropDownListTest');
 	$suite->addTestSuite('TLabelTest');
 	$suite->addTestSuite('TRequiredFieldValidatorTest');
     $suite->addTestSuite('TXmlTransformTest');
-	
+
     return $suite;
   }
 }
@@ -30,4 +30,3 @@ class Web_UI_WebControls_AllTests {
 if(PHPUnit_MAIN_METHOD == 'Web_UI_WebControls_AllTests::main') {
   Web_UI_WebControls_AllTests::main();
 }
-?>

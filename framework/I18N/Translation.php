@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: Translation.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.I18N
  */
 
@@ -40,7 +39,7 @@ class Translation extends TComponent
 	public static function init($catalogue='messages')
 	{
 		static $saveEventHandlerAttached=false;
-		
+
 		//initialized the default class wide formatter
 		if(!isset(self::$formatters[$catalogue]))
 		{

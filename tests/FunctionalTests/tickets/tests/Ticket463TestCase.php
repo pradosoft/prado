@@ -1,11 +1,11 @@
 <?php
 
-class Ticket463TestCase extends PradoGenericSeleniumTest
+class Ticket463TestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$this->open('tickets/index.php?page=Ticket463');
-		$this->verifyTitle("Verifying Ticket 463", "");
-		$this->assertTextPresent('May 1, 2005 12:00:00 AM');
+		$this->url('tickets/index.php?page=Ticket463');
+		$this->assertEquals("Verifying Ticket 463", $this->title());
+		$this->assertContains('May 1, 2005 12:00:00 AM', $this->source());
 	}
 }

@@ -1,4 +1,4 @@
-<com:TForm>
+<com:TContent ID="Content">
 
 <h1>Active Control With Expression Tag Test</h1>
 
@@ -22,6 +22,5 @@
 <com:TActiveButton ID="button2" Text="Show More!" Enabled="false"
 	OnCallback="button2_callback" />
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

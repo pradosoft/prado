@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.2.3
+         Upgrading Instructions for PRADO Framework v3.2.4
          =================================================
 
 !!!IMPORTANT!!!
@@ -9,8 +9,10 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v3.2.2
+Upgrading from v3.2.3
 ---------------------
+
+- TMarkdown is using Parsedown instead of Markdown, adding GitHub Flavored Markdown support.
 
 Upgrading from v3.2.1
 ---------------------

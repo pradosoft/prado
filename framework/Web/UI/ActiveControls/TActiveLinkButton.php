@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveLinkButton.php 3292 2013-05-31 08:51:42Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -29,7 +28,6 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * will update the link text upon callback response completion.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActiveLinkButton.php 3292 2013-05-31 08:51:42Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -145,7 +143,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 					$this->getClientClassName(), $this->getPostBackOptions());
 
 			} else {
-				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);				
+				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);
 			}
 		}
 	}

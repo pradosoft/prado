@@ -14,5 +14,3 @@ $pages['Testing Business Code'] = array(
 	'Docs/UserClassAndExceptions.page'
 	);
 return $pages;
-
-?>

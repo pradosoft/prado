@@ -23,5 +23,3 @@ class User
 	public function getLastLogon(){ return $this->_LastLogon; }
 	public function setLastLogon($value){ $this->_LastLogon = $value; }
 }
-
-?>

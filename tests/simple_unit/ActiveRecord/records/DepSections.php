@@ -12,5 +12,3 @@ class DepSections extends TActiveRecord
 		return parent::finder($className);
 	}
 }
-
-?>

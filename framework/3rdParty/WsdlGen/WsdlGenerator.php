@@ -11,7 +11,6 @@
  * This file is part of the PRADO framework from {@link http://www.xisc.com}
  *
  * @author Marcus Nyeholt		<tanus@users.sourceforge.net>
- * @version $Id: WsdlGenerator.php 3314 2013-08-20 10:00:47Z ctrlaltca $
  * @package System.Web.Services.SOAP
  */
 

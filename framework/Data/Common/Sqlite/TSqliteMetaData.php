@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TSqliteMetaData.php 1861 2007-04-12 08:05:03Z wei $
  * @package System.Data.Common.Sqlite
  */
 
@@ -20,7 +19,6 @@ Prado::using('System.Data.Common.Sqlite.TSqliteTableInfo');
  * TSqliteMetaData loads SQLite database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id: TSqliteMetaData.php 1861 2007-04-12 08:05:03Z wei $
  * @package System.Data.Commom.Sqlite
  * @since 3.1
  */
@@ -190,21 +188,15 @@ class TSqliteMetaData extends TDbMetaData
 		}
 		return false;
 	}
+        
+        /**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. This is not used for sqlite database.
+	 * @return array all table names in the database.
+	 */
+	public function findTableNames($schema='')
+	{
+		$sql="SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
+		return $this->getDbConnection()->createCommand($sql)->queryColumn();
+	}
 }
-
-/**
-
-CREATE TABLE foo
-(
-	id INTEGER NOT NULL PRIMARY KEY,
-	id2 CHAR(2)
-);
-
-CREATE TABLE bar
-(
-	id INTEGER NOT NULL PRIMARY KEY,
-	foo_id INTEGER
-		CONSTRAINT fk_foo_id REFERENCES foo(id) ON DELETE CASCADE
-);
-*/
-

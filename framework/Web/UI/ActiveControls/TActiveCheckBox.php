@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TActiveCheckBox.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  */
 
@@ -26,7 +25,6 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * changed during a callback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: TActiveCheckBox.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.ActiveControls
  * @since 3.1
  */
@@ -121,9 +119,9 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
-	 * 
+	 *
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
-	 * 
+	 *
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
 	 * @param string onclick js

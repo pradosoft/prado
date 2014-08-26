@@ -4,9 +4,8 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TTranslate.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.I18N
  */
 
@@ -243,7 +242,7 @@ class TTranslate extends TI18NControl
 			$catalogue = $config['catalogue'];
 		if (empty($catalogue)) $catalogue='messages';
 		Translation::init($catalogue);
-			
+
 		$key = $this->getKey();
 		if(!empty($key)) $text = $key;
 

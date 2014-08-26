@@ -4,9 +4,8 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TPanelStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  */
 
@@ -20,7 +19,6 @@ Prado::using('System.Web.UI.WebControls.TStyle');
  * TPanelStyle represents the CSS style specific for panel HTML tag.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPanelStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0
  */
@@ -239,7 +237,6 @@ class TPanelStyle extends TStyle
  * - RightToLeft: content in a panel is right to left
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPanelStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */
@@ -263,7 +260,6 @@ class TContentDirection extends TEnumerable
  * - Vertical: vertical scroll bar only
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: TPanelStyle.php 3245 2013-01-07 20:23:32Z ctrlaltca $
  * @package System.Web.UI.WebControls
  * @since 3.0.4
  */

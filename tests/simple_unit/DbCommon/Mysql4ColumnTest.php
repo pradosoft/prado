@@ -250,5 +250,3 @@ class Mysql4ColumnTest extends UnitTestCase
 		}
 	}
 }
-
-?>

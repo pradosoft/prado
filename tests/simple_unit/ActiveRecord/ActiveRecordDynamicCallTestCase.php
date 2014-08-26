@@ -65,5 +65,3 @@ class ActiveRecordDynamicCallTestCase extends UnitTestCase
 		var_dump($param);
 	}
 }
-
-?>

@@ -1,4 +1,4 @@
-<com:TForm ID="form1">
+<com:TContent ID="Content">
 
 <h1>My Tab Panel Test</h1>
 
@@ -36,6 +36,5 @@
  This is the contents of panel C
 </com:TActivePanel>
 
-<com:TJavascriptLogger />
 
-</com:TForm>
+</com:TContent>

@@ -33,7 +33,6 @@
 <com:TForm>
 <com:TContentPlaceHolder ID="Content" />
 <hr style="margin-top: 2em" />
-<com:TJavascriptLogger />
 </com:TForm>
 </body>
 </html>

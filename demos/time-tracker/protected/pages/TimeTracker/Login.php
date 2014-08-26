@@ -6,18 +6,16 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2006 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: Login.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  */
 
 /**
  * Login page class.
- * 
- * Validate the user credentials and redirect to requested page 
+ *
+ * Validate the user credentials and redirect to requested page
  * if successful.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id: Login.php 3189 2012-07-12 12:16:21Z ctrlaltca $
  * @package Demos
  * @since 3.1
  */
@@ -26,7 +24,7 @@ class Login extends TPage
 	/**
 	 * Validates the username and password.
 	 * @param TControl custom validator that created the event.
-	 * @param TServerValidateEventParameter validation parameters. 
+	 * @param TServerValidateEventParameter validation parameters.
 	 */
 	public function validateUser($sender, $param)
 	{
@@ -34,7 +32,7 @@ class Login extends TPage
 		if(!$authManager->login($this->username->Text,$this->password->Text))
 			$param->IsValid=false;;
 	}
-	
+
 	/**
 	 * Redirect to the requested page if login is successful.
 	 * @param TControl button control that created the event.

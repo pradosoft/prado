@@ -9,10 +9,9 @@ before_script:
   - composer self-update
   - composer install --prefer-source --dev
   - export PATH=./bin/:$PATH
-  - phpenv config-add travis.php.ini
 
 script:
-  - ./bin/phing coverage
+  - bash -c 'if [ "$TRAVIS_PHP_VERSION" == "5.3" ]; then phing test; else phing coverage ; fi;'
 
 after_script:
   - php ./bin/coveralls -v

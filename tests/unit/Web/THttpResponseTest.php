@@ -7,18 +7,18 @@ Prado::using('System.Web.THttpResponse');
  * @package System.Web
  */
 class THttpResponseTest extends PHPUnit_Framework_TestCase {
-  
+
   public static $app=null;
 
   public function setUp () {
     if (self::$app===null) self::$app=new TApplication(dirname(__FILE__).'/app');
     ob_start();
   }
-  
+
   public function tearDown () {
     ob_end_flush();
   }
-  
+
   public function testInit() {
     $response=new THttpResponse ();
     $response->init (null);
@@ -43,7 +43,7 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
       $response->setCacheControl('invalid');
       self::fail ('Expected TInvalidDataValueException not thrown');
     } catch (TInvalidDataValueException $e) {}
-    
+
   }
 
   public function testSetContentType() {
@@ -62,7 +62,7 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
     self::assertEquals('UTF-8', $response->getCharset());
     $response->setCharset ('ISO8859-1');
     self::assertEquals('ISO8859-1', $response->getCharset());
-    
+
   }
 
   public function testSetBufferOutput() {
@@ -101,17 +101,17 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testWriteFile() {
-    
+
   	 // Don't know how to test headers :(( ...
 	throw new PHPUnit_Framework_IncompleteTestError();
-  	
+
     $response=new THttpResponse ();
     $response->setBufferOutput(true);
     // Suppress warning with headers
     $response->writeFile(dirname(__FILE__).'/data/aTarFile.md5', null, 'text/plain', array ('Pragma: public', 'Expires: 0'));
-	
+
     self::assertContains('4b1ecb0b243918a8bbfbb4515937be98  aTarFile.tar', ob_get_clean());
-	
+
   }
 
   public function testRedirect() {
@@ -158,4 +158,3 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
     throw new PHPUnit_Framework_IncompleteTestError();
   }
 }
-?>

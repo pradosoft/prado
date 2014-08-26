@@ -4,19 +4,17 @@
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2013 PradoSoft
+ * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @version $Id: TFastSqlMapApplicationCache.php 2996 2011-06-20 15:24:57Z ctrlaltca@gmail.com $
  * @package System.Data.SqlMap
  */
 
 /**
  * TFastSqlMapApplicationCache class file
- *  
+ *
  * Fast SqlMap result cache class with minimal-concurrency get/set and atomic flush operations
- *  
+ *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @version $Id: TFastSqlMapApplicationCache.php 2996 2011-06-20 15:24:57Z ctrlaltca@gmail.com $
  * @package System.Data.SqlMap
  * @since 3.2
  */
@@ -30,12 +28,12 @@ class TFastSqlMapApplicationCache implements ICache
 	{
 		$this->_cacheModel = $cacheModel;
 	}
-	
+
 	protected function getBaseKeyKeyName()
 	{
 		return 'SqlMapCacheBaseKey::'.$this->_cacheModel->getId();
 	}
-	
+
 	protected function getBaseKey()
 	{
 		$cache = $this->getCache();
@@ -48,7 +46,7 @@ class TFastSqlMapApplicationCache implements ICache
 		}
 		return $basekey;
 	}
-	
+
 	protected function getCacheKey($key)
 	{
 		return $this->getBaseKey().'###'.$key;
@@ -63,7 +61,7 @@ class TFastSqlMapApplicationCache implements ICache
 	{
 		$this->getCache()->delete($this->getBaseKeyKeyName());
 	}
-	
+
 	public function get($key)
 	{
 		$result = $this->getCache()->get($this->getCacheKey($key));
