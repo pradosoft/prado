@@ -43,8 +43,32 @@ class THttpSessionTest extends PHPUnit_Framework_TestCase {
     throw new PHPUnit_Framework_IncompleteTestError();
   }
 
-  public function testSetCookieMode() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+  public function testSetCookieModeNone() {
+    $session = new THttpSession();
+    $session->CookieMode = THttpSessionCookieMode::None;
+
+    $this->assertEquals(0, ini_get('session.use_cookies_only'));
+    $this->assertEquals(0, ini_get('session.use_cookies'));
+    $this->assertEquals(THttpSessionCookieMode::None, $session->CookieMode);
+  }
+
+  public function testSetCookieModeAllow() {
+    $session = new THttpSession();
+    $session->CookieMode = THttpSessionCookieMode::Allow;
+
+    $this->assertEquals(0, ini_get('session.use_only_cookies'));
+    $this->assertEquals(1, ini_get('session.use_cookies'));
+    $this->assertEquals(THttpSessionCookieMode::Allow, $session->CookieMode);
+  }
+
+  public function testSetCookieModeAlways() {
+    $session = new THttpSession();
+    $session->CookieMode = THttpSessionCookieMode::Only;
+
+    $this->assertEquals(1, ini_get('session.use_only_cookies'));
+    $this->assertEquals(1, ini_get('session.use_cookies'));
+    $this->assertEquals(0, ini_get('session.use_trans_sid'));
+    $this->assertEquals(THttpSessionCookieMode::Only, $session->CookieMode);
   }
 
   public function testSetAutoStart() {
