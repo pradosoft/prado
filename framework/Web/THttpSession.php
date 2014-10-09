@@ -129,9 +129,17 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			if($this->_cookie!==null)
 				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure());
 			if(ini_get('session.auto_start')!=='1')
-				session_start();
+			      session_start();
 			$this->_started=true;
 		}
+		else
+		{
+		  # this is a fix for CVE-2011-4718
+		    session_destroy();
+		    session_regenerate_id();
+		    $_SESSION['valid_id'] = session_id();
+		}
+		//
 	}
 
 	/**
@@ -185,7 +193,11 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getSessionID()
 	{
-		return session_id();
+	  # this is a fix for CVE-2011-4718
+	  if ($_SESSION['valid_id'] !== session_id()) {
+	    throw new TInvalidOperationException('httpsession_sessionid_unchangeable');
+	  }
+	  return session_id();
 	}
 
 	/**
@@ -297,7 +309,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 		else
 		{
 			$value=TPropertyValue::ensureEnum($value,'THttpSessionCookieMode');
-			if($value===THttpSessionCookieMode::None) 
+			if($value===THttpSessionCookieMode::None)
       {
 				ini_set('session.use_cookies','0');
 			  ini_set('session.use_only_cookies','0');
