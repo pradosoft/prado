@@ -45,3 +45,73 @@ Then you can include the autoloader, and you will have access to the library cla
 <?php
 require 'vendor/autoload.php';
 ```
+## Demo Apps
+The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradosoft.com/demos/ . When you create your own prado application you do NOT need these folders.
+
+* address-book
+* blog
+* blog-tutorial
+* chat
+* composer
+* currency-converter
+* helloworld
+* northwind-db
+* personal
+* quickstart
+* soap
+* sqlmap
+* time-tracker
+
+
+## Testing
+
+Prado uses phpunit (https://phpunit.de/) for testing, phing (http://www.phing.info/) for building, and Selenum (http://www.seleniumhq.org/) for web browser emulation.
+
+Running `phing` with no arguments will show you the different tests/builds that are setup in build.xml.
+
+```
+$phing
+Buildfile: /yourcodepath/build.xml
+
+prado > help:
+
+     [echo]
+
+    Welcome to use PRADO build script!
+    ----------------------------------
+    You may use the following command format to build a target:
+
+              phing   <target name>
+
+    where <target name> can be one of the following:
+
+    For all PRADO developers:
+    - test       : run unit tests (results are under /build/test-reports)
+    - coverage   : run unit tests collecting coverage informations
+    - lint       : run lint on framework
+    - lint-demos : run lint on demos
+```
+
+
+## Contributing
+
+In the spirit of free software, **everyone** is encouraged to help improve this project.
+
+Here are some ways *you* can contribute:
+
+* by using prerelease versions
+* by reporting bugs
+* by writing specifications
+* by writing code (*no patch is too small*: fix typos, add comments, clean up inconsistent whitespace)
+* by refactoring code
+* by resolving issues
+* by reviewing patches
+
+Starting point:
+
+* Fork the repo
+* Clone your repo
+* Make your changes
+* Write tests for your changes to ensure that later changes to prado won't break your code.
+* Submit your pull request
+
