@@ -1216,6 +1216,7 @@ class TPage extends TTemplateControl
         /**
          * Function to update view controls with those data in a given AR object.
          * @param type $arObj
+         * TODO
          */
         public function tryUpdateView($arObj)
         {
