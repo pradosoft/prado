@@ -1212,6 +1212,24 @@ class TPage extends TTemplateControl
 		if ($this->_writer)
 			$this->Response->write($this->_writer->flush());
 	}
+        
+        /**
+         * Function to update view controls with those data in a given AR object.
+         * @param type $arObj
+         */
+        public function tryUpdateView($arObj)
+        {
+            
+        }
+        
+        /**
+         * Function to try to update an AR object with data in view controls.
+         * @param type $arObj
+         */
+        public function tryUpdateAR($arObj)
+        {
+            
+        }
 }
 
 /**
