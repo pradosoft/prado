@@ -1215,19 +1215,69 @@ class TPage extends TTemplateControl
         
         /**
          * Function to update view controls with those data in a given AR object.
-         * @param type $arObj
-         * TODO
+         * @param TActiveRecord $arObj
+         * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
-        public function tryUpdateView($arObj)
+        public function tryToUpdateView($arObj, $throwExceptions = false)
         {
-            
+                $objAttrs = get_class_vars(get_class($arObj));
+                foreach (array_keys($objAttrs) as $key)
+                {
+                        try
+                        {
+                                if ($key != "RELATIONS")
+                                {
+                                        $control = $this->{$key};
+                                        switch (get_class($control))
+                                        {
+                                                default:
+                                                case "TTextBox":
+                                                        $control->Text = $arObj->{$key};
+                                                        break;
+                                                case "TCheckBox":
+                                                        $control->Checked = (boolean) $arObj->{$key};
+                                                        break;
+                                                case "TDatePicker":
+                                                        $control->Date = $arObj->{$key};
+                                                        break;
+                                        }
+                                } else
+                                {
+                                        foreach ($objAttrs["RELATIONS"] as $relKey => $relValues)
+                                        {
+                                                $relControl = $this->{$relKey};
+                                                switch ($relValues[0])
+                                                {
+                                                        case TActiveRecord::BELONGS_TO:
+                                                        case TActiveRecord::HAS_ONE:
+                                                                $relControl->Text = $arObj->{$relKey};
+                                                                break;
+                                                        case TActiveRecord::HAS_MANY:
+                                                                if($relControl instanceof TListControl){
+                                                                        $relControl->DataSource = $arObj->{$relKey};
+                                                                        $relControl->dataBind();
+                                                                }
+                                                                break;
+                                                }
+                                        }
+                                        break;
+                                }
+                        } catch (Exception $ex)
+                        {
+                                if ($throwExceptions)
+                                {
+                                        throw $ex;
+                                }
+                        }
+                }
         }
         
         /**
          * Function to try to update an AR object with data in view controls.
-         * @param type $arObj
+         * @param TActiveRecord $arObj
+         * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
-        public function tryUpdateAR($arObj)
+        public function tryToUpdateAR($arObj)
         {
             
         }
