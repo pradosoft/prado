@@ -1277,9 +1277,39 @@ class TPage extends TTemplateControl
          * @param TActiveRecord $arObj
          * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
-        public function tryToUpdateAR($arObj)
+        public function tryToUpdateAR($arObj, $throwExceptions = false)
         {
-            
+                $objAttrs = get_class_vars(get_class($arObj));
+                foreach (array_keys($objAttrs) as $key)
+                {
+                        try
+                        {
+                                if ($key == "RELATIONS")
+                                {
+                                       break;
+                                } 
+                                $control = $this->{$key};
+                                switch (get_class($control))
+                                {
+                                        default:
+                                        case "TTextBox":
+                                                 $arObj->{$key} = $control->Text;
+                                                break;
+                                        case "TCheckBox":
+                                                $arObj->{$key} = $control->Checked;
+                                                break;
+                                        case "TDatePicker":
+                                                $arObj->{$key} = $control->Date;
+                                                break;
+                                }
+                        } catch (Exception $ex)
+                        {
+                                if ($throwExceptions)
+                                {
+                                        throw $ex;
+                                }
+                        }
+                }
         }
 }
 
