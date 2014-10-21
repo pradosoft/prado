@@ -1214,7 +1214,8 @@ class TPage extends TTemplateControl
 	}
         
         /**
-         * Function to update view controls with those data in a given AR object.
+         * Function to update view controls with data in a given AR object.
+         * View controls and AR object need to have the same name in IDs and Attrs respectively.
          * @param TActiveRecord $arObj
          * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
