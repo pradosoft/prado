@@ -5,6 +5,7 @@
 // To make future upgrades easier
 if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.7');
 if (!defined('JQUERY_DIR')) define ('JQUERY_DIR', 'jquery');
+if (!defined('BOOTSTRAP_DIR')) define ('BOOTSTRAP_DIR', 'bootstrap3/js');
 if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.9.0');
 
 //package names and its contents (files relative to the current directory)
@@ -91,6 +92,11 @@ $packages = array(
 		SCRIPTACULOUS_DIR.'/builder.js',
 		SCRIPTACULOUS_DIR.'/effects.js'
 	),
+        
+        //bootstrap
+        'bootstrap' => array(
+                BOOTSTRAP_DIR.'/bootstrap.js'
+        ),
 
 	'dragdrop'=>array(
 		SCRIPTACULOUS_DIR.'/dragdrop.js',

@@ -19,9 +19,10 @@ to include on the page. For following example will include the "ajax" and "effec
 <p id="260239" class="block-content">
 	The available bundled libraries included in Prado are</p>
 	<ul id="u1" class="block-content">
-	    <li><tt>prado</tt> : basic prado javascript framework based on Prototype</li>
-	    <li><tt>effects</tt> : visual effects from script.aculo.us</li>
-	    <li><tt>ajax</tt> : ajax and callback related based on Prototype</li>
+	    <li><tt>prado</tt> : basic prado javascript framework based on jQuery</li>
+            <li><tt>bootstrap</tt> : bootstrap framework based on jQuery</li>
+	    <li><tt>effects</tt> : visual effects from jQuery</li>
+	    <li><tt>ajax</tt> : ajax and callback related based on jQuery</li>
 	    <li><tt>validator</tt> : validation</li>
 	    <li><tt>logger</tt> : javascript logger and object browser</li>
 	    <li><tt>datepicker</tt> : datepicker</li>
