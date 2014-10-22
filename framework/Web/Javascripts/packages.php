@@ -5,7 +5,7 @@
 // To make future upgrades easier
 if (!defined('PROTOTYPE_DIR')) define ('PROTOTYPE_DIR', 'prototype-1.7');
 if (!defined('JQUERY_DIR')) define ('JQUERY_DIR', 'jquery');
-if (!defined('BOOTSTRAP_DIR')) define ('BOOTSTRAP_DIR', 'bootstrap3/js');
+if (!defined('BOOTSTRAP_DIR')) define ('BOOTSTRAP_DIR', 'bootstrap3');
 if (!defined('SCRIPTACULOUS_DIR')) define ('SCRIPTACULOUS_DIR', 'scriptaculous-1.9.0');
 
 //package names and its contents (files relative to the current directory)
@@ -95,7 +95,7 @@ $packages = array(
         
         //bootstrap
         'bootstrap' => array(
-                BOOTSTRAP_DIR.'/bootstrap.js'
+                BOOTSTRAP_DIR.'/js/bootstrap.js',
         ),
 
 	'dragdrop'=>array(
@@ -118,27 +118,28 @@ $packages = array(
 $dependencies = array(
 		'jquery'			=> array('jquery'),
 		'prado'				=> array('jquery', 'prado'),
+                'bootstrap'		        => array('jquery', 'bootstrap'),
 		'validator'			=> array('jquery', 'prado', 'validator'),
 		'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
 		'ajax'				=> array('jquery', 'prado', 'ajax'),
 		'logger'			=> array('jquery', 'prado', 'logger'),
-		'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
+		'activefileupload'	        => array('jquery', 'prado', 'ajax', 'activefileupload'),
 		'effects'			=> array('jquery', 'jqueryui'),
-		'datepicker'		=> array('jquery', 'prado', 'datepicker'),
-		'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
-		'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
+		'datepicker'                    => array('jquery', 'prado', 'datepicker'),
+		'activedatepicker'              => array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
+		'colorpicker'                   => array('jquery', 'prado', 'colorpicker'),
 		'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
 		'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
 		'keyboard'			=> array('jquery', 'prado', 'keyboard'),
 		'slider'			=> array('jquery', 'prado', 'slider'),
-		'inlineeditor'		=> array('jquery', 'prado', 'ajax', 'inlineeditor'),
+		'inlineeditor'                  => array('jquery', 'prado', 'ajax', 'inlineeditor'),
 		'accordion'			=> array('jquery', 'prado', 'accordion'),
 		'ratings'			=> array('jquery', 'prado', 'ajax', 'ratings'),
 		'jqueryui'			=> array('jquery', 'jqueryui'),
 		'prototype'			=> array('prototype'),
 		'dragdrop'			=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop'),
-		'dragdropextra'		=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
-		'autocomplete'		=> array('prototype', 'jquery', 'prado', 'ajax', 'autocomplete'),
+		'dragdropextra'                 => array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
+		'autocomplete'                  => array('prototype', 'jquery', 'prado', 'ajax', 'autocomplete'),
 );
 
 return array($packages, $dependencies);

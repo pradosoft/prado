@@ -9,10 +9,17 @@
  * @since 3.3
  * @package Wsat
  */
-        
-class TWsatScaffoldingGenerator
+
+Prado::using("System.Wsat.TWsatBaseGenerator");
+
+class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 {
-        //put your code here
+
+        function __construct()
+        {
+                parent::__construct();
+        }
+
 }
 
 ?>

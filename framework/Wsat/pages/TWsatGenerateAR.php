@@ -51,7 +51,7 @@ class TWsatGenerateAR extends TPage
 
         public function preview($sender)
         {
-//                throw new THttpException(500, "Not implemented yet.");
+                throw new THttpException(500, "Not implemented yet.");
         }
 
 }

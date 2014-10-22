@@ -1,3 +1,12 @@
 <com:TContent ID="Content">
-    Scaffolding will be avaliable in Prado 3.4   
+    <div class="section_title">Scaffolding Generator</div>
+    
+    <div>
+            <com:TPanel ID="tableNames"/>
+    </div>
+
+    <div style="text-align: center; width: 400px">
+        <com:TButton Text="Preview" OnClick="preview" Visible="false" />
+        <com:TButton Text="Generate" OnClick="generate" />
+    </div>     
 </com:TContent>

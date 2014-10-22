@@ -150,3 +150,9 @@ html, body{
     margin-top:25px;
     padding:10px;
 }
+
+.section_title {
+    margin: 10px; 
+    font-size: 16px; 
+    font-weight: bold
+}
