@@ -1,12 +1,19 @@
 <com:TContent ID="Content">
-    <div class="section_title">Scaffolding Generator</div>
-    
-    <div>
-            <com:TPanel ID="tableNames"/>
-    </div>
+        <div class="section_title">Scaffolding Generator</div>
 
-    <div style="text-align: center; width: 400px">
-        <com:TButton Text="Preview" OnClick="preview" Visible="false" />
-        <com:TButton Text="Generate" OnClick="generate" />
-    </div>     
+        <div>
+                <com:TPanel ID="tableNames" GroupingText="Select tables to generate CRUD for:" Width="400px"/>
+        </div>
+
+        <div class="form_row">
+                <com:TLabel Text="Output Folder:" ForControl="output_folder" style="margin-right: 8px"/>
+                <com:TTextBox ID="output_folder" Text="Application.pages" CssClass="in_text" />
+                <label style="color: red">*</label>
+                <com:TRequiredFieldValidator ControlToValidate="output_folder" Text="Output folder cannot be blank." Display="Dynamic" />
+        </div>
+
+        <div style="text-align: center; width: 400px">
+                <com:TButton Text="Preview" OnClick="preview" Visible="false" />
+                <com:TButton Text="Generate" OnClick="generate" />
+        </div>     
 </com:TContent>

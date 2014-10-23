@@ -1,17 +1,25 @@
 <com:TContent ID="Content">
-    <label style="font-size: 18px; font-weight: bold">Welcome to the Web Site Administration Tool</label> 
+        <label style="font-size: 18px; font-weight: bold">Welcome to the Web Site Administration Tool</label> 
 
-    <div style="margin-top: 25px"><b>Application Dir:</b> <%= Prado::getPathOfNamespace('Application') %></div>
+        <div style="margin-top: 25px"><b>Application Dir:</b> <%= Prado::getPathOfNamespace('Application') %></div>
 
-    <br/>
-    <table>
-        <tr style="background-color: #cccccc">
-            <td style="padding: 5px; width: 100px">
-                <com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('TWsatGenerateAR') %>" Text="AR Classes" />
-            </td>
-            <td style="padding: 5px">
-                Enables you to generate all Active Record Classes with relations included.
-            </td>
-        </tr>
-    </table>
+        <br/>
+        <table>
+                <tr style="background-color: #cccccc">
+                        <td style="padding: 5px; width: 100px">
+                                <com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('TWsatGenerateAR') %>" Text="AR Classes" />
+                        </td>
+                        <td style="padding: 5px">
+                                Enables you to generate all Active Record Classes with relations included.
+                        </td>
+                </tr>
+                <tr style="background-color: #cccccc">
+                        <td style="padding: 5px; width: 100px">
+                                <com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('TWsatScaffolding') %>" Text="Scaffolding" />
+                        </td>
+                        <td style="padding: 5px">
+                                Enables you to generate a completed CRUD based in DB tables. It allow to choose bootstrap for the view generation.  
+                        </td>
+                </tr>
+        </table>
 </com:TContent>

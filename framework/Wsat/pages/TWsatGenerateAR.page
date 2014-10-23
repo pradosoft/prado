@@ -1,7 +1,7 @@
 <com:TContent ID="Content">
     <div class="section_title">Active Record Classes Generator</div>
     <div class="green_panel" style="text-align: left; font-size: 14px; margin: 15px 5px">
-        <label>This generator generates an AR class for the specified database table.</label><br/>
+        <label>This tool generates an AR class for the specified database table.</label><br/>
         <label>Fields with <b style="color: red">*</b> are required.</label>
         <hr/>
         <div style="font-size: 12px; font-style: italic">

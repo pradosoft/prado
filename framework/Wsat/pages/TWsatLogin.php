@@ -17,7 +17,6 @@ class TWsatLogin extends TPage
                 if ($this->IsValid)
                 {
                         $this->Session["wsat_password"] = $this->getService()->getPassword();
-
                         $url = $this->Service->constructUrl('TWsatHome');
                         $this->Response->redirect($url);
                 }

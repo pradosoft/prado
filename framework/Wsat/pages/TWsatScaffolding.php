@@ -17,10 +17,7 @@ class TWsatScaffolding extends TPage
         public function onInit($param)
         {
                 parent::onInit($param);
-                if (!$this->IsPostBack)
-                {
-                        $this->startVisual();
-                }
+                $this->startVisual();
         }
 
         private function startVisual()
@@ -29,11 +26,12 @@ class TWsatScaffolding extends TPage
                 foreach ($scf_generator->getAllTableNames() as $tableName)
                 {
                         $dynChb = new TCheckBox();
-                        $dynChb->ID = $tableName;
+                        $dynChb->ID = "cb_$tableName";
                         $dynChb->Text = ucfirst($tableName);
                         $dynChb->Checked = true;
+                        $this->registerObject("cb_$tableName", $dynChb);
                         $this->tableNames->getControls()->add($dynChb);
-
+                        $this->tableNames->getControls()->add("</br>");
                 }
         }
 
@@ -42,7 +40,8 @@ class TWsatScaffolding extends TPage
                 if ($this->IsValid)
                 {
                         $scf_generator = new TWsatScaffoldingGenerator();
-                        $scf_generator->renderAllTablesInformation();
+                      //  echo $this->cb_student->Text;
+                        //   $scf_generator->renderAllTablesInformation();
                 }
         }
 
