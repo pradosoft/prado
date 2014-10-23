@@ -199,19 +199,7 @@ class TErrorHandler extends TModule
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
 
-		$CGI=substr(php_sapi_name(), 0, 3) == 'cgi'; // FastCGI / IIS
-		if($isDebug)
-		{
-			if ($CGI)
-				header("Status: $statusCode ".$exception->getMessage(), true, TPropertyValue::ensureInteger($statusCode));
-			else
-				header("HTTP/1.0 $statusCode ".$exception->getMessage(), true, TPropertyValue::ensureInteger($statusCode));
-		} else {
-			if ($CGI)
-				header("Status: $statusCode", true, TPropertyValue::ensureInteger($statusCode));
-			else
-				header("HTTP/1.0 $statusCode", true, TPropertyValue::ensureInteger($statusCode));
-		}
+		$this->getApplication()->getResponse()->setStatusCode($statusCode, $isDebug ? $exception->getMessage() : null);
 
 		echo strtr($content,$tokens);
 	}
