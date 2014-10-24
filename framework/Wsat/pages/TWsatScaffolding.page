@@ -12,6 +12,10 @@
                 <com:TRequiredFieldValidator ControlToValidate="output_folder" Text="Output folder cannot be blank." Display="Dynamic" />
         </div>
 
+        <com:TPanel ID="feedback_panel" Visible="false" style="width: 400px">
+                <com:TLabel ID="generation_msg" />
+        </com:TPanel>
+
         <div style="text-align: center; width: 400px">
                 <com:TButton Text="Preview" OnClick="preview" Visible="false" />
                 <com:TButton Text="Generate" OnClick="generate" />

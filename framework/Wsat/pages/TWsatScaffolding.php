@@ -39,10 +39,21 @@ class TWsatScaffolding extends TPage
         {
                 if ($this->IsValid)
                 {
-                        $scf_generator = new TWsatScaffoldingGenerator();
-                      //  echo $this->cb_student->Text;
-                        //   $scf_generator->renderAllTablesInformation();
+                        try
+                        {
+                                $scf_generator = new TWsatScaffoldingGenerator();
+                                $scf_generator->setOpFile($this->output_folder->Text);
+                                $scf_generator->generate();
+                                $this->feedback_panel->CssClass = "green_panel";
+                                $this->generation_msg->Text = "The code has been generated successfully.";
+                        } catch (Exception $ex)
+                        {
+                                $this->feedback_panel->CssClass = "red_panel";
+                                $this->generation_msg->Text = $ex->getMessage();
+                        }
+                        $this->feedback_panel->Visible = true;
                 }
-        }
 
+                //   $scf_generator->renderAllTablesInformation();
+        }
 }
