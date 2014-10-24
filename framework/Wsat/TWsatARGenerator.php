@@ -136,8 +136,8 @@ class TWsatARGenerator extends TWsatBaseGenerator
                 else
                 {
                         $properties = array();
-                        foreach ($tableInfo->getColumns() as $field => $column)
-                                $properties[] = $this->generateProperty($field, $column);
+                        foreach ($tableInfo->getColumns() as $field => $metadata)
+                                $properties[] = $this->generateProperty($field, $metadata);
                         $toString = $this->_buildSmartToString($tableInfo);
                 }
 
@@ -156,7 +156,7 @@ class TWsatARGenerator extends TWsatBaseGenerator
 
 //-----------------------------------------------------------------------------
 
-        protected function generateProperty($field, $column)
+        protected function generateProperty($field, $metadata)
         {
                 $prop = '';
                 $name = '$' . $field;
