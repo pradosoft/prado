@@ -10,7 +10,7 @@ PRADO Jui widgets controls can be divided in two groups:
 For informations of the specific options of each widget, follow jQuery-UI Widget <a href="http://api.jqueryui.com/category/widgets/">API Documentation</a> for the specific interaction.
 </p>
 
-<a name="TJuiProgressbar"></a>
+<a name="TJuiProgressbar" />
 <h2>TJuiProgressbar</h2>
 <com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiProgressbar" /> - <a href="http://api.jqueryui.com/progressbar/">jQuery UI API</a>
 
@@ -23,6 +23,29 @@ The panel takes the aspect of a progressbar ranging from a value of 0 to the val
 </p>
 
 <com:RunBar PagePath="JuiControls.Samples.TJuiProgressbar.Home" />
+<br/>
+
+<a name="TJuiAutoComplete" />
+<h2>TJuiAutoComplete</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiAutoComplete" /> - <a href="http://api.jqueryui.com/autocomplete/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiAutoComplete</tt> is an extension to <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a> based on jQuery-UI's <a href="http://jqueryui.com/autocomplete/">autocomplete</a> widget.
+</p>
+
+<p class="block-content">
+TJuiAutoComplete is an extended ActiveTextBox that provides a list of suggestions on the current partial word typed in the textbox. The suggestions are requested using callbacks. The <tt>Frequency</tt> and <tt>MinChars</tt> properties sets the delay and minimum number of characters typed, respectively, before requesting for sugggestions. An embedded <tt>TRepeater</tt> is used to Display the list of suggestions. It can be accessed and styled through the Suggestions property and its sub-properties.
+</p>
+
+<p class="block-content">
+On each request for suggestions, the <tt>OnSuggestion</tt> event will be raised. The event handler receives the entered token that can be used to build the list of suggestions and to <tt>dataBind()</tt> it to the Suggestions repeater.
+</p>
+
+<p class="block-content">
+When a suggestion is selected the <tt>OnSuggestionSelected</tt> event is raised, with the index of the selected suggestion contained in the parameter. Multiple selections can be performed in the same textbox. The selections must be separated by any characters specified with the <tt>Separator</tt> property.
+</p>
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiAutoComplete.Home" />
 <br/>
 
 </com:TContent>

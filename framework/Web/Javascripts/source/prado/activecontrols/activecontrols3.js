@@ -103,7 +103,12 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 		this.hasResults = false;
 		jQuery.extend(this.options, {
 			source: this.getUpdatedChoices.bind(this),
-			select: this.selectEntry.bind(this)
+			select: this.selectEntry.bind(this),
+			focus: function () {
+				return false;
+			},
+			minLength: this.options.minLength,
+			frequency: this.options.frequency
 		});
 		jQuery('#'+options.ID).autocomplete(this.options)
 		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
@@ -131,21 +136,37 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 
 	getUpdatedChoices : function(request, callback)
 	{
-		var params = new Array(request.term,"__TJuiAutoComplete_onSuggest__");
+        var lastTerm = this.extractLastTerm(request.term);
+		var params = new Array(lastTerm, "__TJuiAutoComplete_onSuggest__");
 		var options = jQuery.extend(this.options, {
 			'autocompleteCallback' : callback
 		});
 		Prado.Callback(this.options.EventTarget, params, this.onComplete.bind(this), this.options);
 	},
 
+	extractLastTerm: function(string)
+	{
+		var re = new RegExp("[" + this.options.Separators + "]");
+		return string.split(re).pop().trim();
+	},
+
 	/**
 	 * Overrides parent implements, don't update if no results.
 	 */
-	selectEntry: function(event, ui)
-	{
+	selectEntry: function(event, ui) {
+		var value = event.target.value;
+		var lastTerm = this.extractLastTerm(value);
+
+		// strip (possibly) incomplete last part
+		var previousTerms = value.substr(0, value.length - lastTerm.length);
+		// and append selected value
+		ui.item.value = previousTerms + ui.item.value;
+
+		//ui.item.value = event.target.value;
 		var options = [ui.item.id, "__TJuiAutoComplete_onSuggestionSelected__"];
 		Prado.Callback(this.options.EventTarget, options, null, this.options);
 	},
+
 
 	onComplete : function(request, result)
   	{

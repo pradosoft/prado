@@ -1,0 +1,45 @@
+<com:TContent ID="body">
+<h1>TJuiAutoComplete Samples</h1>
+
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Simple Autocompleter:
+</td><td class="sampleaction">
+<com:TJuiAutoComplete
+    ID="AutoComplete"
+    OnSuggest="suggestNames"
+    OnSuggestionSelected="suggestionSelected1"
+    ResultPanel.CssClass="acomplete"
+    Suggestions.DataKeyField="id" >
+
+    <prop:Suggestions.ItemTemplate>
+    <li><%# $this->Data['name'] %></li>
+    </prop:Suggestions.ItemTemplate>
+</com:TJuiAutoComplete>
+<com:TActiveLabel ID="Selection1" />
+</td></tr>
+
+<tr><td class="samplenote">
+Autocompleter with multiple selection:
+</td><td class="sampleaction">
+<com:TJuiAutoComplete
+    ID="AutoComplete2"
+    OnSuggest="suggestNames"
+    OnSuggestionSelected="suggestionSelected2"
+    Separator=","
+    ResultPanel.CssClass="acomplete"
+    Suggestions.DataKeyField="id" >
+
+    <prop:Suggestions.ItemTemplate>
+    <li><%# $this->Data['name'] %></li>
+    </prop:Suggestions.ItemTemplate>
+</com:TJuiAutoComplete>
+(Use ',' to separate the selected suggestions)
+<com:TActiveLabel ID="Selection2" />
+</td></tr>
+
+</table>
+
+</com:TContent>

@@ -147,6 +147,57 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 		return $this->getViewState('TextCssClass');
 	}
 
+
+	/**
+	 * @return string word or token separators (delimiters).
+	 */
+	public function getSeparator()
+	{
+		return $this->getViewState('separator', '');
+	}
+
+	/**
+	 * @param string word or token separators (delimiters).
+	 */
+	public function setSeparator($value)
+	{
+		$this->setViewState('separator', TPropertyValue::ensureString($value), '');
+	}
+
+	/**
+	 * @return float maximum delay (in seconds) before requesting a suggestion.
+	 */
+	public function getFrequency()
+	{
+		return $this->getViewState('frequency', 0.4);
+	}
+
+	/**
+	 * @param float maximum delay (in seconds) before requesting a suggestion.
+	 * Default is 0.4.
+	 */
+	public function setFrequency($value)
+	{
+		$this->setViewState('frequency', TPropertyValue::ensureFloat($value), 0.4);
+	}
+
+	/**
+	 * @return integer minimum number of characters before requesting a suggestion.
+	 */
+	public function getMinChars()
+	{
+		return $this->getViewState('minChars','');
+	}
+
+	/**
+	 * @param integer minimum number of characters before requesting a suggestion.
+	 * Default is 1
+	 */
+	public function setMinChars($value)
+	{
+		$this->setViewState('minChars', TPropertyValue::ensureInteger($value), 1);
+	}
+
 	/**
 	 * Raises the callback event. This method is overrides the parent implementation.
 	 * If {@link setAutoPostBack AutoPostBack} is enabled it will raise
@@ -316,17 +367,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	protected function getPostBackOptions()
 	{
-		//disallow page state update ?
-		//$this->getActiveControl()->getClientSide()->setEnablePageStateUpdate(false);
 		$options = $this->getOptions()->toArray();
-		/*
-		if(strlen($string = $this->getSeparator()))
-		{
-			$string = strtr($string,array('\t'=>"\t",'\n'=>"\n",'\r'=>"\r"));
-			$token = preg_split('//', $string, -1, PREG_SPLIT_NO_EMPTY);
-			$options['tokens'] = $token;
-		}
-		*/
+
+		if(strlen($separator = $this->getSeparator()))
+			$options['Separators'] = $separator;
+
 		if($this->getAutoPostBack())
 		{
 			$options = array_merge($options,parent::getPostBackOptions());
@@ -334,6 +379,8 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 		}
 		if(strlen($textCssClass = $this->getTextCssClass()))
 			$options['textCssClass'] = $textCssClass;
+		$options['minLength'] = $this->getMinChars();
+		$options['delay'] = $this->getFrequency()/1000.0;
 		$options['appendTo'] = '#'.$this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();

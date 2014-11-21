@@ -1,0 +1,50 @@
+<?php
+
+
+/**
+ * Testcase for TJuiAutoComplete
+ */
+class JuiAutoCompleteTestCase extends PradoGenericSelenium2Test
+{
+	function test ()
+	{
+		$this->url("../../demos/quickstart/index.php?page=JuiControls.Samples.TJuiAutoComplete.Home&amp;notheme=true&amp;lang=en");
+
+		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+
+		$this->assertContains('TJuiAutoComplete Samples', $this->source());
+
+		$base = 'ctl0_body_';
+
+
+		$this->assertText("{$base}Selection1", "");
+
+		$this->byId("{$base}AutoComplete")->click();
+		$this->keys('J');
+		$this->pause(800);
+		$this->assertContains('John', $this->source());
+
+		$this->byCssSelector("#{$base}AutoComplete_result ul li")->click();
+		$this->pause(800);
+		$this->assertValue("{$base}AutoComplete", "John");
+		$this->assertText("{$base}Selection1", "Selected ID: 1");
+
+
+		$this->byId("{$base}AutoComplete2")->click();
+		$this->keys('Joh');
+		$this->pause(800);
+		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();
+		$this->pause(800);
+		$this->assertValue("{$base}AutoComplete2", "John");
+		$this->assertText("{$base}Selection2", "Selected ID: 1");
+
+		//$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
+		$this->keys(',Ge');
+		$this->pause(800);
+		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();
+		$this->pause(500);
+		$this->assertValue("{$base}AutoComplete2", "John,George");
+		$this->assertText("{$base}Selection2", "Selected ID: 3");
+
+	}
+}
