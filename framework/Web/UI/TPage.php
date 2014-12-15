@@ -1217,6 +1217,7 @@ class TPage extends TTemplateControl
          * Function to update view controls with data in a given AR object.
          * View controls and AR object need to have the same name in IDs and Attrs respectively.
          * @param TActiveRecord $arObj
+         * @param Boolean $throwExceptions Wheter or not to throw exceptions
          * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
         public function tryToUpdateView($arObj, $throwExceptions = false)
@@ -1229,20 +1230,14 @@ class TPage extends TTemplateControl
                                 if ($key != "RELATIONS")
                                 {
                                         $control = $this->{$key};
-                                        switch (get_class($control))
-                                        {
-                                                default:
-                                                case "TTextBox":
-                                                        $control->Text = $arObj->{$key};
-                                                        break;
-                                                case "TCheckBox":
-                                                        $control->Checked = (boolean) $arObj->{$key};
-                                                        break;
-                                                case "TDatePicker":
-                                                        $control->Date = $arObj->{$key};
-                                                        break;
-                                        }
-                                } else
+                                        if ($control instanceof TTextBox)
+                                                $control->Text = $arObj->{$key};
+                                        elseif ($control instanceof TCheckBox)
+                                                $control->Checked = (boolean) $arObj->{$key};
+                                        elseif ($control instanceof TDatePicker)
+                                                $control->Date = $arObj->{$key};
+                                }
+                                else
                                 {
                                         foreach ($objAttrs["RELATIONS"] as $relKey => $relValues)
                                         {
@@ -1254,7 +1249,8 @@ class TPage extends TTemplateControl
                                                                 $relControl->Text = $arObj->{$relKey};
                                                                 break;
                                                         case TActiveRecord::HAS_MANY:
-                                                                if($relControl instanceof TListControl){
+                                                                if ($relControl instanceof TListControl)
+                                                                {
                                                                         $relControl->DataSource = $arObj->{$relKey};
                                                                         $relControl->dataBind();
                                                                 }
@@ -1266,16 +1262,15 @@ class TPage extends TTemplateControl
                         } catch (Exception $ex)
                         {
                                 if ($throwExceptions)
-                                {
                                         throw $ex;
-                                }
                         }
                 }
         }
-        
+
         /**
          * Function to try to update an AR object with data in view controls.
          * @param TActiveRecord $arObj
+         * @param Boolean $throwExceptions Wheter or not to throw exceptions
          * @author Daniel Sampedro <darthdaniel85@gmail.com>
          */
         public function tryToUpdateAR($arObj, $throwExceptions = false)
@@ -1286,32 +1281,22 @@ class TPage extends TTemplateControl
                         try
                         {
                                 if ($key == "RELATIONS")
-                                {
-                                       break;
-                                } 
+                                        break;
                                 $control = $this->{$key};
-                                switch (get_class($control))
-                                {
-                                        default:
-                                        case "TTextBox":
-                                                 $arObj->{$key} = $control->Text;
-                                                break;
-                                        case "TCheckBox":
-                                                $arObj->{$key} = $control->Checked;
-                                                break;
-                                        case "TDatePicker":
-                                                $arObj->{$key} = $control->Date;
-                                                break;
-                                }
+                                if ($control instanceof TTextBox)
+                                        $arObj->{$key} = $control->Text;
+                                elseif ($control instanceof TCheckBox)
+                                        $arObj->{$key} = $control->Checked;
+                                elseif ($control instanceof TDatePicker)
+                                        $arObj->{$key} = $control->Date;
                         } catch (Exception $ex)
                         {
                                 if ($throwExceptions)
-                                {
                                         throw $ex;
-                                }
                         }
                 }
         }
+
 }
 
 /**
