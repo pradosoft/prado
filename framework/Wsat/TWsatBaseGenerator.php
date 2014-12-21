@@ -62,7 +62,8 @@ class TWsatBaseGenerator
         {
                 $tableNames = $this->_dbMetaData->findTableNames();
                 $index = array_search('pradocache', $tableNames);
-                array_splice($tableNames, $index, 1);
+                if($index)
+                        array_splice($tableNames, $index, 1);
                 return $tableNames;
         }
 
