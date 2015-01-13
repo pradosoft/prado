@@ -127,7 +127,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 			if($this->_customStorage)
 				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
 			if($this->_cookie!==null)
-				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure());
+				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure(),$this->_cookie->getHttpOnly());
 			if(ini_get('session.auto_start')!=='1')
 				session_start();
 			$this->_started=true;
