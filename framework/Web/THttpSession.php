@@ -55,6 +55,14 @@
  * GCProbability}, {@link getUseTransparentSessionID UseTransparentSessionID}
  * and {@link getTimeout TimeOut} are configurable properties of THttpSession.
  *
+ * To avoid the possibility of identity theft through some variants of XSS attacks,
+ * THttpSessionshould always be configured to enforce HttpOnly setting on session cookie.
+ * The HttpOnly setting is disabled by default. To enable it, configure the THttpSession
+ * module as follows,
+ * <code>
+ * <module id="session" class="THttpSession" Cookie.HttpOnly="true" >
+ * </code>
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package System.Web
  * @since 3.0

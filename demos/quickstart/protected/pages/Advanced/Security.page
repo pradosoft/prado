@@ -86,4 +86,13 @@ $cookie=new THttpCookie($name,$value);
 $this->Response->Cookies[]=$cookie;
 </com:TTextHighlighter>
 
+<p class="block-content">
+To avoid the possibility of identity theft through some variants of XSS attacks, <tt>THttpSession</tt> should always be configured to enforce <a href="http://php.net/manual/session.configuration.php#ini.session.cookie-httponly">HttpOnly</a> setting on session cookie.
+The HttpOnly setting is disabled by default. To enable it, configure the THttpSession module as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content">
+<modules>
+  <module id="session" class="THttpSession" Cookie.HttpOnly="true" >
+</modules>
+</com:TTextHighlighter>
 </com:TContent>
