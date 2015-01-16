@@ -241,9 +241,7 @@ class TUrlMapping extends TUrlManager
 			{
 				foreach($config['urls'] as $url)
 				{
-					$class=null;
-					if(!isset($url['class']))
-						$class=$defaultClass;
+					$class=isset($url['class'])?$url['class']:$defaultClass;
 					$properties = isset($url['properties'])?$url['properties']:array();
 					$this->buildUrlMapping($class,$properties,$url);
 				}
