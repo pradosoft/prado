@@ -36,8 +36,8 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 */
 	public function onInit($param)
 	{
-	  parent::onInit($param);
-	  $this->setStateTracker('TJuiCallbackPageStateTracker');
+		parent::onInit($param);
+		$this->setStateTracker('TJuiCallbackPageStateTracker');
 	}
 
 	/**
@@ -45,7 +45,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 */
 	public function setJuiBaseStyle($value)
 	{
-	   $this->getControl()->setViewState('JuiBaseStyle', $value, 'base');
+		$this->getControl()->setViewState('JuiBaseStyle', $value, 'base');
 	}
 
 	/**
@@ -53,7 +53,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 */
 	public function getJuiBaseStyle()
 	{
-	   return $this->getControl()->getViewState('JuiBaseStyle', 'base');
+		return $this->getControl()->getViewState('JuiBaseStyle', 'base');
 	}
 
 	/**
@@ -94,9 +94,10 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 * Calls the parent implementation first and sets the parent control for the
 	 * {@link TJuiControlOptions} again afterwards since it was not serialized in viewstate.
 	 */
-	public function loadState() {
-	  parent::loadState();
-    $this->getControl()->getOptions()->setControl($this->getControl());
+	public function loadState()
+	{
+		parent::loadState();
+		$this->getControl()->getOptions()->setControl($this->getControl());
 	}
 
 }
