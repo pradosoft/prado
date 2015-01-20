@@ -10,25 +10,6 @@
  */
 
 /**
- * IJuiOptions interface
- *
- * IJuiOptions is the interface that must be implemented by controls using
- * {@link TJuiControlOptions}.
- *
- * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package System.Web.UI.JuiControls
- * @since 3.3
- */
-interface IJuiOptions
-{
-	public function getWidget();
-	public function getWidgetID();
-	public function getOptions();
-	public function getValidOptions();
-	public function getValidEvents();
-}
-
-/**
  * TJuiControlOptions interface
  *
  * TJuiControlOptions is an helper class that can collect a list of options
@@ -61,7 +42,7 @@ class TJuiControlOptions
 	 */
 	public function __construct($control)
 	{
-    $this->setControl($control);
+		$this->setControl($control);
 	}
 
 	/**
@@ -71,9 +52,9 @@ class TJuiControlOptions
 	 */
 	public function setControl($control)
 	{
-	  if(!$control instanceof IJuiOptions)
-	    throw new THttpException(500,'juioptions_control_invalid',$control->ID);
-	  $this->_control=$control;
+		if(!$control instanceof IJuiOptions)
+			throw new THttpException(500,'juioptions_control_invalid',$control->ID);
+		$this->_control=$control;
 	}
 
 	/**
