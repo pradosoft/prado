@@ -375,25 +375,3 @@ class TUserManager extends TModule implements IUserManager
 		$user->setIsGuest(true);
 	}
 }
-
-/**
- * TUserManagerPasswordMode class.
- * TUserManagerPasswordMode defines the enumerable type for the possible modes
- * that user passwords can be specified for a {@link TUserManager}.
- *
- * The following enumerable values are defined:
- * - Clear: the password is in plain text
- * - MD5: the password is recorded as the MD5 hash value of the original password
- * - SHA1: the password is recorded as the SHA1 hash value of the original password
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
- * @since 3.0.4
- */
-class TUserManagerPasswordMode extends TEnumerable
-{
-	const Clear='Clear';
-	const MD5='MD5';
-	const SHA1='SHA1';
-}
-
