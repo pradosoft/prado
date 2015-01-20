@@ -9,50 +9,6 @@
  * @package System.Web.UI.WebControls
  */
 
-Prado::using('System.Web.UI.WebControls.TTable');
-
-/**
- * IRepeatInfoUser interface.
- * This interface must be implemented by classes who want to use {@link TRepeatInfo}.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-interface IRepeatInfoUser
-{
-	/**
-	 * @return boolean whether the repeat user contains footer
-	 */
-	public function getHasFooter();
-	/**
-	 * @return boolean whether the repeat user contains header
-	 */
-	public function getHasHeader();
-	/**
-	 * @return boolean whether the repeat user contains separators
-	 */
-	public function getHasSeparators();
-	/**
-	 * @return integer number of items to be rendered (excluding header, footer and separators)
-	 */
-	public function getItemCount();
-	/**
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer zero-based index of the current rendering item.
-	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
-	 */
-	public function generateItemStyle($itemType,$index);
-	/**
-	 * Renders an item.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param TRepeatInfo repeat information
-	 * @param string item type
-	 * @param integer zero-based index of the item being rendered
-	 */
-	public function renderItem($writer,$repeatInfo,$itemType,$index);
-}
-
 /**
  * TRepeatInfo class.
  * TRepeatInfo represents repeat information for controls like {@link TCheckBoxList}.
@@ -511,45 +467,3 @@ class TRepeatInfo extends TComponent
 		$writer->writeLine();
 	}
 }
-
-
-/**
- * TRepeatDirection class.
- * TRepeatDirection defines the enumerable type for the possible directions
- * that repeated contents can repeat along
- *
- * The following enumerable values are defined:
- * - Vertical
- * - Horizontal
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0.4
- */
-class TRepeatDirection extends TEnumerable
-{
-	const Vertical='Vertical';
-	const Horizontal='Horizontal';
-}
-
-/**
- * TRepeatLayout class.
- * TRepeatLayout defines the enumerable type for the possible layouts
- * that repeated contents can take.
- *
- * The following enumerable values are defined:
- * - Table: the repeated contents are organized using an HTML table
- * - Flow: the repeated contents are organized using HTML spans and breaks
- * - Raw: the repeated contents are stacked together without any additional decorations
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0.4
- */
-class TRepeatLayout extends TEnumerable
-{
-	const Table='Table';
-	const Flow='Flow';
-	const Raw='Raw';
-}
-

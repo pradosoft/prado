@@ -333,25 +333,3 @@ class TRangeValidator extends TBaseValidator
 		return $options;
 	}
 }
-
-
-/**
- * TRangeValidationDataType class.
- * TRangeValidationDataType defines the enumerable type for the possible data types that
- * a range validator can validate upon.
- *
- * The following enumerable values are defined:
- * - Integer
- * - Float
- * - Date
- * - String
- * - StringLength
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0.4
- */
-class TRangeValidationDataType extends TValidationDataType
-{
-	const StringLength='StringLength';
-}

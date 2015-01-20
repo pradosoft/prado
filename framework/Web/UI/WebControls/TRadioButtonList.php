@@ -96,12 +96,3 @@ class TRadioButtonList extends TCheckBoxList
 		return 'Prado.WebUI.TRadioButtonList';
 	}
 }
-
-class TRadioButtonItem extends TRadioButton {
-	/**
-	 * Override client implementation to avoid emitting the javascript
-	 */
-	protected function renderClientControlScript($writer)
-	{
-	}
-}

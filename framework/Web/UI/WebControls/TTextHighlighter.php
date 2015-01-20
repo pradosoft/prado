@@ -197,14 +197,3 @@ class TTextHighlighter extends TTextProcessor
 
 
 }
-
-/**
- * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-class TTextHighlighterLineNumberStyle extends TEnumerable
-{
-	const Li='Li';
-	const Table='Table';
-}

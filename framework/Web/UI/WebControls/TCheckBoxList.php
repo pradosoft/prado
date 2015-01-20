@@ -498,12 +498,3 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	}
 
 }
-
-class TCheckBoxItem extends TCheckBox {
-	/**
-	 * Override client implementation to avoid emitting the javascript
-	 */
-	protected function renderClientControlScript($writer)
-	{
-	}
-}

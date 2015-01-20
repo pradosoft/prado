@@ -10,20 +10,6 @@
  */
 
 /**
- * IDataSource class
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-interface IDataSource
-{
-	public function getView($viewName);
-	public function getViewNames();
-	public function onDataSourceChanged($param);
-}
-
-/**
  * TDataSourceControl class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -82,33 +68,3 @@ abstract class TDataSourceControl extends TControl implements IDataSource
 		throw new TNotSupportedException('datasourcecontrol_visible_unsupported');
 	}
 }
-
-/**
- * TDataSourceControl class
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-class TReadOnlyDataSource extends TDataSourceControl
-{
-	private $_dataSource;
-	private $_dataMember;
-
-	public function __construct($dataSource,$dataMember)
-	{
-		if(!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof Traversable))
-			throw new TInvalidDataTypeException('readonlydatasource_datasource_invalid');
-		$this->_dataSource=$dataSource;
-		$this->_dataMember=$dataMember;
-	}
-
-	public function getView($viewName)
-	{
-		if($this->_dataSource instanceof IDataSource)
-			return $this->_dataSource->getView($viewName);
-		else
-			return new TReadOnlyDataSourceView($this,$this->_dataMember,$this->_dataSource);
-	}
-}
-

@@ -10,67 +10,6 @@
  */
 
 /**
- * TDataSourceSelectParameters class
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-class TDataSourceSelectParameters extends TComponent
-{
-	private $_retrieveTotalRowCount=false;
-	private $_startRowIndex=0;
-	private $_totalRowCount=0;
-	private $_maximumRows=0;
-
-	public function getStartRowIndex()
-	{
-		return $this->_startRowIndex;
-	}
-
-	public function setStartRowIndex($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_startRowIndex=$value;
-	}
-
-	public function getMaximumRows()
-	{
-		return $this->_maximumRows;
-	}
-
-	public function setMaximumRows($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_maximumRows=$value;
-	}
-
-	public function getRetrieveTotalRowCount()
-	{
-		return $this->_retrieveTotalRowCount;
-	}
-
-	public function setRetrieveTotalRowCount($value)
-	{
-		$this->_retrieveTotalRowCount=TPropertyValue::ensureBoolean($value);
-	}
-
-	public function getTotalRowCount()
-	{
-		return $this->_totalRowCount;
-	}
-
-	public function setTotalRowCount($value)
-	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_totalRowCount=$value;
-	}
-}
-
-/**
  * TDataSourceView class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -171,32 +110,3 @@ abstract class TDataSourceView extends TComponent
 		$this->raiseEvent('OnDataSourceViewChanged',$this,$param);
 	}
 }
-
-/**
- * TReadOnlyDataSourceView class
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
- * @since 3.0
- */
-class TReadOnlyDataSourceView extends TDataSourceView
-{
-	private $_dataSource=null;
-
-	public function __construct(IDataSource $owner,$viewName,$dataSource)
-	{
-		parent::__construct($owner,$viewName);
-		if($dataSource===null || is_array($dataSource))
-			$this->_dataSource=new TMap($dataSource);
-		else if($dataSource instanceof Traversable)
-			$this->_dataSource=$dataSource;
-		else
-			throw new TInvalidDataTypeException('readonlydatasourceview_datasource_invalid');
-	}
-
-	public function select($parameters)
-	{
-		return $this->_dataSource;
-	}
-}
-
