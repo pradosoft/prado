@@ -127,19 +127,3 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	}
 
 }
-
-
-class TActiveRadioButtonItem extends TActiveRadioButton
-{
-	/**
-	 * Override client implementation to avoid emitting the javascript
-	 *
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string onclick js
-	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
-	{
-		TRadioButton::renderInputTag($writer,$clientID,$onclick);
-	}
-}
