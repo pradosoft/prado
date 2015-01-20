@@ -391,22 +391,3 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 		$this->removeAt($offset);
 	}
 }
-
-
-/**
- * TListIterator class
- *
- * TListIterator implements Iterator interface.
- *
- * TListIterator is used by TList. It allows TList to return a new iterator
- * for traversing the items in the list.
- *
- * @deprecated Issue 264 : ArrayIterator should be used instead
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Collections
- * @since 3.0
- */
-class TListIterator extends ArrayIterator
-{
-}
-
