@@ -282,25 +282,3 @@ class TScaffoldEditView extends TScaffoldBase
 		return 'group_'.$this->getUniqueID();
 	}
 }
-
-/**
- * IScaffoldEditRenderer interface.
- *
- * IScaffoldEditRenderer defines the interface that an edit renderer
- * needs to implement. Besides the {@link getData Data} property, an edit
- * renderer also needs to provide {@link updateRecord updateRecord} method
- * that is called before the save() method is called on the TActiveRecord.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.ActiveRecord.Scaffold
- * @since 3.1
- */
-interface IScaffoldEditRenderer extends IDataRenderer
-{
-	/**
-	 * This method should update the record with the user input data.
-	 * @param TActiveRecord record to be saved.
-	 */
-	public function updateRecord($record);
-}
-

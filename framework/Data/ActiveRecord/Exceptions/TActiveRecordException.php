@@ -31,16 +31,3 @@ class TActiveRecordException extends TDbException
 		return $msgFile;
 	}
 }
-
-/**
- * TActiveRecordConfigurationException class.
- *
- * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.ActiveRecord
- * @since 3.1
- */
-class TActiveRecordConfigurationException extends TActiveRecordException
-{
-
-}
-
