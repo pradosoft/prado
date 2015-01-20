@@ -78,5 +78,4 @@ class TWsatBaseGenerator
     {
         return '"' . $data . '"';
     }
-
 }
