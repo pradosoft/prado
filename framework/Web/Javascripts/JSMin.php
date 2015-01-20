@@ -285,6 +285,3 @@ class JSMin {
     return $this->lookAhead;
   }
 }
-
-// -- Exceptions ---------------------------------------------------------------
-class JSMinException extends Exception {}
