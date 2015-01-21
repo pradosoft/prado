@@ -3,11 +3,14 @@
  * TAuthManager class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Security
+ * @package Prado\Security
  */
+
+namespace Prado\Security;
 
 /**
  * Using IUserManager interface
@@ -36,7 +39,7 @@ Prado::using('System.Security.IUserManager');
  * <module id="users" class="System.Security.TUserManager" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0
  */
 class TAuthManager extends TModule

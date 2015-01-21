@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.I18N
+ * @package Prado\I18N
  */
+
+namespace Prado\I18N;
 
 /**
  * TTranslateParameter component should be used inside the TTranslate component to
@@ -36,7 +38,7 @@
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v3.0, last update on Friday, 6 January 2006
- * @package System.I18N
+ * @package Prado\I18N
  */
 class TTranslateParameter extends TControl
 {

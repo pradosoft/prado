@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.I18N
+ * @package Prado\I18N
  */
+
+namespace Prado\I18N;
 
 /**
  * Get the parent control class.
@@ -57,7 +59,7 @@ Prado::using('System.I18N.TI18NControl');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 21:38:49 EST 2004
- * @package System.I18N
+ * @package Prado\I18N
  */
 class TTranslate extends TI18NControl
 {

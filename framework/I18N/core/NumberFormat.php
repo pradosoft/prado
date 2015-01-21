@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.6 $  $Date: 2005/12/20 09:32:42 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Get the NumberFormatInfo class file.
@@ -69,7 +71,7 @@ require_once(dirname(__FILE__).'/util.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 10 18:10:20 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class NumberFormat
 {

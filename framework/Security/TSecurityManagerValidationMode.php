@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Security
+ * @package Prado\Security
  */
+
+namespace Prado\Security;
 
 /**
  * TSecurityManagerValidationMode class.
@@ -22,7 +24,7 @@
  * - SHA1: an SHA1 hash is generated from the data and used for validation.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0.4
  */
 class TSecurityManagerValidationMode extends TEnumerable

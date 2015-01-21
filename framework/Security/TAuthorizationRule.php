@@ -3,11 +3,15 @@
  * TAuthorizationRule, TAuthorizationRuleCollection class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Security
+ * @package Prado\Security
  */
+
+namespace Prado\Security;
+
 /**
  * TAuthorizationRule class
  *
@@ -24,7 +28,7 @@
  * IP rules are separated by comma ',' and can contain wild card in the rules (e.g. '192.132.23.33, 192.122.*.*')
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0
  */
 class TAuthorizationRule extends TComponent

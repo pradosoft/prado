@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
- * @package System.I18N
+ * @package Prado\I18N
  */
+
+namespace Prado\I18N;
 
 /**
  * Import the HTTPNeogtiator
@@ -21,7 +23,7 @@ Prado::using('System.I18N.core.HTTPNegotiator');
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
- * @package System.I18N
+ * @package Prado\I18N
  */
 class TGlobalizationAutoDetect extends TGlobalization
 {

@@ -14,9 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.1 $  $Date: 2005/01/11 07:19:39 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 
+namespace Prado\I18N\core;
 
 /**
  * ChoiceFormat class.
@@ -74,7 +75,7 @@
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 20:46:16 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class ChoiceFormat
 {

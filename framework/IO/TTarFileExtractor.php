@@ -4,8 +4,10 @@
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
  * @copyright Copyright &copy; 1997-2003 The PHP Group
- * @package System.IO
+ * @package Prado\IO
  */
+
+namespace Prado\IO;
 
 /* vim: set ts=4 sw=4: */
 // +----------------------------------------------------------------------+
@@ -30,7 +32,7 @@
  * TTarFileExtractor class
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @package System.IO
+ * @package Prado\IO
  * @since 3.0
  */
 class TTarFileExtractor

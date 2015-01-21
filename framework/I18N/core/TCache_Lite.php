@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.3 $  $Date: 2005/10/09 10:24:12 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
 * Fast, light and safe Cache Class

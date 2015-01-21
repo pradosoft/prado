@@ -3,11 +3,14 @@
  * TDbUserManager class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Security
+ * @package Prado\Security
  */
+
+namespace Prado\Security;
 
 /**
  * Using IUserManager interface
@@ -43,7 +46,7 @@ Prado::using('System.Security.TUser');
  * which specifies how to establish database connection to retrieve user information.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.1.0
  */
 class TDbUserManager extends TModule implements IUserManager

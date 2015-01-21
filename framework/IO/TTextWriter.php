@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.IO
+ * @package Prado\IO
  */
+
+namespace Prado\IO;
 
 /**
  * TTextWriter class.
@@ -17,7 +19,7 @@
  * and can be obtained by calling {@link flush()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.IO
+ * @package Prado\IO
  * @since 3.0
  */
 class TTextWriter extends TComponent implements ITextWriter

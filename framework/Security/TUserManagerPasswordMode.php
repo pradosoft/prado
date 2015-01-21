@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Security
+ * @package Prado\Security
  */
+
+namespace Prado\Security;
 
 /**
  * TUserManagerPasswordMode class.
@@ -20,7 +22,7 @@
  * - SHA1: the password is recorded as the SHA1 hash value of the original password
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0.4
  */
 class TUserManagerPasswordMode extends TEnumerable

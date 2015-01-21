@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.3 $  $Date: 2005/08/04 05:27:19 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Get the CultureInfo class file.
@@ -43,7 +45,7 @@ require_once(dirname(__FILE__).'/CultureInfo.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Sun Dec 05 14:48:26 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class NumberFormatInfo
 {

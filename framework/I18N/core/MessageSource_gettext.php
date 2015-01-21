@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.7 $  $Date: 2005/12/17 06:11:28 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Get the MessageSource class file.
@@ -37,7 +39,7 @@ require_once(dirname(__FILE__).'/Gettext/TGettext.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 16:18:44 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class MessageSource_gettext extends MessageSource
 {

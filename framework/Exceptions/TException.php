@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Exceptions
+ * @package Prado\Exceptions
  */
+
+namespace Prado\Exceptions;
 
 /**
  * TException class
@@ -27,7 +29,7 @@
  * "message.txt" will be used instead.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Exceptions
+ * @package Prado\Exceptions
  * @since 3.0
  */
 class TException extends Exception

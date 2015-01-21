@@ -13,8 +13,10 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * CultureInfo class.
@@ -43,7 +45,7 @@
  * For example, Australian English is "en_AU".
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class CultureInfo
 {

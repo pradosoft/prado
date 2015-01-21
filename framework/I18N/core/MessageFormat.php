@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.5 $  $Date: 2005/08/27 03:21:12 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Get the MessageSource classes.
@@ -49,7 +51,7 @@ require_once(dirname(__FILE__).'/util.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 20:46:16 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class MessageFormat
 {

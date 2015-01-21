@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Exceptions
+ * @package Prado\Exceptions
  */
+
+namespace Prado\Exceptions;
 
 /**
  * TErrorHandler class
@@ -44,7 +46,7 @@
  * <module id="error" class="TErrorHandler" ErrorTemplatePath="System.Exceptions" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Exceptions
+ * @package Prado\Exceptions
  * @since 3.0
  */
 class TErrorHandler extends TModule

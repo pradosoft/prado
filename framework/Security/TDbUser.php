@@ -6,9 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Security
+ * @package Prado\Security
  */
 
+namespace Prado\Security;
 
 /**
  * TDbUser class
@@ -19,7 +20,7 @@
  * - {@link createUser()}: creates a new user instance given the username
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.1.0
  */
 abstract class TDbUser extends TUser

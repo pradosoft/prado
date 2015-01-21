@@ -14,8 +14,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.2 $  $Date: 2005/01/05 03:15:14 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Include the CultureInfo class.
@@ -29,7 +31,7 @@ require_once(dirname(__FILE__).'/CultureInfo.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Fri Dec 24 16:01:35 EST 2004
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class HTTPNegotiator
 {

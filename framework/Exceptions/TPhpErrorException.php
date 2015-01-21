@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Exceptions
+ * @package Prado\Exceptions
  */
+
+namespace Prado\Exceptions;
 
 /**
  * TPhpErrorException class
@@ -16,7 +18,7 @@
  * This exception is mainly thrown within a PHP error handler.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Exceptions
+ * @package Prado\Exceptions
  * @since 3.0
  */
 class TPhpErrorException extends TSystemException

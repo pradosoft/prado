@@ -6,9 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Exceptions
+ * @package Prado\Exceptions
  */
 
+namespace Prado\Exceptions;
 
 /**
  * THttpException class
@@ -18,7 +19,7 @@
  * It is used by {@link TErrorHandler} to provide different error output to users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Exceptions
+ * @package Prado\Exceptions
  * @since 3.0
  */
 class THttpException extends TSystemException

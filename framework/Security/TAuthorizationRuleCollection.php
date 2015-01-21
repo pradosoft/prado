@@ -6,9 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Security
+ * @package Prado\Security
  */
 
+namespace Prado\Security;
 
 /**
  * TAuthorizationRuleCollection class.
@@ -16,7 +17,7 @@
  * To check if a user is allowed, call {@link isUserAllowed}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0
  */
 class TAuthorizationRuleCollection extends TList

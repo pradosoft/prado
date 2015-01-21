@@ -13,9 +13,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.3 $  $Date: 2005/08/27 03:21:12 $
- * @package System.I18N.core
+ * @package Prado\I18N\core\Gettext
  */
 
+namespace Prado\I18N\core\Gettext;
 
 // +----------------------------------------------------------------------+
 // | PEAR :: File :: Gettext :: MO                                        |
@@ -48,7 +49,7 @@ require_once dirname(__FILE__).'/TGettext.php';
  * @author      Michael Wallner <mike@php.net>
  * @version     $Revision: 1.3 $
  * @access      public
- * @package System.I18N.core
+ * @package Prado\I18N\core\Gettext
  */
 class TGettext_MO extends TGettext
 {

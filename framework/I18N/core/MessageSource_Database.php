@@ -11,8 +11,10 @@
  * The latest version of PRADO can be obtained from:
  * {@link http://prado.sourceforge.net/}
  *
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
+
+namespace Prado\I18N\core;
 
 /**
  * Get the MessageSource class file.
@@ -26,7 +28,7 @@ require_once(dirname(__FILE__).'/MessageSource.php');
  *
  * See the MessageSource::factory() method to instantiate this class.
  *
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class MessageSource_Database extends MessageSource
 {

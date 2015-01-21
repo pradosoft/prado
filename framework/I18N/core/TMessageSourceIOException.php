@@ -13,9 +13,10 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.4 $  $Date: 2005/12/17 06:11:28 $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 
+namespace Prado\I18N\core;
 
 /**
  * TMessageSourceIOException thrown when unable to modify message source
@@ -23,7 +24,7 @@
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @version $Revision: 1.4 $  $Date: 2005/12/17 06:11:28 ${DATE} ${TIME} $
- * @package System.I18N.core
+ * @package Prado\I18N\core
  */
 class TMessageSourceIOException extends TException
 {

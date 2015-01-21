@@ -3,12 +3,14 @@
  * TSecurityManager class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Security
+ * @package Prado\Security
  */
 
+namespace Prado\Security;
 
 /**
  * TSecurityManager class
@@ -35,7 +37,7 @@
  * Note, to use encryption, the PHP Mcrypt extension must be loaded.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Security
+ * @package Prado\Security
  * @since 3.0
  */
 class TSecurityManager extends TModule

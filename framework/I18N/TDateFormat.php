@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.I18N
+ * @package Prado\I18N
  */
+
+namespace Prado\I18N;
 
 /**
  * Get the DateFormat class.
@@ -56,7 +58,7 @@ Prado::using('System.I18N.TI18NControl');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
- * @package System.I18N
+ * @package Prado\I18N
  */
 class TDateFormat extends TI18NControl implements IDataRenderer
 {
