@@ -1,4 +1,7 @@
 <?php
+
+namespace Prado\Data\SqlMap\DataMapper;
+
 /**
  * TSqlMapCache class file contains FIFO, LRU, and GLOBAL cache implementations.
  *
@@ -6,7 +9,7 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  */
 
 /**
@@ -14,7 +17,7 @@
  * object that was first added when the cache is full.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TSqlMapFifoCache extends TSqlMapCache

@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.Common.Oracle
+ * @package Prado\Data\Common\Oracle
  */
+
+namespace Prado\Data\Common\Oracle;
 
 /**
  * Load the base TDbMetaData class.
@@ -20,7 +22,7 @@ Prado::using('System.Data.Common.Oracle.TOracleTableColumn');
  * TOracleMetaData loads Oracle database table and column information.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
- * @package System.Data.Common.Oracle
+ * @package Prado\Data\Common\Oracle
  * @since 3.1
  */
 class TOracleMetaData extends TDbMetaData

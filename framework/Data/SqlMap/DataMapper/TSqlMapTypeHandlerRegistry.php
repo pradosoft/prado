@@ -6,15 +6,17 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  */
+
+namespace Prado\Data\SqlMap\DataMapper;
 
 /**
  * TTypeHandlerFactory provides type handler classes to convert database field type
  * to PHP types and vice versa.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TSqlMapTypeHandlerRegistry

@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  */
+
+namespace Prado\Data\SqlMap\DataMapper;
 
 Prado::using('System.Collections.TPagedList');
 
@@ -22,7 +24,7 @@ Prado::using('System.Collections.TPagedList');
  * The paged list does not need to know about the total number of records.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TSqlMapPagedList extends TPagedList

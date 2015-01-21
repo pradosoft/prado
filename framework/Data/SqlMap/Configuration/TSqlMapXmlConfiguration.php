@@ -6,18 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.SqlMap.Configuration
- */']";
-			foreach($document->xpath($xpath) as $node)
-				return $node;
-		}
-	}
+ * @package Prado\Data\SqlMap\Configuration
+ */
 
-	/**
-	 * @return string configuration file.
-	 */
-	protected abstract function getConfigFile();
-}
+namespace Prado\Data\SqlMap\Configuration;
 
 /**
  * TSqlMapXmlConfig class.
@@ -25,7 +17,7 @@
  * Configures the TSqlMapManager using xml configuration file.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder

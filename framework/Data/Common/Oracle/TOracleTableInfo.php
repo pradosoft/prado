@@ -7,14 +7,16 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.Common
+ * @package Prado\Data\Common\Oracle
  */
+
+namespace Prado\Data\Common\Oracle;
 
 /**
  * TDbTableInfo class describes the meta data of a database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.Common
+ * @package Prado\Data\Common\Oracle
  * @since 3.1
  */
 class TOracleTableInfo extends TComponent

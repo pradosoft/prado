@@ -7,8 +7,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Caching
+ * @package Prado\Caching
  */
+
+namespace Prado\Caching;
 
 /**
  * TMemCache class
@@ -76,7 +78,7 @@
  * NB : MemCache server(s) must be restarted to apply settings. Require (PECL memcache >= 2.0.0) or memcached if {@link useMemcached} is true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Caching
+ * @package Prado\Caching
  * @since 3.0
  */
 class TMemCache extends TCache

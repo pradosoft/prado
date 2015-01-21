@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.Common.Pgsql
+ * @package Prado\Data\Common\Pgsql
  */
+
+namespace Prado\Data\Common\Pgsql;
 
 /**
  * Load the base TDbMetaData class.
@@ -19,7 +21,7 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlTableInfo');
  * TPgsqlMetaData loads PostgreSQL database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.Common.Pgsql
+ * @package Prado\Data\Common\Pgsql
  * @since 3.1
  */
 class TPgsqlMetaData extends TDbMetaData

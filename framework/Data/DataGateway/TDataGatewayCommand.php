@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  */
+
+namespace Prado\Data\DataGateway;
 
 /**
  * TDataGatewayCommand is command builder and executor class for
@@ -31,7 +33,7 @@
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  * @since 3.1
  */
 class TDataGatewayCommand extends TComponent
@@ -178,6 +180,7 @@ class TDataGatewayCommand extends TComponent
 		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command,$command->query());
 	}
+
 	/**
 	 * @param array multiple primary key values or composite value arrays
 	 * @return integer number of rows affected.
@@ -192,6 +195,7 @@ class TDataGatewayCommand extends TComponent
 		$command->prepare();
 		return $this->onExecuteCommand($command,$command->execute());
 	}
+
 	public function getIndexKeyCondition($table,$fields,$values)
 	{
 		if (!count($values))
@@ -202,6 +206,7 @@ class TDataGatewayCommand extends TComponent
 			$columns[] = $tableName.'.'.$table->getColumn($field)->getColumnName();
 		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
 	}
+
 	/**
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
 	 * @param array values for IN predicate
@@ -230,6 +235,7 @@ class TDataGatewayCommand extends TComponent
 		}
 		return $this->getIndexKeyCondition($this->getTableInfo(),$primary, $values);
 	}
+
 	/**
 	 * @param TDbConnection database connection.
 	 * @param array values
@@ -243,6 +249,7 @@ class TDataGatewayCommand extends TComponent
 			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
 		return '('.implode(', ', $data).')';
 	}
+
 	/**
 	 * Create the condition and parameters for find by primary.
 	 * @param array primary key values
@@ -267,6 +274,7 @@ class TDataGatewayCommand extends TComponent
 		}
 		return array(implode(' AND ', $criteria), $bindings);
 	}
+
 	/**
 	 * Find one matching records for arbituary SQL.
 	 * @param TSqlCriteria $criteria
@@ -277,6 +285,7 @@ class TDataGatewayCommand extends TComponent
 		$command = $this->getSqlCommand($criteria);
 		return $this->onExecuteCommand($command, $command->queryRow());
 	}
+
 	/**
 	 * Find zero or more matching records for arbituary SQL.
 	 * @param TSqlCriteria $criteria
@@ -287,6 +296,7 @@ class TDataGatewayCommand extends TComponent
 		$command = $this->getSqlCommand($criteria);
 		return $this->onExecuteCommand($command, $command->query());
 	}
+
 	/**
 	 * Build sql command from the criteria. Limit, Offset and Ordering are applied if applicable.
 	 * @param TSqlCriteria $criteria
@@ -307,6 +317,7 @@ class TDataGatewayCommand extends TComponent
 		$this->onCreateCommand($command, $criteria);
 		return $command;
 	}
+
 	/**
 	 * @param TSqlCriteria $criteria
 	 * @return integer number of records.
@@ -324,6 +335,7 @@ class TDataGatewayCommand extends TComponent
 		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, (int)$command->queryScalar());
 	}
+
 	/**
 	 * Inserts a new record into the table. Each array key must
 	 * correspond to a column name in the table unless a null value is permitted.
@@ -343,6 +355,7 @@ class TDataGatewayCommand extends TComponent
 		}
 		return false;
 	}
+
 	/**
 	 * Iterate through all the columns and returns the last insert id of the
 	 * first column that has a sequence or serial.
@@ -352,6 +365,7 @@ class TDataGatewayCommand extends TComponent
 	{
 		return $this->getBuilder()->getLastInsertID();
 	}
+
 	/**
 	 * @param string __call method name
 	 * @param string criteria conditions
@@ -369,6 +383,7 @@ class TDataGatewayCommand extends TComponent
 		}
 		return new TSqlCriteria(implode(' ',$fields), $args);
 	}
+
 	/**
 	 * Calculates the AND/OR condition from dynamic method substrings using
 	 * table meta data, allows for any AND-OR combinations.
@@ -387,6 +402,7 @@ class TDataGatewayCommand extends TComponent
 			throw new TDbException('dbtablegateway_mismatch_column_name',
 				$method, implode(', ', $columns), $table->getTableFullName());
 		}
+
 		$fields = array();
 		foreach($matches as $match)
 		{
@@ -399,6 +415,7 @@ class TDataGatewayCommand extends TComponent
 		}
 		return $fields;
 	}
+
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
@@ -411,6 +428,7 @@ class TDataGatewayCommand extends TComponent
 	{
 		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command,$criteria));
 	}
+
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the

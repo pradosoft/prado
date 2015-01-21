@@ -7,8 +7,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  */
+
+namespace Prado\Data\SqlMap\Configuration;
 
 /**
  * TSqlMapStatement class corresponds to <statement> element.
@@ -23,7 +25,7 @@
  * statement can return a database-generated key.)
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TSqlMapStatement extends TComponent

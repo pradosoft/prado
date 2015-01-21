@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data
+ * @package Prado\Data
  */
+
+namespace Prado\Data;
 
 /**
  * TDbCommand class.
@@ -31,7 +33,7 @@
  * You may also call {@link prepare} to explicitly prepare an SQL statement.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Data
+ * @package Prado\Data
  * @since 3.0
  */
 class TDbCommand extends TComponent

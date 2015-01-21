@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Collections
+ * @package Prado\Collections
  */
+
+namespace Prado\Collections;
 
 /**
  * TPriorityMap class
@@ -50,7 +52,7 @@
  * the decimal space.  See {@link round}.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package System.Collections
+ * @package Prado\Collections
  * @since 3.2a
  */
 Prado::using('System.Collections.TMap');

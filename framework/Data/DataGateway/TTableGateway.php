@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  */
+
+namespace Prado\Data\DataGateway;
 
 /**
  * Loads the data gateway command builder and sql criteria.
@@ -73,7 +75,7 @@ Prado::using('System.Data.DataGateway.TDataGatewayCommand');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  * @since 3.1
  */
 class TTableGateway extends TComponent

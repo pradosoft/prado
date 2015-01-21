@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Collections
+ * @package Prado\Collections
  */
+
+namespace Prado\Collections;
 
 /**
  * TPagedListFetchDataEventParameter class.
@@ -21,7 +23,7 @@
  * Newly fetched data should be saved in {@link setData Data} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Collections
+ * @package Prado\Collections
  * @since 3.0
  */
 class TPagedListFetchDataEventParameter extends TEventParameter

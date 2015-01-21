@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  */
+
+namespace Prado\Data\SqlMap\Configuration;
 
 /**
  * TResultProperty corresponds a <property> tags inside a <resultMap> tag.
@@ -28,7 +30,7 @@
  * with the {@link Select setSelect()} .
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TResultProperty extends TComponent

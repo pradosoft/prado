@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap
  */
+
+namespace Prado\Data\SqlMap;
 
 Prado::using('System.Data.TDataSourceConfig');
 
@@ -17,7 +19,7 @@ Prado::using('System.Data.TDataSourceConfig');
  * Database connection and TSqlMapManager configuration.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap
  * @since 3.1
  */
 class TSqlMapConfig extends TDataSourceConfig
@@ -176,4 +178,3 @@ class TSqlMapConfig extends TDataSourceConfig
 		return $this->_sqlmap;
 	}
 }
-

@@ -6,14 +6,16 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord\Exceptions
  */
+
+namespace Prado\Data\ActiveRecord\Exceptions;
 
 /**
  * Base exception class for Active Records.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord\Exceptions
  * @since 3.1
  */
 class TActiveRecordException extends TDbException

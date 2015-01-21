@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Collections
+ * @package Prado\Collections
  */
+
+namespace Prado\Collections;
 
 /**
  * Includes TMap class
@@ -37,7 +39,7 @@ Prado::using('System.Collections.TMap');
  * in the collection storage.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Collections
+ * @package Prado\Collections
  * @since 3.0
  */
 class TAttributeCollection extends TMap

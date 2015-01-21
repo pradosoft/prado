@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap
  */
+
+namespace Prado\Data\SqlMap;
 
 Prado::using('System.Data.SqlMap.TSqlMapManager');
 
@@ -22,7 +24,7 @@ Prado::using('System.Data.SqlMap.TSqlMapManager');
  * This class should be instantiated from a TSqlMapManager instance.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap
  * @since 3.1
  */
 class TSqlMapGateway extends TComponent

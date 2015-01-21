@@ -6,14 +6,16 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  */
+
+namespace Prado\Data\SqlMap\DataMapper;
 
 /**
  * TLazyLoadList executes mapped statements when the proxy collection is first accessed.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TLazyLoadList

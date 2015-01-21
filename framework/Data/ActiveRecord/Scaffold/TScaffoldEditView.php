@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.ActiveRecord.Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  */
+
+namespace Prado\Data\ActiveRecord\Scaffold;
 
 /**
  * Load scaffold base.
@@ -42,7 +44,7 @@ Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
  * xxx is the property name).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.ActiveRecord.Scaffold
+  * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldEditView extends TScaffoldBase

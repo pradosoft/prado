@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Caching
+ * @package Prado\Caching
  */
+
+namespace Prado\Caching;
 
 /**
  * TAPCCache class
@@ -40,7 +42,7 @@
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @package System.Caching
+ * @package Prado\Caching
  * @since 3.0b
  */
 class TAPCCache extends TCache

@@ -6,15 +6,17 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.Common
+ * @package Prado\Data\Common
  */
+
+namespace Prado\Data\Common;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
  * giving by {@link setTableInfo TableInfo} the property.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.Common
+ * @package Prado\Data\Common
  * @since 3.1
  */
 class TDbCommandBuilder extends TComponent

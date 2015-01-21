@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  */
+
+namespace Prado\Data\SqlMap\DataMapper;
 
 /**
  * A simple interface for implementing custom type handlers.
@@ -23,7 +25,7 @@
  * booleans using "Y" and "N" instead of the more typical 0/1.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.SqlMap
+ * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 abstract class TSqlMapTypeHandler extends TComponent

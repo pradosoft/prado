@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  */
+
+namespace Prado\Data\ActiveRecord;
 
 Prado::using('System.Data.TDataSourceConfig');
 Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
@@ -65,7 +67,7 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
  * </code>
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  * @since 3.1
  */
 class TActiveRecordConfig extends TDataSourceConfig

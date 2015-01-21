@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  */
+
+namespace Prado\Data\SqlMap\Configuration;
 
 Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
 
@@ -15,7 +17,7 @@ Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
  * TSqlMapXmlConfig class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Data.SqlMap.Configuration
+ * @package Prado\Data\SqlMap\Configuration
  */
 abstract class TSqlMapXmlConfigBuilder
 {
@@ -36,7 +38,6 @@ abstract class TSqlMapXmlConfigBuilder
 		throw new TSqlMapConfigurationException(
 			'sqlmap_node_class_undef', $node, $this->getConfigFile());
 	}
-
 	/**
 	 * For each attributes (excluding attribute named in $except) set the
 	 * property of the $obj given by the name of the attribute with the value
@@ -60,7 +61,6 @@ abstract class TSqlMapXmlConfigBuilder
 			}
 		}
 	}
-
 	/**
 	 * Gets the filename relative to the basefile.
 	 * @param string base filename
@@ -79,7 +79,6 @@ abstract class TSqlMapXmlConfigBuilder
 			throw new TSqlMapConfigurationException(
 				'sqlmap_unable_to_find_resource', $resource);
 	}
-
 	/**
 	 * Load document using simple xml.
 	 * @param string filename.
@@ -89,13 +88,11 @@ abstract class TSqlMapXmlConfigBuilder
 	{
 		if( strpos($filename, '${') !== false)
 			$filename = $config->replaceProperties($filename);
-
 		if(!is_file($filename))
 			throw new TSqlMapConfigurationException(
 				'sqlmap_unable_to_find_config', $filename);
 		return simplexml_load_string($config->replaceProperties(file_get_contents($filename)));
 	}
-
 	/**
 	 * Get element node by ID value (try for attribute name ID as case insensitive).
 	 * @param SimpleXmlDocument $document
@@ -108,4 +105,13 @@ abstract class TSqlMapXmlConfigBuilder
 		//hack to allow upper case and lower case attribute names.
 		foreach(array('id','ID','Id', 'iD') as $id)
 		{
-			$xpath = "//{$tag}[@{$id}='{$value}
+			$xpath = "//{$tag}[@{$id}='{$value}']";
+			foreach($document->xpath($xpath) as $node)
+				return $node;
+		}
+	}
+	/**
+	 * @return string configuration file.
+	 */
+	protected abstract function getConfigFile();
+}

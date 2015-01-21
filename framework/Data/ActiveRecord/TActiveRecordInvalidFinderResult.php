@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  */
+
+namespace Prado\Data\ActiveRecord;
 
 /**
  * TActiveRecordInvalidFinderResult class.
@@ -19,7 +21,7 @@
  * - Exception: throws a TActiveRecordException
  *
  * @author Yves Berkholz <godzilla80@gmx.net>
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  * @see TActiveRecordManager::setInvalidFinderResult
  * @see TActiveRecordConfig::setInvalidFinderResult
  * @see TActiveRecord::setInvalidFinderResult

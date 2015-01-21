@@ -6,9 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Caching
+ * @package Prado\Caching
  */
 
+namespace Prado\Caching;
 Prado::using('System.Data.TDbConnection');
 
 /**
@@ -81,7 +82,7 @@ Prado::using('System.Data.TDbConnection');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Caching
+ * @package Prado\Caching
  * @since 3.1.0
  */
 class TDbCache extends TCache

@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
- * @package System.Data.ActiveRecord.Relations
+ * @package Prado\Data\ActiveRecord\Relations
  */
+
+namespace Prado\Data\ActiveRecord\Relations;
 
 /**
  * Load active record relationship context.
@@ -20,7 +22,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.ActiveRecord.Relations
+ * @package Prado\Data\ActiveRecord\Relations
  * @since 3.1
  */
 abstract class TActiveRecordRelation

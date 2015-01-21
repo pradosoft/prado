@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
- * @package System.Collections
+ * @package Prado\Collections
  */
+
+namespace Prado\Collections;
 
 /**
  * TQueueIterator class
@@ -20,7 +22,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @version $Id$
- * @package System.Collections
+ * @package Prado\Collections
  * @since 3.1
  */
 class TQueueIterator implements Iterator

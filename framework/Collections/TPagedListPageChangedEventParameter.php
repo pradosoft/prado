@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Collections
+ * @package Prado\Collections
  */
+
+namespace Prado\Collections;
 
 /**
  * TPagedListPageChangedEventParameter class.
@@ -16,7 +18,7 @@
  * To obtain the page index before it was changed, use {@link getOldPageIndex OldPageIndex}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Collections
+ * @package Prado\Collections
  * @since 3.0
  */
 class TPagedListPageChangedEventParameter extends TEventParameter

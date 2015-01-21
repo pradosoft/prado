@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  */
+
+namespace Prado\Data\ActiveRecord;
 
 /**
  * TActiveRecordChangeEventParameter class
@@ -19,7 +21,7 @@
  * be set to false to prevent the requested change event to be performed.
  *
  * @author Wei Zhuo<weizhuo@gmail.com>
- * @package System.Data.ActiveRecord
+ * @package Prado\Data\ActiveRecord
  * @since 3.1.2
  */
 class TActiveRecordChangeEventParameter extends TEventParameter

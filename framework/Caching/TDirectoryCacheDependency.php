@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Caching
+ * @package Prado\Caching
  */
+
+namespace Prado\Caching;
 
 /**
  * TDirectoryCacheDependency class.
@@ -24,7 +26,7 @@
  * to a certain depth of the subdirectories.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Caching
+ * @package Prado\Caching
  * @since 3.1.0
  */
 class TDirectoryCacheDependency extends TCacheDependency
