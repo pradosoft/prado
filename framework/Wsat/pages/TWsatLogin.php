@@ -7,8 +7,11 @@
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
  * @since 3.3
- * @package Wsat.pages
+ * @package Prado\Wsat\pages
  */
+
+namespace Prado\Wsat\pages;
+
 class TWsatLogin extends TPage
 {
 

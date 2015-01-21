@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * TApplicationStatePersister class.
@@ -17,7 +19,7 @@
  * Cache will be exploited if it is enabled.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 class TApplicationStatePersister extends TModule implements IStatePersister

@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TBrowserLogRoute class.
@@ -15,7 +17,7 @@
  * TBrowserLogRoute prints selected log messages in the response.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.0
  */
 class TBrowserLogRoute extends TLogRoute

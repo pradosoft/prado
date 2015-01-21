@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TFirebugLogRoute class.
@@ -17,7 +19,7 @@
  * {@link http://www.getfirebug.com/ FireBug Website}
  *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.1.2
  */
 class TFirebugLogRoute extends TBrowserLogRoute

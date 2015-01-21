@@ -14,8 +14,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * Includes the PradoBase class file
@@ -31,7 +33,7 @@ if(!class_exists('Prado',false))
 	 * Prado class.
 	 *
 	 * @author Qiang Xue <qiang.xue@gmail.com>
-	 * @package System
+	* @package Prado
 	 * @since 3.0
 	 */
 	class Prado extends PradoBase

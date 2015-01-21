@@ -5,9 +5,10 @@
  * @copyright 2010 Bigpoint GmbH
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @since 3.2
- * @package System.Util
+ * @package Prado\Util
  */
 
+namespace Prado\Util;
 
 /**
  * TRpcClient class
@@ -41,7 +42,7 @@
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
- * @package System.Util
+ * @package Prado\Util
  * @since 3.2
  */
 

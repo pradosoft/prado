@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TFirePhpLogRoute class.
@@ -18,7 +20,7 @@
  * {@link http://www.firephp.org/ FirePHP Website}
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.1.5
  */
 class TFirePhpLogRoute extends TLogRoute

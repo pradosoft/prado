@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * TApplicationMode class.
@@ -19,7 +21,7 @@
  * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0.4
  */
 class TApplicationMode extends TEnumerable

@@ -5,10 +5,11 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
- * @since 3.3
- * @package System.Wsat
+ * @package Prado\Wsat
  */
+
+namespace Prado\Wsat;
+
 Prado::using("System.Wsat.TWsatBaseGenerator");
 
 class TWsatARGenerator extends TWsatBaseGenerator

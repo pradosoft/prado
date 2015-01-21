@@ -6,9 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
 
+namespace Prado;
 
 /**
  * ICache interface.
@@ -16,7 +17,7 @@
  * This interface must be implemented by cache managers.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 interface ICache

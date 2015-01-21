@@ -8,10 +8,12 @@
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  */
 
+namespace Prado\Util;
+
 /**
  * TClassBehavior is a convenient base class for whole class behaviors.
  * @author Brad Anderson <javalizard@gmail.com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.2.3
  */
 class TClassBehavior extends TComponent implements IClassBehavior

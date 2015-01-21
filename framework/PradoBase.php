@@ -9,8 +9,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * Defines the PRADO framework installation path.
@@ -33,7 +35,7 @@ if(!defined('PRADO_CHMOD'))
  * rewritten for customization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 class PradoBase

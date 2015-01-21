@@ -8,10 +8,12 @@
  * @license http://www.yiiframework.com/license/
  */
 
+namespace Prado\Util;
+
 /**
  * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.2.3
  */
 class TBehavior extends TComponent implements IBehavior

@@ -10,10 +10,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
 
-
+namespace Prado;
 
 /**
  * TClassBehaviorEventParameter class.
@@ -21,7 +21,7 @@
  *
  * @author Brad Anderson <javalizard@mac.com>
  * @version $Id$
- * @package System
+ * @package Prado
  * @since 3.2.3
  */
 class TClassBehaviorEventParameter extends TEventParameter

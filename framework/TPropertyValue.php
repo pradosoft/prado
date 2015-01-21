@@ -10,8 +10,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * TPropertyValue class
@@ -42,7 +44,7 @@
  * - enum: enumerable type, represented by an array of strings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 class TPropertyValue

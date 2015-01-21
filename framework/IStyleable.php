@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * IStyleable interface.
@@ -15,7 +17,7 @@
  * This interface should be implemented by classes that support CSS styles.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.1.0
  */
 interface IStyleable

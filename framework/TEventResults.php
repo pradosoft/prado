@@ -10,8 +10,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 class TEventResults extends TEnumerable {
 	const EVENT_RESULT_FEED_FORWARD=1;

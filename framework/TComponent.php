@@ -7,11 +7,14 @@
  * Global Events, intra-object events, Class behaviors, expanded behaviors
  * @author Brad Anderson <javalizard@mac.com>
  *
+ * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * TComponent class
@@ -276,7 +279,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@mac.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 class TComponent

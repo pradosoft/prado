@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * IStatePersister class.
@@ -16,7 +18,7 @@
  * {@link TPageStatePersister}, {@link TApplicationStatePersister}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 interface IStatePersister

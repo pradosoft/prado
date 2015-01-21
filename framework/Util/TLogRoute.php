@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TLogRoute class.
@@ -27,7 +29,7 @@
  * satisfying both filter conditions will they be returned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.0
  */
 abstract class TLogRoute extends TApplicationComponent

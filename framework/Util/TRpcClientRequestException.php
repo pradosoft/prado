@@ -5,8 +5,10 @@
  * @copyright 2010 Bigpoint GmbH
  * @license http://www.pradosoft.com/license/
  * @since 3.2
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TRpcClientRequestException class
@@ -16,7 +18,7 @@
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
- * @package System.Util
+ * @package Prado\Util
  * @since 3.2
  */
 

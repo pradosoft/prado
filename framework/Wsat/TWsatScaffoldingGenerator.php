@@ -6,9 +6,17 @@
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
+<<<<<<< e3f4fc1a5b6f731b109593b4be57e0f958a185f5
  * @since 4.0
  * @package System.Wsat
+=======
+ * @since 3.3
+ * @package Prado\Wsat
+>>>>>>> Add namespaces: framework/*.php, Util, Wsat, Xml
  */
+
+namespace Prado\Wsat;
+
 Prado::using("System.Wsat.TWsatBaseGenerator");
 
 class TWsatScaffoldingGenerator extends TWsatBaseGenerator

@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Xml
+ * @package Prado\Xml
  */
+
+namespace Prado\Xml;
 
 /**
  * TXmlDocument class.
@@ -55,7 +57,7 @@
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Xml
+ * @package Prado\Xml
  * @since 3.0
  */
 class TXmlDocument extends TXmlElement

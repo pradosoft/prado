@@ -6,8 +6,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * IActiveControl interface.
@@ -15,7 +17,7 @@
  * Active controls must implement IActiveControl interface.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @package System
+ * @package Prado
  * @since 3.1
  */
 interface IActiveControl

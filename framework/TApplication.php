@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * Includes core interfaces essential for TApplication class
@@ -104,7 +106,7 @@ Prado::using('System.I18N.TGlobalization');
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System
+ * @package Prado
  * @since 3.0
  */
 class TApplication extends TComponent

@@ -8,12 +8,14 @@
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  */
 
+namespace Prado\Util;
+
 /**
  * TCallChain is a recursive event calling mechanism.  This class implements
  * the {@link IDynamicMethods} class so that any 'dy' event calls can be caught
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
- * @package System.Util
+ * @package Prado\Util
  * @since 3.2.3
  */
 class TCallChain extends TList implements IDynamicMethods

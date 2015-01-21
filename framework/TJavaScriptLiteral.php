@@ -10,8 +10,10 @@
  * @link http://www.pradosoft.com/
  * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
- * @package System
+ * @package Prado
  */
+
+namespace Prado;
 
 /**
  * TJavaScriptLiteral class that encloses string literals that are not
@@ -31,7 +33,7 @@
  * $raw=_js($js);
  * </code>
  *
- * @package System
+ * @package Prado
  * @since 3.2.0
  */
 class TJavaScriptLiteral

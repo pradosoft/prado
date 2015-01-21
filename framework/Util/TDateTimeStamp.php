@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Util
+ * @package Prado\Util
  */
+
+namespace Prado\Util;
 
 /**
  * TDateTimeStamp Class
@@ -19,7 +21,7 @@
  * julian dates anymore.
  *
  * @author Fabio Bas ctrlaltca[AT]gmail[DOT]com
- * @package System.Util
+ * @package Prado\Util
  * @since 3.0.4
  * @deprecated since 3.2.1
  */
