@@ -20,7 +20,6 @@ namespace Prado;
  * IDynamicMethods marks an object to receive undefined global or dynamic events.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id$
  * @package Prado
  * @since 3.2.3
  */

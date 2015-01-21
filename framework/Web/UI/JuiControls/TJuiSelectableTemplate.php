@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
+
+namespace Prado\Web\UI\JuiControls;
 
 /**
  * TJuiSelectableTemplate class.
@@ -16,7 +18,7 @@
  * item template.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.1
  */
 class TJuiSelectableTemplate extends TComponent implements ITemplate

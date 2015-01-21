@@ -20,7 +20,6 @@ namespace Prado;
  * TClassBehaviorEventParameter is the parameter sent with the class behavior changes.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id$
  * @package Prado
  * @since 3.2.3
  */

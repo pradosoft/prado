@@ -16,7 +16,6 @@ namespace Prado\Util;
  * This Exception is fired when the
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @version $Id$
  * @package Prado\Util
  * @since 3.2
  */

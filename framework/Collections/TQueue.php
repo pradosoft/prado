@@ -6,7 +6,6 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
  * @package Prado\Collections
  */
 
@@ -30,7 +29,6 @@ namespace Prado\Collections;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @version $Id$
  * @package Prado\Collections
  * @since 3.1
  */

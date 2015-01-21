@@ -17,7 +17,6 @@ namespace Prado\Util;
  * there is no RPC server responding on the given remote host.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @version $Id$
  * @package Prado\Util
  * @since 3.2
  */

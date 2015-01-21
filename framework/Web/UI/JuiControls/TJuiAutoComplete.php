@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\JuiControls
  */
+
+namespace Prado\Web\UI\JuiControls;
 
 /**
  * Load active text box.
@@ -76,7 +78,7 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  * "informal" are ignored as text for suggestions.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.1
  */
 class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiOptions

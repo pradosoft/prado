@@ -6,7 +6,6 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
  * @package Prado\Web
  */
 
@@ -19,7 +18,6 @@ namespace Prado\Web;
  * without change the class hierarchy.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Id$
  * @package Prado\Web
  * @since 3.0
  */

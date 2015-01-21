@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2015 PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
+
+namespace Prado\Web\UI\JuiControls;
 
 Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
 Prado::using('System.Web.UI.ActiveControls.TActivePanel');
@@ -32,7 +34,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventHandler

@@ -3,10 +3,12 @@
  * TActiveDataList class file
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TActiveDataList class
@@ -21,7 +23,7 @@
  * Please refer to the original documentation of the regular counterparts for usage.
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
 class TActiveDataList extends TDataList implements IActiveControl {
 

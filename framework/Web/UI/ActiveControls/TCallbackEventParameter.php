@@ -6,9 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TCallbackEventParameter class.
@@ -28,7 +29,7 @@
  * callback handler function) can be set using {@link setResponseData ResponseData} property.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 class TCallbackEventParameter extends TEventParameter

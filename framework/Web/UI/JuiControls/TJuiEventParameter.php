@@ -6,10 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2014 PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
 
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
+namespace Prado\Web\UI\JuiControls;
 
 /**
  * TJuiEventParameter class
@@ -35,7 +35,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
 class TJuiEventParameter extends TCallbackEventParameter
 {

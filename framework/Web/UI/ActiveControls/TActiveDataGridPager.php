@@ -6,8 +6,10 @@
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2009 LANDWEHR Computer und Software GmbH
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TActiveDataGridPager class.
@@ -15,7 +17,7 @@
  * TActiveDataGridPager represents a pager in an activedatagrid.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.2.1
  */
 class TActiveDataGridPager extends TDataGridPager

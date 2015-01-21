@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * Load active control adapter.
@@ -24,7 +26,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
  * and it is raise <b>after</b> the {@link onPageIndexChanged OnPageIndexChanged} event.
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.1.2
  */
 class TActivePager extends TPager implements IActiveControl, ICallbackEventHandler

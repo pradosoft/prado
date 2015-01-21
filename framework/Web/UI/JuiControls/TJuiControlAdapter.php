@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2015 PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
+
+namespace Prado\Web\UI\JuiControls;
 
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 Prado::using('System.Web.UI.JuiControls.TJuiControlOptions');
@@ -20,7 +22,7 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlOptions');
  * publish jQuery-UI javascript and css assets.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiControlAdapter extends TActiveControlAdapter

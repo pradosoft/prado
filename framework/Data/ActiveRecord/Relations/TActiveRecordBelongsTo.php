@@ -6,7 +6,6 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
  * @package Prado\Data\ActiveRecord\Relations
  */
 
@@ -66,7 +65,6 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
  * <tt>with_team('location = ?', 'Madrid')</tt>.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
  * @package Prado\Data\ActiveRecord\Relations
  * @since 3.1
  */

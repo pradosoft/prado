@@ -6,8 +6,10 @@
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2009 LANDWEHR Computer und Software GmbH
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TActiveDataGridPagerEventParameter class
@@ -17,7 +19,7 @@
  * The {@link getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.2.1
  */
 class TActiveDataGridPagerEventParameter extends TDataGridPagerEventParameter

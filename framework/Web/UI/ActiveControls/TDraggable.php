@@ -3,10 +3,12 @@
  * TDraggable class file
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TDraggable is a control which can be dragged
@@ -25,9 +27,9 @@
  * <b>{@link setHandle Handle}</b>:
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @deprecated Use TJuiDraggable instead
  */
 class TDraggable extends TPanel

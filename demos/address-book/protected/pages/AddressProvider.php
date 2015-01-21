@@ -2,7 +2,6 @@
 Prado::using('Application.pages.AddressRecord');
 /**
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
  * @since 3.1
  */
 class AddressProvider

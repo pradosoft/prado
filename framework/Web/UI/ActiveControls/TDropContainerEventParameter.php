@@ -3,11 +3,12 @@
  * TDropContainer class file
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
- * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
- * @license http://www.pradosoft.com/license
- * @package System.Web.UI.ActiveControls
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TDropContainerEventParameter class
@@ -16,9 +17,9 @@
  * data for <b>OnDrop</b> event of TDropContainer components
  *
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
- * @copyright Copyright &copy; 2008, PradoSoft
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
 class TDropContainerEventParameter extends TEventParameter
 {

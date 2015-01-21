@@ -1,7 +1,6 @@
 <?php
 /**
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
  * @since 3.1
  */
 class FlexApp extends TTemplateControl

@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
+
+namespace Prado\Web\UI\ActiveControls;
 
 Prado::using('System.Web.UI.ActiveControls.TTriggeredCallback');
 
@@ -21,7 +23,7 @@ Prado::using('System.Web.UI.ActiveControls.TTriggeredCallback');
  * {@link setPreventDefaultAction PreventDefaultAction} is set to true.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 class TEventTriggeredCallback extends TTriggeredCallback

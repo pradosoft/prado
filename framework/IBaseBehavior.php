@@ -20,7 +20,6 @@ namespace Prado;
  * behaviors types are derived
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id$
  * @package Prado
  * @since 3.2.3
  */

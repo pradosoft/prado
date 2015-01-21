@@ -23,7 +23,6 @@ namespace Prado\Util;
  * </pre>
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @version $Id$
  * @package Prado\Util
  * @since 3.2
  */

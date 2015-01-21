@@ -23,7 +23,6 @@ namespace Prado;
  * class.  Objects may signal behaviors through dynamic events.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @version $Id$
  * @package Prado
  * @since 3.2.3
  */

@@ -6,9 +6,10 @@
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2009 LANDWEHR Computer und Software GmbH
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  */
 
+namespace Prado\Web\UI\ActiveControls;
 
 /**
  * TActiveButtonColumn class
@@ -22,7 +23,7 @@
  * Please refer to the original documentation of the {@link TButtonColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package System.Web.UI.ActiveControls
+ * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
 class TActiveButtonColumn extends TButtonColumn {

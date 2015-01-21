@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @version $Id$
  * @since 3.1
 -->
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
