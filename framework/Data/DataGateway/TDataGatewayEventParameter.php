@@ -6,9 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  */
+
+namespace Prado\Data\DataGateway;
 
 /**
  * TDataGatewayEventParameter class contains the TDbCommand to be executed as
@@ -16,7 +17,7 @@
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @version $Id$
- * @package System.Data.DataGateway
+ * @package Prado\Data\DataGateway
  * @since 3.1
  */
 class TDataGatewayEventParameter extends TEventParameter
