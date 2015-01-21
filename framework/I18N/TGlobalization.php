@@ -20,7 +20,6 @@ namespace Prado\I18N;
  * setting the Culture based on browser settings.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package Prado\I18N
  * @since 3.0
  */

@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.5 $  $Date: 2005/08/27 03:21:12 $
  * @package Prado\I18N\core
  */
 
@@ -50,7 +49,6 @@ require_once(dirname(__FILE__).'/util.php');
  * </code>
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 24 20:46:16 EST 2004
  * @package Prado\I18N\core
  */
 class MessageFormat

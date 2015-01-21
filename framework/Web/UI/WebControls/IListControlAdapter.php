@@ -16,7 +16,6 @@ namespace Prado\Web\UI\WebControls;
  * IListControlAdapter interface
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: $  Sun Jun 25 04:53:43 EST 2006 $
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */

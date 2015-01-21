@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.2 $  $Date: 2005/01/05 03:15:14 $
  * @package Prado\I18N\core
  */
 
@@ -30,7 +29,6 @@ require_once(dirname(__FILE__).'/CultureInfo.php');
  * Get the language and charset information from the client browser.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 24 16:01:35 EST 2004
  * @package Prado\I18N\core
  */
 class HTTPNegotiator

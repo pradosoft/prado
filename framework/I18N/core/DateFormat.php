@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.8 $  $Date: 2005/12/15 07:14:49 $
  * @package Prado\I18N\core
  */
 
@@ -44,7 +43,6 @@ require_once(dirname(__FILE__).'/util.php');
  * in the properties of a DateTimeFormatInfo.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Sat Dec 04 14:10:49 EST 2004
  * @package Prado\I18N\core
  */
 class DateFormat

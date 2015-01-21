@@ -6,7 +6,6 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Id $
  * @package Prado\Web
  */
 
@@ -28,7 +27,6 @@ namespace Prado\Web;
  * with the ID of your URL manager module.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id $
  * @package Prado\Web
  * @since 3.0.6
  */

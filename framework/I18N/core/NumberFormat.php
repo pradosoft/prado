@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.6 $  $Date: 2005/12/20 09:32:42 $
  * @package Prado\I18N\core
  */
 
@@ -70,7 +69,6 @@ require_once(dirname(__FILE__).'/util.php');
  * For each culture, the symbol for each currency may be different.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 10 18:10:20 EST 2004
  * @package Prado\I18N\core
  */
 class NumberFormat

@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.2 $  $Date: 2005/01/05 03:15:14 $
  * @package Prado\I18N\core\Gettext
  */
 
@@ -47,7 +46,6 @@ require_once dirname(__FILE__).'/TGettext.php';
  * GNU PO file reader and writer.
  *
  * @author      Michael Wallner <mike@php.net>
- * @version     $Revision: 1.2 $
  * @access      public
  * @package Prado\I18N\core\Gettext
  */

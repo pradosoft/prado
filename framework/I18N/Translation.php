@@ -23,7 +23,6 @@ Prado::using('System.I18N.core.MessageFormat');
  * Provides translation using a static MessageFormatter.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Tue Dec 28 11:54:48 EST 2004
  * @package Prado\I18N
  */
 class Translation extends TComponent

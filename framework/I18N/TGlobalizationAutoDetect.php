@@ -6,7 +6,6 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package Prado\I18N
  */
 
@@ -22,7 +21,6 @@ Prado::using('System.I18N.core.HTTPNegotiator');
  * culture using the user browser language settings.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package Prado\I18N
  */
 class TGlobalizationAutoDetect extends TGlobalization

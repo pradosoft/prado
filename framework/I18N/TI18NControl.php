@@ -27,7 +27,6 @@ namespace Prado\I18N;
  *   Application/Page is used. The default is UTF-8.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Sat Dec 11 15:25:11 EST 2004
  * @package Prado\I18N
  */
 class TI18NControl extends TControl

@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.2 $  $Date: 2005/01/05 03:15:14 $
  * @package Prado\I18N\core
  */
 
@@ -74,7 +73,6 @@ require_once(dirname(__FILE__).'/CultureInfo.php');
  * </code>
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 03 22:30:31 EST 2004
  * @package Prado\I18N\core
  */
 class DateTimeFormatInfo

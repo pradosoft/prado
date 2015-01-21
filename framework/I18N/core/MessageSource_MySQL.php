@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.4 $  $Date: 2005/02/25 09:59:40 $
  * @package Prado\I18N\core
  */
 
@@ -37,7 +36,6 @@ require_once(dirname(__FILE__).'/util.php');
  * See the MessageSource::factory() method to instantiate this class.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 24 16:58:58 EST 2004
  * @package Prado\I18N\core
  */
 class MessageSource_MySQL extends MessageSource

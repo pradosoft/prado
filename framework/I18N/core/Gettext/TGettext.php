@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.4 $  $Date: 2005/01/09 23:36:23 $
  * @package Prado\I18N\core\Gettext
  */
 
@@ -54,7 +53,6 @@ namespace Prado\I18N\core\Gettext;
  * #################################################################
  *
  * @author      Michael Wallner <mike@php.net>
- * @version     $Revision: 1.4 $
  * @access      public
  * @package Prado\I18N\core\Gettext
  */

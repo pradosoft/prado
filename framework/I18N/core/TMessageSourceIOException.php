@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.4 $  $Date: 2005/12/17 06:11:28 $
  * @package Prado\I18N\core
  */
 
@@ -23,7 +22,6 @@ namespace Prado\I18N\core;
  * data.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.4 $  $Date: 2005/12/17 06:11:28 ${DATE} ${TIME} $
  * @package Prado\I18N\core
  */
 class TMessageSourceIOException extends TException

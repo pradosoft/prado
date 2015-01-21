@@ -62,7 +62,6 @@ Prado::using('System.I18N.TI18NControl');
   * shown instead of the default currency Value/Pattern.
   *
   * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
-  * @version v1.0, last update on Sat Dec 11 17:49:56 EST 2004
   * @package Prado\I18N
   */
 class TNumberFormat extends TI18NControl implements IDataRenderer

@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.7 $  $Date: 2005/12/17 06:11:28 $
  * @package Prado\I18N\core
  */
 
@@ -38,7 +37,6 @@ require_once(dirname(__FILE__).'/Gettext/TGettext.php');
  * See the MessageSource::factory() method to instantiate this class.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 24 16:18:44 EST 2004
  * @package Prado\I18N\core
  */
 class MessageSource_gettext extends MessageSource

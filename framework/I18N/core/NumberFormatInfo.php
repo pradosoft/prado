@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version $Revision: 1.3 $  $Date: 2005/08/04 05:27:19 $
  * @package Prado\I18N\core
  */
 
@@ -44,7 +43,6 @@ require_once(dirname(__FILE__).'/CultureInfo.php');
  *
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Sun Dec 05 14:48:26 EST 2004
  * @package Prado\I18N\core
  */
 class NumberFormatInfo

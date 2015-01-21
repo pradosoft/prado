@@ -25,7 +25,6 @@ namespace Prado\Web\UI;
  * {@link TApplication::getSecurityManager() SecurityManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Revision: $  $Date: $
  * @package Prado\Web\UI
  * @since 3.1
  */

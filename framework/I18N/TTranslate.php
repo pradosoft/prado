@@ -58,7 +58,6 @@ Prado::using('System.I18N.TI18NControl');
  *   Default is to trim the contents.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v1.0, last update on Fri Dec 24 21:38:49 EST 2004
  * @package Prado\I18N
  */
 class TTranslate extends TI18NControl

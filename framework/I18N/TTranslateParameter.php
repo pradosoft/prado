@@ -37,7 +37,6 @@ namespace Prado\I18N;
  *   Default is to trim the contents.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version v3.0, last update on Friday, 6 January 2006
  * @package Prado\I18N
  */
 class TTranslateParameter extends TControl

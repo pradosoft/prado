@@ -34,7 +34,6 @@ namespace Prado\Web\UI\WebControls;
  * and the style element will be rendered in the right position.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @version : $  Tue Jul  4 04:38:16 EST 2006 $
  * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
