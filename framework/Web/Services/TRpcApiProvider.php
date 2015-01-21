@@ -1,13 +1,15 @@
 <?php
 /**
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @link http://www.pradosoft.com/
+ * @link https://github.com/pradosoft/prado
  * @copyright 2010 Bigpoint GmbH
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
  * @since 3.2
- * @package System.Web.Services
+ * @package Prado\Web\Services
  */
+
+namespace Prado\Web\Services;
 
 /**
  * TRpcApiProvider class
@@ -40,7 +42,7 @@
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.2
  */
 abstract class TRpcApiProvider extends TModule

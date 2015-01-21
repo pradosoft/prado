@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web
+ * @package Prado\Web
  */
+
+namespace Prado\Web;
 
 Prado::using('System.Web.TUrlManager');
 Prado::using('System.Collections.TAttributeCollection');
@@ -62,7 +64,7 @@ Prado::using('System.Collections.TAttributeCollection');
  * in the GET variables.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web
+ * @package Prado\Web
  * @since 3.0.5
  */
 class TUrlMapping extends TUrlManager

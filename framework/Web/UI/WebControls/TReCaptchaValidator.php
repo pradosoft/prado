@@ -7,8 +7,10 @@
  * @link http://www.devworx.hu/
  * @copyright Copyright &copy; 2011 DevWorx
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 Prado::using('System.Web.UI.WebControls.TBaseValidator');
 Prado::using('System.Web.UI.WebControls.TReCaptcha');
@@ -25,7 +27,7 @@ Prado::using('System.Web.UI.WebControls.TReCaptcha');
  * to be the ID path of the {@link TReCaptcha} control.
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 class TReCaptchaValidator extends TBaseValidator

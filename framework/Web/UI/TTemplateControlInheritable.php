@@ -8,8 +8,10 @@
  * @copyright Copyright &copy; 2010 Schlaue-Kids.net
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
- * @package System.Web.UI
+ * @package Prado\Web\UI
  */
+
+namespace Prado\Web\UI;
 
 Prado::using('System.Web.UI.TTemplateControl');
 
@@ -25,7 +27,7 @@ Prado::using('System.Web.UI.TTemplateControl');
  * @author Schlaue-Kids.net <info@schlaue-kids.net>
  * @author Kyle Caine
  * @version $Id$
- * @package System.Web.UI
+ * @package Prado\Web\UI
  * @since 3.1.8
  */
 class TTemplateControlInheritable extends TTemplateControl

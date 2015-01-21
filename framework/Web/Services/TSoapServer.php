@@ -4,12 +4,13 @@
  *
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.Services
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\Services
  */
 
+namespace Prado\Web\Services;
 
 /**
  * TSoapServer class.
@@ -19,7 +20,7 @@
  * It also manages the URI for the SOAP service and WSDL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.1
  */
 class TSoapServer extends TApplicationComponent

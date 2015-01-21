@@ -6,9 +6,10 @@
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
  * @since 3.2
- * @package System.Web.Services
+ * @package Prado\Web\Services
  */
 
+namespace Prado\Web\Services;
 
 /**
  * TRpcService class
@@ -51,7 +52,7 @@
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @version $Id$
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.2
  **/
 class TRpcService extends TService

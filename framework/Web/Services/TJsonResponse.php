@@ -3,11 +3,13 @@
  * TJsonService and TJsonResponse class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.Services
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\Services
  */
+
+namespace Prado\Web\Services;
 
 /**
  * TJsonResponse Class
@@ -19,7 +21,7 @@
  * will be empty if the returned content is null.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.1
  */
 abstract class TJsonResponse extends TApplicationComponent

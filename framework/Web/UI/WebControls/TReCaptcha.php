@@ -7,10 +7,12 @@
  * @link http://www.devworx.hu/
  * @copyright Copyright &copy; 2011 DevWorx
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
 
-	Prado::using('System.3rdParty.ReCaptcha.recaptchalib');
+namespace Prado\Web\UI\WebControls;
+
+Prado::using('System.3rdParty.ReCaptcha.recaptchalib');
 
 /**
  * TReCaptcha class.
@@ -48,7 +50,7 @@
  * </code>
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 class TReCaptcha extends TWebControl implements IValidatable

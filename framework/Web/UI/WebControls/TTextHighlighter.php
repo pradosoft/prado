@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter',false);
 Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter.Renderer.Html',false);
@@ -30,7 +32,7 @@ Prado::using('System.Web.UI.WebControls.TTextProcessor');
  * because it needs to insert some CSS styles.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TTextHighlighter extends TTextProcessor

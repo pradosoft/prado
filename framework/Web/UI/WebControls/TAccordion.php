@@ -6,9 +6,11 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * Class TAccordion.
@@ -58,7 +60,7 @@
  * </code>
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 

@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI
+ * @package Prado\Web\UI
  */
+
+namespace Prado\Web\UI;
 
 /**
  * TForm class
@@ -22,7 +24,7 @@
  * URLs.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI
+ * @package Prado\Web\UI
  * @since 3.0
  */
 class TForm extends TControl

@@ -6,8 +6,10 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * THyperLink class
@@ -25,7 +27,7 @@
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class THyperLink extends TWebControl implements IDataRenderer

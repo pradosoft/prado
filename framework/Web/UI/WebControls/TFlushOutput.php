@@ -5,8 +5,10 @@
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * TFlushOutput class.
@@ -28,7 +30,7 @@
  * {@link setContinueBuffering ContinueBuffering}.
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
 class TFlushOutput extends TControl

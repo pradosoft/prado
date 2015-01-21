@@ -3,12 +3,14 @@
  * TSlider class file.
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.UI.WebControls
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * TSliderClientScript class.
@@ -23,7 +25,7 @@
  * The <tt>OnChange</tt> event is raised when the slider value is changed (or at the end of a move)
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TSliderClientScript extends TClientSideOptions

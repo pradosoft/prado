@@ -3,11 +3,13 @@
  * TUrlMapping, TUrlMappingPattern and TUrlMappingPatternSecureConnection class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web
  */
+
+namespace Prado\Web;
 
 /**
  * TUrlMappingPattern class.
@@ -105,7 +107,7 @@
  * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package System.Web
+ * @package Prado\Web
  * @since 3.0.5
  */
 class TUrlMappingPattern extends TComponent

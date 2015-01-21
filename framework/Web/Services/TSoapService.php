@@ -7,8 +7,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.Services
+ * @package Prado\Web\Services
  */
+
+namespace Prado\Web\Services;
 
 /**
  * TSoapService class
@@ -83,7 +85,7 @@
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.1
  */
 class TSoapService extends TService

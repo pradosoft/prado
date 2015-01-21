@@ -3,17 +3,19 @@
  * IDataSource, TDataSourceControl, TReadOnlyDataSource class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.UI.WebControls
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * TDataSourceControl class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TReadOnlyDataSource extends TDataSourceControl

@@ -11,8 +11,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * Includes TBaseList, TPagedDataSource, TDummyDataSource and TTable classes
@@ -144,7 +146,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridPagerStyle');
  * - Save the data in viewstate and get it back during postbacks.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TDataGrid extends TBaseDataList implements INamingContainer

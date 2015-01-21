@@ -3,12 +3,13 @@
  * TControl, TControlCollection, TEventParameter and INamingContainer class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.UI
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\UI
  */
 
+namespace Prado\Web\UI;
 
 /**
  * IValidatable interface
@@ -16,7 +17,7 @@
  * If a control wants to be validated by a validator, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI
+ * @package Prado\Web\UI
  * @since 3.0
  */
 interface IValidatable

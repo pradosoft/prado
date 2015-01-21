@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI
+ * @package Prado\Web\UI
  */
+
+namespace Prado\Web\UI;
 
 /**
  * Includes TAttributeCollection and TControlAdapter class
@@ -63,7 +65,7 @@ Prado::using('System.Web.UI.TControlAdapter');
  * They work together with page lifecycles to process a page request.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI
+ * @package Prado\Web\UI
  * @since 3.0
  */
 class TControl extends TApplicationComponent implements IRenderable, IBindable

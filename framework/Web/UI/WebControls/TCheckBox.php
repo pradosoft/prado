@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * TCheckBox class
@@ -35,7 +37,7 @@
  * that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, ISurroundable

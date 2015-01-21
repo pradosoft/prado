@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * Includes TDataBoundControl and TDataFieldAccessor classes
@@ -36,7 +38,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * content can be specified via {@link setHorizontalAlign HorizontalAlign}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 abstract class TBaseDataList extends TDataBoundControl

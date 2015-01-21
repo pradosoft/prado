@@ -6,9 +6,11 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * Class TTabPanel.
@@ -53,7 +55,7 @@
  * </code>
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TTabPanel extends TWebControl implements IPostBackDataHandler

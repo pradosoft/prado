@@ -6,8 +6,10 @@
  * @link http://www.xisc.com/
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * THiddenField class
@@ -18,7 +20,7 @@
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class THiddenField extends TControl implements IPostBackDataHandler, IValidatable, IDataRenderer

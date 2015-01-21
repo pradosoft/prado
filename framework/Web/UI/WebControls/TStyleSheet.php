@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
+
+namespace Prado\Web\UI\WebControls;
 
 /**
  * TStyleSheet class.
@@ -33,7 +35,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version : $  Tue Jul  4 04:38:16 EST 2006 $
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
 class TStyleSheet extends TControl

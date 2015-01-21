@@ -6,8 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI
+ * @package Prado\Web\UI
  */
+
+namespace Prado\Web\UI;
 
 /**
  * TControlAdapter class
@@ -16,7 +18,7 @@
  * various behaviors for the control to which the adapter is attached.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI
+ * @package Prado\Web\UI
  * @since 3.0
  */
 class TControlAdapter extends TApplicationComponent

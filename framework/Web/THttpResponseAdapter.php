@@ -7,8 +7,10 @@
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @version $Id$
- * @package System.Web
+ * @package Prado\Web
  */
+
+namespace Prado\Web;
 
 /**
  * THttpResponseAdapter class.
@@ -18,7 +20,7 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @version $Id$
- * @package System.Web
+ * @package Prado\Web
  * @since 3.0
  */
 class THttpResponseAdapter extends TApplicationComponent

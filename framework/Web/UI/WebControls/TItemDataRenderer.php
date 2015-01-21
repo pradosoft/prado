@@ -6,9 +6,11 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.2
  */
+
+namespace Prado\Web\UI\WebControls;
 
 Prado::using('System.Web.UI.WebControls.TDataBoundControl');
 Prado::using('System.Web.UI.WebControls.TDataRenderer');
@@ -25,9 +27,9 @@ Prado::using('System.Web.UI.WebControls.TDataRenderer');
  * - {@link getItemIndex ItemIndex}: zero-based index of this renderer in the item list collection.
  * - {@link getItemType ItemType}: item type of this renderer, such as TListItemType::AlternatingItem
  * - {@link getData Data}: data associated with this renderer
-
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.1.2
  */
 abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRenderer

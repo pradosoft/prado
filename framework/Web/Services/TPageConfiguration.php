@@ -3,12 +3,13 @@
  * TPageService class file.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
- * @package System.Web.Services
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2016 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @package Prado\Web\Services
  */
 
+namespace Prado\Web\Services;
 
 /**
  * TPageConfiguration class
@@ -18,7 +19,7 @@
  * Configurations along this path are merged together to be provided for the page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package System.Web.Services
+ * @package Prado\Web\Services
  * @since 3.0
  */
 class TPageConfiguration extends TComponent
