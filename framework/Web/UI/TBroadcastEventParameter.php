@@ -23,7 +23,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TBroadcastEventParameter extends TEventParameter
+class TBroadcastEventParameter extends \Prado\TEventParameter
 {
 	private $_name;
 	private $_param;

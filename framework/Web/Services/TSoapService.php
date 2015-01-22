@@ -11,6 +11,10 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\THttpException;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
 
 /**
  * TSoapService class
@@ -88,7 +92,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.1
  */
-class TSoapService extends TService
+class TSoapService extends \Prado\TService
 {
 	const DEFAULT_SOAP_SERVER='TSoapServer';
 	private $_servers=array();

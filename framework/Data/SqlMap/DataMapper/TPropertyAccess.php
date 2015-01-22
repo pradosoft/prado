@@ -57,7 +57,7 @@ class TPropertyAccess
 		$properties = explode('.', $path);
 		foreach($properties as $prop)
 		{
-			if(is_array($object) || $object instanceof ArrayAccess)
+			if(is_array($object) || $object instanceof \ArrayAccess)
 			{
 				if(array_key_exists($prop, $object))
 					$object = $object[$prop];
@@ -94,7 +94,7 @@ class TPropertyAccess
 		$properties = explode('.', $path);
 		foreach($properties as $prop)
 		{
-			if(is_array($object) || $object instanceof ArrayAccess)
+			if(is_array($object) || $object instanceof \ArrayAccess)
 			{
 				if(array_key_exists($prop, $object))
 					$object = $object[$prop];
@@ -135,7 +135,7 @@ class TPropertyAccess
 		else
 			$object = &$originalObject;
 
-		if(is_array($object) || $object instanceof ArrayAccess)
+		if(is_array($object) || $object instanceof \ArrayAccess)
 		{
 			$object[$prop] = $value;
 		}

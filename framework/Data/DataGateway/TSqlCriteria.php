@@ -29,7 +29,7 @@ namespace Prado\Data\DataGateway;
  * @package Prado\Data\DataGateway
  * @since 3.1
  */
-class TSqlCriteria extends TComponent
+class TSqlCriteria extends \Prado\TComponent
 {
 	/**
 	 * @var mixed
@@ -180,12 +180,12 @@ class TSqlCriteria extends TComponent
 	}
 
 	/**
-	 * @param ArrayAccess named parameters.
+	 * @param \ArrayAccess named parameters.
 	 */
 	public function setParameters($value)
 	{
-		if(!(is_array($value) || $value instanceof ArrayAccess))
-			throw new TException('value must be array or ArrayAccess');
+		if(!(is_array($value) || $value instanceof \ArrayAccess))
+			throw new TException('value must be array or \ArrayAccess');
 		$this->_parameters->copyFrom($value);
 	}
 

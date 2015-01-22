@@ -11,6 +11,10 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
+use Prado\Prado;
+use Prado\TApplicationMode;
 
 /**
  * TSoapServer class.
@@ -23,7 +27,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.1
  */
-class TSoapServer extends TApplicationComponent
+class TSoapServer extends \Prado\TApplicationComponent
 {
 	const WSDL_CACHE_PREFIX='wsdl.';
 
@@ -82,7 +86,7 @@ class TSoapServer extends TApplicationComponent
 		{
 			$server->handle();
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			if($this->getApplication()->getMode()===TApplicationMode::Debug)
 				$this->fault($e->getMessage(), $e->__toString());
@@ -143,7 +147,7 @@ class TSoapServer extends TApplicationComponent
 		{
 			if($this->getApplication()->getMode()===TApplicationMode::Debug)
 				ini_set("soap.wsdl_cache_enabled",0);
-			$this->_server = new SoapServer($this->getWsdlUri(),$this->getOptions());
+			$this->_server = new \SoapServer($this->getWsdlUri(),$this->getOptions());
 		}
 		return $this->_server;
 	}

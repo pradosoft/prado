@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TQueueIterator class
  *
- * TQueueIterator implements Iterator interface.
+ * TQueueIterator implements \Iterator interface.
  *
  * TQueueIterator is used by TQueue. It allows TQueue to return a new iterator
  * for traversing the items in the queue.
@@ -23,7 +23,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.1
  */
-class TQueueIterator implements Iterator
+class TQueueIterator implements \Iterator
 {
 	/**
 	 * @var array the data to be iterated through

@@ -22,7 +22,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeaterItemEventParameter extends TEventParameter
+class TRepeaterItemEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * The repeater item control responsible for the event.

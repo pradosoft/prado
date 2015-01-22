@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Collections;
-
-/**
- * Includes TMap class
- */
-Prado::using('System.Collections.TMap');
+use Prado\TPropertyValue;
 
 /**
  * TAttributeCollection class

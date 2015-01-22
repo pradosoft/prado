@@ -22,7 +22,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class THotSpot extends TComponent
+abstract class THotSpot extends \Prado\TComponent
 {
 	private $_viewState=array();
 

@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TOutputCacheCalculateKeyEventParameter extends TEventParameter
+class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var string cache key to be appended to the default calculation scheme.

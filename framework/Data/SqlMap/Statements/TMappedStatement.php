@@ -21,7 +21,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.0
  */
-class TMappedStatement extends TComponent implements IMappedStatement
+class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 {
 	/**
 	 * @var TSqlMapStatement current SQL statement.
@@ -226,7 +226,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 	public function runQueryForList($connection, $parameter, $sql, $result, $delegate=null)
 	{
 		$registry=$this->getManager()->getTypeHandlers();
-		$list = $result instanceof ArrayAccess ? $result :
+		$list = $result instanceof \ArrayAccess ? $result :
 							$this->_statement->createInstanceOfListClass($registry);
 		$connection->setActive(true);
 		$reader = $sql->query();
@@ -581,7 +581,7 @@ class TMappedStatement extends TComponent implements IMappedStatement
 			$resultObject = $this->_statement->createInstanceOfResultClass($registry,$row);
 		}
 
-		if($resultObject instanceOf ArrayAccess)
+		if($resultObject instanceOf \ArrayAccess)
 			return $this->fillResultArrayList($row, $resultObject);
 		else if(is_object($resultObject))
 			return $this->fillResultObjectProperty($row, $resultObject);

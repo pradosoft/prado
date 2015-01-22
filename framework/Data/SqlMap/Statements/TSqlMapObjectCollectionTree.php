@@ -22,7 +22,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
-class TSqlMapObjectCollectionTree extends TComponent
+class TSqlMapObjectCollectionTree extends \Prado\TComponent
 {
 	/**
 	 * @var array object graph as tree

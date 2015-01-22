@@ -19,10 +19,7 @@
 
 namespace Prado;
 
-/**
- * Includes the PradoBase class file
- */
-require_once(dirname(__FILE__).'/PradoBase.php');
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * Defines Prado class if not defined.
@@ -42,25 +39,10 @@ if(!class_exists('Prado',false))
 }
 
 /**
- * Registers the autoload function.
- * Since Prado::autoload will report a fatal error if the class file
- * cannot be found, if you have multiple autoloaders, Prado::autoload
- * should be registered in the last.
- */
-spl_autoload_register(array('Prado','autoload'));
-
-/**
  * Initializes error and exception handlers
  */
 Prado::initErrorHandlers();
 
-/**
- * Includes TApplication class file
- */
-require_once(dirname(__FILE__).'/TApplication.php');
-
-/**
- * Includes TShellApplication class file
- */
-require_once(dirname(__FILE__).'/TShellApplication.php');
-
+class_alias('\Prado\TApplication', 'TApplication', true);
+class_alias('\Prado\Web\Services\TPageService', 'TPageService', true);
+class_alias('\Prado\Web\UI\TPage', 'TPage', true);

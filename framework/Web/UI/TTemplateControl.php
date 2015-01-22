@@ -10,11 +10,11 @@
  */
 
 namespace Prado\Web\UI;
-
-/**
- * Includes TCompositeControl class
- */
-Prado::using('System.Web.UI.TCompositeControl');
+use Prado\Prado;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\UI\WebControls\TContent;
+use Prado\Web\UI\WebControls\TContentPlaceHolder;
 
 /**
  * TTemplateControl class.

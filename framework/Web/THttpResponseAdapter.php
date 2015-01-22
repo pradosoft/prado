@@ -21,7 +21,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class THttpResponseAdapter extends TApplicationComponent
+class THttpResponseAdapter extends \Prado\TApplicationComponent
 {
 	/**
 	 * @var THttpResponse the response object the adapter is attached.

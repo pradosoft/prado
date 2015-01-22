@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TMapIterator class
  *
- * TMapIterator implements Iterator interface.
+ * TMapIterator implements \Iterator interface.
  *
  * TMapIterator is used by TMap. It allows TMap to return a new iterator
  * for traversing the items in the map.
@@ -24,6 +24,6 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TMapIterator extends ArrayIterator
+class TMapIterator extends \ArrayIterator
 {
 }

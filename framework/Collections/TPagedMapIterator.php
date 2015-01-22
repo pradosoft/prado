@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TPagedMapIterator class
  *
- * TPagedMapIterator implements Iterator interface.
+ * TPagedMapIterator implements \Iterator interface.
  *
  * TPagedMapIterator is used by {@link TPagedDataSource}. It allows TPagedDataSource
  * to return a new iterator for traversing the items in a {@link TMap} object.
@@ -23,7 +23,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TPagedMapIterator implements Iterator
+class TPagedMapIterator implements \Iterator
 {
 	private $_map;
 	private $_startIndex;

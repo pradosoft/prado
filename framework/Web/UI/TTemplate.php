@@ -10,6 +10,12 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Prado;
+use Prado\TComponent;
+use Prado\Web\Javascripts\TJavaScriptLiteral;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TTemplateException;
+use Prado\Exceptions\TException;
 
 /**
  * TTemplate implements PRADO template parsing logic.
@@ -44,7 +50,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TTemplate extends TApplicationComponent implements ITemplate
+class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 {
 	/**
 	 *  '<!--.*?--!>' - template comments
@@ -206,7 +212,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				$properties=&$object[2];
 				if($component instanceof TControl)
 				{
-					if($component instanceof TOutputCache)
+					if($component instanceof \Prado\Web\UI\WebControls\TOutputCache)
 						$component->setCacheKeyPrefix($this->_hashCode.$key);
 					$component->setTemplateControl($tplControl);
 					if(isset($properties['id']))
@@ -641,7 +647,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			if($textStart<strlen($input))
 				$tpl[$c++]=array($container,substr($input,$textStart));
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			if(($e instanceof TException) && ($e instanceof TTemplateException))
 				throw $e;
@@ -796,7 +802,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 			$className=substr($type,$pos+1);
 		else
 			$className=$type;
-		$class=new ReflectionClass($className);
+		$class=new \ReflectionClass($className);
 		if(is_subclass_of($className,'TControl') || $className==='TControl')
 		{
 			foreach($attributes as $name=>$att)

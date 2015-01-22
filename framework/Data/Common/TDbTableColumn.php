@@ -18,7 +18,7 @@ namespace Prado\Data\Common;
  * @package Prado\Data\Common
  * @since 3.1
  */
-class TDbTableColumn extends TComponent
+class TDbTableColumn extends \Prado\TComponent
 {
 	const UNDEFINED_VALUE= INF; //use infinity for undefined value
 

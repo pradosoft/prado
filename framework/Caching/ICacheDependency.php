@@ -6,10 +6,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Caching
  */
 
-namespace Prado;
+namespace Prado\Caching;
 
 /**
  * ICacheDependency interface.
@@ -20,7 +20,7 @@ namespace Prado;
  * Classes implementing this interface must support serialization and unserialization.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
+ * @package Prado\Caching
  * @since 3.0
  */
 interface ICacheDependency

@@ -54,7 +54,7 @@ class TDataFieldAccessor
 	{
 		try
 		{
-			if(is_array($data) || ($data instanceof ArrayAccess))
+			if(is_array($data) || ($data instanceof \ArrayAccess))
 			{
 				if(isset($data[$field]))
 					return $data[$field];

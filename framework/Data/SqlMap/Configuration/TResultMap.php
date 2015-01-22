@@ -36,7 +36,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TResultMap extends TComponent
+class TResultMap extends \Prado\TComponent
 {
 	private $_columns;
 	private $_class;

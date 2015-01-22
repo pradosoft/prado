@@ -36,7 +36,7 @@ namespace Prado\Data;
  * @package Prado\Data
  * @since 3.0
  */
-class TDbCommand extends TComponent
+class TDbCommand extends \Prado\TComponent
 {
 	private $_connection;
 	private $_text='';

@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TServerValidateEventParameter extends TEventParameter
+class TServerValidateEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * the value to be validated

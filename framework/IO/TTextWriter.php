@@ -22,7 +22,7 @@ namespace Prado\IO;
  * @package Prado\IO
  * @since 3.0
  */
-class TTextWriter extends TComponent implements ITextWriter
+class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 {
 	private $_str='';
 

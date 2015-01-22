@@ -10,8 +10,11 @@
  */
 
 namespace Prado\Web\UI;
-
-Prado::using('System.Web.Services.TPageService');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\Web\Services\TPageService;
 
 /**
  * TThemeManager class
@@ -38,7 +41,7 @@ Prado::using('System.Web.Services.TPageService');
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TThemeManager extends TModule
+class TThemeManager extends \Prado\TModule
 {
 	/**
 	 * default themes base path

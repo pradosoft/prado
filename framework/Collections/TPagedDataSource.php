@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TPagedDataSource class
@@ -28,7 +31,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TPagedDataSource extends TComponent implements IteratorAggregate,Countable
+class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, \Countable
 {
 	/**
 	 * @var mixed original data source
@@ -72,7 +75,7 @@ class TPagedDataSource extends TComponent implements IteratorAggregate,Countable
 		{
 			if(is_array($value))
 				$value=new TMap($value);
-			else if($value instanceof Traversable)
+			else if($value instanceof \Traversable)
 				$value=new TList($value);
 			else if($value!==null)
 				throw new TInvalidDataTypeException('pageddatasource_datasource_invalid');
@@ -184,7 +187,7 @@ class TPagedDataSource extends TComponent implements IteratorAggregate,Countable
 
 	/**
 	 * Returns the number of items in the current page.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the current page.
 	 */
 	public function count()

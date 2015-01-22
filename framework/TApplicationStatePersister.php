@@ -22,7 +22,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TApplicationStatePersister extends TModule implements IStatePersister
+class TApplicationStatePersister extends \Prado\TModule implements IStatePersister
 {
 	/**
 	 * Name of the value stored in cache

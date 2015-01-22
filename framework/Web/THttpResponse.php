@@ -10,11 +10,10 @@
  */
 
 namespace Prado\Web;
-
-/**
- * Includes the THttpResponse adapter.
- */
-Prado::using('System.Web.THttpResponseAdapter');
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * THttpResponse class
@@ -64,7 +63,7 @@ Prado::using('System.Web.THttpResponseAdapter');
  * @package Prado\Web
  * @since 3.0
  */
-class THttpResponse extends TModule implements ITextWriter
+class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
 	const DEFAULT_CONTENTTYPE	= 'text/html';
 	const DEFAULT_CHARSET		= 'UTF-8';
@@ -103,7 +102,7 @@ class THttpResponse extends TModule implements ITextWriter
 	/**
 	 * @var string HTML writer type
 	 */
-	private $_htmlWriterType='System.Web.UI.THtmlWriter';
+	private $_htmlWriterType='\Prado\Web\UI\THtmlWriter';
 	/**
 	 * @var string content type
 	 */
@@ -212,7 +211,7 @@ class THttpResponse extends TModule implements ITextWriter
 	public function setContentType($type)
 	{
 		if ($this->_contentTypeHeaderSent)
-			throw new Exception('Unable to alter content-type as it has been already sent');
+			throw new \Exception('Unable to alter content-type as it has been already sent');
 		$this->_contentType = $type;
 	}
 
@@ -279,7 +278,7 @@ class THttpResponse extends TModule implements ITextWriter
 	public function setStatusCode($status, $reason=null)
 	{
 		if ($this->_httpHeaderSent)
-			throw new Exception('Unable to alter response as HTTP header already sent');
+			throw new \Exception('Unable to alter response as HTTP header already sent');
 		$status=TPropertyValue::ensureInteger($status);
 		if(isset(self::$HTTP_STATUS_CODES[$status])) {
 			$this->_reason=self::$HTTP_STATUS_CODES[$status];

@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TOutputCacheCheckDependencyEventParameter extends TEventParameter
+class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 {
 	private $_isValid=true;
 	private $_cacheTime=0;

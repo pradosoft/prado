@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Web;
+use Prado\Collections\TAttributeCollection;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TUrlMappingPattern class.
@@ -110,7 +114,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0.5
  */
-class TUrlMappingPattern extends TComponent
+class TUrlMappingPattern extends \Prado\TComponent
 {
 	/**
 	 * @var string service parameter such as Page class name.

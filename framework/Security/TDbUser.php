@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+use Prado\Data\TDbConnection;
 
 /**
  * TDbUser class

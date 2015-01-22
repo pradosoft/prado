@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+use Prado\TPropertyValue;
 
 /**
  * THttpCookie class.
@@ -21,7 +22,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class THttpCookie extends TComponent
+class THttpCookie extends \Prado\TComponent
 {
 	/**
 	 * @var string domain of the cookie

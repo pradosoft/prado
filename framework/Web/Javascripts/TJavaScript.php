@@ -9,6 +9,10 @@
  * @package Prado\Web\Javascripts
  */
 
+namespace Prado\Web\Javascripts;
+use Prado\Web\THttpUtility;
+use Prado\Prado;
+
 /**
  * TJavaScript class.
  *
@@ -291,7 +295,7 @@ class TJavaScript
 				$msg = 'Unknown error';
 				break;
 		}
-		throw new Exception("JSON error ($err): $msg");
+		throw new \Exception("JSON error ($err): $msg");
 	}
 
 	/**
@@ -302,7 +306,6 @@ class TJavaScript
 	 */
 	public static function JSMin($code)
 	{
-		Prado::using('System.Web.Javascripts.JSMin');
 		return JSMin::minify($code);
 	}
 }

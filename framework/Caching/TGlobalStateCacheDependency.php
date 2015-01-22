@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+use Prado\Prado;
 
 /**
  * TGlobalStateCacheDependency class.

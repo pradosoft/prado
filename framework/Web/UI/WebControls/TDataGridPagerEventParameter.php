@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridPagerEventParameter extends TEventParameter
+class TDataGridPagerEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * The TDataGridPager control responsible for the event.

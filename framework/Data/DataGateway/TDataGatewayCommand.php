@@ -34,7 +34,7 @@ namespace Prado\Data\DataGateway;
  * @package Prado\Data\DataGateway
  * @since 3.1
  */
-class TDataGatewayCommand extends TComponent
+class TDataGatewayCommand extends \Prado\TComponent
 {
 	private $_builder;
 	/**

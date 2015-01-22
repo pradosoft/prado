@@ -30,7 +30,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TParameterMap extends TComponent
+class TParameterMap extends \Prado\TComponent
 {
 	private $_extend;
 	private $_properties;

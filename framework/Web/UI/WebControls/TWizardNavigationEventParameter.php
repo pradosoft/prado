@@ -29,7 +29,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizardNavigationEventParameter extends TEventParameter
+class TWizardNavigationEventParameter extends \Prado\TEventParameter
 {
 	private $_cancel=false;
 	private $_currentStep;

@@ -36,12 +36,12 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TEnumerable implements Iterator
+class TEnumerable implements \Iterator
 {
 	private $_enums=array();
 
 	public function __construct() {
-		$reflection=new ReflectionClass($this);
+		$reflection=new \ReflectionClass($this);
 		$this->_enums=$reflection->getConstants();
 	}
 

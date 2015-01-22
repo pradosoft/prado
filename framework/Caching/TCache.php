@@ -10,7 +10,9 @@
  */
 
 namespace Prado\Caching;
-Prado::using('System.Collections.TList');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\TPropertyValue;
 
 /**
  * TCache class
@@ -38,14 +40,14 @@ Prado::using('System.Collections.TList');
  * - {@link deleteValue}
  * and optionally {@link flush}
  *
- * Since version 3.1.2, TCache implements the ArrayAccess interface such that
+ * Since version 3.1.2, TCache implements the \ArrayAccess interface such that
  * the cache acts as an array.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Caching
  * @since 3.0
  */
-abstract class TCache extends TModule implements ICache, ArrayAccess
+abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 {
 	private $_prefix=null;
 	private $_primary=true;
@@ -241,7 +243,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 
 	/**
 	 * Returns whether there is a cache entry with a specified key.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param string a key identifying the cached value
 	 * @return boolean
 	 */
@@ -252,7 +254,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 
 	/**
 	 * Retrieves the value from cache with a specified key.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param string a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
@@ -265,7 +267,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 	 * Stores the value identified by a key into cache.
 	 * If the cache already contains such a key, the existing value will be
 	 * replaced with the new ones. To add expiration and dependencies, use the set() method.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 */
@@ -276,7 +278,7 @@ abstract class TCache extends TModule implements ICache, ArrayAccess
 
 	/**
 	 * Deletes the value with the specified key from cache
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param string the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */

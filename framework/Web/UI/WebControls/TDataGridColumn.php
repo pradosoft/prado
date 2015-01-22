@@ -62,7 +62,7 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class TDataGridColumn extends TApplicationComponent
+abstract class TDataGridColumn extends \Prado\TApplicationComponent
 {
 	private $_id='';
 	private $_owner=null;

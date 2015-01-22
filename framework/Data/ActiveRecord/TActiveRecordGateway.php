@@ -19,7 +19,7 @@ namespace Prado\Data\ActiveRecord;
  * @package Prado\Data\ActiveRecord
  * @since 3.1
  */
-class TActiveRecordGateway extends TComponent
+class TActiveRecordGateway extends \Prado\TComponent
 {
 	private $_manager;
 	private $_tables=array(); //table cache

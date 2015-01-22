@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\THttpException;
 
 /**
  * TXmlRpcProtocol class
@@ -80,7 +81,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 		{
 			throw $e;
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			return $this->createErrorResponse(new TRpcException('An internal error occured'));
 		}

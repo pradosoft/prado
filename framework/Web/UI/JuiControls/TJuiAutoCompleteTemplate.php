@@ -21,7 +21,7 @@ namespace Prado\Web\UI\JuiControls;
  * @package Prado\Web\UI\JuiControls
  * @since 3.1
  */
-class TJuiAutoCompleteTemplate extends TComponent implements ITemplate
+class TJuiAutoCompleteTemplate extends \Prado\TComponent implements ITemplate
 {
 	private $_template;
 

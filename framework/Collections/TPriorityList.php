@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
 
 /**
  * TPriorityList class
@@ -95,7 +99,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Returns the number of items in the list.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the list.
 	 */
 	public function count()
@@ -164,12 +168,12 @@ class TPriorityList extends TList
 
 	/**
 	 * Returns an iterator for traversing the items in the list.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the list.
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->flattenPriorities());
+		return new \ArrayIterator($this->flattenPriorities());
 	}
 
 	/**
@@ -646,7 +650,7 @@ class TPriorityList extends TList
 				foreach($data->itemsAtPriority($priority) as $index=>$item)
 					$this->insertAtIndexInPriority($item,$index,$priority);
 			}
-		} else if(is_array($data)||$data instanceof Traversable) {
+		} else if(is_array($data)||$data instanceof \Traversable) {
 			if($this->getCount()>0)
 				$this->clear();
 			foreach($data as $key=>$item)
@@ -673,7 +677,7 @@ class TPriorityList extends TList
 					$this->insertAtIndexInPriority($item,false,$priority);
 			}
 		}
-		else if(is_array($data)||$data instanceof Traversable)
+		else if(is_array($data)||$data instanceof \Traversable)
 		{
 			foreach($data as $priority=>$item)
 				$this->add($item);
@@ -685,7 +689,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Returns whether there is an element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to check on
 	 * @return boolean
 	 */
@@ -696,7 +700,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Returns the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -706,7 +710,7 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * Sets the element at the specified offset. This method is required by the interface ArrayAccess.
+	 * Sets the element at the specified offset. This method is required by the interface \ArrayAccess.
 	 * Setting elements in a priority list is not straight forword when appending and setting at the
 	 * end boundary.  When appending without an offset (a null offset), the item will be added at
 	 * the default priority.  The item may not be the last item in the list.  When appending with an
@@ -733,7 +737,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Unsets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to unset element
 	 */
 	public function offsetUnset($offset)

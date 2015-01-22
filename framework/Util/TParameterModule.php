@@ -45,7 +45,7 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.0
  */
-class TParameterModule extends TModule
+class TParameterModule extends \Prado\TModule
 {
 	/**
 	 * @deprecated since 3.2

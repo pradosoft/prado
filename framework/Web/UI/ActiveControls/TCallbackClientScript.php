@@ -58,7 +58,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TCallbackClientScript extends TApplicationComponent
+class TCallbackClientScript extends \Prado\TApplicationComponent
 {
 	/**
 	 * @var TList list of client functions to execute.

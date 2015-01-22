@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TUri class
@@ -30,7 +31,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class TUri extends TComponent
+class TUri extends \Prado\TComponent
 {
 	/**
 	 * @var array list of default ports for known schemes

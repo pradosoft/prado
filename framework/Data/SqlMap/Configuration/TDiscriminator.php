@@ -25,7 +25,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TDiscriminator extends TComponent
+class TDiscriminator extends \Prado\TComponent
 {
 	private $_column;
 	private $_type;

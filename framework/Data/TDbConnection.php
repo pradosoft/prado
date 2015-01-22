@@ -81,7 +81,7 @@ Prado::using('System.Data.TDbCommand');
  * @package Prado\Data
  * @since 3.0
  */
-class TDbConnection extends TComponent
+class TDbConnection extends \Prado\TComponent
 {
 	/**
 	 *

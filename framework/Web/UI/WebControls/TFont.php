@@ -20,7 +20,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TFont extends TComponent
+class TFont extends \Prado\TComponent
 {
 	/**
 	 * Bits indicating the font states.

@@ -77,7 +77,7 @@ abstract class TActiveRecordRelation
 
 		$results = call_user_func_array(array($this->getSourceRecord(),$method),$args);
 		$validArray = is_array($results) && count($results) > 0;
-		if($validArray || $results instanceof ArrayAccess || $results instanceof TActiveRecord)
+		if($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord)
 		{
 			$this->collectForeignObjects($results);
 			while($obj = array_pop($stack))
@@ -193,7 +193,7 @@ abstract class TActiveRecordRelation
 	 */
 	protected function getIndexValues($keys, $results)
 	{
-		if(!is_array($results) && !$results instanceof ArrayAccess)
+		if(!is_array($results) && !$results instanceof \ArrayAccess)
 			$results = array($results);
 		$values=array();
 		foreach($results as $result)
@@ -229,7 +229,7 @@ abstract class TActiveRecordRelation
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
-		if(is_array($results) || $results instanceof ArrayAccess)
+		if(is_array($results) || $results instanceof \ArrayAccess)
 		{
 			for($i=0,$k=count($results);$i<$k;$i++)
 				$this->setObjectProperty($results[$i], $properties, $collections);

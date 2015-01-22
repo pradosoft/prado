@@ -28,7 +28,7 @@ namespace Prado\Data\SqlMap\DataMapper;
  * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
-abstract class TSqlMapTypeHandler extends TComponent
+abstract class TSqlMapTypeHandler extends \Prado\TComponent
 {
 	private $_dbType='NULL';
 	private $_type;

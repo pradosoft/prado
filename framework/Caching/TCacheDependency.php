@@ -39,6 +39,6 @@ namespace Prado\Caching;
  * @package Prado\Caching
  * @since 3.1.0
  */
-abstract class TCacheDependency extends TComponent implements ICacheDependency
+abstract class TCacheDependency extends \Prado\TComponent implements ICacheDependency
 {
 }

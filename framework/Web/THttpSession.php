@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
 
 /**
  * THttpSession class
@@ -69,7 +72,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class THttpSession extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
+class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
 	/**
 	 * @var boolean whether this module has been initialized
@@ -491,7 +494,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns an iterator for traversing the session variables.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return TSessionIterator an iterator for traversing the session variables.
 	 */
 	public function getIterator()
@@ -509,7 +512,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns the number of items in the session.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the session.
 	 */
 	public function count()
@@ -591,7 +594,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to check on
 	 * @return boolean
 	 */
@@ -601,7 +604,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -611,7 +614,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
@@ -621,7 +624,7 @@ class THttpSession extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to unset element
 	 */
 	public function offsetUnset($offset)

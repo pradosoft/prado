@@ -9,6 +9,10 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
+use Prado\Prado;
+use Prado\Xml\TXmlElement;
 
 /**
  * TRpcService class
@@ -53,7 +57,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.2
  **/
-class TRpcService extends TService
+class TRpcService extends \Prado\TService
 {
 	/**
 	 * const string base api provider class which every API must extend

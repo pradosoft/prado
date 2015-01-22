@@ -27,7 +27,7 @@ Prado::using('System.Data.SqlMap.TSqlMapManager');
  * @package Prado\Data\SqlMap
  * @since 3.1
  */
-class TSqlMapGateway extends TComponent
+class TSqlMapGateway extends \Prado\TComponent
 {
 	/**
 	 * @var TSqlMapManager manager

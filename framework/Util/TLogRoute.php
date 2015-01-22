@@ -32,7 +32,7 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.0
  */
-abstract class TLogRoute extends TApplicationComponent
+abstract class TLogRoute extends \Prado\TApplicationComponent
 {
 	/**
 	 * @var array lookup table for level names

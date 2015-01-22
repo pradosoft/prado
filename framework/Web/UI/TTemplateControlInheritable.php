@@ -11,8 +11,7 @@
  */
 
 namespace Prado\Web\UI;
-
-Prado::using('System.Web.UI.TTemplateControl');
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TTemplateControlInheritable class.

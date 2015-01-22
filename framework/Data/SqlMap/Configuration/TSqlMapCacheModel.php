@@ -32,7 +32,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TSqlMapCacheModel extends TComponent
+class TSqlMapCacheModel extends \Prado\TComponent
 {
 	private $_cache;
 	private $_hits = 0;

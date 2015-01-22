@@ -23,7 +23,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TCommandEventParameter extends TEventParameter
+class TCommandEventParameter extends \Prado\TEventParameter
 {
 	private $_name;
 	private $_param;

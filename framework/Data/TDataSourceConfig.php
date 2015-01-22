@@ -46,7 +46,7 @@ Prado::using('System.Data.TDbConnection');
  * @package Prado\Data
  * @since 3.1
  */
-class TDataSourceConfig extends TModule
+class TDataSourceConfig extends \Prado\TModule
 {
 	private $_connID='';
 	private $_conn;

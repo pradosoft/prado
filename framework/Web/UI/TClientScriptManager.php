@@ -11,6 +11,13 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
+use Prado\Web\THttpUtility;
 
 /**
  * TClientScriptManager class.
@@ -22,7 +29,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TClientScriptManager extends TApplicationComponent
+class TClientScriptManager extends \Prado\TApplicationComponent
 {
 	/**
 	 * directory containing Prado javascript files
@@ -263,7 +270,7 @@ class TClientScriptManager extends TApplicationComponent
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options=null)
 	{
 		$options = !is_array($options) ? array() : $options;
-		$class = new ReflectionClass($callbackHandler);
+		$class = new \ReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
 		$optionString = TJavaScript::encode($options);
@@ -852,6 +859,6 @@ class TClientScriptManager extends TApplicationComponent
 	protected function checkIfNotInRender()
 	{
 		if ($form = $this->_page->InFormRender)
-			throw new Exception('Operation invalid when page is already rendering');
+			throw new \Exception('Operation invalid when page is already rendering');
 	}
 }

@@ -34,7 +34,7 @@ namespace Prado\Data;
  * @package Prado\Data
  * @since 3.0
  */
-class TDbDataReader extends TComponent implements Iterator
+class TDbDataReader extends \Prado\TComponent implements \Iterator
 {
 	private $_statement;
 	private $_closed=false;

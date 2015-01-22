@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Caching;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 
 /**
  * TSqliteCache class
@@ -121,7 +124,7 @@ class TSqliteCache extends TCache
 		if($this->_file===null)
 			$this->_file=$this->getApplication()->getRuntimePath().'/sqlite.cache';
 		$error='';
-		if(($this->_db=new SQLiteDatabase($this->_file,0666,$error))===false)
+		if(($this->_db=new \SQLiteDatabase($this->_file,0666,$error))===false)
 			throw new TConfigurationException('sqlitecache_connection_failed',$error);
 		if(@$this->_db->query('DELETE FROM '.self::CACHE_TABLE.' WHERE expire<>0 AND expire<'.time())===false)
 		{

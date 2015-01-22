@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI;
-
-/**
- * Includes TOutputCache class file
- */
-Prado::using('System.Web.UI.WebControls.TOutputCache');
+use Prado\Prado;
 
 /**
  * TTemplateManager class
@@ -36,7 +32,7 @@ Prado::using('System.Web.UI.WebControls.TOutputCache');
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TTemplateManager extends TModule
+class TTemplateManager extends \Prado\TModule
 {
 	/**
 	 * Template file extension
@@ -64,7 +60,7 @@ class TTemplateManager extends TModule
 	 */
 	public function getTemplateByClassName($className)
 	{
-		$class=new ReflectionClass($className);
+		$class=new \ReflectionClass($className);
 		$tplFile=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$className.self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}

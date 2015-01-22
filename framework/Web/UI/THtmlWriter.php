@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\THttpUtility;
 
 /**
  * THtmlWriter class
@@ -36,7 +37,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class THtmlWriter extends TApplicationComponent implements ITextWriter
+class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITextWriter
 {
 	/**
 	 * @var array list of tags are do not need a closing tag

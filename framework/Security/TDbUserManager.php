@@ -10,13 +10,10 @@
  */
 
 namespace Prado\Security;
-
-/**
- * Using IUserManager interface
- */
-Prado::using('System.Security.IUserManager');
-Prado::using('System.Data.TDataSourceConfig');
-Prado::using('System.Security.TUser');
+use Prado\Data\TDataSourceConfig;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Prado;
 
 /**
  * TDbUserManager class
@@ -48,7 +45,7 @@ Prado::using('System.Security.TUser');
  * @package Prado\Security
  * @since 3.1.0
  */
-class TDbUserManager extends TModule implements IUserManager
+class TDbUserManager extends \Prado\TModule implements IUserManager
 {
 	private $_connID='';
 	private $_conn;

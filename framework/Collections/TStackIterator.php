@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TStackIterator class
  *
- * TStackIterator implements Iterator interface.
+ * TStackIterator implements \Iterator interface.
  *
  * TStackIterator is used by TStack. It allows TStack to return a new iterator
  * for traversing the items in the list.
@@ -24,7 +24,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TStackIterator implements Iterator
+class TStackIterator implements \Iterator
 {
 	/**
 	 * @var array the data to be iterated through

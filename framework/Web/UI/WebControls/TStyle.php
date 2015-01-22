@@ -25,7 +25,7 @@ Prado::using('System.Web.UI.WebControls.TFont');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TStyle extends TComponent
+class TStyle extends \Prado\TComponent
 {
 	/**
 	 * @var array storage of CSS fields

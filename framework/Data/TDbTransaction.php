@@ -39,7 +39,7 @@ Prado::using('System.Data.TDbDataReader');
  * @package Prado\Data
  * @since 3.0
  */
-class TDbTransaction extends TComponent
+class TDbTransaction extends \Prado\TComponent
 {
 	private $_connection=null;
 	private $_active;

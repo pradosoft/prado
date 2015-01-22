@@ -18,7 +18,7 @@ namespace Prado\Data\Common;
  * @package Prado\Data\Common
  * @since 3.1
  */
-class TDbTableInfo extends TComponent
+class TDbTableInfo extends \Prado\TComponent
 {
 	private $_info=array();
 

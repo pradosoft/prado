@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * THttpCookieCollection class.
@@ -26,7 +27,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class THttpCookieCollection extends TList
+class THttpCookieCollection extends \Prado\Collections\TList
 {
 	/**
 	 * @var mixed owner of this collection

@@ -12,6 +12,7 @@
  */
 
 namespace Prado\Web;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TCacheHttpSession class

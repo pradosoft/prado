@@ -11,6 +11,8 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Collections\TMap;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TClientSideOptions abstract class.
@@ -23,7 +25,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-abstract class TClientSideOptions extends TComponent
+abstract class TClientSideOptions extends \Prado\TComponent
 {
 	/**
 	 * @var TMap list of client-side options.
@@ -71,7 +73,7 @@ abstract class TClientSideOptions extends TComponent
 	public function getOptions()
 	{
 		if (!$this->_options)
-			$this->_options = Prado::createComponent('System.Collections.TMap');
+			$this->_options = new TMap;
 		return $this->_options;
 	}
 

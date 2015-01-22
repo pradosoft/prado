@@ -21,7 +21,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-abstract class TModule extends TApplicationComponent implements IModule
+abstract class TModule extends \Prado\TApplicationComponent implements IModule
 {
 	/**
 	 * @var string module id

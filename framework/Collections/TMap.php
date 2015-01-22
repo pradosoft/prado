@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
 
 /**
  * TMap class
@@ -32,7 +35,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
+class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	/**
 	 * @var array internal data storage
@@ -90,17 +93,17 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 
 	/**
 	 * Returns an iterator for traversing the items in the list.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the list.
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator( $this->_d );
+		return new \ArrayIterator( $this->_d );
 	}
 
 	/**
 	 * Returns the number of items in the map.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the map.
 	 */
 	public function count()
@@ -237,7 +240,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 
 	/**
 	 * Returns whether there is an element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to check on
 	 * @return boolean
 	 */
@@ -248,7 +251,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 
 	/**
 	 * Returns the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -259,7 +262,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 
 	/**
 	 * Sets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
@@ -270,7 +273,7 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 
 	/**
 	 * Unsets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to unset element
 	 */
 	public function offsetUnset($offset)

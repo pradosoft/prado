@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TList class
@@ -36,7 +40,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countable
+class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	/**
 	 * internal data storage
@@ -85,17 +89,17 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Returns an iterator for traversing the items in the list.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the list.
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator( $this->_d );
+		return new \ArrayIterator( $this->_d );
 	}
 
 	/**
 	 * Returns the number of items in the list.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the list.
 	 */
 	public function count()
@@ -315,7 +319,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof Traversable))
+		if(is_array($data) || ($data instanceof \Traversable))
 		{
 			if($this->_c>0)
 				$this->clear();
@@ -334,7 +338,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 	 */
 	public function mergeWith($data)
 	{
-		if(is_array($data) || ($data instanceof Traversable))
+		if(is_array($data) || ($data instanceof \Traversable))
 		{
 			foreach($data as $item)
 				$this->add($item);
@@ -345,7 +349,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Returns whether there is an item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to check on
 	 * @return boolean
 	 */
@@ -356,7 +360,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Returns the item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve item.
 	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid
@@ -368,7 +372,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Sets the item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set item
 	 * @param mixed the item value
 	 */
@@ -385,7 +389,7 @@ class TList extends TComponent implements IteratorAggregate,ArrayAccess,Countabl
 
 	/**
 	 * Unsets the item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to unset item
 	 */
 	public function offsetUnset($offset)

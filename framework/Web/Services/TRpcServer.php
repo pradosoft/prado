@@ -25,7 +25,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.2
  **/
-class TRpcServer extends TModule
+class TRpcServer extends \Prado\TModule
 {
 	/**
 	 * @var TRpcProtocol instance

@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TForm class

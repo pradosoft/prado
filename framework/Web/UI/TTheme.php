@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Exceptions\TIOException;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TApplicationMode;
 
 /**
  * TTheme class
@@ -36,7 +40,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TTheme extends TApplicationComponent implements ITheme
+class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
 	/**
 	 * prefix for cache variable name used to store parsed themes
@@ -252,7 +256,7 @@ class TTheme extends TApplicationComponent implements ITheme
 		{
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
-				Prado::trace("Applying skin $name to $type",'System.Web.UI.TThemeManager');
+				Prado::trace("Applying skin $name to $type",'Prado\Web\UI\TThemeManager');
 				if(is_array($value))
 				{
 					switch($value[0])

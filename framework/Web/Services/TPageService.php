@@ -10,13 +10,14 @@
  */
 
 namespace Prado\Web\Services;
-
-/**
- * Include classes to be used by page service
- */
-Prado::using('System.Web.UI.TPage');
-Prado::using('System.Web.UI.TTemplateManager');
-Prado::using('System.Web.UI.TThemeManager');
+use Prado\Prado;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TApplication;
+use Prado\TApplicationMode;
+use Prado\Web\UI\TTemplateManager;
+use Prado\Web\UI\TThemeManager;
 
 /**
  * TPageService class.
@@ -74,7 +75,7 @@ Prado::using('System.Web.UI.TThemeManager');
  * @package Prado\Web\Services
  * @since 3.0
  */
-class TPageService extends TService
+class TPageService extends \Prado\TService
 {
 	/**
 	 * Configuration file name
@@ -112,7 +113,7 @@ class TPageService extends TService
 	 * @var string clientscript manager class in namespace format
 	 * @since 3.1.7
 	 */
-	private $_clientScriptManagerClass='System.Web.UI.TClientScriptManager';
+	private $_clientScriptManagerClass='\Prado\Web\UI\TClientScriptManager';
 	/**
 	 * @var string default page
 	 */
@@ -149,7 +150,7 @@ class TPageService extends TService
 	 */
 	public function init($config)
 	{
-		Prado::trace("Initializing TPageService",'System.Web.Services.TPageService');
+		Prado::trace("Initializing TPageService",'\Prado\Web\Services\TPageService');
 
 		$pageConfig=$this->loadPageConfig($config);
 

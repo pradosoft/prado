@@ -30,7 +30,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0.6
  */
-class TUrlManager extends TModule
+class TUrlManager extends \Prado\TModule
 {
 	/**
 	 * Constructs a URL that can be recognized by PRADO.
@@ -69,7 +69,7 @@ class TUrlManager extends TModule
 		$url=$serviceID.'='.urlencode($serviceParam);
 		$amp=$encodeAmpersand?'&amp;':'&';
 		$request=$this->getRequest();
-		if(is_array($getItems) || $getItems instanceof Traversable)
+		if(is_array($getItems) || $getItems instanceof \Traversable)
 		{
 			if($encodeGetItems)
 			{

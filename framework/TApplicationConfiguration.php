@@ -10,6 +10,8 @@
  */
 
 namespace Prado;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Xml\TXmlDocument;
 
 /**
  * TApplicationConfiguration class.
@@ -21,7 +23,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TApplicationConfiguration extends TComponent
+class TApplicationConfiguration extends \Prado\TComponent
 {
 	/**
 	 * @var array list of application initial property values, indexed by property names

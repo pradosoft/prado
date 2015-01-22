@@ -11,6 +11,9 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\TApplication;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
 
 /**
  * TFeedService class
@@ -57,7 +60,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.1
  */
-class TFeedService extends TService
+class TFeedService extends \Prado\TService
 {
 	private $_feeds=array();
 

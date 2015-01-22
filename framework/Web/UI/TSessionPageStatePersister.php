@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\TPropertyValue;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TSessionPageStatePersister class
@@ -43,7 +46,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.1
  */
-class TSessionPageStatePersister extends TComponent implements IPageStatePersister
+class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
 	const STATE_SESSION_KEY='PRADO_SESSION_PAGESTATE';
 	const QUEUE_SESSION_KEY='PRADO_SESSION_STATEQUEUE';

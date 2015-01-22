@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Exceptions;
+use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * TException class
@@ -32,7 +34,7 @@ namespace Prado\Exceptions;
  * @package Prado\Exceptions
  * @since 3.0
  */
-class TException extends Exception
+class TException extends \Exception
 {
 	private $_errorCode='';
 	static $_messageCache=array();

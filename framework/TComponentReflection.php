@@ -14,7 +14,7 @@
  */
 
 namespace Prado;
-
+use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * TComponentReflection class.
  *
@@ -32,7 +32,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TComponentReflection extends TComponent
+class TComponentReflection extends \Prado\TComponent
 {
 	private $_className;
 	private $_properties=array();
@@ -72,7 +72,7 @@ class TComponentReflection extends TComponent
 
 	private function reflect()
 	{
-		$class=new ReflectionClass($this->_className);
+		$class=new \ReflectionClass($this->_className);
 		$properties=array();
 		$events=array();
 		$methods=array();

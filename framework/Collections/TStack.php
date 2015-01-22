@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
 
 /**
  * TStack class
@@ -31,7 +33,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TStack extends TComponent implements IteratorAggregate,Countable
+class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 {
 	/**
 	 * internal data storage
@@ -72,7 +74,7 @@ class TStack extends TComponent implements IteratorAggregate,Countable
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof Traversable))
+		if(is_array($data) || ($data instanceof \Traversable))
 		{
 			$this->clear();
 			foreach($data as $item)
@@ -145,12 +147,12 @@ class TStack extends TComponent implements IteratorAggregate,Countable
 
 	/**
 	 * Returns an iterator for traversing the items in the stack.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the stack.
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator( $this->_d );
+		return new \ArrayIterator( $this->_d );
 	}
 
 	/**
@@ -163,7 +165,7 @@ class TStack extends TComponent implements IteratorAggregate,Countable
 
 	/**
 	 * Returns the number of items in the stack.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the stack.
 	 */
 	public function count()

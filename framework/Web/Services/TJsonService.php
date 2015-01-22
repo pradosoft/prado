@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\TApplication;
+use Prado\Prado;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TJsonService class provides to end-users javascript content response in
@@ -51,7 +56,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.1
  */
-class TJsonService extends TService
+class TJsonService extends \Prado\TService
 {
 	/**
 	 * @var array registered services

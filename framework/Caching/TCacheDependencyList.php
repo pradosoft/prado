@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TCacheDependencyList class.

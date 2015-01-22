@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizardNavigationTemplate extends TComponent implements ITemplate
+class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 {
 	private $_wizard;
 

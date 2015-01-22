@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TDummyDataSourceIterator class
  *
- * TDummyDataSourceIterator implements Iterator interface.
+ * TDummyDataSourceIterator implements \Iterator interface.
  *
  * TDummyDataSourceIterator is used by {@link TDummyDataSource}.
  * It allows TDummyDataSource to return a new iterator
@@ -24,7 +24,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TDummyDataSourceIterator implements Iterator
+class TDummyDataSourceIterator implements \Iterator
 {
 	private $_index;
 	private $_count;

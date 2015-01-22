@@ -32,7 +32,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TApplicationComponent extends TComponent
+class TApplicationComponent extends \Prado\TComponent
 {
 	/**
 	 * @return TApplication current application instance
@@ -100,7 +100,7 @@ class TApplicationComponent extends TComponent
 	{
 		if($className===null)
 			$className=get_class($this);
-		$class=new ReflectionClass($className);
+		$class=new \ReflectionClass($className);
 		$fullPath=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$assetPath;
 		return $this->publishFilePath($fullPath);
 	}

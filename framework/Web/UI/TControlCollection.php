@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TControlCollection class
@@ -21,7 +22,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TControlCollection extends TList
+class TControlCollection extends \Prado\Collections\TList
 {
 	/**
 	 * the control that owns this collection.

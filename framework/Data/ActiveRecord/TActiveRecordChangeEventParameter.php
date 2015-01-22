@@ -24,7 +24,7 @@ namespace Prado\Data\ActiveRecord;
  * @package Prado\Data\ActiveRecord
  * @since 3.1.2
  */
-class TActiveRecordChangeEventParameter extends TEventParameter
+class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 {
 	private $_isValid=true;
 

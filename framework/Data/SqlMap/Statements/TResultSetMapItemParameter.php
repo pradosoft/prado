@@ -18,7 +18,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
-class TResultSetMapItemParameter extends TComponent
+class TResultSetMapItemParameter extends \Prado\TComponent
 {
 	private $_key;
 	private $_value;

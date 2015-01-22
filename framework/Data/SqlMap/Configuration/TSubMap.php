@@ -23,7 +23,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TSubMap extends TComponent
+class TSubMap extends \Prado\TComponent
 {
 	private $_value;
 	private $_resultMapping;

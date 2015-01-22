@@ -18,7 +18,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
-class TStaticSql extends TComponent
+class TStaticSql extends \Prado\TComponent
 {
 	private $_preparedStatement;
 

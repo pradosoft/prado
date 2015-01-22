@@ -146,7 +146,7 @@ Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
  * @package Prado\Data\ActiveRecord
  * @since 3.1
  */
-abstract class TActiveRecord extends TComponent
+abstract class TActiveRecord extends \Prado\TComponent
 {
 	const BELONGS_TO='BELONGS_TO';
 	const HAS_ONE='HAS_ONE';

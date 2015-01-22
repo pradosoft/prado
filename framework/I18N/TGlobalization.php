@@ -23,7 +23,7 @@ namespace Prado\I18N;
  * @package Prado\I18N
  * @since 3.0
  */
-class TGlobalization extends TModule
+class TGlobalization extends \Prado\TModule
 {
 	/**
 	 * Default character set is 'UTF-8'.

@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridSortCommandEventParameter extends TEventParameter
+class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var string sort expression

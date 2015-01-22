@@ -25,7 +25,7 @@ Prado::using('System.I18N.core.MessageFormat');
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\I18N
  */
-class Translation extends TComponent
+class Translation extends \Prado\TComponent
 {
 	/**
 	 * The array of formatters. We define 1 formatter per translation catalog

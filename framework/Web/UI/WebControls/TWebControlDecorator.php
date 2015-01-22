@@ -55,7 +55,7 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.2
  */
 
-class TWebControlDecorator extends TComponent {
+class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * @var boolean tells if there should only be decoration around the inner content

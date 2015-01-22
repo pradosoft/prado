@@ -126,7 +126,7 @@ class TTarFileExtractor
 
     protected function _error($p_message)
     {
-		throw new Exception($p_message);
+		throw new \Exception($p_message);
     }
 
     private function _isArchive($p_filename=null)

@@ -10,11 +10,11 @@
  */
 
 namespace Prado\Security;
-
-/**
- * Using TUser class
- */
-Prado::using('System.Security.TUser');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TApplication;
+use Prado\TPropertyValue;
+use Prado\Xml\TXmlDocument;
 
 /**
  * TUserManager class
@@ -68,7 +68,7 @@ Prado::using('System.Security.TUser');
  * @package Prado\Security
  * @since 3.0
  */
-class TUserManager extends TModule implements IUserManager
+class TUserManager extends \Prado\TModule implements IUserManager
 {
 	/**
 	 * extension name to the user file

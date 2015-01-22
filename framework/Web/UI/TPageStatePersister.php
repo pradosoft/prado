@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Exceptions\THttpException;
 
 /**
  * TPageStatePersister class
@@ -26,7 +27,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TPageStatePersister extends TComponent implements IPageStatePersister
+class TPageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
 	private $_page;
 

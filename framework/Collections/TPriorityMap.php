@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Collections;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TPriorityMap class
@@ -55,7 +58,6 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.2a
  */
-Prado::using('System.Collections.TMap');
 
 class TPriorityMap extends TMap
 {
@@ -158,12 +160,12 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Returns an iterator for traversing the items in the map.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the map.
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->flattenPriorities());
+		return new \ArrayIterator($this->flattenPriorities());
 	}
 
 
@@ -194,7 +196,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Returns the number of items in the map.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the map.
 	 */
 	public function count()
@@ -524,7 +526,7 @@ class TPriorityMap extends TMap
 				}
 			}
 		}
-		else if(is_array($data)||$data instanceof Traversable)
+		else if(is_array($data)||$data instanceof \Traversable)
 		{
 			if($this->getCount()>0)
 				$this->clear();
@@ -552,7 +554,7 @@ class TPriorityMap extends TMap
 					$this->add($key,$value,$priority);
 			}
 		}
-		else if(is_array($data)||$data instanceof Traversable)
+		else if(is_array($data)||$data instanceof \Traversable)
 		{
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
@@ -563,7 +565,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Returns whether there is an element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to check on
 	 * @return boolean
 	 */
@@ -574,7 +576,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Returns the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -585,7 +587,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Sets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
@@ -596,7 +598,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Unsets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to unset element
 	 */
 	public function offsetUnset($offset)

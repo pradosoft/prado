@@ -21,7 +21,7 @@ namespace Prado\Web\UI\JuiControls;
  * @package Prado\Web\UI\JuiControls
  * @since 3.1
  */
-class TJuiSortableTemplate extends TComponent implements ITemplate
+class TJuiSortableTemplate extends \Prado\TComponent implements ITemplate
 {
 	private $_template;
 

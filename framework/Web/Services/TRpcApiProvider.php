@@ -43,7 +43,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.2
  */
-abstract class TRpcApiProvider extends TModule
+abstract class TRpcApiProvider extends \Prado\TModule
 {
 	/**
 	 * @var TRpcServer instance

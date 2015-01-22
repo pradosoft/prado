@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TImageClickEventParameter extends TEventParameter
+class TImageClickEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * the X coordinate of the clicking point

@@ -22,7 +22,7 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.0
  */
-class TLogger extends TComponent
+class TLogger extends \Prado\TComponent
 {
 	/**
 	 * Log levels.

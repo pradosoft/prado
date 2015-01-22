@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Security;
-
-/**
- * Using IUserManager interface
- */
-Prado::using('System.Security.IUserManager');
+use Prado\TPropertyValue;
 
 /**
  * TUser class
@@ -31,7 +27,7 @@ Prado::using('System.Security.IUserManager');
  * @package Prado\Security
  * @since 3.0
  */
-class TUser extends TComponent implements IUser
+class TUser extends \Prado\TComponent implements IUser
 {
 	/**
 	 * @var array persistent state

@@ -21,7 +21,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TCompositeLiteral extends TComponent implements IRenderable, IBindable
+class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBindable
 {
 	const TYPE_EXPRESSION=0;
 	const TYPE_STATEMENTS=1;
@@ -69,7 +69,7 @@ class TCompositeLiteral extends TComponent implements IRenderable, IBindable
 	/**
 	 * @param TComponent container of this component. It serves as the evaluation context of expressions and statements.
 	 */
-	public function setContainer(TComponent $value)
+	public function setContainer(\Prado\TComponent $value)
 	{
 		$this->_container=$value;
 	}

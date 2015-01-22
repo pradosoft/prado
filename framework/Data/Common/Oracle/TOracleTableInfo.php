@@ -19,7 +19,7 @@ namespace Prado\Data\Common\Oracle;
  * @package Prado\Data\Common\Oracle
  * @since 3.1
  */
-class TOracleTableInfo extends TComponent
+class TOracleTableInfo extends \Prado\TComponent
 {
 	private $_info=array();
 

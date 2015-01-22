@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Web\UI;
+use Prado\Caching\ICache;
+use Prado\Prado;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TCachePageStatePersister class
@@ -58,7 +63,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.1.1
  */
-class TCachePageStatePersister extends TComponent implements IPageStatePersister
+class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
 	private $_prefix='statepersister';
 	private $_page;

@@ -35,7 +35,7 @@ Prado::using('System.Data.ActiveRecord.TActiveRecordGateway');
  * @package Prado\Data\ActiveRecord
  * @since 3.1
  */
-class TActiveRecordManager extends TComponent
+class TActiveRecordManager extends \Prado\TComponent
 {
 	const DEFAULT_GATEWAY_CLASS = 'System.Data.ActiveRecord.TActiveRecordGateway';
 

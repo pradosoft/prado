@@ -11,6 +11,11 @@
  */
 
 namespace Prado\Caching;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Xml\TXmlElement;
 
 /**
  * TMemCache class

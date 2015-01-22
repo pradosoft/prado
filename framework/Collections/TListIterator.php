@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TListIterator class
  *
- * TListIterator implements Iterator interface.
+ * TListIterator implements \Iterator interface.
  *
  * TListIterator is used by TList. It allows TList to return a new iterator
  * for traversing the items in the list.
@@ -24,6 +24,6 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TListIterator extends ArrayIterator
+class TListIterator extends \ArrayIterator
 {
 }

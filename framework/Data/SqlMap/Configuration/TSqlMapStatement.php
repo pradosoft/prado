@@ -28,7 +28,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TSqlMapStatement extends TComponent
+class TSqlMapStatement extends \Prado\TComponent
 {
 	private $_parameterMapName;
 	private $_parameterMap;
@@ -185,7 +185,7 @@ class TSqlMapStatement extends TComponent
 	}
 
 	/**
-	 * @return string name of a PHP class that implements ArrayAccess.
+	 * @return string name of a PHP class that implements \ArrayAccess.
 	 */
 	public function getListClass()
 	{
@@ -193,8 +193,8 @@ class TSqlMapStatement extends TComponent
 	}
 
 	/**
-	 * An ArrayAccess class can be specified to handle the type of objects in the collection.
-	 * @param string name of a PHP class that implements ArrayAccess.
+	 * An \ArrayAccess class can be specified to handle the type of objects in the collection.
+	 * @param string name of a PHP class that implements \ArrayAccess.
 	 */
 	public function setListClass($value)
 	{
@@ -256,7 +256,7 @@ class TSqlMapStatement extends TComponent
 
 	/**
 	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @return ArrayAccess new instance of list class.
+	 * @return \ArrayAccess new instance of list class.
 	 */
 	public function createInstanceOfListClass($registry)
 	{

@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Caching;
+use Prado\Prado;
+use Prado\TApplicationMode;
 
 /**
  * TApplicationStateCacheDependency class.

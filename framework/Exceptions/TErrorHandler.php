@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Exceptions;
+use \Prado\TApplicationMode;
+use \Prado\Prado;
 
 /**
  * TErrorHandler class
@@ -49,7 +51,7 @@ namespace Prado\Exceptions;
  * @package Prado\Exceptions
  * @since 3.0
  */
-class TErrorHandler extends TModule
+class TErrorHandler extends \Prado\TModule
 {
 	/**
 	 * error template file basename
@@ -149,7 +151,7 @@ class TErrorHandler extends TModule
 	protected static function hideSecurityRelated($value, $exception=null)
 	{
 		$aRpl = array();
-		if($exception !== null && $exception instanceof Exception)
+		if($exception !== null && $exception instanceof \Exception)
 		{
 			$aTrace = $exception->getTrace();
 			foreach($aTrace as $item)

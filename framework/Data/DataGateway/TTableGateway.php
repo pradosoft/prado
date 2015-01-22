@@ -76,7 +76,7 @@ Prado::using('System.Data.DataGateway.TDataGatewayCommand');
  * @package Prado\Data\DataGateway
  * @since 3.1
  */
-class TTableGateway extends TComponent
+class TTableGateway extends \Prado\TComponent
 {
 	private $_command;
 	private $_connection;

@@ -10,8 +10,13 @@
  */
 
 namespace Prado\Web;
-
-Prado::using('System.Web.TUrlManager');
+use Prado\Caching\TFileCacheDependency;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TPhpErrorException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\TApplicationMode;
 
 /**
  * THttpRequest class
@@ -68,7 +73,7 @@ Prado::using('System.Web.TUrlManager');
  * @package Prado\Web
  * @since 3.0
  */
-class THttpRequest extends TApplicationComponent implements IteratorAggregate,ArrayAccess,Countable,IModule
+class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
 	const CGIFIX__PATH_INFO		= 1;
 	const CGIFIX__SCRIPT_NAME	= 2;
@@ -813,7 +818,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns an iterator for traversing the items in the list.
-	 * This method is required by the interface IteratorAggregate.
+	 * This method is required by the interface \IteratorAggregate.
 	 * @return Iterator an iterator for traversing the items in the list.
 	 */
 	public function getIterator()
@@ -831,7 +836,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns the number of items in the request.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of items in the request.
 	 */
 	public function count()
@@ -915,7 +920,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns whether there is an element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to check on
 	 * @return boolean
 	 */
@@ -926,7 +931,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Returns the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -937,7 +942,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Sets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
@@ -948,7 +953,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 
 	/**
 	 * Unsets the element at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed the offset to unset element
 	 */
 	public function offsetUnset($offset)

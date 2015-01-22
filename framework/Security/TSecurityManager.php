@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Security;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\TPropertyValue;
 
 /**
  * TSecurityManager class
@@ -39,7 +42,7 @@ namespace Prado\Security;
  * @package Prado\Security
  * @since 3.0
  */
-class TSecurityManager extends TModule
+class TSecurityManager extends \Prado\TModule
 {
 	const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
 	const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';

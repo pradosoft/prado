@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class TDataSourceView extends TComponent
+abstract class TDataSourceView extends \Prado\TComponent
 {
 	private $_owner;
 	private $_name;

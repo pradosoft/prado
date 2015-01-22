@@ -45,7 +45,7 @@ namespace Prado\Util;
  * @since 3.2
  */
 
-class TRpcClient extends TApplicationComponent
+class TRpcClient extends \Prado\TApplicationComponent
 {
 	/**
 	 * @var string url of the RPC server

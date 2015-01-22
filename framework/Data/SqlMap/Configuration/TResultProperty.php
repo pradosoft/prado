@@ -33,7 +33,7 @@ namespace Prado\Data\SqlMap\Configuration;
  * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
-class TResultProperty extends TComponent
+class TResultProperty extends \Prado\TComponent
 {
 	private $_nullValue;
 	private $_propertyName;
@@ -275,7 +275,7 @@ class TResultProperty extends TComponent
 	}
 
 	/**
-	 * Determines if the type is an instance of ArrayAccess, TList or an array.
+	 * Determines if the type is an instance of \ArrayAccess, TList or an array.
 	 * @return int TResultProperty::LIST_TYPE or TResultProperty::ARRAY_TYPE
 	 */
 	protected function getPropertyValueType()
@@ -308,10 +308,10 @@ class TResultProperty extends TComponent
 	}
 
 	/**
-	 * Returns true if the result property {@link Type getType()} is of ArrayAccess
-	 * or that the actual result object is an array or implements ArrayAccess
+	 * Returns true if the result property {@link Type getType()} is of \ArrayAccess
+	 * or that the actual result object is an array or implements \ArrayAccess
 	 * @param object result object
-	 * @return boolean true if the result object is an instance of ArrayAccess or is an array.
+	 * @return boolean true if the result object is an instance of \ArrayAccess or is an array.
 	 */
 	public function instanceOfArrayType($target)
 	{
@@ -319,7 +319,7 @@ class TResultProperty extends TComponent
 		{
 			$prop = TPropertyAccess::get($target,$this->getProperty());
 			if(is_object($prop))
-				return $prop instanceof ArrayAccess;
+				return $prop instanceof \ArrayAccess;
 			return is_array($prop);
 		}
 		return $this->getPropertyValueType() == self::ARRAY_TYPE;

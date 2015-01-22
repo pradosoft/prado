@@ -14,7 +14,7 @@ namespace Prado\Collections;
 /**
  * TPagedListIterator class
  *
- * TPagedListIterator implements Iterator interface.
+ * TPagedListIterator implements \Iterator interface.
  *
  * TPagedListIterator is used by {@link TPagedDataSource}. It allows TPagedDataSource
  * to return a new iterator for traversing the items in a {@link TList} object.
@@ -23,7 +23,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TPagedListIterator implements Iterator
+class TPagedListIterator implements \Iterator
 {
 	private $_list;
 	private $_startIndex;

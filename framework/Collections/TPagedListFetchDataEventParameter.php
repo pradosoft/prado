@@ -26,7 +26,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TPagedListFetchDataEventParameter extends TEventParameter
+class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 {
 	private $_pageIndex;
 	private $_offset;

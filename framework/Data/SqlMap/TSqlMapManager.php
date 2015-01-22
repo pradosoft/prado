@@ -41,7 +41,7 @@ Prado::using('System.Caching.TCache');
  * @package Prado\Data\SqlMap
  * @since 3.1
  */
-class TSqlMapManager extends TComponent
+class TSqlMapManager extends \Prado\TComponent
 {
 	private $_mappedStatements;
 	private $_resultMaps;

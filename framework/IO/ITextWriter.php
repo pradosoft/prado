@@ -6,24 +6,29 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\IO
  */
 
-namespace Prado;
+namespace Prado\IO;
 
 /**
- * IBindable interface.
+ * ITextWriter interface.
  *
- * This interface must be implemented by classes that are capable of performing databinding.
+ * This interface must be implemented by writers.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
+ * @package Prado\IO
  * @since 3.0
  */
-interface IBindable
+interface ITextWriter
 {
 	/**
-	 * Performs databinding.
+	 * Writes a string.
+	 * @param string string to be written
 	 */
-	public function dataBind();
+	public function write($str);
+	/**
+	 * Flushes the content that has been written.
+	 */
+	public function flush();
 }

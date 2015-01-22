@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Xml;
+use Prado\Exceptions\TIOException;
 
 /**
  * TXmlDocument class.
@@ -138,7 +139,7 @@ class TXmlDocument extends TXmlElement
 	public function loadFromString($string)
 	{
 		// TODO: since PHP 5.1, we can get parsing errors and throw them as exception
-		$doc=new DOMDocument();
+		$doc=new \DOMDocument();
 		if($doc->loadXML($string)===false)
 			return false;
 
@@ -175,7 +176,7 @@ class TXmlDocument extends TXmlElement
 			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') .$name,$attr->value);
 		foreach($element->childNodes as $child)
 		{
-			if($child instanceof DOMElement)
+			if($child instanceof \DOMElement)
 				$elements->add($this->buildElement($child));
 		}
 
@@ -243,7 +244,7 @@ class TXmlDocument extends TXmlElement
 
 		foreach($node->childNodes as $child)
 		{
-			if($child instanceof DOMElement)
+			if($child instanceof \DOMElement)
 				$element->getElements()->add($this->buildElement($child));
 		}
 		return $element;

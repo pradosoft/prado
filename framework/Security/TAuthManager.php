@@ -10,11 +10,11 @@
  */
 
 namespace Prado\Security;
-
-/**
- * Using IUserManager interface
- */
-Prado::using('System.Security.IUserManager');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
+use Prado\Web\Services\TPageService;
+use Prado\Web\THttpCookie;
 
 /**
  * TAuthManager class
@@ -41,7 +41,7 @@ Prado::using('System.Security.IUserManager');
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthManager extends TModule
+class TAuthManager extends \Prado\TModule
 {
 	/**
 	 * GET variable name for return url

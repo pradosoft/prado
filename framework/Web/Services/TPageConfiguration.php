@@ -10,6 +10,12 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\Security\TAuthorizationRuleCollection;
+use Prado\TApplication;
+use Prado\Xml\TXmlElement;
+use Prado\Xml\TXmlDocument;
 
 /**
  * TPageConfiguration class
@@ -22,7 +28,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.0
  */
-class TPageConfiguration extends TComponent
+class TPageConfiguration extends \Prado\TComponent
 {
 	/**
 	 * @var array list of application configurations

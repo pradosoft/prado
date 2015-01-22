@@ -21,7 +21,7 @@ namespace Prado\Web\UI;
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TControlAdapter extends TApplicationComponent
+class TControlAdapter extends \Prado\TApplicationComponent
 {
 	/**
 	 * @var TControl the control to which the adapter is attached

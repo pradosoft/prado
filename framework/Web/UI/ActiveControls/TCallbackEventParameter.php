@@ -32,7 +32,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TCallbackEventParameter extends TEventParameter
+class TCallbackEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var THttpResponse output content.

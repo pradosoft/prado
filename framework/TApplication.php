@@ -10,35 +10,15 @@
  */
 
 namespace Prado;
-
-/**
- * Includes core interfaces essential for TApplication class
- */
-require_once(PRADO_DIR.'/interfaces.php');
-
-/**
- * Includes core classes essential for TApplication class
- */
-Prado::using('System.TApplicationComponent');
-Prado::using('System.TModule');
-Prado::using('System.TService');
-Prado::using('System.Exceptions.TErrorHandler');
-Prado::using('System.Caching.TCache');
-Prado::using('System.IO.TTextWriter');
-Prado::using('System.Collections.TPriorityList');
-Prado::using('System.Collections.TPriorityMap');
-Prado::using('System.Collections.TStack');
-Prado::using('System.Xml.TXmlDocument');
-Prado::using('System.Security.TAuthorizationRule');
-Prado::using('System.Security.TSecurityManager');
-Prado::using('System.Web.THttpUtility');
-Prado::using('System.Web.Javascripts.TJavaScript');
-Prado::using('System.Web.THttpRequest');
-Prado::using('System.Web.THttpResponse');
-Prado::using('System.Web.THttpSession');
-Prado::using('System.Web.Services.TPageService');
-Prado::using('System.Web.TAssetManager');
-Prado::using('System.I18N.TGlobalization');
+use Prado\Exceptions\TErrorHandler;
+use Prado\Exceptions\THttpException;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Security\TSecurityManager;
+use Prado\Web\TAssetManager;
+use Prado\Web\THttpRequest;
+use Prado\Web\THttpResponse;
+use Prado\Web\THttpSession;
+use Prado\Util\TLogger;
 
 /**
  * TApplication class.
@@ -109,7 +89,7 @@ Prado::using('System.I18N.TGlobalization');
  * @package Prado
  * @since 3.0
  */
-class TApplication extends TComponent
+class TApplication extends \Prado\TComponent
 {
 	/**
 	 * possible application mode.
@@ -213,7 +193,7 @@ class TApplication extends TComponent
 	 */
 	private $_lazyModules=array();
 	/**
-	 * @var TMap list of application parameters
+	 * @var \Prado\Collections\TMap list of application parameters
 	 */
 	private $_parameters;
 	/**
@@ -332,7 +312,7 @@ class TApplication extends TComponent
 
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
-		$this->_parameters=new TMap;
+		$this->_parameters=new \Prado\Collections\TMap;
 		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
 
 		Prado::setPathOfAlias('Application',$this->_basePath);
@@ -411,7 +391,7 @@ class TApplication extends TComponent
 				$this->_step++;
 			}
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$this->onError($e);
 		}
@@ -691,7 +671,7 @@ class TApplication extends TComponent
 	 * @param string ID of the module
 	 * @param IModule module object or null if the module has not been loaded yet
 	 */
-	public function setModule($id,IModule $module=null)
+	public function setModule($id, IModule $module=null)
 	{
 		if(isset($this->_modules[$id]))
 			throw new TConfigurationException('application_moduleid_duplicated',$id);
@@ -729,9 +709,9 @@ class TApplication extends TComponent
 
 	/**
 	 * Returns the list of application parameters.
-	 * Since the parameters are returned as a {@link TMap} object, you may use
+	 * Since the parameters are returned as a {@link \Prado\Collections\TMap} object, you may use
 	 * the returned result to access, add or remove individual parameters.
-	 * @return TMap the list of application parameters
+	 * @return \Prado\Collections\TMap the list of application parameters
 	 */
 	public function getParameters()
 	{
@@ -745,7 +725,7 @@ class TApplication extends TComponent
 	{
 		if(!$this->_request)
 		{
-			$this->_request=new THttpRequest;
+			$this->_request=new \Prado\Web\THttpRequest;
 			$this->_request->init(null);
 		}
 		return $this->_request;
@@ -896,7 +876,7 @@ class TApplication extends TComponent
 	/**
 	 * @param ICache the cache module
 	 */
-	public function setCache(ICache $cache)
+	public function setCache(\Prado\Caching\ICache $cache)
 	{
 		$this->_cache=$cache;
 	}
@@ -912,7 +892,7 @@ class TApplication extends TComponent
 	/**
 	 * @param IUser the application user
 	 */
-	public function setUser(IUser $user)
+	public function setUser(\Prado\Security\IUser $user)
 	{
 		$this->_user=$user;
 	}
@@ -934,7 +914,7 @@ class TApplication extends TComponent
 	/**
 	 * @param TGlobalization globalization module
 	 */
-	public function setGlobalization(TGlobalization $glob)
+	public function setGlobalization(\Prado\I18N\TGlobalization $glob)
 	{
 		$this->_globalization=$glob;
 	}
@@ -945,13 +925,13 @@ class TApplication extends TComponent
 	public function getAuthorizationRules()
 	{
 		if($this->_authRules===null)
-			$this->_authRules=new TAuthorizationRuleCollection;
+			$this->_authRules=new \Prado\Security\TAuthorizationRuleCollection;
 		return $this->_authRules;
 	}
 
 	protected function getApplicationConfigurationClass()
 	{
-		return 'TApplicationConfiguration';
+		return '\Prado\TApplicationConfiguration';
 	}
 
 	protected function internalLoadModule($id, $force=false)
@@ -959,12 +939,12 @@ class TApplication extends TComponent
 		list($moduleClass, $initProperties, $configElement)=$this->_lazyModules[$id];
 		if(isset($initProperties['lazy']) && $initProperties['lazy'] && !$force)
 		{
-			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})",'System.TApplication');
+			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})",'\Prado\TApplication');
 			$this->setModule($id, null);
 			return null;
 		}
 
-		Prado::trace("Loading module $id ({$moduleClass})",'System.TApplication');
+		Prado::trace("Loading module $id ({$moduleClass})",'\Prado\TApplication');
 		$module=Prado::createComponent($moduleClass);
 		foreach($initProperties as $name=>$value)
 		{

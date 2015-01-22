@@ -10,6 +10,13 @@
  */
 
 namespace Prado\Web;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\IO\TIOException;
+use Prado\IO\TTarFileExtractor;
 
 /**
  * TAssetManager class
@@ -42,7 +49,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class TAssetManager extends TModule
+class TAssetManager extends \Prado\TModule
 {
 	/**
 	 * Default web accessible base path for storing private files

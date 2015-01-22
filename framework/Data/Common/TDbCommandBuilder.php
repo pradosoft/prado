@@ -19,7 +19,7 @@ namespace Prado\Data\Common;
  * @package Prado\Data\Common
  * @since 3.1
  */
-class TDbCommandBuilder extends TComponent
+class TDbCommandBuilder extends \Prado\TComponent
 {
 	private $_connection;
 	private $_tableInfo;

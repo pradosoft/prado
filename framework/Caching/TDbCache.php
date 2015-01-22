@@ -10,7 +10,11 @@
  */
 
 namespace Prado\Caching;
-Prado::using('System.Data.TDbConnection');
+use Prado\Prado;
+use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbConnection;
+use Prado\Exceptions\TConfigurationException;
+use Prado\TPropertyValue;
 
 /**
  * TDbCache class
@@ -201,7 +205,7 @@ class TDbCache extends TCache
 				$this -> getApplication() -> setGlobalState($key, time());
 			}
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			// DB table not exists
 			if($this->_autoCreate)
@@ -464,7 +468,7 @@ class TDbCache extends TCache
 			$command=$this->getDbConnection()->createCommand($sql);
 			return unserialize($command->queryScalar());
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$this->initializeCache(true);
 			return unserialize($command->queryScalar());
@@ -503,12 +507,12 @@ class TDbCache extends TCache
 		try
 		{
 			$command=$this->getDbConnection()->createCommand($sql);
-			$command->bindValue(':key',$key,PDO::PARAM_STR);
-			$command->bindValue(':value',serialize($value),PDO::PARAM_LOB);
+			$command->bindValue(':key',$key,\PDO::PARAM_STR);
+			$command->bindValue(':value',serialize($value),\PDO::PARAM_LOB);
 			$command->execute();
 			return true;
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			try
 			{
@@ -516,7 +520,7 @@ class TDbCache extends TCache
 				$command->execute();
 				return true;
 			}
-			catch(Exception $e)
+			catch(\Exception $e)
 			{
 				return false;
 			}
@@ -535,11 +539,11 @@ class TDbCache extends TCache
 		try
 		{
 			$command=$this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-			$command->bindValue(':key',$key,PDO::PARAM_STR);
+			$command->bindValue(':key',$key,\PDO::PARAM_STR);
 			$command->execute();
 			return true;
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$this->initializeCache(true);
 			$command->execute();
@@ -559,7 +563,7 @@ class TDbCache extends TCache
 			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable}");
 			$command->execute();
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			try
 			{
@@ -567,7 +571,7 @@ class TDbCache extends TCache
 				$command->execute();
 				return true;
 			}
-			catch(Exception $e)
+			catch(\Exception $e)
 			{
 				return false;
 			}

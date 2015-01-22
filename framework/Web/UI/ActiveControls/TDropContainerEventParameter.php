@@ -21,7 +21,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package Prado\Web\UI\ActiveControls
  */
-class TDropContainerEventParameter extends TEventParameter
+class TDropContainerEventParameter extends \Prado\TEventParameter
 {
 	private $_dragElementId;
 	private $_screenX;

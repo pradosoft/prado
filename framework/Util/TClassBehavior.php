@@ -16,7 +16,7 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-class TClassBehavior extends TComponent implements IClassBehavior
+class TClassBehavior extends \Prado\TComponent implements IClassBehavior
 {
 
 	/**

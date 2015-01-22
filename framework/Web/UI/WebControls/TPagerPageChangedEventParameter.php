@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
-class TPagerPageChangedEventParameter extends TEventParameter
+class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var integer new page index

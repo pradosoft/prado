@@ -20,7 +20,7 @@ namespace Prado\Data\DataGateway;
  * @package Prado\Data\DataGateway
  * @since 3.1
  */
-class TDataGatewayResultEventParameter extends TEventParameter
+class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 {
 	private $_command;
 	private $_result;

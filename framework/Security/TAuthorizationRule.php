@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TAuthorizationRule class
@@ -30,7 +31,7 @@ namespace Prado\Security;
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthorizationRule extends TComponent
+class TAuthorizationRule extends \Prado\TComponent
 {
 	/**
 	 * @var string action, either 'allow' or 'deny'

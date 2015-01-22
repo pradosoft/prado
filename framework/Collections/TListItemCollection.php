@@ -12,12 +12,9 @@
  */
 
 namespace Prado\Collections;
-
-/**
- * Includes the supporting classes
- */
-Prado::using('System.Collections.TList');
-Prado::using('System.Web.UI.WebControls.TListItem');
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\TPropertyValue;
+use Prado\Web\TListItem;
 
 /**
  * TListItemCollection class.

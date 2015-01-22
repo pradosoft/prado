@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TBulletedListEventParameter extends TEventParameter
+class TBulletedListEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var integer index of the item clicked

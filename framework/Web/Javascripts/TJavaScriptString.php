@@ -10,16 +10,16 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Web\Javascripts
  */
 
-namespace Prado;
+namespace Prado\Web\Javascripts;
 
 /**
  * TJavaScriptString class is an internal class that marks strings that will be
  * forcibly encoded when rendered inside a javascript block
  *
- * @package Prado
+ * @package Prado\Web\Javascripts
  * @since 3.2.0
  */
 class TJavaScriptString extends TJavaScriptLiteral

@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Xml;
+use \Prado\TPropertyValue;
+use \Prado\Collections\TList;
+use \Prado\Collections\TMap;
 
 /**
  * TXmlElement class.
@@ -26,7 +29,7 @@ namespace Prado\Xml;
  * @package Prado\Xml
  * @since 3.0
  */
-class TXmlElement extends TComponent
+class TXmlElement extends \Prado\TComponent
 {
 	/**
 	 * @var TXmlElement parent of this element

@@ -23,7 +23,7 @@ namespace Prado;
  * @package Prado
  * @since 3.2.3
  */
-class TClassBehaviorEventParameter extends TEventParameter
+class TClassBehaviorEventParameter extends \Prado\TEventParameter
 {
 	private $_class;
 	private $_name;

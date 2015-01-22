@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TAuthorizationRuleCollection class.
@@ -20,7 +21,7 @@ namespace Prado\Security;
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthorizationRuleCollection extends TList
+class TAuthorizationRuleCollection extends \Prado\Collections\TList
 {
 	/**
 	 * @param IUser the user to be authorized

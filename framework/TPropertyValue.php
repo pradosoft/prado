@@ -14,6 +14,8 @@
  */
 
 namespace Prado;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\Javascripts\TJavascript;
 
 /**
  * TPropertyValue class
@@ -74,7 +76,7 @@ class TPropertyValue
 	 */
 	public static function ensureString($value)
 	{
-		if (TJavaScript::isJsLiteral($value))
+		if (TJavascript::isJsLiteral($value))
 			return $value;
 		if (is_bool($value))
 			return $value?'true':'false';
@@ -161,7 +163,7 @@ class TPropertyValue
 		if(func_num_args()===2 && is_string($enums))
 		{
 			if(!isset($types[$enums]))
-				$types[$enums]=new ReflectionClass($enums);
+				$types[$enums]=new \ReflectionClass($enums);
 			if($types[$enums]->hasConstant($value))
 				return $value;
 			else

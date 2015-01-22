@@ -18,7 +18,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
-class TCachingStatement extends TComponent implements IMappedStatement
+class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 {
 	private $_mappedStatement;
 

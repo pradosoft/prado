@@ -21,7 +21,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TPagedListPageChangedEventParameter extends TEventParameter
+class TPagedListPageChangedEventParameter extends \Prado\TEventParameter
 {
 	private $_oldPage;
 

@@ -21,7 +21,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-abstract class TService extends TApplicationComponent implements IService
+abstract class TService extends \Prado\TApplicationComponent implements IService
 {
 	/**
 	 * @var string service id

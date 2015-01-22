@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Xml;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TXmlElementList class.
@@ -21,7 +22,7 @@ namespace Prado\Xml;
  * @package Prado\Xml
  * @since 3.0
  */
-class TXmlElementList extends TList
+class TXmlElementList extends \Prado\Collections\TList
 {
 	/**
 	 * @var TXmlElement owner of this list

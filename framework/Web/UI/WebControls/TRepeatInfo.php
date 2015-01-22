@@ -29,7 +29,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeatInfo extends TComponent
+class TRepeatInfo extends \Prado\TComponent
 {
 	/**
 	 * @var string caption of the table used to organize the repeated items

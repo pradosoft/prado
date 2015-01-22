@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizardSideBarListItemTemplate extends TComponent implements ITemplate
+class TWizardSideBarListItemTemplate extends \Prado\TComponent implements ITemplate
 {
 	/**
 	 * Instantiates the template.

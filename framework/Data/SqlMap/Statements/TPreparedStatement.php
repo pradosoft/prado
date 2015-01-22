@@ -18,7 +18,7 @@ namespace Prado\Data\SqlMap\Statements;
  * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
-class TPreparedStatement extends TComponent
+class TPreparedStatement extends \Prado\TComponent
 {
 	private $_sqlString='';
 	private $_parameterNames;

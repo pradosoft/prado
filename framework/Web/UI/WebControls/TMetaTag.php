@@ -24,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TMetaTag extends TComponent
+class TMetaTag extends \Prado\TComponent
 {
 	/**
 	 * @var string id of the meta tag

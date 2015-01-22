@@ -26,7 +26,7 @@ namespace Prado\Collections;
  * @package Prado\Collections
  * @since 3.0
  */
-class TDummyDataSource extends TComponent implements IteratorAggregate, Countable
+class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, \Countable
 {
 	private $_count;
 
@@ -57,7 +57,7 @@ class TDummyDataSource extends TComponent implements IteratorAggregate, Countabl
 
 	/**
 	 * Returns the number of (virtual) items in the data source.
-	 * This method is required by Countable interface.
+	 * This method is required by \Countable interface.
 	 * @return integer number of (virtual) items in the data source.
 	 */
 	public function count()

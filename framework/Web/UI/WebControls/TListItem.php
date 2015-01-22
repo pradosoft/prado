@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TListItem extends TComponent
+class TListItem extends \Prado\TComponent
 {
 	/**
 	 * @var TMap list of custom attributes

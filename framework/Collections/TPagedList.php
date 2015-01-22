@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Collections;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TPagedList class
@@ -331,7 +333,7 @@ class TPagedList extends TList
 
 	/**
 	 * Returns whether there is an item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to check on
 	 * @return boolean
 	 */
@@ -342,7 +344,7 @@ class TPagedList extends TList
 
 	/**
 	 * Returns the item at the specified offset.
-	 * This method is required by the interface ArrayAccess.
+	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve item.
 	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid

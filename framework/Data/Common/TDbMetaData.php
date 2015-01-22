@@ -21,7 +21,7 @@ namespace Prado\Data\Common;
  * @package Prado\Data\Common
  * @since 3.1
  */
-abstract class TDbMetaData extends TComponent
+abstract class TDbMetaData extends \Prado\TComponent
 {
 	private $_tableInfoCache=array();
 	private $_connection;

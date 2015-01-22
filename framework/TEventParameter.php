@@ -23,6 +23,6 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  */
-class TEventParameter extends TComponent
+class TEventParameter extends \Prado\TComponent
 {
 }

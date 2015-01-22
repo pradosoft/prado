@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridPageChangedEventParameter extends TEventParameter
+class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * @var integer new page index

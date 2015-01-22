@@ -40,7 +40,7 @@ Prado::using('System.Data.TDbConnection');
  * @package Prado\Util
  * @since 3.0
  */
-class TLogRouter extends TModule
+class TLogRouter extends \Prado\TModule
 {
 	/**
 	 * @var array list of routes available

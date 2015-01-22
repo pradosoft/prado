@@ -21,7 +21,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TAutoCompleteTemplate extends TComponent implements ITemplate
+class TAutoCompleteTemplate extends \Prado\TComponent implements ITemplate
 {
 	private $_template;
 

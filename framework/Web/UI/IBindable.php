@@ -6,26 +6,24 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Web\UI
  */
 
-namespace Prado;
+namespace Prado\Web\UI;
 
 /**
- * IRenderable interface.
+ * IBindable interface.
  *
- * This interface must be implemented by classes that can be rendered
- * to end-users.
+ * This interface must be implemented by classes that are capable of performing databinding.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
+ * @package Prado\Web\UI
  * @since 3.0
  */
-interface IRenderable
+interface IBindable
 {
 	/**
-	 * Renders the component to end-users.
-	 * @param ITextWriter writer for the rendering purpose
+	 * Performs databinding.
 	 */
-	public function render($writer);
+	public function dataBind();
 }

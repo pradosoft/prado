@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\THttpException;
 
 /**
  * TJsonRpcProtocol class
@@ -86,7 +87,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 		{
 			throw $e;
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			return $this->createErrorResponse(new TRpcException('An internal error occured', '-32603'));
 		}
@@ -160,7 +161,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	{
 		$errnum = json_last_error();
 		if($errnum != JSON_ERROR_NONE)
-			throw new Exception("JSON error: $msg", $err);
+			throw new \Exception("JSON error: $msg", $err);
 	}
 
 	/**

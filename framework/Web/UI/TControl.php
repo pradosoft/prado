@@ -10,12 +10,11 @@
  */
 
 namespace Prado\Web\UI;
-
-/**
- * Includes TAttributeCollection and TControlAdapter class
- */
-Prado::using('System.Collections.TAttributeCollection');
-Prado::using('System.Web.UI.TControlAdapter');
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\ActiveControls\IActiveControl;
 
 /**
  * TControl class
@@ -68,7 +67,7 @@ Prado::using('System.Web.UI.TControlAdapter');
  * @package Prado\Web\UI
  * @since 3.0
  */
-class TControl extends TApplicationComponent implements IRenderable, IBindable
+class TControl extends \Prado\TApplicationComponent implements IRenderable, IBindable
 {
 	/**
 	 * format of control ID
@@ -867,7 +866,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindProperties()
 	{
-		Prado::trace("Data bind properties",'System.Web.UI.TControl');
+		Prado::trace("Data bind properties",'Prado\Web\UI\TControl');
 		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
 		{
 			if(($context=$this->getTemplateControl())===null)
@@ -896,7 +895,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	protected function dataBindChildren()
 	{
-		Prado::trace("dataBindChildren()",'System.Web.UI.TControl');
+		Prado::trace("dataBindChildren()",'Prado\Web\UI\TControl');
 		if(isset($this->_rf[self::RF_CONTROLS]))
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1406,7 +1405,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	 */
 	public function onDataBinding($param)
 	{
-		Prado::trace("onDataBinding()",'System.Web.UI.TControl');
+		Prado::trace("onDataBinding()",'Prado\Web\UI\TControl');
 		$this->raiseEvent('OnDataBinding',$this,$param);
 	}
 

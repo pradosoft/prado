@@ -10,9 +10,11 @@
  */
 
 namespace Prado\Web;
-
-Prado::using('System.Web.TUrlManager');
-Prado::using('System.Collections.TAttributeCollection');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TUrlMapping Class
@@ -351,7 +353,7 @@ class TUrlMapping extends TUrlManager
 	{
 		if($this->_customUrl)
 		{
-			if(!(is_array($getItems) || ($getItems instanceof Traversable)))
+			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
 				$getItems=array();
 			$key=$serviceID.':'.$serviceParam;
 			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?

@@ -16,7 +16,7 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-class TBehavior extends TComponent implements IBehavior
+class TBehavior extends \Prado\TComponent implements IBehavior
 {
 	private $_enabled;
 	private $_owner;

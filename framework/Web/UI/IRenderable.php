@@ -6,29 +6,26 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Web\UI
  */
 
-namespace Prado;
+namespace Prado\Web\UI;
 
 /**
- * ITextWriter interface.
+ * IRenderable interface.
  *
- * This interface must be implemented by writers.
+ * This interface must be implemented by classes that can be rendered
+ * to end-users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
+ * @package Prado\Web\UI
  * @since 3.0
  */
-interface ITextWriter
+interface IRenderable
 {
 	/**
-	 * Writes a string.
-	 * @param string string to be written
+	 * Renders the component to end-users.
+	 * @param ITextWriter writer for the rendering purpose
 	 */
-	public function write($str);
-	/**
-	 * Flushes the content that has been written.
-	 */
-	public function flush();
+	public function render($writer);
 }

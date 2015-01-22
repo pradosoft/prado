@@ -24,7 +24,7 @@ namespace Prado\Web\Services;
  * @package Prado\Web\Services
  * @since 3.1
  */
-abstract class TJsonResponse extends TApplicationComponent
+abstract class TJsonResponse extends \Prado\TApplicationComponent
 {
 	private $_id='';
 

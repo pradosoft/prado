@@ -14,7 +14,7 @@ namespace Prado\Web;
 /**
  * TSessionIterator class
  *
- * TSessionIterator implements Iterator interface.
+ * TSessionIterator implements \Iterator interface.
  *
  * TSessionIterator is used by THttpSession. It allows THttpSession to return a new iterator
  * for traversing the session variables.
@@ -23,7 +23,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0
  */
-class TSessionIterator implements Iterator
+class TSessionIterator implements \Iterator
 {
 	/**
 	 * @var array list of keys in the map

@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataSourceSelectParameters extends TComponent
+class TDataSourceSelectParameters extends \Prado\TComponent
 {
 	private $_retrieveTotalRowCount=false;
 	private $_startRowIndex=0;
