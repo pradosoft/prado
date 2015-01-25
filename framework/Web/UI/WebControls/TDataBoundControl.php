@@ -10,10 +10,11 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TDataSourceControl');
-Prado::using('System.Web.UI.WebControls.TDataSourceView');
-Prado::using('System.Collections.TPagedDataSource');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
 
 /**
  * TDataBoundControl class.
@@ -43,7 +44,7 @@ Prado::using('System.Collections.TPagedDataSource');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class TDataBoundControl extends TWebControl
+abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 {
 	private $_initialized=false;
 	private $_dataSource=null;
@@ -334,7 +335,7 @@ abstract class TDataBoundControl extends TWebControl
 		else
 			$data=null;
 
-		if($data instanceof Traversable)
+		if($data instanceof \Traversable)
 		{
 			if($this->getAllowPaging())
 			{
@@ -486,7 +487,7 @@ abstract class TDataBoundControl extends TWebControl
 			// read array from TDbDataReader since it's forward-only stream and can only be traversed once
 			return $value->readAll();
 		}
-		else if(($value instanceof Traversable) || $value===null)
+		else if(($value instanceof \Traversable) || $value===null)
 			return $value;
 		else
 			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid',get_class($this));

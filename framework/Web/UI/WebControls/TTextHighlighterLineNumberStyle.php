@@ -16,7 +16,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTextHighlighterLineNumberStyle extends TEnumerable
+class TTextHighlighterLineNumberStyle extends \Prado\TEnumerable
 {
 	const Li='Li';
 	const Table='Table';

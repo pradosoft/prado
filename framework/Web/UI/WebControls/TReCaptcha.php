@@ -11,8 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.3rdParty.ReCaptcha.recaptchalib');
+use Prado\TPropertyValue;
 
 /**
  * TReCaptcha class.
@@ -53,7 +52,7 @@ Prado::using('System.3rdParty.ReCaptcha.recaptchalib');
  * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
-class TReCaptcha extends TWebControl implements IValidatable
+class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {
 	private $_isValid=true;
 

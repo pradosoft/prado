@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * Class TAccordionView.
@@ -25,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
-class TAccordionView extends TWebControl
+class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 {
 	private $_active=false;
 

@@ -10,14 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TMultiView');
-Prado::using('System.Web.UI.WebControls.TPanel');
-Prado::using('System.Web.UI.WebControls.TButton');
-Prado::using('System.Web.UI.WebControls.TLinkButton');
-Prado::using('System.Web.UI.WebControls.TImageButton');
-Prado::using('System.Web.UI.WebControls.TDataList');
-Prado::using('System.Web.UI.WebControls.TWizardNavigationButtonStyle');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * Class TWizard.
@@ -81,7 +75,7 @@ Prado::using('System.Web.UI.WebControls.TWizardNavigationButtonStyle');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizard extends TWebControl implements INamingContainer
+class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * Wizard step types.
@@ -1142,7 +1136,7 @@ class TWizard extends TWebControl implements INamingContainer
 			// if the button clicked causes validation which fails,
 			// by default we will cancel navigation to the new step
 			$button=$param->getCommandSource();
-			if(($button instanceof IButtonControl) && $button->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
+			if(($button instanceof \Prado\Web\UI\IButtonControl) && $button->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
 				$navParam->setCancelNavigation(true);
 
 			$this->_activeStepIndexSet=false;
@@ -1347,7 +1341,7 @@ class TWizard extends TWebControl implements INamingContainer
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$command=$param->getCommandName();
 			if(strcasecmp($command,self::CMD_CANCEL)===0)
@@ -1359,7 +1353,7 @@ class TWizard extends TWebControl implements INamingContainer
 			$type=$this->getStepType($this->getActiveStep());
 			$index=$this->getActiveStepIndex();
 			$navParam=new TWizardNavigationEventParameter($index);
-			if(($sender instanceof IButtonControl) && $sender->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
+			if(($sender instanceof \Prado\Web\UI\IButtonControl) && $sender->getCausesValidation() && ($page=$this->getPage())!==null && !$page->getIsValid())
 				$navParam->setCancelNavigation(true);
 
 			$handled=false;

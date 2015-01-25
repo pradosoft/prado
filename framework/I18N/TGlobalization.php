@@ -10,6 +10,8 @@
  */
 
 namespace Prado\I18N;
+use Prado\TApplication;
+use Prado\TPropertyValue;
 
 /**
  * TGlobalization contains settings for Culture, Charset

@@ -10,7 +10,7 @@
  */
 
 namespace Prado\Web\UI;
-use Prado\THttpUtility;
+use Prado\Web\THttpUtility;
 
 /**
  * THtmlWriter class

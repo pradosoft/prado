@@ -23,7 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWebControlAdapter extends TControlAdapter
+class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 {
 	/**
 	 * Renders the control to which the adapter is attached.

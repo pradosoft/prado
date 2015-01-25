@@ -20,7 +20,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TTextBoxAutoCompleteType extends TEnumerable
+class TTextBoxAutoCompleteType extends \Prado\TEnumerable
 {
 	const BusinessCity='BusinessCity';
 	const BusinessCountryRegion='BusinessCountryRegion';

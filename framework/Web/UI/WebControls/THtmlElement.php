@@ -9,9 +9,7 @@
  * @package Prado\Web\UI\WebControls
  */
 namespace Prado\Web\UI\WebControls;
-
-
-Prado::using('System.Web.UI.WebControls.TWebControl');
+use Prado\TPropertyValue;
 
 /**
  * THtmlElement class.
@@ -27,7 +25,7 @@ Prado::using('System.Web.UI.WebControls.TWebControl');
  * @package Prado\Web\UI\WebControls
  * @since 3.1.2
  */
-class THtmlElement extends TWebControl
+class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * @var the tag of this element

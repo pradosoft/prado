@@ -10,11 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 
 /**
  * TLiteralColumn class

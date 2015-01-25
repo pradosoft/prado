@@ -15,6 +15,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\IActiveControl;
+use Prado\Collections\TAttributeCollection;
 
 /**
  * TControl class

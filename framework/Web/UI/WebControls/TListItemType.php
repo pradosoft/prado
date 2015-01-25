@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TListItemType extends TEnumerable
+class TListItemType extends \Prado\TEnumerable
 {
 	const Header='Header';
 	const Footer='Footer';

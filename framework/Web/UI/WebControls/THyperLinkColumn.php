@@ -12,15 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
-/**
- * THyperLink class file
- */
-Prado::using('System.Web.UI.WebControls.THyperLink');
-
-/**
  * THyperLinkColumn class
  *
  * THyperLinkColumn contains a hyperlink for each item in the column.

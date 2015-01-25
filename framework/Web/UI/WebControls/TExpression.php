@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TExpression extends TControl
+class TExpression extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @var string PHP expression to be evaluated

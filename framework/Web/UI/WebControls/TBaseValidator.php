@@ -10,11 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TLabel class
- */
-Prado::using('System.Web.UI.WebControls.TLabel');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TBaseValidator class
@@ -490,11 +487,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Retrieves the property value of the control being validated.
 	 * @param TControl control being validated
 	 * @return string property value to be validated
-	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link IValidatable}.
+	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
 	 */
 	protected function getValidationValue($control)
 	{
-		if($control instanceof IValidatable)
+		if($control instanceof \Prado\Web\UI\IValidatable)
 			return $control->getValidationPropertyValue();
 		else
 			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));

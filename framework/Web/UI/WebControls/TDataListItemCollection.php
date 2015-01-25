@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataListItemCollection class.
@@ -20,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataListItemCollection extends TList
+class TDataListItemCollection extends \Prado\Collections\TList
 {
 	/**
 	 * Inserts an item at the specified position.

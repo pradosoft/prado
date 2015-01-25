@@ -28,7 +28,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TContentPlaceHolder extends TControl
+class TContentPlaceHolder extends \Prado\Web\UI\TControl
 {
 	/**
 	 * This method is invoked after the control is instantiated on a template.

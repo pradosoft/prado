@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TDataSourceSelectParameters class

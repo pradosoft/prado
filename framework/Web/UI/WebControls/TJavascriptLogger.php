@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TJavascriptLogger extends TWebControl
+class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 {
 	private static $_keyCodes = array(
 		'0'=>48, '1'=>49, '2'=>50, '3'=>51, '4'=>52, '5'=>53, '6'=>54, '7'=>55, '8'=>56, '9'=>57,

@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TBaseValidator class
- */
-Prado::using('System.Web.UI.WebControls.TBaseValidator');
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TCustomValidator class

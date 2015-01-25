@@ -10,11 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TRadioButtonList class
- */
-Prado::using('System.Web.UI.WebControls.TRadioButtonList');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TRatingList class.

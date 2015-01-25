@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * Class TAccordionViewCollection.
@@ -21,7 +22,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
-class TAccordionViewCollection extends TControlCollection
+class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 {
 	/**
 	 * Inserts an item at the specified position.

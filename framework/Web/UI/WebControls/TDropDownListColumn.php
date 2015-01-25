@@ -10,9 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
-Prado::using('System.Web.UI.WebControls.TDropDownList');
+use Prado\TPropertyValue;
 
 /**
  * TDropDownListColumn class

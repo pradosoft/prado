@@ -10,10 +10,26 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Prado;
 
-Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter',false);
-Prado::using('System.3rdParty.TextHighlighter.Text.Highlighter.Renderer.Html',false);
-Prado::using('System.Web.UI.WebControls.TTextProcessor');
+// BC trick : only define constants if Text/Highlighter.php
+// is not yet included
+if (!defined('HL_NUMBERS_LI')) {
+    /**#@+
+     * Constant for use with $options['numbers']
+     */
+    /**
+     * use numbered list, deprecated, use HL_NUMBERS_OL instaed
+     * @deprecated
+     */
+    define ('HL_NUMBERS_LI'    ,    1);
+    /**
+     * Use 2-column table with line numbers in left column and code in  right column.
+     */
+    define ('HL_NUMBERS_TABLE'    , 2);
+    /**#@-*/
+}
 
 
 /**
@@ -149,7 +165,7 @@ class TTextHighlighter extends TTextProcessor
 	protected function registerStyleSheet()
 	{
 		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('System.3rdParty.TextHighlighter.highlight','.css');
+		$cssFile=Prado::getPathOfNamespace('Prado\\3rdParty\\TextHighlighter\\highlight','.css');
 		$cssKey='prado:TTextHighlighter:'.$cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
@@ -165,9 +181,9 @@ class TTextHighlighter extends TTextProcessor
 	{
 		try
 		{
-			$highlighter=Text_Highlighter::factory($this->getLanguage());
+			$highlighter=\Prado\3rdParty\TextHighlighter\Text\Highlighter::factory($this->getLanguage());
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$highlighter=false;
 		}

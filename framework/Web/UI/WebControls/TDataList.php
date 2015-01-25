@@ -10,15 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TBaseDataList class
- */
-Prado::using('System.Web.UI.WebControls.TBaseDataList');
-/**
- * Includes TRepeatInfo class
- */
-Prado::using('System.Web.UI.WebControls.TRepeatInfo');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataList class
@@ -45,7 +39,7 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * as an external template (in fact, it can also be non-templated controls).
  *
  * A renderer can be any control class.
- * - If the class implements {@link IDataRenderer}, the <b>Data</b>
+ * - If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
  * implement this interface, such as {@link TLabel}, {@link TTextBox}, etc.
  * - If the class implements {@link IItemDataRenderer}, the <b>ItemIndex</b> property will be set
@@ -150,7 +144,7 @@ Prado::using('System.Web.UI.WebControls.TRepeatInfo');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUser
+class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer, IRepeatInfoUser
 {
 	/**
 	 * Command name that TDataList understands. They are case-insensitive.
@@ -1161,7 +1155,7 @@ class TDataList extends TBaseDataList implements INamingContainer, IRepeatInfoUs
 		if(($item=$this->createItem($itemIndex,$itemType))!==null)
 		{
 			$param=new TDataListItemEventParameter($item);
-			if($item instanceof IDataRenderer)
+			if($item instanceof \Prado\IDataRenderer)
 				$item->setData($dataItem);
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);

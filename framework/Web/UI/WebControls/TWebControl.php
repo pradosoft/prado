@@ -10,13 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TStyle and TWebAdapter definition
- */
-Prado::using('System.Web.UI.WebControls.TStyle');
-Prado::using('System.Web.UI.WebControls.TWebControlAdapter');
-Prado::using('System.Web.UI.WebControls.TWebControlDecorator');
+use Prado\Prado;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TWebControl class
@@ -39,7 +35,7 @@ Prado::using('System.Web.UI.WebControls.TWebControlDecorator');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWebControl extends TControl implements IStyleable
+class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 {
 	/**
 	 *	@var boolean ensures the inclusion the id in the tag rendering.

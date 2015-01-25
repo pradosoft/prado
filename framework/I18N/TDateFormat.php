@@ -59,7 +59,7 @@ Prado::using('System.I18N.TI18NControl');
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\I18N
  */
-class TDateFormat extends TI18NControl implements IDataRenderer
+class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
 	 * Default DateFormat, set to the application culture.
@@ -186,7 +186,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 
 	/**
 	 * Get the date-time value for this control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getValue()}.
 	 * @return string date time value.
 	 * @see getValue
@@ -199,7 +199,7 @@ class TDateFormat extends TI18NControl implements IDataRenderer
 
 	/**
 	 * Set the date-time value for this control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
 	 * @param string the date-time value.
 	 * @see setValue

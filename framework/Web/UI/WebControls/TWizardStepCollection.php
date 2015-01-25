@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TWizardStepCollection class.
@@ -21,7 +22,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizardStepCollection extends TList
+class TWizardStepCollection extends \Prado\Collections\TList
 {
 	/**
 	 * @var TWizard

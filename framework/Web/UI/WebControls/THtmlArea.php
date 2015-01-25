@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TTextBox class
- */
-Prado::using('System.Web.UI.WebControls.TTextBox');
+use Prado\TPropertyValue;
 
 /**
  * THtmlArea class

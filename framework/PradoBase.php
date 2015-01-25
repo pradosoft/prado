@@ -13,6 +13,7 @@
  */
 
 namespace Prado;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Util\TLogger;
@@ -52,11 +53,15 @@ class PradoBase
 	/**
 	 * @var array list of path aliases
 	 */
-	private static $_aliases=array('System'=>PRADO_DIR);
+	private static $_aliases=array(
+		'Prado'=>PRADO_DIR
+		);
 	/**
 	 * @var array list of namespaces currently in use
 	 */
-	private static $_usings=array();
+	private static $_usings=array(
+		'Prado'=>PRADO_DIR
+		);
 	/**
 	 * @var TApplication the application instance
 	 */
@@ -65,13 +70,35 @@ class PradoBase
 	 * @var TLogger logger instance
 	 */
 	private static $_logger=null;
-
+	/**
+	 * @var array list of class exists checks
+	 */
+	protected static $classExists = array();
+	/**
+	 * @var Autoloader instance
+	 */
+	private static $_loader=null;
 	/**
 	 * @return string the version of Prado framework
 	 */
 	public static function getVersion()
 	{
-		return '3.3.2';
+		return '3.3.99';
+	}
+
+	public static function init()
+	{
+		static::initAutoloader();
+		static::initErrorHandlers();
+	}
+
+	/**
+	 * Registers the autoload function.
+	 */
+	public static function initAutoloader()
+	{
+		self::$_loader  = require_once __DIR__ . '/../vendor/autoload.php';
+		spl_autoload_register(array(get_called_class(), 'autoload'));
 	}
 
 	/**
@@ -100,6 +127,24 @@ class PradoBase
 	}
 
 	/**
+	 * Class autoload loader.
+	 * This method is provided to be invoked within an __autoload() magic method.
+	 * @param string class name
+	 */
+	public static function autoload($className)
+	{
+		static::using($className);
+	}
+
+	/**
+	 * retrieve the current autoloader object
+	 */
+	public static function getAutoloader()
+	{
+		return self::$_loader;
+	}
+
+	/**
 	 * @param integer the type of "powered logo". Valid values include 0 and 1.
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
@@ -109,7 +154,7 @@ class PradoBase
 		if(self::$_application!==null)
 		{
 			$am=self::$_application->getAssetManager();
-			$url=$am->publishFilePath(self::getPathOfNamespace('System.'.$logoName,'.gif'));
+			$url=$am->publishFilePath(self::getPathOfNamespace('Prado\\'.$logoName,'.gif'));
 		}
 		else
 			$url='http://pradosoft.github.io/docs/'.$logoName.'.gif';
@@ -209,20 +254,20 @@ class PradoBase
 	 * @return string Equivalent class name in PHP namespace format
 	 */
 
-	protected static function prado3NamespaceToPhpNamespace(&$type)
+	protected static function prado3NamespaceToPhpNamespace($type)
 	{
 		if(substr($type, 0, 6) === 'System')
 			$type='Prado'.substr($type, 6);
 
-		return str_replace($type, '.', '\\');
+		return str_replace('.', '\\', $type);
 	}
 
 	/**
 	 * Creates a component with the specified type.
 	 * A component type can be either the component class name
 	 * or a namespace referring to the path of the component class file.
-	 * For example, 'TButton', '\Prado\Web|UI\WeControls\',
-	 * 'System.Web.UI.WebControls.TButton' are valid component type.
+	 * For example, 'TButton', '\Prado\Web|UI\WeControls\TButton' are both
+	 * valid component type.
 	 * This method can also pass parameters to component constructors.
 	 * All parameters passed to this method except the first one (the component type)
 	 * will be supplied as component constructor parameters.
@@ -232,15 +277,21 @@ class PradoBase
 	 */
 	public static function createComponent($type)
 	{
-		self::prado3NamespaceToPhpNamespace($type);
+		$type = static::prado3NamespaceToPhpNamespace($type);
 
-		if(!class_exists($type,true) && !interface_exists($type,true))
-			self::fatalError("Class file for '$type' cannot be found.");
+		if(!isset(self::$classExists[$type]))
+			self::$classExists[$type] = class_exists($type, false);
 
-		// Instanciate the object
+		if( !isset(self::$_usings[$type]) && !self::$classExists[$type]) {
+			static::using($type);
+			self::$classExists[$type] = class_exists($type, false);
+		}
+
+		if( ($pos = strrpos($type, '\\')) !== false)
+			$type = substr($type,$pos+1);
+
 		if(($n=func_num_args())>1)
 		{
-			// ReflectionClass::newInstanceArgs can't accept refereces
 			$args = func_get_args();
 			switch($n) {
 				case 2:
@@ -279,35 +330,40 @@ class PradoBase
 	 */
 	public static function using($namespace,$checkClassExistence=true)
 	{
-		self::prado3NamespaceToPhpNamespace($type);
+		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
 		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false))
 			return;
-		if(($pos=strrpos($namespace,'\\'))===false)  // a class name
+		if(($pos=strrpos($namespace,'\\'))===false)
 		{
-			try
+			// trying to autoload an old class name
+			foreach(self::$_usings as $k => $v)
 			{
-				include_once($namespace.self::CLASS_FILE_EXT);
+				$path = $v . DIRECTORY_SEPARATOR . $namespace . self::CLASS_FILE_EXT;
+				if(file_exists($path))
+				{
+					$phpNamespace = '\\'. $k.'\\'.$namespace;
+					if(class_exists($phpNamespace, true))
+					{
+						class_alias($phpNamespace, $namespace, true);
+						return;
+					}
+				}
 			}
-			catch(\Exception $e)
-			{
-				if($checkClassExistence && !class_exists($namespace,false))
-					throw new TInvalidOperationException('prado_component_unknown',$namespace,$e->getMessage());
-				else
-					throw $e;
-			}
+
+			if($checkClassExistence && !class_exists($namespace,false))
+				throw new TInvalidOperationException('prado_component_unknown',$namespace,'');
 		}
 		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null)
 		{
 			$className=substr($namespace,$pos+1);
 			if($className==='*')  // a directory
 			{
-				self::$_usings[$namespace]=$path;
-				set_include_path(get_include_path().PATH_SEPARATOR.$path);
+				self::$_usings[substr($namespace, 0, $pos)]=$path;
 			}
 			else  // a file
 			{
-				self::$_usings[$namespace]=$path;
+				//self::$_usings[$namespace]=$path;
 				if(!$checkClassExistence || !class_exists($className,false))
 				{
 					try
@@ -324,8 +380,6 @@ class PradoBase
 				}
 			}
 		}
-		else
-			throw new TInvalidDataValueException('prado_using_invalid',$namespace);
 	}
 
 	/**
@@ -342,7 +396,7 @@ class PradoBase
 	 */
 	public static function getPathOfNamespace($namespace, $ext='')
 	{
-		self::prado3NamespaceToPhpNamespace($namespace);
+		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
 		if(self::CLASS_FILE_EXT === $ext || empty($ext))
 		{

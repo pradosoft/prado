@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TSafeHtml class
@@ -38,7 +39,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TSafeHtml extends TControl
+class TSafeHtml extends \Prado\Web\UI\TControl
 {
 	/**
 	 * Sets whether to parse the contents as UTF-7. This property enables a routine

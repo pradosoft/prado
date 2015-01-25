@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TValidationDataType extends TEnumerable
+class TValidationDataType extends \Prado\TEnumerable
 {
 	const Integer='Integer';
 	const Float='Float';

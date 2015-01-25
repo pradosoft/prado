@@ -11,9 +11,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-Prado::using('System.Web.UI.WebControls.TRepeater');
-Prado::using('System.Web.UI.WebControls.TItemDataRenderer');
-
 /**
  * TRepeaterItemRenderer class
  *
@@ -38,7 +35,7 @@ class TRepeaterItemRenderer extends TItemDataRenderer
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TRepeaterCommandEventParameter($this,$sender,$param));
 			return true;

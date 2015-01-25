@@ -23,7 +23,7 @@ namespace Prado\Data\ActiveRecord\Scaffold;
   * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
-interface IScaffoldEditRenderer extends IDataRenderer
+interface IScaffoldEditRenderer extends \Prado\IDataRenderer
 {
 	/**
 	 * This method should update the record with the user input data.

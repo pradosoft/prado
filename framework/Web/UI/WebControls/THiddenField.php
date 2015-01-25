@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * THiddenField class
@@ -23,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class THiddenField extends TControl implements IPostBackDataHandler, IValidatable, IDataRenderer
+class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer
 {
 	private $_dataChanged=false;
 	private $_isValid=true;
@@ -94,7 +95,7 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -104,7 +105,7 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
+	 * This methid is required by \Prado\Web\UI\IValidatable interface.
 	 * @return mixed the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()
@@ -170,7 +171,7 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns the value of the hidden field.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getValue()}.
 	 * @return string value of the hidden field
 	 * @see getValue
@@ -183,7 +184,7 @@ class THiddenField extends TControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Sets the value of the hidden field.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
 	 * @param string value of the hidden field
 	 * @see setValue

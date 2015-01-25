@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TRepeaterItem class
@@ -24,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeaterItem extends TControl implements INamingContainer, IItemDataRenderer
+class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer, IItemDataRenderer
 {
 	/**
 	 * index of the data item in the Items collection of repeater
@@ -124,7 +125,7 @@ class TRepeaterItem extends TControl implements INamingContainer, IItemDataRende
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TRepeaterCommandEventParameter($this,$sender,$param));
 			return true;

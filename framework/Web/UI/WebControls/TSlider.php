@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TSlider class
@@ -46,7 +47,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
+class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\IDataRenderer
 {
 	const MAX_STEPS=200;
 	/**
@@ -179,7 +180,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 
 	/**
 	 * Returns the value of the TSlider control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getValue()}.
 	 * @return string the value of the TSlider control.
 	 * @see getValue
@@ -191,7 +192,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 
 	/**
 	 * Sets the value of the TSlider control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
 	 * @param string the value of the TSlider control.
 	 * @see setValue
@@ -252,7 +253,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -262,7 +263,7 @@ class TSlider extends TWebControl implements IPostBackDataHandler, IDataRenderer
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
 	 * It is invoked by the framework when {@link getValue Value} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.

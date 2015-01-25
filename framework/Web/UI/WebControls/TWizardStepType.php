@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TWizardStepType extends TEnumerable
+class TWizardStepType extends \Prado\TEnumerable
 {
 	const Auto='Auto';
 	const Complete='Complete';

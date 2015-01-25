@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TImage class file
- */
-Prado::using('System.Web.UI.WebControls.TImage');
+use Prado\TPropertyValue;
 
 /**
  * TImageButton class
@@ -34,7 +30,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * the {@link setCommandParameter CommandParameter} property value
  * through the {@link TCommandParameter::getName Name} and
  * {@link TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@link TCommandEventParameter}.
+ * parameter which is of type {@link \Prado\Web\UI\TCommandEventParameter}.
  *
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
@@ -56,7 +52,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEventHandler, IButtonControl
+class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler, IPostBackEventHandler, \Prado\Web\UI\IButtonControl
 {
 	/**
 	 * @var integer x coordinate that the image is being clicked at
@@ -209,7 +205,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	}
 
 	/**
-	 * A dummy implementation for the IPostBackDataHandler interface.
+	 * A dummy implementation for the \Prado\Web\UI\IPostBackDataHandler interface.
 	 */
 	public function raisePostDataChangedEvent()
 	{
@@ -233,7 +229,7 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{
@@ -255,12 +251,12 @@ class TImageButton extends TImage implements IPostBackDataHandler, IPostBackEven
 		if($this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onClick(new TImageClickEventParameter($this->_x,$this->_y));
-		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()

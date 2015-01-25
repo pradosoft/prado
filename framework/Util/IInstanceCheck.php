@@ -10,10 +10,10 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Util
  */
 
-namespace Prado;
+namespace Prado\Util;
 
 /**
  * IInstanceCheck This interface allows objects to determine their own
@@ -22,7 +22,7 @@ namespace Prado;
  * particular objects other than themselves.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado
+ * @package Prado\Util
  * @since 3.2.3
  */
 interface IInstanceCheck {

@@ -23,7 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.4
  */
-class TDatePickerPositionMode extends TEnumerable
+class TDatePickerPositionMode extends \Prado\TEnumerable
 {
 	const Top='Top';
 	const Bottom='Bottom';

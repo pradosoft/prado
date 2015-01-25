@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TClientScript class
@@ -44,7 +45,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TClientScript extends TControl
+class TClientScript extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @return string comma delimited list of javascript libraries to included

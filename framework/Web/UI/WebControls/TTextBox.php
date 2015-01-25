@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TTextBox class
@@ -50,7 +53,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer
+class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer
 {
 	/**
 	 * Default number of rows (for MultiLine text box)
@@ -270,7 +273,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -280,7 +283,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
+	 * This methid is required by \Prado\Web\UI\IValidatable interface.
 	 * @return mixed the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()
@@ -320,7 +323,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
 	 * It is invoked by the framework when {@link getText Text} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
@@ -528,7 +531,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Returns the text content of the TTextBox control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getText()}.
 	 * @return string the text content of the TTextBox control.
 	 * @see getText
@@ -541,7 +544,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 
 	/**
 	 * Sets the text content of the TTextBox control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
 	 * @param string the text content of the TTextBox control.
 	 * @see setText

@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TTabView class.
@@ -33,7 +34,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TTabView extends TWebControl
+class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 {
 	private $_active=false;
 

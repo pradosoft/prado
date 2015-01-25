@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TOutputCache class.
@@ -67,7 +69,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
-class TOutputCache extends TControl implements INamingContainer
+class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
 	const CACHE_ID_PREFIX='prado:outputcache';
 	private $_cacheModuleID='';

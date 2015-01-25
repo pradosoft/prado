@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TMultiView class
@@ -36,7 +38,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TMultiView extends TControl
+class TMultiView extends \Prado\Web\UI\TControl
 {
 	const CMD_NEXTVIEW='NextView';
 	const CMD_PREVIOUSVIEW='PreviousView';
@@ -144,7 +146,7 @@ class TMultiView extends TControl
 	{
 		if($view->getActive())
 			return;
-		$triggerEvent=$triggerViewChangedEvent && ($this->getControlStage()>=TControl::CS_STATE_LOADED || ($this->getPage() && !$this->getPage()->getIsPostBack()));
+		$triggerEvent=$triggerViewChangedEvent && ($this->getControlStage()>=\Prado\Web\UI\TControl::CS_STATE_LOADED || ($this->getPage() && !$this->getPage()->getIsPostBack()));
 		foreach($this->getViews() as $v)
 		{
 			if($v===$view)
@@ -214,7 +216,7 @@ class TMultiView extends TControl
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if(!$this->_ignoreBubbleEvents && ($param instanceof TCommandEventParameter))
+		if(!$this->_ignoreBubbleEvents && ($param instanceof \Prado\Web\UI\TCommandEventParameter))
 		{
 			switch($param->getCommandName())
 			{

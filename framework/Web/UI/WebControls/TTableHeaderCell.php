@@ -10,12 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TTableCell class
- */
-Prado::using('System.Web.UI.WebControls.TTableCell');
-
+use Prado\TPropertyValue;
 
 /**
  * TTableHeaderCell class.

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TDataListItem class
@@ -24,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataListItem extends TWebControl implements INamingContainer, IItemDataRenderer
+class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer, IItemDataRenderer
 {
 	/**
 	 * index of the data item in the Items collection of DataList
@@ -151,7 +152,7 @@ class TDataListItem extends TWebControl implements INamingContainer, IItemDataRe
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
 			return true;

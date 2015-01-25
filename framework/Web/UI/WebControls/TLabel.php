@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TLabel class
@@ -30,7 +31,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TLabel extends TWebControl implements IDataRenderer
+class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
 	private $_forControl='';
 
@@ -109,7 +110,7 @@ class TLabel extends TWebControl implements IDataRenderer
 
 	/**
 	 * Returns the text value of the label.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getText()}.
 	 * @return string the text value of the label
 	 * @see getText
@@ -122,7 +123,7 @@ class TLabel extends TWebControl implements IDataRenderer
 
 	/**
 	 * Sets the text value of the label.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
 	 * @param string the text value of the label
 	 * @see setText

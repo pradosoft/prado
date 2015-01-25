@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TLiteral class
@@ -31,7 +32,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TLiteral extends TControl implements IDataRenderer
+class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 {
 	/**
 	 * @return string the static text of the TLiteral
@@ -52,7 +53,7 @@ class TLiteral extends TControl implements IDataRenderer
 
 	/**
 	 * Returns the static text of the TLiteral.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getText()}.
 	 * @return string the static text of the TLiteral
 	 * @see getText
@@ -65,7 +66,7 @@ class TLiteral extends TControl implements IDataRenderer
 
 	/**
 	 * Sets the static text of the TLiteral.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
 	 * @param string the static text of the TLiteral
 	 * @see setText

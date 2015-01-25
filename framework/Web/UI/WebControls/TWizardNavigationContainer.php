@@ -23,7 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TWizardNavigationContainer extends TControl implements INamingContainer
+class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
 	private $_previousButton=null;
 	private $_nextButton=null;

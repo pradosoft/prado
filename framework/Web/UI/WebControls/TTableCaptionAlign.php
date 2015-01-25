@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TTableCaptionAlign extends TEnumerable
+class TTableCaptionAlign extends \Prado\TEnumerable
 {
 	const NotSet='NotSet';
 	const Top='Top';

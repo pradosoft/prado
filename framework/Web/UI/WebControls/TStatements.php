@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TStatements extends TControl
+class TStatements extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @var string PHP statements

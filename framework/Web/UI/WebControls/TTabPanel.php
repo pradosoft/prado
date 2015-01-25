@@ -11,6 +11,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * Class TTabPanel.
@@ -58,7 +60,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TTabPanel extends TWebControl implements IPostBackDataHandler
+class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
 	private $_dataChanged=false;
 
@@ -353,7 +355,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
 	 * It is invoked by the framework when {@link getActiveViewIndex ActiveViewIndex} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
@@ -365,7 +367,7 @@ class TTabPanel extends TWebControl implements IPostBackDataHandler
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()

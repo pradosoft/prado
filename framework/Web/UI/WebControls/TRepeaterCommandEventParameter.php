@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeaterCommandEventParameter extends TCommandEventParameter
+class TRepeaterCommandEventParameter extends \Prado\Web\UI\TCommandEventParameter
 {
 	/**
 	 * @var TControl the repeater item control responsible for the event.
@@ -40,9 +40,9 @@ class TRepeaterCommandEventParameter extends TCommandEventParameter
 	 * Constructor.
 	 * @param TControl repeater item responsible for the event
 	 * @param TControl original event sender
-	 * @param TCommandEventParameter original event parameter
+	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
 	 */
-	public function __construct($item,$source,TCommandEventParameter $param)
+	public function __construct($item,$source,\Prado\Web\UI\TCommandEventParameter $param)
 	{
 		$this->_item=$item;
 		$this->_source=$source;

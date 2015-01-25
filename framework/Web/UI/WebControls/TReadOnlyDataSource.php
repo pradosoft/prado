@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataSourceControl class
@@ -25,7 +26,7 @@ class TReadOnlyDataSource extends TDataSourceControl
 
 	public function __construct($dataSource,$dataMember)
 	{
-		if(!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof Traversable))
+		if(!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof \Traversable))
 			throw new TInvalidDataTypeException('readonlydatasource_datasource_invalid');
 		$this->_dataSource=$dataSource;
 		$this->_dataMember=$dataMember;

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TValidationSummary class
@@ -34,7 +35,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TValidationSummary extends TWebControl
+class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * @var TClientSideValidationSummaryOptions validation client side options.

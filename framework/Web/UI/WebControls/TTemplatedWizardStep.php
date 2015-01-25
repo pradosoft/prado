@@ -24,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTemplatedWizardStep extends TWizardStep implements INamingContainer
+class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * @var ITemplate the template for displaying the navigation UI of a wizard step.

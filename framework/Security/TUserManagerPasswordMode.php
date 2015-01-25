@@ -25,7 +25,7 @@ namespace Prado\Security;
  * @package Prado\Security
  * @since 3.0.4
  */
-class TUserManagerPasswordMode extends TEnumerable
+class TUserManagerPasswordMode extends \Prado\TEnumerable
 {
 	const Clear='Clear';
 	const MD5='MD5';

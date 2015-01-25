@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TView class
@@ -26,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TView extends TControl
+class TView extends \Prado\Web\UI\TControl
 {
 	private $_active=false;
 

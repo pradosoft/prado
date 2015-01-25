@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TSliderDirection extends TEnumerable
+class TSliderDirection extends \Prado\TEnumerable
 {
 	const Horizontal='Horizontal';
 	const Vertical='Vertical';

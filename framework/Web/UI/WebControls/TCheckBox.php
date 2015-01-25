@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TCheckBox class
@@ -40,7 +41,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatable, IDataRenderer, ISurroundable
+class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer, \Prado\Web\UI\ISurroundable
 {
 	private $_dataChanged=false;
 	private $_isValid=true;
@@ -109,7 +110,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -211,7 +212,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns the value indicating whether the checkbox is checked.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getChecked()}.
 	 * @return boolean whether the checkbox is checked.
 	 * @see getChecked
@@ -224,7 +225,7 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Sets the value indicating whether the checkbox is to be checked or not.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setChecked()}.
 	 * @param boolean whether the checkbox is to be checked
 	 * @see setChecked

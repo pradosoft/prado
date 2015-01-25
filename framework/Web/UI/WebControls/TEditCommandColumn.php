@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+use Prado\TPropertyValue;
 
 /**
  * TEditCommandColumn class
@@ -241,12 +237,12 @@ class TEditCommandColumn extends TDataGridColumn
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup)
 	{
 		if($this->getButtonType()===TButtonColumnType::LinkButton)
-			$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TLinkButton');
 		else if($this->getButtonType()===TButtonColumnType::PushButton)
-			$button=Prado::createComponent('System.Web.UI.WebControls.TButton');
+			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TButton');
 		else	// image buttons
 		{
-			$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImageButton');
 			if(strcasecmp($commandName,'Update')===0)
 				$url=$this->getUpdateImageUrl();
 			else if(strcasecmp($commandName,'Cancel')===0)

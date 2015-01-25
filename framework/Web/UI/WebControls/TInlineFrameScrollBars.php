@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TInlineFrameScrollBars extends TEnumerable
+class TInlineFrameScrollBars extends \Prado\TEnumerable
 {
 	const None='None';
 	const Auto='Auto';

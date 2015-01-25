@@ -10,8 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TImage');
+use Prado\TPropertyValue;
 
 /**
  * TCaptcha class.

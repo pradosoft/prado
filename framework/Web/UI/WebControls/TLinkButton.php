@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TLinkButton class
@@ -31,7 +32,7 @@ namespace Prado\Web\UI\WebControls;
  * the {@link setCommandParameter CommandParameter} property value
  * through the {@link TCommandParameter::getName Name} and
  * {@link TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@link TCommandEventParameter}.
+ * parameter which is of type {@link \Prado\Web\UI\TCommandEventParameter}.
  *
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
@@ -54,7 +55,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonControl, IDataRenderer
+class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
 	/**
 	 * @return string tag name of the button
@@ -200,7 +201,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 
 	/**
 	 * Returns the caption of the button.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getText()}.
 	 * @return string caption of the button.
 	 * @see getText
@@ -213,7 +214,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 
 	/**
 	 * Sets the caption of the button.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
 	 * @param string caption of the button
 	 * @see setText
@@ -303,7 +304,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 		if($this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onClick(null);
-		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
 	/**
@@ -323,7 +324,7 @@ class TLinkButton extends TWebControl implements IPostBackEventHandler, IButtonC
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{

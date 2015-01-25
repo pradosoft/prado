@@ -24,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TButtonType extends TEnumerable
+class TButtonType extends \Prado\TEnumerable
 {
 	const Submit='Submit';
 	const Reset='Reset';

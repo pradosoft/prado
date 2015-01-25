@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\INamingContainer;
 
 /**
  * TContent class
@@ -29,7 +31,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TContent extends TControl implements INamingContainer
+class TContent extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * This method is invoked after the control is instantiated on a template.

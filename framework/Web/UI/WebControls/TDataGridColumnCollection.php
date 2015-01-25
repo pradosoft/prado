@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataGridColumnCollection class.
@@ -25,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridColumnCollection extends TList
+class TDataGridColumnCollection extends \Prado\Collections\TList
 {
 	/**
 	 * the control that owns this collection.

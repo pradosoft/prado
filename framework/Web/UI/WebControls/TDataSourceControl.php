@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class TDataSourceControl extends TControl implements IDataSource
+abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDataSource
 {
 	public function getView($viewName)
 	{

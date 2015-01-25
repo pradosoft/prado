@@ -11,9 +11,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-Prado::using('System.Web.UI.WebControls.TDataGrid');
-Prado::using('System.Web.UI.WebControls.TItemDataRenderer');
-
 /**
  * TDataGridItemRenderer class
  *

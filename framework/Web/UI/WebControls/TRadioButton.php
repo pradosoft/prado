@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TCheckBox parent class
- */
-Prado::using('System.Web.UI.WebControls.TCheckBox');
+use Prado\TPropertyValue;
 
 /**
  * TRadioButton class
@@ -164,7 +160,7 @@ class TRadioButton extends TCheckBox
 			$this->_previousUniqueID=$uniqueID;
 			if($uniqueID!=='')
 			{
-				if(($pos=strrpos($uniqueID,TControl::ID_SEPARATOR))!==false)
+				if(($pos=strrpos($uniqueID,\Prado\Web\UI\TControl::ID_SEPARATOR))!==false)
 				{
 					if($groupName!=='')
 						$groupName=substr($uniqueID,0,$pos+1).$groupName;

@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TTableCell class
- */
-Prado::using('System.Web.UI.WebControls.TTableCell');
+use Prado\TPropertyValue;
 
 /**
  * TTableRow class.
@@ -28,7 +24,7 @@ Prado::using('System.Web.UI.WebControls.TTableCell');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTableRow extends TWebControl
+class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * @return string tag name for the table

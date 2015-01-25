@@ -12,12 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * Using TTextHighlighter and MarkdownParser classes
- */
-Prado::using('System.Web.UI.WebControls.TTextHighlighter');
-Prado::using('System.3rdParty.Parsedown.Parsedown');
-
-/**
  * TMarkdown class
  *
  * TMarkdown is a control that produces HTML from code with markdown syntax.

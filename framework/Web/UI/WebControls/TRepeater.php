@@ -10,12 +10,10 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TDataBoundControl and TDataFieldAccessor cass
- */
-Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-Prado::using('System.Util.TDataFieldAccessor');
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Collections\TMap;
+use Prado\Collections\TList;
 
 /**
  * TRepeater class.
@@ -36,7 +34,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * as an external template (in fact, it can also be non-templated controls).
  *
  * A renderer can be any control class.
- * - If the class implements {@link IDataRenderer}, the <b>Data</b>
+ * - If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
  * implement this interface, such as {@link TLabel}, {@link TTextBox}, etc.
  * - If the class implements {@link IItemDataRenderer}, the <b>ItemIndex</b> property will be set
@@ -91,7 +89,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeater extends TDataBoundControl implements INamingContainer
+class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * Repeater item types
@@ -300,7 +298,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setItemTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_itemTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','ItemTemplate');
@@ -320,7 +318,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_alternatingItemTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','AlternatingItemTemplate');
@@ -340,7 +338,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setHeaderTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_headerTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','HeaderTemplate');
@@ -360,7 +358,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setFooterTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_footerTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','FooterTemplate');
@@ -380,7 +378,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setEmptyTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_emptyTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','EmptyTemplate');
@@ -400,7 +398,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 	 */
 	public function setSeparatorTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
+		if($value instanceof \Prado\Web\UI\ITemplate || $value===null)
 			$this->_separatorTemplate=$value;
 		else
 			throw new TInvalidDataTypeException('repeater_template_required','SeparatorTemplate');
@@ -494,7 +492,7 @@ class TRepeater extends TDataBoundControl implements INamingContainer
 		if(($item=$this->createItem($itemIndex,$itemType))!==null)
 		{
 			$param=new TRepeaterItemEventParameter($item);
-			if($item instanceof IDataRenderer)
+			if($item instanceof \Prado\IDataRenderer)
 				$item->setData($dataItem);
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);

@@ -10,19 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TListControl class
- */
-Prado::using('System.Web.UI.WebControls.TListControl');
-/**
- * Includes TRepeatInfo class
- */
-Prado::using('System.Web.UI.WebControls.TRepeatInfo');
-/**
- * Includes TCheckBox class
- */
-Prado::using('System.Web.UI.WebControls.TCheckBox');
+use Prado\TPropertyValue;
 
 /**
  * TCheckBoxList class
@@ -47,7 +35,7 @@ Prado::using('System.Web.UI.WebControls.TCheckBox');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingContainer, IPostBackDataHandler,  IValidatable
+class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\UI\INamingContainer, \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
 	private $_repeatedControl;
 	private $_isEnabled;
@@ -355,7 +343,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
 	 * It is invoked by the framework when {@link getSelectedIndices SelectedIndices} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
@@ -440,7 +428,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -450,7 +438,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
+	 * This methid is required by \Prado\Web\UI\IValidatable interface.
 	 * @return mixed the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()

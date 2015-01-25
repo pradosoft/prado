@@ -22,6 +22,10 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 use Prado\Web\UI\ActiveControls\TCallbackClientScript;
+use Prado\Web\UI\WebControls\THead;
+
+Prado::using('System.Web.UI.*');
+Prado::using('System.Web.UI.WebControls.*');
 
 /**
  * TPage class
@@ -594,11 +598,9 @@ class TPage extends TTemplateControl
 		if(!$this->_clientScript) {
 			$className = $classPath = $this->getService()->getClientScriptManagerClass();
 			Prado::using($className);
-			if(($pos=strrpos($className,'.'))!==false)
-				$className=substr($className,$pos+1);
 
-			if(!class_exists($className,false) || ($className!=='TClientScriptManager' && !is_subclass_of($className,'TClientScriptManager')))
-				throw new THttpException(404,'page_csmanagerclass_invalid',$classPath);
+			if($className!=='\Prado\Web\UI\TClientScriptManager' && !is_subclass_of($className,'\Prado\Web\UI\TClientScriptManager'))
+				throw new THttpException(404,'page_csmanagerclass_invalid',$className);
 
 			$this->_clientScript=new $className($this);
 		}
@@ -874,7 +876,7 @@ class TPage extends TTemplateControl
 				continue;
 			else if($control=$this->findControl($key))
 			{
-				if($control instanceof IPostBackDataHandler)
+				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
 				{
 					if($control->loadPostData($key,$postData))
 						$this->_controlsPostDataChanged[]=$control;
@@ -894,7 +896,7 @@ class TPage extends TTemplateControl
 		{
 			if($control=$this->findControl($key))
 			{
-				if($control instanceof IPostBackDataHandler)
+				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
 				{
 					if($control->loadPostData($key,$this->_postData))
 						$this->_controlsPostDataChanged[]=$control;

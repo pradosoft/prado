@@ -10,8 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TDataGrid');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TDataGridPagerStyle class.

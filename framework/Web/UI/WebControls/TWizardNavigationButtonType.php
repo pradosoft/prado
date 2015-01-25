@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TWizardNavigationButtonType extends TEnumerable
+class TWizardNavigationButtonType extends \Prado\TEnumerable
 {
 	const Button='Button';
 	const Image='Image';

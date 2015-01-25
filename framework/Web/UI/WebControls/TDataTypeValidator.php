@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TBaseValidator class
- */
-Prado::using('System.Web.UI.WebControls.TBaseValidator');
+use Prado\TPropertyValue;
 
 /**
  * TDataTypeValidator class
@@ -101,7 +97,7 @@ class TDataTypeValidator extends TBaseValidator
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))
 				{
-					$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$dateFormat);
+					$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',$dateFormat);
 					return $formatter->isValidDate($value);
 				}
 				else

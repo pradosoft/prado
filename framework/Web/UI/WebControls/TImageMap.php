@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TImage class file
- */
-Prado::using('System.Web.UI.WebControls.TImage');
+use Prado\TPropertyValue;
 
 /**
  * TImageMap class
@@ -37,7 +33,7 @@ Prado::using('System.Web.UI.WebControls.TImage');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TImageMap extends TImage implements IPostBackEventHandler
+class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 {
 	const MAP_NAME_PREFIX='ImageMap';
 

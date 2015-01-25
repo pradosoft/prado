@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TFlushOutput class.
@@ -33,7 +34,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
-class TFlushOutput extends TControl
+class TFlushOutput extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @var boolean whether to continue buffering of output

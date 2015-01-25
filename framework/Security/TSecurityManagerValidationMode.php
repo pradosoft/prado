@@ -27,7 +27,7 @@ namespace Prado\Security;
  * @package Prado\Security
  * @since 3.0.4
  */
-class TSecurityManagerValidationMode extends TEnumerable
+class TSecurityManagerValidationMode extends \Prado\TEnumerable
 {
 	const MD5 = 'MD5';
 	const SHA1 = 'SHA1';

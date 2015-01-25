@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridCommandEventParameter extends TCommandEventParameter
+class TDataGridCommandEventParameter extends \Prado\Web\UI\TCommandEventParameter
 {
 	/**
 	 * @var TDataGridItem the TDataGridItem control responsible for the event.
@@ -45,9 +45,9 @@ class TDataGridCommandEventParameter extends TCommandEventParameter
 	 * Constructor.
 	 * @param TDataGridItem datagrid item responsible for the event
 	 * @param TControl original event sender
-	 * @param TCommandEventParameter original event parameter
+	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
 	 */
-	public function __construct($item,$source,TCommandEventParameter $param)
+	public function __construct($item,$source,\Prado\Web\UI\TCommandEventParameter $param)
 	{
 		$this->_item=$item;
 		$this->_source=$source;

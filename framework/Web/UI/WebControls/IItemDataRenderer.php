@@ -23,7 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.0
  */
-interface IItemDataRenderer extends IDataRenderer
+interface IItemDataRenderer extends \Prado\IDataRenderer
 {
 	/**
 	 * Returns a value indicating the zero-based index of the item in the corresponding data control's item collection.

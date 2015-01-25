@@ -39,7 +39,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 
 		if(($classPath=$this->getHeaderRenderer())!=='') {
 			$control=Prado::createComponent($classPath);
-			if($control instanceof IDataRenderer) {
+			if($control instanceof \Prado\IDataRenderer) {
 				if($control instanceof IItemDataRenderer) {
 					$item=$cell->getParent();
 					$control->setItemIndex($item->getItemIndex());

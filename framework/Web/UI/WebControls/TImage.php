@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TImage extends TWebControl implements IDataRenderer
+class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
 	/**
 	 * @return string tag name of image control
@@ -114,7 +114,7 @@ class TImage extends TWebControl implements IDataRenderer
 
 	/**
 	 * Returns the URL of the image file.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getImageUrl()}.
 	 * @return string the URL of the image file.
 	 * @see getImageUrl
@@ -127,7 +127,7 @@ class TImage extends TWebControl implements IDataRenderer
 
 	/**
 	 * Sets the URL of the image.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setImageUrl()}.
 	 * @param string the URL of the image file.
 	 * @see setImageUrl

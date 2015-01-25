@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TFileUpload class
@@ -32,7 +33,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidatable
+class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
 	/**
 	 * Maximum file size (in bytes) allowed to be uploaded, defaults to 1MB.
@@ -242,7 +243,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -252,7 +253,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 
 	/**
 	 * Returns the original file name as the property value to be validated.
-	 * This method is required by IValidatable property.
+	 * This method is required by \Prado\Web\UI\IValidatable property.
 	 * @return mixed the property value to be validated
 	 */
 	public function getValidationPropertyValue()

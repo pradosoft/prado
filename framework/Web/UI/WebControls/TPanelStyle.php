@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TStyle class file
- */
-Prado::using('System.Web.UI.WebControls.TStyle');
+use Prado\TPropertyValue;
 
 /**
  * TPanelStyle class.

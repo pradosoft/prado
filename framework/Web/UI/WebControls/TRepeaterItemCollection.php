@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TRepeaterItemCollection class.
@@ -20,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TRepeaterItemCollection extends TList
+class TRepeaterItemCollection extends \Prado\Collections\TList
 {
 	/**
 	 * Inserts an item at the specified position.
@@ -31,7 +32,7 @@ class TRepeaterItemCollection extends TList
 	 */
 	public function insertAt($index,$item)
 	{
-		if($item instanceof TControl)
+		if($item instanceof \Prado\Web\UI\TControl)
 			parent::insertAt($index,$item);
 		else
 			throw new TInvalidDataTypeException('repeateritemcollection_item_invalid');

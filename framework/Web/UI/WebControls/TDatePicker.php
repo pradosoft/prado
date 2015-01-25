@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TTextBox class
- */
-Prado::using('System.Web.UI.WebControls.TTextBox');
+use Prado\TPropertyValue;
 
 /**
  *
@@ -315,14 +311,14 @@ class TDatePicker extends TTextBox
 		else
 		{
 			$date = TPropertyValue::ensureFloat($value);
-			$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$this->getDateFormat());
+			$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',$this->getDateFormat());
 			$this->setText($formatter->format($date));
 		}
 	}
 
 	/**
 	 * Returns the timestamp selected by the user.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getTimeStamp()}.
 	 * @return integer the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
@@ -335,7 +331,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the timestamp represented by this control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setTimeStamp()}.
 	 * @param integer the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
@@ -389,7 +385,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
+	 * This methid is required by \Prado\Web\UI\IValidatable interface.
 	 * @return integer the interger timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
@@ -513,6 +509,9 @@ class TDatePicker extends TTextBox
 		$date = $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
+		$pattern = $this->getDateFormat();
+		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter', $pattern);
 		return $formatter->format($date);
 	}
 
@@ -585,7 +584,6 @@ class TDatePicker extends TTextBox
 	{
 		//expensive operations
 		$culture = $this->getCurrentCulture();
-		Prado::using('System.I18N.core.DateTimeFormatInfo');
 		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
 		return $info->getDateTimeFormat();
 	}
@@ -624,7 +622,7 @@ class TDatePicker extends TTextBox
 
 	protected function hasDayPattern()
 	{
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
 						$this->getDateFormat());
 		return ($formatter->getDayPattern()!==null);
 	}
@@ -636,7 +634,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarSelections($writer, $date)
 	{
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
 						$this->getDateFormat());
 
 		foreach($formatter->getDayMonthYearOrdering() as $type)
@@ -658,7 +656,7 @@ class TDatePicker extends TTextBox
 	{
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$pattern);
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',$pattern);
 		return $formatter->parse($this->getText());
 	}
 
@@ -704,7 +702,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getDropDownDayOptions()
 	{
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
 						$this->getDateFormat());
 		$days = array();
 		$requiresPadding = $formatter->getDayPattern() === 'dd';
@@ -743,7 +741,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getLocalizedMonthNames($info)
 	{
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',
+		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
 						$this->getDateFormat());
 		switch($formatter->getMonthPattern())
 		{

@@ -12,15 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * Includes TRadioButton class
- */
-Prado::using('System.Web.UI.WebControls.TRadioButton');
-/**
- * Includes TCheckBoxList class
- */
-Prado::using('System.Web.UI.WebControls.TCheckBoxList');
-
-/**
  * TRadioButtonList class
  *
  * TRadioButtonList displays a list of radiobuttons on a Web page.

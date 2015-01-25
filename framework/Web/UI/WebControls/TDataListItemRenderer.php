@@ -11,9 +11,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-Prado::using('System.Web.UI.WebControls.TDataList');
-Prado::using('System.Web.UI.WebControls.TItemDataRenderer');
-
 /**
  * TDataListItemRenderer class
  *
@@ -82,7 +79,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
 			return true;

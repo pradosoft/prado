@@ -10,17 +10,17 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado
+ * @package Prado\Util
  */
 
-namespace Prado;
+namespace Prado\Util;
 
 /**
  * TClassBehaviorEventParameter class.
  * TClassBehaviorEventParameter is the parameter sent with the class behavior changes.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado
+ * @package Prado\Util
  * @since 3.2.3
  */
 class TClassBehaviorEventParameter extends \Prado\TEventParameter

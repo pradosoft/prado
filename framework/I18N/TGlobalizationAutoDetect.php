@@ -12,11 +12,6 @@
 namespace Prado\I18N;
 
 /**
- * Import the HTTPNeogtiator
- */
-Prado::using('System.I18N.core.HTTPNegotiator');
-
-/**
  * TGlobalizationAutoDetect class will automatically try to resolve the default
  * culture using the user browser language settings.
  *
@@ -32,7 +27,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 		parent::init($xml);
 
 		//set the culture according to browser language settings
-		$http = new HTTPNegotiator();
+		$http = new core\HTTPNegotiator();
 		$languages = $http->getLanguages();
 		if(count($languages) > 0)
 		{

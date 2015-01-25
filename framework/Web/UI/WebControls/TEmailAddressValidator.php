@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Using TRegularExpressionValidator class
- */
-Prado::using('System.Web.UI.WebControls.TRegularExpressionValidator');
+use Prado\TPropertyValue;
 
 /**
  * TEmailAddressValidator class

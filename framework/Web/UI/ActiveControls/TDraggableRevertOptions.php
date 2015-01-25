@@ -16,7 +16,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package Prado\Web\UI\ActiveControls
  */
-class TDraggableRevertOptions extends TEnumerable
+class TDraggableRevertOptions extends \Prado\TEnumerable
 {
 	const None='None';
 	const Revert='Revert';

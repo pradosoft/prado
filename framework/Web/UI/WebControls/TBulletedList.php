@@ -10,11 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TListControl class
- */
-Prado::using('System.Web.UI.WebControls.TListControl');
+use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
 
 /**
  * TBulletedList class
@@ -37,7 +34,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TBulletedList extends TListControl implements IPostBackEventHandler
+class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEventHandler
 {
 	/**
 	 * @var boolean cached property value of Enabled

@@ -24,7 +24,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0.4
  */
-class TApplicationMode extends TEnumerable
+class TApplicationMode extends \Prado\TEnumerable
 {
 	const Off='Off';
 	const Debug='Debug';

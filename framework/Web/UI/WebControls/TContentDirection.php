@@ -24,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TContentDirection extends TEnumerable
+class TContentDirection extends \Prado\TEnumerable
 {
 	const NotSet='NotSet';
 	const LeftToRight='LeftToRight';

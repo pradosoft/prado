@@ -12,11 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * Using TBaseValidator class
- */
-Prado::using('System.Web.UI.WebControls.TBaseValidator');
-
-/**
  * TRegularExpressionValidator class
  *
  * TRegularExpressionValidator validates whether the value of an associated

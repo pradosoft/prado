@@ -21,7 +21,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.2
  */
-class TUrlMappingPatternSecureConnection extends TEnumerable
+class TUrlMappingPatternSecureConnection extends \Prado\TEnumerable
 {
 	/**
 	 * Keep current SecureConnection status

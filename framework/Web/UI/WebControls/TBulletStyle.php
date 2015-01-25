@@ -20,7 +20,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TBulletStyle extends TEnumerable
+class TBulletStyle extends \Prado\TEnumerable
 {
 	const NotSet='NotSet';
 	const None='None';

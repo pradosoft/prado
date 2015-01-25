@@ -12,12 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * Includes TDataBoundControl and TDataFieldAccessor classes
- */
-Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-Prado::using('System.Util.TDataFieldAccessor');
-
-/**
  * TBaseDataList class
  *
  * TBaseDataList is the base class for data listing controls, including

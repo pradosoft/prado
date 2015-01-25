@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Prado;
+use Prado\IO\TTextWriter;
 
 /**
  * TTextProcessor class.
@@ -27,7 +29,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.1
  */
-abstract class TTextProcessor extends TWebControl
+abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * Processes a text string.

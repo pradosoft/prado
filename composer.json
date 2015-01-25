@@ -50,7 +50,7 @@
 		"satooshi/php-coveralls": "dev-master"
 	},
 	"provide" : {
-		"pradosoft/prado" : "3.3.2"
+		"pradosoft/prado" : "3.3.99"
 	},
 	"suggest" : {
 		"ext-apc" : "*",
@@ -69,7 +69,7 @@
     "autoload": {
         "psr-4": {
             "Prado\\": "framework"
-        }
+        },
     },
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",

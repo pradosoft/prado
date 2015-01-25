@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TListControl class
- */
-Prado::using('System.Web.UI.WebControls.TListControl');
+use Prado\TPropertyValue;
 
 /**
  * TListBox class
@@ -36,7 +32,7 @@ Prado::using('System.Web.UI.WebControls.TListControl');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TListBox extends TListControl implements IPostBackDataHandler, IValidatable
+class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
 	private $_dataChanged=false;
 	private $_isValid=true;
@@ -147,7 +143,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link IPostBackDataHandler} interface.
+	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
 	 * It is invoked by the framework when {@link getSelectedIndices SelectedIndices} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
@@ -161,7 +157,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
-	 * This method is required by the IPostBackDataHandler interface.
+	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
 	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
@@ -214,7 +210,7 @@ class TListBox extends TListControl implements IPostBackDataHandler, IValidatabl
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by IValidatable interface.
+	 * This methid is required by \Prado\Web\UI\IValidatable interface.
 	 * @return mixed the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()

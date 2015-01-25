@@ -11,15 +11,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes the supporting classes
- */
-Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-Prado::using('System.Web.UI.WebControls.TListItem');
-Prado::using('System.Collections.TListItemCollection');
-Prado::using('System.Collections.TAttributeCollection');
-Prado::using('System.Util.TDataFieldAccessor');
+use Prado\TPropertyValue;
+use Prado\Web\THttpUtility;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TListControl class
@@ -82,7 +76,7 @@ Prado::using('System.Util.TDataFieldAccessor');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-abstract class TListControl extends TDataBoundControl implements IDataRenderer
+abstract class TListControl extends TDataBoundControl implements \Prado\IDataRenderer
 {
 	/**
 	 * @var TListItemCollection item list
@@ -277,7 +271,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 	 */
 	protected function createListItemCollection()
 	{
-		return new TListItemCollection;
+		return new \Prado\Collections\TListItemCollection;
 	}
 
 	/**
@@ -552,7 +546,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 
 	/**
 	 * Returns the value of the selected item with the lowest cardinal index.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getSelectedValue()}.
 	 * @return string the value of the selected item with the lowest cardinal index, empty if no selection.
 	 * @see getSelectedValue
@@ -565,7 +559,7 @@ abstract class TListControl extends TDataBoundControl implements IDataRenderer
 
 	/**
 	 * Selects an item by the specified value.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setSelectedValue()}.
 	 * @param string the value of the item to be selected.
 	 * @see setSelectedValue

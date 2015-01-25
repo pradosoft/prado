@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TRepeatLayout extends TEnumerable
+class TRepeatLayout extends \Prado\TEnumerable
 {
 	const Table='Table';
 	const Flow='Flow';

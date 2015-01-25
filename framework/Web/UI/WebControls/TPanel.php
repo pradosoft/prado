@@ -10,11 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TPanelStyle class file
- */
-Prado::using('System.Web.UI.WebControls.TPanelStyle');
+use Prado\Prado;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TPanel class
@@ -39,7 +36,7 @@ Prado::using('System.Web.UI.WebControls.TPanelStyle');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TPanel extends TWebControl
+class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * @var string ID path to the default button

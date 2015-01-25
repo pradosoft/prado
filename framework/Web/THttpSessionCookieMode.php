@@ -25,7 +25,7 @@ namespace Prado\Web;
  * @package Prado\Web
  * @since 3.0.4
  */
-class THttpSessionCookieMode extends TEnumerable
+class THttpSessionCookieMode extends \Prado\TEnumerable
 {
 	const None='None';
 	const Allow='Allow';

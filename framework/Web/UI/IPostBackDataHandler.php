@@ -12,7 +12,7 @@
 namespace Prado\Web\UI;
 
 /**
- * IPostBackDataHandler interface
+ * \Prado\Web\UI\IPostBackDataHandler interface
  *
  * If a control wants to load post data, it must implement this interface.
  *

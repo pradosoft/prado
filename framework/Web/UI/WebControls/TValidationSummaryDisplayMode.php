@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TValidationSummaryDisplayMode extends TEnumerable
+class TValidationSummaryDisplayMode extends \Prado\TEnumerable
 {
 	const SimpleList='SimpleList';
 	const SingleParagraph='SingleParagraph';

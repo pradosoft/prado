@@ -10,9 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TBaseValidator');
-Prado::using('System.Web.UI.WebControls.TCaptcha');
+use Prado\TPropertyValue;
 
 /**
  * TCaptchaValidator class

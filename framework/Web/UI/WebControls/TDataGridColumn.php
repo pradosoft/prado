@@ -10,9 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Util.TDataFieldAccessor');
-Prado::using('System.Web.UI.WebControls.TDataGrid');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TDataGridColumn class
@@ -43,8 +42,8 @@ Prado::using('System.Web.UI.WebControls.TDataGrid');
  * column will be grouped into one cell.
  * Note, there are some limitations to cell grouping. We determine the cell content according to
  * the cell's {@link TTableCell::getText Text} property. If the text is empty and the cell has
- * some child controls, we will pick up the first control who implements {@link IDataRenderer}
- * and obtain its {@link IDataRenderer::getData Data} property.
+ * some child controls, we will pick up the first control who implements {@link \Prado\IDataRenderer}
+ * and obtain its {@link \Prado\IDataRenderer::getData Data} property.
  *
  * The following datagrid column types are provided by the framework currently,
  * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
@@ -135,7 +134,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets the column header cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column header cell.
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the {@link getFooterText FooterText}.
 	 *
 	 * @param string the renderer class name in namespace format.
@@ -189,7 +188,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets the column footer cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column footer cell.
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the {@link getFooterText FooterText}.
 	 *
 	 * @param string the renderer class name in namespace format.
@@ -419,7 +418,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		{
 			$control=Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
-			if($control instanceof IDataRenderer)
+			if($control instanceof \Prado\IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
 				{
@@ -435,7 +434,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$button=Prado::createComponent('System.Web.UI.WebControls.TImageButton');
+				$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImageButton');
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -446,7 +445,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			}
 			else if($text!=='')
 			{
-				$button=Prado::createComponent('System.Web.UI.WebControls.TLinkButton');
+				$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TLinkButton');
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -460,7 +459,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		{
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$image=Prado::createComponent('System.Web.UI.WebControls.TImage');
+				$image=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImage');
 				$image->setImageUrl($url);
 				if($text!=='')
 					$image->setAlternateText($text);
@@ -490,7 +489,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		{
 			$control=Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
-			if($control instanceof IDataRenderer)
+			if($control instanceof \Prado\IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
 				{

@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TInlineFrame class
@@ -31,7 +32,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TInlineFrame extends TWebControl implements IDataRenderer
+class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
 	/**
 	 * @return string tag name of the iframe.
@@ -107,7 +108,7 @@ class TInlineFrame extends TWebControl implements IDataRenderer
 
 	/**
 	 * Returns the URL that this iframe will load content from
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getFrameUrl()}.
 	 * @return string the URL that this iframe will load content from
 	 * @see getFrameUrl
@@ -120,7 +121,7 @@ class TInlineFrame extends TWebControl implements IDataRenderer
 
 	/**
 	 * Sets the URL that this iframe will load content from.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setFrameUrl()}.
 	 * @param string the URL that this iframe will load content from
 	 * @see setFrameUrl

@@ -386,7 +386,7 @@ class TApplication extends \Prado\TComponent
 				if($this->_requestCompleted)
 					break;
 				$method=self::$_steps[$this->_step];
-				Prado::trace("Executing $method()",'System.TApplication');
+				Prado::trace("Executing $method()",'Prado\TApplication');
 				$this->$method();
 				$this->_step++;
 			}
@@ -539,7 +539,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value,'TApplicationMode');
+		$this->_mode=TPropertyValue::ensureEnum($value,'\Prado\TApplicationMode');
 	}
 
 	/**
@@ -1042,7 +1042,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function initApplication()
 	{
-		Prado::trace('Initializing application','System.TApplication');
+		Prado::trace('Initializing application','Prado\TApplication');
 
 		if($this->_configFile!==null)
 		{
@@ -1111,7 +1111,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onError($param)
 	{
-		Prado::log($param->getMessage(),TLogger::ERROR,'System.TApplication');
+		Prado::log($param->getMessage(),TLogger::ERROR,'Prado\TApplication');
 		$this->raiseEvent('OnError',$this,$param);
 		$this->getErrorHandler()->handleError($this,$param);
 	}

@@ -15,16 +15,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TBaseList, TPagedDataSource, TDummyDataSource and TTable classes
- */
-Prado::using('System.Web.UI.WebControls.TBaseDataList');
-Prado::using('System.Collections.TPagedDataSource');
-Prado::using('System.Collections.TDummyDataSource');
-Prado::using('System.Web.UI.WebControls.TTable');
-Prado::using('System.Web.UI.WebControls.TPanel');
-Prado::using('System.Web.UI.WebControls.TDataGridPagerStyle');
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataGrid class
@@ -149,7 +141,7 @@ Prado::using('System.Web.UI.WebControls.TDataGridPagerStyle');
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGrid extends TBaseDataList implements INamingContainer
+class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * datagrid item types
@@ -1139,7 +1131,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 			$controls=$cell->getControls();
 			foreach($controls as $control)
 			{
-				if($control instanceof IDataRenderer)
+				if($control instanceof \Prado\IDataRenderer)
 					return $control->getData();
 			}
 		}

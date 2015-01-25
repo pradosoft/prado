@@ -18,7 +18,7 @@ namespace Prado\Data;
  * @package Prado\Data
  * @since 3.0
  */
-class TDbColumnCaseMode extends TEnumerable
+class TDbColumnCaseMode extends \Prado\TEnumerable
 {
 	/**
 	 * Column name cases are kept as is from the database

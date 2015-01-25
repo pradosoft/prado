@@ -6,10 +6,11 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package Prado\Web\UI
+ * @package Prado\Web\UI\WebControls
  */
 
-namespace Prado\Web\UI;
+namespace Prado\Web\UI\WebControls;
+use Prado\Web\THttpUtility;
 
 /**
  * THead class
@@ -38,10 +39,10 @@ namespace Prado\Web\UI;
  * theme will not be rendered.
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
+ * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class THead extends TControl
+class THead extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @var TList list of meta name tags to be loaded by {@link THead}

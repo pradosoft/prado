@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TConditional class.
@@ -43,7 +45,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TConditional extends TControl
+class TConditional extends \Prado\Web\UI\TControl
 {
 	private $_condition='true';
 	private $_trueTemplate;
@@ -76,7 +78,7 @@ class TConditional extends TControl
 		{
 			$result=$this->getTemplateControl()->evaluateExpression($this->_condition);
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			throw new TInvalidDataValueException('conditional_condition_invalid',$this->_condition,$e->getMessage());
 		}

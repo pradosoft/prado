@@ -12,7 +12,7 @@
 namespace Prado;
 
 /**
- * IDataRenderer interface.
+ * \Prado\IDataRenderer interface.
  *
  * If a control wants to be used a renderer for another data-bound control,
  * this interface must be implemented.

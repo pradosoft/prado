@@ -12,6 +12,7 @@
 namespace Prado\Web\Services;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\TApplicationConfiguration;
 use Prado\Security\TAuthorizationRuleCollection;
 use Prado\TApplication;
 use Prado\Xml\TXmlElement;

@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * Includes TFont definition
- */
-Prado::using('System.Web.UI.WebControls.TFont');
+use Prado\TPropertyValue;
 
 /**
  * TStyle class

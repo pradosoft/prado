@@ -27,7 +27,7 @@ namespace Prado\Data\ActiveRecord;
  * @see TActiveRecord::setInvalidFinderResult
  * @since 3.1.5
  */
-class TActiveRecordInvalidFinderResult extends TEnumerable
+class TActiveRecordInvalidFinderResult extends \Prado\TEnumerable
 {
 	const Null = 'Null';
 	const Exception = 'Exception';

@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class THotSpotMode extends TEnumerable
+class THotSpotMode extends \Prado\TEnumerable
 {
 	const NotSet='NotSet';
 	const Navigate='Navigate';

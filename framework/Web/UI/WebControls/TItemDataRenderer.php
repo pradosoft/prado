@@ -11,9 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-Prado::using('System.Web.UI.WebControls.TDataBoundControl');
-Prado::using('System.Web.UI.WebControls.TDataRenderer');
+use Prado\TPropertyValue;
 
 /**
  * TItemDataRenderer class

@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * Class TKeyboard.
@@ -37,7 +38,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
-class TKeyboard extends TWebControl
+class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
 	 * @return string the ID path of the {@link TTextBox} control

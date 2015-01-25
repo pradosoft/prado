@@ -10,15 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
-/**
- * TCheckBox class file
- */
-Prado::using('System.Web.UI.WebControls.TCheckBox');
+use Prado\TPropertyValue;
 
 /**
  * TCheckBoxColumn class

@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Web\UI\TCommandEventParameter;
+use Prado\TPropertyValue;
 
 /**
  * TButton class
@@ -47,7 +49,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TButton extends TWebControl implements IPostBackEventHandler, IButtonControl, IDataRenderer
+class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackEventHandler, \Prado\Web\UI\IButtonControl, \Prado\IDataRenderer
 {
 	/**
 	 * @return string tag name of the button
@@ -219,7 +221,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{
@@ -241,7 +243,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		if($this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onClick(null);
-		$this->onCommand(new TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
 	}
 
 	/**
@@ -262,7 +264,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 
 	/**
 	 * Returns the caption of the button.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getText()}.
 	 * @return string caption of the button.
 	 * @see getText
@@ -275,7 +277,7 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 
 	/**
 	 * Sets the caption of the button.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
 	 * @param string caption of the button
 	 * @see setText

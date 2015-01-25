@@ -37,7 +37,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
-class TStyleSheet extends TControl
+class TStyleSheet extends \Prado\Web\UI\TControl
 {
 	/**
 	 * @return string comma delimited list of css libraries to include

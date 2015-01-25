@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TPager class.
@@ -49,7 +51,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
-class TPager extends TWebControl implements INamingContainer
+class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * Command name that TPager understands.
@@ -678,7 +680,7 @@ class TPager extends TWebControl implements INamingContainer
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$command=$param->getCommandName();
 			if(strcasecmp($command,self::CMD_PAGE)===0)

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+use Prado\Collections\TMapIterator;
 use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;

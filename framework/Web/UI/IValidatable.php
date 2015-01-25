@@ -12,7 +12,7 @@
 namespace Prado\Web\UI;
 
 /**
- * IValidatable interface
+ * \Prado\Web\UI\IValidatable interface
  *
  * If a control wants to be validated by a validator, it must implement this interface.
  *

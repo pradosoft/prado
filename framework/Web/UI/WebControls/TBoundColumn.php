@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+use Prado\TPropertyValue;
 
 /**
  * TBoundColumn class
@@ -62,7 +58,7 @@ class TBoundColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
 	 *
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the data associated with the datagrid cell during databinding.
 	 * The data can be either the whole data row or a field of the row if
 	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
@@ -90,7 +86,7 @@ class TBoundColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
 	 *
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the data associated with the datagrid cell during databinding.
 	 * The data can be either the whole data row or a field of the row if
 	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
@@ -201,7 +197,7 @@ class TBoundColumn extends TDataGridColumn
 					}
 					else
 					{
-						$control=Prado::createComponent('System.Web.UI.WebControls.TTextBox');
+						$control=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TTextBox');
 						$cell->getControls()->add($control);
 						$cell->registerObject('TextBox',$control);
 					}

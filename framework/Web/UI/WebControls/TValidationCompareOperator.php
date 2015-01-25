@@ -28,7 +28,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TValidationCompareOperator extends TEnumerable
+class TValidationCompareOperator extends \Prado\TEnumerable
 {
 	const Equal='Equal';
 	const NotEqual='NotEqual';

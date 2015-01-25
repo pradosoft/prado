@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
 
 /**
  * TDataGridItem class
@@ -30,7 +31,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridItem extends TTableRow implements INamingContainer
+class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 {
 	/**
 	 * @var integer index of the data item in the Items collection of datagrid
@@ -146,7 +147,7 @@ class TDataGridItem extends TTableRow implements INamingContainer
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
 			return true;

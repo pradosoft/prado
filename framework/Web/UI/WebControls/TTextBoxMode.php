@@ -42,7 +42,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TTextBoxMode extends TEnumerable
+class TTextBoxMode extends \Prado\TEnumerable
 {
 	const SingleLine='SingleLine';
 	const MultiLine='MultiLine';

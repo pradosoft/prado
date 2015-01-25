@@ -18,7 +18,7 @@ namespace Prado\Data;
  * @package Prado\Data
  * @since 3.0
  */
-class TDbNullConversionMode extends TEnumerable
+class TDbNullConversionMode extends \Prado\TEnumerable
 {
 	/**
 	 * No conversion is performed for null and empty values.

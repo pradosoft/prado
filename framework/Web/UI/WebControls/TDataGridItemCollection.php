@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDataGridItemCollection class.
@@ -25,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridItemCollection extends TList
+class TDataGridItemCollection extends \Prado\Collections\TList
 {
 	/**
 	 * Inserts an item at the specified position.

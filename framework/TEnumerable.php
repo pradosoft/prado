@@ -23,7 +23,7 @@ namespace Prado;
  * The constant name must be the same as the constant value.
  * For example,
  * <code>
- * class TTextAlign extends TEnumerable
+ * class TTextAlign extends \Prado\TEnumerable
  * {
  *     const Left='Left';
  *     const Right='Right';

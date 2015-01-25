@@ -19,13 +19,13 @@
 
 namespace Prado;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 /**
  * Defines Prado class if not defined.
  */
 if(!class_exists('Prado',false))
 {
+	require(__DIR__ . '/Pradobase.php');
+
 	/**
 	 * Prado class.
 	 *
@@ -38,11 +38,15 @@ if(!class_exists('Prado',false))
 	}
 }
 
-/**
- * Initializes error and exception handlers
- */
-Prado::initErrorHandlers();
+Prado::init();
 
+
+/**
+ * Defines basic class aliases used by not-PSR4 applications
+ */
+
+class_alias('\Prado\Prado', 'Prado', true);
 class_alias('\Prado\TApplication', 'TApplication', true);
+class_alias('\Prado\TModule', 'TModule', true);
 class_alias('\Prado\Web\Services\TPageService', 'TPageService', true);
 class_alias('\Prado\Web\UI\TPage', 'TPage', true);

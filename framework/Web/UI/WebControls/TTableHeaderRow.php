@@ -12,11 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * Includes TTableRow class.
- */
-Prado::using('System.Web.UI.WebControls.TTableRow');
-
-/**
  * TTableHeaderRow class.
  *
  * TTableHeaderRow displays a table header row.

@@ -10,11 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TTemplateColumn class
@@ -63,7 +59,7 @@ class TTemplateColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
 	 *
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
 	 * @param string the renderer class name in namespace format.
@@ -88,7 +84,7 @@ class TTemplateColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
 	 *
-	 * If the class implements {@link IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
 	 * @param string the renderer class name in namespace format.
@@ -214,7 +210,7 @@ class TTemplateColumn extends TDataGridColumn
 					$control->setItemIndex($cell->getParent()->getItemIndex());
 					$control->setItemType($itemType);
 				}
-				if($control instanceof IDataRenderer)
+				if($control instanceof \Prado\IDataRenderer)
 					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			}
 			else if($template!==null)

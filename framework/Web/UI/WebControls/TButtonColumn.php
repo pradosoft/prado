@@ -10,14 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-
-/**
- * TDataGridColumn class file
- */
-Prado::using('System.Web.UI.WebControls.TDataGridColumn');
-Prado::using('System.Web.UI.WebControls.TButton');
-Prado::using('System.Web.UI.WebControls.TLinkButton');
-Prado::using('System.Web.UI.WebControls.TImageButton');
+use Prado\TPropertyValue;
 
 /**
  * TButtonColumn class
@@ -259,7 +252,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function dataBindColumn($sender,$param)
 	{
-		if($sender instanceof IButtonControl)
+		if($sender instanceof \Prado\Web\UI\IButtonControl)
 		{
 			if(($field=$this->getDataTextField())!=='')
 			{

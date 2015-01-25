@@ -474,7 +474,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$matchEnd=0;
 		$c=0;
 		$this->_directive=null;
-		try
+		//try
 		{
 			for($i=0;$i<$n;++$i)
 			{
@@ -647,6 +647,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			if($textStart<strlen($input))
 				$tpl[$c++]=array($container,substr($input,$textStart));
 		}
+		/*
 		catch(\Exception $e)
 		{
 			if(($e instanceof TException) && ($e instanceof TTemplateException))
@@ -656,7 +657,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			else
 				$line=$this->_startingLine+count(explode("\n",substr($input,0,$matchEnd+1)));
 			$this->handleException($e,$line,$input);
-		}
+		} */
 
 		if($this->_directive===null)
 			$this->_directive=array();
@@ -803,7 +804,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		else
 			$className=$type;
 		$class=new \ReflectionClass($className);
-		if(is_subclass_of($className,'TControl') || $className==='TControl')
+		if(is_subclass_of($className,'\Prado\Web\UI\TControl') || $className==='\Prado\Web\UI\TControl')
 		{
 			foreach($attributes as $name=>$att)
 			{
@@ -842,7 +843,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				}
 			}
 		}
-		else if(is_subclass_of($className,'TComponent') || $className==='TComponent')
+		else if(is_subclass_of($className,'\Prado\TComponent') || $className==='\Prado\TComponent')
 		{
 			foreach($attributes as $name=>$att)
 			{

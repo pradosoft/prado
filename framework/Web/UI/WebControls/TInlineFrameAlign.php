@@ -29,7 +29,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
-class TInlineFrameAlign extends TEnumerable
+class TInlineFrameAlign extends \Prado\TEnumerable
 {
 	const NotSet='NotSet';
 	const Left='Left';

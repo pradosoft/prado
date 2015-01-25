@@ -11,8 +11,6 @@
 
 namespace Prado\Web\UI\WebControls;
 
-Prado::using('System.Web.UI.WebControls.TTable');
-
 /**
  * IRepeatInfoUser interface.
  * This interface must be implemented by classes who want to use {@link TRepeatInfo}.

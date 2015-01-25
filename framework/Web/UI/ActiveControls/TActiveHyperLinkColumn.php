@@ -35,7 +35,7 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
 		if(($classPath=$this->getHeaderRenderer())!=='')
 		{
 			$control=Prado::createComponent($classPath);
-			if($control instanceof IDataRenderer)
+			if($control instanceof \Prado\IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
 				{

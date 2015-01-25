@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TXmlTransform class
@@ -36,7 +37,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
-class TXmlTransform extends TControl {
+class TXmlTransform extends \Prado\Web\UI\TControl {
 
   const EXT_XML_FILE = '.xml';
   const EXT_XSL_FILE = '.xsl';

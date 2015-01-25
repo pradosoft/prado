@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TDataGridPager extends TPanel implements INamingContainer
+class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 {
 	private $_dataGrid;
 
@@ -47,7 +47,7 @@ class TDataGridPager extends TPanel implements INamingContainer
 	 */
 	public function bubbleEvent($sender,$param)
 	{
-		if($param instanceof TCommandEventParameter)
+		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
 			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
 			return true;

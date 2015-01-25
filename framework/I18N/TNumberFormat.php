@@ -64,7 +64,7 @@ Prado::using('System.I18N.TI18NControl');
   * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
   * @package Prado\I18N
   */
-class TNumberFormat extends TI18NControl implements IDataRenderer
+class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
 	 * Default NumberFormat, set to the application culture.
@@ -128,7 +128,7 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 
 	/**
 	 * Get the numberic value for this control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getValue()}.
 	 * @return string number
 	 * @see getValue
@@ -141,7 +141,7 @@ class TNumberFormat extends TI18NControl implements IDataRenderer
 
 	/**
 	 * Set the numberic value for this control.
-	 * This method is required by {@link IDataRenderer}.
+	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
 	 * @param string the number value
 	 * @see setValue
