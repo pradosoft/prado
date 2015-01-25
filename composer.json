@@ -69,7 +69,7 @@
     "autoload": {
         "psr-4": {
             "Prado\\": "framework"
-        },
+        }
     },
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",
