@@ -24,7 +24,7 @@ namespace Prado;
  */
 if(!class_exists('Prado',false))
 {
-	require(__DIR__ . '/Pradobase.php');
+	require(__DIR__ . '/PradoBase.php');
 
 	/**
 	 * Prado class.
