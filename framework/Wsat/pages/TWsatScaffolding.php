@@ -35,6 +35,10 @@ class TWsatScaffolding extends TPage
                 }
         }
 
+        /**
+         * Generate Scaffolding code for selected tables
+         * @param type $sender
+         */
         public function generate($sender)
         {
                 if ($this->IsValid)
@@ -43,7 +47,7 @@ class TWsatScaffolding extends TPage
                         {
                                 $scf_generator = new TWsatScaffoldingGenerator();
                                 $scf_generator->setOpFile($this->output_folder->Text);
-                                $scf_generator->generate();
+                                $scf_generator->generateCRUD("estudiante");
                                 $this->feedback_panel->CssClass = "green_panel";
                                 $this->generation_msg->Text = "The code has been generated successfully.";
                         } catch (Exception $ex)
