@@ -77,6 +77,7 @@
     <li><a href="?page=Database.ActiveRecord">アクティブレコード</a></li>
     <li><a href="?page=Database.Scaffold">アクティブレコードScaffold</a></li>
     <li><a href="?page=Database.SqlMap">SqlMapデータマッパー</a></li>
+    <li><a href="?page=Database.ViewsArUpdate">ビュー - ARクラスのアップデート</a></li>
 </ul>
 </div>
 

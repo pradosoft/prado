@@ -77,6 +77,7 @@
     <li><a href="?page=Database.ActiveRecord">Rekaman Aktf</a></li>
     <li><a href="?page=Database.Scaffold">Kerangka Rekaman Aktif</a></li>
     <li><a href="?page=Database.SqlMap">Pemeta Data SqlMap</a></li>
+    <li><a href="?page=Database.ViewsArUpdate">Views - AR Kelas Perbarui</a></li>
 </ul>
 </div>
 

@@ -76,6 +76,7 @@
     <li><a href="?page=Database.ActiveRecord">Active Record</a></li>
     <li><a href="?page=Database.Scaffold">Active Record Scaffold</a></li>
     <li><a href="?page=Database.SqlMap">SqlMap Data Mapper</a></li>
+    <li><a href="?page=Database.ViewsArUpdate">Vues - Mise à jour des classes AR</a></li>
 </ul>
 </div>
 

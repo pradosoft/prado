@@ -1,0 +1,28 @@
+<com:TContent ID="body" >
+<h1 id="138046">Views - AR Classes Update</h1>
+<com:SinceVersion Version="4.0" />
+<p class="block-content">
+    Usually when have <tt>Active Records Classes</tt>
+    there are correspondingly the proper views to handle them.
+</p>
+
+<com:TTextHighlighter CssClass="source block-content">
+$student = AR_Student::finder()->findByPk(1);
+$this->tryToUpdateView($student);
+</com:TTextHighlighter>
+
+<p class="block-content">
+    Also you can do the reverse operation.
+</p>
+
+<com:TTextHighlighter CssClass="source block-content">
+$student = new AR_Student();
+$this->tryToUpdateAR($student);
+$student->save();
+</com:TTextHighlighter>
+
+<div class="info"><b class="note">Info:</b>
+    When an AR class attribute does not match any of the controls IDs on the view, nothing will happen
+</div>
+
+</com:TContent>

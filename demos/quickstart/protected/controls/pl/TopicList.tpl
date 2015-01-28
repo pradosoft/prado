@@ -77,6 +77,7 @@
     <li><a href="?page=Database.ActiveRecord">Rekord aktywny (Active Record)</a></li>
     <li><a href="?page=Database.Scaffold">Szkielet rekordu aktywnego (Scafold)</a></li>
     <li><a href="?page=Database.SqlMap">Mapa danych SqlMap</a></li>
+    <li><a href="?page=Database.ViewsArUpdate">Widoki - Zajęcia AR Aktualizacja</a></li>
 </ul>
 </div>
 
