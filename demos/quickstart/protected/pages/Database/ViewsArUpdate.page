@@ -2,18 +2,44 @@
 <h1 id="138046">Views - AR Classes Update</h1>
 <com:SinceVersion Version="4.0" />
 <p class="block-content">
-    Usually when have <tt>Active Records Classes</tt>
-    there are correspondingly the proper views to handle them.
+    Usually when you use <tt>Active Records Classes</tt> to interact with your Data Base
+    you also build some proper views to handle them. To save every element of your views in your Data Base
+    you need first to assign everyone of them to their corresponding attribute in one of your AR Classes.
+    This task is really tedious and usually takes a significant amount of your time.
+    Thats why Prado offers an automatic mechanism to update your views from your AR Classes and vice versa. 
 </p>
+
+<h2>Updating views from AR Classes</h2>
+
+<p>Instead of assign each attribute in your AR Class to your view controls like this:</p>
+<com:TTextHighlighter CssClass="source block-content">
+$student = AR_Student::finder()->findByPk(1);
+$this->name->Text = $student->name;
+$this->age->Text = $student->age;
+$this->gender->Text = $student->gender;
+$this->average->Text = $student->average;
+</com:TTextHighlighter>
+
+<p>You can do the same as follows:</p>
 
 <com:TTextHighlighter CssClass="source block-content">
 $student = AR_Student::finder()->findByPk(1);
 $this->tryToUpdateView($student);
 </com:TTextHighlighter>
 
-<p class="block-content">
-    Also you can do the reverse operation.
-</p>
+
+<h2>Updating AR Classes from views</h2>
+<p>Instead of assign each attribute in your views to your AR Classes like this:</p>
+<com:TTextHighlighter CssClass="source block-content">
+$student = new AR_Student();
+$student->name = $this->name->Text;
+$student->age = $this->age->Text;
+$student->gender = $this->gender->Text;
+$student->average = $this->average->Text;
+$student->save();
+</com:TTextHighlighter>
+
+<p>You can do the same as follows:</p>
 
 <com:TTextHighlighter CssClass="source block-content">
 $student = new AR_Student();
@@ -21,8 +47,10 @@ $this->tryToUpdateAR($student);
 $student->save();
 </com:TTextHighlighter>
 
+
 <div class="info"><b class="note">Info:</b>
-    When an AR class attribute does not match any of the controls IDs on the view, nothing will happen
+    Note that the identifiers of your controls should be exactly the same of the attributes of your 
+    AR Classes... otherwise nothing will happen.
 </div>
 
 </com:TContent>
