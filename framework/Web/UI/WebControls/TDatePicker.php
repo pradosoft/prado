@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  *

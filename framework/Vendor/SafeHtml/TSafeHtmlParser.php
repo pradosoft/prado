@@ -19,7 +19,7 @@
 /**
  * This package requires HTMLSax3 package
  */
-Prado::using('System.3rdParty.SafeHtml.HTMLSax3');
+Prado::using('System.Vendor.SafeHtml.HTMLSax3');
 
 
 /**
@@ -43,7 +43,7 @@ Prado::using('System.3rdParty.SafeHtml.HTMLSax3');
  *
  * <b>Example:</b>
  * <pre>
- * $parser = Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
+ * $parser = Prado::createComponent('System.Vendor.SafeHtml.TSafeHtmlParser');
  * $result = $parser->parse($doc);
  * </pre>
  *

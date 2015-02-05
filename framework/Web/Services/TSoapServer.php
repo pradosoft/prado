@@ -195,14 +195,14 @@ class TSoapServer extends \Prado\TApplicationComponent
 				$wsdl=$cache->get(self::WSDL_CACHE_PREFIX.$providerClass);
 				if(is_string($wsdl))
 					return $wsdl;
-				Prado::using('System.3rdParty.WsdlGen.WsdlGenerator');
+				Prado::using('System.Vendor.WsdlGen.WsdlGenerator');
 				$wsdl=WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 				$cache->set(self::WSDL_CACHE_PREFIX.$providerClass,$wsdl);
 				return $wsdl;
 			}
 			else
 			{
-				Prado::using('System.3rdParty.WsdlGen.WsdlGenerator');
+				Prado::using('System.Vendor.WsdlGen.WsdlGenerator');
 				return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 			}
 		}

@@ -74,7 +74,7 @@ class TTextHighlighter extends TTextProcessor
 	/**
 	 * @param string language (case-insensitive) whose syntax is to be used for highlighting.
 	 * Valid values are those file names (without suffix) that are contained
-	 * in '3rdParty/TextHighlighter/Text/Highlighter'. Currently, the following languages are supported:
+	 * in 'Vendor/TextHighlighter/Text/Highlighter'. Currently, the following languages are supported:
 	 * ABAP, CPP, CSS, DIFF, DTD, HTML, JAVA, JAVASCRIPT,
 	 * MYSQL, PERL, PHP, PRADO, PYTHON, RUBY, SQL, XML
 	 * If a language is not supported, it will be displayed as plain text.
@@ -165,7 +165,7 @@ class TTextHighlighter extends TTextProcessor
 	protected function registerStyleSheet()
 	{
 		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('Prado\\3rdParty\\TextHighlighter\\highlight','.css');
+		$cssFile=Prado::getPathOfNamespace('Prado\\Vendor\\TextHighlighter\\highlight','.css');
 		$cssKey='prado:TTextHighlighter:'.$cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
@@ -181,7 +181,7 @@ class TTextHighlighter extends TTextProcessor
 	{
 		try
 		{
-			$highlighter=\Prado\3rdParty\TextHighlighter\Text\Highlighter::factory($this->getLanguage());
+			$highlighter=\Prado\Vendor\TextHighlighter\Text\Highlighter::factory($this->getLanguage());
 		}
 		catch(\Exception $e)
 		{

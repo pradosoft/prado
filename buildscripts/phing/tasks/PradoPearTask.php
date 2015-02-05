@@ -90,7 +90,7 @@ class PradoPearTask extends Task
 						'examples'      => 'doc',
 						'framework'     => 'php',
 						'framework/js'  => 'doc',
-						'framework/3rdParty' => 'doc',
+						'framework/Vendor' => 'doc',
 					),
 				'exceptions' =>
 					array(

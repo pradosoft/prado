@@ -13,6 +13,7 @@
 namespace Prado\Web\UI\WebControls;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * Class TTabPanel.

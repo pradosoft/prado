@@ -571,7 +571,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	protected function getSafeTextParser()
 	{
 		if(!self::$_safeTextParser)
-			self::$_safeTextParser=Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
+			self::$_safeTextParser=Prado::createComponent('System.Vendor.SafeHtml.TSafeHtmlParser');
 		return self::$_safeTextParser;
 	}
 

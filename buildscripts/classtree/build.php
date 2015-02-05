@@ -13,7 +13,7 @@ $exclusions=array(
 	'prado-cli.php',
 	'JSMin.php',
 	'/I18N/core',
-	'/3rdParty',
+	'/Vendor',
 	'/Testing',
 	'/Web/UI/WebControls/assets',
 	);

@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * THtmlArea class
@@ -424,8 +425,8 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptDeploymentPath()
 	{
-		$tarfile = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.tar');
-		$md5sum = Prado::getPathOfNamespace('System.3rdParty.TinyMCE.tiny_mce', '.md5');
+		$tarfile = Prado::getPathOfNamespace('System.Vendor.TinyMCE.tiny_mce', '.tar');
+		$md5sum = Prado::getPathOfNamespace('System.Vendor.TinyMCE.tiny_mce', '.md5');
 		if($tarfile===null || $md5sum===null)
 			throw new TConfigurationException('htmlarea_tarfile_invalid');
 		$url = $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);

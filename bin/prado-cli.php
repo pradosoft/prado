@@ -34,7 +34,7 @@ if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
 	{
 		if(!$shell->has_semicolon) echo Prado::varDump($var);
 	}
-	include_once($frameworkPath.'/3rdParty/PhpShell/php-shell-init.php');
+	include_once($frameworkPath.'/Vendor/PhpShell/php-shell-init.php');
 }
 
 
@@ -867,5 +867,5 @@ if(class_exists('PHP_Shell_Commands', false))
 	$__shell_exts->registerExtensions(array(
 		    "active-record"        => new PHP_Shell_Extensions_ActiveRecord)); /* the :set command */
 
-	include_once(realpath(dirname(dirname(__FILE__))).'/framework/3rdParty/PhpShell/php-shell-cmd.php');
+	include_once(realpath(dirname(dirname(__FILE__))).'/framework/Vendor/PhpShell/php-shell-cmd.php');
 }

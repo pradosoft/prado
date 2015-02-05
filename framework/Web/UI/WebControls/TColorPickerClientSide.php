@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Web\UI\TClientSideOptions;
 
 /**
  * TColorPickerClientSide class.

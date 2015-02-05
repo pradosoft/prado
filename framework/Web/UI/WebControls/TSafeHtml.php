@@ -79,7 +79,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	 */
 	protected function parseSafeHtml($text)
 	{
-		$renderer = Prado::createComponent('System.3rdParty.SafeHtml.TSafeHtmlParser');
+		$renderer = Prado::createComponent('System.Vendor.SafeHtml.TSafeHtmlParser');
 		return $renderer->parse($text, $this->getRepackUTF7());
 	}
 }
