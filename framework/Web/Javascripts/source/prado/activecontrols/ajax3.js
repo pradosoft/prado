@@ -873,7 +873,7 @@ jQuery(function()
  * @param mixed parameter to pass to callback handler on the server side.
  * @param function client side onSuccess event handler.
  * @param object additional request options.
- * @return boolean always false.
+ * @return Prado.CallbackRequest request that was created
  */
 Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 {
@@ -888,14 +888,14 @@ Prado.Callback = function(UniqueID, parameter, onSuccess, options)
 
 	var request = new Prado.CallbackRequest(UniqueID, callback);
 	request.dispatch();
-	return false;
+	return request;
 };
 
 /**
  * Create a new callback request initiated by jQuery-UI elements.
  * @param event object as sent by jQuery-UI events
  * @param ui object as sent by jQuery-UI events
- * @return boolean always false.
+ * @return Prado.CallbackRequest request that was created
  */
 Prado.JuiCallback = function(UniqueID, eventType, event, ui, target)
 {
@@ -926,7 +926,7 @@ Prado.JuiCallback = function(UniqueID, eventType, event, ui, target)
 
 	var request = new Prado.CallbackRequest(UniqueID, callback);
 	request.dispatch();
-	return false;
+	return request;
 };
 
 /**
