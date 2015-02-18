@@ -506,3 +506,7 @@ juioptions_control_invalid				= Control '{0}' must implement IJuiOptions.
 juioptions_option_invalid				= '{1}' is not a valid option for control '{0}'.
 
 ratinglist_invalid_caption_id			= '{0}' is not a valid caption control for TRatingList '{0}'.
+
+accordion_activeviewid_invalid			= TAccordion.ActiveViewID has an invalid ID '{0}'.
+accordion_activeviewindex_invalid		= TAccordion.ActiveViewIndex has an invalid Index '{0}'.
+accordion_view_inexistent				= TAccordion cannot find the specified view.

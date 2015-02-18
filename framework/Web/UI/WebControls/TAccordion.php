@@ -142,14 +142,14 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 			if(($index=$views->findIndexByID($id))>=0)
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid',$id);
+				throw new TInvalidDataValueException('accordion_activeviewid_invalid',$id);
 		}
 		else if(($index=$this->getActiveViewIndex())>=0)
 		{
 			if($index<$views->getCount())
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid',$index);
+				throw new TInvalidDataValueException('accordion_activeviewindex_invalid',$index);
 		}
 		else
 		{
@@ -176,7 +176,7 @@ class TAccordion extends TWebControl implements IPostBackDataHandler
 		if($this->getViews()->indexOf($view)>=0)
 			$this->activateView($view);
 		else
-			throw new TInvalidOperationException('tabpanel_view_inexistent');
+			throw new TInvalidOperationException('accordion_view_inexistent');
 	}
 
 	/**
