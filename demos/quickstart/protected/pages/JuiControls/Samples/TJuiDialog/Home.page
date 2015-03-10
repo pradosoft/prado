@@ -1,0 +1,67 @@
+<com:TContent ID="body">
+<h1>TJuiDialog Samples</h1>
+
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Simple Dialog:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="Open Dialog"
+	OnClick="bt1Click"/>
+<com:TJuiDialog
+    ID="dlg1"
+    Options.Title="Simple Dialog"
+    Options.AutoOpen="False"
+    >
+    This is a simple Dialog
+</com:TJuiDialog>
+</td></tr>
+
+<tr><td class="samplenote">
+Modal dialog:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="Open Dialog"
+	OnClick="bt2Click"/>
+<com:TJuiDialog
+    ID="dlg2"
+    Options.Title="Modal dialog"
+    Options.AutoOpen="False"
+    Options.Modal="True"
+    >
+    This is a modal dialog
+
+</com:TJuiDialog>
+</td></tr>
+
+
+<tr><td class="samplenote">
+Dialog with buttons:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="Open Dialog"
+	OnClick="bt3Click"/>
+<com:TJuiDialog
+    ID="dlg3"
+    Options.Title="Dialog with buttons"
+    Options.AutoOpen="False"
+    >
+    This is a dialog with buttons.
+    <com:TJuiDialogButton
+    	Text="Ok"
+    	OnClick="dlg3Ok"
+    	/>
+    <com:TJuiDialogButton
+    	Text="Cancel"
+    	OnClick="dlg3Cancel"
+    	/>
+
+</com:TJuiDialog>
+<com:TActiveLabel ID="lbl3" />
+</td></tr>
+
+</table>
+
+</com:TContent>

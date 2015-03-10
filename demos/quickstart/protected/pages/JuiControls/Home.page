@@ -84,6 +84,10 @@ For informations of the specific options of each interaction, follow jQuery-UI I
   <a href="?page=JuiControls.Widgets#TJuiAutoComplete">TJuiProgressbar</a>
   provides a list of suggestions on the current partial word typed in the textbox
   </li>
+  <li>
+  <a href="?page=JuiControls.Widgets#TJuiDialog">TJuiDialog</a>
+  displays an movable dialog control
+  </li>
 </ul>
 
 </com:TContent>

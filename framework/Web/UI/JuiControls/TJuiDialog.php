@@ -1,0 +1,238 @@
+<?php
+/**
+ * TJuiDialog class file.
+ *
+ * @author  David Otto <ottodavid[at]gmx[dot]net>
+ * @link http://www.pradosoft.com/
+ * @copyright Copyright &copy; 2013-2014 PradoSoft
+ * @license http://www.pradosoft.com/license/
+ * @package System.Web.UI.JuiControls
+ */
+
+Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
+Prado::using('System.Web.UI.ActiveControls.TActivePanel');
+
+/**
+ * TJuiDialog class.
+ *
+ * TJuiDialog is an extension to {@link TActivePanel} based on jQuery-UI's
+ * {@link http://jqueryui.com/dialog/ Dialog} widget.
+ *
+ *
+ * <code>
+ * <com:TJuiDialog
+ *	ID="dlg1"
+ * >
+ * contents
+ * </com:TJuiDialog>
+ * </code>
+ *
+ * @author David Otto <ottodavid[at]gmx[dot]net>
+ * @package System.Web.UI.JuiControls
+ * @since 3.3
+ */
+class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHandler
+{
+	protected $_options;
+
+	/**
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter. If you override this class, be sure to set the
+	 * adapter appropriately by, for example, by calling this constructor.
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->setAdapter(new TJuiControlAdapter($this));
+	}
+
+	/**
+	 * Object containing defined javascript options
+	 * @return TJuiControlOptions
+	 */
+	public function getOptions()
+	{
+		if($this->_options===null)
+			$this->_options=new TJuiControlOptions($this);
+		return $this->_options;
+	}
+
+	/**
+	 * Array containing valid javascript options
+	 * @return array()
+	 */
+	public function getValidOptions()
+	{
+		return array('appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizeable', 'show', 'title', 'width');
+	}
+
+	/**
+	 * Array containing valid javascript events
+	 * @return array()
+	 */
+	public function getValidEvents()
+	{
+		return array('beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop');
+	}
+
+	/**
+	 * @return array list of callback options.
+	 */
+	protected function getPostBackOptions()
+	{
+		$options = $this->getOptions()->toArray();
+
+		foreach($this->getControls() as $control)
+			if($control instanceof TJuiDialogButton)
+				$options['buttons'][] = $control->getPostBackOptions();
+
+		return $options;
+	}
+
+	/**
+	 * Ensure that the ID attribute is rendered and registers the javascript code
+	 * for initializing the active control.
+	 */
+	protected function addAttributesToRender($writer)
+	{
+		parent::addAttributesToRender($writer);
+
+		$writer->addAttribute('id',$this->getClientID());
+		$options=TJavascript::encode($this->getPostBackOptions());
+		$cs=$this->getPage()->getClientScript();
+		$code="jQuery('#".$this->getClientId()."').dialog(".$options.");";
+		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
+	}
+
+	/**
+	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * interface.
+	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 */
+	public function raiseCallbackEvent($param)
+	{
+		$this->getOptions()->raiseCallbackEvent($param);
+	}
+
+	/**
+	 * Raises the OnCreate event
+	 * @param object $params event parameters
+	 */
+	public function onOpen ($params)
+	{
+		$this->raiseEvent('OnOpen', $this, $params);
+	}
+
+	/**
+	 * Open this dialog
+	 */
+	public function open()
+	{
+		$this->triggerClientMethod('open');
+	}
+
+	/**
+	 * Close this dialog
+	 */
+	public function close()
+	{
+		$this->triggerClientMethod('close');
+	}
+
+	private function triggerClientMethod($method)
+	{
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#".$this->getClientId()."').dialog('".$method."');";
+		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
+	}
+}
+
+/**
+ * TJuiDialogButton class
+ *
+ * This button must be child of a TJuiDialog. It can be used to bind an callback
+ * to the buttons of the dialog.
+ *
+ * <code>
+ * <com:TJuiDialog> * >
+ * Text
+ * 	<com:TJuiDialogButton Text="Ok" OnClick="Ok" />
+ *
+ * </com:TJuiDialog>
+ * </code>
+ *
+ * @author David Otto <ottodavid[at]gmx[dot]net>
+ * @package System.Web.UI.JuiControls
+ * @since 3.3
+ */
+class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiveControl
+{
+
+	/**
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter. If you override this class, be sure to set the
+	 * adapter appropriately by, for example, by calling this constructor.
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->setAdapter(new TActiveControlAdapter($this));
+	}
+
+	/**
+	 * @return TBaseActiveCallbackControl standard callback control options.
+	 */
+	public function getActiveControl()
+	{
+		return $this->getAdapter()->getBaseActiveControl();
+	}
+
+	/**
+	 * Array containing defined javascript options
+	 * @return array
+	 */
+	public function getPostBackOptions()
+	{
+		return array(
+			'text' => $this->getText(),
+			'click' => new TJavaScriptLiteral("function(){new Prado.Callback('".$this->getUniqueID()."', 'onClick');}"
+			)) ;
+	}
+
+	/**
+	 * @return string caption of the button
+	 */
+	public function getText()
+	{
+		return $this->getViewState('Text','');
+	}
+
+	/**
+	 * @param string caption of the button
+	 */
+	public function setText($value)
+	{
+		$this->setViewState('Text',$value,'');
+	}
+
+	/**
+	 * Raises the OnClick event
+	 * @param object $params event parameters
+	 */
+	public function onClick ($params)
+	{
+		$this->raiseEvent('OnClick', $this, $params);
+	}
+
+	/**
+	 * Raises callback event.
+	 * raises the appropriate event(s) (e.g. OnClick)
+	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 */
+	public function raiseCallbackEvent($param)
+	{
+		if($param->CallbackParameter === 'onClick')
+			$this->onClick($param);
+	}
+
+}

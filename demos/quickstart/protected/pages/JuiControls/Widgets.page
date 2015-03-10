@@ -48,4 +48,26 @@ When a suggestion is selected the <tt>OnSuggestionSelected</tt> event is raised,
 <com:RunBar PagePath="JuiControls.Samples.TJuiAutoComplete.Home" />
 <br/>
 
+
+<a name="TJuiDialog" />
+<h2>TJuiDialog</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDialog" /> - <a href="http://api.jqueryui.com/dialog/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiDialog</tt> is an extension to <a href="?page=ActiveControls.ActivePanel">TActivePanel</a> based on jQuery-UI's <a href="http://jqueryui.com/dialog/">dialog</a> widget.
+</p>
+
+<p class="block-content">
+TJuiDialog is an extended TActivePanel that shows an dialog. The dialog may contain buttons that can fire callback events.
+</p>
+
+<p class="block-content">
+The dialog may contain one or more <tt>TJuiDialogButton</tt> Controls.
+The buttons may contain a callback that will be fired when they are clicked.
+</p>
+
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiDialog.Home" />
+<br/>
+
 </com:TContent>
