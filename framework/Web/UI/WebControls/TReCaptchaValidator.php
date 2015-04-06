@@ -124,12 +124,9 @@ class TReCaptchaValidator extends TBaseValidator
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
 				$this->Page->IsCallback ? $fn.'('.$value.');' : '',
 				'',
-				// wait for the captcha to be constructed
-				'jQuery(document).on("captchaready:'.$control->getClientID().'",function() { ',
-					// install event handler that clears the validation error when user changes the captcha response field
-					'jQuery('.TJavaScript::quoteString('#'.$control->getResponseFieldName()).').on("keyup",function() { ',
-						$fn.'("1");',
-					'});',
+				// install event handler that clears the validation error when user changes the captcha response field
+				'jQuery("#'.$control->getClientID().'").on("keyup", '.TJavaScript::quoteString('#'.$control->getResponseFieldName()).', function() { ',
+					$fn.'("1");',
 				'});',
 			)));
 		}
