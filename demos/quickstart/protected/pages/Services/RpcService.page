@@ -26,7 +26,7 @@ To use <tt>TRpcService</tt>, configure it in the application specification like 
 The example specifies a RPC service provider named <tt>stockquote</tt> which implements the <tt>getPrice</tt> RPC method in the provider class <tt>StockQuote</tt>,
 </p>
 <com:TTextHighlighter Language="php" CssClass="source block-content">
-class StockQuote
+class StockQuote extends TRpcApiProvider
 {
 	/**
 	 * @param string $symbol the symbol of the stock
@@ -35,7 +35,7 @@ class StockQuote
 	 */
 	public function getPrice($symbol)
 	{
-		....return stock price for $symbol
+		//....return stock price for $symbol
 	}
 
     /**
