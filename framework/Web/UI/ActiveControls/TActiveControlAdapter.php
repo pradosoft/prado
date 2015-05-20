@@ -45,6 +45,10 @@ class TActiveControlAdapter extends TControlAdapter
 	 * @var TCallbackPageStateTracker view state tracker.
 	 */
 	private $_stateTracker;
+	/**
+	 * @var string view state tracker class.
+	 */
+	private $_stateTrackerClass='TCallbackPageStateTracker';
 
 	/**
 	 * Constructor.
@@ -140,7 +144,8 @@ class TActiveControlAdapter extends TControlAdapter
 	{
 		if($this->getIsTrackingPageState())
 		{
-			$this->_stateTracker = new TCallbackPageStateTracker($this->getControl());
+		  $stateTrackerClass = $this->_stateTrackerClass;
+			$this->_stateTracker = new $stateTrackerClass($this->getControl());
 			$this->_stateTracker->trackChanges();
 		}
 		parent::onLoad($param);
@@ -167,6 +172,14 @@ class TActiveControlAdapter extends TControlAdapter
 	{
 		return $this->_stateTracker;
 	}
+
+	/**
+	 * @param string state tracker class.
+	 */
+	public function setStateTracker($value)
+	{
+		$this->_stateTrackerClass = TPropertyValue::ensureString($value);
+	}
 }
 
 /**
@@ -191,7 +204,7 @@ class TCallbackPageStateTracker
 	/**
 	 * @var TControl the control tracked
 	 */
-	private $_control;
+	protected $_control;
 	/**
 	 * @var object null object.
 	 */
