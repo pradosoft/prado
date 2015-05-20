@@ -50,14 +50,33 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+	  return 'sortable';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+	  return $this->getClientID() . '_0';
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		if($this->_options===null)
-			$this->_options=new TJuiControlOptions($this);
-		return $this->_options;
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
+		return $options;
 	}
 
 	/**
@@ -103,7 +122,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getClientId()."_0').sortable(".$options.");";
+		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -274,7 +293,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	protected function createRepeater()
 	{
 		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
-		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="'.$this->getClientId().'_0'.'">'));
+		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="'.$this->getWidgetID().'">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
 		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));
 		$repeater->setEmptyTemplate(new TJuiSortableTemplate('<ul></ul>'));

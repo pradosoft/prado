@@ -71,14 +71,33 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+	  return 'droppable';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+	  return $this->getClientID();
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		if($this->_options===null)
-			$this->_options=new TJuiControlOptions($this);
-		return $this->_options;
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
+		return $options;
 	}
 
 	/**
@@ -87,7 +106,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('addClasses', 'appendTo', 'axis', 'cancel', 'connectToSortable', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'grid', 'handle', 'helper', 'iframeFix', 'opacity', 'refreshPositions', 'revert', 'revertDuration', 'scope', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'snap', 'snapMode', 'snapTolerance', 'stack', 'zIndex');
+		return array('accept', 'activeClass', 'addClasses', 'disabled', 'greedy', 'hoverClass', 'scope', 'tolerance');
 	}
 
 	/**
@@ -118,7 +137,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getClientId()."').droppable(".$options.");";
+		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

@@ -53,14 +53,33 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+	  return 'resizable';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+	  return $this->getClientID();
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		if($this->_options===null)
-			$this->_options=new TJuiControlOptions($this);
-		return $this->_options;
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
+		return $options;
 	}
 
 	/**
@@ -101,7 +120,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getClientId()."').resizable(".$options.");";
+		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

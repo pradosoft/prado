@@ -102,14 +102,32 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+		return 'autocomplete';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+		return $this->getClientID();
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		static $options;
-		if($options===null)
-			$options=new TJuiControlOptions($this);
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
 		return $options;
 	}
 

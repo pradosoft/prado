@@ -53,14 +53,33 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+	  return 'selectable';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+	  return $this->getClientID() . '_0';
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		if($this->_options===null)
-			$this->_options=new TJuiControlOptions($this);
-		return $this->_options;
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
+		return $options;
 	}
 
 	/**
@@ -105,7 +124,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getClientId()."_0').selectable(".$options.");";
+		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -222,7 +241,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	protected function createRepeater()
 	{
 		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
-		$repeater->setHeaderTemplate(new TJuiSelectableTemplate('<ul id="'.$this->getClientId().'_0'.'">'));
+		$repeater->setHeaderTemplate(new TJuiSelectableTemplate('<ul id="'.$this->getWidgetID().'">'));
 		$repeater->setFooterTemplate(new TJuiSelectableTemplate('</ul>'));
 		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->DataItem %></li>',null));
 		$repeater->setEmptyTemplate(new TJuiSelectableTemplate('<ul></ul>'));

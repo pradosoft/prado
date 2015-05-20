@@ -47,14 +47,33 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	}
 
 	/**
+	 * @return string the name of the jQueryUI widget method
+	 */
+	public function getWidget()
+	{
+	  return 'progressbar';
+	}
+
+	/**
+	 * @return string the clientid of the jQueryUI widget element
+	 */
+	public function getWidgetID()
+	{
+	  return $this->getClientID();
+	}
+
+	/**
 	 * Object containing defined javascript options
 	 * @return TJuiControlOptions
 	 */
 	public function getOptions()
 	{
-		if($this->_options===null)
-			$this->_options=new TJuiControlOptions($this);
-		return $this->_options;
+		if (($options=$this->getViewState('JuiOptions'))===null)
+		{
+		  $options=new TJuiControlOptions($this);
+		  $this->setViewState('JuiOptions', $options);
+		}
+		return $options;
 	}
 
 	/**
@@ -94,7 +113,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavascript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getClientId()."').progressbar(".$options.");";
+		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

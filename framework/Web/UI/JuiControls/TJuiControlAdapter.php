@@ -29,6 +29,17 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	const BASE_CSS_FILENAME ='jquery-ui.css';
 
 	/**
+	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
+	 * options tracking in ViewState.
+	 * @param TEventParameter event parameter to be passed to the event handlers
+	 */
+	public function onInit($param)
+	{
+	  parent::onInit($param);
+	  $this->setStateTracker('TJuiCallbackPageStateTracker');
+	}
+
+	/**
 	 * @param string set the jquery-ui style
 	 */
 	public function setJuiBaseStyle($value)
@@ -78,6 +89,15 @@ class TJuiControlAdapter extends TActiveControlAdapter
 		return $url;
 	}
 
+	/**
+	 * Calls the parent implementation first and sets the parent control for the
+	 * {@link TJuiControlOptions} again afterwards since it was not serialized in viewstate.
+	 */
+	public function loadState() {
+	  parent::loadState();
+    $this->getControl()->getOptions()->setControl($this->getControl());
+	}
+
 }
 
 /**
@@ -92,6 +112,8 @@ class TJuiControlAdapter extends TActiveControlAdapter
  */
 interface IJuiOptions
 {
+  public function getWidget();
+  public function getWidgetID();
 	public function getOptions();
 	public function getValidOptions();
 	public function getValidEvents();
@@ -124,12 +146,27 @@ class TJuiControlOptions
 	 */
 	private $_control;
 
+	/**
+	 * Constructor. Set the parent control owning these options.
+	 * @param TControl parent control
+	 */
 	public function __construct($control)
 	{
-		if(!$control instanceof IJuiOptions)
-			throw new THttpException(500,'juioptions_control_invalid',$control->ID);
-		$this->_control=$control;
+    $this->setControl($control);
 	}
+
+	/**
+	 * Sets the parent control.
+	 * @param TControl $control
+	 * @throws THttpException
+	 */
+	public function setControl($control)
+	{
+	  if(!$control instanceof IJuiOptions)
+	    throw new THttpException(500,'juioptions_control_invalid',$control->ID);
+	  $this->_control=$control;
+	}
+
 	/**
 	 * Sets a named options with a value. Options are used to store and retrive
 	 * named values for the javascript control.
@@ -187,6 +224,14 @@ class TJuiControlOptions
 		}
 
 		return null;
+	}
+
+	/**
+	 * Only serialize the options itself, not the corresponding parent control.
+	 * @return mixed array with the names of all variables of that object that should be serialized.
+	 */
+	public function __sleep() {
+	  return array('_options');
 	}
 
 	/**
@@ -289,4 +334,38 @@ class TJuiEventParameter extends TCallbackEventParameter
 
 		return $this->getControl($cp->$name);
 	}
+}
+
+/**
+ * TJuiCallbackPageStateTracker class.
+ *
+ * Tracking changes to the page state during callback, including {@link TJuiControlOptions}.
+ *
+ * @author LANDWEHR Computer und Software GmbH
+ * @package System.Web.UI.JuiControls
+ * @since 3.3
+ */
+class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {
+
+  /**
+   * Add the {@link TJuiControlOptions} to the states to track.
+   */
+  protected function addStatesToTrack()
+  {
+    parent::addStatesToTrack();
+    $states = $this->getStatesToTrack();
+    $states['JuiOptions'] = array('TMapCollectionDiff', array($this, 'updateJuiOptions'));
+  }
+
+	/**
+	 * Updates the options of the jQueryUI widget.
+	 * @param array list of widget options to change.
+	 */
+  protected function updateJuiOptions($options)
+  {
+    foreach ($options as $key => $value) $options[$key] = $key . ': ' . (is_string($value) ? "'{$value}'" : TPropertyValue::ensureString($value));
+    $code = "jQuery('#{$this->_control->getWidgetID()}').{$this->_control->getWidget()}('option', { " . implode(', ', $options) . " });";
+    $this->_control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);
+  }
+
 }
