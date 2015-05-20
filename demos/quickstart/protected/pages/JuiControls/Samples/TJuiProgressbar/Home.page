@@ -50,6 +50,18 @@ Undefined progresbar, value changed from javascript:
 	</com:TClientScript/>
 </td></tr>
 
+<tr><td class="samplenote">
+Default options, Max=100, Value=50, value changed during callback:
+</td><td class="sampleaction">
+  <com:TJuiProgressbar
+    ID="pbar2"
+    Options.Max="100"
+    Options.Value="50"
+  />
+  <com:TActiveButton ID="button2" Text="-10" OnClick="pbar2_minus" />
+  <com:TActiveButton ID="button3" Text="+10" OnClick="pbar2_plus" />
+</td></tr>
+
 </table>
 
 </com:TContent>

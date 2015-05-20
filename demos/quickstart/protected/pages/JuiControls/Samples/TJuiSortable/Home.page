@@ -17,17 +17,36 @@
 		background: lime;
 		border: 1px solid black;
 	}
+  
+  .ui-sortable li.ui-sortable-highlight {
+    background: red;
+    border: 1px solid black;
+    height: 17px;
+  }
 </com:TStyleSheet>
 <table class="sampletable">
 
 <tr><td class="samplenote">
-Default options with a little css applied:
+Default options with a little css applied, change options during callback:
 </td><td class="sampleaction">
 	<com:TJuiSortable
 		ID="repeater1"
 		onStop="repeater1_onStop"
 		/>
-	<com:TActiveLabel ID="label1" />
+	Items order: <com:TActiveLabel ID="label1" />
+  <div><com:TActiveCheckBox OnCheckedChanged="sort1" Text="Apply CSS dragging placeholder" /></div>
+  <div><com:TActiveCheckBox OnCheckedChanged="sort2" Text="Revert to new position using a smooth animation" /></div>
+  <div>
+    Cursor is
+    <com:TActiveDropDownList OnSelectedIndexChanged="sort3">
+      <com:TListItem Text="auto" Value="auto" Selected="true" />
+      <com:TListItem Text="move" Value="move" />
+      <com:TListItem Text="pointer" Value="pointer" />
+      <com:TListItem Text="crosshair" Value="crosshair" />
+      <com:TListItem Text="help" Value="help" />
+    </com:TActiveDropDownList>
+    while dragging
+  </div>
 </td></tr>
 
 </table>

@@ -5,9 +5,10 @@
 	.ui-draggable {
 		width: 100px;
 		height:100px;
-		background-color: lime;
 		border: 1px solid black;
+    background-color: lime;
 		padding: 1em;
+    cursor: move;
 	}
 	.ui-droppable {
 		width: 150px;
@@ -22,25 +23,34 @@
 	.drop-red {
 		background-color: red;
 	}
+  .drop-red.active {
+    background-color: orange;
+  }
 </com:TStyleSheet>
 <table class="sampletable">
 
 <tr><td class="samplenote">
-Default options with a little css applied:
+Default options with a little css applied, change options during callback:
 </td><td class="sampleaction" style="height:600px">
-	<com:TJuiDraggable ID="drag1">
-	Drag me around
+	<com:TJuiDraggable ID="drag1" CssClass="drag-lime">
+	  Drag me around
+    <p><com:TActiveLabel ID="label3" /></p>
 	</com:TJuiDraggable>
 
-	<com:TJuiDroppable OnDrop="drop1_ondrop" CssClass="drop-yellow">
-	Drop it here!
-	<br/><com:TActiveLabel ID="label1" />
+	<com:TJuiDroppable ID="drop1" OnDrop="drop1_ondrop" CssClass="drop-yellow" Options.accept=".drag-lime">
+  	Drop it here!
+  	<p><com:TActiveLabel ID="label1a" Text="is accepting lime draggable" /></p>
+    <p><com:TActiveLabel ID="label1b" /></p>
 	</com:TJuiDroppable>
 
-	<com:TJuiDroppable OnDrop="drop2_ondrop" CssClass="drop-red">
-	Drop it here!
-	<br/><com:TActiveLabel ID="label2" />
+	<com:TJuiDroppable ID="drop2" OnDrop="drop2_ondrop" CssClass="drop-red">
+  	Drop it here!
+  	<p><com:TActiveLabel ID="label2a" Text="is NOT highlighted while dragging" /></p>
+  	<p><com:TActiveLabel ID="label2b" /></p>
 	</com:TJuiDroppable>
+  
+  <p><com:TActiveCheckBox Text="yellow droppable accepts lime draggable" OnCheckedChanged="drop1_changed" Checked="true" /></p>
+  <p><com:TActiveCheckBox Text="highlight red droppable while dragging" OnCheckedChanged="drop2_changed" /></p>
 </td></tr>
 
 </table>

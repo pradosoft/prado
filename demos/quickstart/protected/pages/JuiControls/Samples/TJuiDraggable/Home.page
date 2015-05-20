@@ -12,16 +12,40 @@
 </com:TStyleSheet>
 <table class="sampletable">
 
-<tr><td class="samplenote">
-Default options with a little css applied:
+<tr><td class="samplenote" rowspan="2">
+Default options with a little css applied, change options during callback:
 </td><td class="sampleaction" style="height:600px">
 	<com:TJuiDraggable
+    ID="drag1"
 		OnStart="drag1_start"
 		OnStop="drag1_stop"
 	>
 	Drag me around
 	</com:TJuiDraggable>
 	<com:TActiveLabel ID="label1" Text="Waiting.." />
+</td></tr>
+
+<tr><td>
+  <div>
+    Move direction
+    <com:TActiveButton Text="only horizontally" OnClick="drag1h" />
+    <com:TActiveButton Text="only vertically" OnClick="drag1v" />
+    <com:TActiveButton Text="both directions" OnClick="drag1b" />
+  </div>
+  <div>
+    Cursor is
+    <com:TActiveDropDownList OnSelectedIndexChanged="drag2c">
+      <com:TListItem Text="auto" Value="auto" Selected="true" />
+      <com:TListItem Text="move" Value="move" />
+      <com:TListItem Text="pointer" Value="pointer" />
+      <com:TListItem Text="crosshair" Value="crosshair" />
+      <com:TListItem Text="help" Value="help" />
+    </com:TActiveDropDownList>
+    while dragging
+  </div>
+  <div>
+    <com:TActiveCheckBox OnCheckedChanged="drag3r" Text="Revert to original position after dragging stopped" />
+  </div>
 </td></tr>
 
 </table>

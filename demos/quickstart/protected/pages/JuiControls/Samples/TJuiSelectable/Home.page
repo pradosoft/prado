@@ -27,13 +27,15 @@
 <table class="sampletable">
 
 <tr><td class="samplenote">
-Default options with a little css applied:
+Default options with a little css applied, change options during callback:
 </td><td class="sampleaction">
 	<com:TJuiSelectable
 		ID="repeater1"
 		OnStop="repeater1_onStop"
 	/>
-	<com:TActiveLabel ID="label1" />
+	Selected items: <com:TActiveLabel ID="label1" />
+  <div><com:TActiveCheckBox OnCheckedChanged="select1" Text="Disable selectable" /></div>
+  <div><com:TActiveCheckBox OnCheckedChanged="select2" Text="Selecting starts after dragging at least 100px" /></div>
 </td></tr>
 
 </table>

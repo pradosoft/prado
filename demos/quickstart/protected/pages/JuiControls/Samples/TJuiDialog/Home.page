@@ -62,6 +62,36 @@ Dialog with buttons:
 <com:TActiveLabel ID="lbl3" />
 </td></tr>
 
+<tr><td class="samplenote">
+Dialog with callbacks:
+</td><td class="sampleaction">
+<com:TActiveButton
+  Text="Open Dialog"
+  OnClick="bt4Click"/>
+<com:TJuiDialog
+    ID="dlg4"
+    Options.Width="400"
+    Options.Title="Dialog with callbacks"
+    Options.AutoOpen="False"
+    Options.Position="center center"
+    >
+    Change dialog options during callback.
+    <com:TJuiDialogButton
+      Text="change title"
+      OnClick="dlg4title"
+      />
+    <com:TJuiDialogButton
+      Text="toggle width"
+      OnClick="dlg4width"
+      />
+    <com:TJuiDialogButton
+      Text="toggle position"
+      OnClick="dlg4pos"
+      />
+
+</com:TJuiDialog>
+</td></tr>
+
 </table>
 
 </com:TContent>

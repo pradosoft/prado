@@ -2,26 +2,42 @@
 <h1>TJuiResizable Samples</h1>
 
 <com:TStyleSheet>
+  #box {
+    width: 800px;
+    height: 500px;
+    border: 1px solid #000;
+  }
 	.resizable {
 		width: 150px;
 		height: 150px;
 		padding: 0.5em;
 		background: #fff;
-		border: 1px solid #000;
+		border: 1px solid #f00;
+    overflow: hidden;
 	}
 	</com:TStyleSheet>
 <table class="sampletable">
 
-<tr><td class="samplenote">
+<tr><td class="samplenote" rowspan="2">
 Default options with a little css applied:
 </td><td class="sampleaction">
-	<com:TJuiResizable
-		CssClass="resizable"
-		OnStart="resize1_start"
-		OnStop="resize1_stop"
-	>
-		<com:TActiveLabel ID="label1" Text="Resize me!" />
-	</com:TJuiResizable>
+  <div id="box">
+  	<com:TJuiResizable
+      ID="resize1"
+  		CssClass="resizable"
+  		OnStart="resize1_start"
+  		OnStop="resize1_stop"
+      Options.AnimateEasing="easeOutBounce"
+  	>
+  		<com:TActiveLabel ID="label1" Text="Resize me!" />
+  	</com:TJuiResizable>
+  </div>
+</td></tr>
+
+<tr><td>
+  <div><com:TActiveCheckBox OnCheckedChanged="check1" Text="Resize outer box synchronously" /></div>
+  <div><com:TActiveCheckBox OnCheckedChanged="check2" Text="Animate final resizing" /></div>
+  <div><com:TActiveCheckBox OnCheckedChanged="check3" Text="Snap to [30,30] grid" /></div>
 </td></tr>
 
 </table>
