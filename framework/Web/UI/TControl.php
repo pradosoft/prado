@@ -172,13 +172,6 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	private $_rf=array();
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct()
-	{
-	}
-
-	/**
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
 	 * a control via its ID using the following syntax,
