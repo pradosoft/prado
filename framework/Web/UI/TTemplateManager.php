@@ -938,7 +938,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				else
 				{
 					// a simple property
-					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name)) )
+					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name) || $this->isClassBehaviorMethod($class,$name)) )
 					{
 						if ($class->hasMethod('get'.$name) || $class->hasMethod('getjs'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
@@ -1067,6 +1067,30 @@ class TTemplate extends TApplicationComponent implements ITemplate
 		}
 
 		return $input;
+	}
+
+	/**
+	 * Checks if the given method belongs to a previously attached class behavior.
+	 * @param ReflectionClass $class
+	 * @param string $method
+	 * @return boolean
+	 */
+	protected function isClassBehaviorMethod(ReflectionClass $class,$method)
+	{
+	  $component=new ReflectionClass('TComponent');
+	  $behaviors=$component->getStaticProperties();
+	  if(!isset($behaviors['_um']))
+	    return false;
+	  foreach($behaviors['_um'] as $name=>$list)
+	  {
+	    if(!$class->isSubclassOf($name)) continue;
+	    foreach($list as $param)
+	    {
+	      if(method_exists($param->getBehavior(),'set'.$method))
+	        return true;
+	    }
+	  }
+	  return false;
 	}
 }
 
