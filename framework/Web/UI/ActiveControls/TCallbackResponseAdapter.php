@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Web\THttpResponseAdapter;
 
 /**
  * TCallbackResponseAdapter alters the THttpResponse's outputs.

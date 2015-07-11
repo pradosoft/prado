@@ -14,6 +14,12 @@ namespace Prado\I18N;
 /**
  * Get the parent control class.
  */
+use Prado\Collections\TAttributeCollection;
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\TControl;
+
 Prado::using('System.I18N.TI18NControl');
 
 /**

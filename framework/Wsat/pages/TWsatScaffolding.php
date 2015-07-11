@@ -11,6 +11,12 @@
 
 namespace Prado\Wsat\pages;
 
+use Exception;
+use Prado\Prado;
+use Prado\Web\UI\TPage;
+use Prado\Web\UI\WebControls\TCheckBox;
+use Prado\Wsat\TWsatScaffoldingGenerator;
+
 Prado::using("System.Wsat.TWsatScaffoldingGenerator");
 
 class TWsatScaffolding extends TPage

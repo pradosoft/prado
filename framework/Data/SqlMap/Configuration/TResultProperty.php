@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Collections\TList;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use ReflectionClass;
 
 /**
  * TResultProperty corresponds a <property> tags inside a <resultMap> tag.

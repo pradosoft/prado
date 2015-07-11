@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Exceptions\TException;
 
 /**
  * TInvalidCallbackException class.

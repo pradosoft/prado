@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 
 /**

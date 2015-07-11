@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Util;
+use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TDataFieldAccessor class

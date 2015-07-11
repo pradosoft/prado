@@ -10,6 +10,16 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+use Prado\Collections\TList;
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\SqlMap\Configuration\TResultProperty;
+use Prado\Data\SqlMap\Configuration\TSqlMapInsert;
+use Prado\Data\SqlMap\Configuration\TSqlMapStatement;
+use Prado\Data\SqlMap\DataMapper\TLazyLoadList;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
+use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
+use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TMappedStatement class executes SQL mapped statements. Mapped Statements can

@@ -11,6 +11,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\TClientSideOptions;
 
 /**
  * TSliderClientScript class.

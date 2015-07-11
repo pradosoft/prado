@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Util;
+use Exception;
+use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbConnection;
+use Prado\Exceptions\TConfigurationException;
+use Prado\TPropertyValue;
 
 /**
  * TDbLogRoute class

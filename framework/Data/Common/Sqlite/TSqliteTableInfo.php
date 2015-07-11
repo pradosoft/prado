@@ -14,6 +14,9 @@ namespace Prado\Data\Common\Sqlite;
 /**
  * Loads the base TDbTableInfo class and TSqliteTableColumn class.
  */
+use Prado\Data\Common\TDbTableInfo;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbTableInfo');
 Prado::using('System.Data.Common.Sqlite.TSqliteTableColumn');
 

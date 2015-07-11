@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\IO\TTextWriter;
 
 /**
  * TCallbackResponseWriter class.

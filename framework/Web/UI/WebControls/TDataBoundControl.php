@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Collections\TPagedDataSource;
+use Prado\Data\TDbDataReader;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;

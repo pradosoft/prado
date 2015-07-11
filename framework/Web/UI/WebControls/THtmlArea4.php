@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 

@@ -10,6 +10,11 @@
  */
 
 namespace Prado\I18N;
+use Prado\Exceptions\TException;
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\TControl;
 
 /**
  * TTranslateParameter component should be used inside the TTranslate component to

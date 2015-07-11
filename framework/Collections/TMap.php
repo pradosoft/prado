@@ -13,6 +13,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Traversable;
 
 /**
  * TMap class

@@ -15,6 +15,13 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\WebControls\TDatePicker;
+use Prado\Web\UI\WebControls\TDatePickerInputMode;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**

@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Exceptions\TException;
 
 /**
  * TRpcException class

@@ -10,6 +10,15 @@
  */
 
 namespace Prado\Data\ActiveRecord;
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
+use Prado\Data\Common\TDbMetaData;
+use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\DataGateway\TDataGatewayCommand;
+use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Data\TDbConnection;
+use Prado\Prado;
+use ReflectionClass;
 
 /**
  * TActiveRecordGateway excutes the SQL command queries and returns the data

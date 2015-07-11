@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\TPropertyValue;
 
 /**
  * Custom Validator callback client side options class.

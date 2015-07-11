@@ -14,6 +14,11 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Includes the following used classes
  */
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TTable;
+use Prado\Web\UI\WebControls\TTableRow;
+
 Prado::using('System.Web.UI.WebControls.TTableRow');
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');

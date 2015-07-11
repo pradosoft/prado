@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Data\ActiveRecord\Exceptions;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
 
 /**
  * Base exception class for Active Records.

@@ -15,8 +15,11 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Collections\TList;
+use Prado\Collections\TPagedDataSource;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Web\UI\ITemplate;
 
 /**
  * TDataGrid class

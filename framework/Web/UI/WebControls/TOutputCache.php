@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Caching\ICache;
+use Prado\Exceptions\TConfigurationException;
+use Prado\IO\TTextWriter;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 

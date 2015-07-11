@@ -14,6 +14,13 @@ namespace Prado\Web\UI\JuiControls;
 /**
  * Load active text box.
  */
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\ActiveControls\TActiveTextBox;
+use Prado\Web\UI\INamingContainer;
+use Prado\Web\UI\TTemplate;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');

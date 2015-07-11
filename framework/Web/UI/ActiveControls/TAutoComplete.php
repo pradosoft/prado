@@ -14,6 +14,11 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active text box.
  */
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\INamingContainer;
+use Prado\Web\UI\TTemplate;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
 /**
  * TJuiAutoCompleteEventParameter contains the {@link getToken Token} requested by

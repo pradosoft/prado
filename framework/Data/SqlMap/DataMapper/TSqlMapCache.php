@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+use Prado\Caching\ICache;
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
+use Prado\TPropertyValue;
 
 /**
  * Allow different implementation of caching strategy. See <tt>TSqlMapFifoCache</tt>

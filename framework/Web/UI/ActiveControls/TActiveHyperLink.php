@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\Web\UI\WebControls\THyperLink;
 
 /**
  * TActiveHyperLink class.

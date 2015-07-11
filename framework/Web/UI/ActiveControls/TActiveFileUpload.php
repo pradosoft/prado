@@ -13,6 +13,13 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load TActiveControlAdapter and TFileUpload.
  */
+use Exception;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\INamingContainer;
+use Prado\Web\UI\WebControls\TFileUpload;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 Prado::using('System.Web.UI.WebControls.TFileUpload');
 

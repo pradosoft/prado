@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Javascripts\TJavaScript;

@@ -1,4 +1,6 @@
 <?php
+use Prado\Web\UI\TTemplateControl;
+use Prado\Wsat\pages\TWsatLogin;
 
 /**
  * Description of MainLayout

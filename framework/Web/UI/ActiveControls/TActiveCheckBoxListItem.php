@@ -11,6 +11,8 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Web\UI\WebControls\TCheckBox;
+
 class TActiveCheckBoxListItem extends TActiveCheckBox
 {
 	/**

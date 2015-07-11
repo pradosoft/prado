@@ -14,6 +14,14 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 /**
  * Load the scaffold base class.
  */
+use Prado\Data\ActiveRecord\TActiveRecordCriteria;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\WebControls\IItemDataRenderer;
+use Prado\Web\UI\WebControls\TListItemType;
+use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
+
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**

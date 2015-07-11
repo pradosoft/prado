@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+use PDO;
 
 /**
  * TDbTableColumn class describes the column meta data of the schema for a database table.

@@ -11,6 +11,7 @@
 
 namespace Prado\Security;
 use Prado\Data\TDbConnection;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TDbUser class

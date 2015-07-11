@@ -19,6 +19,11 @@ namespace Prado\I18N\core;
 /**
  * Get the MessageSource class file.
  */
+use PDO;
+use Prado\Data\TDataSourceConfig;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+
 require_once(dirname(__FILE__).'/MessageSource.php');
 
 /**

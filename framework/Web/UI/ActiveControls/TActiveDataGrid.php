@@ -14,6 +14,12 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Includes the following used classes
  */
+use Prado\Prado;
+use Prado\Web\UI\ISurroundable;
+use Prado\Web\UI\WebControls\TDataGrid;
+use Prado\Web\UI\WebControls\TDataGridPagerButtonType;
+use Prado\Web\UI\WebControls\TLabel;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 Prado::using('System.Web.UI.ActiveControls.TActiveLinkButton');
 Prado::using('System.Web.UI.ActiveControls.TActiveImageButton');

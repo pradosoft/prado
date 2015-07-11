@@ -14,6 +14,9 @@ namespace Prado\I18N;
 /**
  * Get the DateFormat class.
  */
+use Prado\I18N\core\DateFormat;
+use Prado\Prado;
+
 Prado::using('System.I18N.core.DateFormat');
 
 /**

@@ -14,6 +14,14 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TDisplayStyle;
+use Prado\Web\UI\WebControls\TLabel;
+use Prado\Web\UI\WebControls\TPager;
+use Prado\Web\UI\WebControls\TPagerButtonType;
+use Prado\Web\UI\WebControls\TPagerMode;
+use Prado\Web\UI\WebControls\TWebControl;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**

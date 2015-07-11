@@ -11,6 +11,11 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Exceptions\TNotSupportedException;
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TBaseValidator;
+use Prado\Web\UI\WebControls\TCustomValidator;
+
 Prado::using('System.Web.UI.ActiveControls.TCallbackClientSide');
 
 /**

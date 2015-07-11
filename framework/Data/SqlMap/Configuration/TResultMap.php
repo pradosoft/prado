@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Collections\TMap;
+use Prado\Data\SqlMap\DataMapper\TSqlMapException;
 
 /**
  * TResultMap corresponds to <resultMap> mapping tag.

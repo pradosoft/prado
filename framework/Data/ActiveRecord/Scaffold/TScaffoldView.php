@@ -14,6 +14,8 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 /**
  * Import scaffold base, list, edit and search controls.
  */
+use Prado\Prado;
+
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldListView');
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldEditView');

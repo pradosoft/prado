@@ -12,6 +12,7 @@
  */
 
 namespace Prado\Web;
+use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
 
 /**

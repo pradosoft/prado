@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Web\UI\WebControls\TClientScript;
 
 /**
  * TActiveClientScript class

@@ -16,6 +16,7 @@
 
 namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Web\UI\TControl;
 
 /**
  * TDataGridColumnCollection class.

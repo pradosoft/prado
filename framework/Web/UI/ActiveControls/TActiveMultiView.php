@@ -14,6 +14,9 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Includes the following used classes
  */
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TMultiView;
+
 Prado::using('System.Web.UI.WebControls.TMultiView');
 
 /**

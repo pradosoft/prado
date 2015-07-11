@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 
 /**
  * TSqlMapSelect corresponds to the <selectKey> element.

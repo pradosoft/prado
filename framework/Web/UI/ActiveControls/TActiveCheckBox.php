@@ -14,6 +14,10 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\WebControls\TCheckBox;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\DataGateway;
+use Prado\Exceptions\TDbException;
 
 /**
  * TDataGatewayCommand is command builder and executor class for

@@ -14,6 +14,9 @@ namespace Prado\Web\UI\ActiveControls;
 /*
  * Load common active control options.
  */
+use Prado\Prado;
+use Prado\Web\UI\TControlAdapter;
+
 Prado::using('System.Web.UI.ActiveControls.TBaseActiveControl');
 
 /**

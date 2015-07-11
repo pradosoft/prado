@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+use Prado\Caching\ICache;
+use Prado\Prado;
 
 /**
  * TFastSqlMapApplicationCache class file

@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Util;
+use Prado\Exceptions\TApplicationException;
 
 /**
  * TRpcClientResponseException class

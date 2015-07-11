@@ -11,6 +11,8 @@
 
 namespace Prado\Wsat;
 
+use Prado\Prado;
+
 Prado::using("System.Wsat.TWsatBaseGenerator");
 
 class TWsatScaffoldingGenerator extends TWsatBaseGenerator

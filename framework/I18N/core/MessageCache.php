@@ -10,6 +10,8 @@ namespace Prado\I18N\core;
 /**
  * Load the cache lite library.
  */
+use Exception;
+
 require_once(dirname(__FILE__).'/TCache_Lite.php');
 
 /**

@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\TPropertyValue;
+use Prado\Web\UI\TClientSideOptions;
+use Prado\Web\UI\TControl;
 
 /**
  * TCallbackClientSide class.

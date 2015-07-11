@@ -14,6 +14,13 @@ namespace Prado\Data\ActiveRecord;
 /**
  * Load record manager, criteria and relations.
  */
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
+use Prado\Data\DataGateway\TSqlCriteria;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use ReflectionClass;
+
 Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
 Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');

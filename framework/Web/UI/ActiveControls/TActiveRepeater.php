@@ -8,6 +8,8 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Web\UI\ISurroundable;
+use Prado\Web\UI\WebControls\TRepeater;
 
 /**
  * TActiveRepeater class

@@ -17,6 +17,7 @@
  */
 
 namespace Prado\I18N\core;
+use Exception;
 
 /**
 * Fast, light and safe Cache Class

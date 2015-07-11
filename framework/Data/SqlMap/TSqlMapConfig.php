@@ -11,6 +11,12 @@
 
 namespace Prado\Data\SqlMap;
 
+use Prado\Data\TDataSourceConfig;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\TPropertyValue;
+
 Prado::using('System.Data.TDataSourceConfig');
 
 /**

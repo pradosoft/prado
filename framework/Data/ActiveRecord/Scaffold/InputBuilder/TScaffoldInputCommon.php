@@ -10,6 +10,23 @@
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\WebControls\TCheckBox;
+use Prado\Web\UI\WebControls\TCheckBoxList;
+use Prado\Web\UI\WebControls\TDataTypeValidator;
+use Prado\Web\UI\WebControls\TDatePicker;
+use Prado\Web\UI\WebControls\TDatePickerInputMode;
+use Prado\Web\UI\WebControls\TDropDownList;
+use Prado\Web\UI\WebControls\TRadioButtonList;
+use Prado\Web\UI\WebControls\TRangeValidator;
+use Prado\Web\UI\WebControls\TRequiredFieldValidator;
+use Prado\Web\UI\WebControls\TTextBox;
+use Prado\Web\UI\WebControls\TTextBoxMode;
+use Prado\Web\UI\WebControls\TValidationDataType;
+use Prado\Web\UI\WebControls\TValidatorDisplayStyle;
+
 Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputBase');
 
 class TScaffoldInputCommon extends TScaffoldInputBase

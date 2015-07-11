@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+use Prado\Prado;
 
 /**
  * TTypeHandlerFactory provides type handler classes to convert database field type

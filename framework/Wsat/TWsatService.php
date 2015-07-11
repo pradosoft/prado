@@ -10,6 +10,12 @@
  */
 
 namespace Prado\Wsat;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\Web\Services\TPageService;
+use Prado\Web\UI\TThemeManager;
 
 /**
  * TWsatService class

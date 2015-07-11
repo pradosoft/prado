@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+use Prado\Web\UI\ITemplate;
 
 /**
  * TJuiAutoCompleteTemplate class.

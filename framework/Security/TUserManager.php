@@ -12,6 +12,7 @@
 namespace Prado\Security;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
 use Prado\Xml\TXmlDocument;

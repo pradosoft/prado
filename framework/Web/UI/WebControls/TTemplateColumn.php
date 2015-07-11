@@ -10,7 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Web\UI\ITemplate;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Prado;
 
 /**
  * TTemplateColumn class

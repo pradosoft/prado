@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Web\UI\WebControls\TButtonColumn;
+use Prado\Web\UI\WebControls\TButtonColumnType;
+use Prado\Web\UI\WebControls\TListItemType;
 
 /**
  * TActiveButtonColumn class

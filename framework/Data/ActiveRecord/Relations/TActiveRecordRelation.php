@@ -14,6 +14,10 @@ namespace Prado\Data\ActiveRecord\Relations;
 /**
  * Load active record relationship context.
  */
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Prado;
+
 Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 
 /**

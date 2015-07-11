@@ -10,6 +10,9 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Collections\TStack;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 

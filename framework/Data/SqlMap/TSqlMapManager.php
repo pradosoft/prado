@@ -11,6 +11,19 @@
 
 namespace Prado\Data\SqlMap;
 
+use Prado\Caching\TChainedCacheDependency;
+use Prado\Collections\TMap;
+use Prado\Data\SqlMap\Configuration\TParameterMap;
+use Prado\Data\SqlMap\Configuration\TResultMap;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
+use Prado\Data\SqlMap\Configuration\TSqlMapXmlConfiguration;
+use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
+use Prado\Data\SqlMap\DataMapper\TSqlMapDuplicateException;
+use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry;
+use Prado\Data\SqlMap\DataMapper\TSqlMapUndefinedException;
+use Prado\Data\SqlMap\Statements\IMappedStatement;
+use Prado\Prado;
+
 Prado::using('System.Data.SqlMap.TSqlMapGateway');
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapException');
 Prado::using('System.Data.SqlMap.DataMapper.TSqlMapTypeHandlerRegistry');

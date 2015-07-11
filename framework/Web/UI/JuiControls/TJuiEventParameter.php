@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+use Prado\Prado;
+use Prado\Web\Services\TPageService;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
+use Prado\Web\UI\TControl;
 
 /**
  * TJuiEventParameter class

@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Exception;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**

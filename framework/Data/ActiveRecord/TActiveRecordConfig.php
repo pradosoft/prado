@@ -11,6 +11,10 @@
 
 namespace Prado\Data\ActiveRecord;
 
+use Prado\Data\TDataSourceConfig;
+use Prado\Prado;
+use Prado\TPropertyValue;
+
 Prado::using('System.Data.TDataSourceConfig');
 Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
 

@@ -11,6 +11,8 @@
 
 namespace Prado\Wsat\pages;
 
+use Prado\Web\UI\TPage;
+
 class TWsatLogin extends TPage
 {
 

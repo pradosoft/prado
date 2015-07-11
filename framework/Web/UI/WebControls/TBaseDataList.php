@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Collections\TList;
+use Prado\Util\TDataFieldAccessor;
 
 /**
  * TBaseDataList class

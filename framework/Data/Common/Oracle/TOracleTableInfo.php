@@ -11,6 +11,9 @@
  */
 
 namespace Prado\Data\Common\Oracle;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
 
 /**
  * TDbTableInfo class describes the meta data of a database table.

@@ -13,6 +13,7 @@ namespace Prado\Web;
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**

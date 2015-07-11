@@ -11,6 +11,13 @@
 
 namespace Prado\Data;
 
+use PDO;
+use PDOException;
+use Prado\Data\Common\TDbMetaData;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+
 Prado::using('System.Data.TDbTransaction');
 Prado::using('System.Data.TDbCommand');
 

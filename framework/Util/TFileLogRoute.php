@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Util;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * TFileLogRoute class.

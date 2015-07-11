@@ -11,6 +11,9 @@
 
 namespace Prado\Data\SqlMap;
 
+use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
+use Prado\Prado;
+
 Prado::using('System.Data.SqlMap.TSqlMapManager');
 
 /**

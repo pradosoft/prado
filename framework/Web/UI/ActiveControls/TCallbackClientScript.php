@@ -10,6 +10,14 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Collections\TList;
+use Prado\TPropertyValue;
+use Prado\Web\UI\ISurroundable;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\WebControls\TCheckBox;
+use Prado\Web\UI\WebControls\TCheckBoxList;
+use Prado\Web\UI\WebControls\TListControl;
 
 /**
  * TCallbackClientScript class.

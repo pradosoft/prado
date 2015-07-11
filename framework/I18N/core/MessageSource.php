@@ -20,6 +20,8 @@ namespace Prado\I18N\core;
  /**
   * Get the IMessageSource interface.
   */
+use Exception;
+
 require_once(dirname(__FILE__).'/IMessageSource.php');
 
 /**

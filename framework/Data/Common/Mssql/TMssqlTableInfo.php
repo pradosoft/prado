@@ -14,6 +14,9 @@ namespace Prado\Data\Common\Mssql;
 /**
  * Loads the base TDbTableInfo class and TMssqlTableColumn class.
  */
+use Prado\Data\Common\TDbTableInfo;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbTableInfo');
 Prado::using('System.Data.Common.Mssql.TMssqlTableColumn');
 

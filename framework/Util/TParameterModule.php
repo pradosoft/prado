@@ -10,6 +10,13 @@
  */
 
 namespace Prado\Util;
+use Prado\Caching\TFileCacheDependency;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TParameterModule class

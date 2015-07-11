@@ -13,9 +13,9 @@ namespace Prado\Web;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TIOException;
 use Prado\Prado;
 use Prado\TApplicationMode;
-use Prado\IO\TIOException;
 use Prado\IO\TTarFileExtractor;
 
 /**

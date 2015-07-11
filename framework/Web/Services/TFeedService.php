@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\Services;
+use Prado\Prado;
 use Prado\TApplication;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;

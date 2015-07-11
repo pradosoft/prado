@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+use Prado\Web\UI\TControl;
 
 /**
  * TLogger class.

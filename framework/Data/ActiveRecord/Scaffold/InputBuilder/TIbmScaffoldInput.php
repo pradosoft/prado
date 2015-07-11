@@ -11,6 +11,8 @@
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
+use Prado\Prado;
+
 Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputCommon');
 
 class TIbmScaffoldInput extends TScaffoldInputCommon

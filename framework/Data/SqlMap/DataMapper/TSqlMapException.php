@@ -1,6 +1,10 @@
 <?php
 
 namespace Prado\Data\SqlMap\DataMapper;
+use Prado\Exceptions\TException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use SimpleXMLElement;
 
 /**
  * TSqlMapException is the base exception class for all SqlMap exceptions.

@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+use Prado\Data\SqlMap\Configuration\TSimpleDynamicParser;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
 /**
  * TSimpleDynamicSql class.

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+use Prado\Prado;
 
 /**
  * TFirePhpLogRoute class.

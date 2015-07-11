@@ -14,6 +14,11 @@ namespace Prado\Data\DataGateway;
 /**
  * Loads the data gateway command builder and sql criteria.
  */
+use Prado\Data\Common\TDbMetaData;
+use Prado\Data\Common\TDbTableInfo;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
+
 Prado::using('System.Data.DataGateway.TSqlCriteria');
 Prado::using('System.Data.DataGateway.TDataGatewayCommand');
 

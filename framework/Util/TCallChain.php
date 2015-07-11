@@ -9,6 +9,8 @@
  */
 
 namespace Prado\Util;
+use Prado\Collections\TList;
+use Prado\Collections\TListIterator;
 
 /**
  * TCallChain is a recursive event calling mechanism.  This class implements

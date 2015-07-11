@@ -15,6 +15,12 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load callback response adapter class.
  */
+use Prado\Prado;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\TControl;
+use Prado\Web\UI\TControlAdapter;
+use Prado\Web\UI\TPage;
+
 Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
 Prado::using('System.Web.UI.ActiveControls.TCallbackClientScript');
 Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');

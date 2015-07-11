@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+use Prado\Collections\TMap;
+use Prado\Exceptions\THttpException;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TJavaScriptLiteral;
+use Prado\Web\UI\TControl;
 
 /**
  * TJuiControlOptions interface

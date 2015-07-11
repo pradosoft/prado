@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Web\UI\ITemplate;
 
 /**
  * TAutoCompleteTemplate class.

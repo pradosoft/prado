@@ -10,6 +10,18 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Caching\TFileCacheDependency;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
+use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
+use Prado\Data\SqlMap\Statements\TCachingStatement;
+use Prado\Data\SqlMap\Statements\TDeleteMappedStatement;
+use Prado\Data\SqlMap\Statements\TInsertMappedStatement;
+use Prado\Data\SqlMap\Statements\TMappedStatement;
+use Prado\Data\SqlMap\Statements\TSimpleDynamicSql;
+use Prado\Data\SqlMap\Statements\TStaticSql;
+use Prado\Data\SqlMap\Statements\TUpdateMappedStatement;
+use Prado\Prado;
+use Prado\TApplicationMode;
 
 /**
  * Loads the statements, result maps, parameters maps from xml configuration.

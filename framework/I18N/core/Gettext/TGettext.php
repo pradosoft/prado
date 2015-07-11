@@ -42,6 +42,7 @@ namespace Prado\I18N\core\Gettext;
  * Use PHPs builtin error messages
  */
 //ini_set('track_errors', true);
+use Exception;
 
 /**
  * File_Gettext

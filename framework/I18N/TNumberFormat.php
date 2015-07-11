@@ -14,6 +14,10 @@ namespace Prado\I18N;
 /**
  * Get the NumberFormat class.
  */
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\I18N\core\NumberFormat;
+use Prado\Prado;
+
 Prado::using('System.I18N.core.NumberFormat');
 
 /**

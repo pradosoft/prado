@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+use Prado\Collections\TList;
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**

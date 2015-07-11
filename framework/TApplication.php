@@ -13,6 +13,7 @@ namespace Prado;
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TConfigurationException;
+use Prado\I18N\TGlobalization;
 use Prado\Security\TSecurityManager;
 use Prado\Web\TAssetManager;
 use Prado\Web\THttpRequest;

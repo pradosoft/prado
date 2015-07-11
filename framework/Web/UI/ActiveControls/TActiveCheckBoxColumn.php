@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Prado;
+use Prado\Web\UI\WebControls\IItemDataRenderer;
+use Prado\Web\UI\WebControls\TCheckBoxColumn;
+use Prado\Web\UI\WebControls\TDataGrid;
+use Prado\Web\UI\WebControls\TListItemType;
 
 /**
  * TActiveCheckBoxColumn class

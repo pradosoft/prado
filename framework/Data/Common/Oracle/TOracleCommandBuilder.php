@@ -12,6 +12,9 @@
 
 namespace Prado\Data\Common\Oracle;
 
+use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**

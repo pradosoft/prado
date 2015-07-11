@@ -14,6 +14,9 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TTextBox;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**

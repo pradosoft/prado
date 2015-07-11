@@ -10,6 +10,12 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
+use Prado\Data\SqlMap\DataMapper\TInvalidPropertyException;
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
+use Prado\Data\SqlMap\DataMapper\TSqlMapException;
+use Prado\Prado;
 
 /**
  * TParameterMap corresponds to the <parameterMap> element.

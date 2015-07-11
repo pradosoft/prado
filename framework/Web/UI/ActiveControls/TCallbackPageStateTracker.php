@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\Collections\TMap;
+use stdClass;
 
 /**
  * TCallbackPageStateTracker class.

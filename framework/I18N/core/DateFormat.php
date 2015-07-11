@@ -20,6 +20,9 @@ namespace Prado\I18N\core;
 /**
  * Get the DateTimeFormatInfo class.
  */
+use Exception;
+use Prado\Prado;
+
 require_once(dirname(__FILE__).'/DateTimeFormatInfo.php');
 
 /**

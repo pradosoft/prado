@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\INamingContainer;
 

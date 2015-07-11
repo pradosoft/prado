@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TCachePageStatePersister class

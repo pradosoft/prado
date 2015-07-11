@@ -11,8 +11,10 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TJavaScriptLiteral;
 
 /**
  * TReCaptcha class.

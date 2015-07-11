@@ -10,6 +10,11 @@
  */
 
 namespace Prado\Data\ActiveRecord\Relations;
+use Prado\Collections\TList;
+use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\ActiveRecord\TActiveRecordCriteria;
+use Prado\Prado;
 
 /**
  * TActiveRecordRelationContext holds information regarding record relationships

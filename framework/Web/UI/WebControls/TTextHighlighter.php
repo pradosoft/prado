@@ -12,6 +12,9 @@
 namespace Prado\Web\UI\WebControls;
 use Prado\TPropertyValue;
 use Prado\Prado;
+use Prado\Web\Javascripts\TJavaScript;
+use Text_Highlighter;
+use Text_Highlighter_Renderer_Html;
 
 // BC trick : only define constants if Text/Highlighter.php
 // is not yet included
@@ -181,7 +184,7 @@ class TTextHighlighter extends TTextProcessor
 	{
 		try
 		{
-			$highlighter=\Prado\Vendor\TextHighlighter\Text\Highlighter::factory($this->getLanguage());
+			$highlighter=Text_Highlighter::factory($this->getLanguage());
 		}
 		catch(\Exception $e)
 		{

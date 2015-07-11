@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\UI\ITemplate;
 
 /**
  * TWizardNavigationTemplate class.

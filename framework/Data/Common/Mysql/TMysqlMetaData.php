@@ -14,6 +14,12 @@ namespace Prado\Data\Common\Mysql;
 /**
  * Load the base TDbMetaData class.
  */
+use PDO;
+use Prado\Data\Common\TDbMetaData;
+use Prado\Data\TDbColumnCaseMode;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
 

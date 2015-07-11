@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Util;
+use DateTime;
+use DateTimeZone;
 
 /**
  * TDateTimeStamp Class

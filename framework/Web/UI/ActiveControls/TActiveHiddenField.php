@@ -11,6 +11,9 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Prado;
+use Prado\Web\UI\WebControls\THiddenField;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**

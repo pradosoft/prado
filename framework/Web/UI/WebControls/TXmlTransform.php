@@ -11,7 +11,13 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use DOMDocument;
+use Prado\Collections\TAttributeCollection;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use XSLTProcessor;
 
 /**
  * TXmlTransform class

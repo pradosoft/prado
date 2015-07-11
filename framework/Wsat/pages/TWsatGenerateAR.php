@@ -11,6 +11,12 @@
 
 namespace Prado\Wsat\pages;
 
+use Exception;
+use Prado\Exceptions\THttpException;
+use Prado\Prado;
+use Prado\Web\UI\TPage;
+use Prado\Wsat\TWsatARGenerator;
+
 Prado::using("System.Wsat.TWsatARGenerator");
 
 class TWsatGenerateAR extends TPage

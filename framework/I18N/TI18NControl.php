@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+use Prado\Web\UI\TControl;
 
 /**
  * TI18NControl class.

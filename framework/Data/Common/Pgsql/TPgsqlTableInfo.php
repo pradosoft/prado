@@ -14,6 +14,9 @@ namespace Prado\Data\Common\Pgsql;
 /**
  * Loads the base TDbTableInfo class and TPgsqlTableColumn class.
  */
+use Prado\Data\Common\TDbTableInfo;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbTableInfo');
 Prado::using('System.Data.Common.Pgsql.TPgsqlTableColumn');
 

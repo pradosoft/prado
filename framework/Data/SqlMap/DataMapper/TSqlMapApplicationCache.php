@@ -10,6 +10,10 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+use Prado\Caching\ICache;
+use Prado\Collections\TList;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
+use Prado\Prado;
 
 /**
  * TSqlMapApplicationCache uses the default Prado application cache for

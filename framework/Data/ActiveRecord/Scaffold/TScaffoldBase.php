@@ -14,6 +14,12 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 /**
  * Include the base Active Record class.
  */
+use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\TTemplateControl;
+
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
 /**

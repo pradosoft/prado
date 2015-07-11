@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Collections\TAttributeCollection;
+use Prado\Collections\TMap;
 use Prado\TPropertyValue;
 
 /**

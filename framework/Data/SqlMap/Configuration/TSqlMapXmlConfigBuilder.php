@@ -11,6 +11,9 @@
 
 namespace Prado\Data\SqlMap\Configuration;
 
+use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
+use Prado\Prado;
+
 Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
 
 /**

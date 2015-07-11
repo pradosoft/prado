@@ -14,6 +14,9 @@ namespace Prado\Data\Common\Oracle;
 /**
  * Load common TDbTableCommon class.
  */
+use Prado\Data\Common\TDbTableColumn;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbTableColumn');
 
 /**

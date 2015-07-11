@@ -11,6 +11,10 @@
 
 namespace Prado\Data;
 
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TApplication;
+
 Prado::using('System.Data.TDbConnection');
 
 /**

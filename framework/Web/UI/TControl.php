@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+use Exception;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;

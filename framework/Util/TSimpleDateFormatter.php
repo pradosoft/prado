@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Util;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 
 /**
  * TSimpleDateFormatter class.

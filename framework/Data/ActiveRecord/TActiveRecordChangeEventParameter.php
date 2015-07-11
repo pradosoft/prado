@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord;
+use Prado\TPropertyValue;
 
 /**
  * TActiveRecordChangeEventParameter class

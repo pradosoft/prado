@@ -13,6 +13,7 @@ namespace Prado\Web;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\TPropertyValue;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 

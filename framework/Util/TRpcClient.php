@@ -9,6 +9,8 @@
  */
 
 namespace Prado\Util;
+use Prado\Exceptions\TApplicationException;
+use Prado\TPropertyValue;
 
 /**
  * TRpcClient class

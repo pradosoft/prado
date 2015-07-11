@@ -23,6 +23,8 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.0
  */
+use Prado\Exceptions\TConfigurationException;
+
 /**
  * TEmailLogRoute class.
  *

@@ -14,6 +14,9 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 /**
  * Import the scaffold base.
  */
+use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+
 Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**

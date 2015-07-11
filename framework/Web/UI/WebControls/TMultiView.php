@@ -10,8 +10,11 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\UI\TControl;
 
 /**
  * TMultiView class

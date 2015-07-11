@@ -14,6 +14,9 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter and active radio button.
  */
+use Prado\Prado;
+use Prado\Web\UI\WebControls\TRadioButtonList;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 Prado::using('System.Web.UI.ActiveControls.TActiveRadioButton');
 

@@ -9,6 +9,9 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\WebControls\TPanel;
 
 /**
  * TDraggable is a control which can be dragged

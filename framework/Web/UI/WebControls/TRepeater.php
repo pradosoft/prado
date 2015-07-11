@@ -14,6 +14,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Collections\TMap;
 use Prado\Collections\TList;
+use Prado\Prado;
+use Prado\Util\TDataFieldAccessor;
 
 /**
  * TRepeater class.

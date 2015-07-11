@@ -10,9 +10,12 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\IValidator;
 
 /**
  * TBaseValidator class

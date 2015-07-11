@@ -21,6 +21,8 @@ namespace Prado\I18N\core;
 /**
  * Get the CultureInfo class.
  */
+use Exception;
+
 require_once(dirname(__FILE__).'/CultureInfo.php');
 
 

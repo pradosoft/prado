@@ -10,6 +10,8 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * TSqlMapCacheModel corresponds to the <cacheModel> sql mapping configuration tag.

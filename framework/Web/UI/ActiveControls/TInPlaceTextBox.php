@@ -11,6 +11,11 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Prado;
+use Prado\TPropertyValue;
+use Prado\Web\UI\WebControls\TTextBox;
+use Prado\Web\UI\WebControls\TWebControl;
+
 Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 
 /**

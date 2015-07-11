@@ -14,6 +14,12 @@ namespace Prado\I18N;
 /**
  * Get the MessageFormat class.
  */
+use Prado\I18N\core\MessageCache;
+use Prado\I18N\core\MessageFormat;
+use Prado\I18N\core\MessageSource;
+use Prado\Prado;
+use Prado\TPropertyValue;
+
 Prado::using('System.I18N.core.MessageFormat');
 
 

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheKey;
 
 /**
  * TCacheingStatement class.

@@ -11,6 +11,9 @@
 
 namespace Prado\Data\Common\Mssql;
 
+use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**

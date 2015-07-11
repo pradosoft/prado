@@ -11,6 +11,11 @@
 
 namespace Prado\Data\SqlMap\Statements;
 
+use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\Common\TDbMetaData;
+use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Prado;
+
 Prado::using('System.Data.Common.TDbMetaData');
 Prado::using('System.Data.Common.TDbCommandBuilder');
 

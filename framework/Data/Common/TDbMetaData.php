@@ -10,6 +10,13 @@
  */
 
 namespace Prado\Data\Common;
+use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\Common\Mysql\TMysqlMetaData;
+use Prado\Data\Common\Oracle\TOracleMetaData;
+use Prado\Data\Common\Pgsql\TPgsqlMetaData;
+use Prado\Data\Common\Sqlite\TSqliteMetaData;
+use Prado\Exceptions\TDbException;
+use Prado\Prado;
 
 /**
  * TDbMetaData is the base class for retrieving metadata information, such as
