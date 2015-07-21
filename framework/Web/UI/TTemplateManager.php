@@ -938,7 +938,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				else
 				{
 					// a simple property
-					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name) || $this->isClassBehaviorMethod($class,$name)) )
+					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name) || $this->isClassBehaviorMethod($class,'set'.$name)) )
 					{
 						if ($class->hasMethod('get'.$name) || $class->hasMethod('getjs'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
@@ -973,7 +973,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 				else
 				{
 					// id is still alowed for TComponent, even if id property doesn't exist
-					if(strcasecmp($name,'id')!==0 && !$class->hasMethod('set'.$name))
+					if(strcasecmp($name,'id')!==0 && !($class->hasMethod('set'.$name) || $this->isClassBehaviorMethod($class,'set'.$name)))
 					{
 						if($class->hasMethod('get'.$name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
@@ -1086,7 +1086,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	    if(!$class->isSubclassOf($name)) continue;
 	    foreach($list as $param)
 	    {
-	      if(method_exists($param->getBehavior(),'set'.$method))
+	      if(method_exists($param->getBehavior(),$method))
 	        return true;
 	    }
 	  }
