@@ -6,19 +6,19 @@ class AutoCompleteTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=AutoCompleteTest");
-		$this->assertContains("TAutoComplete Test", $this->source());
+		$this->assertSourceContains("TAutoComplete Test");
 
 		$this->assertText("{$base}label1", "Label 1");
 
 		$this->byId("{$base}textbox3")->click();
 		$this->keys('a');
 		$this->pause(800);
-		$this->assertContains('Andorra', $this->source());
+		$this->assertSourceContains('Andorra');
 		$this->assertText("{$base}label1", "suggestion for a");
 
 		$this->keys('u');
 		$this->pause(800);
-		$this->assertContains('Australia', $this->source());
+		$this->assertSourceContains('Australia');
 		$this->assertText("{$base}label1", "suggestion for au");
 
 		$this->byCssSelector("#{$base}textbox3_result ul li")->click();

@@ -9,16 +9,16 @@ class QuickstartWizard1TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
 		// step 1
-		$this->assertContains('Wizard Step 1', $this->source());
-		$this->assertNotContains('Wizard Step 2', $this->source());
+		$this->assertSourceContains('Wizard Step 1');
+		$this->assertSourceNotContains('Wizard Step 2');
 		$this->assertVisible('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
 		$this->assertAttribute('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton@disabled','regexp:true|disabled');
 		$this->select('ctl0$body$Wizard1$DropDownList1', "Purple");
 		$this->byName('ctl0$body$Wizard1$ctl6$ctl1')->click();
 
 		// step 2
-		$this->assertContains('Your favorite color is: Purple', $this->source());
-		$this->assertNotContains('Wizard Step 1', $this->source());
-		$this->assertContains('Wizard Step 2', $this->source());
+		$this->assertSourceContains('Your favorite color is: Purple');
+		$this->assertSourceNotContains('Wizard Step 1');
+		$this->assertSourceContains('Wizard Step 2');
 	}
 }

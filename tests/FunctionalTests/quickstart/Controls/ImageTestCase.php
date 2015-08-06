@@ -11,7 +11,7 @@ class QuickstartImageTestCase extends PradoGenericSelenium2Test
 
 		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='']");
 		$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @alt='Hello World!']");
-		$this->assertContains("Hello World! Hello World! Hello World!", $this->source());
+		$this->assertSourceContains("Hello World! Hello World! Hello World!");
 		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and @align='baseline']");
 		//$this->assertElementPresent("//img[contains(@src,'/hello_world.gif') and contains(@longdesc,'HelloWorld.html')]");
 	}

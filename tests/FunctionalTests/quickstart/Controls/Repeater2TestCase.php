@@ -7,12 +7,12 @@ class QuickstartRepeater2TestCase extends PradoGenericSelenium2Test
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->assertContains('North', $this->source());
-		$this->assertContains('John', $this->source());
-		$this->assertContains('Developer', $this->source());
-		$this->assertContains('South', $this->source());
-		$this->assertContains('Carter', $this->source());
-		$this->assertContains('Program Manager', $this->source());
+		$this->assertSourceContains('North');
+		$this->assertSourceContains('John');
+		$this->assertSourceContains('Developer');
+		$this->assertSourceContains('South');
+		$this->assertSourceContains('Carter');
+		$this->assertSourceContains('Program Manager');
 
 		// verify specific table tags
 		$this->assertElementPresent("//table[@cellspacing='1']");

@@ -9,7 +9,7 @@ class ActiveHiddenFieldTestCase extends PradoGenericSelenium2Test
 	    $fieldEmpty = 'No longer empty';
 	    $fieldUsed = 'My value';
 
-	    $this->assertContains('Value of current hidden field', $this->source());
+	    $this->assertSourceContains('Value of current hidden field');
 		$this->byId("{$base}Button1")->click();
 		$this->pause(800);
 		$this->assertText("{$base}ResponseLabel", $fieldEmpty);

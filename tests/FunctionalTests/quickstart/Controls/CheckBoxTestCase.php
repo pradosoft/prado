@@ -15,11 +15,11 @@ class QuickstartCheckBoxTestCase extends PradoGenericSelenium2Test
 		$this->byXPath("//input[@name='ctl0\$body\$ctl1' and @value='value']")->click();
 
 		// an auto postback checkbox
-		$this->assertNotContains("I'm clicked", $this->source());
+		$this->assertSourceNotContains("I'm clicked");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
-		$this->assertContains("I'm clicked", $this->source());
+		$this->assertSourceContains("I'm clicked");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
-		$this->assertContains("I'm clicked", $this->source());
+		$this->assertSourceContains("I'm clicked");
 
 		// a checkbox causing validation on a textbox
 		$this->assertNotVisible('ctl0_body_ctl3');

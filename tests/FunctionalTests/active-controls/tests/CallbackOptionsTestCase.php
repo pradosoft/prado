@@ -6,7 +6,7 @@ class CallbackOptionsTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=CallbackOptionsTest");
-		$this->assertContains("TCallbackOptions Test", $this->source());
+		$this->assertSourceContains("TCallbackOptions Test");
 
 		$this->assertText("label1", "Label 1");
 		$this->assertText("label2", "Label 2");

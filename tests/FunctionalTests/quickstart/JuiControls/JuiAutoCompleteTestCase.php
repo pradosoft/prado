@@ -12,7 +12,7 @@ class JuiAutoCompleteTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('TJuiAutoComplete Samples', $this->source());
+		$this->assertSourceContains('TJuiAutoComplete Samples');
 
 		$base = 'ctl0_body_';
 
@@ -22,7 +22,7 @@ class JuiAutoCompleteTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}AutoComplete")->click();
 		$this->keys('J');
 		$this->pause(800);
-		$this->assertContains('John', $this->source());
+		$this->assertSourceContains('John');
 
 		$this->byCssSelector("#{$base}AutoComplete_result ul li")->click();
 		$this->pause(800);

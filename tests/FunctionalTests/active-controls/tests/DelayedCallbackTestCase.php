@@ -6,7 +6,7 @@ class DelayedCallbackTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=DelayedCallback");
-		$this->assertContains("Delayed Callback Test", $this->source());
+		$this->assertSourceContains("Delayed Callback Test");
 
 		$this->assertText("{$base}status", "");
 		$this->byId("{$base}button1")->click();

@@ -6,7 +6,7 @@ class TextBoxGroupValidationTestCase extends PradoGenericSelenium2Test
 	{
 		$base="ctl0_Content_";
 		$this->url("active-controls/index.php?page=TextBoxValidationCallback");
-		$this->assertContains('TextBox AutoPostBack With Group Validation', $this->source());
+		$this->assertSourceContains('TextBox AutoPostBack With Group Validation');
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->type("{$base}ZipCode", 'test');

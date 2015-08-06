@@ -25,25 +25,25 @@ class QuickstartDropDownListTestCase extends PradoGenericSelenium2Test
 		// an auto postback dropdown list
 		$this->assertNotContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
 		$this->selectAndWait("ctl0\$body\$ctl4", "item 3");
-		$this->assertContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)");
 
 		// a single selection list box upon postback
 		$this->select("ctl0\$body\$DropDownList1", "item 4");
 		$this->assertNotContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
-		$this->assertContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)");
 
 		// Databind to an integer-indexed array
 		$this->selectAndWait("ctl0\$body\$DBDropDownList1", "item 3");
-		$this->assertContains("Your selection is: (Index: 2, Value: 2, Text: item 3)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: 2, Text: item 3)");
 
 		// Databind to an associative array
 		$this->selectAndWait("ctl0\$body\$DBDropDownList2", "item 2");
-		$this->assertContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)");
 
 		// Databind with DataTextField and DataValueField specified
 		$this->selectAndWait("ctl0\$body\$DBDropDownList3", "Cary");
-		$this->assertContains("Your selection is: (Index: 2, Value: 003, Text: Cary)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: 003, Text: Cary)");
 
 		// dropdown list is being validated
 		$this->assertNotVisible('ctl0_body_ctl6');

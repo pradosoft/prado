@@ -5,7 +5,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveDatePicker");
-		$this->assertContains("TActiveDatePicker test", $this->source());
+		$this->assertSourceContains("TActiveDatePicker test");
 		$this->assertText("{$base}status", "");
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
 		$this->byId("{$base}increaseButton")->click();

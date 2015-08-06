@@ -9,7 +9,7 @@ class DataTypeValidatorTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=DataTypeValidator");
-		$this->assertContains("Data Type Validator Tests", $this->source());
+		$this->assertSourceContains("Data Type Validator Tests");
 		$this->byXPath("//input[@type='submit' and @value='submit!']")->click();
 		$this->pause(500);
 

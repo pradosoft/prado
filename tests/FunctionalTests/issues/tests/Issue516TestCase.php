@@ -5,7 +5,7 @@ class Issue516TestCase extends PradoGenericSelenium2Test
 	function test()
 	{
 		$this->url('issues/index.php?page=Issue516');
-		$this->assertContains('Issue 516 Test', $this->source());
+		$this->assertSourceContains('Issue 516 Test');
 		$base='ctl0_Content_';
 		$row1='DataGrid_ctl1_';
 		$row2='DataGrid_ctl2_';

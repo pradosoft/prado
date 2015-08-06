@@ -6,27 +6,34 @@ class QuickstartHangmanTestCase extends PradoGenericSelenium2Test
 	{
 		$this->url("../../demos/quickstart/index.php?page=Fundamentals.Samples.Hangman.Home&amp;notheme=true&amp;lang=en");
 		$this->assertEquals("Hangman Game", $this->title());
-		$this->assertContains("Medium game; you are allowed 5 misses.", $this->source());
+		$this->assertSourceContains("Medium game; you are allowed 5 misses.");
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
-		$this->assertContains("You must choose a difficulty level", $this->source());
+		$this->assertSourceContains("You must choose a difficulty level");
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
+		$this->pause(50);
 		$this->byXPath("//input[@name='ctl0\$body\$LevelSelection' and @value='3']")->click();
+		$this->pause(50);
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
-		$this->assertContains("Please make a guess", $this->source());
-		$this->assertContains("maximum of 3", $this->source());
+		$this->assertSourceContains("Please make a guess");
+		$this->assertSourceContains("maximum of 3");
 		$this->byLinkText("B")->click();
+		$this->pause(50);
 		$this->byLinkText("F")->click();
+		$this->pause(50);
 		$this->byLinkText("Give up?")->click();
-		$this->assertContains("You Lose", $this->source());
+		$this->assertSourceContains("You Lose");
 		$this->byLinkText("Start Again")->click();
+		$this->pause(50);
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
-		$this->assertContains("Please make a guess", $this->source());
-		$this->assertContains("maximum of 3", $this->source());
+		$this->assertSourceContains("Please make a guess");
+		$this->assertSourceContains("maximum of 3");
 		$this->byLinkText("Give up?")->click();
-		$this->assertContains("You Lose", $this->source());
+		$this->assertSourceContains("You Lose");
 		$this->byLinkText("Start Again")->click();
+		$this->pause(50);
 		$this->byXPath("//input[@name='ctl0\$body\$LevelSelection' and @value='5']")->click();
+		$this->pause(50);
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
-		$this->assertContains("maximum of 5", $this->source());
+		$this->assertSourceContains("maximum of 5");
 	}
 }

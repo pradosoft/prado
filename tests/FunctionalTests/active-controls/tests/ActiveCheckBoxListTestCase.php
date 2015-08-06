@@ -6,7 +6,7 @@ class ActiveCheckBoxListTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=TActiveCheckBoxListTest");
-		$this->assertContains("TActiveCheckBoxList Test Case", $this->source());
+		$this->assertSourceContains("TActiveCheckBoxList Test Case");
 
 		$this->assertText("{$base}label1", "Label 1");
 

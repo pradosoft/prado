@@ -6,9 +6,10 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ControlAdapterTest");
-		$this->assertContains('Control Adapter - State Tracking Tests', $this->source());
+		$this->assertSourceContains('Control Adapter - State Tracking Tests');
 
 		$this->byId("{$base}button2")->click();
+		$this->pause(50);
 		$this->assertEquals('ok', $this->alertText());
 		$this->acceptAlert();
 
@@ -22,10 +23,12 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 
 		$this->byId("{$base}button1")->click();
+		$this->pause(50);
 		$this->assertEquals('haha!', $this->alertText());
 		$this->acceptAlert();
 
 		$this->byId("{$base}button2")->click();
+		$this->pause(50);
 		$this->assertEquals('ok', $this->alertText());
 		$this->acceptAlert();
     $this->pause(500);
@@ -36,7 +39,7 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 	function testIE()
 	{
 		$this->url("active-controls/index.php?page=ControlAdapterTest");
-		$this->assertContains('Control Adapter - State Tracking Tests', $this->source());
+		$this->assertSourceContains('Control Adapter - State Tracking Tests');
 
 		$this->byId("{$base}button2")->click();
 		$this->assertEquals('ok', $this->alertText());

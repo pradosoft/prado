@@ -10,11 +10,11 @@ class QuickstartImageButtonTestCase extends PradoGenericSelenium2Test
 
 		// a click button
 		$this->byXPath("//input[@type='image' and @alt='hello world']")->click();
-		$this->assertContains("You clicked at ", $this->source());
+		$this->assertSourceContains("You clicked at ");
 
 		// a command button
 		$this->byName("ctl0\$body\$ctl1")->click();
-		$this->assertContains("Command name: test, Command parameter: value", $this->source());
+		$this->assertSourceContains("Command name: test, Command parameter: value");
 
 		// a button causing validation
 		$this->assertNotVisible('ctl0_body_ctl2');

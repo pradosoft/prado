@@ -7,7 +7,7 @@ class RegExpValidatorTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RegularExpressionValidator");
-		$this->assertContains("Prado RegularExpressionValidator Tests", $this->source());
+		$this->assertSourceContains("Prado RegularExpressionValidator Tests");
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 		$this->type("{$base}text1", "1");

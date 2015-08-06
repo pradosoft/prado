@@ -6,7 +6,7 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url('active-controls/index.php?page=ReplaceContentTest');
-		$this->assertContains('Callback Replace Content Test', $this->source());
+		$this->assertSourceContains('Callback Replace Content Test');
 
 		$this->assertText("{$base}subpanel", 'Sub Panel');
 		$this->assertText("{$base}panel1", "Main Panel\nSub Panel");
@@ -48,7 +48,7 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 	function testIE()
 	{
 		$this->url('active-controls/index.php?page=ReplaceContentTest');
-		$this->assertContains('Callback Replace Content Test', $this->source());
+		$this->assertSourceContains('Callback Replace Content Test');
 
 		$this->assertText("{$base}subpanel", 'Sub Panel');
 		$this->assertText("{$base}panel1", 'regexp:Main Panel\s*Sub Panel');

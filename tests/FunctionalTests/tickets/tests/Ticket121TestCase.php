@@ -12,6 +12,6 @@ class Ticket121TestCase extends PradoGenericSelenium2Test
 		$this->type("ctl0\$Content\$FooTextBox", "content");
 		$this->byXPath("//input[@type='image' and @id='ctl0_Content_ctl0']")->click();
 		$this->assertNotVisible('ctl0_Content_ctl1');
-		$this->assertContains("clicked at", $this->source());
+		$this->assertSourceContains("clicked at");
 	}
 }

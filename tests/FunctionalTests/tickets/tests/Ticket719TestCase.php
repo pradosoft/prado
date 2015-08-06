@@ -5,7 +5,7 @@ class Ticket719TestCase extends PradoGenericSelenium2Test
 	function test()
 	{
 		$this->url("tickets/index.php?page=Ticket719");
-		$this->assertContains("Verifying Ticket 719", $this->source());
+		$this->assertSourceContains("Verifying Ticket 719");
 
 		$base="ctl0_Content_";
 
@@ -18,15 +18,15 @@ class Ticket719TestCase extends PradoGenericSelenium2Test
 
 		$this->keys('f');
 		$this->pause(500);
-		$this->assertContains('Finland', $this->source());
+		$this->assertSourceContains('Finland');
 
 		$this->keys('r');
 		$this->pause(500);
-		$this->assertContains('French', $this->source());
+		$this->assertSourceContains('French');
 
 		$this->keys('a');
 		$this->pause(500);
-		$this->assertContains('France', $this->source());
+		$this->assertSourceContains('France');
 
 		$this->byCssSelector("#${base}autocomplete_result ul li")->click();
 		$this->pause(800);

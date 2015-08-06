@@ -7,11 +7,11 @@ class QuickstartDataGrid2TestCase extends PradoGenericSelenium2Test
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->assertContains('Book Title', $this->source());
-		$this->assertContains('Publisher', $this->source());
-		$this->assertContains('Price', $this->source());
-		$this->assertContains('In-stock', $this->source());
-		$this->assertContains('Rating', $this->source());
+		$this->assertSourceContains('Book Title');
+		$this->assertSourceContains('Publisher');
+		$this->assertSourceContains('Price');
+		$this->assertSourceContains('In-stock');
+		$this->assertSourceContains('Rating');
 
 		// verify book titles
 		$this->assertElementPresent("//a[@href='http://www.amazon.com/gp/product/0596007124' and text()='Head First Design Patterns']",'');
@@ -19,11 +19,11 @@ class QuickstartDataGrid2TestCase extends PradoGenericSelenium2Test
 
 		// verify publishers
 		$this->assertContains("O'Reilly Media, Inc.", $this->source());
-		$this->assertContains("Addison-Wesley Professional", $this->source());
+		$this->assertSourceContains("Addison-Wesley Professional");
 
 		// verify prices
-		$this->assertContains("\$37.49", $this->source());
-		$this->assertContains("\$38.49", $this->source());
+		$this->assertSourceContains("\$37.49");
+		$this->assertSourceContains("\$38.49");
 
 		// verify in-stock
 		$this->assertAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked','regexp:true|checked');
@@ -38,12 +38,14 @@ class QuickstartDataGrid2TestCase extends PradoGenericSelenium2Test
 
 		// verify toggle column visibility
 		$this->byXPath("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']")->click();
-		$this->assertNotContains('Head First Design Patterns', $this->source());
+		$this->assertSourceNotContains('Head First Design Patterns');
 		$this->byXPath("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']")->click();
+		$this->pause(50);
 		$this->assertElementNotPresent('ctl0_body_DataGrid_ctl1_ctl5','');
 		$this->byXPath("//input[@name='ctl0\$body\$ctl1\$c3' and @value='In-stock']")->click();
+		$this->pause(50);
 		$this->assertElementPresent('ctl0_body_DataGrid_ctl1_ctl5','');
 		$this->byXPath("//input[@name='ctl0\$body\$ctl1\$c0' and @value='Book Title']")->click();
-		$this->assertContains('Head First Design Patterns', $this->source());
+		$this->assertSourceContains('Head First Design Patterns');
 	}
 }

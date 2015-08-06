@@ -8,7 +8,7 @@ class ValidationSummaryTestCase extends PradoGenericSelenium2Test
 		$base = "ctl0_Content_";
 
 		$this->url("validators/index.php?page=ValidationSummary");
-		$this->assertContains("Validation Summary Test", $this->source());
+		$this->assertSourceContains("Validation Summary Test");
 		//$this->assertText("{$base}summary1", "");
 		//$this->assertText("{$base}summary2", "");
 

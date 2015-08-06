@@ -13,11 +13,12 @@ class QuickstartMultiViewTestCase extends PradoGenericSelenium2Test
 		$this->assertElementNotPresent('ctl0_body_Result2');
 		$this->type('ctl0_body_Memo','test');
 		$this->byName('ctl0$body$ctl0')->click(); // view 2 to select the dropdown
+		$this->pause(50);
 		$this->byName('ctl0$body$ctl4')->click();
 
 		// view 3 : check if the output is updated
-		$this->assertContains('Your text input is: test', $this->source());
-		$this->assertContains('Your color choice is: Red', $this->source());
+		$this->assertSourceContains('Your text input is: test');
+		$this->assertSourceContains('Your color choice is: Red');
 		$this->byName('ctl0$body$ctl7')->click();
 
 		// view 2 : update dropdownlist
@@ -27,8 +28,8 @@ class QuickstartMultiViewTestCase extends PradoGenericSelenium2Test
 		$this->byName('ctl0$body$ctl4')->click();
 
 		// view 3 : check if the output is updated
-		$this->assertContains('Your text input is: test', $this->source());
-		$this->assertContains('Your color choice is: Blue', $this->source());
+		$this->assertSourceContains('Your text input is: test');
+		$this->assertSourceContains('Your color choice is: Blue');
 		$this->byName('ctl0$body$ctl7')->click();
 
 		// view 2 : check if dropdownlist maintains state

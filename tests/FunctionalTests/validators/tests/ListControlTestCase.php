@@ -9,7 +9,7 @@ class ListControlTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=ListControl");
-		$this->assertContains("List Control Required Field Validation Test", $this->source());
+		$this->assertSourceContains("List Control Required Field Validation Test");
 		$this->byXPath("//input[@type='submit' and @value='Submit!']")->click();
 
 		$this->assertVisible("{$base}validator1");

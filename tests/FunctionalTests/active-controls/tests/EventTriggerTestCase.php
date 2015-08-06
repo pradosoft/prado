@@ -6,7 +6,7 @@ class EventTriggerTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("active-controls/index.php?page=EventTriggeredCallback");
-		$this->assertContains("Event Triggered Callback Test", $this->source());
+		$this->assertSourceContains("Event Triggered Callback Test");
 
 		$this->assertText("{$base}label1", 'Label 1');
 

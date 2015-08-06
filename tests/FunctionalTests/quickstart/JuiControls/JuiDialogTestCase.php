@@ -12,7 +12,7 @@ class JuiDialogTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('TJuiDialog Samples', $this->source());
+		$this->assertSourceContains('TJuiDialog Samples');
 
 		$base = 'ctl0_body_';
 
@@ -20,6 +20,8 @@ class JuiDialogTestCase extends PradoGenericSelenium2Test
 		$this->byId("${base}ctl0")->click();
 		$this->pause(500);
 		$this->assertVisible("${base}dlg1");
+
+		$this->active()->click(); // close
 
 
 		$this->assertEmpty($this->byId("${base}lbl3")->text());

@@ -8,6 +8,6 @@ class QuickstartExpressionTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('PRADO QuickStart Sample', $this->source());
+		$this->assertSourceContains('PRADO QuickStart Sample');
 	}
 }

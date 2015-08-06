@@ -5,7 +5,7 @@ class ActiveListBoxMasterTestCase extends PradoGenericSelenium2Test
 	function test()
 	{
 		$this->url("active-controls/index.php?page=ActiveListBoxMasterTest");
-		$this->assertContains('Active List Box Functional Test', $this->source());
+		$this->assertSourceContains('Active List Box Functional Test');
 
 		$base = 'ctl0_body_';
 

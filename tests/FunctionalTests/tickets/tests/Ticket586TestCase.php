@@ -10,6 +10,7 @@ class Ticket586TestCase extends PradoGenericSelenium2Test
 
 		$this->assertText("{$base}label1", "Status");
 		$this->byId("{$base}button1")->click();
+		$this->pause(50);
 		$this->assertText("{$base}label1", "Button 1 Clicked!");
 
 		$this->type("{$base}text1", "testing");

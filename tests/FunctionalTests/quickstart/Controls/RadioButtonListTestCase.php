@@ -22,23 +22,23 @@ class QuickstartRadioButtonListTestCase extends PradoGenericSelenium2Test
 		// RadioButton list's behavior upon postback
 		$this->byXPath("//input[@name='ctl0\$body\$RadioButtonList' and @value='value 3']")->click();
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
-		$this->assertContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)");
 
 		// Auto postback check box list
 		$this->byXPath("//input[@name='ctl0\$body\$ctl7' and @value='value 5']")->click();
-		$this->assertContains("Your selection is: (Index: 4, Value: value 5, Text: item 5)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 4, Value: value 5, Text: item 5)");
 
 		// Databind to an integer-indexed array
 		$this->byXPath("//input[@name='ctl0\$body\$DBRadioButtonList1' and @value='0']")->click();
-		$this->assertContains("Your selection is: (Index: 0, Value: 0, Text: item 1)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 0, Value: 0, Text: item 1)");
 
 		// Databind to an associative array:
 		$this->byXPath("//input[@name='ctl0\$body\$DBRadioButtonList2' and @value='key 2']")->click();
-		$this->assertContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)");
 
 		// Databind with DataTextField and DataValueField specified
 		$this->byXPath("//input[@name='ctl0\$body\$DBRadioButtonList3' and @value='003']")->click();
-		$this->assertContains("Your selection is: (Index: 2, Value: 003, Text: Cary)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: 003, Text: Cary)");
 
 		// RadioButton list causing validation
 		$this->assertNotVisible('ctl0_body_ctl8');

@@ -6,7 +6,7 @@ class ActiveButtonTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveButtonTest");
-		$this->assertContains("TActiveButton Functional Test", $this->source());
+		$this->assertSourceContains("TActiveButton Functional Test");
 		$this->assertText("{$base}label1", "Label 1");
 		$this->clickOnElement("{$base}button2");
 		$this->pause(800);

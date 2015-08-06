@@ -7,20 +7,20 @@ class QuickstartDataGrid1TestCase extends PradoGenericSelenium2Test
 		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
-		$this->assertContains('id', $this->source());
-		$this->assertContains('name', $this->source());
-		$this->assertContains('quantity', $this->source());
-		$this->assertContains('price', $this->source());
-		$this->assertContains('imported', $this->source());
-		$this->assertContains('ITN001', $this->source());
-		$this->assertContains('Motherboard', $this->source());
-		$this->assertContains('100', $this->source());
-		$this->assertContains('true', $this->source());
-		$this->assertContains('ITN019', $this->source());
-		$this->assertContains('Speaker', $this->source());
-		$this->assertContains('35', $this->source());
-		$this->assertContains('65', $this->source());
-		$this->assertContains('false', $this->source());
+		$this->assertSourceContains('id');
+		$this->assertSourceContains('name');
+		$this->assertSourceContains('quantity');
+		$this->assertSourceContains('price');
+		$this->assertSourceContains('imported');
+		$this->assertSourceContains('ITN001');
+		$this->assertSourceContains('Motherboard');
+		$this->assertSourceContains('100');
+		$this->assertSourceContains('true');
+		$this->assertSourceContains('ITN019');
+		$this->assertSourceContains('Speaker');
+		$this->assertSourceContains('35');
+		$this->assertSourceContains('65');
+		$this->assertSourceContains('false');
 
 		// verify specific table tags
 		$this->assertElementPresent("ctl0_body_DataGrid");

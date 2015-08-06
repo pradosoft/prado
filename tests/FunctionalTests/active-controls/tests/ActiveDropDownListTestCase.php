@@ -6,7 +6,7 @@ class ActiveDropDownListTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveDropDownList");
-		$this->assertContains('Active Drop Down List Test Case', $this->source());
+		$this->assertSourceContains('Active Drop Down List Test Case');
 
 		$this->assertText("{$base}label1", "Label 1");
 

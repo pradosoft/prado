@@ -6,7 +6,7 @@ class TimeTriggeredCallbackTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=TimeTriggeredCallbackTest");
-		$this->assertContains("TimeTriggeredCallback + ViewState Tests", $this->source());
+		$this->assertSourceContains("TimeTriggeredCallback + ViewState Tests");
 
 		$this->assertText("{$base}label1", "ViewState Counter :");
 

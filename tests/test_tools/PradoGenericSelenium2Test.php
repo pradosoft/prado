@@ -22,6 +22,15 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		),
 /*
 		array(
+			'name'    => 'Safari on OSX',
+			'browserName' => 'safari',
+			'sessionStrategy' => 'shared',
+			'host'    => '127.0.0.1',
+			'port'    => 4444,
+		),
+*/
+/*
+		array(
 			'name'    => 'Firefox on WindowsXP',
 			'browserName' => '*firefox',
 			'host'    => '127.0.0.1',
@@ -89,12 +98,24 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertVisible($id)
 	{
-		$this->assertTrue($this->getElement($id)->displayed());
+		try{
+			$this->assertTrue($this->getElement($id)->displayed());
+		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+			//stale element reference. try second time.
+			$this->pause(50);
+			$this->assertTrue($this->getElement($id)->displayed());
+		}
 	}
 
 	protected function assertNotVisible($id)
 	{
-		$this->assertFalse($this->getElement($id)->displayed());
+		try{
+			$this->assertFalse($this->getElement($id)->displayed());
+		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+			//stale element reference. try second time.
+			$this->pause(50);
+			$this->assertFalse($this->getElement($id)->displayed());
+		}
 	}
 
 	protected function assertElementPresent($id)
@@ -226,5 +247,28 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		usleep($msec*1000);
 	}
+
+	public function assertSourceContains($text)
+	{
+		$found = strpos($this->source(), $text) !== false;
+		for($i=0;$i<10 && ! $found; $i++) {
+			$this->pause(20);
+			$found = strpos($this->source(), $text) !== false;
+		}
+		$this->assertTrue($found, "Failed asserting that page source contains $text");
+	}
+
+	public function assertSourceNotContains($text)
+	{
+		$found = strpos($this->source(), $text) !== false;
+		for($i=0;$i<10 && $found; $i++) {
+			$this->pause(20);
+			$found = strpos($this->source(), $text) !== false;
+		}
+		$this->assertFalse($found, "Failed asserting that page source does not contain $text");
+	}
+
+
+
 
 }

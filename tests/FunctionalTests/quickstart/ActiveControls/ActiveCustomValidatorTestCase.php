@@ -8,7 +8,7 @@ class QuickstartActiveCustomValidatorTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('TActiveCustomValidator Samples (AJAX)', $this->source());
+		$this->assertSourceContains('TActiveCustomValidator Samples (AJAX)');
 
 		$base = 'ctl0_body_';
 

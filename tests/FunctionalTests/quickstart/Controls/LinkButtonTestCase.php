@@ -10,14 +10,19 @@ class QuickstartLinkButtonTestCase extends PradoGenericSelenium2Test
 
 		// regular buttons
 		$this->byLinkText("link button")->click();
+		$this->pause(50);
 		$this->byXPath("//a[contains(text(),'body content')]")->click();
+		$this->pause(50);
 
 		// a click button
 		$this->byLinkText("click me")->click();
+		$this->pause(50);
 		$this->byLinkText("I'm clicked")->click();
+		$this->pause(50);
 
 		// a command button
 		$this->byLinkText("click me")->click();
+		$this->pause(50);
 		$this->byXPath("//a[contains(text(),'Name: test, Param: value')]")->click();
 
 		// a button causing validation

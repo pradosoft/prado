@@ -10,7 +10,7 @@ class Issue524TestCase extends PradoGenericSelenium2Test
   function test()
   {
     $this->url('issues/index.php?page=Issue524');
-    $this->assertContains('Issue 524 Test', $this->source());
+    $this->assertSourceContains('Issue 524 Test');
     $base='ctl0_Content_';
 
     $this->byID("{$base}buttonOk")->click();

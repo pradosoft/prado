@@ -7,7 +7,7 @@ class CustomValidatorTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=CustomValidator");
-		$this->assertContains("Prado CustomValidator Tests", $this->source());
+		$this->assertSourceContains("Prado CustomValidator Tests");
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->byXPath("//input[@type='submit' and @value='Test']")->click();

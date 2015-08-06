@@ -6,7 +6,7 @@ class Ticket220TestCase extends PradoGenericSelenium2Test
 	{
 		$base="ctl0_Content_";
 		$this->url('tickets/index.php?page=Ticket220');
-		$this->assertContains('ClientScript Test', $this->source());
+		$this->assertSourceContains('ClientScript Test');
 		$this->assertText("{$base}label1", "Label 1");
 
 		$this->byId("button1")->click();

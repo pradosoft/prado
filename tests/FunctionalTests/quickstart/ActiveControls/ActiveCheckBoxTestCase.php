@@ -9,18 +9,18 @@ class QuickstartActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('TActiveCheckBox Samples (AJAX)', $this->source());
+		$this->assertSourceContains('TActiveCheckBox Samples (AJAX)');
 
 
 		// an auto postback checkbox
-		$this->assertNotContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->assertSourceNotContains("ctl0_body_ctl0 clicked using callback");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
 		$this->pause(800);
 		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
-		$this->assertContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->assertSourceContains("ctl0_body_ctl0 clicked using callback");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
 		$this->pause(800);
-		$this->assertContains("ctl0_body_ctl0 clicked using callback", $this->source());
+		$this->assertSourceContains("ctl0_body_ctl0 clicked using callback");
 		$this->assertFalse($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
 
 		// a checkbox causing validation on a textbox
@@ -33,7 +33,7 @@ class QuickstartActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
 		$this->pause(800);
 		$this->assertNotVisible('ctl0_body_ctl1');
-		$this->assertContains("ctl0_body_ctl2 clicked using callback", $this->source());
+		$this->assertSourceContains("ctl0_body_ctl2 clicked using callback");
 
 		// a checkbox validated by a required field validator
 		$this->assertFalse($this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->selected());
@@ -45,7 +45,7 @@ class QuickstartActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
 		$this->pause(800);
 		$this->assertNotVisible('ctl0_body_ctl4');
-		$this->assertContains("ctl0_body_CheckBox clicked", $this->source());
+		$this->assertSourceContains("ctl0_body_CheckBox clicked");
 
 		// a checkbox validated by a required field validator using AutoPostBack
 		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$CheckBox2']")->selected());

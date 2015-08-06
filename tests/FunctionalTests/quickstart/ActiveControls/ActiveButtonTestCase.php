@@ -8,7 +8,7 @@ class QuickstartActiveButtonTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('TActiveButton Samples (AJAX)', $this->source());
+		$this->assertSourceContains('TActiveButton Samples (AJAX)');
 
 		// a click button
 		$this->assertElementNotPresent("//input[@type='submit' and @value=\"I'm clicked\"]");

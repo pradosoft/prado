@@ -6,8 +6,8 @@ class ActiveControlExpressionTagTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url('active-controls/index.php?page=ActiveControlExpressionTag');
-		$this->assertContains('Active Control With Expression Tag Test', $this->source());
-		$this->assertNotContains('Text box content:', $this->source());
+		$this->assertSourceContains('Active Control With Expression Tag Test');
+		$this->assertSourceNotContains('Text box content:');
 
 		$this->type("{$base}textbox1", 'Hello world');
 		$this->byId("{$base}button1")->click();

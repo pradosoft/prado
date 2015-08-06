@@ -6,7 +6,7 @@ class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=ConditionalValidation");
-		$this->assertContains("Conditional Validation (clientside + server side)", $this->source());
+		$this->assertSourceContains("Conditional Validation (clientside + server side)");
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
@@ -21,6 +21,7 @@ class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}check1")->click();
 		$this->byId("{$base}submit1")->click();
+		$this->pause(50);
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 

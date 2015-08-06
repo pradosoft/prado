@@ -12,7 +12,7 @@ class Ticket897TestCase extends PradoGenericSelenium2Test
 		$this->select($base.'Date_day', 22);
 
 		$this->byId($base.'SendButton')->click();
-		$this->assertContains(date('Y').'-10-22', $this->source());
+		$this->assertSourceContains(date('Y').'-10-22');
 	}
 }
 

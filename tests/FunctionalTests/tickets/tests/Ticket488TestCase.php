@@ -6,7 +6,7 @@ class Ticket488TestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url('active-controls/index.php?page=CustomValidatorByPass');
-		$this->assertContains('Custom Login', $this->source());
+		$this->assertSourceContains('Custom Login');
 		$this->assertNotVisible('loginBox');
 		$this->byId("showLogin")->click();
 		$this->assertVisible("loginBox");

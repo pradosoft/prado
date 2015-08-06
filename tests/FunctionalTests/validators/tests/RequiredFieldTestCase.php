@@ -6,7 +6,7 @@ class RequiredFieldTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RequiredFieldValidator");
-		$this->assertContains("RequiredFieldValidator Tests", $this->source());
+		$this->assertSourceContains("RequiredFieldValidator Tests");
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 		$this->byId("{$base}submit1")->click();
@@ -45,6 +45,7 @@ class RequiredFieldTestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("{$base}validator2");
 		$this->byId("{$base}check2")->click();
 		$this->byId("{$base}submit2")->click();
+		$this->pause(50);
 
 		$this->type("{$base}text1", "Hello");
 		$this->byId("{$base}check1")->click();
@@ -74,7 +75,7 @@ class RequiredFieldTestCase extends PradoGenericSelenium2Test
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RequiredFieldValidator");
-		$this->assertContains("InitialValue Test", $this->source());
+		$this->assertSourceContains("InitialValue Test");
 		$this->assertNotVisible("{$base}validator9");
 		$this->byId("{$base}submit5")->click();
 		$this->pause(250);

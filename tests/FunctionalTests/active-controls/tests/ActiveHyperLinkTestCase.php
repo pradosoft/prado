@@ -6,7 +6,7 @@ class ActiveHyperLinkTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveHyperLinkTest");
-		$this->assertContains("Active HyperLink Test Case", $this->source());
+		$this->assertSourceContains("Active HyperLink Test Case");
 
 		$this->assertText("{$base}link1", "Link 1");
 

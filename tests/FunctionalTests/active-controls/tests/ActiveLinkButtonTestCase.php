@@ -6,7 +6,7 @@ class ActiveLinkButtonTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveLinkButtonTest");
-		$this->assertContains("TActiveLinkButton Functional Test", $this->source());
+		$this->assertSourceContains("TActiveLinkButton Functional Test");
 		$this->assertText("{$base}label1", "Label 1");
 		$this->byId("{$base}button2")->click();
 		$this->pause(800);

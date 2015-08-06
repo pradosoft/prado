@@ -6,7 +6,7 @@ class ActiveRadioButtonTestCase extends PradoGenericSelenium2Test
 	{
 		$base='ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveRadioButtonTest");
-		$this->assertContains("Active Radio Button Test", $this->source());
+		$this->assertSourceContains("Active Radio Button Test");
 		$this->assertText("{$base}label1", 'Label 1');
 
 		$this->assertFalse($this->byId("{$base}radio1")->selected());

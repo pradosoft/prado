@@ -25,13 +25,13 @@ class QuickstartListBoxTestCase extends PradoGenericSelenium2Test
 		// an auto postback single selection list box
 		$this->assertNotContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
 		$this->selectAndWait("ctl0\$body\$ctl4", "item 3");
-		$this->assertContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)");
 
 		// a single selection list box upon postback
 		$this->select("ctl0\$body\$ListBox1", "item 4");
 		$this->assertNotContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
-		$this->assertContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)");
 
 		// a multiple selection list box
 		$this->assertAttribute("ctl0\$body\$ctl6[]@size","4");
@@ -44,6 +44,7 @@ class QuickstartListBoxTestCase extends PradoGenericSelenium2Test
 		// multiselection list box's behavior upon postback
 		$this->addSelection("ctl0\$body\$ListBox2[]", "item 3");
 		$this->byName("ctl0\$body\$ctl8")->click();
+		$this->pause(50);
 		$this->assertText("ctl0_body_MultiSelectionResult2","Your selection is: (Index: 1, Value: value 2, Text: item 2)(Index: 2, Value: value 3, Text: item 3)(Index: 3, Value: value 4, Text: item 4)");
 
 		// Auto postback multiselection list box
@@ -52,15 +53,15 @@ class QuickstartListBoxTestCase extends PradoGenericSelenium2Test
 
 		// Databind to an integer-indexed array
 		$this->selectAndWait("ctl0\$body\$DBListBox1[]", "item 3");
-		$this->assertContains("Your selection is: (Index: 2, Value: 2, Text: item 3)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: 2, Text: item 3)");
 
 		// Databind to an associative array
 		$this->selectAndWait("ctl0\$body\$DBListBox2[]", "item 2");
-		$this->assertContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)");
 
 		// Databind with DataTextField and DataValueField specified
 		$this->selectAndWait("ctl0\$body\$DBListBox3[]", "Cary");
-		$this->assertContains("Your selection is: (Index: 2, Value: 003, Text: Cary)", $this->source());
+		$this->assertSourceContains("Your selection is: (Index: 2, Value: 003, Text: Cary)");
 
 		// List box is being validated
 		$this->assertNotVisible('ctl0_body_ctl10');

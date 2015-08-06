@@ -8,6 +8,6 @@ class QuickstartStatementsTestCase extends PradoGenericSelenium2Test
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
-		$this->assertContains('UniqueID is \'ctl0$body$ctl0\'', $this->source());
+		$this->assertSourceContains('UniqueID is \'ctl0$body$ctl0\'');
 	}
 }

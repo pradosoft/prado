@@ -8,7 +8,7 @@ class CompareValidatorTestCase extends PradoGenericSelenium2Test
 		$base = "ctl0_Content_";
 
 		$this->url("validators/index.php?page=CompareValidator");
-		$this->assertContains("Prado CompareValidator Tests", $this->source());
+		$this->assertSourceContains("Prado CompareValidator Tests");
 
 		$this->type("{$base}text1", "qwe");
 		$this->assertNotVisible("{$base}validator1");
