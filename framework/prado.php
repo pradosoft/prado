@@ -46,7 +46,7 @@ Prado::init();
  */
 
 class_alias('\Prado\Prado', 'Prado', true);
-class_alias('\Prado\TApplication', 'TApplication', true);
-class_alias('\Prado\TModule', 'TModule', true);
-class_alias('\Prado\Web\Services\TPageService', 'TPageService', true);
-class_alias('\Prado\Web\UI\TPage', 'TPage', true);
+Prado::using('Prado\TApplication');
+Prado::using('Prado\TModule');
+Prado::using('Prado\Web\Services\TPageService');
+Prado::using('Prado\Web\UI\TPage');
