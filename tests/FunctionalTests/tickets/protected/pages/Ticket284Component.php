@@ -1,5 +1,7 @@
 <?php
 
+Prado::using('System.Web.UI.IValidatable');
+
 class Ticket284Component extends TTemplateControl implements IValidatable
 {
 	private $_isValid;

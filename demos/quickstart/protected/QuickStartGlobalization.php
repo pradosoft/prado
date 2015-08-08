@@ -1,5 +1,8 @@
 <?php
 
+Prado::using('System.I18N.core.CultureInfo');
+Prado::using('System.Web.THttpCookie');
+
 class QuickStartGlobalization extends TGlobalizationAutoDetect
 {
 	public function init($xml)

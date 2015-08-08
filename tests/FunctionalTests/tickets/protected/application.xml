@@ -5,7 +5,7 @@
 		<url ServiceID="testService" ServiceParameter="ticket653" pattern="/ticket653/?" />
 		<url ServiceParameter="Ticket922" pattern="/ticket922/{text}" parameters.text=".*" />
 	</module>
-	<module id="request" class="THttpRequest" UrlManager="friendly-url"/>
+	<module id="request" class="System.Web.THttpRequest" UrlManager="friendly-url"/>
 </modules>
 <services>
 	<!-- Define a new PageService, changing default basePath, and a new MasterClass -->
