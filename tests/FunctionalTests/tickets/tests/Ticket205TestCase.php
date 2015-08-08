@@ -13,7 +13,7 @@ class Ticket205TestCase extends PradoGenericSelenium2Test
 
 		$this->type("{$base}textbox1", "test");
 		$this->byId("{$base}button1")->click();
-		$this->pause(50);
+		$this->pause(100);
 
 		$this->assertEquals("error", $this->alertText());
 		$this->acceptAlert();

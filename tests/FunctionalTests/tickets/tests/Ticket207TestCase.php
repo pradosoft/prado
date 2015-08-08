@@ -11,6 +11,7 @@ class Ticket207TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator2");
 
 		$this->byId("{$base}button1")->click();
+		$this->pause(50);
 
 		$this->assertEquals('error on text1 fired', $this->alertText());
 		$this->acceptAlert();
@@ -31,6 +32,7 @@ class Ticket207TestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("{$base}validator2");
 
 		$this->byId("{$base}button1")->click();
+		$this->pause(50);
 
 		$this->assertEquals('error on text1 fired', $this->alertText());
 		$this->acceptAlert();

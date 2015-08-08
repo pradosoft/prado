@@ -49,6 +49,7 @@ class QuickstartTextBoxTestCase extends PradoGenericSelenium2Test
 		// SafeText
 		$this->assertText("ctl0_body_Output","test");
 		$this->typeSpecial("ctl0\$body\$TextBox2","<a href=javascript:xxx>malicious code</a>");
+		$this->pause(50);
 		$this->assertText("ctl0_body_Output","malicious code");
 
 		// password
@@ -83,7 +84,6 @@ End of message
 		// textbox associated with a validator
 		$this->assertNotVisible('ctl0_body_ctl15');
 		$this->typeSpecial("ctl0\$body\$MultiTextBox3", "demo");
-//		$this->pause(1000);
 		$this->assertVisible('ctl0_body_ctl15');
 		$this->typeSpecial("ctl0\$body\$MultiTextBox3", "non demo");
 		$this->assertNotVisible('ctl0_body_ctl15');

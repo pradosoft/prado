@@ -11,7 +11,7 @@ class ValueTriggerTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", 'Label 1');
 
 		$this->type("{$base}text1", 'test');
-		$this->pause(2000);
+		$this->pause(3000);
 		$this->assertText("{$base}label1", 'Old = : New Value = test');
 
 		$this->type("{$base}text1", 'more');

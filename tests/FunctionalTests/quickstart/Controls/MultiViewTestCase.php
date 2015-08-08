@@ -20,6 +20,7 @@ class QuickstartMultiViewTestCase extends PradoGenericSelenium2Test
 		$this->assertSourceContains('Your text input is: test');
 		$this->assertSourceContains('Your color choice is: Red');
 		$this->byName('ctl0$body$ctl7')->click();
+		$this->pause(50);
 
 		// view 2 : update dropdownlist
 		$this->assertElementNotPresent('ctl0_body_Result1');

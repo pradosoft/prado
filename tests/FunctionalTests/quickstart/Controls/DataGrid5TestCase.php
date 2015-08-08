@@ -107,6 +107,7 @@ class QuickstartDataGrid5TestCase extends PradoGenericSelenium2Test
 
 		$this->type("ctl0\$body\$PageButtonCount", "10");
 		$this->byName("ctl0\$body\$ctl6")->click();
+		$this->pause(50);
 		$this->type("ctl0\$body\$PageSize", "2");
 		$this->pause(50);
 		$this->byName("ctl0\$body\$ctl8")->click();

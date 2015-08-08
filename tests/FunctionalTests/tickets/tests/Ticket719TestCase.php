@@ -17,7 +17,7 @@ class Ticket719TestCase extends PradoGenericSelenium2Test
 		$this->byId("${base}autocomplete")->click();
 
 		$this->keys('f');
-		$this->pause(500);
+		$this->pause(800);
 		$this->assertSourceContains('Finland');
 
 		$this->keys('r');

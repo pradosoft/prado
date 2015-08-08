@@ -50,6 +50,7 @@ class Ticket700TestCase extends PradoGenericSelenium2Test
 		$this->type('ctl0_Main_Username','AdminUser');
 		$this->type('ctl0_Main_Password','demo');
 		$this->byId('ctl0_Main_LoginButton')->click();
+		$this->pause(50);
 		$this->byId('pageAdminUsersHome')->click();
 		$this->assertTitleEquals('admin.users.Home');
 		$this->assertSourceContains('|Param1: Set at admin|');

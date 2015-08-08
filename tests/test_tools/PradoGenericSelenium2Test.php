@@ -93,7 +93,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertValue($id, $txt)
 	{
-		$this->assertEquals($txt, $this->getElement($id)->value());
+		try{
+			$this->assertEquals($txt, $this->getElement($id)->value());
+		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+			//stale element reference. try second time.
+			$this->pause(50);
+			$this->assertEquals($txt, $this->getElement($id)->value());
+		}
 	}
 
 	protected function assertVisible($id)
