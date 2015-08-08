@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TPanel;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActivePanel is the TPanel active control counterpart.

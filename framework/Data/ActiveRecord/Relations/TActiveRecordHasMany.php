@@ -16,7 +16,6 @@ namespace Prado\Data\ActiveRecord\Relations;
  */
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
  * Implements TActiveRecord::HAS_MANY relationship between the source object having zero or

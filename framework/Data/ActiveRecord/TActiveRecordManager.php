@@ -14,10 +14,6 @@ namespace Prado\Data\ActiveRecord;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.Data.TDbConnection');
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
-Prado::using('System.Data.ActiveRecord.Exceptions.TActiveRecordException');
-Prado::using('System.Data.ActiveRecord.TActiveRecordGateway');
 
 /**
  * TActiveRecordManager provides the default DB connection,

@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\TControlAdapter;
 
-Prado::using('System.Web.UI.ActiveControls.TBaseActiveControl');
 
 /**
  * TActiveControlAdapter class.

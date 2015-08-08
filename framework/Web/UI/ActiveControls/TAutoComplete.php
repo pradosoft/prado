@@ -19,8 +19,6 @@ use Prado\TPropertyValue;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\TTemplate;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TAutoComplete class.

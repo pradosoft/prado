@@ -17,8 +17,6 @@ namespace Prado\Data\Common\Mysql;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbTableInfo');
-Prado::using('System.Data.Common.Mysql.TMysqlTableColumn');
 
 /**
  * TMysqlTableInfo class provides additional table information for MySQL database.
@@ -54,7 +52,6 @@ class TMysqlTableInfo extends TDbTableInfo
 	 */
 	public function createCommandBuilder($connection)
 	{
-		Prado::using('System.Data.Common.Mysql.TMysqlCommandBuilder');
 		return new TMysqlCommandBuilder($connection,$this);
 	}
 }

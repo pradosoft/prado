@@ -14,7 +14,6 @@ namespace Prado\Wsat\pages;
 use Prado\Prado;
 use Prado\Web\UI\TPage;
 
-Prado::using("System.Wsat.TWsatARGenerator");
 
 class TWsatHome extends TPage
 {

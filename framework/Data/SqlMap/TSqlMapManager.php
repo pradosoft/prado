@@ -24,15 +24,6 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapUndefinedException;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
-Prado::using('System.Data.SqlMap.TSqlMapGateway');
-Prado::using('System.Data.SqlMap.DataMapper.TSqlMapException');
-Prado::using('System.Data.SqlMap.DataMapper.TSqlMapTypeHandlerRegistry');
-Prado::using('System.Data.SqlMap.DataMapper.TSqlMapCache');
-Prado::using('System.Data.SqlMap.Configuration.TSqlMapStatement');
-Prado::using('System.Data.SqlMap.Configuration.*');
-Prado::using('System.Data.SqlMap.DataMapper.*');
-Prado::using('System.Data.SqlMap.Statements.*');
-Prado::using('System.Caching.TCache');
 
 
 /**

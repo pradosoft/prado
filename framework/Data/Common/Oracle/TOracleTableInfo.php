@@ -51,7 +51,6 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function createCommandBuilder($connection)
 	{
-		Prado::using('System.Data.Common.Oracle.TOracleCommandBuilder');
 		return new TOracleCommandBuilder($connection,$this);
 	}
 

@@ -17,8 +17,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbTableInfo');
-Prado::using('System.Data.Common.Sqlite.TSqliteTableColumn');
 
 /**
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
@@ -35,7 +33,6 @@ class TSqliteTableInfo extends TDbTableInfo
 	 */
 	public function createCommandBuilder($connection)
 	{
-		Prado::using('System.Data.Common.Sqlite.TSqliteCommandBuilder');
 		return new TSqliteCommandBuilder($connection,$this);
 	}
 

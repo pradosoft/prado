@@ -21,9 +21,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use ReflectionClass;
 
-Prado::using('System.Data.ActiveRecord.TActiveRecordManager');
-Prado::using('System.Data.ActiveRecord.TActiveRecordCriteria');
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 
 /**
  * Base class for active records.

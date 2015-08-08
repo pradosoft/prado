@@ -20,8 +20,6 @@ use Prado\TPropertyValue;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\WebControls\TFileUpload;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
-Prado::using('System.Web.UI.WebControls.TFileUpload');
 
 /**
  * TActiveFileUpload

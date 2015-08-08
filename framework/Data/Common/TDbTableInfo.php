@@ -56,7 +56,6 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function createCommandBuilder($connection)
 	{
-		Prado::using('System.Data.Common.TDbCommandBuilder');
 		return new TDbCommandBuilder($connection,$this);
 	}
 

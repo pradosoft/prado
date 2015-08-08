@@ -18,7 +18,6 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelationContext');
 
 /**
  * Base class for active record relationships.

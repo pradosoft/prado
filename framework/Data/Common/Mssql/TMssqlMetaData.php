@@ -18,8 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.Mssql.TMssqlTableInfo');
 
 /**
  * TMssqlMetaData loads MSSQL database table and column information.

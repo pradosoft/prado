@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TButton;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveButton is the active control counter part to TButton.

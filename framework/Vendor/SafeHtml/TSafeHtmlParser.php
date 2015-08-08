@@ -21,7 +21,6 @@
  */
 Prado::using('System.Vendor.SafeHtml.HTMLSax3');
 
-
 /**
  *
  * TSafeHtmlParser

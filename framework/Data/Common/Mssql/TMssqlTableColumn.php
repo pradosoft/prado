@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbTableColumn');
 
 /**
  * Describes the column metadata of the schema for a Mssql database table.

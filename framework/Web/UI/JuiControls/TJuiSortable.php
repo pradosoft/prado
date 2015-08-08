@@ -18,8 +18,6 @@ use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\TTemplate;
 
-Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
-Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 
 /**
  * TJuiSortable class.

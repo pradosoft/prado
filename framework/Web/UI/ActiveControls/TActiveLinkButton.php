@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLinkButton;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveLinkButton is the active control counter part to TLinkButton.

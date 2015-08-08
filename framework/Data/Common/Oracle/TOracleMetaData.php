@@ -19,9 +19,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.Oracle.TOracleTableInfo');
-Prado::using('System.Data.Common.Oracle.TOracleTableColumn');
 
 /**
  * TOracleMetaData loads Oracle database table and column information.

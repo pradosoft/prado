@@ -18,12 +18,10 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\NumberFormat;
 use Prado\Prado;
 
-Prado::using('System.I18N.core.NumberFormat');
 
 /**
  * Get the parent control class.
  */
-Prado::using('System.I18N.TI18NControl');
 
 /**
   * To format numbers in locale sensitive manner use

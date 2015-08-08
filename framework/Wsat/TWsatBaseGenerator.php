@@ -16,7 +16,6 @@ use Prado\Data\ActiveRecord\TActiveRecordManager;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
 
 class TWsatBaseGenerator
 {

@@ -18,7 +18,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.Web.UI.ActiveControls.TCallback');
 
 /**
  * TTimeTriggeredCallback class.

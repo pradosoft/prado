@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
  * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between

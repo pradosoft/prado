@@ -18,8 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.Pgsql.TPgsqlTableInfo');
 
 /**
  * TPgsqlMetaData loads PostgreSQL database table and column information.

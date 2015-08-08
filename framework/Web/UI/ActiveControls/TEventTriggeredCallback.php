@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.Web.UI.ActiveControls.TTriggeredCallback');
 
 /**
  * TEventTriggeredCallback Class

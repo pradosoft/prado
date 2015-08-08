@@ -19,8 +19,6 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.DataGateway.TSqlCriteria');
-Prado::using('System.Data.DataGateway.TDataGatewayCommand');
 
 /**
  * TTableGateway class provides several find methods to get data from the database
@@ -118,7 +116,6 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	protected function setTableName($tableName)
 	{
-		Prado::using('System.Data.Common.TDbMetaData');
 		$meta = TDbMetaData::getInstance($this->getDbConnection());
 		$this->initCommandBuilder($meta->createCommandBuilder($tableName));
 	}

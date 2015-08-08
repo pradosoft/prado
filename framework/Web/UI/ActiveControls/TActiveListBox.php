@@ -18,7 +18,6 @@ use Prado\Web\UI\WebControls\TListBox;
 /**
  * Load active list control adapter
  */
-Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 
 /**
  * TActiveListBox class.

@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TDropDownList;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveListControlAdapter');
 
 /**
  * TActiveDropDownList class.

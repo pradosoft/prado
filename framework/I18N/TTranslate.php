@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-Prado::using('System.I18N.TI18NControl');
 
 /**
  * TTranslate class.

@@ -16,8 +16,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**
  * TPreparedCommand class.

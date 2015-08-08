@@ -17,8 +17,6 @@ namespace Prado\I18N;
 use Prado\I18N\core\ChoiceFormat;
 use Prado\Prado;
 
-Prado::using('System.I18N.core.ChoiceFormat');
-Prado::using('System.I18N.TTranslate');
 
 /**
  * TChoiceFormat class.

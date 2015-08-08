@@ -66,26 +66,20 @@ abstract class TDbMetaData extends \Prado\TComponent
 		switch(strtolower($driver))
 		{
 			case 'pgsql':
-				Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
 				return new TPgsqlMetaData($conn);
 			case 'mysqli':
 			case 'mysql':
-				Prado::using('System.Data.Common.Mysql.TMysqlMetaData');
 				return new TMysqlMetaData($conn);
 			case 'sqlite': //sqlite 3
 			case 'sqlite2': //sqlite 2
-				Prado::using('System.Data.Common.Sqlite.TSqliteMetaData');
 				return new TSqliteMetaData($conn);
 			case 'mssql': // Mssql driver on windows hosts
 			case 'sqlsrv': // sqlsrv driver on windows hosts
 			case 'dblib': // dblib drivers on linux (and maybe others os) hosts
-				Prado::using('System.Data.Common.Mssql.TMssqlMetaData');
 				return new TMssqlMetaData($conn);
 			case 'oci':
-				Prado::using('System.Data.Common.Oracle.TOracleMetaData');
 				return new TOracleMetaData($conn);
 //			case 'ibm':
-//				Prado::using('System.Data.Common.IbmDb2.TIbmDb2MetaData');
 //				return new TIbmDb2MetaData($conn);
 			default:
 				throw new TDbException('ar_invalid_database_driver',$driver);

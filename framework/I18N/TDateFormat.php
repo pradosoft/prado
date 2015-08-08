@@ -17,12 +17,10 @@ namespace Prado\I18N;
 use Prado\I18N\core\DateFormat;
 use Prado\Prado;
 
-Prado::using('System.I18N.core.DateFormat');
 
 /**
  * Get the parent control class.
  */
-Prado::using('System.I18N.TI18NControl');
 
 /**
  * To format dates and/or time according to the current locale use

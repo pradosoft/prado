@@ -637,7 +637,6 @@ class PradoBase
 	 */
 	public static function varDump($var,$depth=10,$highlight=false)
 	{
-		Prado::using('System.Util.TVarDumper');
 		return TVarDumper::dump($var,$depth,$highlight);
 	}
 

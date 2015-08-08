@@ -17,8 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\IListControlAdapter;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
-Prado::using('System.Web.UI.WebControls.TListControl');
 
 /**
  * TActiveListControlAdapter class.

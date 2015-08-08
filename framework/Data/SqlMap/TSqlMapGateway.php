@@ -14,7 +14,6 @@ namespace Prado\Data\SqlMap;
 use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
 use Prado\Prado;
 
-Prado::using('System.Data.SqlMap.TSqlMapManager');
 
 /**
  * DataMapper client, a fascade to provide access the rest of the DataMapper

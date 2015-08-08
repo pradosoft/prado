@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\TControl;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TCallback component class.

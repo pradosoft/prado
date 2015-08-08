@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
  * TActiveRecordHasOne models the object relationship that a record (the source object)

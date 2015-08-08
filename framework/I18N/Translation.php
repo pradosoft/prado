@@ -20,7 +20,6 @@ use Prado\I18N\core\MessageSource;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.I18N.core.MessageFormat');
 
 
 /**

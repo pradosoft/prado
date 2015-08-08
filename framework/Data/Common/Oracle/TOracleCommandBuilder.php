@@ -15,7 +15,6 @@ namespace Prado\Data\Common\Oracle;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands

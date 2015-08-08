@@ -27,7 +27,6 @@ use Prado\Web\UI\WebControls\TTextBoxMode;
 use Prado\Web\UI\WebControls\TValidationDataType;
 use Prado\Web\UI\WebControls\TValidatorDisplayStyle;
 
-Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputBase');
 
 class TScaffoldInputCommon extends TScaffoldInputBase
 {

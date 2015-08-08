@@ -14,7 +14,6 @@ namespace Prado\Data\ActiveRecord;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Prado;
 
-Prado::using('System.Data.DataGateway.TSqlCriteria');
 
 /**
  * Search criteria for Active Record.

@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Pgsql;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**
  * TPgsqlCommandBuilder provides specifics methods to create limit/offset query commands

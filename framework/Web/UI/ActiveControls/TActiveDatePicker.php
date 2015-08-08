@@ -22,7 +22,6 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TDatePickerInputMode;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActiveDatePicker class

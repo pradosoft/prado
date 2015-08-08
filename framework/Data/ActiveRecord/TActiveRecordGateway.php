@@ -118,7 +118,6 @@ class TActiveRecordGateway extends \Prado\TComponent
 			//will find the correct driver dependent classes.
 			if(!isset($this->_meta[$connStr]))
 			{
-				Prado::using('System.Data.Common.TDbMetaData');
 				$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
 			}
 
@@ -148,7 +147,6 @@ class TActiveRecordGateway extends \Prado\TComponent
 		if(!isset($this->_commandBuilders[$connStr]))
 		{
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
-			Prado::using('System.Data.DataGateway.TDataGatewayCommand');
 			$command = new TDataGatewayCommand($builder);
 			$command->OnCreateCommand[] = array($this, 'onCreateCommand');
 			$command->OnExecuteCommand[] = array($this, 'onExecuteCommand');

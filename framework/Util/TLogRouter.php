@@ -17,7 +17,6 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-Prado::using('System.Data.TDbConnection');
 
 /**
  * TLogRouter class.

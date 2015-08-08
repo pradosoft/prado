@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TTemplateControl;
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
 /**
  * Base class for Active Record scaffold views.

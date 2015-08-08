@@ -15,7 +15,6 @@ use Exception;
 use PDO;
 use Prado\Prado;
 
-Prado::using("System.Wsat.TWsatBaseGenerator");
 
 class TWsatARGenerator extends TWsatBaseGenerator
 {

@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbCommandBuilder');
 
 /**
  * TSqliteCommandBuilder provides specifics methods to create limit/offset query commands

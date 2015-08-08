@@ -16,7 +16,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-Prado::using('System.Web.UI.ActiveControls.TCallbackClientSide');
 
 /**
  * TBaseActiveControl class provided additional basic property for every

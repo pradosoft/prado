@@ -353,7 +353,6 @@ class TAssetManager extends \Prado\TModule
 			throw new TIOException('assetmanager_tarfile_invalid',$path);
 		else
 		{
-			Prado::using('System.IO.TTarFileExtractor');
 			$tar = new TTarFileExtractor($fullpath);
 			return $tar->extract($destination);
 		}

@@ -21,9 +21,6 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
 use Prado\Web\UI\TPage;
 
-Prado::using('System.Web.UI.ActiveControls.TCallbackResponseAdapter');
-Prado::using('System.Web.UI.ActiveControls.TCallbackClientScript');
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TActivePageAdapter class.

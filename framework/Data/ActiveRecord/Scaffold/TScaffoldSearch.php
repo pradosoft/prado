@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**
  * TScaffoldSearch provide a simple textbox and a button that is used

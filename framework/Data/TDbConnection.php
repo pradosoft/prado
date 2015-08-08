@@ -18,8 +18,6 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.Data.TDbTransaction');
-Prado::using('System.Data.TDbCommand');
 
 /**
  * TDbConnection class
@@ -441,7 +439,6 @@ class TDbConnection extends \Prado\TComponent
 	{
 		if($this->_dbMeta===null)
 		{
-			Prado::using('System.Data.Common.TDbMetaData');
 			$this->_dbMeta = TDbMetaData::getInstance($this);
 		}
 		return $this->_dbMeta;

@@ -15,7 +15,6 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-Prado::using('System.Data.TDbDataReader');
 
 /**
  * TDbTransaction class.

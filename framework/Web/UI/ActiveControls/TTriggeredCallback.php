@@ -15,7 +15,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\Web\UI\TControl;
 
-Prado::using('System.Web.UI.ActiveControls.TCallback');
 /**
  * TTriggeredCallback abstract Class
  *

@@ -19,9 +19,6 @@ use Prado\Prado;
 use Prado\Web\UI\WebControls\TTable;
 use Prado\Web\UI\WebControls\TTableRow;
 
-Prado::using('System.Web.UI.WebControls.TTableRow');
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TActiveTableRow class.

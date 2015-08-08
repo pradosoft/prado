@@ -16,7 +16,6 @@ use Prado\Collections\TPagedList;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
-Prado::using('System.Collections.TPagedList');
 
 /**
  * TSqlMapPagedList implements a list with paging functionality that retrieves

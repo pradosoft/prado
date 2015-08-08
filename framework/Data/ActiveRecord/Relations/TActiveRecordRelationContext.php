@@ -183,16 +183,12 @@ class TActiveRecordRelationContext
 		switch($this->getRelationType())
 		{
 			case TActiveRecord::HAS_MANY:
-				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasMany');
 				return new TActiveRecordHasMany($this, $criteria);
 			case TActiveRecord::MANY_TO_MANY:
-				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasManyAssociation');
 				return new TActiveRecordHasManyAssociation($this, $criteria);
 			case TActiveRecord::HAS_ONE:
-				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordHasOne');
 				return new TActiveRecordHasOne($this, $criteria);
 			case TActiveRecord::BELONGS_TO:
-				Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordBelongsTo');
 				return new TActiveRecordBelongsTo($this, $criteria);
 			default:
 				throw new TActiveRecordException('ar_invalid_relationship');

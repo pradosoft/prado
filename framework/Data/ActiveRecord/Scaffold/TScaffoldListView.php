@@ -22,7 +22,6 @@ use Prado\Web\UI\WebControls\IItemDataRenderer;
 use Prado\Web\UI\WebControls\TListItemType;
 use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
 
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**
  * TScaffoldListView displays a list of Active Records.

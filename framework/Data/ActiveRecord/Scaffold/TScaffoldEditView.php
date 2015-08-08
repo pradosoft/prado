@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TListItemType;
 
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
 
 /**
  * Template control for editing an Active Record instance.
@@ -276,7 +275,6 @@ class TScaffoldEditView extends TScaffoldBase
 		$class = get_class($record);
 		if(!isset($_builders[$class]))
 		{
-			Prado::using('System.Data.ActiveRecord.Scaffold.InputBuilder.TScaffoldInputBase');
 			$_builders[$class] = TScaffoldInputBase::createInputBuilder($record);
 		}
 		return $_builders[$class];

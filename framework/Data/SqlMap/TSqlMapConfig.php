@@ -17,7 +17,6 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 
-Prado::using('System.Data.TDataSourceConfig');
 
 /**
  * TSqlMapConfig module configuration class.
@@ -67,7 +66,6 @@ class TSqlMapConfig extends TDataSourceConfig
 	 * @since 3.1.7
 	 */
 	public function getSqlMapManager() {
-		Prado::using('System.Data.SqlMap.TSqlMapManager');
 		if(($manager = $this->loadCachedSqlMapManager())===null)
 		{
 			$manager = new TSqlMapManager($this->getDbConnection());

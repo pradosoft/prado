@@ -22,7 +22,6 @@ use Prado\Web\UI\WebControls\TPagerButtonType;
 use Prado\Web\UI\WebControls\TPagerMode;
 use Prado\Web\UI\WebControls\TWebControl;
 
-Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 
 /**
  * TActivePager is the active control counter part of TPager.

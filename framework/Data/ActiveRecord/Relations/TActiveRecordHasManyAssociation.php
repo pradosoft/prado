@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Relations.TActiveRecordRelation');
 
 /**
  * Implements the M-N (many to many) relationship via association table.

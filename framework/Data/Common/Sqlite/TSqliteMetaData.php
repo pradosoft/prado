@@ -18,8 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.Sqlite.TSqliteTableInfo');
 
 /**
  * TSqliteMetaData loads SQLite database table and column information.

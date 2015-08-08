@@ -16,10 +16,6 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  */
 use Prado\Prado;
 
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldBase');
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldListView');
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldEditView');
-Prado::using('System.Data.ActiveRecord.Scaffold.TScaffoldSearch');
 
 /**
  * TScaffoldView is a composite control consisting of TScaffoldListView

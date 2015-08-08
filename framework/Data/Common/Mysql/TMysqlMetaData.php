@@ -20,8 +20,6 @@ use Prado\Data\TDbColumnCaseMode;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-Prado::using('System.Data.Common.TDbMetaData');
-Prado::using('System.Data.Common.Mysql.TMysqlTableInfo');
 
 /**
  * TMysqlMetaData loads Mysql version 4.1.x and 5.x database table and column information.

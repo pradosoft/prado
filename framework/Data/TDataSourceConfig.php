@@ -15,8 +15,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
 
-Prado::using('System.Data.TDbConnection');
-
 /**
  * TDataSourceConfig module class provides <module> configuration for database connections.
  *

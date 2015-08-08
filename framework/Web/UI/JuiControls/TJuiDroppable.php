@@ -16,8 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
-Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 
 /**
  * TJuiDroppable class.
