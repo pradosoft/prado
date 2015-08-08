@@ -192,7 +192,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		foreach(self::$_clientClass as $type)
 			if($control instanceof $type)
 				return $type;
-		return get_class($control);
+		$reflectionClass = new \ReflectionClass($control);
+		return $reflectionClass->getShortName();
 	}
 
 	/**
