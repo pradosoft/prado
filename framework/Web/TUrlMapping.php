@@ -95,7 +95,7 @@ class TUrlMapping extends TUrlManager
 
 	private $_urlPrefix='';
 
-	private $_defaultMappingClass='TUrlMappingPattern';
+	private $_defaultMappingClass='System.Web.TUrlMappingPattern';
 
 	/**
 	 * Initializes this module.

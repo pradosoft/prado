@@ -74,9 +74,9 @@ class TActiveControlAdapter extends TControlAdapter
 		if($type===null)
 		{
 			if($this->getControl() instanceof ICallbackEventHandler)
-				$this->_activeControlType = 'TBaseActiveCallbackControl';
+				$this->_activeControlType = 'Prado\\Web\UI\\ActiveControls\\TBaseActiveCallbackControl';
 			else
-				$this->_activeControlType = 'TBaseActiveControl';
+				$this->_activeControlType = 'Prado\\Web\UI\\ActiveControls\\TBaseActiveControl';
 		}
 		else
 			$this->_activeControlType = $type;
