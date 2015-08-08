@@ -275,9 +275,9 @@ class PradoBase
 	 * @return TComponent component instance of the specified type
 	 * @throws TInvalidDataValueException if the component type is unknown
 	 */
-	public static function createComponent($type)
+	public static function createComponent($requestedType)
 	{
-		$type = static::prado3NamespaceToPhpNamespace($type);
+		$type = static::prado3NamespaceToPhpNamespace($requestedType);
 
 		if(!isset(self::$classExists[$type]))
 			self::$classExists[$type] = class_exists($type, false);
@@ -287,7 +287,7 @@ class PradoBase
 			self::$classExists[$type] = class_exists($type, false);
 		}
 
-		if( ($pos = strrpos($type, '\\')) !== false)
+		if( ($pos = strrpos($type, '\\')) !== false & ($requestedType != $type))
 			$type = substr($type,$pos+1);
 
 		if(($n=func_num_args())>1)
@@ -343,9 +343,10 @@ class PradoBase
 				if(file_exists($path))
 				{
 					$phpNamespace = '\\'. $k.'\\'.$namespace;
-					if(class_exists($phpNamespace, true))
+					if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
 					{
-						class_alias($phpNamespace, $namespace, true);
+						if(!class_exists($namespace) && !interface_exists($namespace))
+							class_alias($phpNamespace, $namespace, true);
 						return;
 					}
 				}
@@ -364,11 +365,13 @@ class PradoBase
 			else  // a file
 			{
 				//self::$_usings[$namespace]=$path;
-				if(!$checkClassExistence || !class_exists($className,false))
+				if(!$checkClassExistence || (!class_exists($className,false) && !interface_exists($className, false)))
 				{
 					try
 					{
 						include_once($path);
+						if(class_exists($namespace, false) || interface_exists($namespace, false))
+							class_alias($namespace, $className, true);
 					}
 					catch(\Exception $e)
 					{
