@@ -108,8 +108,8 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 
 	ajaxresponder: function(request)
 	{
-		if(request && (request instanceof Prado.AjaxRequest))
-			obj.checkInstance();
+		if(request && (request instanceof Prado.CallbackRequest))
+			this.checkInstance();
 	},
 
 	onDone: function()
