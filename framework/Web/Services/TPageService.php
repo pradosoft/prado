@@ -102,6 +102,10 @@ class TPageService extends \Prado\TService
 	 */
 	const PAGE_FILE_EXT='.page';
 	/**
+	 * Prefix of Pages used for instantiating new pages
+	 */
+	const PAGE_NAMESPACE_PREFIX = 'Application\\Pages\\';
+	/**
 	 * @var string root path of pages
 	 */
 	private $_basePath=null;
@@ -490,15 +494,16 @@ class TPageService extends \Prado\TService
 		if($hasClassFile)
 		{
 			$className=basename($path);
-			if(!class_exists($className,false))
+			$namespacedClassName = static::PAGE_NAMESPACE_PREFIX .str_replace('.', '\\', $pagePath);
+			if(!class_exists($className,false) && !class_exists($namespacedClassName, false))
 				include_once($path.Prado::CLASS_FILE_EXT);
+
+			if(!class_exists($className,false))
+				$className = $namespacedClassName;
 		}
 		else
 		{
 			$className=$this->getBasePageClass();
-			Prado::using($className);
-			if(($pos=strrpos($className,'.'))!==false)
-				$className=substr($className,$pos+1);
 		}
 
  		if(!class_exists($className,false) || ($className!=='TPage' && !is_subclass_of($className,'TPage')))
