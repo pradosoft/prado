@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Web.THttpSession');
+use Prado\Web\THttpSession;
+use Prado\Web\THttpSessionCookieMode;
+
 
 /**
  * @package System.Web

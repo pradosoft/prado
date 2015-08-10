@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TForm');
 
 /**
  * @package System.Web.UI

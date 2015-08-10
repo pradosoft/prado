@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Web.THttpRequest');
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\THttpCookie;
+use Prado\Web\THttpCookieCollection;
+
 
 /**
  * @package System.Web

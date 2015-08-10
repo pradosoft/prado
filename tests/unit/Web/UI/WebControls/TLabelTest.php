@@ -1,8 +1,8 @@
 <?php
 
 
-Prado::using('System.Web.UI.WebControls.TLabel');
-Prado::using('System.Web.UI.THtmlWriter');
+use Prado\Web\UI\WebControls\TLabel;
+
 
 /**
  * @package System.Web.UI.WebControls

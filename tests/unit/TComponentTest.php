@@ -1,8 +1,16 @@
 <?php
 
-Prado::using('System.Util.*');
-Prado::using('System.Collections.TPriorityList');
-Prado::using('System.Collections.TPriorityMap');
+use Prado\Collections\TPriorityList;
+use Prado\Exceptions\TApplicationException;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TComponent;
+use Prado\TEventResults;
+use Prado\Util\IDynamicMethods;
+use Prado\Util\IInstanceCheck;
+use Prado\Util\TBehavior;
+use Prado\Util\TClassBehavior;
+
 
 class NewComponent extends TComponent {
   private $_object = null;
@@ -624,9 +632,9 @@ class TComponentTest extends PHPUnit_Framework_TestCase {
 
   public function testGetClassHierarchy() {
     $component = new DynamicCatchingComponent;
-    $this->assertEquals(array('TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'), $component->getClassHierarchy());
-    $this->assertEquals(array('TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'), $component->getClassHierarchy(false));
-    $this->assertEquals(array('tcomponent', 'newcomponent', 'newcomponentnolisten', 'dynamiccatchingcomponent'), $component->getClassHierarchy(true));
+    $this->assertEquals(array('Prado\TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'), $component->getClassHierarchy());
+    $this->assertEquals(array('Prado\TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'), $component->getClassHierarchy(false));
+    $this->assertEquals(array('prado\tcomponent', 'newcomponent', 'newcomponentnolisten', 'dynamiccatchingcomponent'), $component->getClassHierarchy(true));
   }
 
 

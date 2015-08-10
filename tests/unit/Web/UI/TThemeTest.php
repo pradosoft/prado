@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TThemeManager');
 
 /**
  * @package System.Web.UI

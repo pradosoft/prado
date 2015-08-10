@@ -1,6 +1,12 @@
 <?php
 
-Prado::using('System.Web.TAssetManager');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\TApplication;
+use Prado\Web\TAssetManager;
+
 
 /**
  * @package System.Web

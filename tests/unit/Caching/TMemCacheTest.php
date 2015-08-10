@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Caching.TMemCache');
+use Prado\Caching\TMemCache;
+use Prado\TApplication;
+
 
 /**
  * @package System.Caching

@@ -1,8 +1,11 @@
 <?php
 
 
-Prado::using('System.Web.UI.WebControls.TXmlTransform');
-Prado::using('System.Web.UI.THtmlWriter');
+use Prado\IO\TTextWriter;
+use Prado\Prado;
+use Prado\Web\UI\THtmlWriter;
+use Prado\Web\UI\WebControls\TXmlTransform;
+
 
 /**
  * @package System.Web.UI.WebControls

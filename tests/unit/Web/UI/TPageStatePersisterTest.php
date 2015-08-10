@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TPageStatePersister');
 
 /**
  * @package System.Web.UI

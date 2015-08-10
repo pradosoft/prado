@@ -1,6 +1,7 @@
 <?php
 
-Prado::using('System.Util.TSimpleDateFormatter');
+use Prado\Util\TSimpleDateFormatter;
+
 
 /**
  * @package System.Util

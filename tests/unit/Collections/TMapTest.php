@@ -1,5 +1,10 @@
 <?php
 
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+
 class TMapTest_MapItem {
   public $data='data';
 }

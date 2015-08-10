@@ -1,6 +1,7 @@
 <?php
 
-Prado::using('System.I18N.core.ChoiceFormat');
+use Prado\I18N\core\ChoiceFormat;
+
 
 /**
  * @package System.I18N.core

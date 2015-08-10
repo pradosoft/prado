@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Collections.TAttributeCollection');
+use Prado\Collections\TAttributeCollection;
+use Prado\Exceptions\TInvalidOperationException;
+
 
 /**
  * @package System.Collections

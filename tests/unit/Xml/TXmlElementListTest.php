@@ -1,6 +1,9 @@
 <?php
 
-Prado::using('System.Xml.TXmlDocument');
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Xml\TXmlElement;
+use Prado\Xml\TXmlElementList;
+
 
 /**
  * @package System.Xml

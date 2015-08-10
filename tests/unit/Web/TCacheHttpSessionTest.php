@@ -1,7 +1,10 @@
 <?php
 
-Prado::using('System.Web.TCacheHttpSession');
-Prado::using('System.Caching.TMemCache');
+use Prado\Caching\TMemCache;
+use Prado\Exceptions\TConfigurationException;
+use Prado\TApplication;
+use Prado\Web\TCacheHttpSession;
+
 
 /**
  * @package System.Web

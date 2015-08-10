@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TClientScriptManager');
 
 /**
  * @package System.Web.UI

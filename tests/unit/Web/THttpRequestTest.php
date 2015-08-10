@@ -1,7 +1,17 @@
 <?php
 
-Prado::using('System.Web.THttpRequest');
-Prado::using('System.Security.TSecurityManager');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
+use Prado\Security\TSecurityManager;
+use Prado\TApplication;
+use Prado\Web\TAssetManager;
+use Prado\Web\THttpRequest;
+use Prado\Web\THttpRequestUrlFormat;
+use Prado\Web\TUrlManager;
+use Prado\Web\TUrlMapping;
+use Prado\Xml\TXmlDocument;
+
 
 /**
  * @package System.Web

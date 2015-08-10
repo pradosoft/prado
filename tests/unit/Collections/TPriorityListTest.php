@@ -1,5 +1,11 @@
 <?php
 
+use Prado\Collections\TPriorityList;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+
 class PriorityListItem
 {
 	var $data = 'data';
@@ -8,7 +14,6 @@ class PriorityListItem
 		$this->data = $d;
 	}
 }
-Prado::using('System.Collections.TPriorityList');
 
 /**
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList

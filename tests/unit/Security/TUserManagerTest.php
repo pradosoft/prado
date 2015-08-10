@@ -1,6 +1,13 @@
 <?php
 
-Prado::using('System.Security.TUserManager');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
+use Prado\Security\TUserManager;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
+
 
 /**
  * @package System.Security

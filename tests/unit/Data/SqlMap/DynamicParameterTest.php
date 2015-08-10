@@ -1,8 +1,11 @@
 <?php
 
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.SqlMap.*');
+use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Data\TDbConnection;
+use Prado\Prado;
+use Prado\TApplication;
+
 
 /**
  * @package System.Data.SqlMap

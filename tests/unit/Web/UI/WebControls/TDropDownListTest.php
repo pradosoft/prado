@@ -1,7 +1,9 @@
 <?php
 
 
-Prado::using('System.Web.UI.WebControls.TDropDownList');
+use Prado\Collections\TListItemCollection;
+use Prado\Web\UI\WebControls\TDropDownList;
+
 
 /**
  * @package System.Web.UI.WebControls

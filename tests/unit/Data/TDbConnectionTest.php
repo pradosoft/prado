@@ -1,6 +1,12 @@
 <?php
 
-Prado::using('System.Data.*');
+use Prado\Data\TDbColumnCaseMode;
+use Prado\Data\TDbCommand;
+use Prado\Data\TDbConnection;
+use Prado\Data\TDbNullConversionMode;
+use Prado\Exceptions\TDbException;
+use Prado\TApplication;
+
 
 if(!defined('TEST_DB_FILE'))
 	define('TEST_DB_FILE',dirname(__FILE__).'/db/test.db');

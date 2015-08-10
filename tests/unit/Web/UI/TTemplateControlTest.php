@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TTemplateControl');
 
 /**
  * @package System.Web.UI

@@ -1,6 +1,7 @@
 <?php
 
-Prado::using('System.Web.THttpUtility');
+use Prado\Web\THttpUtility;
+
 
 /**
  * @package System.Web

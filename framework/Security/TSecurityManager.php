@@ -151,7 +151,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function setValidation($value)
 	{
-		$this->_hashAlgorithm = TPropertyValue::ensureEnum($value, 'TSecurityManagerValidationMode');
+		$this->_hashAlgorithm = TPropertyValue::ensureEnum($value, 'Prado\\Security\\TSecurityManagerValidationMode');
 	}
 
 	/**

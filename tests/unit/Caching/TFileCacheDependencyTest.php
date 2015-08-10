@@ -1,4 +1,5 @@
 <?php
+use Prado\Caching\TFileCacheDependency;
 
 /**
  * @package System.Caching

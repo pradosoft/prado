@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Collections.TPagedDataSource');
 
 /**
  * @package System.Collections

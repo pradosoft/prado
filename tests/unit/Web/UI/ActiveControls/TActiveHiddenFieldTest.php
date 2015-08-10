@@ -1,7 +1,8 @@
 <?php
 
 
-Prado::using('System.Web.UI.ActiveControls.TActiveHiddenField');
+use Prado\Web\UI\ActiveControls\TActiveHiddenField;
+
 
 /**
  * @package System.Web.UI.ActiveControls

@@ -1,7 +1,8 @@
 <?php
 
 
-Prado::using('System.Util.TDateTimeStamp');
+use Prado\Util\TDateTimeStamp;
+
 
 /**
  * @package System.Util

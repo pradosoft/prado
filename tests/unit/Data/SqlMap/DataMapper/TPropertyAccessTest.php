@@ -1,8 +1,8 @@
 <?php
 
 
-Prado::using('System.Data.SqlMap.DataMapper.TSqlMapException');
-Prado::using('System.Data.SqlMap.DataMapper.TPropertyAccess');
+use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
+
 
 /**
  * @package System.Data.SqlMap.DataMapper

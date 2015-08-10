@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Web.THttpResponse');
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\TApplication;
+use Prado\Web\THttpResponse;
+
 
 
 /**

@@ -1,7 +1,6 @@
 <?php
 
 
-Prado::using('System.Web.UI.TControlAdapter');
 
 /**
  * @package System.Web.UI

@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Collections.TPagedList');
+use Prado\Collections\TPagedList;
+use Prado\Collections\TPagedListFetchDataEventParameter;
+use Prado\Collections\TPagedListPageChangedEventParameter;
+use Prado\Exceptions\TInvalidDataValueException;
+
 
 class MyPagedList extends TPagedList {
 

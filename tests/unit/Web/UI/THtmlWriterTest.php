@@ -1,7 +1,11 @@
 <?php
 
 
-Prado::using('System.Web.UI.THtmlWriter');
+use Prado\IO\ITextWriter;
+use Prado\TComponent;
+use Prado\Web\THttpUtility;
+use Prado\Web\UI\THtmlWriter;
+
 
 /**
  * Implement a writer that flush the content to a variable, to simulate a real flush

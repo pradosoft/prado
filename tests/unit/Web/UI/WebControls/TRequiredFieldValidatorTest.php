@@ -1,7 +1,9 @@
 <?php
 
 
-Prado::using('System.Web.UI.WebControls.TRequiredFieldValidator');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Web\UI\WebControls\TRequiredFieldValidator;
+
 
 /**
  * @package System.Web.UI.WebControls

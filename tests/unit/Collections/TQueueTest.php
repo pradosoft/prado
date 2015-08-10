@@ -1,6 +1,9 @@
 <?php
 
-Prado::using('System.Collections.TQueue');
+use Prado\Collections\TQueue;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+
 
 /**
  * @package System.Collections

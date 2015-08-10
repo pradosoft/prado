@@ -1,10 +1,14 @@
 <?php
 
+use Prado\Collections\TList;
+use Prado\Collections\TPriorityMap;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+
 class TPriorityMapTest_MapItem {
   public $data='data';
 }
 
-Prado::using('System.Collections.TPriorityMap');
 /**
  * @package System.Collections
  */

@@ -1,6 +1,9 @@
 <?php
 
-Prado::using('System.Xml.TXmlDocument');
+use Prado\Exceptions\TIOException;
+use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
+
 
 /**
  * @package System.Xml

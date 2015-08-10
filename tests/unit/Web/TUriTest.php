@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Web.THttpRequest');
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Web\TUri;
+
 
 /**
  * @package System.Web

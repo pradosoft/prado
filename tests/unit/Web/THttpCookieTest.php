@@ -1,6 +1,7 @@
 <?php
 
-Prado::using('System.Web.THttpRequest');
+use Prado\Web\THttpCookie;
+
 
 /**
  * @package System.Web

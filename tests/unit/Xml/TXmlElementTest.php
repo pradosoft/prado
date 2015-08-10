@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Xml.TXmlDocument');
+use Prado\Collections\TMap;
+use Prado\Xml\TXmlElement;
+
 
 /**
  * @package System.Xml

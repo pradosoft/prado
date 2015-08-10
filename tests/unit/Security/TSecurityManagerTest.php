@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Security.TSecurityManager');
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\Security\TSecurityManager;
+use Prado\TApplication;
+
 
 /**
  * @package System.Security

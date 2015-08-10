@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Util.TLogger');
 
 /**
  * @package System.Util

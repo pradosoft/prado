@@ -1,6 +1,9 @@
 <?php
 
-Prado::using('System.Collections.TStack');
+use Prado\Collections\TStack;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
+
 
 /**
  * @package System.Collections

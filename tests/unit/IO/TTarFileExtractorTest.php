@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.IO.TTarFileExtractor');
 
 /**
  * @package System.IO

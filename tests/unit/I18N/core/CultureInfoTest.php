@@ -1,7 +1,8 @@
 <?php
 
 
-Prado::using('System.I18N.core.CultureInfo');
+use Prado\I18N\core\CultureInfo;
+
 
 /**
  * @package System.I18N.core

@@ -1,7 +1,8 @@
 <?php
 
 
-Prado::using('System.Data.DataGateway.TSqlCriteria');
+use Prado\Data\DataGateway\TSqlCriteria;
+
 
 /**
  * @package System.Data.DataGateway

@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Caching.TAPCCache');
+use Prado\Caching\TAPCCache;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\TApplication;
+
 
 /**
  * @package System.Caching

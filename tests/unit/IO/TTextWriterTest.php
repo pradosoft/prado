@@ -1,6 +1,7 @@
 <?php
 
-Prado::using('System.IO.TTextWriter');
+use Prado\IO\TTextWriter;
+
 
 /**
  * @package System.IO

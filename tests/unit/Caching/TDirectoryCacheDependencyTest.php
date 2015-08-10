@@ -1,4 +1,6 @@
 <?php
+use Prado\Caching\TDirectoryCacheDependency;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * @package System.Caching

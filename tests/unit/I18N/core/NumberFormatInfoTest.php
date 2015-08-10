@@ -2,7 +2,8 @@
 
 
 //NOTE: This page require UTF-8 aware editors
-Prado::using('System.I18N.core.NumberFormatInfo');
+use Prado\I18N\core\NumberFormatInfo;
+
 
 /**
  * @package System.I18N.core

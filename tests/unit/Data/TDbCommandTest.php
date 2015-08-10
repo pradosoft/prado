@@ -1,6 +1,10 @@
 <?php
 
-Prado::using('System.Data.*');
+use Prado\Data\TDbConnection;
+use Prado\Data\TDbDataReader;
+use Prado\Exceptions\TDbException;
+use Prado\TApplication;
+
 
 if(!defined('TEST_DB_FILE'))
 	define('TEST_DB_FILE',dirname(__FILE__).'/db/test.db');

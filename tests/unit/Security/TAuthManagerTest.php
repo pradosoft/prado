@@ -1,8 +1,12 @@
 <?php
 
-Prado::using('System.Security.TAuthManager');
-Prado::using('System.Security.TUserManager');
-Prado::using('System.Xml.TXmlDocument');
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Security\TAuthManager;
+use Prado\Security\TUserManager;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
+
 
 /**
  * @package System.Security

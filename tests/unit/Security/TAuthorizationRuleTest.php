@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Security.TAuthorizationRule');
 
 /**
  * @package System.Security

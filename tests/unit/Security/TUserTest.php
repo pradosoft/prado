@@ -1,7 +1,11 @@
 <?php
 
-Prado::using('System.Security.TUser');
-Prado::using('System.Security.TUserManager');
+use Prado\Prado;
+use Prado\Security\TUser;
+use Prado\Security\TUserManager;
+use Prado\TApplication;
+use Prado\Xml\TXmlDocument;
+
 
 /**
  * @package System.Security

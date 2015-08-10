@@ -1,6 +1,8 @@
 <?php
 
-Prado::using('System.Caching.TSqliteCache');
+use Prado\Caching\TSqliteCache;
+use Prado\TApplication;
+
 
 /**
  * @package System.Caching

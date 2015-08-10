@@ -1,7 +1,8 @@
 <?php
 
 
-Prado::using('System.I18N.core.DateFormat');
+use Prado\I18N\core\DateFormat;
+
 
 /**
  * @package System.I18N.core

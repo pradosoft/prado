@@ -1,5 +1,10 @@
 <?php
 
+use Prado\Collections\TList;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
+
 class ListItem {
     public $data='data';
 }
