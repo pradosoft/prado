@@ -92,7 +92,7 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
   public function testGetCookies() {
     $response=new THttpResponse ();
     $response->init (null);
-    self::assertInstanceOf('THttpCookieCollection', $response->getCookies());
+    self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $response->getCookies());
     self::assertEquals(0, $response->getCookies()->getCount());
   }
 

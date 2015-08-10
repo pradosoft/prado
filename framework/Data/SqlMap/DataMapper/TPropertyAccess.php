@@ -11,6 +11,8 @@
 
 namespace Prado\Data\SqlMap\DataMapper;
 
+use Prado\Exceptions\TInvalidDataValueException;
+
 /**
  * TPropertyAccess class provides dot notation stype property access and setting.
  *

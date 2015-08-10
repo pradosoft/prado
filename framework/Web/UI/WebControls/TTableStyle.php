@@ -255,7 +255,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setGridLines($value)
 	{
-		$this->_gridLines=TPropertyValue::ensureEnum($value,'TTableGridLines');
+		$this->_gridLines=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableGridLines');
 	}
 
 

@@ -465,7 +465,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setColumnCase($value)
 	{
-		switch(TPropertyValue::ensureEnum($value,'TDbColumnCaseMode'))
+		switch(TPropertyValue::ensureEnum($value,'Prado\\Data\\TDbColumnCaseMode'))
 		{
 			case TDbColumnCaseMode::Preserved:
 				$value=PDO::CASE_NATURAL;
@@ -501,7 +501,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setNullConversion($value)
 	{
-		switch(TPropertyValue::ensureEnum($value,'TDbNullConversionMode'))
+		switch(TPropertyValue::ensureEnum($value,'Prado\\Data\\TDbNullConversionMode'))
 		{
 			case TDbNullConversionMode::Preserved:
 				$value=PDO::NULL_NATURAL;

@@ -55,7 +55,7 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**

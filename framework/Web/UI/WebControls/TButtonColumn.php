@@ -157,7 +157,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TButtonColumnType'),TButtonColumnType::LinkButton);
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TButtonColumnType'),TButtonColumnType::LinkButton);
 	}
 
 	/**

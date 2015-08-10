@@ -365,6 +365,6 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'TButtonType'),TButtonType::Submit);
+		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TButtonType'),TButtonType::Submit);
 	}
 }

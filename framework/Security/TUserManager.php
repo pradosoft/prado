@@ -282,7 +282,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setPasswordMode($value)
 	{
-		$this->_passwordMode=TPropertyValue::ensureEnum($value,'TUserManagerPasswordMode');
+		$this->_passwordMode=TPropertyValue::ensureEnum($value,'Prado\\Security\\TUserManagerPasswordMode');
 	}
 
 	/**

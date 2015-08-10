@@ -13,7 +13,7 @@ class THttpCookieCollectionTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
     $coll=new THttpCookieCollection();
-    self::assertInstanceOf('THttpCookieCollection', $coll);
+    self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $coll);
   }
 
   public function testInsertAt() {

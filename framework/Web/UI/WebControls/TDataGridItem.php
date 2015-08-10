@@ -81,7 +81,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**

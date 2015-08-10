@@ -339,7 +339,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
+		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
 	}
 
 	/**

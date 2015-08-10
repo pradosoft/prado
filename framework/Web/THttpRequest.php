@@ -374,7 +374,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat=TPropertyValue::ensureEnum($value,'THttpRequestUrlFormat');
+		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Prado\\Web\\THttpRequestUrlFormat');
 	}
 
 	/**

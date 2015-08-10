@@ -72,13 +72,13 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	public function testGetUrl() {
 		$request = new THttpRequest();
 		$request->init(null);
-		self::assertInstanceOf('TUri', $request->getUrl());
+		self::assertInstanceOf('Prado\\Web\\TUri', $request->getUrl());
 		// Try with $_SERVER['HTTP_HOST'] empty
 		$request=null;
 		$request = new THttpRequest();
 		$request->init(null);
 		$_SERVER['HTTP_HOST']='';
-		self::assertInstanceOf('TUri', $request->getUrl());
+		self::assertInstanceOf('Prado\\Web\\TUri', $request->getUrl());
 	}
 
 	public function testGetUrlManager() {
@@ -122,7 +122,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$request->setUrlManager('goodmanager');
 		$request->init(null);
 		self::assertEquals ('goodmanager', $request->getUrlManager());
-		self::assertInstanceOf ('TUrlManager',$request->getUrlManagerModule());
+		self::assertInstanceOf ('Prado\\Web\\TUrlManager',$request->getUrlManagerModule());
 
 	}
 
@@ -281,7 +281,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	$request->init (null);
   	$request->setEnableCookieValidation (false);
   	$cookies=$request->getCookies();
-  	self::assertInstanceOf('THttpCookieCollection', $cookies);
+  	self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $cookies);
   	self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
   	$request = null;
 
@@ -293,7 +293,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   	$request->init (null);
   	$request->setEnableCookieValidation (true);
   	$cookies=$request->getCookies();
-  	self::assertInstanceOf('THttpCookieCollection', $cookies);
+  	self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $cookies);
   	self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
   }
 
@@ -338,7 +338,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   public function testGetIterator() {
     $request = new THttpRequest ();
     $request->init(null);
-    self::assertInstanceOf ('ArrayIterator', $request->getIterator());
+    self::assertInstanceOf ('\ArrayIterator', $request->getIterator());
   }
 
   public function testGetCount() {

@@ -129,7 +129,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value,'TWizardNavigationButtonType');
+		$this->_buttonType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TWizardNavigationButtonType');
 	}
 
 	/**

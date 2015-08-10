@@ -3,7 +3,7 @@
 use Prado\Prado;
 
 /**
- * @runTestsInSeparateProcesses
+ * @package System
  */
 class PradoBaseTest extends PHPUnit_Framework_TestCase
 {

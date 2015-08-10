@@ -718,7 +718,7 @@ class TComponentTest extends PHPUnit_Framework_TestCase {
   public function testIsA() {
   	//This doesn't check the IInstanceCheck functionality, separate function
 
-    $this->assertTrue($this->component->isa('TComponent'));
+    $this->assertTrue($this->component->isa('Prado\TComponent'));
     $this->assertTrue($this->component->isa('NewComponent'));
     $this->assertFalse($this->component->isa(new FooBehavior));
     $this->assertFalse($this->component->isa('FooBehavior'));

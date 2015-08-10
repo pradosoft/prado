@@ -84,7 +84,7 @@ class TDraggable extends TPanel
 			$value=TDraggableRevertOptions::Revert;
 		elseif (strcasecmp($value,'false')==0 || $value===false)
 			$value=TDraggableRevertOptions::None;
-		$this->setViewState('Revert', TPropertyValue::ensureEnum($value, 'TDraggableRevertOptions'), true);
+		$this->setViewState('Revert', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\ActiveControls\\TDraggableRevertOptions'), true);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TDraggable extends TPanel
 			$value=TDraggableGhostingOptions::Ghosting;
 		elseif (strcasecmp($value,'false')==0 || $value===false)
 			$value=TDraggableGhostingOptions::None;
-		$this->setViewState('Ghosting', TPropertyValue::ensureEnum($value, 'TDraggableGhostingOptions'), TDraggableGhostingOptions::None);
+		$this->setViewState('Ghosting', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\ActiveControls\\TDraggableGhostingOptions'), TDraggableGhostingOptions::None);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class TDraggable extends TPanel
 	 */
 	public function setConstraint($value)
 	{
-		$this->setViewState('Constraint', TPropertyValue::ensureEnum($value, 'TDraggableConstraint'), TDraggableConstraint::None);
+		$this->setViewState('Constraint', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\ActiveControls\\DraggableConstraint'), TDraggableConstraint::None);
 	}
 
 	/**

@@ -158,6 +158,6 @@ class TActiveRecordManager extends \Prado\TComponent
 	 */
 	public function setInvalidFinderResult($value)
 	{
-		$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'TActiveRecordInvalidFinderResult');
+		$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'Prado\\Data\\ActiveRecord\\TActiveRecordInvalidFinderResult');
 	}
 }

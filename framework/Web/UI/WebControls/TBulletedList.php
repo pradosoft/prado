@@ -173,7 +173,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	public function setBulletStyle($value)
 	{
-		$this->setViewState('BulletStyle',TPropertyValue::ensureEnum($value,'TBulletStyle'),TBulletStyle::NotSet);
+		$this->setViewState('BulletStyle',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TBulletStyle'),TBulletStyle::NotSet);
 	}
 
 	/**
@@ -189,7 +189,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'TBulletedListDisplayMode'),TBulletedListDisplayMode::Text);
+		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TBulletedListDisplayMode'),TBulletedListDisplayMode::Text);
 	}
 
 	/**

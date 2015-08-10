@@ -84,7 +84,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'TListItemType');
+		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**

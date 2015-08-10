@@ -495,8 +495,9 @@ class TPageService extends \Prado\TService
 		{
 			$className=basename($path);
 			$namespacedClassName = static::PAGE_NAMESPACE_PREFIX .str_replace('.', '\\', $pagePath);
-			if(!class_exists($className,false) && !class_exists($namespacedClassName, false))
-				include_once($path.Prado::CLASS_FILE_EXT);
+
+            if(!class_exists($className,false) && !class_exists($namespacedClassName, false))
+                include_once($path.Prado::CLASS_FILE_EXT);
 
 			if(!class_exists($className,false))
 				$className = $namespacedClassName;
@@ -504,6 +505,9 @@ class TPageService extends \Prado\TService
 		else
 		{
 			$className=$this->getBasePageClass();
+			Prado::using($className);
+			if(($pos=strrpos($className,'.'))!==false)
+				$className=substr($className,$pos+1);
 		}
 
  		if(!class_exists($className,false) || ($className!=='TPage' && !is_subclass_of($className,'TPage')))

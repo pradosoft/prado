@@ -69,7 +69,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'TValidationDataType'),TValidationDataType::String);
+		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationDataType'),TValidationDataType::String);
 	}
 
 	/**
@@ -120,7 +120,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setOperator($value)
 	{
-		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'TValidationCompareOperator'),TValidationCompareOperator::Equal);
+		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationCompareOperator'),TValidationCompareOperator::Equal);
 	}
 
 	/**

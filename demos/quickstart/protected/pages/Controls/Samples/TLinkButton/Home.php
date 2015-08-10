@@ -1,5 +1,7 @@
 <?php
 
+Prado::using('System.Web.UI.TCommandEventParameter');
+
 class Home extends TPage
 {
 	public function buttonClicked($sender,$param)

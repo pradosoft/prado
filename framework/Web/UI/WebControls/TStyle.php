@@ -209,7 +209,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setDisplayStyle($value)
 	{
-		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'TDisplayStyle');
+		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDisplayStyle');
 		switch($this->_displayStyle)
 		{
 			case TDisplayStyle::None:

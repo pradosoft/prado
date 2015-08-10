@@ -83,7 +83,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->_captionAlign=TPropertyValue::ensureEnum($value,'TTableCaptionAlign');
+		$this->_captionAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign');
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatDirection($value)
 	{
-		$this->_repeatDirection=TPropertyValue::ensureEnum($value,'TRepeatDirection');
+		$this->_repeatDirection=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TRepeatDirection');
 	}
 
 	/**
@@ -133,7 +133,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatLayout($value)
 	{
-		$this->_repeatLayout=TPropertyValue::ensureEnum($value,'TRepeatLayout');
+		$this->_repeatLayout=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TRepeatLayout');
 	}
 
 	/**

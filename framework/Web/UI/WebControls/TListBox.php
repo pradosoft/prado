@@ -205,7 +205,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	public function setSelectionMode($value)
 	{
-		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,'TListSelectionMode'),TListSelectionMode::Single);
+		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListSelectionMode'),TListSelectionMode::Single);
 	}
 
 	/**
