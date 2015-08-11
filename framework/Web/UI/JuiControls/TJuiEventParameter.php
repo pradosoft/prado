@@ -52,7 +52,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 	public function getControl($id)
 	{
 		$control=null;
-		$service=prado::getApplication()->getService();
+		$service=Prado::getApplication()->getService();
 		if ($service instanceof TPageService)
 		{
 			// Find the control

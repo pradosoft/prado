@@ -15,7 +15,7 @@
 
 namespace Prado;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Web\Javascripts\TJavascript;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TPropertyValue class
@@ -76,7 +76,7 @@ class TPropertyValue
 	 */
 	public static function ensureString($value)
 	{
-		if (TJavascript::isJsLiteral($value))
+		if (TJavaScript::isJsLiteral($value))
 			return $value;
 		if (is_bool($value))
 			return $value?'true':'false';

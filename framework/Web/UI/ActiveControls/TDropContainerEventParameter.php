@@ -72,7 +72,7 @@ class TDropContainerEventParameter extends \Prado\TEventParameter
 	 public function getDroppedControl ()
 	 {
 		 $control=null;
-		 $service=prado::getApplication()->getService();
+		 $service=Prado::getApplication()->getService();
 		 if ($service instanceof TPageService)
 		 {
 			// Find the control

@@ -114,7 +114,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		foreach($options as $event => $implementation)
 		{
 			if($event=='sort' || $event=='stop')
-				$options[$event]=new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback('.TJavascript::encode($this->getUniqueID()).', \''.$event.'\', event, ui, this); }');
+				$options[$event]=new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback('.TJavaScript::encode($this->getUniqueID()).', \''.$event.'\', event, ui, this); }');
 		}
 		return $options;
 	}
@@ -127,7 +127,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavascript::encode($this->getPostBackOptions());
+		$options=TJavaScript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
 		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);

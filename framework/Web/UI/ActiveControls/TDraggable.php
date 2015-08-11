@@ -168,7 +168,7 @@ class TDraggable extends TPanel
 		else
 			$cs->registerPradoScript('dragdrop');
 		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavascript::encode($this->getPostBackOptions());
+		$options=TJavaScript::encode($this->getPostBackOptions());
 		$class=$this->getClientClassName();
 		$code="new {$class}('{$this->getClientId()}', {$options}) ";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);

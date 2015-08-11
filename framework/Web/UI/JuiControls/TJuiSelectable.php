@@ -116,7 +116,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 		// overload the "OnStop" event to add information about the current selected items
 		if(isset($options['stop']))
 		{
-			$options['stop']=new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#'.$this->getClientID().' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback('.TJavascript::encode($this->getUniqueID()).', \'stop\', event, ui, this); }');
+			$options['stop']=new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#'.$this->getClientID().' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback('.TJavaScript::encode($this->getUniqueID()).', \'stop\', event, ui, this); }');
 		}
 		return $options;
 	}
@@ -129,7 +129,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavascript::encode($this->getPostBackOptions());
+		$options=TJavaScript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
 		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);

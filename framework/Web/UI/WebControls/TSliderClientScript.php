@@ -38,7 +38,7 @@ class TSliderClientScript extends TClientSideOptions
 	 */
 	public function setOnChange($javascript)
 	{
-		$code=TJavascript::quoteJsLiteral("function (value) { {$javascript} }");
+		$code=TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onChange', $code);
 	}
 
@@ -55,7 +55,7 @@ class TSliderClientScript extends TClientSideOptions
 	 */
 	public function setOnSlide($javascript)
 	{
-		$code=TJavascript::quoteJsLiteral("function (value) { {$javascript} }");
+		$code=TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onSlide', $code);
 	}
 

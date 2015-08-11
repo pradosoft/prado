@@ -31,7 +31,7 @@ class TSqlMapException extends TException
 		$tokens=array();
 		for($i=0;$i<$n;++$i)
 		{
-			if($args[$i] instanceof SimpleXmlElement)
+			if($args[$i] instanceof SimpleXMLElement)
 				$tokens['{'.$i.'}']=$this->implodeNode($args[$i]);
 			else
 				$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);

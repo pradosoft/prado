@@ -142,7 +142,7 @@ class TJuiControlOptions
 
 		foreach($this->_control->getValidEvents() as $event)
 			if($this->_control->hasEventHandler('on'.$event))
-				$ret[$event]=new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(".TJavascript::encode($this->_control->getUniqueID()).", ".TJavascript::encode($event).", event, ui, this); }");
+				$ret[$event]=new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(".TJavaScript::encode($this->_control->getUniqueID()).", ".TJavaScript::encode($event).", event, ui, this); }");
 
 		return $ret;
 	}
