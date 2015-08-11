@@ -111,8 +111,13 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+		if($this->getEnableClientScript()
+			&& $this->getAutoPostBack()
+			&& $this->getPage()->getClientSupportsJavaScript())
+		{
+		  $this->getActiveControl()->registerCallbackClientScript(
+		    $this->getClientClassName(), $this->getPostBackOptions());
+		}
 	}
 
 	/**
