@@ -97,7 +97,16 @@ class PradoBase
 	 */
 	public static function initAutoloader()
 	{
-		self::$_loader  = require_once __DIR__ . '/../vendor/autoload.php';
+		$autoloadPaths = array(
+			__DIR__ . '/../../../autoload.php', // prado as dependency
+			__DIR__ . '/../vendor/autoload.php', // prado itself
+		);
+		foreach($autoloadPaths as $autoloadPath)
+			if(file_exists($autoloadPath)) {
+				self::$_loader = $autoloadPath;
+				break;
+			}
+
 		spl_autoload_register(array(get_called_class(), 'autoload'));
 	}
 
