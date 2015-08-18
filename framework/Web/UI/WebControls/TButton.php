@@ -52,7 +52,23 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 	 */
 	protected function getTagName()
 	{
-		return 'input';
+		return strtolower($this->getButtonTag());
+	}
+
+	/**
+	 * @return TButtonTag the tag name of the button. Defaults to TButtonType::Input.
+	 */
+	public function getButtonTag()
+	{
+		return $this->getViewState('ButtonTag',TButtonTag::Input);
+	}
+
+	/**
+	 * @param TButtonTag the tag name of the button.
+	 */
+	public function setButtonTag($value)
+	{
+		$this->setViewState('ButtonTag',TPropertyValue::ensureEnum($value,'TButtonTag'),TButtonTag::Input);
 	}
 
 	/**
@@ -83,7 +99,10 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 		$writer->addAttribute('type',strtolower($this->getButtonType()));
 		if(($uniqueID=$this->getUniqueID())!=='')
 			$writer->addAttribute('name',$uniqueID);
-		$writer->addAttribute('value',$this->getText());
+		if($this->getButtonTag()===TButtonTag::Button)
+		  $this->addParsedObject($this->getText());
+		else
+		  $writer->addAttribute('value',$this->getText());
 		if($this->getEnabled(true))
 		{
 			if($this->getEnableClientScript() && $this->needPostBackScript())
@@ -171,11 +190,14 @@ class TButton extends TWebControl implements IPostBackEventHandler, IButtonContr
 
 	/**
 	 * Renders the body content enclosed between the control tag.
-	 * This overrides the parent implementation with nothing to be rendered.
+	 * This overrides the parent implementation with nothing to be rendered for input tags,
+	 * button tags are rendered normally.
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
+		if($this->getButtonTag()===TButtonTag::Button)
+			parent::renderContents($writer);
 	}
 
 	/**
@@ -360,6 +382,23 @@ class TButtonType extends TEnumerable
 {
 	const Submit='Submit';
 	const Reset='Reset';
+	const Button='Button';
+}
+
+/**
+ * TButtonTag class.
+ * TButtonTag defines the enumerable type for the possible tag names that a {@link TButton} can use for rendering.
+ *
+ * The following enumerable values are defined:
+ * - Input: an input tag is rendered
+ * - Button: a button tag is rendered
+ *
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
+ * @package System.Web.UI.WebControls
+ */
+class TButtonTag extends TEnumerable
+{
+	const Input='Input';
 	const Button='Button';
 }
 
