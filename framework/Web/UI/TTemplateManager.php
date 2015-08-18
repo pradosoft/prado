@@ -1083,7 +1083,7 @@ class TTemplate extends TApplicationComponent implements ITemplate
 	    return false;
 	  foreach($behaviors['_um'] as $name=>$list)
 	  {
-	    if(!$class->isSubclassOf($name)) continue;
+	    if(strtolower($class->getShortName())!==$name && !$class->isSubclassOf($name)) continue;
 	    foreach($list as $param)
 	    {
 	      if(method_exists($param->getBehavior(),$method))
