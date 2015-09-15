@@ -439,9 +439,9 @@ Prado.ValidationManager.prototype =
 	 */
 	isValid : function(group)
 	{
-		for(var i = 0; i < this.validatorPartition(group)[0]; i++)
+		for(var i = 0; i < this.validatorPartition(group)[0].length; i++)
 		{
-			if(!this.validatorPartition(group)[0].isValid())
+			if(!this.validatorPartition(group)[0][i].isValid)
 				return false;
 		}
 
@@ -456,16 +456,16 @@ Prado.ValidationManager.prototype =
 	addValidator : function(validator)
 	{
 		// Remove previously registered validator with same ID
-        // to prevent stale validators created by AJAX updates
-        this.removeValidator(validator);
+    // to prevent stale validators created by AJAX updates
+    this.removeValidator(validator);
 
 		this.validators.push(validator);
 		if(validator.group && jQuery.inArray(validator.group, this.groups)==-1)
 			this.groups.push(validator.group);
 
-        if (typeof this.controls[validator.control.id] === 'undefined')
-            this.controls[validator.control.id] = Array();
-        this.controls[validator.control.id].push(validator);
+    if(typeof this.controls[validator.control.id] === 'undefined')
+      this.controls[validator.control.id] = Array();
+    this.controls[validator.control.id].push(validator);
 	},
 
 	/**
@@ -483,19 +483,25 @@ Prado.ValidationManager.prototype =
 	 * @function ?
 	 * @param {TBaseValidator} validator - Validator object
 	 */
-    removeValidator : function(validator)
+  removeValidator : function(validator)
+  {
+    // Remove from list of validators
+  	this.validators = jQuery.grep(this.validators, function(v)
+  	{
+  		return (v.options.ID!=validator.options.ID);
+  	});
+	  // Remove from global list of validators per control
+    if (this.controls[validator.control.id])
     {
-		this.validators = jQuery.grep(this.validators, function(v)
-		{
-			return (v.options.ID!=validator.options.ID);
-		});
-		// WTF?
-        if (this.controls[validator.control.id])
-            jQuery.grep(this.controls[validator.control.id],  function(v)
-            {
-                return (v.options.ID!=validator.options.ID)
-            });
-    },
+      this.controls[validator.control.id] = jQuery.grep(this.controls[validator.control.id], function(v)
+      {
+        return (v.options.ID!=validator.options.ID)
+      });
+      // Delete array if empty
+      if(this.controls[validator.control.id].length == 0)
+        delete this.controls[validator.control.id];
+    }
+  },
 
 	/**
 	 * Gets validators with errors.
