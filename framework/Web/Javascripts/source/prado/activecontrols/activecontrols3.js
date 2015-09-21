@@ -146,7 +146,7 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 
 	extractLastTerm: function(string)
 	{
-		var re = new RegExp("[" + this.options.Separators + "]");
+		var re = new RegExp("[" + (this.options.Separators || '') + "]");
 		return string.split(re).pop().trim();
 	},
 
