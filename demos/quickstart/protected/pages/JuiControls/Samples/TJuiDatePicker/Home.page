@@ -1,0 +1,65 @@
+<com:TContent ID="body">
+<h1>TJuiDatePicker Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Simple TJuiDatePicker:
+</td><td class="sampleaction">
+<com:TJuiDatePicker ID="dp1" />
+</td></tr>
+
+<tr><td class="samplenote">
+TJuiDatePicker with TRequiredFieldValidator:
+</td><td class="sampleaction">
+<com:TJuiDatePicker ID="dp2" />
+<com:TRequiredFieldValidator
+    ValidationGroup="vg2"
+    ControlToValidate="dp2"
+    Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="vg2" />
+</td></tr>
+
+<tr><td class="samplenote">
+TJuiDatePicker with TDataTypeValidator:
+</td><td class="sampleaction">
+<com:TJuiDatePicker ID="dp3" Options.dateFormat="yy-mm-dd" />
+<com:TDataTypeValidator
+    ValidationGroup="vg3"
+    ControlToValidate="dp3"
+    DataType="Date"
+    DateFormat="yyyy-MM-dd"
+    Text="You must enter a valid date (yyyy-MM-dd)." />
+<com:TButton Text="Submit" ValidationGroup="vg3" />
+</td></tr>
+
+<tr><td class="samplenote">
+TJuiDatePicker with animation:
+</td><td class="sampleaction">
+<com:TJuiDatePicker ID="dp4" Options.dateFormat="yy-mm-dd" />
+<com:TActiveDropDownList OnSelectedIndexChanged="change4">
+  <com:TListItem Value="show" Text="Show (default)" Selected="true" />
+  <com:TListItem Value="slideDown" Text="Slide down" />
+  <com:TListItem Value="fadeIn" Text="Fade in" />
+  <com:TListItem Value="blind" Text="Blind (UI Effect)" />
+  <com:TListItem Value="bounce" Text="Bounce (UI Effect)" />
+  <com:TListItem Value="clip" Text="Clip (UI Effect)" />
+  <com:TListItem Value="drop" Text="Drop (UI Effect)" />
+  <com:TListItem Value="fold" Text="Fold (UI Effect)" />
+  <com:TListItem Value="slide" Text="Slide (UI Effect)" />
+</com:TActiveDropDownList>
+</td></tr>
+
+<tr><td class="samplenote">
+Change options of TJuiDatePicker during callback:
+</td><td class="sampleaction">
+<div><com:TJuiDatePicker ID="dp5" /></div>
+<div><com:TActiveCheckBox OnCheckedChanged="change5" Value="button" /> show button bar</div>
+<div><com:TActiveCheckBox OnCheckedChanged="change5" Value="menu" /> display year & month menus</div>
+<div><com:TActiveCheckBox OnCheckedChanged="change5" Value="week" /> show week of year</div>
+<div><com:TActiveCheckBox OnCheckedChanged="change5" Value="month" /> show 3 months</div>
+</td></tr>
+
+</table>
+
+</com:TContent>

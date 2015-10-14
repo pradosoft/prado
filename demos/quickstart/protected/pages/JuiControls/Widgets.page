@@ -70,4 +70,21 @@ The buttons may contain a callback that will be fired when they are clicked.
 <com:RunBar PagePath="JuiControls.Samples.TJuiDialog.Home" />
 <br/>
 
+
+<a name="TJuiDatePicker" />
+<h2>TJuiDatePicker</h2>
+<com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDatePicker" /> - <a href="http://api.jqueryui.com/datepicker/">jQuery UI API</a>
+
+<p class="block-content">
+<tt>TJuiDatePicker</tt> is an extension to <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a> based on jQuery-UI's <a href="http://jqueryui.com/datepicker/">datepicker</a> widget.
+</p>
+
+<p class="block-content">
+TJuiDatePicker is an extended TActiveTextBox that shows a date picker dialog on focus for an easy way to enter a date into the textbox.
+</p>
+
+
+<com:RunBar PagePath="JuiControls.Samples.TJuiDatePicker.Home" />
+<br/>
+
 </com:TContent>

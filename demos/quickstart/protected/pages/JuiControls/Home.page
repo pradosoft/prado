@@ -88,6 +88,10 @@ For informations of the specific options of each interaction, follow jQuery-UI I
   <a href="?page=JuiControls.Widgets#TJuiDialog">TJuiDialog</a>
   displays an movable dialog control
   </li>
+  <li>
+  <a href="?page=JuiControls.Widgets#TJuiDatePicker">TJuiDatePicker</a>
+  provides a date picker control
+  </li>
 </ul>
 
 </com:TContent>

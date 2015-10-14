@@ -416,3 +416,5 @@ tactivetablecell_control_notincollection = {0} '{1}' no member of the TTableCell
 
 tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable control.
 tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.
+
+juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.

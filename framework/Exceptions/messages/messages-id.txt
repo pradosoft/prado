@@ -462,3 +462,5 @@ ar_save_invalid							= Turunan {0} tidak bisa disimpan karena kondisi sudah dih
 ar_delete_invalid						= Turunan {0} tidak bisa dihapus karena ada rekaman baru atau rekaman sudah dihapus.
 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' tidak benar. ia merujuk ke modul aplikasi yang benar.
+
+juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.

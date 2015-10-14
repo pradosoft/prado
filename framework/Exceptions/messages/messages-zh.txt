@@ -432,3 +432,5 @@ urlmapping_configfile_inexistent		= TUrlMapping.ConfigFile '{0}' is not a file.
 urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' must point to an XML file in namespace format.
 
 urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter is required for pattern '{0}'.
+
+juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed. 
