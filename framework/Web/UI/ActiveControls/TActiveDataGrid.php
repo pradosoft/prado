@@ -97,7 +97,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Returns the id of the surrounding container (div).
 	 * @return string container id
 	 */
-	public function getSurroundingTagId() {
+	public function getSurroundingTagID() {
 		return $this->ClientID.'_Container';
 	}
 
