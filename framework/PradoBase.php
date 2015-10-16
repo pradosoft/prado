@@ -296,6 +296,12 @@ class PradoBase
 			self::$classExists[$type] = class_exists($type, false);
 		}
 
+		/*
+		 * Old apps compatibility support: if the component name has been specified using the 
+		 * old namespace syntax (eg. Application.Common.MyDataModule), assume that the calling
+		 * code expects the class not to be php5.3-namespaced (eg: MyDataModule instead of
+		 * \Application\Common\MyDataModule)
+		 */
 		if( ($pos = strrpos($type, '\\')) !== false & ($requestedType != $type))
 			$type = substr($type,$pos+1);
 
@@ -361,7 +367,7 @@ class PradoBase
 				}
 			}
 
-			if($checkClassExistence && !class_exists($namespace,false))
+			if($checkClassExistence && !class_exists($namespace,false) && !interface_exists($namespace,false))
 				throw new TInvalidOperationException('prado_component_unknown',$namespace,'');
 		}
 		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null)
