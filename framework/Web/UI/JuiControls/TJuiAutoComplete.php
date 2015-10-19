@@ -398,7 +398,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 		if(strlen($textCssClass = $this->getTextCssClass()))
 			$options['textCssClass'] = $textCssClass;
 		$options['minLength'] = $this->getMinChars();
-		$options['delay'] = $this->getFrequency()/1000.0;
+		$options['delay'] = $this->getFrequency()*1000.0;
 		$options['appendTo'] = '#'.$this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
