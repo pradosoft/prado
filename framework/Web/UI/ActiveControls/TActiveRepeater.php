@@ -25,10 +25,15 @@
  */
 class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable {
 
-/**
- * Creates a new callback control, sets the adapter to
- * TActiveControlAdapter.
- */
+  /**
+   * @var string the tag used to render the surrounding container
+   */
+  protected $_surroundingTag='div';
+
+  /**
+   * Creates a new callback control, sets the adapter to
+   * TActiveControlAdapter.
+   */
 	public function __construct() {
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
@@ -57,11 +62,27 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Returns the id of the surrounding container (span).
+	 * Gets the tag used to render the surrounding container. Defaults to 'div'.
+	 * @return string container tag
+	 */
+	public function getSurroundingTag() {
+	  return $this->_surroundingTag;
+	}
+
+	/**
+	 * Sets the tag used to render the surrounding container.
+	 * @param string $value container tag
+	 */
+	public function setSurroundingTag($value) {
+	  $this->_surroundingTag=TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the id of the surrounding container.
 	 * @return string container id
 	 */
 	public function getSurroundingTagID() {
-		return $this->ClientID.'_Container';
+		return $this->getClientID().'_Container';
 	}
 
 	/**
@@ -96,13 +117,14 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Renders the repeater by writing a span tag with the container id obtained from {@link getSurroundingTagID()}
-	 * which will be called by the replacement method of the client script to update it's content.
+	 * Renders the repeater by writing a {@link getSurroundingTag()} with the container id obtained
+	 * from {@link getSurroundingTagID()} which will be called by the replacement method of the client
+	 * script to update it's content.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
 	private function renderRepeater($writer) {
 		$writer->addAttribute('id',$this->getSurroundingTagID());
-		$writer->renderBeginTag('span');
+		$writer->renderBeginTag($this->getSurroundingTag());
 		parent::render($writer);
 		$writer->renderEndTag();
 	}

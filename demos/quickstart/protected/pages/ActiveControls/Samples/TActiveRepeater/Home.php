@@ -60,6 +60,7 @@ class Home extends TPage
 			$data=array();
 			foreach($this->Repeater->Items as $item)
 			{
+			  if($item->getItemType()!=TListItemType::Item && $item->getItemType()!=TListItemType::AlternatingItem) continue;
 				$item=array(
 					'id'=>$products[$index]['id'],
 					'name'=>$item->ProductName->Text,

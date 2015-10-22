@@ -6,6 +6,8 @@
 The following example allows users to modify the existing tabular data using a <tt>TActiveRepeater</tt>. Two validators are used in the repeater to ensure the validity of user inputs. One is to ensure product names are not empty, the other ensures product prices are valid numeric format. After clicking on the <tt>save</tt> button, the input data is displayed in a table at the bottom of the page.
 </p>
 
+<com:TActiveRepeater ID="Repeater" OnItemDataBound="repeaterDataBound">
+<prop:HeaderTemplate>
 <table>
 <tr>
   <th>Name</th>
@@ -13,7 +15,7 @@ The following example allows users to modify the existing tabular data using a <
   <th>Price</th>
   <th>Imported</th>
 </tr>
-<com:TActiveRepeater ID="Repeater" OnItemDataBound="repeaterDataBound">
+</prop:HeaderTemplate>
 <prop:ItemTemplate>
 <tr>
   <td>
@@ -47,8 +49,10 @@ The following example allows users to modify the existing tabular data using a <
   </td>
 </tr>
 </prop:ItemTemplate>
-</com:TActiveRepeater>
+<prop:FooterTemplate>
 </table>
+</prop:FooterTemplate>
+</com:TActiveRepeater>
 
 <div>
 <com:TActiveButton Text="Save" OnClick="saveInput"/>

@@ -284,11 +284,19 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 	}
 
 	/**
-	 * @return string the id of the surrounding tag or this clientID if no such tag needed
+	 * @return string the tag used to wrap the control in.
+	 */
+	public function getSurroundingTag()
+	{
+    return 'span';
+	}
+
+	/**
+	 * @return string the id of the surrounding tag or this clientID if no such tag needed.
 	 */
 	public function getSurroundingTagID()
 	{
-        return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
+    return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
 	}
 
 	/**
@@ -318,11 +326,11 @@ class TCheckBox extends TWebControl implements IPostBackDataHandler, IValidatabl
 		}
 		else
 			$onclick='';
-        if($needspan=$this->getSpanNeeded())
-        {
-            $writer->addAttribute('id',$this->getSurroundingTagID());
-			$writer->renderBeginTag('span');
-        }
+    if($needspan=$this->getSpanNeeded())
+    {
+      $writer->addAttribute('id',$this->getSurroundingTagID());
+      $writer->renderBeginTag($this->getSurroundingTag());
+    }
 		$clientID=$this->getClientID();
 		if(($text=$this->getText())!=='')
 		{

@@ -54,6 +54,11 @@ Prado::using('System.Web.UI.WebControls.TCheckBoxColumn');
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable {
 
+  /**
+   * @var string the tag used to render the surrounding container
+   */
+  protected $_surroundingTag='div';
+
 	/**
 	 * @return string Name of the class used in AutoGenerateColumns mode
 	 */
@@ -94,11 +99,27 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Returns the id of the surrounding container (div).
+	 * Gets the tag used to render the surrounding container. Defaults to 'div'.
+	 * @return string container tag
+	 */
+	public function getSurroundingTag() {
+	  return $this->_surroundingTag;
+	}
+
+	/**
+	 * Sets the tag used to render the surrounding container.
+	 * @param string $value container tag
+	 */
+	public function setSurroundingTag($value) {
+    $this->_surroundingTag=TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * Returns the id of the surrounding container.
 	 * @return string container id
 	 */
 	public function getSurroundingTagID() {
-		return $this->ClientID.'_Container';
+		return $this->getClientID().'_Container';
 	}
 
 	/**
@@ -181,14 +202,16 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Renders the datagrid by writing a div tag with the container id obtained from {@link getSurroundingTagId()}
-	 * which will be called by the replacement method of the client script to update it's content.
+	 * Renders the datagrid by writing a {@link getSurroundingTag()} with the container id obtained
+	 * from {@link getSurroundingTagId()} which will be called by the replacement method of the client
+	 * script to update it's content.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
 	private function renderDataGrid($writer) {
-		$writer->write('<div id="'.$this->getSurroundingTagId().'">');
+	  $writer->addAttribute('id',$this->getSurroundingTagID());
+	  $writer->renderBeginTag($this->getSurroundingTag());
 		parent::render($writer);
-		$writer->write('</div>');
+		$writer->renderEndTag();
 	}
 }
 
