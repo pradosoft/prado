@@ -525,8 +525,9 @@ Prado.Element =
 	 * @param {string|element} element - DOM element or element id
 	 * @param {optional string} content - New content of element
 	 * @param {optional string} boundary - Boundary of new content
+	 * @param {optional boolean} self - Whether to replace itself or just the inner content
 	 */
-	replace : function(element, content, boundary)
+	replace : function(element, content, boundary, self)
 	{
 		if(boundary)
 		{
@@ -534,7 +535,10 @@ Prado.Element =
 			if(result != null)
 				content = result;
 		}
-		jQuery('#'+element).replaceWith(content);
+		if(self)
+		  jQuery('#'+element).replaceWith(content);
+		else 
+		  jQuery('#'+element).html(content);
 	},
 
 	/**

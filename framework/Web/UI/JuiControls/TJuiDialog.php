@@ -164,6 +164,32 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 		$code = "jQuery('#".$this->getClientId()."').dialog('".$method."');";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
+
+	/**
+	 * Rendering as a fieldset is not supported for TJuiDialog.
+	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 * @throws TNotSupportedException not supported for TJuiDialog.
+	 */
+	public function setGroupingText($value)
+	{
+		throw new TNotSupportedException('Rendering as a fieldset is not supported for {0}.', get_class($this));
+	}
+
+	/**
+	 * Overrides parent implementation to just render the inner contents and avoid replacing the element itself when
+	 * updating clientside, because replacing/removing will cause jqueryui to fire destroy on the original dialog extension.
+	 * @param THtmlWriter html writer
+	 */
+	public function render($writer)
+	{
+		if($this->getHasPreRendered() && $this->getActiveControl()->canUpdateClientSide())
+		{
+		  parent::renderContents($writer);
+			$this->getPage()->getCallbackClient()->replaceContent($this, $writer, false);
+		}
+		else
+			parent::render($writer);
+	}
 }
 
 /**

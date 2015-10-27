@@ -411,14 +411,14 @@ class TCallbackClientScript extends TApplicationComponent
 	 * a TControl component, its rendered method will be called and its contents
 	 * will be used for replacement.
 	 * @param TControl control element or HTML element id.
-	 * @param string HTML fragement or the control to be rendered
-	 * @param string provide a custom boundary.
+	 * @param string HTML fragement or the control to be rendered.
+	 * @param boolean whether to fully replace the element or just its inner content.
 	 * @see insertAbout
 	 * @see insertBelow
 	 * @see insertBefore
 	 * @see insertAfter
 	 */
-	protected function replace($element, $content, $boundary=null)
+	protected function replace($element, $content, $self)
 	{
 		if($content instanceof TControl)
 		{
@@ -430,19 +430,23 @@ class TCallbackClientScript extends TApplicationComponent
 			$boundary = $this->getResponseContentBoundary($content);
 			$content = null;
 		}
+		else
+			$boundary = null;
 
-		$this->callClientFunction('Prado.Element.replace', array($element, $content, $boundary));
+		$this->callClientFunction('Prado.Element.replace', array($element, $content, $boundary, $self));
 	}
 
 	/**
 	 * Replace the content of an element with new content contained in writer.
 	 * @param TControl control element or HTML element id.
-	 * @param string HTML fragement or the control to be rendered
+	 * @param string HTML fragement or the control to be rendered.
+	 * @param boolean whether to fully replace the element or just its inner content, defaults to true.
 	 */
-	public function replaceContent($element,$content)
+	public function replaceContent($element, $content, $self=true)
 	{
-		$this->replace($element, $content);
+		$this->replace($element, $content, $self);
 	}
+
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
