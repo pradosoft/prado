@@ -128,7 +128,7 @@ class TSqlCriteria extends TComponent
 	{
 		if(empty($value)) {
 			// reset the condition
-			$this->_condition = '';
+			$this->_condition = null;
 			return;
 		}
 
