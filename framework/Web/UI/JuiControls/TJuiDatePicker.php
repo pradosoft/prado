@@ -93,7 +93,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 				         'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
 								 'minDate', 'monthNames', 'monthNamesShort', 'navigationAsDateFormat', 'nextText', 'numberOfMonths', 'prevText',
 								 'selectOtherMonths', 'shortYearCutoff', 'showAnim', 'showButtonPanel', 'showCurrentAtPos', 'showMonthAfterYear',
-				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix');
+				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
+								 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect');
 	}
 
 	/**
@@ -102,7 +103,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getValidEvents()
 	{
-		return array('beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect');
+		return array();
 	}
 
 	/**

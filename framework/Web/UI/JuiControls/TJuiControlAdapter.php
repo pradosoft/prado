@@ -194,6 +194,8 @@ class TJuiControlOptions
 				} elseif(is_numeric($value)) {
 					// trick to get float or integer automatically when needed
 					$this->_options[$option] = $value + 0;
+				} elseif(substr($low,0,8)=='function') {
+					$this->_options[$option] = new TJavaScriptLiteral($value);
 				} else {
 					$this->_options[$option] = $value;
 				}
