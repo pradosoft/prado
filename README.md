@@ -1,5 +1,7 @@
 # Prado PHP Framework
 
+### NEWS: our website suffered a server crash; we are currently rebuilding it, have a look at http://www.pradoframework.net/ for updates. Thank you for your patience.
+
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
