@@ -5,7 +5,7 @@
  * @author Jason Ragsdale <jrags@jasrags.net>
  * @author Harry Pottash <hpottash@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI.WebControls
  */

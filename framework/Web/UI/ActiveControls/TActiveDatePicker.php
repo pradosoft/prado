@@ -5,7 +5,7 @@
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI.ActiveControls
  */

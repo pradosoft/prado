@@ -4,7 +4,7 @@
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI
  */

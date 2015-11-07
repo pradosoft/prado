@@ -4,7 +4,7 @@
  *
  * @author  David Otto <ottodavid[at]gmx[dot]net>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2013-2014 PradoSoft
+ * @copyright Copyright &copy; 2013-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Web.UI.JuiControls
  */

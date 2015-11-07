@@ -3,7 +3,7 @@
 /**
  * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @since 3.3
@@ -47,7 +47,16 @@ class TWsatScaffolding extends TPage
                         {
                                 $scf_generator = new TWsatScaffoldingGenerator();
                                 $scf_generator->setOpFile($this->output_folder->Text);
-                                $scf_generator->generateCRUD("estudiante");
+                                foreach ($scf_generator->getAllTableNames() as $tableName)
+                                {
+                                        $id = "cb_$tableName";
+                                        $obj = $this->tableNames->findControl($id);
+                                        if($obj!==null && $obj->Checked)
+                                        {
+                                                $scf_generator->generateCRUD($tableName);
+                                        }
+                                }
+                                
                                 $this->feedback_panel->CssClass = "green_panel";
                                 $this->generation_msg->Text = "The code has been generated successfully.";
                         } catch (Exception $ex)

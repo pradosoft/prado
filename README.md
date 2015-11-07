@@ -25,7 +25,7 @@ Just create a composer.json file for your project:
 ```JSON
 {
     "require": {
-        "pradosoft/prado": "~3.2"
+        "pradosoft/prado": "~3.3"
     }
 }
 ```

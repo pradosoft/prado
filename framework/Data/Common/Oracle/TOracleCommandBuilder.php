@@ -5,7 +5,7 @@
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package System.Data.Common
  */
