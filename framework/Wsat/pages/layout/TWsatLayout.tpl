@@ -31,7 +31,9 @@
                         <div>Code Generation</div>
                         <ul>
                             <li><com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('TWsatGenerateAR') %>" Text="AR Classes" /></li>
+                            <!---
                             <li><com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('TWsatScaffolding') %>" Text="Scaffolding" /></li>
+                            --->
                         </ul>
                     </div>
                 </div>            
