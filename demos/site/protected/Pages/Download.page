@@ -1,0 +1,116 @@
+<com:TContent ID="Main">
+
+<div id="main">
+
+<h1>Download</h1>
+<p>PRADO is an open source project hosted on <a href="http://github.com/pradosoft/prado">GitHub</a>. It is released under the terms of
+<com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('License')%>" Text="the BSD License" />.</p>
+<p>The latest stable version of PRADO is <b><span id="lastVersion"><%= Prado::getVersion() %></span></b><span id="lastVersionDate"></span>.</p>
+<div style="text-align:center"><a id="downloadLink" style="font-size:150%" href="https://github.com/pradosoft/prado/releases/latest">Download</a></div>
+
+<com:TClientScript PradoScripts="jquery" />
+<com:TClientScript>
+
+$(document).ready(function () {
+	$.getJSON("https://api.github.com/repos/pradosoft/prado/releases").done(function (json) {
+		var release = json[0];
+
+		var releaseVer = release.tag_name;
+		var releaseDate = new Date(release.published_at);
+		var downloadURL = release.assets[0].browser_download_url;
+
+		var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+		var day = releaseDate.getDate();
+		var monthIndex = releaseDate.getMonth();
+		var year = releaseDate.getFullYear();
+
+		$("#lastVersion").text(releaseVer);
+		$("#lastVersionDate").text(' (' + day + ' ' + monthNames[monthIndex] + ' ' + year + ')');
+		$("#downloadLink").attr("href", downloadURL);
+	});
+
+	$.get("https://raw.githubusercontent.com/pradosoft/prado/master/HISTORY", function(data) {
+  		$("#changeLog").text(data);
+	});
+});
+</com:TClientScript>
+
+<br/>
+<h2>Latest changelog entries</h2>
+<pre id="changeLog">loading...</pre>
+
+<br/>
+<h2>Previous PRADO v3.x releases</h2>
+
+<table width="100%" cellspacing="1" cellpadding="1" class="download">
+<tr>
+	<th nowrap="nowrap">Version</th>
+	<th nowrap="nowrap">Date </th>
+	<th nowrap="nowrap">Files</th>
+</tr>
+	<tr><td>3.2.4</td><td>Aug 26, 2014</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.4/prado-3.2.4.re2e58b8.zip">Source code and documentation</a></td></tr>
+	<tr><td>3.2.3</td><td>Nov 26, 2013</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.3/prado-3.2.3.r2b11341.zip">Source code and documentation</a></td></tr>
+	<tr><td>3.2.2</td><td>July 20, 2013</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.2.r3297.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.2.r3297.zip">documentation</a></td></tr>
+	<tr><td>3.2.1</td><td>January 19, 2013</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.1.r3258.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.1.r3258.zip">documentation</a></td></tr>
+	<tr><td>3.2.0</td><td>June 25, 2012</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.0.r3169.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.0.r3169.zip">documentation</a></td></tr>
+	<tr><td>3.1.10</td><td>July 27, 2011</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.10.r3017.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.10.r3017.zip">documentation</a></td></tr>
+	<tr><td>3.1.9</td><td>June 3, 2011</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.9.r2973.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.9.r2973.zip">documentation</a></td></tr>
+	<tr><td>3.1.8</td><td>May 29, 2011</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.8.r2934.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.8.r2934.zip">documentation</a></td></tr>
+	<tr><td>3.1.7</td><td>February 22, 2010</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.7.r2783.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.7.r2783.zip">documentation</a></td></tr>
+	<tr><td>3.1.6</td><td>July 22, 2009</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.6.r2699.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.6-r2699.zip">documentation</a></td></tr>
+	<tr><td>3.1.5</td><td>May 24, 2009</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.5.r2662.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.5.r2662.zip">documentation</a></td></tr>
+	<tr><td>3.1.4</td><td>January 11, 2009</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.4.r2603.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.1.4.r2603.zip">documentation</a></td></tr>
+	<tr><td>3.1.3</td><td>November 1, 2008</td><td><a href="http://prado3.googlecode.com/files/prado-3.1.3-src.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-3.1.3-docs.zip">documentation</a></td></tr>
+	<tr><td>3.1.2</td><td>April 21, 2008</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.1.2.r2448.zip?download">Source code</a></td></tr>
+	<tr><td>3.1.1</td><td>October 1, 2007</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.1.1.r2290.zip?download">Source code</a></td></tr>
+	<tr><td>3.1.0</td><td>July 2, 2007</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.1.0.r2045.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.7</td><td>April 2, 2007</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.7.r1825.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.6</td><td>December 4, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.6.r1561.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.5</td><td>October 23, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.5.r1478.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.4</td><td>September 4, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.4.r1389.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.3</td><td>August 6, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.3.r1331.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.2</td><td>July 2, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.2.r1226.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.1</td><td>June 4, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.1.zip?download">Source code</a></td></tr>
+	<tr><td>3.0.0</td><td>May 1, 2006</td><td><a href="http://prdownloads.sourceforge.net/prado/prado-3.0.0.zip?download">Source code</a></td></tr>
+</table>
+<br/>
+<br/>
+<h2>PRADO Tools</h2>
+<table width="100%" cellspacing="1" cellpadding="5" class="download">
+	<tr>
+		<th nowrap="nowrap">File</th>
+		<th nowrap="nowrap">Description</th>
+		<th nowrap="nowrap">Release date</th>
+	</tr>
+	<tr>
+		<td><a href="http://prado3.googlecode.com/files/prado-dreamweaver-r2764.zip">Dreamweaver Extension</a></td>
+		<td>PRADO Dreamweaver Extension (r2764)</td>
+		<td nowrap="nowrap">February 14, 2010</td>
+	</tr>
+	<tr>
+		<td><a href="http://prado3.googlecode.com/files/prado-intype-bundle-r2854.zip">InType Bundle</a></td>
+		<td>PRADO InType Bundle (r2854)</td>
+		<td nowrap="nowrap">June 23, 2010</td>
+	</tr>
+	<tr>
+		<td><a href="http://prado3.googlecode.com/files/prado-notepadplus-r2793.zip">Notepad++ Plugin</a></td>
+		<td>PRADO Notepad++ Plugin (r2793)</td>
+		<td nowrap="nowrap">April 6, 2010</td>
+	</tr>
+	<tr>
+		<td><a href="http://prado3.googlecode.com/files/prado-textmatebundle-r3193.zip">Textmate Bundle</a></td>
+		<td>PRADO TextMate Bundle, suitable also for Sublime Text 2 (r3193)</td>
+		<td nowrap="nowrap">July 24, 2012</td>
+	</tr>
+</table>
+<br/>
+<br/>
+<h2>Git Access</h2>
+<p>You can obtain the latest development version of PRADO from our <a href="https://github.com/pradosoft/prado">Git repository</a>.</p>
+<blockquote><b>WARNING:</b> Unreleased Source code in Git may contain known bugs and are subject to changes without prior notice.</blockquote>
+<p>The Source code repository can be accessed anonymously using the following command,</p>
+<pre class="instructions">git clone https://github.com/pradosoft/prado.git</pre>
+
+</div>
+
+</com:TContent>

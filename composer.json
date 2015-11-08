@@ -12,6 +12,19 @@
 			"role" : "Developer"
 		},
 		{
+			"name": "Ciro Mattia Gonano",
+			"email": "ciromattia@gmail.com",
+			"role" : "Github/Packagist Maintainer"
+		},
+		{
+			"name": "David Otto",
+			"role" : "Developer"
+		},
+		{
+			"name": "Jens Klaer",
+			"role" : "Developer"
+		},
+		{
 			"name": "Christophe Boulain",
 			"email": "christophe.boulain@gmail.com",
 			"role" : "Developer"
@@ -20,11 +33,6 @@
 			"name": "Robin J. Rogge",
 			"email": "rojaro@gmail.com",
 			"role" : "Developer"
-		},
-		{
-			"name": "Ciro Mattia Gonano",
-			"email": "ciromattia@gmail.com",
-			"role" : "Github/Packagist Maintainer"
 		}
 	],
 	"require": {
@@ -42,8 +50,8 @@
 		"phpunit/phpunit-selenium": ">=1.2",
 		"phpunit/php-invoker": "*",
 		"phpunit/phpunit-story": "*",
-		"phing/phing" : "2.4.14",
-		"apigen/apigen": "2.*",
+		"phing/phing" : "2.*",
+		"apigen/apigen": "*",
 		"satooshi/php-coveralls": "dev-master"
 	},
 	"provide" : {

@@ -1,0 +1,765 @@
+
+/**
+ * PradoSoft profile by Carl G. Mathisen and Stefan A. Petrov
+ * http://decart.no
+ */
+
+body
+{
+    background-color: #ECEDE5;
+    background-image: url('imgs/bg.gif');
+    background-repeat: repeat-x;
+    background-position: top left;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+body, div, span, p, input
+{
+    font-family: Verdana, sans-serif, Arial;
+    font-size: 10pt;
+    color: #333333;
+}
+
+h1, h2, h3, h4
+{
+	font-family: Verdana, Helvetica, Arial, Lucida Grande, Trebuchet MS;
+    padding: 0px;
+    margin: 0px;
+	margin-bottom: 10px;
+    color: #821B18;
+    font-weight: normal;
+}
+
+h2
+{
+	font-size: 18px;
+}
+
+h3
+{
+	font-size: 16px;
+}
+
+div
+{
+    text-align: left;
+}
+
+.instructions
+{
+	background-color: #EEEEEE;
+    padding: 5px;
+}
+
+img
+{
+	border: none;
+}
+
+a
+{
+    color: #CD2C27;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: #821B18;
+    text-decoration: underline;
+}
+
+#page
+{
+    margin: 0 auto;
+    padding: 0;
+    width: 841px;
+    position: relative;
+}
+
+#header
+{
+    position: relative;
+    height: 98px;
+}
+
+#logo
+{
+    height: 99px;
+}
+
+#mainmenu
+{
+    position: absolute;
+    top: 69px;
+}
+
+#mainmenu ul
+{
+    margin-left: 0;
+    padding-left: 0;
+    display: inline;
+}
+
+#mainmenu ul li
+{
+    margin-left: 0px;
+    list-style: none;
+    display: inline;
+}
+
+#mainmenu ul li a
+{
+    display: block;
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 5px;
+    color: #FFFFCC;
+    text-decoration: none;
+    height: 29px;
+}
+
+#mainmenu ul li a:hover
+{
+    background-image: url('imgs/mainmenu_hover.gif');
+    background-repeat: repeat-x;
+    background-position: top left;
+    color: #fff;
+}
+
+#mainmenu ul li a.active
+{
+    background-image: url('imgs/mainmenu_active.gif');
+    background-repeat: repeat-x;
+    background-position: top left;
+    color: #91A412;
+}
+
+/* main page */
+
+div.intro
+{
+    height: 190px;
+    background-image: url('imgs/bigmantis.jpg');
+    background-repeat: no-repeat;
+    background-position: top right;
+    background-color: #fff;
+}
+
+div.statements
+{
+    height: 165px;
+    background-image: url('imgs/statementsbg.gif');
+    background-repeat: repeat-x;
+    position: relative;
+    border-bottom : 1px solid #EEE;
+}
+
+div.statements div
+{
+    position: absolute;
+    width: 250px;
+    top: 20px;
+}
+
+div.statements div p
+{
+    font-size: 13px;
+    color: #818181;
+}
+
+div.statements div.whatis
+{
+    left: 20px;
+}
+
+div.statements div.whatreq
+{
+    left: 310px;
+}
+
+div.statements div.cani
+{
+    left: 590px;
+    width: 250px;
+}
+
+/* navbar */
+#navbar
+{
+    border-bottom: 2px solid #E9EEEF;
+    height: 30px;
+    margin-bottom: 20px;
+}
+
+#navbar ul
+{
+    margin-left: 0;
+    padding-left: 0;
+    display: inline;
+}
+
+#navbar ul li
+{
+    margin-left: 0px;
+    list-style: none;
+    display: inline;
+}
+
+#navbar ul li a
+{
+    display: block;
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    padding-right: 14px;
+    padding-top: 5px;
+    color: #CD2B26;
+    height: 29px;
+}
+
+#navbar ul li a.active, #navbar ul li a.hover
+{
+    color: #821B18;
+}
+
+#navbar ul li a.hover
+{
+    text-decoration: underline;
+}
+
+/* infobar */
+div#infobar
+{
+    float: right;
+    width: 200px;
+    padding-left: 20px;
+    border-left: 2px solid #E9EEEF;
+}
+
+div#infobar div
+{
+    margin-bottom: 20px;
+}
+
+div#infobar div#featured img
+{
+    margin-top: 10px;
+}
+
+/* articles */
+
+div#articles
+{
+    width: 560px;
+    float: left;
+}
+
+/* article */
+
+div.article
+{
+    margin-bottom: 40px;
+}
+
+div.article .date
+{
+    color: #9F9291;
+}
+
+div.article .more
+{
+	margin-right: 10px;
+    display: block;
+    text-align: right;
+}
+
+.logo
+{
+	position: absolute;
+	margin-left: 15px;
+	margin-top: 0px;
+	z-index: 1;
+}
+
+#main
+{
+	padding: 20px;
+	padding-top: 20px;
+	background-color: #fff;
+}
+
+div.mantis
+{
+    height: 190px;
+    background-color: #fff;
+    background-image: url('imgs/bigmantis.jpg');
+    background-repeat: no-repeat;
+    background-position: top right;
+    border-bottom: 1px solid #DCDCDC;
+}
+
+div.releases
+{
+	float: left;
+    width: 240px;
+    height: 190px;
+    background-image: url('imgs/pradodownload.gif');
+    background-repeat: no-repeat;
+}
+
+div.releases div.official
+{
+    width: 190px;
+    position: relative;
+    left: 52px;
+    top: 128px;
+    font-size: 8pt;
+    color: #6D6D6D;
+}
+
+div.releases div.official a
+{
+    display: block;
+}
+
+div.whyprado
+{
+	display: block;
+	float: left;
+}
+
+div.whyprado ul.list
+{
+	margin-top: 40px;
+	margin-left: 40px;
+}
+
+div.whyprado ul.list li
+{
+	display: block;
+	margin: 5px;
+	padding: 0px;
+	font-size: 18px;
+	background-repeat: no-repeat;
+	background-position: bottom left;
+	padding-left: 30px;
+	list-style: none;
+}
+
+div.whyprado ul.list li.one
+{
+	background-image: url('imgs/bullet_one.gif');
+}
+
+div.whyprado ul.list li.two
+{
+	background-image: url('imgs/bullet_two.gif');
+}
+
+div.whyprado ul.list li.three
+{
+	background-image: url('imgs/bullet_three.gif');
+}
+
+div.whyprado ul.list li a
+{
+    color: #9F9291;
+    text-decoration: none;
+}
+
+#footer
+{
+    border-top: 1px solid #e9eeef;
+    background-color: #fff;
+    clear: both;
+    color: #A7A7A7;
+    font-size: 8pt;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 30px;
+    background-image: url('imgs/bottomgradient.gif');
+    background-repeat: repeat-x;
+    background-position: bottom;
+}
+
+#ads
+{
+    font-size: 8pt;
+    text-align: center;
+}
+#features
+{
+	margin-left: 610px;
+    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #BEDD75;
+    color: #344A1E;
+    font-size: 9pt;
+}
+
+#features ul
+{
+    margin: 10px;
+    padding: 0px;
+}
+
+#features ul li
+{
+	font-size: 8pt;
+    padding: 0px;
+    margin: 0px;
+    margin-top: 8px;
+}
+
+#features h3
+{
+    margin: 0px;
+    padding: 0px;
+    font-size: 10pt;
+    color: #292E1D;
+    text-align: center;
+    border-bottom: 1px solid silver;
+}
+
+#news
+{
+	float: left;
+	width: 590px;
+}
+
+.newstitle
+{
+	font-size: 12pt;
+	font-weight: bold;
+	color: #555;
+	margin-top: 10px;
+	margin-bottom: 0px;
+	border-bottom: 1px solid silver;
+}
+
+.newscontentmore
+{
+	margin-right: 10px;
+    display: block;
+    color: #50811A;
+    text-align: right;
+}
+
+.newscontentmore:hover
+{
+	color: red;
+}
+
+.newstime
+{
+	margin: 0px;
+	font-size:0.8em;
+	color:#aaa;
+	padding-left:10px;
+	text-align: right;
+}
+
+.newscontent
+{
+	margin-top: 5px;
+}
+
+#leftpanel
+{
+	float: left;
+	width: 550px;
+}
+
+#topics
+{
+	border: 1px solid #804040;
+	margin-left: 610px;
+	padding-bottom: 10px;
+}
+
+#topicsheader
+{
+	text-align:center;
+	font-weight:bold;
+	background-color:#804040;
+	color:#FFFFBC;
+	padding: 3px;
+	margin-bottom:0px;
+}
+
+.topicitem
+{
+	padding: 5px;
+}
+
+.topicitem a:hover
+{
+	text-decoration: underline;
+}
+
+.topicitem p
+{
+	margin: 0px;
+	font-size:0.8em;
+	color:#aaa;
+	padding-left:10px;
+	white-space:nowrap;
+}
+
+.reference
+{
+}
+
+.reference img
+{
+	margin: 10px;
+}
+
+.reference h3
+{
+}
+
+
+.download
+{
+  width:            100%;
+  background-color: #aaa;
+}
+
+.download td
+{
+  background-color: #FFFFFF;
+  padding: 2px 5px;
+  font-size: 9pt;
+}
+
+.download td a
+{
+  font-weight: bold;
+}
+
+.download td.type
+{
+  font-family:    "courier new", courier;
+  text-align:     right;
+  vertical-align: top;
+}
+
+.download div.declaration
+{
+  font-family: "courier new", courier;
+}
+
+
+.download th
+{
+  background-color: #F0F0F0;
+  font-weight:      bold;
+  font-size:        9pt;
+  padding:          5px;
+  text-align:       left;
+}
+
+.download th.small
+{
+	font-size:  1.0em;
+}
+
+.download tr.reference td {
+    background-color: #FFEDED;
+}
+
+
+.doc-title
+{
+	font-size: 14pt;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.doc-subtitle
+{
+	font-size: 11pt;
+	font-weight: bold;
+	background-color: #EEE;
+	padding: 5px;
+	margin-top: 20px;
+}
+
+.doc-namespace
+{
+	font-size: 8pt;
+}
+
+
+.doc-menu
+{
+}
+
+.doc-classes
+{
+}
+
+.doc-ancestors
+{
+	font-size: 8pt;
+}
+
+.doc-properties
+{
+	font-size: 9pt;
+}
+
+.doc-properties table
+{
+	border-collapse: collapse;
+	background-color: silver;
+	width: 100%;
+}
+
+.doc-properties td, .doc-properties th
+{
+	padding:    3px;
+	vertical-align: top;
+	background-color: white;
+	border: 1px solid silver;
+}
+
+.doc-events
+{
+	font-size: 9pt;
+}
+
+.doc-events table
+{
+	border-collapse: collapse;
+	background-color: silver;
+	width: 100%;
+}
+
+.doc-events td, .doc-events th
+{
+	padding:    3px;
+	vertical-align: top;
+	background-color: white;
+	border: 1px solid silver;
+}
+
+.doc-methods
+{
+	font-size: 9pt;
+}
+
+.doc-methods table
+{
+	border-collapse: collapse;
+	background-color: silver;
+	width: 100%;
+}
+
+.doc-methods td, .doc-methods th
+{
+	padding:    3px;
+	vertical-align: top;
+	background-color: white;
+	border: 1px solid silver;
+}
+
+.doc-derived
+{
+}
+
+.doc-inherited
+{
+}
+
+.doc-native td
+{
+	background-color: lightyellow;
+}
+
+.forum-topic
+{
+	padding: 10px;
+	border:1px solid silver;
+	margin-bottom: 10px;
+}
+
+
+.demo-list li
+{
+	margin-bottom: 1em;
+}
+
+.autocomplete
+{
+  border:1px solid #ccc;
+  background-color:white;
+}
+.autocomplete ul, .autocomplete li
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 11px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+ul.different
+{
+	background-color: pink;
+}
+
+.autocomplete li
+{
+	padding: 5px;
+	background-color: #ffe;
+}
+.autocomplete .selected
+{
+  background-color: #eec;
+}
+
+#ads ul
+{
+	list-style-type: none;
+	margin: 5px;
+	margin-left: 0px;
+	padding: 0;
+	font-size: 10px;
+}
+
+#ads li
+{
+	margin-bottom: 7px;
+}
+
+#ads a
+{
+	color: black;
+	border-bottom: 1px dashed silver;
+}
+
+#changelog
+{
+    overflow:scroll;
+    height: 250px;
+    border:1px solid #ccc;
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    padding: 10px;
+    -webkit-box-shadow: inset 0px -10px 10px -5px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 0px -10px 10px -5px rgba(0,0,0,0.75);
+    box-shadow: inset 0px -10px 10px -5px rgba(0,0,0,0.75);
+}

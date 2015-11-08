@@ -103,8 +103,6 @@
 <div>Scripts del lado del cliente (Client-side Scripting)</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Introducción a Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Librería Prototipo Parte I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Librería Prototipo Parte II</a></li>
     <li><a href="?page=Advanced.Scripts3">Recetario de Javascript (Cookbook)</a></li>
 </ul>
 </div>

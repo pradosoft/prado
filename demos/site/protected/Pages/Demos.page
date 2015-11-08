@@ -1,0 +1,31 @@
+<com:TContent ID="Main">
+
+<div id="main">
+
+<h2>Online Demos</h2>
+<p>
+The following demos are developed using the PRADO framework. They are also available under the <tt>demos</tt> directory in the PRADO release.
+</p>
+<ul class="demo-list">
+  <li><a href="<%$ DemoUrl %>/helloworld/">Hello World</a>: This is perhaps the smallest interactive PRADO application that you can build. It may serve as a good start for building your own applications based on PRADO.</li>
+  <li><a href="<%$ DemoUrl %>/composer/">Component Composer</a>: This demo is an practical application that can be used to help you quickly write up a PRADO component.</li>
+  <li><a href="<%$ DemoUrl %>/personal/">Personal Website</a>: This demo can be served as the starting point to develop a multi-page Web application. It also shows how to support user login in a PRADO application.</li>
+  <li><a href="<%$ DemoUrl %>/quickstart/"><b>Quickstart tutorial demo</b></a>: This demo is meant to help you learn PRADO. It contains tens of sub-demos showing various Web controls included in the PRADO release.
+<ul>
+<li><a href="<%$ DemoUrl %>/quickstart/?page=Controls.Standard">Standard control demos</a> (nearly 40 demos) </li>
+<li><a href="<%$ DemoUrl %>/quickstart/?page=Controls.Validation">Validation control demos</a> </li>
+<li><a href="<%$ DemoUrl %>/quickstart/?page=Controls.List">List control demos</a> (dropdown list, listbox, etc.) </li>
+<li><a href="<%$ DemoUrl %>/quickstart/?page=Controls.Data">Repeater, datalist, datagrid demos</a> </li>
+<li><a href="<%$ DemoUrl %>/quickstart/?page=ActiveControls.Home">Active control demos</a> (AJAX) </li>
+</ul>
+  </li>
+<!--
+  <li><a href="<%$ DemoUrl %>/blog/"><b>PRADO Blog</b></a>: This is a complete weblog system with user management, post management and configuration management.</li>
+-->
+  <li><a href="<%$ DemoUrl %>/currency-converter/">Currency Converter</a>: A small <a href="<%$ DemoUrl %>/quickstart/?page=Tutorial.CurrencyConverter">tutorial</a> example demonstrating the basic use of validator and AJAX controls.</li>
+  <li><a href="<%$ DemoUrl %>/soap/">SOAP Service</a>: This demo is a quick setup of a SOAP server and client.</li>
+  <li><a href="<%$ DemoUrl %>/chat/">AJAX Chat</a>: A easy to build web chat application using AJAX controls and Active Records for database access (see <a href="<%$ DemoUrl %>/quickstart/?page=Tutorial.AjaxChat">tutorial</a>).</li>
+  <li><a href="<%$ DemoUrl %>/time-tracker/"><b>Time Tracker</b></a>: A complete personal project time tracker application using SQLMap for data access.</li>
+
+</div>
+</com:TContent>

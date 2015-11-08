@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-    <h1>Web Site Administration Tool</h1>
+    <h1 id="20008">Web Site Administration Tool</h1>
     <p class="block-content">
         Web Site Administration Tool (WSAT) is a development tool which allows you to perform several
         tedious tasks of a PRADO project in a GUI fashion. Its inspired in both Asp.Net - Web Site Administration Tool and Yii's Gii.
@@ -12,12 +12,12 @@
         </ul>
     </p>
 
-    <h2>Requirements</h2>
+    <h2 id="20009">Requirements</h2>
     <p class="block-content">
         To use WSAT, you need to add in your project configuration file: <tt>application.xml</tt>, 
         in the services section the wsat service like follows:
 
-<com:TTextHighlighter CssClass="source" Language="xml">
+<com:TTextHighlighter CssClass="source block-content" id="code_100018" Language="xml">
 <services> 
     ...
     <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
@@ -25,7 +25,7 @@
 </com:TTextHighlighter>
     </p>
 
-    <h2>Usage</h2>
+    <h2 id="20010">Usage</h2>
     <p class="block-content">
         Then you are ready to go to: http://localhost/yoursite/index.php?wsat=TWsatLogin and doing so you should see
         the following page:
@@ -36,7 +36,7 @@
         is part of a basic security system to avoid undesirable persons to use this tool.
     </p>
     
-    <h2>Active Record classes generation</h2>
+    <h2 id="20011">Active Record classes generation</h2>
     <p class="block-content">
         In order to generate AR classes you need to go to: http://localhost/divermania/index.php?wsat=TWsatGenerateAR 
         by clicking the proper links in the welcome page. Then you should see the following page:        

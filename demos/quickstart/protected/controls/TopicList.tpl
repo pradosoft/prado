@@ -106,8 +106,6 @@
 <div>Client-side Scripting</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Introduction to Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Prototype Library Part I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Prototype Library Part II</a></li>
     <li><a href="?page=Advanced.Scripts3">Javascript Cookbook</a></li>
 </ul>
 </div>

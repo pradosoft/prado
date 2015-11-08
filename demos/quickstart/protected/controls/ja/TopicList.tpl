@@ -102,8 +102,6 @@
 <div>クライアントサイドスクリプト</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Javascript 使用方法</a></li>
-    <li><a href="?page=Advanced.Scripts1">Prototype ライブラリ パート I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Prototype ライブラリ パート II</a></li>
     <li><a href="?page=Advanced.Scripts3">Javascript クックブック</a></li>
 </ul>
 </div>

@@ -101,8 +101,6 @@
 <div>客户端编程</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">JavaScript介绍</a></li>
-    <li><a href="?page=Advanced.Scripts1">Prototype Library Part I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Prototype Library Part II</a></li>
     <li><a href="?page=Advanced.Scripts3">Javascript Cookbook</a></li>
 </ul>
 </div>

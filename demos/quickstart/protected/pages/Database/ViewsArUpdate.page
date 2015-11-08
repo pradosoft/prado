@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 <h1 id="138046">Views - AR Classes Update</h1>
-<com:SinceVersion Version="4.0" />
+<com:SinceVersion Version="3.3" />
 <p class="block-content">
     Usually when you use <tt>Active Records Classes</tt> to interact with your Data Base
     you also build some proper views to handle them. To save every element of your views in your Data Base
@@ -9,9 +9,9 @@
     Thats why Prado offers an automatic mechanism to update your views from your AR Classes and vice versa. 
 </p>
 
-<h2>Updating views from AR Classes</h2>
+<h2 id="244034">Updating views from AR Classes</h2>
 
-<p>Instead of assign each attribute in your AR Class to your view controls like this:</p>
+<p id="1220005" class="block-content">Instead of assign each attribute in your AR Class to your view controls like this:</p>
 <com:TTextHighlighter CssClass="source block-content">
 $student = AR_Student::finder()->findByPk(1);
 $this->name->Text = $student->name;
@@ -20,7 +20,7 @@ $this->gender->Text = $student->gender;
 $this->average->Text = $student->average;
 </com:TTextHighlighter>
 
-<p>You can do the same as follows:</p>
+<p id="1220006" class="block-content">You can do the same as follows:</p>
 
 <com:TTextHighlighter CssClass="source block-content">
 $student = AR_Student::finder()->findByPk(1);
@@ -28,8 +28,8 @@ $this->tryToUpdateView($student);
 </com:TTextHighlighter>
 
 
-<h2>Updating AR Classes from views</h2>
-<p>Instead of assign each attribute in your views to your AR Classes like this:</p>
+<h2 id="244035">Updating AR Classes from views</h2>
+<p id="1220007" class="block-content">Instead of assign each attribute in your views to your AR Classes like this:</p>
 <com:TTextHighlighter CssClass="source block-content">
 $student = new AR_Student();
 $student->name = $this->name->Text;
@@ -39,7 +39,7 @@ $student->average = $this->average->Text;
 $student->save();
 </com:TTextHighlighter>
 
-<p>You can do the same as follows:</p>
+<p id="1220008" class="block-content">You can do the same as follows:</p>
 
 <com:TTextHighlighter CssClass="source block-content">
 $student = new AR_Student();

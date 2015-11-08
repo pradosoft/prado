@@ -1,0 +1,37 @@
+<com:TContent ID="Main">
+
+<div class="intro">
+	<div class="whyprado">
+		<ul class="list">
+			<li class="one"><a href="#features/">Why PRADO</a></li>
+			<li class="two"><a href="#demos/">Try PRADO</a></li>
+			<li class="three"><a href="#documentation/">Learn PRADO</a></li>
+		</ul>
+	</div>
+</div>
+
+<div class="statements">
+  <div class="whatis">
+    <h3>What is PRADO?</h3>
+    <p>PRADO<sup>TM</sup> is a component-based and event-driven programming framework for developing Web applications in PHP 5. PRADO stands for <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented.</p>
+  </div>
+  <div class="whatreq">
+    <h3>What does PRADO require?</h3>
+    <p>The sole requirement to run PRADO-based applications is a Web server supporting PHP 5.3.0 or higher. <a href="#license/">PRADO is free</a>. You can use it to develop either open source or commercial applications.</p>
+  </div>
+  <div class="cani">
+    <h3>Quick facts about PRADO</h3>
+    <p>
+    <b>First release:</b> August 2004<br>
+    <b>License:</b> <a href="#license/">revised BSD</a><br>
+    <b>Lines of core code:</b> &gt; 150,000 lines<br>
+    <b>Number of classes:</b> &gt; 700<br>
+    <b>Downloads:</b> &gt; 430,000 15/09/2013<br>
+    </p>
+  </div>
+</div>
+
+<div id="main">
+</div>
+
+</com:TContent>

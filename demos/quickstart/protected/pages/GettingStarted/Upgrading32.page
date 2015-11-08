@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>Upgrading from v3.2</h1>
+<h1 id="12003">Upgrading from v3.2</h1>
 
 <div class="block-content">
 <p class="block-content">
@@ -17,7 +17,7 @@ We summarize in the following the most significant changes in v3.3 to help devel
 </p>
 </div>
 
-<h2>Basic Prototype to jQuery javascript porting</h2>
+<h2 id="12004">Basic Prototype to jQuery javascript porting</h2>
 <p class="block-content">
 The number one rule on writing jQuery javascript code is to read the <a href="http://api.jquery.com/">jQuery documentation</a>. Porting code from Prototype to jQuery needs some effort: here's a basic lookup table to port existing code:
 </p>
@@ -168,7 +168,7 @@ The number one rule on writing jQuery javascript code is to read the <a href="ht
 	</tr>
 </table>
 
-<h2>PRADO specific code changes</h2>
+<h2 id="12005">PRADO specific code changes</h2>
 <p class="block-content">
 PRADO
 Porting prado to jQuery some method signatures has changed, or have been adapted:
@@ -207,7 +207,7 @@ Porting prado to jQuery some method signatures has changed, or have been adapted
 	</tr>
 </table>
 
-<h2>Specific controls changes</h2>
+<h2 id="12006">Specific controls changes</h2>
 <p class="block-content">
 Some Prado controls were based on specific extensions of the Prototype + Scriptaculous javascript framework, and they have been deprecated now that jQuery has become the primary js framework in PRADO.
 PRADO 3.3 introduces jQuery-based counterpart for these controls and encourage everyone to port their code to the new controls, but the old controls are still supposed to work with some minor annoyance:

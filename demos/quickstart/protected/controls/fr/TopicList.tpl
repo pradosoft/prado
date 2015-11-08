@@ -101,8 +101,6 @@
 <div>Script côté client</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Introduction au Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Librairie Prototype Partie I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Librairie Prototype Partie II</a></li>
     <li><a href="?page=Advanced.Scripts3">Javascript Cookbook</a></li>
 </ul>
 </div>

@@ -102,8 +102,6 @@
 <div>Penaskahan sisi-Klien</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Pengenalan Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Librari Prototipe Bagian I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Librari Prototipe Bagian II</a></li>
     <li><a href="?page=Advanced.Scripts3">Buku Lengkap Javascript</a></li>
 </ul>
 </div>

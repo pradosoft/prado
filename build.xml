@@ -11,6 +11,7 @@
   <taskdef name="prado-quickstart-index" classname="QuickstartIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-api-index" classname="ManualIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="phpunitreporttask" classname="PhpUnitReportTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="apigen4" classname="ApiGen4Task" classpath="buildscripts/phing/tasks"/>
 
   <!-- generates ${prado.version} and ${prado.revision} -->
   <prado-version-check/>
@@ -102,6 +103,7 @@
     <include name="demos/soap/**/*"/>
     <include name="demos/sqlmap/**/*"/>
     <include name="demos/time-tracker/**/*"/>
+    <include name="demos/site/**/*"/>
   </fileset>
 
   <!--
@@ -185,8 +187,8 @@
     <echo>Building API manuals...</echo>
     <delete dir="${build.doc.dir}/manual"/>
     <mkdir dir="${build.doc.dir}/manual"/>
-    <apigen
-      executable="bin/apigen.php"
+    <apigen4
+      executable="bin/apigen"
       source="${build.src.dir}/framework"
       destination="${build.doc.dir}/manual"
       exclude="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*"
@@ -195,9 +197,8 @@
       todo="true"
       sourcecode="false"
       php="false"
-      templateconfig="buildscripts/apigen/pradosoft/config.neon"
     />
-
+<!-- templateconfig="buildscripts/apigen/pradosoft/config.neon" -->
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual" todir="${build.doc.dir}/manual"/>
     <copy file="buildscripts/index/search.php" todir="${build.doc.dir}/manual" />
@@ -224,11 +225,11 @@
     <echo>Moving doc files to build...</echo>
     <mkdir dir="${build.dist.dir}"/>
     <move file="${build.doc.dir}/quickstart.pdf" todir="${build.src.dir}/docs"/>
-    <copy todir="${build.src.dir}/docs/manual">
+    <move todir="${build.src.dir}/docs/manual">
       <fileset dir="${build.doc.dir}/manual">
         <include name="**/**"/>
       </fileset>
-    </copy>
+    </move>
 
     <echo>Generating compressed distribution files...</echo>
     <if>
@@ -243,14 +244,6 @@
     <echo>Compiling class docs...</echo>
     <exec command="${php} build.php" dir="buildscripts/classtree" passthru="true"/>
     <move file="buildscripts/classtree/classes.data" todir="${build.web.dir}/protected/Data"/>
-
-    <echo>Moving HTML docs to Web folder...</echo>
-    <mkdir dir="${build.web.dir}"/>
-    <copy todir="${build.web.dir}/docs/manual">
-      <fileset dir="${build.doc.dir}/manual">
-        <include name="**/**"/>
-      </fileset>
-    </copy>
 
     <echo>
                    Distribution Completed!!!

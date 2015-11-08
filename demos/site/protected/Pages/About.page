@@ -1,0 +1,55 @@
+<com:TContent ID="Main">
+
+<div id="main">
+<h2>The PRADO Group</h2>
+<p>
+The PRADO group is a team of PRADO enthusiasts who develop and promote the PRADO framework and the related projects.
+</p>
+<h3>Team Members</h3>
+<ul>
+  <li>Fabio Bas - development, testing</li>
+  <li>Ciro Mattia Gonano - github/packagist maintainer</li>
+  <li>Daniel Sampedro Bello - wsat development</li>
+  <li>David Otto - development, testing</li>
+  <li>Jens Klaer - development, testing</li>
+</ul>
+<p>The following Team Members are currently inactive.</p>
+<ul>
+  <li>Qiang Xue - founder of PRADO framework, core development</li>
+  <li>Xiang Wei Zhuo - core development (javascripts, active controls, DB controls, tests)</li>
+  <li>Jason Ragsdale - site and forum administration</li>
+  <li>Knut Urdalen - test, marketing</li>
+  <li>Eirik Hoem - core development</li>
+  <li>Yves Berkholz - core development</li>
+  <li>Michael Hartl - component development, testing</li>
+  <li>Carl G. Mathisen - design and document comment system</li>
+  <li>Christophe Boulain - component development, testing</li>
+  <li>Robin J. Rogge - site and forum adminitration, core development</li>
+</ul>
+<h4>Past Team Members</h4>
+<p>
+Alex Flint, Brian Luft, John Teague, Todd Patrick, Pim van der Zwet, Tim Evans, Alban Hanry, Marcus Nyeholt
+</p>
+
+<h3>History of PRADO</h3>
+<p>
+The very original inspiration of PRADO came from Apache Tapestry. During the design and implementation, Qiang Xue borrowed many ideas from Borland Delphi and Microsoft ASP.NET. The first version of PRADO came out in June 2004 and was written in PHP 4. Driven by the Zend PHP 5 coding contest, Qiang rewrote PRADO in PHP 5, which proved to be a wise move, thanks to the new object model provided by PHP 5. PRADO won the grand prize in the Zend contest, earning high votes both from the public and from the judges' panel.
+</p>
+<p>
+In August 2004, PRADO was hosted on SourceForge as an open source project. Soon after, the project site <a href="http://www.xisc.com/">xisc.com</a> was announced to public. With the fantastic support of PRADO developer team and PRADO users, PRADO evolved to version 2.0 in mid 2005. In this version, Wei Zhuo contributed to PRADO with the excellent I18 and L10N support.
+</p>
+<p>
+In May 2005, developers decided to completely rewrite the PRADO framework to resolve a few fundamental issues found in version 2.0 and to catch up with some cool features available in Microsoft ASP.NET 2.0. After nearly a year's hard work with over 50,000 lines of new code, version 3.0 was finally made available in April 2006.
+</p>
+<p>
+In October 2008, the original development team released a new framework called <a href="http://www.yiiframework.com/">Yii</a>. Inheriting most of the PRADO code, Yii left the pages/events concept, focusing on a pure MVC design pattern. Since 2009 a lot of people contributed to PRADO fixing issues, developing new features or backporting them from Yii.
+</p>
+<p>
+To promote a model of community-driven development, the project repositories were moved first on <a href="http://code.google.com/p/prado3/">Google Code</a> and then, in September 2013, on <a href="http://github.com/pradosoft/prado">GitHub</a>.
+</p>
+<p>
+Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x has grown up to a project that is suitable for serious business application development.
+</p>
+
+</div>
+</com:TContent>

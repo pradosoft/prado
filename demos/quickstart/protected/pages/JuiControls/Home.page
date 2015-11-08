@@ -1,9 +1,9 @@
 <com:TContent ID="body" >
-<h1>Jui Controls (jQuery UI)</h1>
+<h1 id="224018">Jui Controls (jQuery UI)</h1>
 <p class="block-content">
 Jui controls are the PRADO port of the standard <a href="http://jqueryui.com/">jQuery UI</a> widgets. They can be used as standard <a href="?page=ActiveControls.Introduction">Active Controls</a>, but will automatically load the needed jQuery-UI javascript libraries.
 </p>
-<h3>Options</h3>
+<h3 id="224021">Options</h3>
 <p class="block-content">
 The <tt>Options</tt> property of PRADO Jui controls is used to pass options to the underlying javascript object. Each subproperty set on <tt>Options</tt> will be translated to a javascript property added to the object. The complete list of options available for each widget is availble at jQuery-UI's API Documentation.
 </p>
@@ -24,7 +24,7 @@ jQuery-UI's <a href="http://jqueryui.com/resizable/">Resizable</a> adds an handl
  /&gt;
 </com:TTextHighlighter>
 
-<h3>Events</h3>
+<h3 id="224022">Events</h3>
 <p class="block-content">
 jQuery-UI widgets offers a lot of events that PRADO can hook up and trasmit to the serverside using a <a href="?page=ActiveControls.Introduction">callback request</a>. Event available for PRADO Jui controls inherits their names from their jQuery-UI counterparts, prefixed with "On".
 Jui controls doesn't make use of the AutoPostback property anymore, but only triggers a callback when an event handler is associated to the corresponding event.
@@ -42,7 +42,7 @@ jQuery's <a href="http://jqueryui.com/draggable/">Draggable</a> allows a target 
  /&gt;
 </com:TTextHighlighter>
 
-<h2>PRADO Jui interactions controls</h2>
+<h2 id="224019">PRADO Jui interactions controls</h2>
 <p class="block-content">
 Jui interactions adds basic mouse-based interactions to elements like moving, resizing or sorting. PRADO Jui interactions controls applies there interactions to a <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
 For informations of the specific options of each interaction, follow jQuery-UI Interaction <a href="http://api.jqueryui.com/category/interactions/">API Documentation</a> for the specific interaction.
@@ -74,7 +74,7 @@ For informations of the specific options of each interaction, follow jQuery-UI I
   </li>
 </ul>
 
-<h2>PRADO Jui widgets controls</h2>
+<h2 id="224020">PRADO Jui widgets controls</h2>
 <ul id="u2" class="block-content">
   <li>
   <a href="?page=JuiControls.Widgets#TJuiProgressbar">TJuiProgressbar</a>

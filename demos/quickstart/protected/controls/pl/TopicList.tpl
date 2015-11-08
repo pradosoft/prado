@@ -102,8 +102,6 @@
 <div>Skrypty po stronie klienta</div>
 <ul>
     <li><a href="?page=Advanced.Scripts">Wprowadznie do Javascript</a></li>
-    <li><a href="?page=Advanced.Scripts1">Biblioteka Prototype część I</a></li>
-    <li><a href="?page=Advanced.Scripts2">Biblioteka Prototype część II</a></li>
     <li><a href="?page=Advanced.Scripts3">Książka z przepisami Javascript</a></li>
 </ul>
 </div>
