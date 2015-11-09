@@ -191,14 +191,15 @@
       executable="bin/apigen"
       source="${build.src.dir}/framework"
       destination="${build.doc.dir}/manual"
-      exclude="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*"
+      exclude="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*,*Wsat/pages,*Wsat/themes"
       title="PRADO v${prado.version} API Manual"
       deprecated="true"
       todo="true"
       sourcecode="false"
       php="false"
+      templateconfig="buildscripts/apigen/pradosoft/config.neon" 
     />
-<!-- templateconfig="buildscripts/apigen/pradosoft/config.neon" -->
+
     <echo>Indexing API manuals...</echo>
     <prado-api-index docdir="${build.doc.dir}/manual" todir="${build.doc.dir}/manual"/>
     <copy file="buildscripts/index/search.php" todir="${build.doc.dir}/manual" />
@@ -225,11 +226,11 @@
     <echo>Moving doc files to build...</echo>
     <mkdir dir="${build.dist.dir}"/>
     <move file="${build.doc.dir}/quickstart.pdf" todir="${build.src.dir}/docs"/>
-    <move todir="${build.src.dir}/docs/manual">
+    <copy todir="${build.src.dir}/docs/manual">
       <fileset dir="${build.doc.dir}/manual">
         <include name="**/**"/>
       </fileset>
-    </move>
+    </copy>
 
     <echo>Generating compressed distribution files...</echo>
     <if>

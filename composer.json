@@ -51,7 +51,7 @@
 		"phpunit/php-invoker": "*",
 		"phpunit/phpunit-story": "*",
 		"phing/phing" : "2.*",
-		"apigen/apigen": "*",
+		"apigen/apigen": "4.*",
 		"satooshi/php-coveralls": "dev-master"
 	},
 	"provide" : {

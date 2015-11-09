@@ -7,7 +7,7 @@
  * @license http://www.pradosoft.com/license/
  * @version $Id$
  * @since 4.0
- * @package Wsat
+ * @package System.Wsat
  */
 Prado::using("System.Wsat.TWsatBaseGenerator");
 

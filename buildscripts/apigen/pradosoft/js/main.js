@@ -1,15 +1,4 @@
-/*!
- * ApiGen 2.8.0 - API documentation generator for PHP 5.3+
- *
- * Copyright (c) 2010-2011 David Grudl (http://davidgrudl.com)
- * Copyright (c) 2011-2012 Jaroslav Hanslík (https://github.com/kukulich)
- * Copyright (c) 2011-2012 Ondřej Nešpor (https://github.com/Andrewsville)
- *
- * For the full copyright and license information, please view
- * the file LICENSE.md that was distributed with this source code.
- */
-
-$(function() {
+$(window).load(function() {
 	var $document = $(document);
 	var $left = $('#left');
 	var $right = $('#right');
@@ -57,8 +46,15 @@ $(function() {
 			matchContains: true,
 			scrollHeight: 200,
 			max: 20,
+			noRecord: '',
+			highlight: function(value, term) {
+				var term = term.toUpperCase().replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1").replace(/[A-Z0-9]/g, function(m, offset) {
+					return offset === 0 ? '(?:' + m + '|^' + m.toLowerCase() + ')' : '(?:(?:[^<>]|<[^<>]*>)*' + m + '|' + m.toLowerCase() + ')';
+				});
+				return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)"), "<strong>$1</strong>");
+			},
 			formatItem: function(data) {
-				return data[1].replace(/^(.+\\)(.+)$/, '<span><small>$1</small>$2</span>');
+				return data.length > 1 ? data[1].replace(/^(.+\\)(.+)$/, '<span><small>$1</small>$2</span>') : data[0];
 			},
 			formatMatch: function(data) {
 				return data[1];
@@ -81,7 +77,7 @@ $(function() {
 			var location = window.location.href.split('/');
 			location.pop();
 			var parts = data[1].split(/::|$/);
-			var file = $.sprintf(ApiGen.config.templates.main[autocompleteFiles[data[0]]].filename, parts[0].replace(/[^\w]/g, '.'));
+			var file = $.sprintf(ApiGen.config.templates[autocompleteFiles[data[0]]].filename, parts[0].replace(/\(\)/, '').replace(/[^\w]/g, '.'));
 			if (parts[1]) {
 				file += '#' + ('mm' === data[0] || 'mp' === data[0] ? 'm' : '') + parts[1].replace(/([\w]+)\(\)/, '_$1');
 			}
@@ -96,12 +92,6 @@ $(function() {
 				if ('' === query) {
 					return false;
 				}
-
-				var label = $('#search input[name=more]').val();
-				if (!autocompleteFound && label && -1 === query.indexOf('more:')) {
-					$search.val(query + ' more:' + label);
-				}
-
 				return !autocompleteFound && '' !== $('#search input[name=cx]').val();
 			});
 
@@ -140,23 +130,35 @@ $(function() {
 
 	// Open details
 	if (ApiGen.config.options.elementDetailsCollapsed) {
+		var trCollapsed = true;
 		$('tr', $content).filter(':has(.detailed)')
 			.click(function() {
 				var $this = $(this);
-				$('.short', $this).hide();
-				$('.detailed', $this).show();
+				if (trCollapsed) {
+					$('.short', $this).hide();
+					$('.detailed', $this).show();
+					trCollapsed = false;
+				} else {					
+					$('.short', $this).show();
+					$('.detailed', $this).hide();
+					trCollapsed = true;
+				}
 			});
 	}
 
 	// Splitter
 	var splitterWidth = $splitter.width();
+	var splitterPosition = $.cookie('splitter') ? parseInt($.cookie('splitter')) : null;
+	var splitterPositionBackup = $.cookie('splitterBackup') ? parseInt($.cookie('splitterBackup')) : null;
 	function setSplitterPosition(position)
 	{
+		splitterPosition = position;
+
 		$left.width(position);
 		$right.css('margin-left', position + splitterWidth);
 		$splitter.css('left', position);
 	}
-	function setNavigationPosition()
+	function setContentWidth()
 	{
 		var width = $rightInner.width();
 		$rightInner
@@ -169,7 +171,7 @@ $(function() {
 			$document.mousemove(function(event) {
 				if (event.pageX >= 230 && $document.width() - event.pageX >= 600 + splitterWidth) {
 					setSplitterPosition(event.pageX);
-					setNavigationPosition();
+					setContentWidth();
 				}
 			});
 
@@ -184,26 +186,39 @@ $(function() {
 							.unbind('mousemove')
 							.unbind('mouseup');
 
-						$.cookie('splitter', parseInt($splitter.css('left')), {expires: 365});
+						$.cookie('splitter', splitterPosition, {expires: 365});
 					});
 
 			return false;
 		});
-	/*
-	var splitterPosition = $.cookie('splitter');
+	$splitter.dblclick(function() {
+		if (splitterPosition) {
+			splitterPositionBackup = $left.width();
+			setSplitterPosition(0);
+		} else {
+			setSplitterPosition(splitterPositionBackup);
+			splitterPositionBackup = null;
+		}
+
+		setContentWidth();
+
+		$.cookie('splitter', splitterPosition, {expires: 365});
+		$.cookie('splitterBackup', splitterPositionBackup, {expires: 365});
+	});
 	if (null !== splitterPosition) {
-		setSplitterPosition(parseInt(splitterPosition));
+		setSplitterPosition(splitterPosition);
 	}
-	setNavigationPosition();
-	$(window).resize(setNavigationPosition);
-*/
+	setContentWidth();
+	$(window).resize(setContentWidth);
+
 	// Select selected lines
 	var matches = window.location.hash.substr(1).match(/^\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*$/);
 	if (null !== matches) {
 		var lists = matches[0].split(',');
 		for (var i = 0; i < lists.length; i++) {
 			var lines = lists[i].split('-');
-			lines[1] = lines[1] || lines[0];
+			lines[0] = parseInt(lines[0]);
+			lines[1] = parseInt(lines[1] || lines[0]);
 			for (var j = lines[0]; j <= lines[1]; j++) {
 				$('#' + j).addClass('selected');
 			}
@@ -211,17 +226,17 @@ $(function() {
 
 		var $firstLine = $('#' + parseInt(matches[0]));
 		if ($firstLine.length > 0) {
-			$right.scrollTop($firstLine.offset().top);
+			$document.scrollTop($firstLine.offset().top);
 		}
 	}
 
 	// Save selected lines
 	var lastLine;
-	$('a.l').click(function(event) {
+	$('.l a').click(function(event) {
 		event.preventDefault();
 
-		var $selectedLine = $(this).parent();
-		var selectedLine = parseInt($selectedLine.attr('id'));
+		var selectedLine = $(this).parent().index() + 1;
+		var $selectedLine = $('pre.code .l').eq(selectedLine - 1);
 
 		if (event.shiftKey) {
 			if (lastLine) {
@@ -277,6 +292,9 @@ $(function() {
 			}
 		}
 
-		window.location.hash = hash.join(',');
+		hash = hash.join(',');
+		$backup = $('#' + hash).removeAttr('id');
+		window.location.hash = hash;
+		$backup.attr('id', hash);
 	});
 });
