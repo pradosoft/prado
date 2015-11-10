@@ -25,7 +25,7 @@ The <a href="<%$ DocsUrl %>/manual/">API Manual</a> contains the documentation f
 <h2>Tutorials</h2>
 
 <ul>
-  <li><a href="<%$ DemoUrl %>/quickstart/">The QuickStart Tutorial</a> - This tutorial is a definitive guidance showing every aspect of PRADO. It is written in PRADO and contains many demos to show the usage of various PRADO controls. The tutorial is also available as a <a href="/web/20151005191144/http://www.pradosoft.com/docs/quickstart.pdf">PDF file</a>.</li>
+  <li><a href="<%$ DemoUrl %>/quickstart/">The QuickStart Tutorial</a> - This tutorial is a definitive guidance showing every aspect of PRADO. It is written in PRADO and contains many demos to show the usage of various PRADO controls. The tutorial is also available as a <a href="<%$ DocsUrl %>/quickstart.pdf">PDF file</a>.</li>
   <li><a href="<%$ DemoUrl %>/blog-tutorial/">The PRADO Blog Tutorial</a> - This tutorial shows how to use PRADO to build a complete Web application. Prior PRADO knowledge is not required.</li> 
   <li><a href="<%$ DemoUrl %>/sqlmap/">The SQLMap Tutorial</a> - This tutorial is a definitive guidance on how to use SQLMap (available since v3.1.0).</li>
 </ul>

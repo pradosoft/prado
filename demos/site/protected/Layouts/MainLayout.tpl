@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <com:THead Title="PRADO PHP Framework" >
 	<com:TMetaTag HttpEquiv="Content-Language" Content="en" />
