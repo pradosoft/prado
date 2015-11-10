@@ -3,9 +3,9 @@
 <div class="intro">
 	<div class="whyprado">
 		<ul class="list">
-			<li class="one"><a href="#features/">Why PRADO</a></li>
-			<li class="two"><a href="#demos/">Try PRADO</a></li>
-			<li class="three"><a href="#documentation/">Learn PRADO</a></li>
+			<li class="one"><a href="<%= $this->Service->constructUrl('Demos') %>">Try PRADO</a></li>
+			<li class="two"><a href="<%= $this->Service->constructUrl('Documentation') %>">Learn PRADO</a></li>
+      <li class="three"><a href="http://github.com/pradosoft/prado">Develop with PRADO</a></li>
 		</ul>
 	</div>
 </div>
@@ -17,21 +17,39 @@
   </div>
   <div class="whatreq">
     <h3>What does PRADO require?</h3>
-    <p>The sole requirement to run PRADO-based applications is a Web server supporting PHP 5.3.0 or higher. <a href="#license/">PRADO is free</a>. You can use it to develop either open source or commercial applications.</p>
+    <p>The sole requirement to run PRADO-based applications is a Web server supporting PHP 5.3.0 or higher. <a href="<%= $this->Service->constructUrl('License') %>">PRADO is free</a>. You can use it to develop either open source or commercial applications.</p>
   </div>
   <div class="cani">
     <h3>Quick facts about PRADO</h3>
     <p>
     <b>First release:</b> August 2004<br>
-    <b>License:</b> <a href="#license/">revised BSD</a><br>
+    <b>License:</b> <a href="<%= $this->Service->constructUrl('License') %>">revised BSD</a><br>
     <b>Lines of core code:</b> &gt; 150,000 lines<br>
     <b>Number of classes:</b> &gt; 700<br>
-    <b>Downloads:</b> &gt; 430,000 15/09/2013<br>
+    <b>Downloads:</b> &gt; 450,000 01/11/2015<br>
     </p>
   </div>
 </div>
 
 <div id="main">
+
+  <h2>Latest News</h2>
+  <div id="articles">
+    
+    <div class="article">
+      <h3>Site outage</h3>
+      <span class="date">November 5, 2015</span>
+      <p>As you may have noticed, in the last few days the PRADO website has been unavailable. Unfortunately the server hosting the website suddently died, resulting in the website being unaccessible. A new server has been put in place, and we are now recovering the website data from the last backups. The website is planned to be fully working in a few days. In the meanwhile, you can always refer to our <a target="_blank" href="https://github.com/pradosoft/prado" class="bb-url">github project site</a>.<br><br>Thank you for your patience,<br><br>The PRADO Team</p>
+    </div>
+    
+    <div class="article">
+      <h3>Prado 3.2.4 is released!</h3>
+      <span class="date">August 26, 2014</span>
+      <p>The PRADO Team is proud to announce the formal release of <span style="font-weight:bold">PRADO 3.2.4</span>.<br><br>This release backports a number of significative bugfixes and changes from the master branch where the new, jQuery-based Prado is been developed.<br>This release officially introduces <a target="_blank" href="http://www.pradoframework.net/demos/quickstart/?page=GettingStarted.Wsat" class="bb-url">Wsat</a>, an useful tool coded by DarthDaniel that can help out generating Active Record classes.<br><br>This release should be an easy plug-in update from previous 3.2.x Prado versions, without any backwards-compatibility issue; anyway, if you find any problem feel free&nbsp; to report it, and we'll take care of sorting it out.<br><br>Finally, some words on the current development.<br>We have some new members helping out the development: welcome in Daniel and David! Many thanks goes to them and also to all the others that have reported issues and fixes on the project's <a target="_blank" href="https://github.com/pradosoft/prado" class="bb-url">github pages</a>.<br><br>Enjoy!<br><br>The PRADO Team</p>
+    </div>
+    
+  </div>
+
 </div>
 
 </com:TContent>
