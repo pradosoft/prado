@@ -36,7 +36,6 @@
 		</div>
 	</div>
 	<com:TContentPlaceHolder ID="Main" />
-	<div style="clear: both;"></div>
 	<div id="footer">
 		<com:THyperLink
 			NavigateUrl="<%= $this->Service->constructUrl('Tos') %>"

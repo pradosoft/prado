@@ -37,7 +37,7 @@ $(document).ready(function () {
 
 <br/>
 <h2>Latest changelog entries</h2>
-<pre id="changeLog">loading...</pre>
+<pre id="changeLog" class="changelog">loading...</pre>
 
 <br/>
 <h2>Previous PRADO v3.x releases</h2>
@@ -111,6 +111,7 @@ $(document).ready(function () {
 <p>The Source code repository can be accessed anonymously using the following command,</p>
 <pre class="instructions">git clone https://github.com/pradosoft/prado.git</pre>
 
+<div style="clear: both;"></div>
 </div>
 
 </com:TContent>

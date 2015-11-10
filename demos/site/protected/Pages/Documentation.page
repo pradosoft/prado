@@ -37,6 +37,7 @@ The <a href="<%$ DocsUrl %>/manual/">API Manual</a> contains the documentation f
 </ul>
 --->
 
+<div style="clear: both;"></div>
 </div>
 
 </com:TContent>

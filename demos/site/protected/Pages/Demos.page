@@ -27,5 +27,6 @@ The following demos are developed using the PRADO framework. They are also avail
   <li><a href="<%$ DemoUrl %>/chat/">AJAX Chat</a>: A easy to build web chat application using AJAX controls and Active Records for database access (see <a href="<%$ DemoUrl %>/quickstart/?page=Tutorial.AjaxChat">tutorial</a>).</li>
   <li><a href="<%$ DemoUrl %>/time-tracker/"><b>Time Tracker</b></a>: A complete personal project time tracker application using SQLMap for data access.</li>
 
+<div style="clear: both;"></div>
 </div>
 </com:TContent>

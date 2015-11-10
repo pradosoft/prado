@@ -748,7 +748,7 @@ ul.different
 	border-bottom: 1px dashed silver;
 }
 
-#changelog
+pre.changelog
 {
     overflow:scroll;
     height: 250px;
