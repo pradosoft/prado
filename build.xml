@@ -134,10 +134,11 @@
     where &lt;target name&gt; can be one of the following:
 
     For all PRADO developers:
-    - test       : run unit tests (results are under /build/test-reports)
-    - coverage   : run unit tests collecting coverage informations
-    - lint       : run lint on framework
-    - lint-demos : run lint on demos
+    - test           : run unit tests (results are under /build/test-reports)
+    - coverage       : run unit tests collecting coverage informations
+    - functionaltest : run funcitonal tests (requires Selenium Server)
+    - lint           : run lint on framework
+    - lint-demos     : run lint on demos
 
     For PRADO release manager:
     - dist    : create release files;
@@ -262,7 +263,7 @@
       </batchtest>
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="noframes" todir="${build.test.dir}"/>
   </target>
 
   <target name="functionaltest" description="Running functional tests">
@@ -276,7 +277,7 @@
       </batchtest>
       <formatter type="xml" todir="${build.functionaltest.dir}" outfile="functional-tests.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.functionaltest.dir}/functional-tests.xml" format="frames" todir="${build.functionaltest.dir}"/>
+    <phpunitreporttask infile="${build.functionaltest.dir}/functional-tests.xml" format="noframes" todir="${build.functionaltest.dir}"/>
   </target>
 
   <target name="coverage" description="Running unit tests with coverage checks">
@@ -298,7 +299,7 @@
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
       <formatter type="clover" todir="${build.test.dir}" outfile="clover.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="noframes" todir="${build.test.dir}"/>
   </target>
 
   <target name="snapshot" depends="rebuild">
