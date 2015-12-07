@@ -3,6 +3,7 @@ Version 3.3.0 December ??, 2015
 CHG: Added jQuery and rebased PRADO's effect and controls on it (ctrlaltca)
 ENH: Added jQueryUI and created new controls (ctrlaltca)
 ENH: Added Bootstrap3 (daniel)
+BUG: Issue #558 - TActiveFileUpload escaping ' in file names (ctrlaltca)
 BUG: Issue #550 - TActivePager not working correctly on XAMP 5.6.3 (LCSKJ)
 BUG: Issue #549 - TSqlCriteria, not possible to reset value of condition (majuca)
 BUG: Issue #542 - Fix clientside validation in TActiveCustomValidator (majuca)

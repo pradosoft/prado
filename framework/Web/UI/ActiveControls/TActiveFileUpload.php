@@ -102,12 +102,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
 			parent::saveAs($localName);
 
-			$filename=addslashes($this->getFileName());
-
-
 			$params = new TActiveFileUploadCallbackParams;
 			$params->localName = $localName;
-			$params->fileName = $filename;
+			$params->fileName = addslashes($this->getFileName());
 			$params->fileSize = $this->getFileSize();
 			$params->fileType = $this->getFileType();
 			$params->errorCode = $this->getErrorCode();
@@ -198,7 +195,7 @@ EOS;
 
 			$params = $this->popParamsByToken($cp->callbackToken);
 
-			$_FILES[$key]['name'] = $params->fileName;
+			$_FILES[$key]['name'] = stripslashes($params->fileName);
 			$_FILES[$key]['size'] = intval($params->fileSize);
 			$_FILES[$key]['type'] = $params->fileType;
 			$_FILES[$key]['error'] = intval($params->errorCode);
