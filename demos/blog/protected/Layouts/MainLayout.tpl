@@ -39,7 +39,7 @@
 </div><!-- end of sidebar -->
 
 <div id="footer">
-Copyright &copy; 2006 <%$ SiteOwner %>.<br/>
+Copyright &copy; <%= date('Y') %>, <%$ SiteOwner %>.<br/>
 <%= Prado::poweredByPrado() %>
 </div><!-- end of footer -->
 

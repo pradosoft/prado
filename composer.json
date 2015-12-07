@@ -70,7 +70,7 @@
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",
 		"source" : "https://github.com/pradosoft/prado",
-		"docs" : "http://www.pradoframework.net/site/documentation",
+		"docs" : "http://www.pradoframework.net/site/documentation"
 	},
 	"bin" : [
 		"bin/prado-cli"
