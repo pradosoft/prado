@@ -57,7 +57,7 @@ There are other techniques to further improve the performance of a PRADO applica
 </p>
 
 <p>
-For a page that is relatively stable yet frequently accessed, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.OutputCache">output caching</a> should be considered. Output caching caches the HTML output of selected portions of a page. This may improve the performance of the cached pages significantly.
+For a page that is relatively stable yet frequently accessed, <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.OutputCache">output caching</a> should be considered. Output caching caches the HTML output of selected portions of a page. This may improve the performance of the cached pages significantly.
 </p>
 
 <p>

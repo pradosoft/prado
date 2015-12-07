@@ -3,7 +3,7 @@
 <h1>Creating Active Record Classes</h1>
 
 <p>
-We need to create two <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and must define property names that matches with the field names of the corresponding table.
+We need to create two <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and must define property names that matches with the field names of the corresponding table.
 </p>
 
 <p>
@@ -47,7 +47,7 @@ So we need to modify again our application configuration in the services section
 <img src="<%~blog_wsat_generate_ar.png%>" style="width: 700px;" />
 
 <p>
-    In the <tt>Output Folder</tt> field we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again, the path <tt>Application.database</tt> indicates that we want to put our class's files in the <tt>protected/database/</tt> folder.
+    In the <tt>Output Folder</tt> field we used the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again, the path <tt>Application.database</tt> indicates that we want to put our class's files in the <tt>protected/database/</tt> folder.
     The <tt>*</tt> in the <tt>Table Name</tt> field means that we want to generate all AR classes, you can specify a table name instead if you want to generate just a specific AR class.
 </p>
 
@@ -121,7 +121,7 @@ The method <tt>withXXX()</tt> (where XXX is the relationship property name, in t
 </com:TipBox>
 
 <p>
-Further detailed documentation can be found in the quickstart <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> docs.
+Further detailed documentation can be found in the quickstart <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> docs.
 </p>
 
 </com:TContent>

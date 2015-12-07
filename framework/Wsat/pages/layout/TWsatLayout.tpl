@@ -19,9 +19,8 @@
             
             <div class="mainmenu">
                 <div style="float: right"><com:TLinkButton Text="Logout" OnClick="logout" /></div>
-                <div style="float: right"><com:THyperLink NavigateUrl="http://www.pradosoft.com/" Text="PradoSoft.com" Target="_blank" />&nbsp;|&nbsp;</div>
+                <div style="float: right"><com:THyperLink NavigateUrl="https://github.com/pradosoft/prado" Text="Prado framework" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="float: right"><com:THyperLink NavigateUrl="<%= $this->Service->DefaultPageUrl %>" Text="Web App" Target="_blank" />&nbsp;|&nbsp;</div>
-                <div style="float: right"><com:THyperLink NavigateUrl="http://www.pradosoft.com/forum/" Text="Help" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="clear: both"></div>
             </div> 
             
@@ -46,7 +45,7 @@
             </div>            
             
             <div id="footer">
-                Copyright &copy; 2005-<%= date('Y') %> <a href="http://www.pradosoft.com">PradoSoft</a>.
+                Copyright &copy; 2005-<%= date('Y') %> <a href="https://github.com/pradosoft">The PRADO Group</a>.
                 <br/><br/>
                 <%= Prado::poweredByPrado() %>
             </div>

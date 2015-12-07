@@ -28,8 +28,8 @@ We now create the template and class files for the <tt>ListPost</tt> page: <tt>p
 Based on the functionality requirement of the <tt>ListPost</tt> page, we will use two controls in the page template:
 </p>
 <ul>
-<li><a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Repeater">TRepeater</a>: this control is mainly used to display a list of data items. The presentation of the each data item can be specified via an inline template or an external template control (the approach we will use here).</li>
-<li><a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Pager">TPager</a>: this control is used to paginate a list of data items. It interacts with end-users to determine which page of data to be displayed in a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">list control</a> (e.g. <tt>TListBox</tt>) or <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Data">data control</a> (e.g. <tt>TRepeater</tt>).</li>
+<li><a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Repeater">TRepeater</a>: this control is mainly used to display a list of data items. The presentation of the each data item can be specified via an inline template or an external template control (the approach we will use here).</li>
+<li><a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Pager">TPager</a>: this control is used to paginate a list of data items. It interacts with end-users to determine which page of data to be displayed in a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.List">list control</a> (e.g. <tt>TListBox</tt>) or <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Data">data control</a> (e.g. <tt>TRepeater</tt>).</li>
 </ul>
 
 <p>

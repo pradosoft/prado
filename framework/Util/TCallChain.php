@@ -3,9 +3,9 @@
  * TCallChain class file.
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @link http://www.pradosoft.com/
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2008-2015 Pradosoft
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  */
 
 /**

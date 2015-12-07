@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
 
 <com:THead Title="PRADO QuickStart Tutorial">
@@ -18,7 +18,7 @@
 	<com:SearchBox />
 </div>
 <a href="?">Home</a> |
-<a href="http://www.pradosoft.com">PradoSoft.com</a> |
+<a href="https://github.com/pradosoft/prado">Prado framework</a> |
 <a href="../../docs/quickstart.pdf">PDF Version</a> |
 <com:THyperLink ID="PrinterLink" Text="Printer-friendly Version" />
 </com:TPanel>
@@ -29,7 +29,7 @@
 <com:TopicList ID="TopicPanel" />
 </td>
 <td valign="top">
-
+<!---
 <com:TRepeater ID="languages" OnItemCreated="languageLinkCreated">
 	<prop:HeaderTemplate>
 		<div class="languages">Available Languages: <ul>
@@ -41,6 +41,7 @@
 		</ul></div>
 	</prop:FooterTemplate>
 </com:TRepeater>
+--->
 <div id="content">
 <p class="block-content" id="top-content" style="border-color: transparent; height:1px; margin: 0; padding: 0; background-color: transparent"></p>
 <com:TContentPlaceHolder ID="body" />
@@ -50,7 +51,7 @@
 </table>
 
 <div id="footer">
-Copyright &copy; 2005-2014 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2006-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>.
 <br/><br/>
 <%= Prado::poweredByPrado() %>
 <a href="http://validator.w3.org/check?uri=referer"><img border="0" src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>

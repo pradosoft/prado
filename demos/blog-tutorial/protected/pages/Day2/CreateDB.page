@@ -3,7 +3,7 @@
 <h1>Creating Database</h1>
 
 <p>
-Most Web applications use database to keep data. Our blog system is not an exception. In this section, we will describe how to write database-driven pages for our blog system. We will use techniques including <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">database access object (DAO)</a> and <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
+Most Web applications use database to keep data. Our blog system is not an exception. In this section, we will describe how to write database-driven pages for our blog system. We will use techniques including <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.DAO">database access object (DAO)</a> and <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
 </p>
 
 <p>

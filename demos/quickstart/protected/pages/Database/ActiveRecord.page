@@ -36,7 +36,7 @@
         Active Record objects can be used to update the database.
         The "relationship" between Active Records and <a href="?page=Database.SqlMap">SqlMap</a> is illustrated in the
     following diagram. More details regarding the SqlMap Data Mapper can be found in
-    the <a href="http://www.pradosoft.com/demos/sqlmap/">SqlMap Manual</a>.
+    the <a href="http://www.pradoframework.net/site/demos/sqlmap/">SqlMap Manual</a>.
     <img src=<%~ sqlmap_active_record.png %> alt="Active Records and SqlMap DataMapper" id="fig:diagram.png" class="figure"/>
     </p>
 

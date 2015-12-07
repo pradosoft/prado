@@ -10,8 +10,8 @@
 	OnClick="${4:${1}_Clicked}"&gt;
 ${5:&lt;com:TTCircleHotSpot
 	${6:HotspotMode="${7:Navigate}"
-	NavigateUrl="${8:http://www.pradosoft.com}"}
-	AlternateText="${9:Navigate to pradosoft.com}"
+	NavigateUrl="${8:https://github.com/pradosoft/prado}"}
+	AlternateText="${9:Navigate to Prado framework}"
 	X="${10:80}" Y="${11:80}" Radius="${12:55}" /&gt;}$0
 &lt;/com:TImageMap&gt;</string>
 	<key>name</key>

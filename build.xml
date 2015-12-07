@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  PRADO 3.3 build file - Copyright (C) 2014 PradoSoft
+  PRADO 3.3 build file - Copyright (C) 2015 The PRADO Group
 
   Requirements
   ============
@@ -242,7 +242,7 @@
       </then>
     </if>
 
-    <echo>Generating files for pradosoft.com...</echo>
+    <echo>Generating files for website...</echo>
     <echo>Compiling class docs...</echo>
     <exec command="${php} build.php" dir="buildscripts/classtree" passthru="true"/>
     <move file="buildscripts/classtree/classes.data" todir="${build.web.dir}/protected/Data"/>

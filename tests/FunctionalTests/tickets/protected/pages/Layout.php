@@ -10,13 +10,6 @@ class Layout extends TTemplateControl
 		$this->getPage()->setTitle("Verifying $type $num");
 		$this->ticketlink->setText("Verifying $type $num");
 		
-		//TODO New issues will link to https://github.com/pradosoft/prado/issues/{$num}
-		if(strToLower($type) === 'issue') {
-			$this->ticketlink->setNavigateUrl("http://code.google.com/p/prado3/issues/detail?id={$num}");	
-		}
-		else {
-			$this->ticketlink->setNavigateUrl("http://trac.pradosoft.com/prado/ticket/{$num}");	
-		}
-		
+		$this->ticketlink->setNavigateUrl("https://github.com/pradosoft/prado/issues/{$num}");	
 	}
 }

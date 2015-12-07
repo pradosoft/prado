@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.xisc.com/
- * @copyright Copyright &copy; 2005-2015 PradoSoft
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  * @package System.Web.UI.WebControls
  */

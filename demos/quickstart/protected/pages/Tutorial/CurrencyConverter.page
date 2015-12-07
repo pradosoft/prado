@@ -10,15 +10,15 @@
 		a dollar amount to an other currency, given the rate of that currency
 		relative to the dollar. The completed application is shown bellow.
 		<img src=<%~ example2.png %> class="figure" />
-		You can try the application <a href="../currency-converter/index.php">locally</a> or at
-		<a href="http://www.pradosoft.com/demos/currency-converter/">Pradosoft.com</a>.
+		You can try the application <a href="../currency-converter/index.php">locally</a> or at the
+		<a href="http://www.pradoframework.net/site/demos/currency-converter/">Prado website</a>.
 		Notice that the application still functions exactly the same if javascript
 		is not available on the user's browser.
 	</p>
 
 	<h1 id="download">Downloading and Installing Prado</h1>
-	<p id="80055" class="block-content">To install Prado, simply download the latest version of Prado from
-		<a href="http://www.pradosoft.com/">http://www.pradosoft.com</a>
+	<p id="80055" class="block-content">To install Prado, simply download the latest version of Prado from the
+		<a href="https://github.com/pradosoft/prado">Prado project website</a>
 		and unzip the file to a directory <b>not</b> accessible by your web server
 		(you may unzip it to a directory accessible by the web server if you wish
 		to see the demos and test). For further detailed installation, see the

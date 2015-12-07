@@ -3,35 +3,30 @@
 	"type": "library",
 	"description": "Component Framework for PHP",
 	"keywords": ["Framework", "Component"],
-	"homepage": "http://www.pradosoft.com/",
+	"homepage": "https://github.com/pradosoft/prado",
 	"license" : "BSD-3-Clause",
 	"authors": [
-		{
-			"name": "Fabio Bas",
-			"email": "ctrlaltca@gmail.com",
-			"role" : "Developer"
-		},
 		{
 			"name": "Ciro Mattia Gonano",
 			"email": "ciromattia@gmail.com",
 			"role" : "Github/Packagist Maintainer"
 		},
 		{
+			"name": "Daniel Sampedro",
+			"email": "darthdaniel85@gmail.com",
+			"role" : "Developer"
+		},
+		{
 			"name": "David Otto",
 			"role" : "Developer"
 		},
 		{
+			"name": "Fabio Bas",
+			"email": "ctrlaltca@gmail.com",
+			"role" : "Developer"
+		},
+		{
 			"name": "Jens Klaer",
-			"role" : "Developer"
-		},
-		{
-			"name": "Christophe Boulain",
-			"email": "christophe.boulain@gmail.com",
-			"role" : "Developer"
-		},
-		{
-			"name": "Robin J. Rogge",
-			"email": "rojaro@gmail.com",
 			"role" : "Developer"
 		}
 	],
@@ -73,8 +68,9 @@
 	},
 	"include-path": ["framework"],
 	"support" : {
-		"forum" : "http://www.pradosoft.com/forum",
-		"source" : "https://github.com/pradosoft/prado"
+		"issues" : "https://github.com/pradosoft/prado/issues",
+		"source" : "https://github.com/pradosoft/prado",
+		"docs" : "http://www.pradoframework.net/site/documentation",
 	},
 	"bin" : [
 		"bin/prado-cli"

@@ -1,7 +1,5 @@
 # Prado PHP Framework
 
-### NEWS: our website suffered a server crash; we are currently rebuilding it, have a look at http://www.pradoframework.net/ for updates. Thank you for your patience.
-
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
@@ -44,7 +42,7 @@ Then you can include the autoloader, and you will have access to the library cla
 require 'vendor/autoload.php';
 ```
 ## Demo Apps
-The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradosoft.com/demos/ . When you create your own prado application you do NOT need these folders.
+The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradoframework.net/site/demos/ . When you create your own prado application you do NOT need these folders.
 
 * address-book
 * blog

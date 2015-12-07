@@ -52,11 +52,7 @@ You may refer to the following resources if you find this tutorial does not fulf
 </p>
 </div>
 <ul class="block-content" id="intro-links">
-  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO Classes</a></li>
-  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO API Documentation</a></li>
-  <li><a href="http://www.pradosoft.com/forum/">PRADO Forum</a></li>
-  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://pradosoft.github.io/docs/manual/">PRADO API Documentation</a></li>
   <li><a href="http://github.com/pradosoft/prado/issues">PRADO Issue Tracker</a></li>
 </ul>
-
 </com:TContent>

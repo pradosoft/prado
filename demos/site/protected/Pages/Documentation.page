@@ -29,13 +29,6 @@ The <a href="<%$ DocsUrl %>/manual/">API Manual</a> contains the documentation f
   <li><a href="<%$ DemoUrl %>/blog-tutorial/">The PRADO Blog Tutorial</a> - This tutorial shows how to use PRADO to build a complete Web application. Prior PRADO knowledge is not required.</li> 
   <li><a href="<%$ DemoUrl %>/sqlmap/">The SQLMap Tutorial</a> - This tutorial is a definitive guidance on how to use SQLMap (available since v3.1.0).</li>
 </ul>
-<!---
-<h3>Screencasts</h3>
-<ul>
-  <li><a href="http://www.pradosoft.com/docs/movies/HelloWorld.mov">Hello World</a> (11.8MB, QuickTime): a short video on how to create the "Hello World" demo using PHP and PRADO 3.x.</li>
-  <li><a href="http://www.pradosoft.com/docs/movies/blog/videos.html" target="_blank">The PRADO Blog Tutorial</a> (Flash plugin required): this is the complete PRADO blog tutorial in Flash format. Split over 6 videos to a sum of about 60 mins in total. Kudos to Wei Zhuo!</li> 
-</ul>
---->
 
 <div style="clear: both;"></div>
 </div>

@@ -156,7 +156,7 @@ class NewUser extends TPage
 </com:TTextHighlighter>
 
 <p>
-In the above, calling <tt>save()</tt> will insert a new row in the <tt>users</tt> table. This intuitive feature is enabled by <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
+In the above, calling <tt>save()</tt> will insert a new row in the <tt>users</tt> table. This intuitive feature is enabled by <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
 </p>
 
 <com:NoteBox>
@@ -174,7 +174,7 @@ To test the <tt>NewUser</tt> page, visit the URL <tt>http://hostname/blog/index.
 
 <h2>Adding Permission Check</h2>
 <p>
-During testing, you may have asked: shouldn't the <tt>NewUser</tt> page be only accessible by the administrator user? Yes, this is called <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Auth">authorization</a>. We now describe how we add this permission check to the <tt>NewUser</tt> page.
+During testing, you may have asked: shouldn't the <tt>NewUser</tt> page be only accessible by the administrator user? Yes, this is called <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.Auth">authorization</a>. We now describe how we add this permission check to the <tt>NewUser</tt> page.
 </p>
 
 <p>
@@ -182,7 +182,7 @@ A straightforward way of performing permission check is in the page class where 
 </p>
 
 <p>
-PRADO offers a more systematic way of checking page access permissions. To do so, we need to use <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. Create a file <tt>protected/pages/users/config.xml</tt> with the content as follows:
+PRADO offers a more systematic way of checking page access permissions. To do so, we need to use <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. Create a file <tt>protected/pages/users/config.xml</tt> with the content as follows:
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="xml">
@@ -204,7 +204,7 @@ Now if we visit the <tt>NewUser</tt> page as a guest, we will be redirected to t
 </p>
 
 <com:TipBox>
-Page configuration can contain more than authorization rules. For example, it can include <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Modules">modules</a> like we did in the <a href="?page=Day2.ConnectDB">application configuration</a>. For a PRADO application, each page directory can have a page configuration which applies to the pages in the same directory and all its subdirectories.
+Page configuration can contain more than authorization rules. For example, it can include <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Modules">modules</a> like we did in the <a href="?page=Day2.ConnectDB">application configuration</a>. For a PRADO application, each page directory can have a page configuration which applies to the pages in the same directory and all its subdirectories.
 </com:TipBox>
 
 </com:TContent>

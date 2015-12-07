@@ -15,8 +15,8 @@ class THttpCookieTest extends PHPUnit_Framework_TestCase {
 
   public function testSetDomain() {
     $cookie=new THttpCookie('name','value');
-    $cookie->setDomain('pradosoft.com');
-    self::assertEquals('pradosoft.com',$cookie->getdomain());
+    $cookie->setDomain('pradoframework.net');
+    self::assertEquals('pradoframework.net',$cookie->getdomain());
   }
 
   public function testSetExpire() {

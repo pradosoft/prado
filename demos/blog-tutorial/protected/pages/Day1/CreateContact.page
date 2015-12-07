@@ -3,7 +3,7 @@
 <h1>Creating Contact Page</h1>
 
 <p>
-We have created a default page <tt>Home.page</tt> using the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a>. The page is relatively static because it does not containt dynamic content. In this section, we will create an interactive page named <tt>Contact</tt>.
+We have created a default page <tt>Home.page</tt> using the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a>. The page is relatively static because it does not containt dynamic content. In this section, we will create an interactive page named <tt>Contact</tt>.
 </p>
 
 <p>
@@ -17,7 +17,7 @@ To create the <tt>Contact</tt> page, we need two files under the <tt>pages</tt> 
 <img src="<%~ directories2.gif %>" class="output" />
 
 <com:InfoBox>
-A <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> must have either a <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template</a> file (extension <tt>.page</tt>) or a class file, or both:
+A <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Pages">page</a> must have either a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1">template</a> file (extension <tt>.page</tt>) or a class file, or both:
 </p>
 
 <ul>
@@ -35,7 +35,7 @@ We first create the template file for the <tt>Contact</tt> page.
 </p>
 
 <p>
-We use template to organize the presentational layout of the feedback form. In the template, we use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">textboxes</a> to collect user's name, email and feedback. And we use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Validation">validators</a> to ensure that the user provides all these information before submitting the feedback form. The whole template is as follows,
+We use template to organize the presentational layout of the feedback form. In the template, we use <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.TextBox">textboxes</a> to collect user's name, email and feedback. And we use <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Validation">validators</a> to ensure that the user provides all these information before submitting the feedback form. The whole template is as follows,
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">
@@ -86,11 +86,11 @@ We use template to organize the presentational layout of the feedback form. In t
 </com:TTextHighlighter>
 
 <p>
-As we can see that the template looks very similar to a normal HTML page. The main difference is that the template contains a few <tt>&lt;com:&gt;</tt> tags. Each <tt>&lt;com:&gt;</tt> tag refers to a <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Controls">control</a> whose properties are being initialized with name-value pairs in the tag. For example, the <tt>&lt;com:TButton&gt;</tt> refers to the <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Button">TButton</a> control which displays a button that users can click on to submit the feedback form. For complete template syntax, please refer to the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">Quickstart Tutorial</a>.
+As we can see that the template looks very similar to a normal HTML page. The main difference is that the template contains a few <tt>&lt;com:&gt;</tt> tags. Each <tt>&lt;com:&gt;</tt> tag refers to a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Controls">control</a> whose properties are being initialized with name-value pairs in the tag. For example, the <tt>&lt;com:TButton&gt;</tt> refers to the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Button">TButton</a> control which displays a button that users can click on to submit the feedback form. For complete template syntax, please refer to the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1">Quickstart Tutorial</a>.
 </p>
 
 <com:InfoBox>
-PRADO provides a control for every type of HTML input. For example, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> displays a text input field, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">TDropDownList</a> displays a combobox. Each control is a component that may be accessed in code as an object with configurable properties.
+PRADO provides a control for every type of HTML input. For example, <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.TextBox">TTextBox</a> displays a text input field, <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.List">TDropDownList</a> displays a combobox. Each control is a component that may be accessed in code as an object with configurable properties.
 </com:InfoBox>
 
 <p>
@@ -117,10 +117,10 @@ Below we summarize the controls that are used in the page template:
 </p>
 
 <ul>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TForm">TForm</a> displays an HTML form. Any input control must be enclosed within it. And most importantly, at most one <tt>TForm</tt> may appear in a page.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TTextBox">TTextBox</a> displays a text box to collect user text input.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TRequiredFieldValidator">TRequiredFieldValidator</a> ensures that the associated text box is not empty when the feedback is submitted.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TEmailAddressValidator">TEmailAddressValidator</a> ensures that the textbox contains a <i>valid</i> email address when the feedback is submitted.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TForm">TForm</a> displays an HTML form. Any input control must be enclosed within it. And most importantly, at most one <tt>TForm</tt> may appear in a page.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TTextBox">TTextBox</a> displays a text box to collect user text input.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TRequiredFieldValidator">TRequiredFieldValidator</a> ensures that the associated text box is not empty when the feedback is submitted.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TEmailAddressValidator">TEmailAddressValidator</a> ensures that the textbox contains a <i>valid</i> email address when the feedback is submitted.</li>
 </ul>
 
 <com:TipBox>

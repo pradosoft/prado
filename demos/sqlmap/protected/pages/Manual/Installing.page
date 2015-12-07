@@ -14,7 +14,7 @@ first time.</p>
 
 <h2>Setup the Distribution</h2>
 
-<p>The official site for SQLMap PHP DataMapper is <a href="http://www.pradosoft.com">http://www.pradosoft.com</a>. 
+<p>The official site for SQLMap PHP DataMapper is <a href="https://github.com/pradosoft/prado">https://github.com/pradosoft/prado</a>. 
 The DataMapper
 is availabe as a source distribution in the form of a ZIP archive. To download
 the distributions, follow the link to the Downloads area on the web site, and

@@ -22,13 +22,13 @@ We create two files <tt>protected/pages/users/AdminUser.page</tt> and <tt>protec
 
 <h2>Creating Page Template</h2>
 <p>
-We use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGrid">TDataGrid</a> to display the user accounts. Based on the above analysis, we configure the following four columns:
+We use <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.DataGrid">TDataGrid</a> to display the user accounts. Based on the above analysis, we configure the following four columns:
 </p>
 <ul>
-<li><a href="http://www.pradosoft.com/docs/classdoc/THyperLinkColumn">THyperLinkColumn</a> displays the username column. The URL is constructed according to the PHP expression specified in the <tt>DataNavigateUrlFormatString</tt> property.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TBoundColumn">TBoundColumn</a> displays the email column.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TCheckBoxColumn">TCheckBoxColumn</a> uses checkboxes to indicate whether a user account is of role administrator.</li>
-<li><a href="http://www.pradosoft.com/docs/classdoc/TButtonColumn">TButtonColumn</a> displays a column of "Delete" buttons.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-THyperLinkColumn">THyperLinkColumn</a> displays the username column. The URL is constructed according to the PHP expression specified in the <tt>DataNavigateUrlFormatString</tt> property.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TBoundColumn">TBoundColumn</a> displays the email column.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TCheckBoxColumn">TCheckBoxColumn</a> uses checkboxes to indicate whether a user account is of role administrator.</li>
+<li><a href="http://pradosoft.github.io/docs/manual/class-TButtonColumn">TButtonColumn</a> displays a column of "Delete" buttons.</li>
 </ul>
 
 <p>The complete page template is shown as follows:</p>
@@ -123,7 +123,7 @@ In the above, the <tt>deleteButtonClicked()</tt> method is invoked whenever a "D
 </p>
 
 <com:TipBox>
-All <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">data-bound</a> controls have similar usage pattern. That is, set the <tt>DataSource</tt> property with the data and call <tt>dataBind()</tt> method to binds the data to the control's internal structure.
+All <a href="http://pradosoft.github.io/docs/manual/class-TDataBoundControl">data-bound</a> controls have similar usage pattern. That is, set the <tt>DataSource</tt> property with the data and call <tt>dataBind()</tt> method to binds the data to the control's internal structure.
 </com:TipBox>
 
 

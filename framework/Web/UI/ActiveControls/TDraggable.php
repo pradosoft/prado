@@ -4,7 +4,7 @@
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 
@@ -23,7 +23,7 @@
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDraggable extends TPanel
@@ -209,7 +209,7 @@ class TDraggable extends TPanel
 /**
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDraggableConstraint extends TEnumerable
@@ -222,7 +222,7 @@ class TDraggableConstraint extends TEnumerable
 /**
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDraggableGhostingOptions extends TEnumerable
@@ -235,7 +235,7 @@ class TDraggableGhostingOptions extends TEnumerable
 /**
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDraggableRevertOptions extends TEnumerable

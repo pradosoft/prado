@@ -36,7 +36,7 @@
 </com:TForm>
 
 <div class="copyrights">
-Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2005-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>.
 <span class="note"><a href="http://www.famfamfam.com/lab/icons/silk/">Silk icons</a> by Mark James.</span>
 </div>
 

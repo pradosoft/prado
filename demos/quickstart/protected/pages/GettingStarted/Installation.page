@@ -15,7 +15,7 @@ PRADO can be installed as a standalone package or using <a href="http://getcompo
 <div id="install-steps" class="block-content">
 <h3 id="6001">Standalone package</h3>
 <ol>
-<li>Go to <a href="http://www.pradosoft.com/download/">pradosoft.com</a> to grab the latest version of PRADO.</li>
+<li>Go to the <a href="https://github.com/pradosoft/prado">Prado framework project page</a> to grab the latest version of PRADO.</li>
 <li>Unpack the PRADO release file to a Web-accessible directory.
 </ol>
 </div>

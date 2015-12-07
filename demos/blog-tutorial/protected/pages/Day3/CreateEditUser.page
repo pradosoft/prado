@@ -24,7 +24,7 @@ We create two files <tt>protected/pages/users/EditUser.page</tt> and <tt>protect
 As you may have guessed, the page template <tt>EditUser</tt> is largely the same as that of <tt>NewUser</tt>. Besides the difference in page title and the caption of the submit button, there are three main differences.
 </p>
 <ul>
-<li>The "username" text box is replaced by a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Label">TLabel</a> control because we do not allow modifying username;</li>
+<li>The "username" text box is replaced by a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.Label">TLabel</a> control because we do not allow modifying username;</li>
 <li>The validator for the "password" input is removed. This is because if the user does not provide a password during editting, it means the user does not want to change the password.</li>
 <li>The "role" input is surrounded with <tt>TControl</tt> whose visibility is toggled according to the role of the currently logged-in user. If the user is not an administrator, the "role" input will not be displayed because normal users are not allowed to modify their roles.</li>
 </ul>
@@ -184,7 +184,7 @@ class EditUser extends TPage
 </com:TTextHighlighter>
 
 <com:TipBox>
-The <tt>onInit()</tt> method is invoked by PRADO during one of the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page lifecycles</a>. Other commonly overriden lifecycle methods include <tt>onPreInit()</tt>, <tt>onLoad()</tt> and <tt>onPreRender()</tt>.
+The <tt>onInit()</tt> method is invoked by PRADO during one of the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Pages">page lifecycles</a>. Other commonly overriden lifecycle methods include <tt>onPreInit()</tt>, <tt>onLoad()</tt> and <tt>onPreRender()</tt>.
 </com:TipBox>
 
 <h2>Adding Permission Check</h2>

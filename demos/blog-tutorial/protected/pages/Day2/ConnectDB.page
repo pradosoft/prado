@@ -7,7 +7,7 @@ To use the database that we just created, we first need to establish a connectio
 </p>
 
 <p>
-We are going to use <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">Data Access Objects (DAO)</a> to abstract our data access mechanisms. If in future we decide to use a different DBMS (e.g. PostgreSQL, Oracle) to store our blog data, we only need to change the database source name (DSN) and we can keep our PHP code intact.
+We are going to use <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.DAO">Data Access Objects (DAO)</a> to abstract our data access mechanisms. If in future we decide to use a different DBMS (e.g. PostgreSQL, Oracle) to store our blog data, we only need to change the database source name (DSN) and we can keep our PHP code intact.
 </p>
 
 <com:NoteBox>
@@ -19,7 +19,7 @@ extension=php_pdo_sqlite.dll
 </com:NoteBox>
 
 <p>
-To further abstract the actual database tables, we will also use the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> (AR) feature. Each data record will be represented as an Active Record object which is capable of performing query, saving and deletion without writing SQL statements.
+To further abstract the actual database tables, we will also use the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> (AR) feature. Each data record will be represented as an Active Record object which is capable of performing query, saving and deletion without writing SQL statements.
 </p>
 
 <p>
@@ -36,11 +36,11 @@ We modify our application configuration file <tt>protected/application.xml</tt> 
 </com:TTextHighlighter>
 
 <p>
-The configuration above shows that we are adding two <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Modules">modules</a> to our application. The <tt>TDataSourceConfig</tt> module is configured with the connection string <tt>sqlite:protected/data/blog.db</tt> which points to our SQLite database. This connection is used by the <tt>TActiveRecordConfig</tt> module which is required by Active Record.
+The configuration above shows that we are adding two <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Modules">modules</a> to our application. The <tt>TDataSourceConfig</tt> module is configured with the connection string <tt>sqlite:protected/data/blog.db</tt> which points to our SQLite database. This connection is used by the <tt>TActiveRecordConfig</tt> module which is required by Active Record.
 </p>
 
 <com:InfoBox>
-One may set up two or more DB connections in the application configuration. For more details, see the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record documentation</a>. And of course, one may also explicitly create a DB connection in PHP code using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">TDbConnection</a> component in PDO.
+One may set up two or more DB connections in the application configuration. For more details, see the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.ActiveRecord">Active Record documentation</a>. And of course, one may also explicitly create a DB connection in PHP code using the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Database.DAO">TDbConnection</a> component in PDO.
 </com:InfoBox>
 
 </com:TContent>
