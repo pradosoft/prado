@@ -12,7 +12,7 @@ PRADO stands for PHP Rapid Application Development Object-oriented.
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/pradosoft/prado?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## API Documentation
-The complete API documentation can be found at http://www.pradoframework.com/docs/manual/
+The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
 
 ## Install
 
