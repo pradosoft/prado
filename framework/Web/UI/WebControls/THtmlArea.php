@@ -405,7 +405,7 @@ class THtmlArea extends TTextBox
 			$options['CompressionOptions'] = $this->getCompressionOptions();
 
 		$options = TJavaScript::encode($options,true,true);
-		$script = "new Prado.WebUI.THtmlArea($options)";
+		$script = "new {$this->getClientClassName()}($options)";
 		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
 	}
 
