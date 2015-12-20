@@ -355,7 +355,7 @@ class THtmlArea4 extends TTextBox
 		);
 
 		$options = TJavaScript::encode($options,true,true);
-		$script = "new Prado.WebUI.THtmlArea4($options)";
+		$script = "new {$this->getClientClassName()}($options)";
 		$scripts->registerEndScript('prado:THtmlArea4'.$this->ClientID,$script);
 	}
 
