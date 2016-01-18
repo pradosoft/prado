@@ -160,6 +160,8 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function findByPk($keys)
 	{
+		if($keys===null)
+			return null;
 		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
 		$this->onCreateCommand($command, new TSqlCriteria($where,$parameters));
@@ -196,6 +198,8 @@ class TDataGatewayCommand extends TComponent
 	 */
 	public function deleteByPk($keys)
 	{
+		if(count($keys)==0)
+			return 0;
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
 		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
