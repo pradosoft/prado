@@ -612,6 +612,8 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findByPk($keys)
 	{
+		if($keys === null)
+			return null;
 		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$data = $this->getRecordGateway()->findRecordByPK($this,$keys);
