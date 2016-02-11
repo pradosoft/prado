@@ -9,13 +9,15 @@ $pages['Getting Started'] = array(
 	'GettingStarted/AboutPrado.page',
 	'GettingStarted/Installation.page',
 	'GettingStarted/NewFeatures.page',
-	'GettingStarted/Upgrading.page'
+	'GettingStarted/Upgrading.page',
+	'GettingStarted/Upgrading32.page'
 	);
 
 $pages['Tutorials'] = array(
 	'GettingStarted/HelloWorld.page',
 	'Fundamentals/Hangman.page',
-	'GettingStarted/CommandLine.page'
+	'GettingStarted/CommandLine.page',
+	'GettingStarted/Wsat.page'
 	);
 
 $pages['Tutorial: Currency Converter'] = array(
@@ -26,13 +28,10 @@ $pages['Tutorial: Building an AJAX Chat Application'] = array(
 	'Tutorial/AjaxChat.page'
 	);
 
-$pages['Tutorial: Addressbook'] = array(
-	'Tutorial/AddressBook.page'
-	);
-
 $pages['Fundamentals'] = array(
 	'Fundamentals/Architecture.page',
-	'Fundamentals/Components.page',
+	'Fundamentals/Components1.page',
+	'Fundamentals/Components2.page',
 	'Fundamentals/Controls.page',
 	'Fundamentals/Pages.page',
 	'Fundamentals/Modules.page',
@@ -66,6 +65,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Head.page',
 	'Controls/HiddenField.page',
 	'Controls/HtmlArea.page',
+	'Controls/HtmlArea4.page',
 	'Controls/HyperLink.page',
 	'Controls/Image.page',
 	'Controls/ImageButton.page',
@@ -76,6 +76,7 @@ $pages['Control Reference : Standard Controls'] = array(
 	'Controls/Label.page',
 	'Controls/LinkButton.page',
 	'Controls/Literal.page',
+	'Controls/Markdown.page',
 	'Controls/MultiView.page',
 	'Controls/OutputCache.page',
 	'Controls/Pager.page',
@@ -125,23 +126,31 @@ $pages['Control Reference : Active Controls (AJAX)'] = array(
 	'ActiveControls/ActivePanel.page',
 	'ActiveControls/ActiveRadioButton.page',
 	'ActiveControls/ActiveRadioButtonList.page',
+	'ActiveControls/ActiveRatingList.page',
 	'ActiveControls/ActiveRepeater.page',
 	'ActiveControls/ActiveTextBox.page',
 	'ActiveControls/AutoComplete.page',
 	'ActiveControls/Callback.page',
+	'ActiveControls/EventTriggeredCallback.page',
+	'ActiveControls/TimeTriggeredCallback.page',
+	'ActiveControls/ValueTriggeredCallback.page',
+	'ActiveControls/DragDrop.page',
+	'ActiveControls/InPlaceTextBox.page',
 	'ActiveControls/CallbackClientScript.page',
 	'ActiveControls/CallbackClientSide.page',
 	'ActiveControls/CallbackEventParameter.page',
-	'ActiveControls/CallbackOptions.page',
-	'ActiveControls/DragDrop.page',
-	'ActiveControls/EventTriggeredCallback.page',
-	'ActiveControls/InPlaceTextBox.page',
-	'ActiveControls/TimeTriggeredCallback.page',
-	'ActiveControls/ValueTriggeredCallback.page');
+	'ActiveControls/CallbackOptions.page'
+	);
 
 $pages['Active Control Overview'] = array(
-		'ActiveControls/Home.page',
+	'ActiveControls/Home.page',
 	'ActiveControls/Introduction.page');
+
+$pages['Control Reference : Jui Controls (jQuery UI)'] = array(
+	'JuiControls/Home.page',
+	'JuiControls/Interactions.page',
+	'JuiControls/Widgets.page'
+	);
 
 $pages['Write New Controls'] = array(
 	'Controls/NewControl.page');
@@ -154,7 +163,9 @@ $pages['Working with Databases'] = array(
 	'Database/DAO.page',
 	'Database/ActiveRecord.page',
 	'Database/Scaffold.page',
-	'Database/SqlMap.page');
+	'Database/SqlMap.page',
+	'Database/ViewsArUpdate.page'
+	);
 
 $pages['Advanced Topics'] = array(
 	'Advanced/Collections.page',
@@ -171,8 +182,6 @@ $pages['Advanced Topics'] = array(
 
 $pages['Client-side Scripting'] = array(
 	'Advanced/Scripts.page',
-	'Advanced/Scripts1.page',
-	'Advanced/Scripts2.page',
 	'Advanced/Scripts3.page');
 
 return $pages;

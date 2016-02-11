@@ -19,7 +19,7 @@
 </div>
 <div class="samplemenu">
     <div class="copyright">
-        Copyright &copy; 2005-2014 <a href="http://www.pradosoft.com">PradoSoft</a>
+        Copyright &copy; 2006-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>
     </div>
 </div>
 

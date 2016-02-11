@@ -3,9 +3,9 @@
  * TErrorHandler class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Exceptions
  */
 
@@ -185,7 +185,7 @@ class TErrorHandler extends TModule
 
 		$errorMessage = $exception->getMessage();
 		if($isDebug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
 		else
 		{
 			$version='';
@@ -268,7 +268,7 @@ class TErrorHandler extends TModule
 		}
 
 		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="http://www.pradosoft.com/">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
 		else
 			$version='';
 
@@ -392,7 +392,7 @@ class TErrorHandler extends TModule
 
 	private function addLink($message)
 	{
-		$baseUrl='http://www.pradosoft.com/docs/classdoc';
+		$baseUrl='http://pradosoft.github.io/docs/manual/class-';
 		return preg_replace('/\b(T[A-Z]\w+)\b/',"<a href=\"$baseUrl/\${1}\" target=\"_blank\">\${1}</a>",$message);
 	}
 }

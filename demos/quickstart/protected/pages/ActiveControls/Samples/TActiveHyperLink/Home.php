@@ -14,7 +14,7 @@ class Home extends TPage
 
 	function button3_clicked($sender, $param)
 	{
-		$this->link3->Text = 'PradoSoft.com';
+		$this->link3->Text = 'Prado framework';
 	}
 
 	function button4_clicked($sender, $param)

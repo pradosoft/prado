@@ -3,7 +3,7 @@
 <h1>Authentication and Authorization</h1>
 
 <p>
-Before we set off to implement the user pages, we need to do some work to enable <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Advanced.Auth">authentication and authorization</a>.
+Before we set off to implement the user pages, we need to do some work to enable <a href="http://www.pradoframework.net/site/demos/quickstart/index.php?page=Advanced.Auth">authentication and authorization</a>.
 </p>
 
 <p>
@@ -26,11 +26,11 @@ We add two new modules to the application configuration as follows:
 </com:TTextHighlighter>
 
 <p>
-The <a href="http://www.pradosoft.com/docs/classdoc/TAuthManager">TAuthManager</a> module manages the whole authentication and authorization workflow. It uses the <tt>users</tt> module as its user manager (see below). By specifying the <tt>LoginPage</tt> property, we inform the auth manager to redirect user's browser to the <tt>LoginUser</tt> page when an authorization fails. We will describe how to create <tt>LoginUser</tt> in the next subsection.
+The <a href="http://pradosoft.github.io/docs/manual/class-TAuthManager">TAuthManager</a> module manages the whole authentication and authorization workflow. It uses the <tt>users</tt> module as its user manager (see below). By specifying the <tt>LoginPage</tt> property, we inform the auth manager to redirect user's browser to the <tt>LoginUser</tt> page when an authorization fails. We will describe how to create <tt>LoginUser</tt> in the next subsection.
 </p>
 
 <p>
-The <tt>user</tt> module is of class <a href="http://www.pradosoft.com/docs/classdoc/TDbUserManager">TDbUserManager</a> which is responsible to verify the validity of a user and keep basic user data in the PHP session. The <tt>UserClass</tt> property is initialized as <tt>Application.BlogUser</tt>, which indicates the user manager would look for a <tt>BlogUser</tt> class under the directory <tt>protected</tt> (remember the alias <tt>Application</tt> refers to the <tt>protected</tt> directory) and use it to keep user's session data.
+The <tt>user</tt> module is of class <a href="http://pradosoft.github.io/docs/manual/class-TDbUserManager">TDbUserManager</a> which is responsible to verify the validity of a user and keep basic user data in the PHP session. The <tt>UserClass</tt> property is initialized as <tt>Application.BlogUser</tt>, which indicates the user manager would look for a <tt>BlogUser</tt> class under the directory <tt>protected</tt> (remember the alias <tt>Application</tt> refers to the <tt>protected</tt> directory) and use it to keep user's session data.
 </p>
 
 <p>
@@ -38,7 +38,7 @@ As we will see in later sections, in controls and pages, we can use <tt>$this->U
 </p>
 
 <p>
-Below is the implementation detail of <tt>BlogUser</tt>. Notice <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Database.ActiveRecord">Active Record</a> is used to perform DB query. For example, we use <tt>UserRecord::finder()->findByPk($username)</tt> to look for the primary key specified by <tt>$username</tt> in the <tt>users</tt> table.
+Below is the implementation detail of <tt>BlogUser</tt>. Notice <a href="http://www.pradoframework.net/site/demos/quickstart/index.php?page=Database.ActiveRecord">Active Record</a> is used to perform DB query. For example, we use <tt>UserRecord::finder()->findByPk($username)</tt> to look for the primary key specified by <tt>$username</tt> in the <tt>users</tt> table.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="php">

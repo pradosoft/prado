@@ -9,7 +9,7 @@ A classic webpage can only transfer data back to the server using an http postba
 A common solution to this problem is the use of AJAX (Asynchronous JavaScript and XML) callbacks. After the first full page load, the web application can make subsequents requests using javascript. The callback requests are asynchronous, so the user can continue to interact with the page while the response is loading. The response contains a list of changes that will be applied to the page "on the fly", like replacing existing elements with new content or add some css style to an existing element.
 </p>
 
-<h2>Interacting with a page on callback</h2>
+<h2 id="222017">Interacting with a page on callback</h2>
 
 <p class="block-content">
 PRADO has builtin support for AJAX callbacks in the form of <i>Active Controls</i>. These controls can trigger a callback request and have their properties (value, css style, attributes, ..) updated during a callback.
@@ -28,7 +28,7 @@ public function onClick($sender, $param)
 }
 </com:TTextHighlighter>
 
-<h1>Active Controls (AJAX enabled Controls)</h1>
+<h1 id="222016">Active Controls (AJAX enabled Controls)</h1>
 <p class="block-content">
 Active controls extends standard PRADO controls adding the ability to automatically update themselves on callbacks without the need of ad-hoc javascript calls. Active controls are reliant on a collection of javascript classes that gets added to the page automatically when needed.
 </p>

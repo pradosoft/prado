@@ -22,7 +22,7 @@
 		that asks the user to enter their nickname and the main application chat
 		page.
 		You can try the application <a href="../chat/index.php">locally</a> or at
-		<a href="http://www.pradosoft.com/demos/chat/">Pradosoft.com</a>.
+		<a href="http://www.pradoframework.net/site/demos/chat/">Prado website</a>.
 		The main application chat page is shown bellow.
 		<img src=<%~ chat1.png %> class="figure" />
 	</p>

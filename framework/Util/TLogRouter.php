@@ -3,9 +3,9 @@
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Util
  */
 
@@ -24,7 +24,7 @@ Prado::using('System.Data.TDbConnection');
  * The format is as follows,
  * <code>
  *   <route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" />
- *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@pradosoft.com" />
+ *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@prado.local" />
  * </code>
  * PHP configuration style:
  * <code>

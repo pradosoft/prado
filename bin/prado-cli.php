@@ -4,9 +4,9 @@
  * Prado command line developer tools.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  */
 
 if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')

@@ -4,8 +4,8 @@
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 
@@ -37,7 +37,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  *
  * @author Christophe BOULAIN (Christophe.Boulain@gmail.com)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler
@@ -254,7 +254,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
  *
  * @author Christophe BOULAIN (Christophe.Boulain@ceram.fr)
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 class TDropContainerEventParameter extends TEventParameter

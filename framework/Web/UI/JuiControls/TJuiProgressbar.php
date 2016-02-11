@@ -3,9 +3,9 @@
  * TJuiProgressbar class file.
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2013-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2013-2015 PradoSoft
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.JuiControls
  */
 

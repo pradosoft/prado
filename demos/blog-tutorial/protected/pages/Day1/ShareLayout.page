@@ -3,11 +3,11 @@
 <h1>Sharing Common Layout</h1>
 
 <p>
-In this section, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature of PRADO to share common layout among pages. Common layout refers to the area that is the same or largely the same for a set of pages. For example, in our blog system, all pages will share the same header, footer and side-bar containing shortcut links. A straightforward implementation is to repeat the common layout in every page. However, this approach is prone to error and is hard to maintain. The <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature allows us to treat the common layout as a control which centralizes the logic and presentation of the common layout for every page.
+In this section, we will use the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature of PRADO to share common layout among pages. Common layout refers to the area that is the same or largely the same for a set of pages. For example, in our blog system, all pages will share the same header, footer and side-bar containing shortcut links. A straightforward implementation is to repeat the common layout in every page. However, this approach is prone to error and is hard to maintain. The <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature allows us to treat the common layout as a control which centralizes the logic and presentation of the common layout for every page.
 </p>
 
 <com:InfoBox>
-It is also possible to share common layout via <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template inclusion</a>, which is like PHP file inclusion. The drawback of template inclusion is that it is not self-contained and does not carry a class to contain the logic for the common layout.
+It is also possible to share common layout via <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1">template inclusion</a>, which is like PHP file inclusion. The drawback of template inclusion is that it is not self-contained and does not carry a class to contain the logic for the common layout.
 </com:InfoBox>
 
 
@@ -52,9 +52,9 @@ For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, 
 The above shows the content in the template file <tt>MainLayout.tpl</tt>. Three new tags are used:
 </p>
 <ul>
-<li><tt>&lt;com:TContentPlaceHolder&gt;</tt> represents <a href="http://www.pradosoft.com/docs/classdoc/TContentPlaceHolder">TContentPlaceHolder</a> control. It reserves the place in the template where content will be placed at. Here, the content comes from the pages who use this master control.</li>
-<li><tt>&lt;com:THead&gt;</tt> represents <a href="http://www.pradosoft.com/docs/classdoc/THead">THead</a> control which represents the &lt;head&gt; tag in HTML. It allows PRADO to manipulate the &lt;head&gt; tag as a component (e.g., setting page titles, adding custom CSS styles.)</li>
-<li><tt>&lt;%= %&gt;</tt> is an <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates2#et">expression tag</a>. It displays the evaluation result of the enclosed expression at the place where it appears.</li>
+<li><tt>&lt;com:TContentPlaceHolder&gt;</tt> represents <a href="http://pradosoft.github.io/docs/manual/class-TContentPlaceHolder">TContentPlaceHolder</a> control. It reserves the place in the template where content will be placed at. Here, the content comes from the pages who use this master control.</li>
+<li><tt>&lt;com:THead&gt;</tt> represents <a href="http://pradosoft.github.io/docs/manual/class-THead">THead</a> control which represents the &lt;head&gt; tag in HTML. It allows PRADO to manipulate the &lt;head&gt; tag as a component (e.g., setting page titles, adding custom CSS styles.)</li>
+<li><tt>&lt;%= %&gt;</tt> is an <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates2#et">expression tag</a>. It displays the evaluation result of the enclosed expression at the place where it appears.</li>
 </ul>
 
 <p>
@@ -69,7 +69,7 @@ class MainLayout extends TTemplateControl
 </com:TTextHighlighter>
 
 <com:InfoBox>
-The file extension name for page templates is <tt>.page</tt>, while for non-page templates it is <tt>.tpl</tt>. This is to differentiate pages from other controls. They both use the same <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template syntax</a>. For pages, their class files are optional (default to <tt>TPage</tt>), while for non-page controls, their class files are mandatory. Similar to Java, the name of a class file must be the same as the class name. Be careful about the case-sensitivity on Linux/Unix systems.
+The file extension name for page templates is <tt>.page</tt>, while for non-page templates it is <tt>.tpl</tt>. This is to differentiate pages from other controls. They both use the same <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1">template syntax</a>. For pages, their class files are optional (default to <tt>TPage</tt>), while for non-page controls, their class files are mandatory. Similar to Java, the name of a class file must be the same as the class name. Be careful about the case-sensitivity on Linux/Unix systems.
 </com:InfoBox>
 
 
@@ -110,15 +110,15 @@ It is possible to have multiple <tt>TContentPlaceHolder</tt>'s in a master templ
 </com:InfoBox>
 
 <p>
-Besides <tt>&lt;com:TContent&gt;</tt>, we also see another new tag <tt>&lt;%@ %&gt;</tt> in the above, which is called <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1#tct">template control tag</a>. It contains name-value pairs which are used to initialize the corresponding properties for the template owner, namely, the <tt>Contact</tt> page.
+Besides <tt>&lt;com:TContent&gt;</tt>, we also see another new tag <tt>&lt;%@ %&gt;</tt> in the above, which is called <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1#tct">template control tag</a>. It contains name-value pairs which are used to initialize the corresponding properties for the template owner, namely, the <tt>Contact</tt> page.
 </p>
 
 <p>
-By setting <tt>MasterClass</tt> property as <tt>Application.layouts.MainLayout</tt>, we instruct the <tt>Contact</tt> page to use <tt>MainLayout</tt> as its master. Here, we are using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> to refer to the <tt>MainLayout</tt> class.
+By setting <tt>MasterClass</tt> property as <tt>Application.layouts.MainLayout</tt>, we instruct the <tt>Contact</tt> page to use <tt>MainLayout</tt> as its master. Here, we are using the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Components">namespace format</a> to refer to the <tt>MainLayout</tt> class.
 </p>
 
 <com:InfoBox>
-Namespace format is widely used in PRADO programming. It is used together with <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Fundamentals.Components">path aliases</a>. PRADO defines two path aliases: <tt>System</tt> refers to the <tt>framework</tt> directory of the PRADO installation, and <tt>Application</tt> refers to the <tt>protected</tt> directory. The namespace <tt>Application.layouts.MainLayout</tt> can thus be translated as <tt>protected/layouts/MainLayout</tt> which is exactly the file name (without the extension <tt>.php</tt>) for the <tt>MainLayout</tt> class.
+Namespace format is widely used in PRADO programming. It is used together with <a href="http://www.pradoframework.net/site/demos/quickstart/index.php?page=Fundamentals.Components">path aliases</a>. PRADO defines two path aliases: <tt>System</tt> refers to the <tt>framework</tt> directory of the PRADO installation, and <tt>Application</tt> refers to the <tt>protected</tt> directory. The namespace <tt>Application.layouts.MainLayout</tt> can thus be translated as <tt>protected/layouts/MainLayout</tt> which is exactly the file name (without the extension <tt>.php</tt>) for the <tt>MainLayout</tt> class.
 </com:InfoBox>
 
 
@@ -151,7 +151,7 @@ In the above, we specify <tt>MasterClass</tt> in the <tt>onPreInit()</tt> method
 </p>
 
 <p>
-We can also specify master in <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>  or <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. The following shows the updated application configuration for our blog system:
+We can also specify master in <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>  or <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. The following shows the updated application configuration for our blog system:
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="xml">

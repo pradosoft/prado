@@ -3,9 +3,9 @@
  * TActiveRecord, TActiveRecordEventParameter, TActiveRecordInvalidFinderResult class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Data.ActiveRecord
  */
 
@@ -612,6 +612,8 @@ abstract class TActiveRecord extends TComponent
 	 */
 	public function findByPk($keys)
 	{
+		if($keys === null)
+			return null;
 		if(func_num_args() > 1)
 			$keys = func_get_args();
 		$data = $this->getRecordGateway()->findRecordByPK($this,$keys);

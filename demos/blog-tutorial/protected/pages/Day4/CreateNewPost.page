@@ -51,7 +51,7 @@ We now create two files <tt>protected/pages/posts/NewPost.page</tt> and <tt>prot
 
 <h2>Creating Page Template</h2>
 <p>
-The <tt>NewPost</tt> page template contains a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> to collect the post title and a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.HtmlArea">THtmlArea</a> to collect the post content. The latter is a WYSIWYG HTML editor. To ensure the user input is valid, we associate validators with these input controls.
+The <tt>NewPost</tt> page template contains a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.TextBox">TTextBox</a> to collect the post title and a <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Controls.HtmlArea">THtmlArea</a> to collect the post content. The latter is a WYSIWYG HTML editor. To ensure the user input is valid, we associate validators with these input controls.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">

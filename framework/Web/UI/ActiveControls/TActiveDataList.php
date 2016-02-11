@@ -4,7 +4,7 @@
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
  * @copyright Copyright &copy; 2008, PradoSoft
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 

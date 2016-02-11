@@ -163,14 +163,14 @@ class Page2Tex
 
 		//runbar
 		$html = preg_replace('/<com:RunBar\s+PagePath="([^"]*)"\s+\/>/',
-				'\href{http://www.pradosoft.com/demos/quickstart/index.php?page=$1}{$1 Demo}', $html);
+				'\href{http://www.pradoframework.net/site/demos/quickstart/index.php?page=$1}{$1 Demo}', $html);
 
 		//DocLink
 		$html = preg_replace('/<com:DocLink\s+ClassPath="([^"]*)[.]([^."]*)"\s+Text="([^"]+)"\s*\/>/',
-	                        '\href{http://www.pradosoft.com/docs/manual/$1/$2.html}{$3}', $html);
+	                        '\href{http://pradosoft.github.io/docs/manual/$1/$2.html}{$3}', $html);
 
 		$html = preg_replace('/<com:DocLink\s+ClassPath="([^"]*)[.]([^.]*)"\s+\/>/',
-	                        '\href{http://www.pradosoft.com/docs/manual/$1/$2.html}{$1.$2 API Reference}', $html);
+	                        '\href{http://pradosoft.github.io/docs/manual/$1/$2.html}{$1.$2 API Reference}', $html);
 
 		//text modifiers
 		$html = preg_replace('/<(b|strong)[^>]*>([^<]*)<\/(b|strong)>/', '\textbf{$2}', $html);

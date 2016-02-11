@@ -2,7 +2,7 @@
 
 class MainLayout extends TTemplateControl
 {
-
+	/*
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
@@ -10,6 +10,7 @@ class MainLayout extends TTemplateControl
 		$this->languages->DataSource = TPropertyValue::ensureArray($this->Application->Parameters['languages']);
 		$this->languages->dataBind();
 	}
+	*/
 
 	public function languageLinkCreated($sender, $param)
 	{

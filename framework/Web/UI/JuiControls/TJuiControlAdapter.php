@@ -3,9 +3,9 @@
  * TJuiControlAdapter class file.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2013-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2013-2015 PradoSoft
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.JuiControls
  */
 
@@ -194,6 +194,8 @@ class TJuiControlOptions
 				} elseif(is_numeric($value)) {
 					// trick to get float or integer automatically when needed
 					$this->_options[$option] = $value + 0;
+				} elseif(substr($low,0,8)=='function') {
+					$this->_options[$option] = new TJavaScriptLiteral($value);
 				} else {
 					$this->_options[$option] = $value;
 				}
@@ -292,7 +294,7 @@ class TJuiControlOptions
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @license http://www.pradosoft.com/license
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.JuiControls
  */
 class TJuiEventParameter extends TCallbackEventParameter

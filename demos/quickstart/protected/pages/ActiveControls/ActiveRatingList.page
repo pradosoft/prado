@@ -1,6 +1,6 @@
 <com:TContent ID="body" >
 
-<h1>TActiveRatingList</h1>
+<h1 id="192015">TActiveRatingList</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveRatingList" />
 
 <p class="block-content">

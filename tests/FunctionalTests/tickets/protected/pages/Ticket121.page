@@ -1,7 +1,7 @@
 <com:TContent ID="Content">
 
 <com:TImageButton
-	ImageUrl="http://www.pradosoft.com/images/powered.gif"
+	ImageUrl="http://pradosoft.github.io/docs/powered.gif"
 	Text="Foo"
 	ValidationGroup="Foo"
 	OnClick="buttonClicked" />

@@ -15,7 +15,7 @@
 
 <com:TPanel ID="MainMenu" CssClass="mainmenu">
 <a href="?">Home</a> |
-<a href="http://www.pradosoft.com">PradoSoft.com</a> |
+<a href="https://github.com/pradosoft/prado">Prado framework</a> |
 <a href="../../docs/quickstart.pdf">PDF Version</a> |
 <com:THyperLink ID="PrinterLink" Text="Printer-friendly Version" />
 </com:TPanel>
@@ -34,7 +34,7 @@
 </table>
 
 <div id="footer">
-Copyright &copy; 2005-2006 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2005-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>.
 <br/><br/>
 
 <a href="http://validator.w3.org/check?uri=referer">Valid XHTML 1.0 Transitional</a>

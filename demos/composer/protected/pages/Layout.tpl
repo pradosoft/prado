@@ -16,7 +16,7 @@
 </div>
 
 <div id="footer">
-Copyright &copy; 2006 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2006-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>
 </div>
 
 </com:TForm>

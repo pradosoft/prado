@@ -41,7 +41,7 @@
 </com:TForm>
 
 <div id="footer">
-Copyright &copy; 2007 <a href="http://www.pradosoft.com">PradoSoft</a>.
+Copyright &copy; 2007-2015 <a href="https://github.com/pradosoft">The PRADO Group</a>
 <br/><br/>
 <%= Prado::poweredByPrado() %>
 </div>

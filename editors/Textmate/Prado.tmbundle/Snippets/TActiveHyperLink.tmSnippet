@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>&lt;com:TActiveHyperLink NavigateUrl="${1:http://www.pradosoft.com/}" Text="${2:PradoSoft.com}" /&gt;$0</string>
+	<string>&lt;com:TActiveHyperLink NavigateUrl="${1:https://github.com/pradosoft/prado}" Text="${2:Prado framework}" /&gt;$0</string>
 	<key>name</key>
 	<string>TActiveHyperLink</string>
 	<key>scope</key>

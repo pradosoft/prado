@@ -5,7 +5,7 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2009 LANDWEHR Computer und Software GmbH
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  * @version $Id$
  */

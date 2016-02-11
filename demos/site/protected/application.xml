@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="pradosite" mode="Debug">
+	<paths>
+		<using namespace="Application.Common.*" />
+		<using namespace="System.Web.UI.ActiveControls.*" />
+	</paths>
+	<modules>
+		<module id="parameter" class="System.Util.TParameterModule">
+			<!-- the site lives in the demos directory -->
+			<parameter id="DemoUrl" value=".." />
+			<parameter id="DocsUrl" value="../docs" />
+		</module>
+		<module id="request" class="THttpRequest" UrlFormat="HiddenPath" UrlManager="friendly-url" />
+		<module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="true">
+			<url ServiceParameter="Home" pattern="/" />
+			<url ServiceParameter="About" pattern="about" />
+			<url ServiceParameter="Demos" pattern="demos" />
+			<url ServiceParameter="Download" pattern="download" />
+			<url ServiceParameter="Documentation" pattern="documentation" />
+			<url ServiceParameter="Tos" pattern="tos" />
+			<url ServiceParameter="License" pattern="license" />
+			<!-- <url ServiceParameter="Forum" pattern="/forum" /> -->
+		</module>
+
+	<!--
+		<module id="log" class="System.Util.TLogRouter">
+			<route class="TFileLogRoute" Categories="OffInfApplication" />
+		</module>
+		<module id="globalization" class="System.I18N.TGlobalization" charset="UTF-8"/>
+		
+		<module id="data" class="Application.Common.OffInfDataModule" />
+		<module id="users" class="Application.Common.OffInfUserManager" />
+	-->
+	</modules>
+	<services>
+		<service id="page" class="TPageService" BasePath="Application.Pages" DefaultPage="Home">
+			<pages MasterClass="Application.Layouts.MainLayout" Theme="Prado"/>
+		</service>
+	</services>
+</application>

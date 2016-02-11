@@ -1,3 +1,4 @@
+/.buildpath
 /.idea
 atlassian-ide-plugin.xml
 /.project
@@ -20,7 +21,8 @@ buildscripts/texbuilder/quickstart/quickstart.toc
 demos/quickstart/.cache
 demos/quickstart/.project
 demos/quickstart/.settings
-demos/quickstart/index_pl.php
+demos/blog/protected/Data/Blog.db
+demos/chat/protected/App_Code/chat.db
 tests/FunctionalTests/results.dat
 tests/unit/Data/db/test.db
 
@@ -28,9 +30,11 @@ tests/unit/Data/db/test.db
 vendor/*
 bin/phpunit
 bin/phing
-bin/apigen.php
+bin/apigen
 bin/coveralls
-bin/dbunit.php
+bin/dbunit
+bin/jsonlint
+bin/validate-json
 
 #OSX
 .DS_Store

@@ -3,7 +3,7 @@
 <h1>Initial Setup</h1>
 
 <p>
-We start by setting up the directories and the files that are required by most PRADO applications. We use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> to achieve this goal.
+We start by setting up the directories and the files that are required by most PRADO applications. We use the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> to achieve this goal.
 </p>
 
 <p>
@@ -11,7 +11,7 @@ Assume <tt>blog</tt> is the name of the directory to hold the whole blog system,
 </p>
 
 <p>
-Under the <tt>blog</tt> directory, we run the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> with the following command (replace <tt>path/to</tt> with the actual path to the PRADO framework installation):
+Under the <tt>blog</tt> directory, we run the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> with the following command (replace <tt>path/to</tt> with the actual path to the PRADO framework installation):
 </p>
 <com:TTextHighlighter CssClass="source cli">
 php path/to/prado-cli.php -c .
@@ -60,7 +60,7 @@ The name of the entry script does not need to be <tt>index.php</tt>. It can be a
 
 <h3>Application Configuration</h3>
 <p>
-The <i>optional</i> XML file <tt>application.xml</tt> contains the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>. Its main purpose is to customize in a configurable fashion the application instance created in the entry script. For example, we may enable the <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">logging</a> feature for our blog system with the help of application configuration.
+The <i>optional</i> XML file <tt>application.xml</tt> contains the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>. Its main purpose is to customize in a configurable fashion the application instance created in the entry script. For example, we may enable the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.Logging">logging</a> feature for our blog system with the help of application configuration.
 </p>
 
 <p>
@@ -71,11 +71,11 @@ The file <tt>application.xml</tt> we have now is nearly empty. In fact, we may s
 <h3>Homepage</h3>
 
 <p>
-The homepage (also called default page) <tt>Home.page</tt> is the only <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> created by the PRADO command line tool. It is the content in this file that shows up in the browser when visiting the URL <tt>http://hostname/blog/index.php</tt>.
+The homepage (also called default page) <tt>Home.page</tt> is the only <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Pages">page</a> created by the PRADO command line tool. It is the content in this file that shows up in the browser when visiting the URL <tt>http://hostname/blog/index.php</tt>.
 </p>
 
 <p>
-Content in the file <tt>Home.page</tt> uses the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">PRADO template format</a>, which is mostly like HTML enhanced with a few PRADO-specific tags. For example, in <tt>Home.page</tt> we see the following pure HTML content:
+Content in the file <tt>Home.page</tt> uses the <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Configurations.Templates1">PRADO template format</a>, which is mostly like HTML enhanced with a few PRADO-specific tags. For example, in <tt>Home.page</tt> we see the following pure HTML content:
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">
@@ -117,7 +117,7 @@ It is safe to remove files and directories under <tt>protected/runtime</tt> and 
 <h3>The <tt>pages</tt> Directory</h3>
 
 <p>
-The <tt>pages</tt> directory is the <i>root page directory</i> holding all <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">pages</a> in a PRADO application. It bears an analogy to the <tt>htdocs</tt> directory for the Apache httpd Web server.
+The <tt>pages</tt> directory is the <i>root page directory</i> holding all <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Fundamentals.Pages">pages</a> in a PRADO application. It bears an analogy to the <tt>htdocs</tt> directory for the Apache httpd Web server.
 </p>
 
 <p>

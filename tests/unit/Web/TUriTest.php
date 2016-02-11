@@ -7,7 +7,7 @@ Prado::using('System.Web.THttpRequest');
  */
 class TUriTest extends PHPUnit_Framework_TestCase {
 
-  const URISTR='http://login:p@ssw0rd:compl3x@www.pradosoft.com:80/demos/quickstart/index.php?page=test&param1=test2#anchor';
+  const URISTR='http://login:p@ssw0rd:compl3x@www.pradoframework.net:80/demos/quickstart/index.php?page=test&param1=test2#anchor';
 
   public function setUp () {
     $this->uri=new TUri(self::URISTR);
@@ -18,11 +18,11 @@ class TUriTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testConstruct() {
-    $url="http://www.pradosoft.com/";
+    $url="http://www.pradoframework.net/";
     $uri=new TUri ($url);
     self::assertEquals($url, $uri->getUri() );
     // Bad uri test
-	$url="http://www.pradosoft.com:badport/test";
+	$url="http://www.pradoframework.net:badport/test";
 	try {
 	  $url=new TUri($url);
 	  self::fail ('exception not raised with an invalid URL');
@@ -40,7 +40,7 @@ class TUriTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetHost() {
-    self::assertEquals('www.pradosoft.com', $this->uri->getHost());
+    self::assertEquals('www.pradoframework.net', $this->uri->getHost());
   }
 
   public function testGetPort() {

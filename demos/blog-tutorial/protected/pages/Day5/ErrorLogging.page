@@ -9,7 +9,7 @@ If we try to access the URL <tt>http://hostname/blog/index.php?page=EditPost&id=
 <img src="<%~ output2.gif %>" class="output" />
 
 <com:InfoBox>
-An important task in a Web application is <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Error">error handling</a> which is often associated <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">logging</a>. There are two types of errors that may occur in a PRADO application: those caused by developers and those by end-users. The former should be resolved before the application is put into production, while the latter are usually within the initial design scope and should be handled nicely (e.g. log the error and display a special page instructing the end-user what to do next.) PRADO implements a very flexible yet powerful framework for error handling and logging.
+An important task in a Web application is <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.Error">error handling</a> which is often associated <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.Logging">logging</a>. There are two types of errors that may occur in a PRADO application: those caused by developers and those by end-users. The former should be resolved before the application is put into production, while the latter are usually within the initial design scope and should be handled nicely (e.g. log the error and display a special page instructing the end-user what to do next.) PRADO implements a very flexible yet powerful framework for error handling and logging.
 </com:InfoBox>
 
 

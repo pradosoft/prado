@@ -24,9 +24,10 @@ class Layout extends TTemplateControl
 			$this->MainMenu->Visible=false;
 			$this->TopicPanel->Visible=false;
 		}
-
+		/*
 		$this->languages->DataSource = TPropertyValue::ensureArray($this->Application->Parameters['languages']);
 		$this->languages->dataBind();
+		*/
 	}
 
 	public function languageLinkCreated($sender, $param)

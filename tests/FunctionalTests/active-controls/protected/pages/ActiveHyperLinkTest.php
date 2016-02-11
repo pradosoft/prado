@@ -4,7 +4,7 @@ class ActiveHyperLinkTest extends TPage
 {
 	function change_text()
 	{
-		$this->link1->Text = "Pradosoft.com";
+		$this->link1->Text = "Prado framework";
 	}
 	
 	function change_image()
@@ -19,6 +19,6 @@ class ActiveHyperLinkTest extends TPage
 	
 	function change_url()
 	{
-		$this->link1->NavigateUrl = "http://www.xlab6.com";
+		$this->link1->NavigateUrl = "http://www.google.com";
 	}
 }

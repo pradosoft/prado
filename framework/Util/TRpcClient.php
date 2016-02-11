@@ -2,9 +2,9 @@
 
 /**
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @link http://www.pradosoft.com/
+ * @link https://github.com/pradosoft/prado
  * @copyright 2010 Bigpoint GmbH
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @since 3.2
  * @package System.Util
  */

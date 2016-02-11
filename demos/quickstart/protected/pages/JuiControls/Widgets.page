@@ -1,5 +1,5 @@
 <com:TContent ID="body">
-<h1>Jui widgets controls</h1>
+<h1 id="228029">Jui widgets controls</h1>
 <p class="block-content">
 Jui widgets are complex controls built on the foundations of jQuery effects and jQueryUI interactions.
 PRADO Jui widgets controls can be divided in two groups:
@@ -11,7 +11,7 @@ For informations of the specific options of each widget, follow jQuery-UI Widget
 </p>
 
 <a name="TJuiProgressbar" />
-<h2>TJuiProgressbar</h2>
+<h2 id="228030">TJuiProgressbar</h2>
 <com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiProgressbar" /> - <a href="http://api.jqueryui.com/progressbar/">jQuery UI API</a>
 
 <p class="block-content">
@@ -26,7 +26,7 @@ The panel takes the aspect of a progressbar ranging from a value of 0 to the val
 <br/>
 
 <a name="TJuiAutoComplete" />
-<h2>TJuiAutoComplete</h2>
+<h2 id="228031">TJuiAutoComplete</h2>
 <com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiAutoComplete" /> - <a href="http://api.jqueryui.com/autocomplete/">jQuery UI API</a>
 
 <p class="block-content">
@@ -50,7 +50,7 @@ When a suggestion is selected the <tt>OnSuggestionSelected</tt> event is raised,
 
 
 <a name="TJuiDialog" />
-<h2>TJuiDialog</h2>
+<h2 id="228032">TJuiDialog</h2>
 <com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDialog" /> - <a href="http://api.jqueryui.com/dialog/">jQuery UI API</a>
 
 <p class="block-content">
@@ -72,7 +72,7 @@ The buttons may contain a callback that will be fired when they are clicked.
 
 
 <a name="TJuiDatePicker" />
-<h2>TJuiDatePicker</h2>
+<h2 id="228033">TJuiDatePicker</h2>
 <com:DocLink ClassPath="System.Web.UI.JuiControls.TJuiDatePicker" /> - <a href="http://api.jqueryui.com/datepicker/">jQuery UI API</a>
 
 <p class="block-content">

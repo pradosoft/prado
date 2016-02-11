@@ -3,7 +3,7 @@
 <h1>Using Themes and Skins</h1>
 
 <p>
-PRADO has intrinsic support for <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Themes">themes</a>. By using themes, we can better separate logic and presentation, and we can also change the overall appearance of our blog system more easily.
+PRADO has intrinsic support for <a href="http://www.pradoframework.net/site/demos/quickstart/?page=Advanced.Themes">themes</a>. By using themes, we can better separate logic and presentation, and we can also change the overall appearance of our blog system more easily.
 </p>
 
 <h2>Creating Theme</h2>
@@ -17,7 +17,7 @@ To create a theme named <tt>Basic</tt>, we create a subdirectory <tt>theme/Basic
 </p>
 
 <com:InfoBox>
-The <tt>themes</tt> directory must be Web-accessible, like the <tt>assets</tt> directory. Do not place sensitive data files under this directory. You can change the name or location of this directory by configuring the <a href="http://www.pradosoft.com/docs/classdoc/TThemeManager">TThemeManager</a> module in the application configuration.
+The <tt>themes</tt> directory must be Web-accessible, like the <tt>assets</tt> directory. Do not place sensitive data files under this directory. You can change the name or location of this directory by configuring the <a href="http://pradosoft.github.io/docs/manual/class-TThemeManager">TThemeManager</a> module in the application configuration.
 </com:InfoBox>
 
 

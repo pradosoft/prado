@@ -9,8 +9,8 @@
 
 <com:TCircleHotSpot
 	HotspotMode="Navigate"
-	NavigateUrl="http://www.pradosoft.com"
-	AlternateText="Navigate to pradosoft.com"
+	NavigateUrl="https://github.com/pradosoft/prado"
+	AlternateText="Navigate to Prado framework project page"
 	Target="_blank"
 	X="80"
 	Y="80"

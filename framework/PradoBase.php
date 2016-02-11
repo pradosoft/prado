@@ -6,9 +6,9 @@
  * and error handling mechanism.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @link https://github.com/pradosoft/prado
+ * @copyright Copyright &copy; 2005-2015 The PRADO Group
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System
  */
 
@@ -69,7 +69,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.2.3';
+		return '3.3.0';
 	}
 
 	/**
@@ -114,8 +114,8 @@ class PradoBase
 			$url=$am->publishFilePath(self::getPathOfNamespace('System.'.$logoName,'.gif'));
 		}
 		else
-			$url='http://www.pradosoft.com/images/'.$logoName.'.gif';
-		return '<a title="Powered by PRADO" href="http://www.pradosoft.com/" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
+			$url='http://pradosoft.github.io/docs/'.$logoName.'.gif';
+		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
 	/**

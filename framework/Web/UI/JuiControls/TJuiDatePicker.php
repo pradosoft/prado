@@ -5,7 +5,7 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2015 LANDWEHR Computer und Software GmbH
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
  */
 
@@ -93,7 +93,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 				         'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
 								 'minDate', 'monthNames', 'monthNamesShort', 'navigationAsDateFormat', 'nextText', 'numberOfMonths', 'prevText',
 								 'selectOtherMonths', 'shortYearCutoff', 'showAnim', 'showButtonPanel', 'showCurrentAtPos', 'showMonthAfterYear',
-				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix');
+				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
+								 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect');
 	}
 
 	/**
@@ -102,7 +103,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getValidEvents()
 	{
-		return array('beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect');
+		return array();
 	}
 
 	/**

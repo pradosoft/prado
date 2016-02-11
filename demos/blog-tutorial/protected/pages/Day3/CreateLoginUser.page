@@ -23,7 +23,7 @@ We create two files <tt>protected/pages/users/LoginUser.page</tt> and <tt>protec
 <h2>Creating Page Template</h2>
 
 <p>
-Below we show the template for <tt>LoginUser</tt>. As we see, the page mainly contains a text box for collecting username and a text box for password. The username input is required, which is ensured by the <tt>TRequiredFieldValidator</tt>. The correctness of the password input is ensured by the <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Controls.Validation">TCustomValidator</a> which invokes the page's <tt>validateUser()</tt> method when validation is performed. The page also has "login" button which invokes the page's <tt>loginButtonClicked()</tt> when it is clicked.
+Below we show the template for <tt>LoginUser</tt>. As we see, the page mainly contains a text box for collecting username and a text box for password. The username input is required, which is ensured by the <tt>TRequiredFieldValidator</tt>. The correctness of the password input is ensured by the <a href="http://www.pradoframework.net/site/demos/quickstart/index.php?page=Controls.Validation">TCustomValidator</a> which invokes the page's <tt>validateUser()</tt> method when validation is performed. The page also has "login" button which invokes the page's <tt>loginButtonClicked()</tt> when it is clicked.
 </p>
 
 <com:TTextHighlighter CssClass="source" Language="prado">

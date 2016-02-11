@@ -1,18 +1,17 @@
 language: php
 
 php:
-  - 5.3
-  - 5.4
   - 5.5
   - 5.6
+  - 7.0
 
 before_script:
   - composer self-update
-  - composer install --prefer-source --dev
+  - composer install --prefer-source
   - export PATH=./bin/:$PATH
 
 script:
-  - bash -c 'if [ "$TRAVIS_PHP_VERSION" == "5.3" ]; then phing test; else phing coverage ; fi;'
+  - phing coverage
 
 after_script:
   - php ./bin/coveralls -v

@@ -3,9 +3,9 @@
  * Logout class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @link http://www.pradosoft.com/
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2006 PradoSoft
- * @license http://www.pradosoft.com/license/
+ * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package Demos
  */
 

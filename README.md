@@ -12,7 +12,7 @@ PRADO stands for PHP Rapid Application Development Object-oriented.
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/pradosoft/prado?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## API Documentation
-The complete API documentation can be found at http://www.pradoframework.com/docs/manual/
+The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
 
 ## Install
 
@@ -23,7 +23,7 @@ Just create a composer.json file for your project:
 ```JSON
 {
     "require": {
-        "pradosoft/prado": "~3.2"
+        "pradosoft/prado": "~3.3"
     }
 }
 ```
@@ -42,7 +42,7 @@ Then you can include the autoloader, and you will have access to the library cla
 require 'vendor/autoload.php';
 ```
 ## Demo Apps
-The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradosoft.com/demos/ . When you create your own prado application you do NOT need these folders.
+The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradoframework.net/site/demos/ . When you create your own prado application you do NOT need these folders.
 
 * address-book
 * blog

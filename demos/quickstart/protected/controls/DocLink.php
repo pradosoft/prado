@@ -2,7 +2,7 @@
 
 class DocLink extends THyperLink
 {
-	const BASE_URL='http://www.pradosoft.com/docs/manual';
+	const BASE_URL='http://pradosoft.github.io/docs/manual';
 
 	public function getClassPath()
 	{

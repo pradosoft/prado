@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  PRADO 3.2 build file - Copyright (C) 2014 PradoSoft
+  PRADO 3.3 build file - Copyright (C) 2015 The PRADO Group
 
   Requirements
   ============
@@ -11,6 +11,7 @@
   <taskdef name="prado-quickstart-index" classname="QuickstartIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="prado-api-index" classname="ManualIndexTask" classpath="buildscripts/phing/tasks"/>
   <taskdef name="phpunitreporttask" classname="PhpUnitReportTask" classpath="buildscripts/phing/tasks"/>
+  <taskdef name="apigen4" classname="ApiGen4Task" classpath="buildscripts/phing/tasks"/>
 
   <!-- generates ${prado.version} and ${prado.revision} -->
   <prado-version-check/>
@@ -102,6 +103,7 @@
     <include name="demos/soap/**/*"/>
     <include name="demos/sqlmap/**/*"/>
     <include name="demos/time-tracker/**/*"/>
+    <include name="demos/site/**/*"/>
   </fileset>
 
   <!--
@@ -132,10 +134,11 @@
     where &lt;target name&gt; can be one of the following:
 
     For all PRADO developers:
-    - test       : run unit tests (results are under /build/test-reports)
-    - coverage   : run unit tests collecting coverage informations
-    - lint       : run lint on framework
-    - lint-demos : run lint on demos
+    - test           : run unit tests (results are under /build/test-reports)
+    - coverage       : run unit tests collecting coverage informations
+    - functionaltest : run funcitonal tests (requires Selenium Server)
+    - lint           : run lint on framework
+    - lint-demos     : run lint on demos
 
     For PRADO release manager:
     - dist    : create release files;
@@ -185,17 +188,17 @@
     <echo>Building API manuals...</echo>
     <delete dir="${build.doc.dir}/manual"/>
     <mkdir dir="${build.doc.dir}/manual"/>
-    <apigen
-      executable="bin/apigen.php"
+    <apigen4
+      executable="bin/apigen"
       source="${build.src.dir}/framework"
       destination="${build.doc.dir}/manual"
-      exclude="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*"
+      exclude="*pradolite.php,*prado-cli.php,*3rdParty/*,*Javascripts/source/*,*packages.php,*JSMin.php,*I18N/core/*,*WebControls/assets/*,*Wsat/pages,*Wsat/themes"
       title="PRADO v${prado.version} API Manual"
       deprecated="true"
       todo="true"
       sourcecode="false"
       php="false"
-      templateconfig="buildscripts/apigen/pradosoft/config.neon"
+      templateconfig="buildscripts/apigen/pradosoft/config.neon" 
     />
 
     <echo>Indexing API manuals...</echo>
@@ -239,18 +242,10 @@
       </then>
     </if>
 
-    <echo>Generating files for pradosoft.com...</echo>
+    <echo>Generating files for website...</echo>
     <echo>Compiling class docs...</echo>
     <exec command="${php} build.php" dir="buildscripts/classtree" passthru="true"/>
     <move file="buildscripts/classtree/classes.data" todir="${build.web.dir}/protected/Data"/>
-
-    <echo>Moving HTML docs to Web folder...</echo>
-    <mkdir dir="${build.web.dir}"/>
-    <copy todir="${build.web.dir}/docs/manual">
-      <fileset dir="${build.doc.dir}/manual">
-        <include name="**/**"/>
-      </fileset>
-    </copy>
 
     <echo>
                    Distribution Completed!!!
@@ -268,7 +263,7 @@
       </batchtest>
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="noframes" todir="${build.test.dir}"/>
   </target>
 
   <target name="functionaltest" description="Running functional tests">
@@ -282,7 +277,7 @@
       </batchtest>
       <formatter type="xml" todir="${build.functionaltest.dir}" outfile="functional-tests.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.functionaltest.dir}/functional-tests.xml" format="frames" todir="${build.functionaltest.dir}"/>
+    <phpunitreporttask infile="${build.functionaltest.dir}/functional-tests.xml" format="noframes" todir="${build.functionaltest.dir}"/>
   </target>
 
   <target name="coverage" description="Running unit tests with coverage checks">
@@ -304,7 +299,7 @@
       <formatter type="xml" todir="${build.test.dir}" outfile="unit-tests.xml"/>
       <formatter type="clover" todir="${build.test.dir}" outfile="clover.xml"/>
     </phpunit>
-    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="frames" todir="${build.test.dir}"/>
+    <phpunitreporttask infile="${build.test.dir}/unit-tests.xml" format="noframes" todir="${build.test.dir}"/>
   </target>
 
   <target name="snapshot" depends="rebuild">

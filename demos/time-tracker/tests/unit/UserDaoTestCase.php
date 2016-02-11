@@ -19,7 +19,7 @@ class UserDaoTestCase extends BaseTestCase
 		if(!$user)
 			return $this->fail();	
 		$this->assertEqual($user->getName(), 'admin');
-		$this->assertEqual($user->getEmailAddress(), 'admin@pradosoft.com');
+		$this->assertEqual($user->getEmailAddress(), 'admin@prado.local');
 	}
 	
 	function assertSameUser($user1, $user2)
@@ -99,7 +99,7 @@ class UserDaoTestCase extends BaseTestCase
 	{
 		$user = new TimeTrackerUser(new UserManager());
 		$user->Name = "user1";
-		$user->EmailAddress = 'user1@pradosoft.com';
+		$user->EmailAddress = 'user1@prado.local';
 		
 		$this->userDao->addNewUser($user, 'password');
 		
@@ -155,7 +155,7 @@ class UserDaoTestCase extends BaseTestCase
 	{
 		$user = new TimeTrackerUser(new UserManager());
 		$user->Name = "user1";
-		$user->EmailAddress = 'user1@pradosoft.com';
+		$user->EmailAddress = 'user1@prado.local';
 		$user->Roles = array("manager", "consultant");
 
 		$this->userDao->addNewUser($user, 'password');
@@ -169,7 +169,7 @@ class UserDaoTestCase extends BaseTestCase
 	{
 		$user = new TimeTrackerUser(new UserManager());
 		$user->Name = "user1";
-		$user->EmailAddress = 'user1@pradosoft.com';
+		$user->EmailAddress = 'user1@prado.local';
 		$user->Roles = array("manager", "consultant");	
 		
 		try
@@ -189,7 +189,7 @@ class UserDaoTestCase extends BaseTestCase
 	function testUpdateUser()
 	{
 		$user = $this->userDao->getUserByName('admin');
-		$user->EmailAddress = 'something@pradosoft.com';
+		$user->EmailAddress = 'something@prado.local';
 		$user->Roles = array('manager', 'admin');
 		
 		$this->userDao->updateUser($user);
@@ -203,7 +203,7 @@ class UserDaoTestCase extends BaseTestCase
 	function testUpdateUserPassword()
 	{
 		$user = $this->userDao->getUserByName('admin');
-		$user->EmailAddress = 'something@pradosoft.com';
+		$user->EmailAddress = 'something@prado.local';
 		$user->Roles = array('manager', 'admin');
 		
 		$pass = 'newpasword';

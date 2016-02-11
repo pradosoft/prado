@@ -1,0 +1,36 @@
+<com:TContent ID="Main">
+
+<div id="main">
+
+<!---
+<div style="float:right;">
+<b>Class Finder</b> <input name="ctl0$main$ctl0$classEdit" type="text" id="ctl0_main_ctl0_classEdit" style="width:20em;" /><div id="ctl0_main_ctl0_classEdit_result" class="autocomplete"></div>
+</div>
+--->
+<div id="navbar"> 
+<ul>
+<li><a href="<%$ DemoUrl %>/quickstart/">QuickStart</a></li>
+<li><a href="<%$ DocsUrl %>/manual/">API Manual</a></li>
+<!--- <li><a href="<%$ DocsUrl %>/tutorials/" class="active">Tutorials</a></li> --->
+<!--- <li><a href="<%$ DocsUrl %>/classdoc/">Class Docs</a></li> --->
+</ul>
+</div>
+
+<h2>API Manual</h2>
+
+The <a href="<%$ DocsUrl %>/manual/">API Manual</a> contains the documentation for all the classes declared in PRADO.
+
+<br/>
+<br/>
+<h2>Tutorials</h2>
+
+<ul>
+  <li><a href="<%$ DemoUrl %>/quickstart/">The QuickStart Tutorial</a> - This tutorial is a definitive guidance showing every aspect of PRADO. It is written in PRADO and contains many demos to show the usage of various PRADO controls. The tutorial is also available as a <a href="<%$ DocsUrl %>/quickstart.pdf">PDF file</a>.</li>
+  <li><a href="<%$ DemoUrl %>/blog-tutorial/">The PRADO Blog Tutorial</a> - This tutorial shows how to use PRADO to build a complete Web application. Prior PRADO knowledge is not required.</li> 
+  <li><a href="<%$ DemoUrl %>/sqlmap/">The SQLMap Tutorial</a> - This tutorial is a definitive guidance on how to use SQLMap (available since v3.1.0).</li>
+</ul>
+
+<div style="clear: both;"></div>
+</div>
+
+</com:TContent>

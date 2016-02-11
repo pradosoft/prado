@@ -23,7 +23,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 		$_SERVER['QUERY_STRING'] = 'page=Links';
 		$_SERVER['SCRIPT_FILENAME'] = __FILE__;
 		$_SERVER['PATH_INFO'] = __FILE__;
-		$_SERVER['HTTP_REFERER'] = 'http://www.pradosoft.com';
+		$_SERVER['HTTP_REFERER'] = 'https://github.com/pradosoft/prado';
 		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.3) Gecko/20070309 Firefox/2.0.0.3';
 		$_SERVER['REMOTE_HOST'] = 'localhost';
@@ -194,7 +194,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 	public function testGetUrlReferrer() {
 		$request = new THttpRequest();
 		$request->init(null);
-		self::assertEquals('http://www.pradosoft.com', $request->getUrlReferrer());
+		self::assertEquals('https://github.com/pradosoft/prado', $request->getUrlReferrer());
 	}
 
 	public function testGetBrowser() {

@@ -77,7 +77,7 @@ class Home extends TPage
 The application is now ready and can be accessed via: <tt>http://Web-server-address/helloworld/index.php</tt>, assuming <tt>helloworld</tt> is directly under the Web <tt>DocumentRoot</tt>. Try to change <tt>TButton</tt> in <tt>Home.page</tt> to <tt>TLinkButton</tt> and see what happens.
 </p>
 <p id="50042">
-Complete source code of this demo can be found in the PRADO release. You can also try the <a href="http://www.pradosoft.com/demos/helloworld/">online demo</a>.
+Complete source code of this demo can be found in the PRADO release. You can also try the <a href="http://www.pradoframework.net/site/demos/helloworld/">online demo</a>.
 </p>
 </div>
 

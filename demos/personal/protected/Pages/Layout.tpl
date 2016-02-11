@@ -34,8 +34,8 @@
 <div class="footer">
 <com:MainMenu />
 <br/>
-Copyright &copy; 2006-2007 Your Name here.<br/>
-Powered by <a href="http://www.pradosoft.com/">PRADO</a>.
+Copyright &copy; 2006-2015 Your Name here.<br/>
+Powered by <a href="https://github.com/pradosoft/prado">PRADO</a>.
 </div>
 </div>
 

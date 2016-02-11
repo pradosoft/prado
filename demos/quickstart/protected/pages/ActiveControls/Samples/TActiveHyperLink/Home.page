@@ -10,8 +10,8 @@ A regular hyperlink:
 Welcome to
 <com:TActiveHyperLink
 	ID="link1"
-	NavigateUrl="http://www.pradosoft.com/"
-	Text="PradoSoft.com"
+	NavigateUrl="https://github.com/pradosoft/prado"
+	Text="Prado framework"
 	Target="_blank" />.
 </td>
 <td class="sampleaction">
@@ -25,8 +25,8 @@ A text hyperlink with css style:
 Welcome to
 <com:TActiveHyperLink
 	ID="link2"
-	NavigateUrl="http://www.pradosoft.com/"
-	Text="PradoSoft.com"
+	NavigateUrl="https://github.com/pradosoft/prado"
+	Text="Prado framework"
 	Target="_blank"
 	BackColor="silver"
 	Font.Italic="true" />.
@@ -41,7 +41,7 @@ An image hyperlink:
 </td><td class="sampleaction">
 <com:TActiveHyperLink
 	ID="link3"
-	NavigateUrl="http://www.pradosoft.com/"
+	NavigateUrl="https://github.com/pradosoft/prado"
 	ImageUrl=<%~hello_world.gif%>
 	Text="Hello World" />.
 </td>
@@ -55,7 +55,7 @@ A hyerplink with body contents as link text:
 </td><td class="sampleaction">
 <com:TActiveHyperLink
 	ID="link4"
-	NavigateUrl="http://www.pradosoft.com/"
+	NavigateUrl="https://github.com/pradosoft/prado"
 	Target="_blank">
 Body contents
 </com:TActiveHyperLink>
