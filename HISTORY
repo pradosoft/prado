@@ -1,4 +1,4 @@
-Version 3.3.0 December ??, 2015
+Version 3.3.0 Febrary ??, 2016
 
 CHG: Added jQuery and rebased PRADO's effect and controls on it (ctrlaltca)
 ENH: Added jQueryUI and created new controls (ctrlaltca)
@@ -13,6 +13,7 @@ BUG: Issue #543 - Can't set a url mapping pattern class in php config (plachance
 BUG: Issue #541 - Security - HttpOnly parameter in THttpSession and THttpCookie (ctrlaltca)
 BUG: Issue #539 - Status Code not send when throwing a THttpException (ctrlaltca)
 BUG: Issues #528, 538 - Fix errors in Prado.Validation.validateControl (majuca, david0)
+ENH: Issue #559 - Add support for memcached (majuca)
 
 Version 3.2.4 Aug 26, 2014
 
