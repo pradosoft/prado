@@ -35,7 +35,13 @@
 
   <h2>Latest News</h2>
   <div id="articles">
-    
+
+    <div class="article">
+      <h3>Prado 3.3.0 is released!</h3>
+      <span class="date">February 15, 2016</span>
+      <p>The PRADO Team is proud to announce the formal release of <span style="font-weight:bold">PRADO 3.3.0</span>.<br><br>Release 3.3.0 is the very first PRADO release to introduce jQuery is the javascript framework of choice. Our first directive is to modernize the framework while keeping old code working, so all the existing PRADO controls have already been ported, and prototype is still included to provide backward compatibility for custom controls. Anyway, updating custom controls is probably a good idea. Have a look at the <a href="http://www.pradoframework.net/demos/quickstart/?page=GettingStarted.Upgrading32">Upgrading from v3.2</a> page in the Quickstart tutorial for more informations.<br><br>For any issue, please <a href="https://github.com/pradosoft/prado/issues/new">report it</a> so that we can fix it in the next version.<br><br>Happy coding!<br><br>The PRADO Group
+    </div>
+
     <div class="article">
       <h3>Site outage</h3>
       <span class="date">November 5, 2015</span>
