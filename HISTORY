@@ -1,4 +1,4 @@
-Version 3.3.0 Febrary ??, 2016
+Version 3.3.0 Febrary 15, 2016
 
 CHG: Added jQuery and rebased PRADO's effect and controls on it (ctrlaltca)
 ENH: Added jQueryUI and created new controls (ctrlaltca)

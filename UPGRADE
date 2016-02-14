@@ -12,7 +12,7 @@ for both A and B.
 Upgrading from v3.2.x
 ---------------------
 - Since PRADO 3.3.0, jQuery is the javascript framework of choice. All the existing PRADO controls have
-  already been ported, and prototype is still included to provide backward comaptibility for custom controls.
+  already been ported, and prototype is still included to provide backward compatibility for custom controls.
   Anyway, updating custom controls is probably a good idea. Have a look at the "Upgrading from v3.2" page in
   the Quickstart tutorial for more informations.
 

@@ -35,6 +35,8 @@ bin/coveralls
 bin/dbunit
 bin/jsonlint
 bin/validate-json
+bin/paratest
+bin/sauce_*
 
 #OSX
 .DS_Store
