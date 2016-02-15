@@ -223,7 +223,6 @@ Following is the list of deprecated controls:
 <tt>TAutoComplete</tt> is deprecated, use <tt>TJuiAutoComplete</tt> instead. Main changes in porting existing code using TAutoComplete to TJuiAutoComplete:
 <ul>
 	<li>the <tt>Frequency</tt> property doesn't exists anymore</li>
-	<li>the <tt>minChars</tt> property is called <tt>minLength</tt></li>
 	<li>only the <tt>ItemTemplate</tt> is supported for the <tt>Suggestions</tt> repeater (no HeaderTemplate, FooterTemplate, etc..)</li>
 	<li><tt>ItemTemplate</tt> doesn't need to render the &lt;li&gt; tag anymore, but only the content itself</li>
 	<li>multiple selections are not supported</li>
