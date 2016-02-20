@@ -280,7 +280,6 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	getParameters : function()
 	{
-		var form = this.getForm();
 		var data = {};
 
 		if(typeof(this.options.CallbackParameter) != "undefined")
@@ -289,9 +288,15 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			data[Prado.CallbackRequestManager.FIELD_CALLBACK_TARGET] = this.options.EventTarget;
 
 		if(this.options.PostInputs != false)
+		{
+			var form = this.getForm();
 			return jQuery(form).serialize() + '&' + jQuery.param(data);
-		else
+		} else {
+			var pagestate = jQuery("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
+			if(pagestate)
+				data[Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE] = pagestate.val();
 			return jQuery.param(data);
+		}
 	},
 
 	/**
