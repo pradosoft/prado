@@ -174,7 +174,7 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
   		if(that.options.textCssClass===undefined)
   		{
 			jQuery.each(result, function(idx, item) {
-				result[idx]['value']=jQuery.trim(jQuery(item['label']).text());
+				result[idx]['value']=jQuery.trim(jQuery('<div/>').html(item['label']).text());
 			});
   		} else {
 			jQuery.each(result, function(idx, item) {
