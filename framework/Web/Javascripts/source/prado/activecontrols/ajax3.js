@@ -48,6 +48,14 @@ Prado.CallbackRequestManager =
 	 * Hidden field list header name.
 	 */
 	HIDDENFIELDLIST_HEADER : 'X-PRADO-HIDDENFIELDLIST',
+	/**
+	 * Log debug informations when a callback fails, default true
+	 */
+	LOG_ERROR : true,
+	/**
+	 * Log debug informations when a callback succedes, default false
+	 */
+	LOG_SUCCESS : false,
 
 	/**
 	 * Formats the exception message for display in console.
@@ -238,7 +246,6 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 
 	dispatch: function()
 	{
-		//Logger.info("dispatching request");
 		//trigger tinyMCE to save data.
 		if(typeof tinyMCE != "undefined")
 			tinyMCE.triggerSave();
@@ -340,9 +347,9 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	{
 		this.data = request.responseText;
 
-		if(log = this.getLogger())
+		if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
 		{
-			log.warn("Ajax callback error:", request.status, "(" +  request.statusText + ")");
+			log.error("PRADO Ajax callback error:", request.status, "(" +  request.statusText + ")");
 			if(request.status==500)
 			{
 				/**
@@ -374,9 +381,9 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	exceptionHandler: function(e)
 	{
-		if(log = this.getLogger())
+		if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
 		{
-			log.warn("Uncaught Callback Client Exception:", e.message);
+			log.error("Uncaught Callback Client Exception:", e.message);
 			log.info('Stack:', e.stack);
 		} else {
 			debugger;
@@ -393,7 +400,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	{
 		this.data = data;
 
-		if(log = this.getLogger())
+		if(Prado.CallbackRequestManager.LOG_SUCCESS && (log = this.getLogger()))
 		{
 			log.info('HTTP '+request.status+" with response : \n");
 
@@ -457,8 +464,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				pagestate.val(data);
 			else
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Missing page state:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Missing page state:"+data);
 				//Logger.warn('## bad state: setting current request to null');
 				//self.endCurrentRequest();
 				//self.tryNextRequest();
@@ -493,8 +500,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid hidden field list:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid hidden field list:"+data);
 			} else {
 				for(var key in json)
 					this.checkHiddenField(key,json[key]);
@@ -546,8 +553,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid script list:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid script list:"+data);
 			} else {
 				for(var key in json)
 					if (/^\d+$/.test(key))
@@ -595,8 +602,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid stylesheet list:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid stylesheet list:"+data);
 			} else {
 				for(var key in json)
 					if (/^\d+$/.test(key))
@@ -613,8 +620,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid stylesheet list:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid stylesheet list:"+data);
 			} else {
 				for(var key in json)
 					if (/^\d+$/.test(key))
@@ -633,8 +640,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid stylesheet list:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid stylesheet list:"+data);
 			} else {
 				for(var key in json)
 					if (/^\d+$/.test(key))
@@ -683,8 +690,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			json = jQuery.parseJSON(data);
 			if(typeof(json) != "object")
 			{
-				if(typeof(Logger) != "undefined")
-					Logger.warn("Invalid action:"+data);
+				if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+					log.warn("Invalid action:"+data);
 			} else {
 				var that = this;
 				jQuery.each(json, function(idx, item){
@@ -857,8 +864,8 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		assetLoadFailed: function(url, element, callback) {
 			debugger;
 			element.assetCallbackFired = true;
-			if(typeof Logger != "undefined")
-				Logger.error("Failed to load asset: "+url, this);
+			if(Prado.CallbackRequestManager.LOG_ERROR && (log = this.getLogger()))
+				log.error("Failed to load asset: "+url, this);
 			if (!element.assetCallbackFired)
 				callback(url,element,false);
 		},
