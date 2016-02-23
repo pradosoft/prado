@@ -324,9 +324,40 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		return null;
 	},
 
+	getLogger: function()
+	{
+		if(typeof Logger != "undefined")
+			return Logger;
+
+		// use the browser console if no Logger is available
+		if(typeof console != "undefined")
+			return console;
+
+		return null;
+	},
+
 	errorHandler: function(request, textStatus, errorThrown)
 	{
-//null) are "timeout", "error", "abort", and "parsererror"
+		this.data = request.responseText;
+
+		if(log = this.getLogger())
+		{
+			log.warn("Ajax callback error:", request.status, "(" +  request.statusText + ")");
+			if(request.status==500)
+			{
+				/**
+				 * Server returns 500 exception. Just log it.
+				 */
+				var errorData = this.extractContent(Prado.CallbackRequestManager.ERROR_HEADER);
+				if (typeof(errorData) == "string" && errorData.length > 0)
+				{
+					errorData = jQuery.parseJSON(errorData);
+					if(typeof(errorData) == "object")
+						log.info(Prado.CallbackRequestManager.formatException(errorData));						
+				}
+			}
+		}
+
 		if (this.options.onFailure)
 			this.options.onFailure(this,textStatus);
 	},
@@ -343,22 +374,16 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	 */
 	exceptionHandler: function(e)
 	{
-		if (this.options.onException)
-			this.options.onException(this,e);
-		/*
-		var msg = "";
-		jQuery.each(e, function(item)
+		if(log = this.getLogger())
 		{
-			msg += item.key+": "+item.value+"\n";
-		})
-		*/
-		if(typeof(Logger) != "undefined")
-		{
-			Logger.error('Uncaught Callback Client Exception:', e.message);
-			Logger.error('Stack:', e.message);
+			log.warn("Uncaught Callback Client Exception:", e.message);
+			log.info('Stack:', e.stack);
 		} else {
 			debugger;
 		}
+
+		if (this.options.onException)
+			this.options.onException(this,e);
 	},
 
 	/**
@@ -367,6 +392,22 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	successHandler: function(data, textStatus, request)
 	{
 		this.data = data;
+
+		if(log = this.getLogger())
+		{
+			log.info('HTTP '+request.status+" with response : \n");
+
+			var tagStart = '<!--';
+			var tagEnd = '<!--//';
+			var start = request.responseText.indexOf(tagStart);
+			while(start > -1)
+			{
+				var end = request.responseText.indexOf(tagEnd,start);
+				if(end > -1)
+					log.info(request.responseText.substring(start,end)+'\n');
+				start = request.responseText.indexOf(tagStart,end+6);
+			}
+		}
 
 		if (this.options.onSuccess)
 		{
@@ -668,209 +709,6 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		}
 	}
 });
-
-//Add HTTP exception respones when logger is enabled.
-jQuery(function()
-{
-	if(typeof Logger != "undefined")
-	{
-		jQuery( document ).ajaxSuccess(function( event, request, settings ) {
-			Logger.info('HTTP '+request.status+" with response : \n");
-
-			var tagStart = '<!--';
-			var tagEnd = '<!--//';
-			var start = request.responseText.indexOf(tagStart);
-			while(start > -1)
-			{
-				var end = request.responseText.indexOf(tagEnd,start);
-				if(end > -1)
-					Logger.info(request.responseText.substring(start,end)+'\n');
-				start = request.responseText.indexOf(tagStart,end+6);
-			}
-		});
-
-		jQuery( document ).ajaxError(function( event, request, settings, exception ) {
-			if(request.status==500)
-			{
-				/**
-				 * Server returns 500 exception. Just log it.
-				 */
-				var e = request.getResponseHeader(Prado.CallbackRequestManager.ERROR_HEADER);
-				if (e)
-				{
-					json = jQuery.parseJSON(e);
-					if(typeof(json) == "object")
-						Logger.error("Callback Server Error "+json.code, Prado.CallbackRequestManager.formatException(json));
-					else
-						Logger.error("Callback Server Error Corrupted");
-				} else {
-					Logger.error("Callback Server Error Unknown",'');
-				}
-			}
-		});
-	}
-});
-
-// /**
-//  * Prado Callback client-side request handler.
-//  */
-// Prado.CallbackRequestManager =
-// {
-
-// 	requestQueue : [],
-
-// 	//all request objects
-// 	requests : {},
-
-// 	getRequestById : function(id)
-// 	{
-// 		var requests = Prado.CallbackRequest.requests;
-// 		if(typeof(requests[id]) != "undefined")
-// 			return requests[id];
-// 	},
-
-// 	dispatch : function(id)
-// 	{
-// 		var requests = Prado.CallbackRequest.requests;
-// 		if(typeof(requests[id]) != "undefined")
-// 			requests[id].dispatch();
-// 	},
-
-// 	/**
-// 	 * Dispatch a normal request, no timeouts or aborting of requests.
-// 	 */
-// 	dispatchNormalRequest : function(callback)
-// 	{
-// 		callback.options.postBody = callback._getPostData(),
-// 		//callback.request(callback.url);
-// 		jQuery.ajax(callback.url, callback.options);
-// 		return true;
-// 	},
-
-// 	/**
-// 	 * Abort the current priority request in progress.
-// 	 */
-// 	tryNextRequest : function()
-// 	{
-// 		var self = Prado.CallbackRequest;
-// 		//Logger.debug('trying next request');
-// 		if(typeof(self.currentRequest) == 'undefined' || self.currentRequest==null)
-// 		{
-// 			if(self.requestQueue.length > 0)
-// 				return self.dispatchQueue();
-// 			//else
-// 				//Logger.warn('empty queque');
-// 		}
-// 		//else
-// 			//Logger.warn('current request ' + self.currentRequest.id);
-// 	},
-
-// 	enqueue : function(callback)
-// 	{
-// 		var self = Prado.CallbackRequest;
-// 		self.requestQueue.push(callback);
-// 		//Logger.warn("equeued "+callback.id+", current queque length="+self.requestQueue.length);
-// 		self.tryNextRequest();
-// 	},
-
-// 	dispatchQueue : function()
-// 	{
-// 		var self = Prado.CallbackRequest;
-// 		//Logger.warn("dispatching queque, length="+self.requestQueue.length+" request="+self.currentRequest);
-// 		var callback = self.requestQueue.shift();
-// 		self.currentRequest = callback;
-
-// 		//get data
-// 		callback.options.postBody = callback._getPostData(),
-
-// 		//callback.request = new Prado.AjaxRequest(callback);
-// 		callback.timeout = setTimeout(function()
-// 		{
-// 			//Logger.warn("priority timeout");
-// 			self.abortRequest(callback.id);
-// 		},callback.ActiveControl.RequestTimeOut);
-// 		callback.request(callback.url);
-// 		//Logger.debug("dispatched "+self.currentRequest.id + " ...")
-// 	},
-
-// 	endCurrentRequest : function()
-// 	{
-// 		var self = Prado.CallbackRequest;
-// 		if(typeof(self.currentRequest) != 'undefined' && self.currentRequest != null)
-// 			clearTimeout(self.currentRequest.timeout);
-// 		self.currentRequest=null;
-// 	},
-
-// 	abortRequest : function(id)
-// 	{
-// 		//Logger.warn("abort id="+id);
-// 		var self = Prado.CallbackRequest;
-// 		if(typeof(self.currentRequest) != 'undefined'
-// 			&& self.currentRequest != null && self.currentRequest.id == id)
-// 		{
-// 			var request = self.currentRequest;
-// 			if(request.transport.readyState < 4)
-// 				request.transport.abort();
-// 			//Logger.warn('## aborted: setting current request to null');
-// 			self.endCurrentRequest();
-// 		}
-// 		self.tryNextRequest();
-// 	}
-// };
-
-// /**
-//  * Automatically aborts the current request when a priority request has returned.
-//  */
-//  /*
-// Ajax.Responders.register({onComplete : function(request)
-// {
-// 	if(request && request instanceof Prado.AjaxRequest)
-// 	{
-// 		if(request.ActiveControl.HasPriority)
-// 			Prado.CallbackRequest.tryNextRequest();
-// 	}
-// }});
-// */
-
-// /**
-//  * Create and prepare a new callback request.
-//  * Call the dispatch() method to start the callback request.
-//  * <code>
-//  * request = new Prado.CallbackRequest(UniqueID, callback);
-//  * request.dispatch();
-//  * </code>
-//  */
-// Prado.CallbackRequest = jQuery.klass({
-
-// 	/**
-// 	 * Prepare and inititate a callback request.
-// 	 */
-// 	initialize : function(id, options)
-// 	{
-// 		this.Enabled = true;
-// 		this.id = id;
-// 		this.randomId = this.randomString();
-
-// 		if(typeof(id)=="string"){
-// 			Prado.CallbackRequestManager.requests[id+"__"+this.randomId] = this;
-// 		}
-
-// 		Prado.CallbackRequestManager.requests[id+"__"+this.randomId].ActiveControl = this.options;
-// 	},
-
-// 	/**
-// 	 * Creates a random string with a length of 8 chars.
-// 	 * @return string
-// 	 */
-// 	randomString : function()
-// 	{
-// 		chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-// 		randomString = "";
-// 		for(x=0;x<8;x++)
-// 			randomString += chars.charAt(Math.floor(Math.random() * 62));
-// 		return randomString
-// 	}
-// });
 
 /**
  * Create a new callback request using default settings.
