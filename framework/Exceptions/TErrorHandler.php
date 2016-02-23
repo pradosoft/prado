@@ -393,7 +393,7 @@ class TErrorHandler extends TModule
 	private function addLink($message)
 	{
 		$baseUrl='http://pradosoft.github.io/docs/manual/class-';
-		return preg_replace('/\b(T[A-Z]\w+)\b/',"<a href=\"$baseUrl/\${1}\" target=\"_blank\">\${1}</a>",$message);
+		return preg_replace('/\b(T[A-Z]\w+)\b/',"<a href=\"$baseUrl\${1}\" target=\"_blank\">\${1}</a>",$message);
 	}
 }
 
