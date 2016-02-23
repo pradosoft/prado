@@ -112,8 +112,8 @@ class TJuiControlAdapter extends TActiveControlAdapter
  */
 interface IJuiOptions
 {
-  public function getWidget();
-  public function getWidgetID();
+	public function getWidget();
+	public function getWidgetID();
 	public function getOptions();
 	public function getValidOptions();
 	public function getValidEvents();
