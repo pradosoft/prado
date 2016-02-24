@@ -270,6 +270,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		// go!
 		this.options.data = this.getParameters();
 		this.options.url = this.getCallbackUrl();
+		this.options.timeout = this.getRequestTimeOut();
 
 		this.request = Prado.CallbackRequestManager.ajax(this.options);
 	},
