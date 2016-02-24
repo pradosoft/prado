@@ -450,8 +450,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	},
 
 	/**
-	 * Updates the page state. It will update only if EnablePageStateUpdate and
-	 * HasPriority options are both true.
+	 * Updates the page state. It will update only if EnablePageStateUpdate is true.
 	 */
 	updatePageState : function(request, datain)
 	{
