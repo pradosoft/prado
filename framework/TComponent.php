@@ -1698,16 +1698,6 @@ class TComponent
 	}
 
 	/**
-	 * Do not call this method. This is a PHP magic method that will be called automatically
-	 * after any unserialization; it can perform reinitialization tasks on the object.
-	 */
-	public function __wakeup()
-	{
-		if ($this->_e===null)
-			$this->_e = array();
-	}
-
-	/**
 	 * Returns an array with the names of all variables of that object that should be serialized.
 	 * Do not call this method. This is a PHP magic method that will be called automatically
 	 * prior to any serialization.
@@ -1717,6 +1707,18 @@ class TComponent
 		$a = (array)$this;
 		$a = array_keys($a);
 		$exprops = array();
+		$this->__getZappableSleepProps($exprops);
+		return array_diff($a, $exprops);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
 		if($this->_listeningenabled===false)
 			$exprops[] = "\0TComponent\0_listeningenabled";
 		if($this->_behaviorsenabled===true)
@@ -1725,7 +1727,6 @@ class TComponent
 			$exprops[] = "\0TComponent\0_e";
 		if ($this->_m===null)
 			$exprops[] = "\0TComponent\0_m";
-		return array_diff($a,$exprops);
 	}
 }
 

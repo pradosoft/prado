@@ -32,19 +32,19 @@ class TListItem extends TComponent
 	/**
 	 * @var string text of the item
 	 */
-	private $_text;
+	private $_text='';
 	/**
 	 * @var string value of the item
 	 */
-	private $_value;
+	private $_value='';
 	/**
 	 * @var boolean whether the item is enabled
 	 */
-	private $_enabled;
+	private $_enabled=true;
 	/**
 	 * @var boolean whether the item is selected
 	 */
-	private $_selected;
+	private $_selected=false;
 
 	/**
 	 * Constructor.
@@ -59,6 +59,27 @@ class TListItem extends TComponent
 		$this->setValue($value);
 		$this->setEnabled($enabled);
 		$this->setSelected($selected);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_attributes===null)
+			$exprops[] = "\0TListItem\0_attributes";
+		if($this->_text==='')
+			$exprops[] = "\0TListItem\0_text";
+		if($this->_value==='')
+			$exprops[] = "\0TListItem\0_value";
+		if ($this->_enabled===true)
+			$exprops[] = "\0TListItem\0_enabled";
+		if ($this->_selected===false)
+			$exprops[] = "\0TListItem\0_selected";
 	}
 
 	/**

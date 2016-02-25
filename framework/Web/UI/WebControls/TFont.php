@@ -54,6 +54,23 @@ class TFont extends TComponent
 	private $_size='';
 
 	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_flags===0)
+			$exprops[] = "\0TFont\0_flags";
+		if ($this->_name==='')
+			$exprops[] = "\0TFont\0_name";
+		if ($this->_size==='')
+			$exprops[] = "\0TFont\0_size";
+	}
+
+	/**
 	 * @return boolean whether the font is in bold face. Defaults to false.
 	 */
 	public function getBold()

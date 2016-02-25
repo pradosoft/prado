@@ -33,6 +33,35 @@ class TDataGridPagerStyle extends TPanelStyle
 	private $_buttonType=null;
 
 	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_mode===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_mode";
+		if ($this->_nextText===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_nextText";
+		if ($this->_prevText===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_prevText";
+		if ($this->_firstText===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_firstText";
+		if ($this->_lastText===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_lastText";
+		if ($this->_buttonCount===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_buttonCount";
+		if ($this->_position===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_position";
+		if ($this->_visible===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_visible";
+		if ($this->_buttonType===null)
+			$exprops[] = "\0TDataGridPagerStyle\0_buttonType";
+	}
+
+	/**
 	 * @return TDataGridPagerMode pager mode. Defaults to TDataGridPagerMode::NextPrev.
 	 */
 	public function getMode()

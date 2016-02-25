@@ -769,13 +769,19 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	{
 		if($this->_trackViewState)
 		{
-			$this->_viewState[$key]=$value;
 			unset($this->_tempState[$key]);
+			if($value===$defaultValue)
+				unset($this->_viewState[$key]);
+			else
+				$this->_viewState[$key]=$value;
 		}
 		else
 		{
 			unset($this->_viewState[$key]);
-			$this->_tempState[$key]=$value;
+			if($value===$defaultValue)
+				unset($this->_tempState[$key]);
+			else
+				$this->_tempState[$key]=$value;
 		}
 	}
 
@@ -1655,7 +1661,10 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
 			{
 				if($control instanceof TControl)
-					$state[$control->_id]=&$control->saveStateRecursive($needViewState);
+				{
+					if(count($tmp = &$control->saveStateRecursive($needViewState)))
+						$state[$control->_id]=$tmp;
+				}
 			}
 		}
 		if($needViewState && !empty($this->_viewState))

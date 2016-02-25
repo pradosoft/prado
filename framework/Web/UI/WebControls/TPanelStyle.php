@@ -46,6 +46,27 @@ class TPanelStyle extends TStyle
 	private $_wrap=null;
 
 	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_backImageUrl===null)
+			$exprops[] = "\0TPanelStyle\0_backImageUrl";
+		if ($this->_direction===null)
+			$exprops[] = "\0TPanelStyle\0_direction";
+		if ($this->_horizontalAlign===null)
+			$exprops[] = "\0TPanelStyle\0_horizontalAlign";
+		if ($this->_scrollBars===null)
+			$exprops[] = "\0TPanelStyle\0_scrollBars";
+		if ($this->_wrap===null)
+			$exprops[] = "\0TPanelStyle\0_wrap";
+	}
+
+	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
 	 * @param THtmlWriter the writer used for the rendering purpose

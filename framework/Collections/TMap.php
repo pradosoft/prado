@@ -42,6 +42,21 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 	private $_r=false;
 
 	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_d===array())
+			$exprops[] = "\0TMap\0_d";
+		if ($this->_r===false)
+			$exprops[] = "\0TMap\0_r";
+	}
+
+	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the intial data. Default is null, meaning no initialization.

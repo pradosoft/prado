@@ -102,7 +102,7 @@ class TLabel extends TWebControl implements IDataRenderer
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
 	}
 
 	/**

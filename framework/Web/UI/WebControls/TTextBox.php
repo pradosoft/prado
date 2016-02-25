@@ -478,7 +478,7 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
 		$this->_safeText = null;
 	}
 

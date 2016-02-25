@@ -45,6 +45,19 @@ class TAttributeCollection extends TMap
 	private $_caseSensitive=false;
 
 	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 */
+	protected function __getZappableSleepProps(&$exprops)
+	{
+		parent::__getZappableSleepProps($exprops);
+		if ($this->_caseSensitive===false)
+			$exprops[] = "\0TAttributeCollection\0_caseSensitive";
+	}
+
+	/**
 	 * Returns a property value or an event handler list by property or event name.
 	 * This method overrides the parent implementation by returning
 	 * a key value if the key exists in the collection.
