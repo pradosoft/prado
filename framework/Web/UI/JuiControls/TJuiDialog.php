@@ -161,7 +161,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	private function triggerClientMethod($method)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$code = "jQuery('#".$this->getClientId()."').dialog('".$method."');";
+		$code = "jQuery(document).ready(function() { jQuery('#".$this->getClientId()."').dialog('".$method."'); })";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
