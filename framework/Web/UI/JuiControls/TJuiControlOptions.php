@@ -112,7 +112,7 @@ class TJuiControlOptions
 			}
 		}
 
-		throw new THttpException(500,'juioptions_option_invalid',$this->_control->ID, $name);
+		throw new TConfigurationException('juioptions_option_invalid',$this->_control->ID, $name);
 	}
 
 	/**
