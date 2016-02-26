@@ -84,6 +84,10 @@ class PradoBase
 		 */
 		set_error_handler(array('PradoBase','phpErrorHandler'));
 		/**
+		 * Sets shutdown function to be Prado::phpFatalErrorHandler
+		 */
+		register_shutdown_function(array('PradoBase','phpFatalErrorHandler'));
+		/**
 		 * Sets exception handler to be Prado::exceptionHandler
 		 */
 		set_exception_handler(array('PradoBase','exceptionHandler'));
@@ -132,6 +136,23 @@ class PradoBase
 	{
 		if(error_reporting() & $errno)
 			throw new TPhpErrorException($errno,$errstr,$errfile,$errline);
+	}
+
+	/**
+	 * PHP shutdown function used to catch fatal errors.
+	 * This method should be registered as PHP error handler using
+	 * {@link register_shutdown_function}. The method throws an exception that
+	 * contains the error information.
+	 */
+	public static function phpFatalErrorHandler()
+	{
+		$error = error_get_last();
+		if($error && 
+			TPhpErrorException::isFatalError($error) &&
+			error_reporting() & $error['type'])
+		{
+			self::exceptionHandler(new TPhpErrorException($error['type'],$error['message'],$error['file'],$error['line']));
+		}
 	}
 
 	/**

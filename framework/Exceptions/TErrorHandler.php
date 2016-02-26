@@ -345,7 +345,12 @@ class TErrorHandler extends TModule
 		// if PHP exception, we want to show the 2nd stack level context
 		// because the 1st stack level is of little use (it's in error handler)
 		if($exception instanceof TPhpErrorException)
-			$result=isset($trace[0]['file'])?$trace[0]:$trace[1];
+		{
+			if(isset($trace[0]['file']))
+				$result=$trace[0];
+			elseif(isset($trace[1]))
+				$result=$trace[1];
+		}
 		else if($exception instanceof TInvalidOperationException)
 		{
 			// in case of getter or setter error, find out the exact file and row
