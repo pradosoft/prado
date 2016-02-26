@@ -336,6 +336,11 @@
         <exclude name="**/*.bak"/>
         <exclude name="**/*~"/>
         <include name="**/*.js"/>
+        <exclude name="Web/Javascripts/source/bootstrap3/**"/>
+        <exclude name="Web/Javascripts/source/jquery/**"/>
+        <exclude name="Web/Javascripts/source/prototype*/**"/>
+        <exclude name="Web/Javascripts/source/scriptaculous*/**"/>
+        <exclude name="Web/Javascripts/source/tinymce*/**"/>
       </fileset>
     </jsllint>
 
