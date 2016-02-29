@@ -24,8 +24,8 @@ class Ticket719 extends TPage
 
 	function suggestion_selected($sender, $param)
 	{
-		var_dump($param->selectedIndex);
 	}
+
 	public function suggestCountries($sender, $param)
 	{
 		$sender->setDataSource($this->matchCountries($param->Token));

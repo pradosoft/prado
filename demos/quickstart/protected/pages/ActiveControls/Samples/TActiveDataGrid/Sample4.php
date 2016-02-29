@@ -6,9 +6,14 @@ class Sample4 extends Sample2
 {
 	protected function sortData($data,$key)
 	{
-		$compare = create_function('$a,$b','if ($a["'.$key.'"] == $b["'.$key.'"]) {return 0;}else {return ($a["'.$key.'"] > $b["'.$key.'"]) ? 1 : -1;}');
-		usort($data,$compare) ;
-		return $data ;
+		usort($data, function($a, $b) use ($key) {
+			if ($a[$key] == $b[$key]) {
+				return 0;
+			} else {
+				return ($a[$key] > $b[$key]) ? 1 : -1;
+			}
+		});
+		return $data;
 	}
 
 	public function sortDataGrid($sender,$param)
