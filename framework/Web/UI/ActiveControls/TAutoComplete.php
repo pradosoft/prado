@@ -18,6 +18,9 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 /**
  * TAutoComplete class.
  *
+ * Warning: this class is deprecatd and will be removed in a future release.
+ * We suggest you to investigate using {@link TJuiAutoComplete} instead.
+ *
  * TAutoComplete is a textbox that provides a list of suggestion on
  * the current partial word typed in the textbox. The suggestions are
  * requested using callbacks, and raises the {@link onSuggestion OnSuggestion}
@@ -78,6 +81,7 @@ Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package System.Web.UI.ActiveControls
  * @since 3.1
+ * @deprecated Use TJuiAutoComplete instead
  */
 class TAutoComplete extends TActiveTextBox implements INamingContainer
 {

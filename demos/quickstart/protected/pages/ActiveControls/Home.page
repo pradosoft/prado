@@ -165,7 +165,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 
 <ul id="u3" class="block-content">
 	<li>
-	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a> (deprecated)
 	extends TActiveTextBox to offer text completion suggestions.
 	</li>
 
@@ -196,7 +196,7 @@ TActiveButton</a> control. See also the later part of the <a href="?page=Tutoria
 	</li>
 
 	<li>
-	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> represents drag and drop containers.
+	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> (deprecated) represents drag and drop containers.
 	The former will make its child controls "draggable" while the latter will raise a callback when a draggable
 	control is dropped on it.
 	</li>

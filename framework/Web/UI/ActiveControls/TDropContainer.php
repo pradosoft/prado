@@ -21,6 +21,10 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
 
 /**
  * TDropContainer is a panel where TDraggable controls can be dropped.
+ *
+ * Warning: this class is deprecatd and will be removed in a future release.
+ * We suggest you to investigate using {@link TJuiDroppable} instead.
+ *
  * When a TDraggable component is dropped into a TDropContainer, the {@link OnDrop OnDrop} event is raised.
  * The {@link TDropContainerEventParameter} param will contain the dropped control.
  *
@@ -39,6 +43,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
+ * @deprecated Use TJuiDroppable instead
  */
 class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHandler
 {

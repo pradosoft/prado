@@ -2,6 +2,10 @@
 <h1 id="188035">TDropContainer</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TDropContainer" />
 
+<p class="block-content">
+This widget is deprecated. Please use <a href="?page=JuiControls.Interactions#TJuiDroppable">TJuiDroppable</a> instead.
+</p>
+
 <p class="block-content"><tt>TDropContainer</tt> represent an area where 
 <tt>TDraggable</tt> controls can be dropped.
 When a <tt>TDraggable</tt> is dropped,  a
@@ -13,6 +17,10 @@ the <tt>OnDrop</tt> event.
 
 <h1 id="188036">TDraggable</h1>
 <com:DocLink ClassPath="System.Web.UI.ActiveControls.TDraggable" />
+
+<p class="block-content">
+This widget is deprecated. Please use <a href="?page=JuiControls.Interactions#TJuiDraggable">TJuiDraggable</a> instead.
+</p>
 
 <p class="block-content"><tt>TDraggable</tt> will make its child controls 'draggable'.
 When a <tt>TDraggable</tt> is dropped,  a

@@ -11,6 +11,9 @@
 /**
  * TDraggable is a control which can be dragged
  *
+ * Warning: this class is deprecatd and will be removed in a future release.
+ * We suggest you to investigate using {@link TJuiDraggable} instead.
+ *
  * This control will make "draggable" control.
  * Properties :
  *
@@ -25,6 +28,7 @@
  * @copyright Copyright &copy; 2008, PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
  * @package System.Web.UI.ActiveControls
+ * @deprecated Use TJuiDraggable instead
  */
 class TDraggable extends TPanel
 {
