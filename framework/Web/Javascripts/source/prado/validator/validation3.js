@@ -1603,7 +1603,7 @@ Prado.WebUI.TActiveCustomValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 				this.options.OnValidate(this, invoker);
 		}
 
-		return this.isValid;
+		return true;
 	},
 
 	/**

@@ -12,7 +12,8 @@ Custom validator using callbacks:
 	ControlToValidate="textbox1"
 	ErrorMessage="Please enter 'Prado'"
 	OnServerValidate="validator1_onvalidate" />
-<com:TActiveButton ID="button1" Text="Submit!" />
+<com:TActiveButton ID="button1" Text="Submit!" OnCallback="button1_oncallback"/>
+<com:TActiveLabel ID="label1" />
 </td></tr>
 </table>
 
