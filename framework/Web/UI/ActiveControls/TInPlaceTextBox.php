@@ -13,7 +13,7 @@ Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
 
 /**
  * TInPlaceTextBox Class
- * *
+ *
  * TInPlaceTextBox is a component rendered as a label and allows its
  * contents to be edited by changing the label to a textbox when
  * the label is clicked or when another control or html element with
@@ -135,6 +135,9 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function setText($value)
 	{
+		if(TTextBox::getText() === $value)
+			return;
+
 		TTextBox::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
@@ -152,6 +155,9 @@ class TInPlaceTextBox extends TActiveTextBox
 	public function setReadOnly ($value)
 	{
 		$value=TPropertyValue::ensureBoolean($value);
+		if(TTextBox::getReadOnly() === $value)
+			return;
+
 		TTextBox::setReadOnly($value);
 		if ($this->getActiveControl()->canUpdateClientSide())
 		{

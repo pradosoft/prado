@@ -94,6 +94,9 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 */
 	public function setText($value)
 	{
+		if(parent::getText() === $value)
+			return;
+
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);

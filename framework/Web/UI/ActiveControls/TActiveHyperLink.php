@@ -50,6 +50,9 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setText($value)
 	{
+		if(parent::getText() === $value)
+			return;
+
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->update($this, $value);
@@ -61,6 +64,9 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setImageUrl($value)
 	{
+		if(parent::getImageUrl() === $value)
+			return;
+
 		parent::setImageUrl($value);
 		if($this->getActiveControl()->canUpdateClientSide() && $value !== '')
 		{
@@ -77,6 +83,9 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setNavigateUrl($value)
 	{
+		if(parent::getNavigateUrl() === $value)
+			return;
+
 		parent::setNavigateUrl($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
@@ -92,6 +101,9 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setTarget($value)
 	{
+		if(parent::getTarget() === $value)
+			return;
+
 		parent::setTarget($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'target', $value);

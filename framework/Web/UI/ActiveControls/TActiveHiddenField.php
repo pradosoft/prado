@@ -55,6 +55,9 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	 */
 	public function setValue($value)
 	{
+		if(parent::getValue() === $value)
+			return;
+
 		parent::setValue($value);
 		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
 			$this->getPage()->getCallbackClient()->setValue($this, $value);

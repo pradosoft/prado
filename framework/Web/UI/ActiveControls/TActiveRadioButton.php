@@ -87,6 +87,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 */
 	public function setText($value)
 	{
+		if(parent::getText() === $value)
+			return;
+
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->update(
@@ -102,6 +105,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	public function setChecked($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
+		if(parent::getChecked() === $value)
+			return;
+
 		parent::setChecked($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 			$this->getPage()->getCallbackClient()->check($this, $value);

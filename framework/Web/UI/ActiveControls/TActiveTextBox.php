@@ -62,6 +62,9 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	 */
 	public function setText($value)
 	{
+		if(parent::getText() === $value)
+			return;
+
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
 			$this->getPage()->getCallbackClient()->setValue($this, $value);

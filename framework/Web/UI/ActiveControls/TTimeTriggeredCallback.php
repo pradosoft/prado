@@ -46,6 +46,10 @@ class TTimeTriggeredCallback extends TCallback
 		$interval = TPropertyValue::ensureFloat($value);
 		if($interval <= 0)
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
+
+		if($this->getInterval() === $value)
+			return;
+
 		$this->setViewState('Interval', $interval, 1);
 		if ($this->getActiveControl()->canUpdateClientSide()){
 			$client = $this->getPage()->getCallbackClient();

@@ -80,6 +80,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setReadOnly($value)
 	{
+		if(parent::getReadOnly() === $value)
+			return;
+
 		parent::setReadOnly($value);
 		$value = $this->getReadOnly();
 		$this->callClientFunction('setReadOnly',$value);
@@ -90,6 +93,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setRating($value)
 	{
+		if(parent::getRating() === $value)
+			return;
+
 		parent::setRating($value);
 		$value = $this->getRating();
 		$this->callClientFunction('setRating',$value);
@@ -115,6 +121,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setCaption($value)
 	{
+		if(parent::getCaption() === $value)
+			return;
+
 		parent::setCaption($value);
 		// if it's an active control, this should not be needed.
 		$this->callClientFunction('setCaption',$value);

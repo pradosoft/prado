@@ -89,6 +89,9 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * @param string text content for the textbox
 	 */
 	public function setText($value){
+		if(parent::getText() === $value)
+			return;
+
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()){
 			$cb=$this->getPage()->getCallbackClient();
