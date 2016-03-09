@@ -240,8 +240,7 @@ class TCallbackClientSide extends TClientSideOptions
 	 */
 	public function getHasPriority()
 	{
-		$option =  $this->getOption('HasPriority');
-		return ($option===null) ? true : $option;
+		return true;
 	}
 
 	/**
@@ -252,9 +251,8 @@ class TCallbackClientSide extends TClientSideOptions
 	 */
 	public function setHasPriority($value)
 	{
-		$hasPriority = TPropertyValue::ensureBoolean($value);
-		$this->setOption('HasPriority', $hasPriority);
-		if(!$hasPriority)
+		// mimic the old behavior
+		if(!$value)
 			$this->setEnablePageStateUpdate(false);
 	}
 
@@ -268,8 +266,6 @@ class TCallbackClientSide extends TClientSideOptions
 	{
 		$enabled = TPropertyValue::ensureBoolean($value);
 		$this->setOption('EnablePageStateUpdate', $enabled);
-		if($enabled)
-			$this->setHasPriority(true);
 	}
 
 	/**

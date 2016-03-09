@@ -384,7 +384,7 @@ class TXmlDocument extends TXmlElement
 			return false;
 
 		$this->setEncoding($doc->encoding);
-		$this->setVersion($doc->version);
+		$this->setVersion($doc->xmlVersion);
 
 		$element=$doc->documentElement;
 		$this->setTagName($element->tagName);

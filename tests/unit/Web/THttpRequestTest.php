@@ -328,7 +328,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
   public function testGetIterator() {
     $request = new THttpRequest ();
     $request->init(null);
-    self::assertInstanceOf ('TMapIterator', $request->getIterator());
+    self::assertInstanceOf ('ArrayIterator', $request->getIterator());
   }
 
   public function testGetCount() {

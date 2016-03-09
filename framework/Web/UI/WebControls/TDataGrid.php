@@ -1162,7 +1162,7 @@ class TDataGrid extends TBaseDataList implements INamingContainer
 		$param=new TDataGridItemEventParameter($item);
 		if($dataBind)
 		{
-			$item->setDataItem($dataItem);
+			$item->setData($dataItem);
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);
 			$item->dataBind();
