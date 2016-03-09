@@ -38,9 +38,9 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_mode===null)
 			$exprops[] = "\0TDataGridPagerStyle\0_mode";
 		if ($this->_nextText===null)

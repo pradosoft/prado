@@ -1591,9 +1591,9 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 {
 	private $_d=array();
 	private $_r=false;
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_d===array())
 			$exprops[] = "\0TMap\0_d";
 		if ($this->_r===false)
@@ -4377,9 +4377,9 @@ Prado::using('System.Web.UI.WebControls.*');
 class TAttributeCollection extends TMap
 {
 	private $_caseSensitive=false;
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_caseSensitive===false)
 			$exprops[] = "\0TAttributeCollection\0_caseSensitive";
 	}
@@ -5640,9 +5640,9 @@ class TFont extends TComponent
 	private $_flags=0;
 	private $_name='';
 	private $_size='';
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_flags===0)
 			$exprops[] = "\0TFont\0_flags";
 		if ($this->_name==='')
@@ -5832,9 +5832,9 @@ class TStyle extends TComponent
 	private $_class=null;
 	private $_customStyle=null;
 	private $_displayStyle='Fixed';
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_fields===array())
 			$exprops[] = "\0TStyle\0_fields";
 		if($this->_font===null)
@@ -6068,9 +6068,9 @@ class TTableStyle extends TStyle
 	private $_cellSpacing=null;
 	private $_gridLines=null;
 	private $_borderCollapse=null;
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl===null)
 			$exprops[] = "\0TTableStyle\0_backImageUrl";
 		if ($this->_horizontalAlign===null)
@@ -6207,9 +6207,9 @@ class TTableItemStyle extends TStyle
 	private $_horizontalAlign=null;
 	private $_verticalAlign=null;
 	private $_wrap=null;
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_horizontalAlign===null)
 			$exprops[] = "\0TTableItemStyle\0_horizontalAlign";
 		if ($this->_verticalAlign===null)

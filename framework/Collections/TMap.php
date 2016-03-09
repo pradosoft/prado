@@ -47,9 +47,9 @@ class TMap extends TComponent implements IteratorAggregate,ArrayAccess,Countable
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_d===array())
 			$exprops[] = "\0TMap\0_d";
 		if ($this->_r===false)
