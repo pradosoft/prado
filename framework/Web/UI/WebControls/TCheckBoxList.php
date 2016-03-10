@@ -402,13 +402,13 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 	 */
 	public function render($writer)
 	{
+	  if ($needSpan=$this->getSpanNeeded())
+	  {
+	    $writer->addAttribute('id', $this->getClientId());
+	    $writer->renderBeginTag('span');
+	  }
 		if($this->getItemCount()>0)
 		{
-			if ($needSpan=$this->getSpanNeeded())
-			{
-				$writer->addAttribute('id', $this->getClientId());
-				$writer->renderBeginTag('span');
-			}
 			$this->_isEnabled=$this->getEnabled(true);
 			$repeatInfo=$this->getRepeatInfo();
 			$accessKey=$this->getAccessKey();
@@ -422,9 +422,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, INamingCont
 			$repeatInfo->renderRepeater($writer,$this);
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);
-			if ($needSpan)
-				$writer->renderEndTag();
 		}
+		if ($needSpan)
+		  $writer->renderEndTag();
 
 		//checkbox skipped the client control script in addAttributesToRender
 		if($this->getEnabled(true)
