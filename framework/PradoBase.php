@@ -91,6 +91,10 @@ class PradoBase
 		 * Sets exception handler to be Prado::exceptionHandler
 		 */
 		set_exception_handler(array('PradoBase','exceptionHandler'));
+		/**
+		 * Disable php's builtin error reporting to avoid duplicated reports
+		 */
+		ini_set('display_errors', 0);
 	}
 
 	/**
