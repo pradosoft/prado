@@ -1,4 +1,20 @@
-Version 3.3.0 Febrary 15, 2016
+Version 3.3.1 XXX XX, 2016
+
+BUG: TJuiAutoComplete: fix parsing of suggestions (ctrlaltca)
+BUG: Fix callback for controls with PostState=false (ctrlaltca)
+BUG: Fix stopping even propagation on javascript events (ctrlaltca)
+BUG: Issue #574 - Fix TActiveCustomValidator validation after error (ctrlaltca)
+BUG: Fix callback loading for dynamically created JuiControls (ctrlaltca)
+BUG: Fix ClientSide.RequestTimeOut on active controls (ctrlaltca)
+BUG: Fix error reporting for not-existing property set on TJuiControl (ctrlaltca)
+BUG: TJuiDialog: avoid "cannot call methods on dialog prior to initialization" error (ctrlaltca)
+ENH: Issue #569 - Improved TJavascriptLogger / browser console logging of errors (ctrlaltca)
+ENH: Applied some misc optimizations to class serialization (ctrlaltca)
+ENH: Intercept fatal errors using register_shutdown_function (ctrlaltca)
+ENH: Activecontrols: avoid updating client side if the value didn't change (ctrlaltca)
+BUG: Fix callback update of TActiveCheckBoxList when initially empty (LCSKJ)
+
+Version 3.3.0 February 15, 2016
 
 CHG: Added jQuery and rebased PRADO's effect and controls on it (ctrlaltca)
 ENH: Added jQueryUI and created new controls (ctrlaltca)
