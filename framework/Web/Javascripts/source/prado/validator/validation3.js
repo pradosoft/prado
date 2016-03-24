@@ -1239,6 +1239,8 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 			case 'TActiveCheckBox':
 			case 'TActiveRadioButton':
 				return value;
+            case 'TReCaptcha2':
+                return document.getElementById(this.options.ResponseFieldName).value;
 			default:
 				if(this.isListControlType())
 					return value;
@@ -1994,3 +1996,83 @@ Prado.WebUI.TReCaptchaValidator = jQuery.klass(Prado.WebUI.TBaseValidator,
 	}
 });
 
+/**
+ * Registry for TReCaptcha2 components
+ */
+Prado.WebUI.TReCaptcha2Instances = {};
+/**
+ * Render callback; called by google's js when loaded
+ */
+TReCaptcha2_onloadCallback = function()
+{
+	jQuery.each(Prado.WebUI.TReCaptcha2Instances, function(index, item) {
+    	item.build();
+	});
+}
+
+/**
+ * TReCaptcha2 client-side control.
+ *
+ * @class Prado.WebUI.TReCaptcha2
+ * @extends Prado.WebUI.Control
+ */
+Prado.WebUI.TReCaptcha2 = jQuery.klass(Prado.WebUI.Control,
+{
+    onInit: function(options)
+    {
+        for (key in options) { this[key] = options[key]; }
+        this.options['callback'] = jQuery.proxy(this.callback,this);
+        this.options['expired-callback'] = jQuery.proxy(this.callbackExpired,this);
+        
+        Prado.WebUI.TReCaptcha2Instances[this.element.id] = this;
+    },
+    build: function()
+    {
+       if (grecaptcha !== undefined) this.widgetId = grecaptcha.render(this.element, this.options);
+    },
+    callback: function(response)
+    {
+        var responseField = jQuery('#' + this.ID + ' textarea').attr('id');
+        var params = {
+            widgetId: this.widgetId,
+            response: response,
+            responseField: responseField,
+            onCallback: this.onCallback
+        };
+        var request = new Prado.CallbackRequest(this.EventTarget,this);
+        request.setCallbackParameter(params);
+        request.dispatch();
+    },
+    callbackExpired: function()
+    {
+        var responseField = jQuery('#' + this.ID + ' textarea').attr('id');
+        var params = {
+            responseField: responseField,
+            onCallbackExpired: this.onCallbackExpired
+        };
+        var request = new Prado.CallbackRequest(this.EventTarget,this);
+        request.setCallbackParameter(params);
+        request.dispatch();
+    }
+});
+
+/**
+ * TReCaptcha2Validator client-side control.
+ *
+ * @class Prado.WebUI.TReCaptcha2Validator
+ * @extends Prado.WebUI.TBaseValidator
+ */
+Prado.WebUI.TReCaptcha2Validator = jQuery.klass(Prado.WebUI.TBaseValidator,
+{
+    /**
+     * Evaluate validation state
+     * @function {boolean} ?
+     * @return True if the captcha has validate, False otherwise.
+     */
+    evaluateIsValid : function()
+    {
+        var a = this.getValidationValue();
+        var b = this.trim(this.options.InitialValue);
+        return(a != b);
+    }
+});

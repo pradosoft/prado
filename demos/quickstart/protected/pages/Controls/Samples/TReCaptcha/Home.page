@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+<h1>TReCaptcha Samples</h1>
+
+<h2>Validating ReCAPTCHA v1</h2>
+
+Please note that this sample can't work unless you provide a valid private/public key to use the ReCAPTCHA service.
+
+<com:TReCaptcha ID="Captcha"
+   PublicKey="insert your public key here"
+   PrivateKey="insert your private key here"
+/>
+
+<com:TButton Id="SubmitButton" Text="Submit" OnClick="buttonClicked" />
+<com:TReCaptchaValidator ControlToValidate="Captcha"
+    ErrorMessage="You are challenged!" />
+
+</com:TContent>

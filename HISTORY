@@ -13,6 +13,7 @@ ENH: Issue #569 - Improved TJavascriptLogger / browser console logging of errors
 ENH: Applied some misc optimizations to class serialization (ctrlaltca)
 ENH: Intercept fatal errors using register_shutdown_function (ctrlaltca)
 ENH: Activecontrols: avoid updating client side if the value didn't change (ctrlaltca)
+ENH: Added TReCaptcha2 / TReCaptcha2Validator (camilohaze)
 BUG: Fix callback update of TActiveCheckBoxList when initially empty (LCSKJ)
 
 Version 3.3.0 February 15, 2016

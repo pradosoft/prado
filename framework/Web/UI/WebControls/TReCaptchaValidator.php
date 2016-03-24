@@ -21,7 +21,7 @@ Prado::using('System.Web.UI.WebControls.TReCaptcha');
  * is not the same as the token displayed in reCAPTCHA. Note, if the user does
  * not enter any thing, it is still considered as failing the validation.
  *
- * To use TReCaptchaValidator, specify the {@link setControlToValidate ControlToValidate}
+ * To use TReCaptchaValidator, specify the {@link setCaptchaControl CaptchaControl}
  * to be the ID path of the {@link TReCaptcha} control.
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>

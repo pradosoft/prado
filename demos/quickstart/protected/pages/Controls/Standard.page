@@ -134,6 +134,14 @@
   </li>
 
   <li>
+  <a href="?page=Controls.ReCaptcha">TReCaptcha</a> displays a <a href="https://www.google.com/recaptcha">ReCaptcha v1</a> useful to detect if the user is a bot or an human.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ReCaptcha2">TReCaptcha2</a> displays a <a href="https://www.google.com/recaptcha">ReCaptcha v2</a> useful to detect if the user is a bot or an human.
+  </li>
+
+  <li>
   <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Advanced.Security">XSS</a>).
   </li>
 
