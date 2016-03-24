@@ -20,6 +20,8 @@ Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 	},
 
 	fileChanged : function(){
+		// ie11 fix
+		if(this.input.value=='') return;
 		// show the upload indicator, and hide the complete and error indicators (if they areSn't already).
 		this.flag.value = '1';
 		this.complete.style.display = 'none';
