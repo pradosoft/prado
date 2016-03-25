@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<sqlMap namespace="LineItem" >
+	
+		<resultMap id="LineItem-Price" class="float">
+			<result property="value"		column="LineItem_Price"/>
+		</resultMap>
+		
+		<resultMap id="LineItem" class="LineItem">
+			<result property="Id"			column="LineItem_Id"/>
+			<result property="Code"			column="LineItem_Code"/>
+			<result property="Quantity"		column="LineItem_Quantity"/>
+			<result property="Price"		column="LineItem_Price"/>
+		</resultMap>
+		
+		<resultMap id="LineItemWithNullReplacement" class="LineItem">
+			<result property="Id"			column="LineItem_Id"/>
+			<result property="Code"			column="LineItem_Code"/>
+			<result property="Quantity"		column="LineItem_Quantity"/>
+			<result property="Price"		column="LineItem_Price" nullValue="-77.77"/>
+		</resultMap>
+		
+	
+		<statement id="GetLineItemPrice"
+					parameterClass="array"
+					resultMap="LineItem-Price" >
+			select
+				LineItem_Price
+				from LineItems
+				where Order_ID = #Order_ID#
+				and LineItem_ID = #LineItem_ID#
+		</statement>
+		
+		<statement id="GetLineItemsForOrder"
+			parameterClass="int"
+			listClass="TList"
+			resultClass="LineItem">
+			select
+				LineItem_ID as Id,
+				LineItem_Code as Code,
+				LineItem_Quantity as Quantity,
+				LineItem_Price as Price
+			from LineItems where Order_ID = #value#
+		</statement>
+		
+
+		<statement id="GetLineItemsForOrderWithListClass"
+			parameterClass="int"
+			listClass="LineItemCollection"
+			resultClass="LineItem">
+			select
+				LineItem_ID as Id,
+				LineItem_Code as Code,
+				LineItem_Quantity as Quantity,
+				LineItem_Price as Price
+			from LineItems where Order_ID = #value#
+			order by LineItem_Code
+		</statement>
+
+		<statement id="GetSpecificLineItem"
+					parameterClass="array"
+					resultClass="LineItem">
+			select
+				LineItem_ID as Id,
+				LineItem_Code as Code,
+				LineItem_Quantity as Quantity,
+				LineItem_Price as Price
+				from LineItems
+			where Order_ID = #Order_ID#
+				and LineItem_ID = #LineItem_ID#
+		</statement>
+		
+		<statement id="GetSpecificLineItemWithPicture"
+					parameterClass="array"
+					resultClass="LineItem">
+			select
+				LineItem_ID as Id,
+				LineItem_Code as Code,
+				LineItem_Quantity as Quantity,
+				LineItem_Price as Price,
+				LineItem_Picture as PictureData				
+				from LineItems
+			where Order_ID = #Order_ID#
+				and LineItem_ID = #LineItem_ID#
+		</statement>
+		
+		<select id="GetDynSpecificLineItem"
+			parameterClass="array"
+			resultClass="LineItem">
+			select
+				LineItem_ID as Id,
+				LineItem_Code as Code,
+				LineItem_Quantity as Quantity,
+				LineItem_Price as Price
+				from LineItems
+			where Order_ID = #Order_ID#
+			<dynamic>
+				<isNotNull property="LineItem_ID">
+					and LineItem_ID = #LineItem_ID#
+				</isNotNull>
+			</dynamic>
+		</select>
+		
+		<statement id="GetSpecificLineItemWithNullReplacement"
+					parameterClass="int"
+					resultMap="LineItemWithNullReplacement">
+			select
+				LineItem_ID,
+				LineItem_Code,
+				LineItem_Quantity,
+				LineItem_Price
+				from LineItems
+				where LineItem_ID =  #value#
+		</statement>
+		
+		<statement id="InsertLineItem" 
+					parameterMap="line-item-insert-params" >
+			insert into LineItems
+			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
+			values
+			(?, ?, ?, ?, ?);
+		</statement>
+		
+		<statement id="InsertLineItemWithPicture" 
+					parameterMap="line-item-insert-params-picture" >
+			insert into LineItems
+			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price, LineItem_Picture)
+			values
+			(?, ?, ?, ?, ?, ?);
+		</statement>
+		
+		<insert id="InsertLineItemPostKey" parameterClass="LineItem">
+			insert into LineItems
+			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
+			values
+			(#Id#, #Order.Id#, #Code#, #Quantity#, #Price, type=float#)
+			<selectKey property="Id" type="post" resultClass="int" >
+				select 99 from LineItems where LineItem_ID = 1 and Order_ID=1
+			</selectKey>
+		</insert>	
+		
+		 <insert id="InsertLineItemPreKey" parameterClass="LineItem">
+			<selectKey property="Id" type="pre" resultClass="int" >
+				select 99 from LineItems where LineItem_ID = 1 and Order_ID=1
+			</selectKey>
+			insert into LineItems
+			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
+			values
+			(#Id#, #Order.Id#, #Code#, #Quantity#, #Price, type=float#)
+		</insert>
+  
+		<insert id="InsertLineItemNoKey" parameterClass="LineItem">
+			insert into LineItems
+			(LineItem_ID, Order_ID, LineItem_Code, LineItem_Quantity, LineItem_Price)
+			values
+			(#Id#, #Order.Id#, #Code#, #Quantity#, #Price, type=float#)
+		</insert>
+		
+  		<!-- JIRA 23 -->
+		<delete id="DeleteWithComments" >
+			<!-- Delete LineItems -->
+			delete from LineItems where Order_ID = 10;
+			<!-- Delete LineItems -->
+		</delete>		
+		
+		<parameterMap id="line-item-insert-params">
+			<parameter property="Id" />
+			<parameter property="Order.Id" />
+			<parameter property="Code" />			
+			<parameter property="Quantity" />
+			<parameter property="Price" dbType="Decimal" nullValue="-99.99"/>
+		</parameterMap>
+				
+		<parameterMap id="line-item-insert-params-picture">
+			<parameter property="Id" />
+			<parameter property="Order.Id" />
+			<parameter property="Code" />			
+			<parameter property="Quantity" />
+			<parameter property="Price" dbType="Decimal" nullValue="-99.99"/>
+			<parameter property="PictureData" dbType="Blob" />
+		</parameterMap>
+		
+</sqlMap>

@@ -347,7 +347,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 		static $bCacheDependencies;
 		if($bCacheDependencies === null)
-			$bCacheDependencies = Prado::getApplication()->getMode() !== TApplicationMode::Performance;
+			$bCacheDependencies = true; //Prado::getApplication()->getMode() !== TApplicationMode::Performance;
 
 		if($bCacheDependencies)
 			$this->_manager->getCacheDependencies()

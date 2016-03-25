@@ -228,7 +228,7 @@ class TCache_Lite
     * @param array $options options
     * @access public
     */
-    function TCache_Lite($options = array(null))
+    function __construct($options = array(null))
     {
         $availableOptions = array(	'automaticSerialization',
         							'fileNameProtection',

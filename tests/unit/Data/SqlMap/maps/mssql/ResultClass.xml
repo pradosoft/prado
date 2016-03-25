@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<sqlMap namespace="ResultClass" >
+
+	<statement id="GetBoolean"
+				parameterClass="Int"
+				resultClass="bool" >
+		select cast(1 as bit) from Orders where Order_ID = #dummy#
+	</statement>
+	<statement id="GetBooleanWithoutResultClass"
+				parameterClass="Int"
+				extends="GetBoolean">
+	</statement>	
+
+	<statement id="GetByte"
+				parameterClass="Int"
+				resultClass="int" >
+		select cast(155 as tinyint) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetByteWithoutResultClass"
+				parameterClass="Int"
+				extends="GetByte">
+	</statement>	
+	
+	<statement id="GetChar"
+				parameterClass="Int"
+				resultClass="string" >
+		select cast('a' as char) from Orders where Order_ID = #value#
+	</statement>
+	<!-- SQL Server provider doesn't know char type, the resultClass type must be specified -->
+	<statement id="GetCharWithoutResultClass"
+				parameterClass="Int" resultClass="string" 
+				extends="GetChar">
+	</statement>
+	
+	<statement id="GetDate"
+				parameterClass="Int"
+				resultClass="date" >
+		select cast('2003-02-15 8:15:00' as datetime) as datetime from Orders where Order_ID  = #value#
+	</statement>
+	<statement id="GetDateWithoutResultClass"
+				parameterClass="Int"
+				extends="GetDate">
+	</statement>
+								
+	<statement id="GetDecimal"
+				parameterClass="Int"
+				resultClass="decimal" >
+		select cast(1.56 as decimal(9,2)) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetDecimalWithoutResultClass"
+				parameterClass="Int"
+				extends="GetDecimal">
+	</statement>
+
+	<statement id="GetDouble"
+				parameterClass="Int"
+				resultClass="double" >
+		select cast(99.5 as float) from Orders where Order_ID= #value#
+	</statement>
+	<statement id="GetDoubleWithoutResultClass"
+				parameterClass="Int"
+				extends="GetDouble">
+	</statement>
+
+	<statement id="GetGuid"
+				parameterClass="Int"
+				resultClass="guid" >
+		select cast('CD5ABF17-4BBC-4C86-92F1-257735414CF4' as UniqueIdentifier) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetGuidWithoutResultClass" parameterClass="Int" extends="GetGuid">
+	</statement>
+	
+	<statement id="GetInt16"
+				parameterClass="Int"
+				resultClass="integer" >
+		select cast(32111 as SmallInt) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetInt16WithoutResultClass"
+				parameterClass="Int"
+				extends="GetInt16">
+	</statement>	
+	
+	<statement id="GetInt32"
+				parameterClass="Int"
+				resultClass="int" >
+		select cast(999999 as int) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetInt32WithoutResultClass"
+				parameterClass="Int"
+				extends="GetInt32">
+	</statement>
+	
+	<statement id="GetInt64"
+				parameterClass="Int"
+				resultClass="float" >
+		select cast(9223372036854775800 as bigint) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetInt64WithoutResultClass"
+				parameterClass="Int"
+				extends="GetInt64">
+	</statement>
+	
+	<statement id="GetSingle"
+				parameterClass="Int"
+				resultClass="float" >
+		select cast(92233.5 as real) from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetSingleWithoutResultClass"
+				parameterClass="Int"
+				extends="GetSingle">
+	</statement>
+					
+	<statement id="GetString"
+				parameterClass="Int"
+				resultClass="string" >
+		select 'VISA'
+		from Orders where Order_ID = #value#
+	</statement>
+	<statement id="GetStringWithoutResultClass"
+				parameterClass="Int"
+				extends="GetString">
+	</statement>
+	
+</sqlMap>

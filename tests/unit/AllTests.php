@@ -15,6 +15,7 @@ require_once 'Security/AllTests.php';
 require_once 'Caching/AllTests.php';
 require_once 'Util/AllTests.php';
 require_once 'Data/DataGateway/AllTests.php';
+require_once 'Data/ActiveRecord/AllTests.php';
 require_once 'Data/SqlMap/AllTests.php';
 
 
@@ -39,6 +40,7 @@ class AllTests {
 	$suite->addTest(Caching_AllTests::suite());
 	$suite->addTest(Util_AllTests::suite());
 	$suite->addTest(Data_DataGateway_AllTests::suite());
+	$suite->addTest(Data_ActiveRecord_AllTests::suite());
 	$suite->addTest(Data_SqlMap_AllTests::suite());
 
 	$suite->addTestSuite('TComponentTest');

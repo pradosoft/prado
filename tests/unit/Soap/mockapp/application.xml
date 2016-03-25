@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="simple_unit" mode="Debug">
+  <services>
+    <service id="soap" class="System.Web.Services.TSoapService">
+		<soap id="contacts" provider="Application.Soap.ContactManager" ClassMaps="Contact, Address"/>
+    </service>
+  </services>
+</application>

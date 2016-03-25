@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<sqlMap namespace="ResultClass" >
+
+		<statement id="GetBoolean"
+					parameterClass="Int"
+					resultClass="bool" >
+			select 1 from Orders where Order_ID = #dummy#
+		</statement>
+		<statement id="GetBooleanWithoutResultClass"
+					parameterClass="Int"
+					extends="GetBoolean">
+		</statement>
+
+		<statement id="GetByte"
+					parameterClass="Int"
+					resultClass="string" >
+			select 155 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetByteWithoutResultClass"
+					parameterClass="Int"
+					extends="GetByte">
+		</statement>	
+		
+		<!-- 
+		NOTE: Use MySql 4.0.2 or higher for "cast"
+		-->
+		<statement id="GetChar"
+					parameterClass="Int"
+					resultClass="string" >
+			select 'a' from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetCharWithoutResultClass"
+					parameterClass="Int"
+					extends="GetChar">
+		</statement>
+		
+		<statement id="GetDate"
+					parameterClass="Int"
+					resultClass="TDateTime" >
+			select '2003-02-15 8:15:00' as datetime from Orders where Order_ID  = #value#
+		</statement>
+		<statement id="GetDateWithoutResultClass"
+					parameterClass="Int"
+					extends="GetDate">
+		</statement>
+									
+		<statement id="GetDecimal"
+					parameterClass="Int"
+					resultClass="float" >
+			select 1.56 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetDecimalWithoutResultClass"
+					parameterClass="Int"
+					extends="GetDecimal">
+		</statement>
+
+		<statement id="GetDouble"
+					parameterClass="Int"
+					resultClass="float" >
+			select 99.5 from Orders where Order_ID= #value#
+		</statement>
+		<statement id="GetDoubleWithoutResultClass"
+					parameterClass="Int"
+					extends="GetDouble">
+		</statement>
+
+		<!--
+		Use binary for cast for MySql
+		-->
+		<statement id="GetGuid"
+					parameterClass="Int"
+					resultClass="guid" >
+			select cast('CD5ABF17-4BBC-4C86-92F1-257735414CF4' as binary) from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetGuidWithoutResultClass" parameterClass="Int" extends="GetGuid">
+		</statement>
+		
+		<statement id="GetInt16"
+					parameterClass="Int"
+					resultClass="int" >
+			select 32111 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetInt16WithoutResultClass"
+					parameterClass="Int"
+					extends="GetInt16">
+		</statement>
+		
+		<statement id="GetInt32"
+					parameterClass="Int"
+					resultClass="int" >
+			select 999999 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetInt32WithoutResultClass"
+					parameterClass="Int"
+					extends="GetInt32">
+		</statement>
+		
+		<statement id="GetInt64"
+					parameterClass="Int"
+					resultClass="double" >
+			select 9223372036854775800 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetInt64WithoutResultClass"
+					parameterClass="Int"
+					extends="GetInt64">
+		</statement>
+		
+		<statement id="GetSingle"
+					parameterClass="Int"
+					resultClass="float" >
+			select 92233.5 from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetSingleWithoutResultClass"
+					parameterClass="Int"
+					extends="GetSingle">
+		</statement>
+						
+		<statement id="GetString"
+					parameterClass="Int"
+					resultClass="string" >
+			select 'VISA'
+			from Orders where Order_ID = #value#
+		</statement>
+		<statement id="GetStringWithoutResultClass"
+					parameterClass="Int"
+					extends="GetString">
+		</statement>
+
+</sqlMap>

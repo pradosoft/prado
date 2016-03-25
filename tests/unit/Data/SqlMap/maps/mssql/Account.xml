@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<sqlMap namespace="Account">
+   
+	
+	<cacheModel id="account-cache" implementation="LRU" >
+		<flushInterval hours="24"/>
+		<flushOnExecute statement="UpdateAccountViaInlineParameters"/>
+		<flushOnExecute statement="UpdateAccountViaParameterMap"/>
+		<property id="CacheSize" value="50"/>
+	</cacheModel> 
+	
+
+	<resultMap id="account-result"  class="Account" >
+		<result property="Id"           column="Account_ID"/>
+		<result property="FirstName"    column="Account_FirstName"/>
+		<result property="LastName"     column="Account_LastName"/>
+		<result property="EmailAddress" column="Account_Email" nullValue="no_email@provided.com"/>
+		<result property="BannerOptions" column="Account_Banner_Option" dbType="Varchar" typeHandler="OuiNonBool"/>
+		<result property="CartOptions"	column="Account_Cart_Option" typeHandler="HundredsBool"/>			
+	</resultMap>
+	<resultMap id="indexed-account-result" class="Account">
+		<result property="Id"           column="Account_ID"			columnIndex="0"/>
+		<result property="FirstName"    column="Account_FirstName"	columnIndex="1"/>
+		<result property="LastName"     column="Account_LastName"	columnIndex="2"/>
+		<result property="EmailAddress" column="Account_Email"		columnIndex="3"	nullValue="no_email@provided.com"/>
+	</resultMap>
+	<resultMap id="account-result-nullable-email" class="Account">
+		<result property="Id"           column="Account_ID"/>
+		<result property="FirstName"    column="Account_FirstName"/>
+		<result property="LastName"     column="Account_LastName"/>
+		<result property="EmailAddress" column="Account_Email"/>
+	</resultMap>
+	
+	<resultMap id="email-result" class="string">
+		<result property="value" column="Account_Email"/>
+	</resultMap>
+	
+	<resultMap id="account-hashtable-result" class="array">
+		<result property="Id"           column="Account_ID"/>
+		<result property="FirstName"    column="Account_FirstName"/>
+		<result property="LastName"     column="Account_LastName"/>
+		<result property="EmailAddress" column="Account_Email"/>
+	</resultMap>
+	
+
+<!-- =============================================
+	MAPPED STATEMENTS - w/Inline Parameters
+============================================= 
+-->
+
+	<select id="GetAllAccountsAsArrayListViaResultClass" resultClass="TList">
+		select
+		Account_ID as ID,
+		Account_FirstName as FirstName,
+		Account_LastName as LastName,
+		Account_Email as EmailAddress
+		from Accounts
+		order by Account_ID
+	</select>
+	
+	<select id="GetAccountsDynamic" resultMap="account-result" parameterClass="array" >
+		select top $MaximumAllowed$ * from Accounts
+		<dynamic prepend="where">
+				<isParameterPresent>
+				<isNotEmpty prepend="and" property="FirstName" >
+						Account_FirstName LIKE '%$FirstName$%'
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="LastName" >
+						Account_LastName LIKE '%$LastName$%'
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="EmailAddress"  >
+						Account_Email LIKE '%$EmailAddress$%'
+				</isNotEmpty>
+				</isParameterPresent>
+			</dynamic>
+			order by Account_LastName
+	</select>
+
+	<select id="SelectWithProperty"
+				resultMap="account-result">
+		select *
+		from Accounts
+		where Account_FirstName = ${accountName}
+	</select>
+				
+	<select id="GetCachedAccountsViaResultMap"
+				resultMap="account-result"
+				cacheModel="account-cache" >
+		select *
+		from Accounts
+		order by Account_ID
+	</select>
+
+	<select id="GetNoAccountWithCache"
+					parameterClass="Integer"
+					resultMap="account-hashtable-result"
+					cacheModel="account-cache">
+		select *
+		from Accounts
+		where Account_ID = #value#
+	</select>
+	
+	<select id="GetAccountAsarray"
+					parameterClass="Integer"
+					resultMap="account-hashtable-result">
+		select *
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetAllAccountsAsHashMapViaResultMap"
+					resultMap="account-hashtable-result">
+		select *
+		from Accounts
+		order by Account_ID
+	</select>
+
+	<select id="GetAccountAsarrayResultClass"
+					parameterClass="int"
+					resultClass="HashMap">
+		select
+		Account_ID as Id,
+		Account_FirstName as FirstName,
+		Account_LastName as LastName,
+		Account_Email as EmailAddress
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetAllAccountsAsarrayViaResultClass"
+					resultClass="array">
+		select
+		Account_ID as Id,
+		Account_FirstName as FirstName,
+		Account_LastName as LastName,
+		Account_Email as EmailAddress
+		from Accounts
+		order by Account_ID
+	</select>
+
+	<select id="GetAccountViaColumnName"
+			parameterClass="int"
+			resultMap="account-result">
+		select
+		Account_ID,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email, 
+		Account_Banner_Option,
+		Account_Cart_Option
+		from Accounts
+		where Account_ID = #value#
+	</select>
+	
+	<select id="GetAccountViaColumnIndex"
+			parameterClass="int"
+			resultMap="indexed-account-result">
+		select
+		Account_ID,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetAllAccountsViaResultMap"
+				resultMap="account-result">
+		select * from Accounts
+		order by Account_ID
+	</select>
+			
+	<select id="GetAllAccountsViaResultClass" 
+		resultClass="Account">
+		select
+		Account_ID as Id,
+		Account_FirstName as FirstName,
+		Account_LastName as LastName,
+		Account_Email as EmailAddress
+		from Accounts
+		order by Account_ID
+	</select>
+	
+	<select id="GetFewAccountsViaResultMap"
+		resultMap="account-result">
+		<![CDATA[
+		select * from Accounts
+		where Account_ID < 2
+		order by Account_ID
+		]]>
+	</select>
+			
+	<select id="GetNoAccountsViaResultMap"
+				resultMap="account-result">
+		select * from Accounts
+		where Account_ID > 1000
+		order by Account_ID
+	</select>
+
+
+	<select id="GetAccountNullableEmail" 
+		resultMap="account-result-nullable-email">
+		select
+		Account_ID,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetAccountViaResultClass" 
+		resultClass="Account">
+		<![CDATA[
+				select
+				Account_ID as Id,
+				Account_FirstName as FirstName,
+				Account_LastName as LastName,
+				Account_Email as EmailAddress
+				from Accounts
+				where Account_ID = #value#
+		]]>
+	</select>
+	
+	<select id="GetAccountViaInlineParameters"
+			resultMap="indexed-account-result">
+		select
+		Account_ID,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email
+		from Accounts
+		where Account_ID = #Id# and Account_ID = #Id#
+	</select>
+	
+	 <select id="GetEmailAddressViaResultClass" resultClass="string">
+		select Account_Email as value
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetEmailAddressViaResultMap"
+					parameterClass="int"
+					resultMap="email-result">
+		select Account_Email
+		from Accounts
+		where Account_ID = #value#
+	</select>
+
+	<select id="GetAllEmailAddressesViaResultClass"
+						resultClass="string">
+		select Account_Email
+		from Accounts
+		order by Account_ID
+	</select>
+	
+	 <select id="GetAllEmailAddressesViaResultMap"
+				resultMap="email-result">
+		select Account_Email
+		from Accounts
+		order by Account_ID
+	</select>
+				
+	 <insert id="InsertAccountViaParameterMap"
+				parameterMap="account-insert-params">
+		insert into Accounts  
+			(Account_ID, Account_FirstName, Account_LastName, Account_Email, Account_Banner_Option, Account_Cart_Option) 
+		values 
+			(?, ?, ?, ?, ?, ?)
+	</insert>
+	
+	 <update id="UpdateAccountViaParameterMap"
+				parameterMap="update-params">
+		update Accounts set
+		Account_FirstName = ?,
+		Account_LastName = ?,
+		Account_Email = ?
+		where
+		Account_ID = ?
+	</update>
+	
+	<update id="UpdateAccountViaParameterMap2"
+				parameterMap="update-params2">
+		update Accounts set
+		Account_ID = ?,
+		Account_FirstName = ?,
+		Account_LastName = ?,
+		Account_Email = ?
+		where
+		Account_ID = ?
+	</update>
+			
+	<delete id="DeleteAccountViaInlineParameters">
+		delete from Accounts 
+		where
+		Account_ID = #Id#
+	</delete>
+	
+	<select id="GetAccountComplexMapping"
+				resultMap="indexed-account-result"
+				parameterClass="array">
+		select *
+		from Accounts 
+		where 
+		Account_FirstName = #Account.FirstName# 
+		And Account_LastName = #Order.City#
+	</select>
+	
+	<select id="GetDynamicOrderedEmailAddressesViaResultMap"
+				resultMap="email-result">
+		select Account_Email
+		from Accounts
+		order by $value$
+	</select>
+	
+	<!-- Dynamic statements -->
+	<select id="GetAllAccountsViaResultMapWithDynamicElement"
+			resultMap="indexed-account-result">
+		select * from Accounts
+		where Account_Email $value$ '%@%'
+		order by Account_ID
+	</select>
+	
+	<select id="SimpleDynamicSubstitution"
+		 parameterClass="array"
+		 resultClass="Account">
+		$statement$
+	</select>
+	
+	<!-- Public Fields -->
+	<insert id="InsertAccountViaPublicFields">
+		insert into Accounts 
+			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
+		values 
+			(#Id#, #FirstName#, #LastName#, #EmailAddress#
+		)
+	</insert>
+	
+	<!-- Inline Parameters -->
+	<update id="UpdateAccountViaInlineParameters"
+		parameterClass="Account">
+		update Accounts set
+		Account_FirstName = #FirstName#,
+		Account_LastName = #LastName#,
+		Account_Email = #EmailAddress, nullValue=no_email@provided.com#
+		where
+		Account_ID = #Id#
+	</update>
+
+	<insert id="InsertAccountViaInlineParameters"
+		parameterClass="Account" >
+		insert into Accounts 
+			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
+		values 
+			(#Id#, #FirstName#, #LastName#, #EmailAddress, nullValue=no_email@provided.com#
+		)
+	</insert>
+
+	<insert id="InsertAccountNullableEmail"
+		parameterClass="Account" >
+		insert into Accounts 
+			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
+		values 
+			( #Id#, #FirstName#, #LastName#, #EmailAddress, dbType=VarChar# )
+	</insert>
+
+	<insert id="InsertAccountUknownParameterClass">
+		insert into Accounts 
+			(Account_ID, Account_FirstName, Account_LastName, Account_Email) 
+		values 
+			( #Id#, #FirstName#, #LastName#, #EmailAddress, dbType=VarChar# )
+	</insert>
+
+	<delete id="DeleteAccount" parameterClass="Account">
+		delete from Accounts
+		where Account_ID = #Id, type=integer#
+		and Account_ID = #Id, type=integer#
+	</delete>
+
+	<!-- Extends statement -->
+	<select id="GetAllAccounts"
+				resultMap="indexed-account-result">
+		select
+		Account_ID,
+		Account_FirstName,
+		Account_LastName,
+		Account_Email
+		from Accounts
+	</select>
+	
+	<select id="GetAllAccountsOrderByName"
+		extends="GetAllAccounts"
+		resultMap="indexed-account-result">
+		order by Account_FirstName
+	</select>
+	
+	<select id="GetOneAccount"
+		extends="GetAllAccounts"
+		resultMap="indexed-account-result">
+		where Account_ID = #value#
+	</select>
+	
+	<select id="GetSomeAccount"
+		extends="GetAllAccounts"
+		parameterClass="array"
+		resultMap="indexed-account-result">
+		where Account_ID between #lowID# and #hightID#
+	</select>
+
+	<select id="SelectAccountJIRA29" parameterClass="map" resultClass="Account">
+		select
+			Account_ID as Id,
+			Account_FirstName as FirstName,
+			Account_LastName as LastName,
+			Account_Email as EmailAddress
+		from Accounts
+		where Account_FirstName = '##$AccountName$##'
+	</select>
+
+	<select id="SelectAccountJIRA29-2"
+			parameterClass="array"
+			resultClass="Account">
+		select
+			Account_ID as Id,
+			Account_FirstName as FirstName,
+			Account_LastName as LastName,
+			Account_Email as EmailAddress
+		from Accounts
+		where 1=1
+		<isNotEmpty prepend="AND" property="Foo"> 
+			(Account_FirstName = '##$Foo$##') 
+		</isNotEmpty> 
+	</select>	
+	
+	<select id="GetAccountWithRepeatingProperty"
+					parameterClass="Account" 
+					resultMap="indexed-account-result">
+		select
+				Account_ID,
+				Account_FirstName,
+				Account_LastName,
+				Account_Email
+		from Accounts
+		where Account_ID = #Id# and 
+				Account_ID = #Id# and 
+				Account_FirstName = #FirstName# and 
+				Account_LastName = #LastName# and 
+				Account_ID = #Id#				
+	</select>		
+					
+	<select id="GetAllAccountsViaCustomTypeHandler"
+		resultMap="account-result">
+		select * from Accounts
+		order by Account_ID
+	</select>	
+	
+	<!-- JIRA-110 -->
+	<select id="GetManyAccound" resultClass="Account">
+		<![CDATA[
+		SELECT 
+			Account_ID as Id,
+			Account_FirstName as FirstName,
+			Account_LastName as LastName,
+			Account_Email as EmailAddress
+		FROM Accounts 
+		]]>
+	</select>
+	
+	<select id="Get1Account" extends="GetManyAccound" resultClass="Account">WHERE Account_ID=1</select>
+	
+	<statement id="GetAccounts" resultMap="account-result"> 
+		<![CDATA[SELECT * ]]> 
+		<![CDATA[FROM ]]> 
+		Accounts 
+	</statement> 
+	<!-- JIRA-110 -->
+
+	<insert id="InsertAccountDynamic" parameterClass="Account">
+		INSERT INTO Accounts
+		(Account_ID, Account_FirstName, Account_LastName, Account_Email)
+		VALUES(#Id#, #FirstName#, #LastName#
+		<dynamic prepend=",">
+			<isNotNull prepend="," property="EmailAddress">
+				#EmailAddress#
+			</isNotNull>
+			<isNull prepend="," property="EmailAddress">
+					null
+			</isNull>
+		</dynamic>
+		)
+	</insert>
+					
+	<!-- For procedure, the parameters of the parameterMap must in the same order 
+	as for the procedure paramaters-->
+	<procedure id="InsertAccountViaStoreProcedure" parameterMap="account-insert-params">
+		ps_InsertAccount
+	</procedure>
+	
+	<procedure id="SwapEmailAddresses" parameterMap="swap-params">
+		ps_swap_email_address
+	</procedure>
+
+	<procedure id="GetAccountViaSP" parameterMap="select-params" resultClass="Account">
+		ps_SelectAccount
+	</procedure>
+
+<!-- =============================================
+		OPTIONAL EXPLICIT PARAMETER MAP
+============================================= -->
+	
+	<parameterMap id="swap-params">
+		<parameter property="email1" column="First_Email" />
+		<parameter property="email2" column="Second_Email" />
+	</parameterMap>
+
+	<parameterMap id="select-params">
+		<parameter property="Account_ID" />
+	</parameterMap>
+			
+	<parameterMap id="account-insert-params">
+		<parameter property="Id" />
+		<parameter property="FirstName" />
+		<parameter property="LastName" />			
+		<parameter property="EmailAddress" nullValue="no_email@provided.com"/>
+		<parameter property="BannerOptions"  dbType="Varchar" type="bool"/>
+		<parameter property="CartOptions"	column="Account_Cart_Option" typeHandler="HundredsBool"/>
+	</parameterMap>
+	
+	<parameterMap id="update-params">
+		<parameter property="FirstName" />
+		<parameter property="LastName" />			
+		<parameter property="EmailAddress" nullValue="no_email@provided.com"/>
+		<parameter property="Id" />
+	</parameterMap>
+	
+	<parameterMap id="update-params2">
+		<parameter property="Id" />
+		<parameter property="FirstName" />
+		<parameter property="LastName" />			
+		<parameter property="EmailAddress" nullValue="no_email@provided.com"/>
+		<parameter property="Id" />
+	</parameterMap>	
+
+
+		<!-- accounts and orders -->
+
+		<select id="getAccountWithOrders" resultMap="Account-with-Orders">
+			SELECT * FROM accounts 
+				LEFT JOIN orders ON
+					accounts.account_id = orders.account_id
+		</select>
+
+		<resultMap id="Account-with-Orders" class="AccountWithOrders" groupBy="Account_ID">
+			<result property="Id"           column="Account_ID"/>
+			<result property="FirstName"    column="Account_FirstName"/>
+			<result property="LastName"     column="Account_LastName"/>
+			<result property="EmailAddress" column="Account_Email" />
+			<result property="Orders" resultMapping="account-orders" />
+		</resultMap>
+
+		<resultMap id="account-orders" class="Order">
+			<result property="Id"         column="Order_Id"/>
+			<result property="Date"       type="date" column="Order_Date" nullValue="0001-01-01 00:00:00"/>
+			<result property="CardExpiry" column="Order_CardExpiry"/>
+			<result property="CardType"   column="Order_CardType"/>
+			<result property="CardNumber" column="Order_CardNumber"/>
+			<result property="Street"     column="Order_Street"/>
+			<result property="City"       column="Order_City"/>
+			<result property="Province"   column="Order_Province"/>
+			<result property="PostalCode" column="Order_PostalCode"/>
+		</resultMap>
+
+		<select id="GetAccountAsHashtable"
+						parameterClass="Integer"
+						resultMap="account-hashtable-result">
+			select *
+			from Accounts
+			where Account_Id = #value#
+		</select>
+  
+  
+		<select id="GetAccountAsHashtableResultClass"
+						parameterClass="int"
+						resultClass="array">
+			select
+			Account_Id as Id,
+			Account_FirstName as FirstName,
+			Account_LastName as LastName,
+			Account_Email as EmailAddress
+			from Accounts
+			where Account_Id = #value#
+		</select>
+
+		<select id="GetAllAccountsAsHashtableViaResultClass"
+						resultClass="array">
+			select
+			Account_Id as Id,
+			Account_FirstName as FirstName,
+			Account_LastName as LastName,
+			Account_Email as EmailAddress
+			from Accounts
+			order by Account_Id
+		</select>
+
+</sqlMap>

@@ -1,0 +1,21 @@
+<sqlmap>
+
+  <statement
+    id="findNotVisitedWatchedTopicList"
+    resultClass="TopicRecord"
+    parametrClass="array"
+  >
+  <![CDATA[
+    SELECT rt.*
+        FROM rbx_watched_topic as rwt
+        LEFT JOIN rbx_topic as rt
+        ON rwt.topic_id = rt.topic_id
+        WHERE user_id = #user_id# AND
+            ( rt.created > #last_visit#  OR
+              rt.modified > #last_visit# OR
+              rwt.visited = 0 )
+        ORDER BY rt.title ASC
+  ]]>
+  </statement>
+
+</sqlmap>

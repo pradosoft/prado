@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="Category" >
+
+
+	<select id="GetCategory" parameterClass="Integer" resultClass="Category">
+		select
+		Category_ID as Id,
+		Category_Name as Name,
+		Category_Guid as Guid
+		from Categories  
+		where Category_ID = #value# 
+	</select>
+	
+
+	<!-- Test for statement as insert -->
+	<statement id="InsertCategory" parameterClass="Category" resultClass="int">
+		insert into Categories  
+			(Category_Name, Category_Guid) 
+		values 
+			(#Name#, #Guid:UniqueIdentifier#);
+		select SCOPE_IDENTITY() as value
+	</statement><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->
+
+	<!-- Test for Guid Parameter Class-->
+	<statement id="InsertCategoryGuidParameterClass" parameterClass="Guid" resultClass="int">
+		insert into Categories  
+			(Category_Name, Category_Guid) 
+		values 
+			('toto', #value:UniqueIdentifier#);
+		select SCOPE_IDENTITY() as value
+	</statement><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->		
+
+	<!-- JIRA 20 Test without specifying the dbtype-->
+	<statement id="InsertCategoryGuidParameterClassJIRA20" parameterClass="Guid" resultClass="int">
+		insert into Categories  
+			(Category_Name, Category_Guid) 
+		values 
+			('toto', #value#);
+		select SCOPE_IDENTITY() as value
+	</statement>
+					
+	<insert id="InsertCategoryViaInsertStatement" parameterClass="Category" >
+		<selectKey property="Id" type="post" resultClass="int">
+			${selectKey}
+		</selectKey>			
+		insert into Categories  
+			(Category_Name, Category_Guid) 
+		values 
+			(#Name#, #Guid:UniqueIdentifier#)
+	</insert><!--Guid for Oledb, UniqueIdentifier for SqlClient, Odbc -->
+	
+	<insert id="InsertCategoryWithProperties" parameterClass="Category" >
+		<selectKey property="Id" type="post" resultClass="int">
+			${selectKey}
+		</selectKey>			
+		insert into Categories  
+			(Category_Name, Category_Guid) 
+		values 
+			(${MyCategoryName}, #Guid:UniqueIdentifier#)
+	</insert>
+	
+	<statement id="InsertCategoryViaParameterMap" parameterMap="InsertParam" resultClass="int">
+		insert into Categories  
+			(Category_Name, Category_Guid)
+		values 
+			(?,?);
+		select SCOPE_IDENTITY() as value
+	</statement>
+
+	<statement id="InsertCategoryNull" parameterMap="insert-null-params" resultClass="int">
+		insert into Categories  
+			(Category_Name, Category_Guid)
+		values 
+			(?,?);
+		select SCOPE_IDENTITY() as value
+	</statement>
+			
+	<update id="UpdateCategoryViaParameterMap" parameterMap="UpdateParam">
+		update Categories set
+		Category_Name =?,
+		Category_Guid = ?
+		where
+		Category_Id = ?
+	</update>
+	
+	<procedure id="InsertCategoryViaStoreProcedure" parameterMap="category-insert-params">
+		ps_InsertCategorie
+	</procedure>
+	
+	<insert id="InsertCategoryGenerate" parameterMap="insert-generate-params">
+		<selectKey property="Id" type="post" resultClass="int">
+			select @@IDENTITY as value
+		</selectKey>
+		<generate table="Categories" />
+	</insert>
+	
+	<update id="UpdateCategoryGenerate" parameterMap="update-generate-params">
+		<generate table="Categories" by="Category_Id"/>
+	</update>
+	
+	<delete id="DeleteCategoryGenerate" parameterMap="delete-generate-params">
+		<generate table="Categories" by="Category_Id, Category_Name"/>
+	</delete>
+	
+	<select id="SelectByPKCategoryGenerate" resultClass="Category" parameterClass="Category" parameterMap="select-generate-params">
+		<generate table="Categories" by="Category_Id"/> 
+	</select>
+	
+	<select id="SelectAllCategoryGenerate" resultClass="Category" parameterMap="select-generate-params">
+		<generate table="Categories" /> 
+	</select>
+	
+	<statement id="DynamicGuid" 
+		resultClass="Category" 
+		parameterClass="Category">
+		select
+		Category_ID as Id,
+		Category_Name as Name,
+		Category_Guid as Guid
+		from Categories  
+		<dynamic prepend="where">
+			<isNotEqual prepend="and" property="Guid" compareProperty="EmptyGuid">
+				Category_Guid=#Guid:UniqueIdentifier#
+			</isNotEqual>
+		</dynamic>
+	</statement>
+	
+	<parameterMap id="category-insert-params">
+		<parameter property="Id" column="Category_Id" dbType="Int" /><!-- Int for SqlClient, Obdc; Integer for Oledb -->
+		<parameter property="Name" column="Category_Name"/>
+		<parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->
+	</parameterMap>
+
+	<parameterMap id="InsertParam">
+		<parameter property="Name" column="Category_Name"/>
+		<parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->
+	</parameterMap>
+	
+	<parameterMap id="insert-null-params">
+		<parameter property="Name" column="Category_Name"/>
+		<parameter property="Guid" column="Category_Guid" nullValue="00000000-0000-0000-0000-000000000000" dbType="UniqueIdentifier"/><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->
+	</parameterMap>
+			
+	<parameterMap id="UpdateParam" extends="InsertParam">
+		<parameter property="Id" column="Category_Id" />
+	</parameterMap>
+
+	<!-- Used by generated statement -->
+	
+	<parameterMap id="insert-generate-params">
+		<parameter property="Name" column="Category_Name"/>
+		<parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/><!--Guid for Oledb, UniqueIdentifier for SqlClient,Odbc -->
+	</parameterMap>
+	
+	<parameterMap id="update-generate-params" extends="insert-generate-params">
+		<parameter property="Id" column="Category_Id" />
+	</parameterMap>
+	
+	<parameterMap id="delete-generate-params">
+		<parameter property="Id" column="Category_Id" />
+		<parameter property="Name" column="Category_Name"/>
+	</parameterMap>
+	
+	<parameterMap id="select-generate-params">
+		<parameter property="Id" column="Category_Id" />
+		<parameter property="Name" column="Category_Name"/>
+		<parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/>
+	</parameterMap>
+			
+
+</sqlMap>
