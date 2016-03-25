@@ -285,7 +285,8 @@ class TReCaptcha2 extends TActivePanel implements ICallbackEventHandler, IValida
     }
     public function validate()
     {
-        if ((is_null($this->getValidationPropertyValue())) || (empty($this->getValidationPropertyValue())))
+        $value = $this->getValidationPropertyValue();
+        if($value === null || empty($value))
             return false;
 
         return true;
