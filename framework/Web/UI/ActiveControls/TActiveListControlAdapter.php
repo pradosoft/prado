@@ -41,9 +41,6 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedIndex($index)
 	{
-		if($this->getControl()->getSelectedIndex() === $index)
-			return;
-
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
@@ -67,9 +64,6 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedIndices($indices)
 	{
-		if($this->getControl()->getSelectedIndices() === $indices)
-			return;
-
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
@@ -100,9 +94,6 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedValue($value)
 	{
-		if($this->getControl()->getSelectedValue() === $value)
-			return;
-
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
@@ -117,9 +108,6 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedValues($values)
 	{
-		if($this->getControl()->getSelectedValues() === $values)
-			return;
-
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
