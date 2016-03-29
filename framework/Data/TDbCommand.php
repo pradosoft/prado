@@ -201,8 +201,8 @@ class TDbCommand extends TComponent
 	 */
 	public function getDebugStatementText()
 	{
-		if(Prado::getApplication()->getMode() === TApplicationMode::Debug)
-			return $this->_statement instanceof PDOStatement ?
+		//if(Prado::getApplication()->getMode() === TApplicationMode::Debug)
+		return $this->_statement instanceof PDOStatement ?
 				$this->_statement->queryString
 				: $this->getText();
 	}

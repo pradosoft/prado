@@ -41,7 +41,7 @@ class ResultMapTest extends BaseCase
 		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemsNoLazyLoad", 1);
 		$this->assertOrder1($order);
 		$this->assertTrue($order->getLineItemsList() instanceof TList);
-		$this->assertIdentical(2, $order->getLineItemsList()->getCount());
+		$this->assertSame(2, $order->getLineItemsList()->getCount());
 	}
 
 
@@ -51,12 +51,12 @@ class ResultMapTest extends BaseCase
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItemsList());
 		$this->assertFalse($order->getLineItemsList() instanceof TList);
-		$this->assertIdentical(2, $order->getLineItemsList()->getCount());
+		$this->assertSame(2, $order->getLineItemsList()->getCount());
 
 		// After a call to a method from a proxy object,
 		// the proxy object is replaced by the real object.
 		$this->assertTrue($order->getLineItemsList() instanceof TList);
-		$this->assertIdentical(2, $order->getLineItemsList()->getCount());
+		$this->assertSame(2, $order->getLineItemsList()->getCount());
 	}
 
 	function testLazyWithTypedCollectionMapping()
@@ -66,7 +66,7 @@ class ResultMapTest extends BaseCase
 		$this->assertNotNull($order->getLineItems());
 		$this->assertFalse($order->getLineItemsList() instanceof LineItemCollection);
 
-		$this->assertIdentical(2, $order->getLineItems()->getCount());
+		$this->assertSame(2, $order->getLineItems()->getCount());
 
 		// After a call to a method from a proxy object,
 		// the proxy object is replaced by the real object.
@@ -81,7 +81,7 @@ class ResultMapTest extends BaseCase
 	function testNullValueReplacementOnString()
 	{
 		$account = $this->sqlmap->queryForObject("GetAccountViaColumnName", 5);
-		$this->assertIdentical("no_email@provided.com", $account->getEmailAddress());
+		$this->assertSame("no_email@provided.com", $account->getEmailAddress());
 	}
 
 	function testTypeSpecified()
@@ -104,7 +104,7 @@ class ResultMapTest extends BaseCase
 
 		// Check strongly typed collection
 		$this->assertNotNull($order->getLineItems());
-		$this->assertIdentical(2, $order->getLineItems()->getCount());
+		$this->assertSame(2, $order->getLineItems()->getCount());
 	}
 
 	function testListMapping()
@@ -114,7 +114,7 @@ class ResultMapTest extends BaseCase
 
 		// Check TList collection
 		$this->assertNotNull($order->getLineItemsList());
-		$this->assertIdentical(2, $order->getLineItemsList()->getCount());
+		$this->assertSame(2, $order->getLineItemsList()->getCount());
 	}
 
 	function testArrayMapping()
@@ -123,7 +123,7 @@ class ResultMapTest extends BaseCase
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItemsArray());
 		$this->assertTrue(is_array($order->getLineItemsArray()));
-		$this->assertIdentical(2, count($order->getLineItemsArray()));
+		$this->assertSame(2, count($order->getLineItemsArray()));
 	}
 
 	function testTypedCollectionMapping()
@@ -132,7 +132,7 @@ class ResultMapTest extends BaseCase
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItems());
 		$this->assertTrue($order->getLineItems() instanceof LineItemCollection);
-		$this->assertIdentical(2, $order->getLineItems()->getCount());
+		$this->assertSame(2, $order->getLineItems()->getCount());
 		foreach($order->getLineItems() as $item)
 		{
 			$this->assertNotNull($item);
@@ -152,8 +152,8 @@ class ResultMapTest extends BaseCase
 
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getFavouriteLineItem());
-		$this->assertIdentical(2, (int)$order->getFavouriteLineItem()->getID());
-		$this->assertIdentical("ESM-23", $order->getFavouriteLineItem()->getCode());
+		$this->assertSame(2, (int)$order->getFavouriteLineItem()->getID());
+		$this->assertSame("ESM-23", $order->getFavouriteLineItem()->getCode());
 
 	}
 
@@ -164,8 +164,8 @@ class ResultMapTest extends BaseCase
 		$this->assertOrder1($order);
 
 		$this->assertNotNull($order->getFavouriteLineItem());
-		$this->assertIdentical(2, (int)$order->getFavouriteLineItem()->getID());
-		$this->assertIdentical("ESM-23", $order->getFavouriteLineItem()->getCode());
+		$this->assertSame(2, (int)$order->getFavouriteLineItem()->getID());
+		$this->assertSame("ESM-23", $order->getFavouriteLineItem()->getCode());
 	}
 
 	function testImplicitResultMaps()
@@ -179,8 +179,8 @@ class ResultMapTest extends BaseCase
 		$this->assertOrder1($order);
 
 		$this->assertNotNull($order->getFavouriteLineItem());
-		$this->assertIdentical(2, $order->getFavouriteLineItem()->getID());
-		$this->assertIdentical("ESM-23", $order->getFavouriteLineItem()->getCode());
+		$this->assertSame(2, $order->getFavouriteLineItem()->getID());
+		$this->assertSame("ESM-23", $order->getFavouriteLineItem()->getCode());
 	}
 
  	function testCompositeKeyMapping()
@@ -192,11 +192,11 @@ class ResultMapTest extends BaseCase
 
 		$this->assertNotNull($order1);
 		$this->assertNotNull($order1->getFavouriteLineItem());
-		$this->assertIdentical(2, $order1->getFavouriteLineItem()->getID());
+		$this->assertSame(2, $order1->getFavouriteLineItem()->getID());
 
 		$this->assertNotNull($order2);
 		$this->assertNotNull($order2->getFavouriteLineItem());
-		$this->assertIdentical(1, $order2->getFavouriteLineItem()->getID());
+		$this->assertSame(1, $order2->getFavouriteLineItem()->getID());
 	}
 
 
@@ -206,8 +206,8 @@ class ResultMapTest extends BaseCase
 
 		$list = $this->sqlmap->QueryForList("GetAllCreditCardNumbersFromOrders", null);
 
-		$this->assertIdentical(5, count($list));
-		$this->assertIdentical("555555555555", $list[0]);
+		$this->assertSame(5, count($list));
+		$this->assertSame("555555555555", $list[0]);
 	}
 
 	function testDecimalTypeMapping()
@@ -217,8 +217,8 @@ class ResultMapTest extends BaseCase
 		$param["LineItem_ID"] = 1;
 		$param["Order_ID"] = 10;
 		$price = $this->sqlmap->queryForObject("GetLineItemPrice", $param);
-		$this->assertIdentical(gettype($price), 'double');
-		$this->assertIdentical(45.43, $price);
+		$this->assertSame(gettype($price), 'double');
+		$this->assertSame(45.43, $price);
 	}
 
 //todo
@@ -234,9 +234,9 @@ class ResultMapTest extends BaseCase
 
 		$enumClass = $this->sqlmap->queryForObject("GetEnumerationNullValue", 99);
 
-		$this->assertIdentical($enumClass['Day'], 'Days.Thu');
+		$this->assertSame($enumClass['Day'], 'Days.Thu');
 		$this->asserEquals($enumClass['Color'], 'Colors.Blue');
-		$this->assertIdentical($enumClass['Month'], 'Months.All');
+		$this->assertSame($enumClass['Month'], 'Months.All');
 	}
 
 
@@ -264,7 +264,7 @@ class ResultMapTest extends BaseCase
 		$this->assertNotNull($order1);
 		$this->assertNotNull($order1->getFavouriteLineItem());
 		var_dump($order1);
-		$this->assertIdentical(2, $order1->getFavouriteLineItem()->getID());
+		$this->assertSame(2, $order1->getFavouriteLineItem()->getID());
 	}
 */
 

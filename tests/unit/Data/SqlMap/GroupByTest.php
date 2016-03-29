@@ -1,9 +1,6 @@
 <?php
 require_once(dirname(__FILE__).'/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class AccountWithOrders extends Account
 {
 	private $_orders = array();
@@ -19,7 +16,9 @@ class AccountWithOrders extends Account
 	}
 }
 
-
+/**
+ * @package System.Data.SqlMap
+ */
 class GroupByTest extends BaseCase
 {
 	function __construct()
@@ -32,10 +31,8 @@ class GroupByTest extends BaseCase
 	{
 		$this->initScript('account-init.sql');
 		$accounts = $this->sqlmap->queryForList("getAccountWithOrders");
-		$this->assertIdentical(5, count($accounts));
+		$this->assertSame(5, count($accounts));
 		foreach($accounts as $account)
-			$this->assertIdentical(2, count($account->getOrders()));
+			$this->assertSame(2, count($account->getOrders()));
 	}
-
-/**/
 }

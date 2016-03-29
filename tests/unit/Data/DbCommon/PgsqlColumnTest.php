@@ -8,16 +8,25 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
  */
 class PgsqlColumnTest extends PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        if (!extension_loaded('pgsql')) {
+            $this->markTestSkipped(
+              'The pgsql extension is not available.'
+            );
+        }
+    }
+
 	function create_meta_data()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		return new TPgsqlMetaData($conn);
 	}
 
 	function test_text_column_def()
 	{
 		$table = $this->create_meta_data()->getTableInfo('public.address');
-		$this->assertEqual(count($table->getColumns()), 14);
+		$this->assertEquals(count($table->getColumns()), 14);
 
 		$columns['id'] = array(
 			'ColumnName'       => '"id"',
@@ -118,9 +127,9 @@ class PgsqlColumnTest extends PHPUnit_Framework_TestCase
 		);
 		$this->assertColumn($columns, $table);
 
-		$this->assertEqual('public', $table->getSchemaName());
-		$this->assertEqual('address', $table->getTableName());
-		$this->assertEqual(array('id'), $table->getPrimaryKeys());
+		$this->assertEquals('public', $table->getSchemaName());
+		$this->assertEquals('address', $table->getTableName());
+		$this->assertEquals(array('id'), $table->getPrimaryKeys());
 	}
 
 	function assertColumn($columns, $table)
@@ -133,7 +142,7 @@ class PgsqlColumnTest extends PHPUnit_Framework_TestCase
 				$ofAssert= var_export($assert,true);
 				$value = $column->{$property};
 				$ofValue = var_export($value, true);
-				$this->assertEqual($value, $assert,
+				$this->assertEquals($value, $assert,
 					"Column [{$id}] {$property} value {$ofValue} did not match {$ofAssert}");
 			}
 		}

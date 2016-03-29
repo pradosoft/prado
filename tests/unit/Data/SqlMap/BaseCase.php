@@ -88,9 +88,9 @@ class BaseCase extends PHPUnit_Framework_TestCase
 	 */
 	protected function assertAccount1(Account $account)
 	{
-		$this->assertIdentical($account->getID(), 1);
-		$this->assertIdentical($account->getFirstName(), 'Joe');
-		$this->assertIdentical($account->getEmailAddress(), 'Joe.Dalton@somewhere.com');
+		$this->assertSame($account->getID(), 1);
+		$this->assertSame($account->getFirstName(), 'Joe');
+		$this->assertSame($account->getEmailAddress(), 'Joe.Dalton@somewhere.com');
 	}
 
 	/**
@@ -98,9 +98,9 @@ class BaseCase extends PHPUnit_Framework_TestCase
 	 */
 	protected function assertAccount6(Account $account)
 	{
-		$this->assertIdentical($account->getID(), 6);
-		$this->assertIdentical($account->getFirstName(), 'Calamity');
-		$this->assertIdentical($account->getLastName(), 'Jane');
+		$this->assertSame($account->getID(), 6);
+		$this->assertSame($account->getFirstName(), 'Calamity');
+		$this->assertSame($account->getLastName(), 'Jane');
 		$this->assertNull($account->getEmailAddress());
 	}
 
@@ -111,43 +111,43 @@ class BaseCase extends PHPUnit_Framework_TestCase
 	{
 		$date = @mktime(8,15,0,2,15,2003);
 
-		$this->assertIdentical((int)$order->getID(), 1);
+		$this->assertSame((int)$order->getID(), 1);
 		if($order->getDate() instanceof TDateTime)
-			$this->assertIdentical($order->getDate()->getTimestamp(), $date);
+			$this->assertSame($order->getDate()->getTimestamp(), $date);
 		else
 			$this->fail();
-		$this->assertIdentical($order->getCardType(), 'VISA');
-		$this->assertIdentical($order->getCardNumber(), '999999999999');
-		$this->assertIdentical($order->getCardExpiry(), '05/03');
-		$this->assertIdentical($order->getStreet(), '11 This Street');
-		$this->assertIdentical($order->getProvince(), 'BC');
-		$this->assertIdentical($order->getPostalCode(), 'C4B 4F4');
+		$this->assertSame($order->getCardType(), 'VISA');
+		$this->assertSame($order->getCardNumber(), '999999999999');
+		$this->assertSame($order->getCardExpiry(), '05/03');
+		$this->assertSame($order->getStreet(), '11 This Street');
+		$this->assertSame($order->getProvince(), 'BC');
+		$this->assertSame($order->getPostalCode(), 'C4B 4F4');
 	}
 
 	function assertAccount1AsHashArray($account)
 	{
-		$this->assertIdentical(1, (int)$account["Id"]);
-		$this->assertIdentical("Joe", $account["FirstName"]);
-		$this->assertIdentical("Dalton", $account["LastName"]);
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $account["EmailAddress"]);
+		$this->assertSame(1, (int)$account["Id"]);
+		$this->assertSame("Joe", $account["FirstName"]);
+		$this->assertSame("Dalton", $account["LastName"]);
+		$this->assertSame("Joe.Dalton@somewhere.com", $account["EmailAddress"]);
 	}
 
 	function AssertOrder1AsHashArray($order)
 	{
 		$date = @mktime(8,15,0,2,15,2003);
 
-		$this->assertIdentical(1, $order["Id"]);
+		$this->assertSame(1, $order["Id"]);
 		if($order['Date'] instanceof TDateTime)
-			$this->assertIdentical($date, $order["Date"]->getTimestamp());
+			$this->assertSame($date, $order["Date"]->getTimestamp());
 		else
 			$this->fail();
-		$this->assertIdentical("VISA", $order["CardType"]);
-		$this->assertIdentical("999999999999", $order["CardNumber"]);
-		$this->assertIdentical("05/03", $order["CardExpiry"]);
-		$this->assertIdentical("11 This Street", $order["Street"]);
-		$this->assertIdentical("Victoria", $order["City"]);
-		$this->assertIdentical("BC", $order["Province"]);
-		$this->assertIdentical("C4B 4F4", $order["PostalCode"]);
+		$this->assertSame("VISA", $order["CardType"]);
+		$this->assertSame("999999999999", $order["CardNumber"]);
+		$this->assertSame("05/03", $order["CardExpiry"]);
+		$this->assertSame("11 This Street", $order["Street"]);
+		$this->assertSame("Victoria", $order["City"]);
+		$this->assertSame("BC", $order["Province"]);
+		$this->assertSame("C4B 4F4", $order["PostalCode"]);
 	}
 
 }

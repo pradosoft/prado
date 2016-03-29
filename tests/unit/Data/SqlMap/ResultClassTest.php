@@ -18,7 +18,7 @@ class ResultClassTest extends BaseCase
 	function testBoolean()
 	{
 		$bit = $this->sqlmap->queryForObject("GetBoolean", 1);
-		$this->assertIdentical(true, $bit);
+		$this->assertSame(true, $bit);
 	}
 
 	/**
@@ -27,7 +27,7 @@ class ResultClassTest extends BaseCase
 	function testBooleanWithoutResultClass()
 	{
 		$bit = (boolean)$this->sqlmap->queryForObject("GetBooleanWithoutResultClass", 1);
-		$this->assertIdentical(true, $bit);
+		$this->assertSame(true, $bit);
 	}
 
 	/**
@@ -36,7 +36,7 @@ class ResultClassTest extends BaseCase
 	function testByte()
 	{
 		$letter = $this->sqlmap->queryForObject("GetByte", 1);
-		$this->assertIdentical(155, (int)$letter);
+		$this->assertSame(155, (int)$letter);
 	}
 
 	/**
@@ -45,7 +45,7 @@ class ResultClassTest extends BaseCase
 	function testByteWithoutResultClass()
 	{
 		$letter = $this->sqlmap->queryForObject("GetByteWithoutResultClass", 1);
-		$this->assertIdentical(155, (int)$letter);
+		$this->assertSame(155, (int)$letter);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class ResultClassTest extends BaseCase
 	function testChar()
 	{
 		$letter = $this->sqlmap->queryForObject("GetChar", 1);
-		$this->assertIdentical('a', trim($letter));
+		$this->assertSame('a', trim($letter));
 	}
 
 	/**
@@ -63,7 +63,7 @@ class ResultClassTest extends BaseCase
 	function testCharWithoutResultClass()
 	{
 		$letter = $this->sqlmap->queryForObject("GetCharWithoutResultClass", 1);
-		$this->assertIdentical('a', trim($letter));
+		$this->assertSame('a', trim($letter));
 	}
 
 	/**
@@ -73,7 +73,7 @@ class ResultClassTest extends BaseCase
 	{
 		$orderDate = $this->sqlmap->queryForObject("GetDate", 1);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
-		$this->assertIdentical($date, $orderDate->getTimeStamp());
+		$this->assertSame($date, $orderDate->getTimeStamp());
 	}
 
 	/**
@@ -86,7 +86,7 @@ class ResultClassTest extends BaseCase
 		$orderDate->setDateTime($date);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
 
-		$this->assertIdentical($date, $orderDate->getTimeStamp());
+		$this->assertSame($date, $orderDate->getTimeStamp());
 	}
 
 	/**
@@ -95,7 +95,7 @@ class ResultClassTest extends BaseCase
 	function testDecimal()
 	{
 		$price = $this->sqlmap->queryForObject("GetDecimal", 1);
-		$this->assertIdentical(1.56, $price);
+		$this->assertSame(1.56, $price);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class ResultClassTest extends BaseCase
 	function testDecimalWithoutResultClass()
 	{
 		$price = $this->sqlmap->queryForObject("GetDecimalWithoutResultClass", 1);
-		$this->assertIdentical(1.56, (float)$price);
+		$this->assertSame(1.56, (float)$price);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class ResultClassTest extends BaseCase
 	function testDouble()
 	{
 		$price = $this->sqlmap->queryForObject("GetDouble", 1);
-		$this->assertIdentical(99.5, $price);
+		$this->assertSame(99.5, $price);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class ResultClassTest extends BaseCase
 	function testDoubleWithoutResultClass()
 	{
 		$price = $this->sqlmap->queryForObject("GetDoubleWithoutResultClass", 1);
-		$this->assertIdentical(99.5, (float)$price);
+		$this->assertSame(99.5, (float)$price);
 	}
 
 	/**
@@ -134,7 +134,7 @@ class ResultClassTest extends BaseCase
 
 		Guid guid = (Guid) $this->sqlmap->queryForObject("GetGuid", 1);
 
-		$this->assertIdentical(newGuid, guid);
+		$this->assertSame(newGuid, guid);
 	}
 */
 
@@ -149,7 +149,7 @@ class ResultClassTest extends BaseCase
 
 		Guid guid = new Guid(guidString);
 
-		$this->assertIdentical(newGuid, guid);
+		$this->assertSame(newGuid, guid);
 	}
 */
 	/**
@@ -159,7 +159,7 @@ class ResultClassTest extends BaseCase
 	{
 		$integer = $this->sqlmap->queryForObject("GetInt16", 1);
 
-		$this->assertIdentical(32111, $integer);
+		$this->assertSame(32111, $integer);
 	}
 
 	/**
@@ -168,7 +168,7 @@ class ResultClassTest extends BaseCase
 	function testInt16WithoutResultClass()
 	{
 		$integer = $this->sqlmap->queryForObject("GetInt16WithoutResultClass", 1);
-		$this->assertIdentical(32111, (int)$integer);
+		$this->assertSame(32111, (int)$integer);
 	}
 
 	/**
@@ -177,7 +177,7 @@ class ResultClassTest extends BaseCase
 	function testInt32()
 	{
 		$integer = $this->sqlmap->queryForObject("GetInt32", 1);
-		$this->assertIdentical(999999, $integer);
+		$this->assertSame(999999, $integer);
 	}
 
 	/**
@@ -186,7 +186,7 @@ class ResultClassTest extends BaseCase
 	function testInt32WithoutResultClass()
 	{
 		$integer = $this->sqlmap->queryForObject("GetInt32WithoutResultClass", 1);
-		$this->assertIdentical(999999, (int)$integer);
+		$this->assertSame(999999, (int)$integer);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class ResultClassTest extends BaseCase
 	function testInt64()
 	{
 		$bigInt = $this->sqlmap->queryForObject("GetInt64", 1);
-		$this->assertIdentical(9223372036854775800, $bigInt);
+		$this->assertEquals(9223372036854775800, $bigInt);
 	}
 
 	/**
@@ -204,7 +204,7 @@ class ResultClassTest extends BaseCase
 	function testInt64WithoutResultClass()
 	{
 		$bigInt = $this->sqlmap->queryForObject("GetInt64WithoutResultClass", 1);
-		$this->assertIdentical(9223372036854775800, (double)$bigInt);
+		$this->assertEquals(9223372036854775800, (double)$bigInt);
 	}
 
 	/**
@@ -213,7 +213,7 @@ class ResultClassTest extends BaseCase
 	function testSingle()
 	{
 		$price = (float)$this->sqlmap->queryForObject("GetSingle", 1);
-		$this->assertIdentical(92233.5, $price);
+		$this->assertSame(92233.5, $price);
 	}
 
 	/**
@@ -222,7 +222,7 @@ class ResultClassTest extends BaseCase
 	function testSingleWithoutResultClass()
 	{
 		$price = $this->sqlmap->queryForObject("GetSingleWithoutResultClass", 1);
-		$this->assertIdentical(92233.5, (float)$price);
+		$this->assertSame(92233.5, (float)$price);
 	}
 
 	/**
@@ -231,7 +231,7 @@ class ResultClassTest extends BaseCase
 	function testString()
 	{
 		$cardType = $this->sqlmap->queryForObject("GetString", 1);
-		$this->assertIdentical("VISA", $cardType);
+		$this->assertSame("VISA", $cardType);
 	}
 
 	/**
@@ -240,7 +240,7 @@ class ResultClassTest extends BaseCase
 	function testStringWithoutResultClass()
 	{
 		$cardType = $this->sqlmap->queryForObject("GetStringWithoutResultClass", 1);
-		$this->assertIdentical("VISA", $cardType);
+		$this->assertSame("VISA", $cardType);
 	}
 /**/
 

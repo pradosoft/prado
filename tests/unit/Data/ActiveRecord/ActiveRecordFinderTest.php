@@ -9,7 +9,7 @@ class ActiveRecordFinderTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -28,18 +28,18 @@ class ActiveRecordFinderTest extends PHPUnit_Framework_TestCase
 	function test_find_by_sql_returns_iterator()
 	{
 		$deps = DepartmentRecord::finder()->findAll('department_id < :id', array('id'=>5));
-		$this->assertEqual(count($deps),4);
+		$this->assertEquals(count($deps),4);
 	}
 
 	function test_find_by_multiple_parameters()
 	{
-		$department = DepartmentRecord::finder()->find('department_id < ? AND "order" > ?', 5,2);
+		$department = DepartmentRecord::finder()->find('department_id < ? AND `order` > ?', 5,2);
 		$this->assertNotNull($department);
 	}
 
 	function test_find_by_array_parameter()
 	{
-		$department = DepartmentRecord::finder()->find('department_id < ? AND "order" > ?', array(5,2));
+		$department = DepartmentRecord::finder()->find('department_id < ? AND `order` > ?', array(5,2));
 		$this->assertNotNull($department);
 	}
 

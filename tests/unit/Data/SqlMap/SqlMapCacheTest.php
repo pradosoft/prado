@@ -9,7 +9,8 @@ class SqlMapCacheTest extends PHPUnit_Framework_TestCase
 {
 	function testFIFOCache()
 	{
-		$fifo = new TSqlMapFifoCache(2);
+		$fifo = new TSqlMapFifoCache();
+		$fifo->setCacheSize(2);
 		$object1 = new TSqlMapManager;
 		$object2 = new TComponent;
 		$object3 = new TSqlMapGateway(null);
@@ -41,8 +42,8 @@ class SqlMapCacheTest extends PHPUnit_Framework_TestCase
 
 	function testLruCache()
 	{
-		$lru = new TSqlMapLruCache(2);
-
+		$lru = new TSqlMapLruCache();
+		$lru->setCacheSize(2);
 		$object1 = new TSqlMapManager;
 		$object2 = new TComponent;
 		$object3 = new TSqlMapGateway(null);

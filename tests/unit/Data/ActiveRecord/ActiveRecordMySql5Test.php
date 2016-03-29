@@ -9,7 +9,7 @@ class ActiveRecordMySql5Test extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=ar_test;port=3307', 'test5','test5');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -42,7 +42,7 @@ class ActiveRecordMySql5Test extends PHPUnit_Framework_TestCase
 	{
 		$props = array('blog_id', 'blog_name', 'blog_author');
 		foreach($props as $prop)
-			$this->assertEqual($check->{$prop}, $blog->{$prop});
+			$this->assertEquals($check->{$prop}, $blog->{$prop});
 	}
 
 }

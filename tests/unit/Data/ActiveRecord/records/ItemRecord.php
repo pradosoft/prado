@@ -29,7 +29,7 @@ class ItemRecord extends TActiveRecord
 		static $conn;
 		if($conn===null)
 		{
-			$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 			$this->OnExecuteCommand[] = array($this,'logger');
 		}
 		return $conn;

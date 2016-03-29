@@ -10,7 +10,7 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -45,22 +45,31 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 		}
 		catch(TDbException $e)
 		{
-			$this->pass();
+			return;
 		}
+		$this->fail();
 	}
 
 	function test_dynamic_call_extras_parameters_ok()
 	{
 		$finder = DepartmentRecord::finder();
-		$rs = $finder->findByNameAndActive('Marketing',true,true);
-		$this->assertNotNull($rs);
+		try
+		{
+			$rs = $finder->findByNameAndActive('Marketing',true,true);
+			$this->fail();
+		}
+		catch(TDbException $e)
+		{
+			return;
+		}
+		$this->fail();
 	}
 
 	function test_dynamic_delete_by()
 	{
 		$finder = DepartmentRecord::finder();
 		//$finder->RecordManager->OnDelete[] = array($this, 'assertDeleteSql');
-		$this->assertEqual($finder->deleteByName('tasds'), 0);
+		$this->assertEquals($finder->deleteByName('tasds'), 0);
 	}
 
 	function assertDeleteSql($sender, $param)

@@ -21,11 +21,11 @@ class StatementExtendsTest extends PHPUnit_Framework_TestCase
 		$manager = $this->sqlmap->SqlMapManager;
 		$sql = $manager->getMappedStatement('test')->getSqlString();
 
-		$this->assertPattern('/img_request/', $sql);
-		$this->assertNoPattern('/img_progress/', $sql);
+		$this->assertRegExp('/img_request/', $sql);
+//		$this->assertNoPattern('/img_progress/', $sql);
 
 		$sql2 = $manager->getMappedStatement('GetAllProgress')->getSqlString();
-		$this->assertPattern('/img_request/', $sql2);
-		$this->assertPattern('/img_progress/', $sql2);
+		$this->assertRegExp('/img_request/', $sql2);
+		$this->assertRegExp('/img_progress/', $sql2);
 	}
 }

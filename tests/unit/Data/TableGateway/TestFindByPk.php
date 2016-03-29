@@ -1,11 +1,11 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseGatewayTest.php');
+require_once(dirname(__FILE__).'/BaseGateway.php');
 
 /**
  * @package System.Data.TableGateway
  */
-class TestFindByPk extends BaseGatewayTest
+class TestFindByPk extends BaseGateway
 {
 	function test_one_key()
 	{
@@ -22,7 +22,7 @@ class TestFindByPk extends BaseGatewayTest
 		$result['phone'] = intval($result['phone']);
 		$result['field9_numeric'] = floatval($result['field9_numeric']);
 
-		$this->assertEqual($record1, $result);
+		$this->assertEquals($record1, $result);
 	}
 
 	function test_composite_key()
@@ -31,7 +31,7 @@ class TestFindByPk extends BaseGatewayTest
 
 		$result = $gateway->findByPk(1,1);
 		$expect = array("department_id" => 1, "section_id" => 1, "order" =>  0);
-		$this->assertEqual($expect, $result);
+		$this->assertEquals($expect, $result);
 	}
 
 	function test_find_all_keys()
@@ -44,7 +44,7 @@ class TestFindByPk extends BaseGatewayTest
 			array("department_id" => 1, "section_id" => 1, "order" =>  0),
 			array("department_id" => 3, "section_id" => 13, "order" =>  0));
 
-		$this->assertEqual($expect, $result);
+		$this->assertEquals($expect, $result);
 
 	}
 }

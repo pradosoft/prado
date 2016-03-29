@@ -3,9 +3,6 @@ Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 require_once(dirname(__FILE__).'/records/UserRecord.php');
 
-/**
- * @package System.Data.ActiveRecord
- */
 class UserRecord2 extends UserRecord
 {
 	public $another_value;
@@ -19,11 +16,14 @@ class SqlTest extends TActiveRecord
 	const TABLE='items';
 }
 
+/**
+ * @package System.Data.ActiveRecord
+ */
 class FindBySqlTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -31,17 +31,5 @@ class FindBySqlTest extends PHPUnit_Framework_TestCase
 	{
 		$deps = DepartmentRecord::finder()->findBySql('SELECT * FROM departments');
 		$this->assertTrue(count($deps) > 0);
-	}
-
-	function test_find_by_sql_arb()
-	{
-		$sql = 'SELECT c.name as category, i.name as item
-			FROM items i, categories c
-			WHERE i.category_id = c.category_id LIMIT 2';
-		$items = TActiveRecord::finder('SqlTest')->findBySql($sql);
-
-		$sql = "SELECT users.*, 'hello' as another_value FROM users LIMIT 2";
-		$users = TActiveRecord::finder('UserRecord2')->findBySql($sql);
-		var_dump($users);
 	}
 }

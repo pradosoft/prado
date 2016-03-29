@@ -7,9 +7,18 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
  */
 class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        if (!extension_loaded('pgsql')) {
+            $this->markTestSkipped(
+              'The pgsql extension is not available.'
+            );
+        }
+    }
+
 	function pgsql_meta_data()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		return new TPgsqlMetaData($conn);
 	}
 
@@ -32,7 +41,7 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 		);
 		$insert = $builder->createInsertCommand($address);
 		$sql = 'INSERT INTO public.address("username", "phone", "field1_boolean", "field2_date", "field3_double", "field4_integer", "field6_time", "field7_timestamp", "field8_money", "field9_numeric", "int_fk1", "int_fk2") VALUES (:username, :phone, :field1_boolean, :field2_date, :field3_double, :field4_integer, :field6_time, :field7_timestamp, :field8_money, :field9_numeric, :int_fk1, :int_fk2)';
-		$this->assertEqual($sql, $insert->Text);
+		$this->assertEquals($sql, $insert->Text);
 	}
 
 	function test_update_command()
@@ -44,7 +53,7 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 		);
 		$update = $builder->createUpdateCommand($data, '1');
 		$sql = 'UPDATE public.address SET "phone" = :phone, "int_fk1" = :int_fk1 WHERE 1';
-		$this->assertEqual($sql, $update->Text);
+		$this->assertEquals($sql, $update->Text);
 	}
 
 	function test_delete_command()
@@ -53,7 +62,7 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 		$where = 'phone is NULL';
 		$delete = $builder->createDeleteCommand($where);
 		$sql = 'DELETE FROM public.address WHERE phone is NULL';
-		$this->assertEqual($sql, $delete->Text);
+		$this->assertEquals($sql, $delete->Text);
 	}
 
 	function test_select_limit()
@@ -64,14 +73,14 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 
 		$limit = $builder->applyLimitOffset($query, 1);
 		$expect = $query.' LIMIT 1';
-		$this->assertEqual($expect, $limit);
+		$this->assertEquals($expect, $limit);
 
 		$limit = $builder->applyLimitOffset($query, -1, 10);
 		$expect = $query.' OFFSET 10';
-		$this->assertEqual($expect, $limit);
+		$this->assertEquals($expect, $limit);
 
 		$limit = $builder->applyLimitOffset($query, 2, 3);
 		$expect = $query.' LIMIT 2 OFFSET 3';
-		$this->assertEqual($expect, $limit);
+		$this->assertEquals($expect, $limit);
 	}
 }

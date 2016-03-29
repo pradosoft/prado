@@ -7,16 +7,25 @@ Prado::using('System.Data.Common.Mysql.TMysqlMetaData');
  */
 class MysqlColumnTest extends PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        if (!extension_loaded('mysql')) {
+            $this->markTestSkipped(
+              'The mysql extension is not available.'
+            );
+        }
+    }
+
 	function create_meta_data()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=tests;port=3307', 'test5','test5');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		return new TMysqlMetaData($conn);
 	}
 
 	function test_columns()
 	{
 		$table = $this->create_meta_data()->getTableInfo('table1');
-		$this->assertEqual(count($table->getColumns()), 18);
+		$this->assertEquals(count($table->getColumns()), 18);
 
 		$columns['id'] = array(
 			'ColumnName'       => '`id`',
@@ -233,8 +242,8 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 		$this->assertColumn($columns, $table);
 
 		$this->assertNull($table->getSchemaName());
-		$this->assertEqual('table1', $table->getTableName());
-		$this->assertEqual(array('id', 'name'), $table->getPrimaryKeys());
+		$this->assertEquals('table1', $table->getTableName());
+		$this->assertEquals(array('id', 'name'), $table->getPrimaryKeys());
 	}
 
 	function assertColumn($columns, $table)
@@ -247,7 +256,7 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 				$ofAssert= var_export($assert,true);
 				$value = $column->{$property};
 				$ofValue = var_export($value, true);
-				$this->assertEqual($value, $assert,
+				$this->assertEquals($value, $assert,
 					"Column [{$id}] {$property} value {$ofValue} did not match {$ofAssert}");
 			}
 		}

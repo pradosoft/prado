@@ -9,6 +9,15 @@ Prado::using('System.Data.DataGateway.TTableGateway');
  */
 class MssqlColumnTest extends PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        if (!extension_loaded('mssql')) {
+            $this->markTestSkipped(
+              'The pgsql extension is not available.'
+            );
+        }
+    }
+
 	function get_conn()
 	{
 		return new TDbConnection('mssql:host=localhost\\sqlexpress', 'test', 'test01');

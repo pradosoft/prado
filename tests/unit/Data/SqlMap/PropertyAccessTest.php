@@ -24,9 +24,9 @@ class PropertyAccessTest extends BaseCase
 		$account6 = $this->NewAccount6();
 		$two->More = $account6;
 
-		$this->assertIdentical(10, TPropertyAccess::get($account, 'Id'));
-		$this->assertIdentical(12, TPropertyAccess::get($account, 'More.Id'));
-		$this->assertIdentical(6, TPropertyAccess::get($account, 'More.More.Id'));
+		$this->assertSame(10, TPropertyAccess::get($account, 'Id'));
+		$this->assertSame(12, TPropertyAccess::get($account, 'More.Id'));
+		$this->assertSame(6, TPropertyAccess::get($account, 'More.More.Id'));
 	}
 
 	function testSetPublicProperty()
@@ -48,11 +48,11 @@ class PropertyAccessTest extends BaseCase
 
 		TPropertyAccess::set($account, 'More.More.EmailAddress', 'hahaha');
 
-		$this->assertIdentical(10, TPropertyAccess::get($account, 'Id'));
-		$this->assertIdentical(12, TPropertyAccess::get($account, 'More.Id'));
-		$this->assertIdentical(6, TPropertyAccess::get($account, 'More.More.Id'));
+		$this->assertSame(10, TPropertyAccess::get($account, 'Id'));
+		$this->assertSame(12, TPropertyAccess::get($account, 'More.Id'));
+		$this->assertSame(6, TPropertyAccess::get($account, 'More.More.Id'));
 
-		$this->assertIdentical('hahaha',
+		$this->assertSame('hahaha',
 				TPropertyAccess::get($account, 'More.More.EmailAddress'));
 	}
 
@@ -63,12 +63,12 @@ class PropertyAccessTest extends BaseCase
 		$things['accounts']  = $this->NewAccount6();
 		$account->More = $things;
 
-		$this->assertIdentical(6, TPropertyAccess::get($account, 'More.accounts.ID'));
+		$this->assertSame(6, TPropertyAccess::get($account, 'More.accounts.ID'));
 
 		TPropertyAccess::set($account, 'More.accounts.EmailAddress', 'adssd');
-		$this->assertIdentical('adssd', TPropertyAccess::get($account, 'More.accounts.EmailAddress'));
+		$this->assertSame('adssd', TPropertyAccess::get($account, 'More.accounts.EmailAddress'));
 
-		$this->assertIdentical(1, TPropertyAccess::get($things, 'more'));
+		$this->assertSame(1, TPropertyAccess::get($things, 'more'));
 	}
 
 }

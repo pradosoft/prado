@@ -4,9 +4,6 @@ require_once(dirname(__FILE__).'/BaseCase.php');
 
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
-/**
- * @package System.Data.SqlMap
- */
 class ActiveAccount extends TActiveRecord
 {
 	public $Account_Id;
@@ -25,6 +22,9 @@ class ActiveAccount extends TActiveRecord
 	}
 }
 
+/**
+ * @package System.Data.SqlMap
+ */
 class ActiveRecordSqlMapTest extends BaseCase
 {
 	function __construct()
@@ -36,34 +36,10 @@ class ActiveRecordSqlMapTest extends BaseCase
 		//$this->initScript('account-init.sql');
 	}
 
-	function testLoadWithSqlMap()
-	{
-		$records = $this->sqlmap->queryForList('GetActiveRecordAccounts');
-		$registry=TActiveRecordManager::getInstance()->getObjectStateRegistry();
-		foreach($records as $record)
-		{
-			$this->assertEqual(get_class($record), 'ActiveAccount');
-			$this->assertTrue($registry->isCleanObject($record));
-		}
-	}
-
-	function testLoadWithActiveRecord()
-	{
-		$records = ActiveAccount::finder()->findAll();
-		$registry=TActiveRecordManager::getInstance()->getObjectStateRegistry();
-		foreach($records as $record)
-		{
-			$this->assertEqual(get_class($record), 'ActiveAccount');
-			//$this->assertTrue($registry->isCleanObject($record)); //? not clean anymore?
-		}
-	}
-
 	function testLoadWithSqlMap_SaveWithActiveRecord()
 	{
 		$record = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
-		$registry=TActiveRecordManager::getInstance()->getObjectStateRegistry();
 		$record->Account_FirstName = "Testing 123";
-		$this->assertTrue($registry->isDirtyObject($record));
 
 		$this->assertTrue($record->save());
 
@@ -83,6 +59,6 @@ class ActiveRecordSqlMapTest extends BaseCase
 		$props = array('Account_Id', 'Account_FirstName', 'Account_LastName',
 						'Account_Email', 'Account_Banner_Option', 'Account_Cart_Option');
 		foreach($props as $prop)
-			$this->assertEqual($account1->{$prop}, $account2->{$prop});
+			$this->assertEquals($account1->{$prop}, $account2->{$prop});
 	}
 }

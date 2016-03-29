@@ -91,7 +91,7 @@ class StatementTest extends BaseCase
 	function testExecuteQueryForObjectWithSimpleResultClass()
 	{
 		$email = $this->sqlmap->QueryForObject("GetEmailAddressViaResultClass", 1);
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $email);
+		$this->assertSame("Joe.Dalton@somewhere.com", $email);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class StatementTest extends BaseCase
 	function testExecuteQueryForObjectWithSimpleResultMap()
 	{
 		$email = $this->sqlmap->QueryForObject("GetEmailAddressViaResultMap", 1);
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $email);
+		$this->assertSame("Joe.Dalton@somewhere.com", $email);
 	}
 
 	/**
@@ -110,7 +110,7 @@ class StatementTest extends BaseCase
 	{
 		$CardExpiry = $this->sqlmap->QueryForObject("GetOrderCardExpiryViaResultClass", 1);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
-		$this->assertIdentical($date, $CardExpiry->getTimeStamp());
+		$this->assertSame($date, $CardExpiry->getTimeStamp());
 	}
 
 	/**
@@ -153,7 +153,7 @@ class StatementTest extends BaseCase
 		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
-		$this->assertIdentical("TSM-12", $testItem->getCode());
+		$this->assertSame("TSM-12", $testItem->getCode());
 	}
 	/**/
 
@@ -162,11 +162,11 @@ class StatementTest extends BaseCase
 	{
 		//$list = $this->sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_ID");
 
-		//$this->assertIdentical("Joe.Dalton@somewhere.com", $list[0]);
+		//$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
 
 		//list = $this->sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
 
-		//$this->assertIdentical("Averel.Dalton@somewhere.com", $list[0]);
+		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
 
 	}
 
@@ -176,14 +176,14 @@ class StatementTest extends BaseCase
 		//$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "LIKE");
 
 		//$this->assertAccount1$list[0]);
-		//$this->assertIdentical(3, $list->getCount());
-		//$this->assertIdentical(1, $list[0]->getID());
-		//$this->assertIdentical(2, $list[1]->getID());
-		//$this->assertIdentical(4, $list[2]->getID());
+		//$this->assertSame(3, $list->getCount());
+		//$this->assertSame(1, $list[0]->getID());
+		//$this->assertSame(2, $list[1]->getID());
+		//$this->assertSame(4, $list[2]->getID());
 
 		//list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
 
-		//$this->assertIdentical(0, $list->getCount());
+		//$this->assertSame(0, $list->getCount());
 	}
 
 
@@ -208,15 +208,15 @@ class StatementTest extends BaseCase
 	{
 		//$enumClass = $this->sqlmap->QueryForObject("GetEnumeration", 1);
 
-		//$this->assertIdentical(enumClass.Day, Days.Sat);
-		//$this->assertIdentical(enumClass.Color, Colors.Red);
-		//$this->assertIdentical(enumClass.Month, Months.August);
+		//$this->assertSame(enumClass.Day, Days.Sat);
+		//$this->assertSame(enumClass.Color, Colors.Red);
+		//$this->assertSame(enumClass.Month, Months.August);
 
 		//enumClass = $this->sqlmap->QueryForObject("GetEnumeration", 3) as Enumeration;
 
-		//$this->assertIdentical(enumClass.Day, Days.Mon);
-		//$this->assertIdentical(enumClass.Color, Colors.Blue);
-		//$this->assertIdentical(enumClass.Month, Months.September);*/
+		//$this->assertSame(enumClass.Day, Days.Mon);
+		//$this->assertSame(enumClass.Color, Colors.Blue);
+		//$this->assertSame(enumClass.Month, Months.September);*/
 	}
 
 	#endregion
@@ -232,13 +232,13 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsAsHashMapViaResultMap");
 
 		$this->assertAccount1AsHashArray($list[0]);
-		$this->assertIdentical(5, count($list));
+		$this->assertSame(5, count($list));
 
-		$this->assertIdentical(1, (int)$list[0]["Id"]);
-		$this->assertIdentical(2, (int)$list[1]["Id"]);
-		$this->assertIdentical(3, (int)$list[2]["Id"]);
-		$this->assertIdentical(4, (int)$list[3]["Id"]);
-		$this->assertIdentical(5, (int)$list[4]["Id"]);
+		$this->assertSame(1, (int)$list[0]["Id"]);
+		$this->assertSame(2, (int)$list[1]["Id"]);
+		$this->assertSame(3, (int)$list[2]["Id"]);
+		$this->assertSame(4, (int)$list[3]["Id"]);
+		$this->assertSame(5, (int)$list[4]["Id"]);
 	}
 
 	/**
@@ -249,13 +249,13 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsAsHashtableViaResultClass");
 
 		$this->assertAccount1AsHashArray($list[0]);
-		$this->assertIdentical(5, count($list));
+		$this->assertSame(5, count($list));
 
-		$this->assertIdentical(1, (int)$list[0]["Id"]);
-		$this->assertIdentical(2, (int)$list[1]["Id"]);
-		$this->assertIdentical(3, (int)$list[2]["Id"]);
-		$this->assertIdentical(4, (int)$list[3]["Id"]);
-		$this->assertIdentical(5, (int)$list[4]["Id"]);
+		$this->assertSame(1, (int)$list[0]["Id"]);
+		$this->assertSame(2, (int)$list[1]["Id"]);
+		$this->assertSame(3, (int)$list[2]["Id"]);
+		$this->assertSame(4, (int)$list[3]["Id"]);
+		$this->assertSame(5, (int)$list[4]["Id"]);
 	}
 
 	/**
@@ -267,23 +267,23 @@ class StatementTest extends BaseCase
 
 		$listAccount = $list[0];
 
-		$this->assertIdentical(1,(int)$listAccount[0]);
-		$this->assertIdentical("Joe",$listAccount[1]);
-		$this->assertIdentical("Dalton",$listAccount[2]);
-		$this->assertIdentical("Joe.Dalton@somewhere.com",$listAccount[3]);
+		$this->assertSame(1,(int)$listAccount[0]);
+		$this->assertSame("Joe",$listAccount[1]);
+		$this->assertSame("Dalton",$listAccount[2]);
+		$this->assertSame("Joe.Dalton@somewhere.com",$listAccount[3]);
 
-		$this->assertIdentical(5, count($list));
+		$this->assertSame(5, count($list));
 
 		$listAccount = $list[0];
-		$this->assertIdentical(1, (int)$listAccount[0]);
+		$this->assertSame(1, (int)$listAccount[0]);
 		$listAccount = $list[1];
-		$this->assertIdentical(2, (int)$listAccount[0]);
+		$this->assertSame(2, (int)$listAccount[0]);
 		$listAccount = $list[2];
-		$this->assertIdentical(3, (int)$listAccount[0]);
+		$this->assertSame(3, (int)$listAccount[0]);
 		$listAccount = $list[3];
-		$this->assertIdentical(4, (int)$listAccount[0]);
+		$this->assertSame(4, (int)$listAccount[0]);
 		$listAccount = $list[4];
-		$this->assertIdentical(5, (int)$listAccount[0]);
+		$this->assertSame(5, (int)$listAccount[0]);
 	}
 
 	/**
@@ -294,12 +294,12 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMap");
 
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(5, count($list));
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
-		$this->assertIdentical(3, $list[2]->getID());
-		$this->assertIdentical(4, $list[3]->getID());
-		$this->assertIdentical(5, $list[4]->getID());
+		$this->assertSame(5, count($list));
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(3, $list[2]->getID());
+		$this->assertSame(4, $list[3]->getID());
+		$this->assertSame(5, $list[4]->getID());
 	}
 
 	/**
@@ -314,138 +314,138 @@ class StatementTest extends BaseCase
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
 
 		// Test illegal previous page (no effect, state should be same)
 		$list->PreviousPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
 
 		// Test next (page 1)
 		$list->NextPage();
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(3, $list[0]->getID());
-		$this->assertIdentical(4, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(3, $list[0]->getID());
+		$this->assertSame(4, $list[1]->getID());
 
 		// Test next (page 2 -last)
 		$list->NextPage();
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
-		$this->assertIdentical(5, $list[0]->getID());
+		$this->assertSame(1, $list->getCount());
+		$this->assertSame(5, $list[0]->getID());
 
 		// Test previous (page 1)
 		$list->PreviousPage();
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(3, $list[0]->getID());
-		$this->assertIdentical(4, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(3, $list[0]->getID());
+		$this->assertSame(4, $list[1]->getID());
 
 		// Test previous (page 0 -first)
 		$list->PreviousPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
 
 		// Test goto (page 0)
 		$list->GotoPage(0);
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
 
 		// Test goto (page 1)
 		$list->GotoPage(1);
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertTrue($list->getIsNextPageAvailable());
-		$this->assertIdentical(2, $list->getCount());
-		$this->assertIdentical(3, $list[0]->getID());
-		$this->assertIdentical(4, $list[1]->getID());
+		$this->assertSame(2, $list->getCount());
+		$this->assertSame(3, $list[0]->getID());
+		$this->assertSame(4, $list[1]->getID());
 
 		// Test goto (page 2)
 		$list->GotoPage(2);
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
-		$this->assertIdentical(5, $list[0]->getID());
+		$this->assertSame(1, $list->getCount());
+		$this->assertSame(5, $list[0]->getID());
 
 		// Test illegal goto (page 0)
 		$list->GotoPage(3);
 		$this->assertTrue($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(0, $list->getCount());
+		$this->assertSame(0, $list->getCount());
 
 		$list = $this->sqlmap->QueryForPagedList("GetNoAccountsViaResultMap", null, 2);
 
 		// Test empty list
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(0, $list->getCount());
+		$this->assertSame(0, $list->getCount());
 
 		// Test next
 		$list->NextPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(0, $list->getCount());
+		$this->assertSame(0, $list->getCount());
 
 		// Test previous
 		$list->PreviousPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(0, $list->getCount());
+		$this->assertSame(0, $list->getCount());
 
 		// Test previous
 		$list->GotoPage(0);
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(0, $list->getCount());
+		$this->assertSame(0, $list->getCount());
 		$list = $this->sqlmap->QueryForPagedList("GetFewAccountsViaResultMap", null, 2);
 
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
+		$this->assertSame(1, $list->getCount());
 
 		// Test next
 		$list->NextPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
+		$this->assertSame(1, $list->getCount());
 		// Test previous
 		$list->PreviousPage();
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
+		$this->assertSame(1, $list->getCount());
 
 		// Test previous
 		$list->GotoPage(0);
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
-		$this->assertIdentical(1, $list->getCount());
+		$this->assertSame(1, $list->getCount());
 
 
 		$list = $this->sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 5);
 
-		$this->assertIdentical(5, $list->getCount());
+		$this->assertSame(5, $list->getCount());
 
 		$list->NextPage();
-		$this->assertIdentical(5, $list->getCount());
+		$this->assertSame(5, $list->getCount());
 
 		$b = $list->getIsPreviousPageAvailable();
 		$list->PreviousPage();
-		$this->assertIdentical(5, $list->getCount());
+		$this->assertSame(5, $list->getCount());
 	}
 
 	/**
@@ -458,12 +458,12 @@ class StatementTest extends BaseCase
 
 		$this->sqlmap->QueryForList("GetAllAccountsViaResultMap", null, $accounts);
 		$this->assertAccount1($accounts[0]);
-		$this->assertIdentical(5, $accounts->getCount());
-		$this->assertIdentical(1, $accounts[0]->getID());
-		$this->assertIdentical(2, $accounts[1]->getID());
-		$this->assertIdentical(3, $accounts[2]->getID());
-		$this->assertIdentical(4, $accounts[3]->getID());
-		$this->assertIdentical(5, $accounts[4]->GetId());
+		$this->assertSame(5, $accounts->getCount());
+		$this->assertSame(1, $accounts[0]->getID());
+		$this->assertSame(2, $accounts[1]->getID());
+		$this->assertSame(3, $accounts[2]->getID());
+		$this->assertSame(4, $accounts[3]->getID());
+		$this->assertSame(5, $accounts[4]->GetId());
 	}
 
 	/**
@@ -474,9 +474,9 @@ class StatementTest extends BaseCase
 		$linesItem = $this->sqlmap->QueryForList("GetLineItemsForOrderWithListClass", 10);
 
 		$this->assertNotNull($linesItem);
-		$this->assertIdentical(2, $linesItem->getCount());
-		$this->assertIdentical("ESM-34", $linesItem[0]->getCode());
-		$this->assertIdentical("QSM-98", $linesItem[1]->getCode());
+		$this->assertSame(2, $linesItem->getCount());
+		$this->assertSame("ESM-34", $linesItem[0]->getCode());
+		$this->assertSame("QSM-98", $linesItem[1]->getCode());
 	}
 
 	/**
@@ -486,7 +486,7 @@ class StatementTest extends BaseCase
 	{
 		$list = $this->sqlmap->QueryForList("GetNoAccountsViaResultMap");
 
-		$this->assertIdentical(0, count($list));
+		$this->assertSame(0, count($list));
 	}
 
 	/**
@@ -497,12 +497,12 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultClass");
 
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(5, count($list));
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
-		$this->assertIdentical(3, $list[2]->getID());
-		$this->assertIdentical(4, $list[3]->getID());
-		$this->assertIdentical(5, $list[4]->getID());
+		$this->assertSame(5, count($list));
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(3, $list[2]->getID());
+		$this->assertSame(4, $list[3]->getID());
+		$this->assertSame(5, $list[4]->getID());
 	}
 
 	/**
@@ -512,11 +512,11 @@ class StatementTest extends BaseCase
 	{
 		$list = $this->sqlmap->QueryForList("GetAllEmailAddressesViaResultClass");
 
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $list[0]);
-		$this->assertIdentical("Averel.Dalton@somewhere.com", $list[1]);
-		$this->assertIdentical('', $list[2]);
-		$this->assertIdentical("Jack.Dalton@somewhere.com", $list[3]);
-		$this->assertIdentical('', $list[4]);
+		$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
+		$this->assertSame("Averel.Dalton@somewhere.com", $list[1]);
+		$this->assertSame('', $list[2]);
+		$this->assertSame("Jack.Dalton@somewhere.com", $list[3]);
+		$this->assertSame('', $list[4]);
 	}
 
 	/**
@@ -526,11 +526,11 @@ class StatementTest extends BaseCase
 	{
 		$list = $this->sqlmap->QueryForList("GetAllEmailAddressesViaResultMap");
 
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $list[0]);
-		$this->assertIdentical("Averel.Dalton@somewhere.com", $list[1]);
-		$this->assertIdentical('', $list[2]);
-		$this->assertIdentical("Jack.Dalton@somewhere.com", $list[3]);
-		$this->assertIdentical('', $list[4]);
+		$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
+		$this->assertSame("Averel.Dalton@somewhere.com", $list[1]);
+		$this->assertSame('', $list[2]);
+		$this->assertSame("Jack.Dalton@somewhere.com", $list[3]);
+		$this->assertSame('', $list[4]);
 	}
 
 	/**
@@ -540,9 +540,9 @@ class StatementTest extends BaseCase
 	{
 		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMap", null, null, 2, 2);
 
-		$this->assertIdentical(2, count($list));
-		$this->assertIdentical(3, $list[0]->getID());
-		$this->assertIdentical(4, $list[1]->getID());
+		$this->assertSame(2, count($list));
+		$this->assertSame(3, $list[0]->getID());
+		$this->assertSame(4, $list[1]->getID());
 	}
 
 
@@ -555,14 +555,14 @@ class StatementTest extends BaseCase
 
 		//$list = $this->sqlmap->QueryWithRowDelegate("GetAllAccountsViaResultMap", null, handler);
 
-		//$this->assertIdentical(5, _index);
-		//$this->assertIdentical(5, $list->getCount());
+		//$this->assertSame(5, _index);
+		//$this->assertSame(5, $list->getCount());
 		//$this->assertAccount1$list[0]);
-		//$this->assertIdentical(1, $list[0]->getID());
-		//$this->assertIdentical(2, $list[1]->getID());
-		//$this->assertIdentical(3, $list[2]->getID());
-		//$this->assertIdentical(4, $list[3]->getID());
-		//$this->assertIdentical(5, $list[4]->getID());
+		//$this->assertSame(1, $list[0]->getID());
+		//$this->assertSame(2, $list[1]->getID());
+		//$this->assertSame(3, $list[2]->getID());
+		//$this->assertSame(4, $list[3]->getID());
+		//$this->assertSame(5, $list[4]->getID());
 	}
 
 	#endregion
@@ -576,14 +576,14 @@ class StatementTest extends BaseCase
 	{
 		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName");
 
-		$this->assertIdentical(5, count($map));
+		$this->assertSame(5, count($map));
 		$this->assertAccount1($map["Joe"]);
 
-		$this->assertIdentical(1, $map["Joe"]->getID());
-		$this->assertIdentical(2, $map["Averel"]->getID());
-		$this->assertIdentical(3, $map["William"]->getID());
-		$this->assertIdentical(4, $map["Jack"]->getID());
-		$this->assertIdentical(5, $map["Gilles"]->getID());
+		$this->assertSame(1, $map["Joe"]->getID());
+		$this->assertSame(2, $map["Averel"]->getID());
+		$this->assertSame(3, $map["William"]->getID());
+		$this->assertSame(4, $map["Jack"]->getID());
+		$this->assertSame(5, $map["Gilles"]->getID());
 	}
 
 	/**
@@ -596,10 +596,10 @@ class StatementTest extends BaseCase
 	{
 		$map = $this->sqlmap->QueryForMap("GetAllOrderWithLineItems", null, "PostalCode");
 
-		$this->assertIdentical(11, count($map));
+		$this->assertSame(11, count($map));
 		$order = $map["T4H 9G4"];
 
-		$this->assertIdentical(2, $order->getLineItemsList()->getCount());
+		$this->assertSame(2, $order->getLineItemsList()->getCount());
 	}
 
 	/**
@@ -611,12 +611,12 @@ class StatementTest extends BaseCase
 		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null,
 						"FirstName", "EmailAddress");
 
-		$this->assertIdentical(5, count($map));
+		$this->assertSame(5, count($map));
 
-		$this->assertIdentical("Joe.Dalton@somewhere.com", $map["Joe"]);
-		$this->assertIdentical("Averel.Dalton@somewhere.com", $map["Averel"]);
+		$this->assertSame("Joe.Dalton@somewhere.com", $map["Joe"]);
+		$this->assertSame("Averel.Dalton@somewhere.com", $map["Averel"]);
 		$this->assertNull($map["William"]);
-		$this->assertIdentical("Jack.Dalton@somewhere.com", $map["Jack"]);
+		$this->assertSame("Jack.Dalton@somewhere.com", $map["Jack"]);
 		$this->assertNull($map["Gilles"]);
 	}
 
@@ -663,12 +663,12 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccounts");
 
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(5, count($list));
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
-		$this->assertIdentical(3, $list[2]->getID());
-		$this->assertIdentical(4, $list[3]->getID());
-		$this->assertIdentical(5, $list[4]->getID());
+		$this->assertSame(5, count($list));
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(3, $list[2]->getID());
+		$this->assertSame(4, $list[3]->getID());
+		$this->assertSame(5, $list[4]->getID());
 	}
 
 	/**
@@ -679,13 +679,13 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsOrderByName");
 
 		$this->assertAccount1($list[3]);
-		$this->assertIdentical(5, count($list));
+		$this->assertSame(5, count($list));
 
-		$this->assertIdentical(2, $list[0]->getID());
-		$this->assertIdentical(5, $list[1]->getID());
-		$this->assertIdentical(4, $list[2]->getID());
-		$this->assertIdentical(1, $list[3]->getID());
-		$this->assertIdentical(3, $list[4]->getID());
+		$this->assertSame(2, $list[0]->getID());
+		$this->assertSame(5, $list[1]->getID());
+		$this->assertSame(4, $list[2]->getID());
+		$this->assertSame(1, $list[3]->getID());
+		$this->assertSame(3, $list[4]->getID());
 	}
 
 	/**
@@ -707,11 +707,11 @@ class StatementTest extends BaseCase
 
 		$list = $this->sqlmap->QueryForList("GetSomeAccount", $param);
 
-		$this->assertIdentical(3, count($list));
+		$this->assertSame(3, count($list));
 
-		$this->assertIdentical(2, $list[0]->getID());
-		$this->assertIdentical(3, $list[1]->getID());
-		$this->assertIdentical(4, $list[2]->getID());
+		$this->assertSame(2, $list[0]->getID());
+		$this->assertSame(3, $list[1]->getID());
+		$this->assertSame(4, $list[2]->getID());
 	}
 
 	#endregion
@@ -739,7 +739,7 @@ class StatementTest extends BaseCase
 
 		$this->assertNotNull($testAccount);
 
-		$this->assertIdentical(10, $testAccount->getID());
+		$this->assertSame(10, $testAccount->getID());
 
 		$this->initScript('account-init.sql');
 	}
@@ -792,7 +792,7 @@ class StatementTest extends BaseCase
 		$testAccount = $this->sqlmap->QueryForObject("GetAccountViaColumnIndex", 10);
 
 		$this->assertNotNull($testAccount);
-		$this->assertIdentical(10, $testAccount->getId());
+		$this->assertSame(10, $testAccount->getId());
 		$this->initScript('account-init.sql');
 	}
 
@@ -824,7 +824,7 @@ class StatementTest extends BaseCase
 
 		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
-		$this->assertIdentical("new@somewhere.com", $account->getEmailAddress());
+		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
 	}
 
@@ -841,7 +841,7 @@ class StatementTest extends BaseCase
 
 		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
-		$this->assertIdentical("new@somewhere.com", $account->getEmailAddress());
+		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
 	}
 
@@ -858,7 +858,7 @@ class StatementTest extends BaseCase
 
 		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
-		$this->assertIdentical("new@somewhere.com", $account->getEmailAddress());
+		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
 	}
 
@@ -879,7 +879,7 @@ class StatementTest extends BaseCase
 		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 6);
 
 		$this->assertNull($account);
-		$this->assertIdentical(0, $noRowsDeleted);
+		$this->assertSame(0, $noRowsDeleted);
 		$this->initScript('account-init.sql');
 	}
 
@@ -915,7 +915,7 @@ class StatementTest extends BaseCase
 		$this->initScript('line-item-init.sql');
 		$rowNumber = $this->sqlmap->Delete("DeleteWithComments");
 
-		$this->assertIdentical($rowNumber, 2);
+		$this->assertSame($rowNumber, 2);
 		$this->initScript('line-item-init.sql');
 	}
 
@@ -930,7 +930,7 @@ class StatementTest extends BaseCase
 	function RowHandler($sender, $paramterObject, $list)
 	{
 		//_index++;
-		//$this->assertIdentical(_index, (($account) obj).Id);
+		//$this->assertSame(_index, (($account) obj).Id);
 		//$list->Add(obj);
 	}
 
@@ -994,7 +994,7 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAccounts");
 
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(5, count($list));
+		$this->assertSame(5, count($list));
 	}
 
 	/**
@@ -1010,7 +1010,7 @@ class StatementTest extends BaseCase
 		$firstId = HashCodeProvider.GetIdentityHashCode(list);
 		list = $this->sqlmap->QueryForList("GetCachedAccountsViaResultMap");
 		int secondId = HashCodeProvider.GetIdentityHashCode(list);
-		$this->assertIdentical(firstId, secondId);
+		$this->assertSame(firstId, secondId);
 
 		string cacheStats = $this->sqlmap->GetDataCacheStats();
 
@@ -1032,12 +1032,12 @@ class StatementTest extends BaseCase
 		$list = $this->sqlmap->QueryForList("GetAllAccountsViaCustomTypeHandler");
 
 		$this->assertAccount1($list[0]);
-		$this->assertIdentical(5, count($list));
-		$this->assertIdentical(1, $list[0]->getID());
-		$this->assertIdentical(2, $list[1]->getID());
-		$this->assertIdentical(3, $list[2]->getID());
-		$this->assertIdentical(4, $list[3]->getID());
-		$this->assertIdentical(5, $list[4]->getID());
+		$this->assertSame(5, count($list));
+		$this->assertSame(1, $list[0]->getID());
+		$this->assertSame(2, $list[1]->getID());
+		$this->assertSame(3, $list[2]->getID());
+		$this->assertSame(4, $list[3]->getID());
+		$this->assertSame(5, $list[4]->getID());
 
 		$this->assertFalse($list[0]->getCartOptions());
 		$this->assertFalse($list[1]->getCartOptions());
@@ -1071,10 +1071,10 @@ class StatementTest extends BaseCase
 
 		$anOther = $this->sqlmap->QueryForObject("SelectByInt", 99);
 		$this->assertNotNull( $anOther );
-		$this->assertIdentical(99, (int)$anOther->getInt());
-		$this->assertIdentical(1966, (int)$anOther->getLong());
-		$this->assertIdentical(true, (boolean)$anOther->getBool());
-		$this->assertIdentical(false, (boolean)$anOther->getBool2());
+		$this->assertSame(99, (int)$anOther->getInt());
+		$this->assertSame(1966, (int)$anOther->getLong());
+		$this->assertSame(true, (boolean)$anOther->getBool());
+		$this->assertSame(false, (boolean)$anOther->getBool2());
 
 	}
 
@@ -1097,10 +1097,10 @@ class StatementTest extends BaseCase
 		$anOther = $this->sqlmap->QueryForObject("SelectByIntV1", 99);
 
 		$this->assertNotNull( $anOther );
-		$this->assertIdentical(99, (int)$anOther->getInt());
-		$this->assertIdentical(1966, (int)$anOther->getLong());
-		$this->assertIdentical(true, (boolean)$anOther->getBool());
-		$this->assertIdentical(false, (boolean)$anOther->getBool2());
+		$this->assertSame(99, (int)$anOther->getInt());
+		$this->assertSame(1966, (int)$anOther->getLong());
+		$this->assertSame(true, (boolean)$anOther->getBool());
+		$this->assertSame(false, (boolean)$anOther->getBool2());
 
 	}
 
@@ -1123,10 +1123,10 @@ class StatementTest extends BaseCase
 		$anOther = $this->sqlmap->QueryForObject("SelectByInt", 99);
 
 		$this->assertNotNull( $anOther );
-		$this->assertIdentical(99, (int)$anOther->getInt());
-		$this->assertIdentical(1966, (int)$anOther->getLong());
-		$this->assertIdentical(true, (boolean)$anOther->getBool());
-		$this->assertIdentical(false, (boolean)$anOther->getBool2());
+		$this->assertSame(99, (int)$anOther->getInt());
+		$this->assertSame(1966, (int)$anOther->getLong());
+		$this->assertSame(true, (boolean)$anOther->getBool());
+		$this->assertSame(false, (boolean)$anOther->getBool2());
 	}
 	#endregion
 	/**/

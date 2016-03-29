@@ -113,9 +113,9 @@ class CacheTest extends BaseCase
 
 		$returnedObject = $cache->get($key);
 
-		$this->assertIdentical('a', $returnedObject);
+		$this->assertSame('a', $returnedObject);
 
-		$this->assertIdentical(1, $cache->getHitRatio());
+		$this->assertSame(1, $cache->getHitRatio());
 	}
 
 
@@ -133,9 +133,9 @@ class CacheTest extends BaseCase
 		$wrongKey = new TSqlMapCacheKey('wrongKey');
 
 		$returnedObject = $cache->get($wrongKey);
-		$this->assertNotEqual($value, $returnedObject);
+		$this->assertNotEquals($value, $returnedObject);
 		$this->assertNull($returnedObject) ;
-		$this->assertIdentical(0, $cache->getHitRatio());
+		$this->assertSame(0, $cache->getHitRatio());
 	}
 
 	/**
@@ -150,13 +150,13 @@ class CacheTest extends BaseCase
 		$cache->set($key, $value);
 
 		$returnedObject = $cache->get($key);
-		$this->assertIdentical($value, $returnedObject);
+		$this->assertSame($value, $returnedObject);
 
 		$wrongKey = new TSqlMapCacheKey('wrongKey');
 
 		$returnedObject = $cache->get($wrongKey);
-		$this->assertNotEqual($value, $returnedObject);
+		$this->assertNotEquals($value, $returnedObject);
 		$this->assertNull($returnedObject) ;
-		$this->assertIdentical(0.5, $cache->getHitRatio());
+		$this->assertSame(0.5, $cache->getHitRatio());
 	}
 }

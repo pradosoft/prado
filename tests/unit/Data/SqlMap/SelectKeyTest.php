@@ -38,15 +38,15 @@ class SelectKeyTest extends BaseCase
 
 		$key = $this->sqlmap->Insert("InsertLineItemPostKey", $item);
 
-		$this->assertIdentical(99, $key);
-		$this->assertIdentical(99, $item->getId());
+		$this->assertSame(99, $key);
+		$this->assertSame(99, $item->getId());
 
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] =10;
 		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
-		$this->assertIdentical(10, $testItem->getId());
+		$this->assertSame(10, $testItem->getId());
 
 		$this->initScript('line-item-init.sql');
 	}
@@ -69,8 +69,8 @@ class SelectKeyTest extends BaseCase
 
 		$key = $this->sqlmap->Insert("InsertLineItemPreKey", $item);
 
-		$this->assertIdentical(99, $key);
-		$this->assertIdentical(99, $item->getId());
+		$this->assertSame(99, $key);
+		$this->assertSame(99, $item->getId());
 
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] = 99;
@@ -78,7 +78,7 @@ class SelectKeyTest extends BaseCase
 		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
-		$this->assertIdentical(99, $testItem->getId());
+		$this->assertSame(99, $testItem->getId());
 
 		$this->initScript('line-item-init.sql');
 	}
@@ -103,7 +103,7 @@ class SelectKeyTest extends BaseCase
 		$key = $this->sqlmap->Insert("InsertLineItemNoKey", $item);
 
 		$this->assertNull($key);
-		$this->assertIdentical(100, $item->getId());
+		$this->assertSame(100, $item->getId());
 
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] = 100;
@@ -111,7 +111,7 @@ class SelectKeyTest extends BaseCase
 		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
-		$this->assertIdentical(100, $testItem->getId());
+		$this->assertSame(100, $testItem->getId());
 
 		$this->initScript('line-item-init.sql');
 	}

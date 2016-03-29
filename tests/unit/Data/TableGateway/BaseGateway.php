@@ -5,7 +5,7 @@ Prado::using('System.Data.DataGateway.TTableGateway');
 /**
  * @package System.Data.TableGateway
  */
-class BaseGatewayTest extends PHPUnit_Framework_TestCase
+class BaseGateway extends PHPUnit_Framework_TestCase
 {
 	protected $gateway1;
 	protected $gateway2;
@@ -17,7 +17,7 @@ class BaseGatewayTest extends PHPUnit_Framework_TestCase
 	{
 		if($this->gateway1===null)
 		{
-			$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 			$this->gateway1 = new TTableGateway('address', $conn);
 		}
 		return $this->gateway1;
@@ -30,7 +30,7 @@ class BaseGatewayTest extends PHPUnit_Framework_TestCase
 	{
 		if($this->gateway2===null)
 		{
-			$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 			$this->gateway2 = new TTableGateway('department_sections', $conn);
 		}
 		return $this->gateway2;
@@ -63,7 +63,7 @@ class BaseGatewayTest extends PHPUnit_Framework_TestCase
 			'field5_text' => 'asdasd',
 			'field6_time' => '12:40:00',
 			'field7_timestamp' => 'NOW',
-			'field8_money' => '$121.12',
+			'field8_money' => '121.12',
 			'field9_numeric' => 98.2232,
 			'int_fk1'=>1,
 			'int_fk2'=>1,
@@ -83,7 +83,7 @@ class BaseGatewayTest extends PHPUnit_Framework_TestCase
 			'field5_text' => 'hello world',
 			'field6_time' => '22:40:00',
 			'field7_timestamp' => 'NOW',
-			'field8_money' => '$1121.12',
+			'field8_money' => '1121.12',
 			'field9_numeric' => 8.2213,
 			'int_fk1'=>1,
 			'int_fk2'=>1,

@@ -18,11 +18,11 @@ class TestQueryForMap extends BaseCase
 	function testExecuteQueryForMap()
 	{
 		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName",null,0,2);
-		$this->assertIdentical(2, count($map));
+		$this->assertSame(2, count($map));
 		$this->assertAccount1($map["Joe"]);
 
-		$this->assertIdentical(1, $map["Joe"]->getID());
-		$this->assertIdentical(2, $map["Averel"]->getID());
+		$this->assertSame(1, $map["Joe"]->getID());
+		$this->assertSame(2, $map["Averel"]->getID());
 	}
 
 	/**
@@ -34,11 +34,11 @@ class TestQueryForMap extends BaseCase
 		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null,
 						"FirstName", "EmailAddress",1,3);
 
-		$this->assertIdentical(3, count($map));
+		$this->assertSame(3, count($map));
 
-		$this->assertIdentical("Averel.Dalton@somewhere.com", $map["Averel"]);
+		$this->assertSame("Averel.Dalton@somewhere.com", $map["Averel"]);
 		$this->assertNull($map["William"]);
-		$this->assertIdentical("Jack.Dalton@somewhere.com", $map["Jack"]);
+		$this->assertSame("Jack.Dalton@somewhere.com", $map["Jack"]);
 	}
 
 }

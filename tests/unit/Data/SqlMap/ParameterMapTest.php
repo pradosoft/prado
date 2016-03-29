@@ -91,7 +91,7 @@ class ParameterMapTest extends BaseCase
 
 		$orderTest = $this->sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
 
-		$this->assertIdentical($order->getCity(), $orderTest->getCity());
+		$this->assertSame($order->getCity(), $orderTest->getCity());
 	}
 
 	/// Test null replacement in ParameterMap/Hahstable property
@@ -118,7 +118,7 @@ class ParameterMapTest extends BaseCase
 
 		$orderTest = $this->sqlmap->queryForObject("GetOrderByHashTable", 99);
 
-		$this->assertIdentical($orderTest["Date"], '0001-01-01 00:00:00');
+		$this->assertSame($orderTest["Date"], '0001-01-01 00:00:00');
 	}
 
 	/// Test null replacement in ParameterMap property
@@ -135,8 +135,8 @@ class ParameterMapTest extends BaseCase
 
 			$categoryRead = $this->sqlmap->queryForObject("GetCategory", $key);
 
-			$this->assertIdentical($category->getName(), $categoryRead->getName());
-			$this->assertIdentical('', $categoryRead->getGuidString());
+			$this->assertSame($category->getName(), $categoryRead->getName());
+			$this->assertSame('', $categoryRead->getGuidString());
 		}
 	}
 
@@ -212,7 +212,7 @@ class ParameterMapTest extends BaseCase
 
 		$this->assertNotNull($item->getId());
 //		$this->assertNotNull($item->getPicture());
-//		$this->assertIdentical( GetSize(item.Picture), this.GetSize( this.GetPicture() ));
+//		$this->assertSame( GetSize(item.Picture), this.GetSize( this.GetPicture() ));
 	}
 */
 
@@ -241,7 +241,7 @@ class ParameterMapTest extends BaseCase
 
 		$orderTest = $this->sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
 
-		$this->assertIdentical($order->getCity(), $orderTest->getCity());
+		$this->assertSame($order->getCity(), $orderTest->getCity());
 	}
 /**/
 }

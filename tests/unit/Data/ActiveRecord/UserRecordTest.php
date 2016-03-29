@@ -9,7 +9,7 @@ class UserRecordTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -62,6 +62,6 @@ class UserRecordTest extends PHPUnit_Framework_TestCase
 						'work_phone', 'work_fax', 'active', 'department_id', 'salutation',
 						'hint_question', 'hint_answer');
 		foreach($props as $prop)
-			$this->assertEqual($user->$prop,$check->$prop);
+			$this->assertEquals($user->$prop,$check->$prop);
 	}
 }

@@ -1,11 +1,19 @@
 <?php
-require_once(dirname(__FILE__).'/BaseGatewayTest.php');
+require_once(dirname(__FILE__).'/BaseGateway.php');
 
 /**
  * @package System.Data.TableGateway
  */
-class TableGatewayPgsqlTest extends BaseGatewayTest
+class TableGatewayPgsqlTest extends BaseGateway
 {
+    public function setUp()
+    {
+        if (!extension_loaded('pgsql')) {
+            $this->markTestSkipped(
+              'The pgsql extension is not available.'
+            );
+        }
+    }
 
 	function test_update()
 	{
@@ -20,7 +28,7 @@ class TableGatewayPgsqlTest extends BaseGatewayTest
 		$expect['username'] = 'tester 1';
 		$expect['field5_text'] = null;
 		unset($expect['field7_timestamp']); unset($test['field7_timestamp']);
-		$this->assertEqual($expect, $test);
+		$this->assertEquals($expect, $test);
 
 		$this->assertTrue($this->getGateway()->deleteAll('username = ?', 'tester 1'));
 	}
@@ -38,7 +46,7 @@ class TableGatewayPgsqlTest extends BaseGatewayTest
 		$expect['username'] = 'tester 1';
 		$expect['field5_text'] = null;
 		unset($expect['field7_timestamp']); unset($test['field7_timestamp']);
-		$this->assertEqual($expect, $test);
+		$this->assertEquals($expect, $test);
 
 		$this->assertTrue($this->getGateway()->deleteAll('username = :name', array(':name'=>'tester 1')));
 	}
@@ -49,10 +57,10 @@ class TableGatewayPgsqlTest extends BaseGatewayTest
 		$this->add_record2();
 
 		$results = $this->getGateway()->findAll('true')->readAll();
-		$this->assertEqual(count($results), 2);
+		$this->assertEquals(count($results), 2);
 
 		$result = $this->getGateway()->findAllBySql('SELECT username FROM address WHERE phone = ?', '45233')->read();
-		$this->assertEqual($result['username'], 'record2');
+		$this->assertEquals($result['username'], 'record2');
 	}
 
 }

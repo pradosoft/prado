@@ -1,9 +1,6 @@
 <?php
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
-/**
- * @package System.Data.ActiveRecord
- */
 class BaseFkRecord extends TActiveRecord
 {
 	public function getDbConnection()
@@ -11,7 +8,7 @@ class BaseFkRecord extends TActiveRecord
 		static $conn;
 		if($conn===null)
 		{
-			$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 			//$this->OnExecuteCommand[] = array($this,'logger');
 		}
 		return $conn;
@@ -122,10 +119,11 @@ class SkillRecord extends BaseFkRecord
     {
         return parent::finder($className);
     }
-
-
 }
 
+/**
+ * @package System.Data.ActiveRecord
+ */
 class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 {
 	function test_add_has_one()
@@ -138,15 +136,15 @@ class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 
 		//test insert
 		$player2 = PlayerRecord::finder()->withProfile()->findByPk(3);
-		$this->assertEqual($player2->profile->salary,50000);
+		$this->assertEquals($player2->profile->salary,50000);
 
 		$player2->profile->salary = 45000;
 		$player2->save();
-		$this->assertEqual($player2->profile->salary,45000);
+		$this->assertEquals($player2->profile->salary,45000);
 
 		//test update
 		$player3 = PlayerRecord::finder()->withProfile()->findByPk(3);
-		$this->assertEqual($player3->profile->salary,45000);
+		$this->assertEquals($player3->profile->salary,45000);
 	}
 
 	function test_add_many()
@@ -160,27 +158,27 @@ class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 
 		//test insert
 		$team1 = TeamRecord::finder()->withPlayers()->findByPk('Team b');
-		$this->assertEqual(count($team1->players),3);
-		$this->assertEqual($team1->players[0]->age, 18);
-		$this->assertEqual($team1->players[1]->age, 20);
-		$this->assertEqual($team1->players[2]->age, 25);
+		$this->assertEquals(count($team1->players),3);
+		$this->assertEquals($team1->players[0]->age, 18);
+		$this->assertEquals($team1->players[1]->age, 20);
+		$this->assertEquals($team1->players[2]->age, 25);
 
 		//test update
 		$team1->players[1]->age = 55;
 		$team1->save();
 
-		$this->assertEqual($team1->players[0]->age, 18);
-		$this->assertEqual($team1->players[1]->age, 55);
-		$this->assertEqual($team1->players[2]->age, 25);
+		$this->assertEquals($team1->players[0]->age, 18);
+		$this->assertEquals($team1->players[1]->age, 55);
+		$this->assertEquals($team1->players[2]->age, 25);
 
 		$criteria = new TActiveRecordCriteria();
 		$criteria->OrdersBy['age'] = 'desc';
 		$team2 = TeamRecord::finder()->withPlayers($criteria)->findByPk('Team b');
-		$this->assertEqual(count($team2->players),3);
+		$this->assertEquals(count($team2->players),3);
 		//ordered by age
-		$this->assertEqual($team2->players[0]->age, 55);
-		$this->assertEqual($team2->players[1]->age, 25);
-		$this->assertEqual($team2->players[2]->age, 18);
+		$this->assertEquals($team2->players[0]->age, 55);
+		$this->assertEquals($team2->players[1]->age, 25);
+		$this->assertEquals($team2->players[2]->age, 18);
 	}
 
 	function test_add_belongs_to()
@@ -196,8 +194,8 @@ class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 		$player1 = PlayerRecord::finder()->withTeam()->findByAge(27);
 		$this->assertNotNull($player1);
 		$this->assertNotNull($player1->team);
-		$this->assertEqual($player1->team->name, 'Team c');
-		$this->assertEqual($player1->team->location, 'Sydney');
+		$this->assertEquals($player1->team->name, 'Team c');
+		$this->assertEquals($player1->team->location, 'Sydney');
 	}
 
 	function test_add_many_via_association()
@@ -213,9 +211,9 @@ class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 		//test insert
 		$player2 = PlayerRecord::finder()->withSkills()->findByAge(37);
 		$this->assertNotNull($player2);
-		$this->assertEqual(count($player2->skills), 2);
-		$this->assertEqual($player2->skills[0]->name, 'Bash');
-		$this->assertEqual($player2->skills[1]->name, 'Jump');
+		$this->assertEquals(count($player2->skills), 2);
+		$this->assertEquals($player2->skills[0]->name, 'Bash');
+		$this->assertEquals($player2->skills[1]->name, 'Jump');
 
 		//test update
 		$player2->skills[1]->name = "Skip";
@@ -226,18 +224,18 @@ class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
 		$criteria->OrdersBy['name'] = 'asc';
 		$player3 = PlayerRecord::finder()->withSkills($criteria)->findByAge(37);
 		$this->assertNotNull($player3);
-		$this->assertEqual(count($player3->skills), 3);
-		$this->assertEqual($player3->skills[0]->name, 'Bash');
-		$this->assertEqual($player3->skills[1]->name, 'Push');
-		$this->assertEqual($player3->skills[2]->name, 'Skip');
+		$this->assertEquals(count($player3->skills), 3);
+		$this->assertEquals($player3->skills[0]->name, 'Bash');
+		$this->assertEquals($player3->skills[1]->name, 'Push');
+		$this->assertEquals($player3->skills[2]->name, 'Skip');
 
 		//test lazy load
 		$player4 = PlayerRecord::finder()->findByAge(37);
-		$this->assertEqual(count($player4->skills), 3);
+		$this->assertEquals(count($player4->skills), 3);
 
-		$this->assertEqual($player4->skills[0]->name, 'Bash');
-		$this->assertEqual($player4->skills[1]->name, 'Skip');
-		$this->assertEqual($player4->skills[2]->name, 'Push');
+		$this->assertEquals($player4->skills[0]->name, 'Bash');
+		$this->assertEquals($player4->skills[1]->name, 'Skip');
+		$this->assertEquals($player4->skills[2]->name, 'Push');
 	}
 //*/
 }

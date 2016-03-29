@@ -11,7 +11,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -20,9 +20,9 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
 		$criteria = new TActiveRecordCriteria;
 		$criteria->OrdersBy['name'] = 'asc';
 		$records = DepartmentRecord::finder()->findAll($criteria);
-		$this->assertEqual(count($records), 8);
-		$this->assertEqual($records[0]->name, '+GX Service');
-		$this->assertEqual($records[7]->name, 'Marketing');
+		$this->assertEquals(count($records), 8);
+		$this->assertEquals($records[0]->name, '+GX Service');
+		$this->assertEquals($records[7]->name, 'Services');
 	}
 
 	function test_orderby_only_desc()
@@ -30,22 +30,22 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
 		$criteria = new TActiveRecordCriteria;
 		$criteria->OrdersBy['name'] = 'desc';
 		$records = DepartmentRecord::finder()->findAll($criteria);
-		$this->assertEqual(count($records), 8);
-		$this->assertEqual($records[7]->name, '+GX Service');
-		$this->assertEqual($records[0]->name, 'Marketing');
+		$this->assertEquals(count($records), 8);
+		$this->assertEquals($records[7]->name, '+GX Service');
+		$this->assertEquals($records[0]->name, 'Services');
 	}
 
 	function test_criteria_parameters()
 	{
 		$criteria = new TActiveRecordCriteria('sql', "One", "two", 3);
 		$expect = array("One", "two", 3);
-		$this->assertEqual($criteria->getParameters()->toArray(), $expect);
+		$this->assertEquals($criteria->getParameters()->toArray(), $expect);
 	}
 
 	function test_criteria_parameters_array()
 	{
 		$expect = array("One", "two", 3);
 		$criteria = new TActiveRecordCriteria('sql', $expect);
-		$this->assertEqual($criteria->getParameters()->toArray(), $expect);
+		$this->assertEquals($criteria->getParameters()->toArray(), $expect);
 	}
 }

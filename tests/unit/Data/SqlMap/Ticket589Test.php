@@ -17,7 +17,7 @@ class Ticket589Test extends PHPUnit_Framework_TestCase
 		}catch(TSqlMapConfigurationException $e)
 		{
 			$expect = 'Invalid property \'parametrClass\' for class \'TSqlMapStatement\' for tag \'<statement id="findNotVisitedWatchedTopicList"';
-			$this->assertEqual(strpos($e->getMessage(),$expect),0);
+			$this->assertEquals(strpos($e->getMessage(),$expect),0);
 		}
 	}
 }

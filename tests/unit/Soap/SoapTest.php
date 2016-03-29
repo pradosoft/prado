@@ -23,15 +23,15 @@ class SoapTestCase extends PHPUnit_Framework_TestCase
 	function testContactArray()
 	{
 		$result = $this->getClient()->getContacts();
-		$this->assertEqual(count($result), 1);
+		$this->assertEquals(count($result), 1);
 		$obj = $result->Contact;
-		$this->assertEqual($obj->name, "me");
-		$this->assertEqual($obj->id, 1);
-		$this->assertEqual($obj->address->street, "sesamstreet");
+		$this->assertEquals($obj->name, "me");
+		$this->assertEquals($obj->id, 1);
+		$this->assertEquals($obj->address->street, "sesamstreet");
 		$this->assertNull($obj->address->nr);
 		$this->assertNull($obj->address->zipcode);
-		$this->assertEqual($obj->address->city, "sesamcity");
-		$this->assertEqual($obj->email, "me@you.com");
+		$this->assertEquals($obj->address->city, "sesamcity");
+		$this->assertEquals($obj->email, "me@you.com");
 	}
 
 	function testGetContactThrowsException()
@@ -67,14 +67,14 @@ class SoapTestCase extends PHPUnit_Framework_TestCase
 	{
 		$result = $this->getClient()>getList();
 		$expected = array(array(1,2), array("12", 1.2));
-		$this->assertEqual($result, $expected);
+		$this->assertEquals($result, $expected);
 	}
 
 	function testEmptyArray()
 	{
 		$result = $this->getClient()->getEmptyArray();
 		$this->assertTrue(is_array($result));
-		$this->assertEqual(count($result), 0);
+		$this->assertEquals(count($result), 0);
 	}
 
 	function testUnknownFunctionThrowsException()

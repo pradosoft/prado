@@ -2,9 +2,6 @@
 
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
-/**
- * @package System.Data.ActiveRecord
- */
 abstract class MultipleFKSqliteRecord extends TActiveRecord
 {
 	protected static $conn;
@@ -26,6 +23,7 @@ fk1 integer CONSTRAINT fk_id1 REFERENCES table2(id) ON DELETE CASCADE,
 fk2 integer CONSTRAINT fk_id2 REFERENCES table2(id) ON DELETE CASCADE,
 fk3 integer CONSTRAINT fk_id3 REFERENCES table2(id) ON DELETE CASCADE)
  */
+
 class Table1 extends MultipleFKSqliteRecord
 {
 	public $id;
@@ -110,57 +108,60 @@ class CategoryX extends MultipleFKSqliteRecord
 	}
 }
 
+/**
+ * @package System.Data.ActiveRecord
+ */
 class MultipleForeignKeyTest extends PHPUnit_Framework_TestCase
 {
 	function testBelongsTo()
 	{
 		$obj = Table1::finder()->withObject1()->findAll();
-		$this->assertEqual(count($obj), 3);
-		$this->assertEqual($obj[0]->id, '1');
-		$this->assertEqual($obj[1]->id, '2');
-		$this->assertEqual($obj[2]->id, '3');
+		$this->assertEquals(count($obj), 3);
+		$this->assertEquals($obj[0]->id, '1');
+		$this->assertEquals($obj[1]->id, '2');
+		$this->assertEquals($obj[2]->id, '3');
 
-		$this->assertEqual($obj[0]->object1->id, '1');
-		$this->assertEqual($obj[1]->object1->id, '2');
-		$this->assertEqual($obj[2]->object1->id, '2');
+		$this->assertEquals($obj[0]->object1->id, '1');
+		$this->assertEquals($obj[1]->object1->id, '2');
+		$this->assertEquals($obj[2]->object1->id, '2');
 	}
 
 	function testHasMany()
 	{
 		$obj = Table2::finder()->withState1()->findAll();
-		$this->assertEqual(count($obj), 5);
+		$this->assertEquals(count($obj), 5);
 
-		$this->assertEqual(count($obj[0]->state1), 1);
-		$this->assertEqual($obj[0]->state1[0]->id, '1');
+		$this->assertEquals(count($obj[0]->state1), 1);
+		$this->assertEquals($obj[0]->state1[0]->id, '1');
 
-		$this->assertEqual(count($obj[1]->state1), 2);
-		$this->assertEqual($obj[1]->state1[0]->id, '2');
-		$this->assertEqual($obj[1]->state1[1]->id, '3');
+		$this->assertEquals(count($obj[1]->state1), 2);
+		$this->assertEquals($obj[1]->state1[0]->id, '2');
+		$this->assertEquals($obj[1]->state1[1]->id, '3');
 
-		$this->assertEqual(count($obj[2]->state1), 0);
-		$this->assertEqual($obj[2]->id, '3');
+		$this->assertEquals(count($obj[2]->state1), 0);
+		$this->assertEquals($obj[2]->id, '3');
 
-		$this->assertEqual(count($obj[3]->state1), 0);
-		$this->assertEqual($obj[3]->id, '4');
+		$this->assertEquals(count($obj[3]->state1), 0);
+		$this->assertEquals($obj[3]->id, '4');
 	}
 
 	function testHasOne()
 	{
 		$obj = Table2::finder()->withState3('id = 3')->findAll();
 
-		$this->assertEqual(count($obj), 5);
+		$this->assertEquals(count($obj), 5);
 
-		$this->assertEqual($obj[0]->id, '1');
+		$this->assertEquals($obj[0]->id, '1');
 		$this->assertNull($obj[0]->state3);
 
-		$this->assertEqual($obj[1]->id, '2');
+		$this->assertEquals($obj[1]->id, '2');
 		$this->assertNull($obj[1]->state3);
 
-		$this->assertEqual($obj[2]->id, '3');
+		$this->assertEquals($obj[2]->id, '3');
 		$this->assertNotNull($obj[2]->state3);
-		$this->assertEqual($obj[2]->state3->id, '3');
+		$this->assertEquals($obj[2]->state3->id, '3');
 
-		$this->assertEqual($obj[3]->id, '4');
+		$this->assertEquals($obj[3]->id, '4');
 		$this->assertNull($obj[3]->state3);
 	}
 
@@ -168,14 +169,14 @@ class MultipleForeignKeyTest extends PHPUnit_Framework_TestCase
 	{
 		$obj = CategoryX::finder()->withChild_Categories()->withParent_Category()->findByPk(2);
 
-		$this->assertEqual($obj->cat_id, '2');
-		$this->assertEqual(count($obj->child_categories), 2);
+		$this->assertEquals($obj->cat_id, '2');
+		$this->assertEquals(count($obj->child_categories), 2);
 		$this->assertNotNull($obj->parent_category);
 
-		$this->assertEqual($obj->child_categories[0]->cat_id, 3);
-		$this->assertEqual($obj->child_categories[1]->cat_id, 4);
+		$this->assertEquals($obj->child_categories[0]->cat_id, 3);
+		$this->assertEquals($obj->child_categories[1]->cat_id, 4);
 
-		$this->assertEqual($obj->parent_category->cat_id, 1);
+		$this->assertEquals($obj->parent_category->cat_id, 1);
 	}
 
 	function testLazyLoadingGetterSetter_hasMany()
@@ -183,10 +184,10 @@ class MultipleForeignKeyTest extends PHPUnit_Framework_TestCase
 		$arr = Table2::finder()->findByPk(2);
 
 		$this->assertNotNull($arr->state2); //lazy load
-		$this->assertEqual(count($arr->state2), 1);
-		$this->assertEqual($arr->state2[0]->id, "1");
+		$this->assertEquals(count($arr->state2), 1);
+		$this->assertEquals($arr->state2[0]->id, "1");
 		$this->assertNotNull($arr->state2[0]->object2);
-		$this->assertEqual($arr->state2[0]->object2->id, "2");
+		$this->assertEquals($arr->state2[0]->object2->id, "2");
 
 		$this->assertNotIdentical($arr, $arr->state2[0]->object2);
 	}

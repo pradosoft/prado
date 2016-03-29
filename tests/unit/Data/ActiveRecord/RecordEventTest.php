@@ -9,7 +9,7 @@ class RecordEventTest extends PHPUnit_Framework_TestCase
 {
 	function setup()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=test', 'test','test');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
@@ -17,18 +17,6 @@ class RecordEventTest extends PHPUnit_Framework_TestCase
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
-	}
-
-	function test_same_data_returns_same_object()
-	{
-		$criteria = new TActiveRecordCriteria('username = ?', 'admin');
-		$finder = new UserRecord();
-		$finder->OnCreateCommand[] = array($this, 'logger');
-		$finder->OnExecuteCommand[] = array($this, 'logger');
-		$user1 = $finder->find($criteria);
-		//var_dump($user1);
-
-		//var_dump(UserRecord::finder()->find($criteria));
 	}
 
 	function logger($sender, $param)
