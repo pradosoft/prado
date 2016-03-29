@@ -364,7 +364,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function renderSuggestions($writer)
 	{
-		if($this->getActiveControl()->canUpdateClientSide())
+		if($this->getActiveControl()->canUpdateClientSide(true))
 		{
 			$data=array();
 			$items=$this->getSuggestions()->getItems();
