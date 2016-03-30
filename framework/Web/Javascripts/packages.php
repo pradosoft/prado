@@ -95,7 +95,7 @@ $packages = array(
 		
 	//bootstrap
 	'bootstrap' => array(
-			BOOTSTRAP_DIR.'/js/bootstrap.js',
+		BOOTSTRAP_DIR.'/js/bootstrap.js',
 	),
 
 	'dragdrop'=>array(
