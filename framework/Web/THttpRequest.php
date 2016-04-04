@@ -816,7 +816,7 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function getIterator()
 	{
-		return new TMapIterator($this->_items);
+		return new ArrayIterator($this->_items);
 	}
 
 	/**

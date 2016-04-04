@@ -6,6 +6,5 @@ class Callback extends TPage
 {
 	function callback1_Requested()
 	{
-		var_dump("ok!");
 	}
 }

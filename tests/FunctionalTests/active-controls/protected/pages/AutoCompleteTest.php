@@ -37,6 +37,5 @@ class AutoCompleteTest extends TPage
 
 	function suggestion_selected($sender, $param)
 	{
-		var_dump($param->selectedIndex);
 	}
 }

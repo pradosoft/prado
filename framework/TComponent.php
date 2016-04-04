@@ -1707,7 +1707,7 @@ class TComponent
 		$a = (array)$this;
 		$a = array_keys($a);
 		$exprops = array();
-		$this->__getZappableSleepProps($exprops);
+		$this->_getZappableSleepProps($exprops);
 		return array_diff($a, $exprops);
 	}
 
@@ -1717,7 +1717,7 @@ class TComponent
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
 		if($this->_listeningenabled===false)
 			$exprops[] = "\0TComponent\0_listeningenabled";

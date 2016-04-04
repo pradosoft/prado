@@ -74,6 +74,5 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 
 	function assertDeleteSql($sender, $param)
 	{
-		var_dump($param);
 	}
 }

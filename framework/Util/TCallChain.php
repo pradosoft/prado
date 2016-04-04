@@ -19,7 +19,7 @@
 class TCallChain extends TList implements IDynamicMethods
 {
 	/**
-	 *	@var {@link TListIterator} for moving through the chained method calls
+	 *	@var {@link ArrayIterator} for moving through the chained method calls
 	 */
 	private $_iterator=null;
 
@@ -97,7 +97,7 @@ class TCallChain extends TList implements IDynamicMethods
 		if(!$this->_iterator)
 		{
 			$chain_array=array_reverse($this->toArray());
-			$this->_iterator=new TListIterator($chain_array);
+			$this->_iterator=new ArrayIterator($chain_array);
 		}
 		if($this->_iterator->valid())
 			do {

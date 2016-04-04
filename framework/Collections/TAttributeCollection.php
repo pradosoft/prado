@@ -50,9 +50,9 @@ class TAttributeCollection extends TMap
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_caseSensitive===false)
 			$exprops[] = "\0TAttributeCollection\0_caseSensitive";
 	}

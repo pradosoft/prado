@@ -67,9 +67,9 @@ class TListItem extends TComponent
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_attributes===null)
 			$exprops[] = "\0TListItem\0_attributes";
 		if($this->_text==='')

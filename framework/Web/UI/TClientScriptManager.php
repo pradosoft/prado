@@ -400,9 +400,9 @@ class TClientScriptManager extends TApplicationComponent
 	public function getStyleSheetUrls()
 	{
 		$stylesheets = array_values(
-			array_map(
-				create_function('$e', 'return is_array($e) ? $e[0] : $e;'),
-				$this->_styleSheetFiles)
+			array_map(function($e) {
+				return is_array($e) ? $e[0] : $e;
+			}, $this->_styleSheetFiles)
 		);
 
 		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)

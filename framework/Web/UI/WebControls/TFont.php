@@ -59,9 +59,9 @@ class TFont extends TComponent
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_flags===0)
 			$exprops[] = "\0TFont\0_flags";
 		if ($this->_name==='')

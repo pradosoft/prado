@@ -295,7 +295,7 @@ class TPagedList extends TList
 		else
 		{
 			$data=$this->toArray();
-			return new TListIterator($data);
+			return new ArrayIterator($data);
 		}
 	}
 

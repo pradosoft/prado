@@ -217,7 +217,7 @@ class PradoTagChooser
 
 	protected function prepareDocument()
 	{
-		$this->_document->standalone = true;
+		$this->_document->xmlStandalone = true;
 		$this->_document->formatOutput = true;
 		$tclibrary = $this->_document->createElement('tclibrary');
 		$tclibrary->setAttribute('name','PRADO tags');

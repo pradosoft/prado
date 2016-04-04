@@ -52,9 +52,9 @@ class TStyle extends TComponent
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_fields===array())
 			$exprops[] = "\0TStyle\0_fields";
 		if($this->_font===null)
@@ -489,9 +489,9 @@ class TTableStyle extends TStyle
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl===null)
 			$exprops[] = "\0TTableStyle\0_backImageUrl";
 		if ($this->_horizontalAlign===null)
@@ -740,9 +740,9 @@ class TTableItemStyle extends TStyle
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_horizontalAlign===null)
 			$exprops[] = "\0TTableItemStyle\0_horizontalAlign";
 		if ($this->_verticalAlign===null)

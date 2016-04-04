@@ -51,9 +51,9 @@ class TPanelStyle extends TStyle
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 */
-	protected function __getZappableSleepProps(&$exprops)
+	protected function _getZappableSleepProps(&$exprops)
 	{
-		parent::__getZappableSleepProps($exprops);
+		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl===null)
 			$exprops[] = "\0TPanelStyle\0_backImageUrl";
 		if ($this->_direction===null)
