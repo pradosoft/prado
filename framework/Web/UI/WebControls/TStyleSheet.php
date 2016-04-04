@@ -13,7 +13,17 @@
  * TStyleSheet class.
  *
  * TStyleSheet represents the link to a stylesheet file and/or a piece of
- * stylesheet code. To specify the link to a CSS file, set {@link setStyleSheetUrl StyleSheetUrl}.
+ * stylesheet code. To specify the link to a CSS file, set {@link setStyleSheetUrl
+ * StyleSheetUrl}.
+ * Since Prado 3.3.1, it' possible to import css libraries bundled with
+ * Prado from template via the {@link setPradoStyles PradoStyles} property.
+ * Multiple Prado libraries can be specified using comma delimited string of the
+ * css library to include on the page. For example,
+ *
+ * <code>
+ * <com:TStyleSheet PradoStyles="bootstrap, jquery.ui.progressbar" />
+ * </code>
+ *
  * The child rendering result of TStyleSheet is treated as CSS code and
  * is rendered within an appropriate style HTML element.
  * Therefore, if the child content is not empty, you should place the TStyleSheet
@@ -28,6 +38,29 @@
  */
 class TStyleSheet extends TControl
 {
+	/**
+	 * @return string comma delimited list of css libraries to include
+	 * on the page.
+	 * @since 3.3.1
+	 */
+	public function getPradoStyles()
+	{
+		return $this->getViewState('PradoStyles', '');
+	}
+
+	/**
+	 * Include css library to the current page. The current supported
+	 * libraries are: "jquery-ui", "bootstrap" and all the split
+	 * jquery.ui.componentname libraries. 
+	 *
+	 * @param string comma delimited list of css libraries to include.
+	 * @since 3.3.1
+	 */
+	public function setPradoStyles($value)
+	{
+		$this->setViewState('PradoStyles', $value, '');
+	}
+
 	/**
 	 * @param string URL to the stylesheet file
 	 */
@@ -67,8 +100,17 @@ class TStyleSheet extends TControl
 	 */
 	public function onPreRender($param)
 	{
+		$cs = $this->getPage()->getClientScript();
+
+		$styles = preg_split('/,|\s+/', $this->getPradoStyles());
+		foreach($styles as $style)
+		{
+			if(($style = trim($style))!=='')
+				$cs->registerPradoStyle($style);
+		}
+
 		if(($url=$this->getStyleSheetUrl())!=='')
-			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url,$this->getMediaType());
+			$cs->registerStyleSheetFile($url,$url,$this->getMediaType());
 	}
 
 	/**
