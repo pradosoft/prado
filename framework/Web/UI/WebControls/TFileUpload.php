@@ -47,7 +47,7 @@ class TFileUpload extends TWebControl implements IPostBackDataHandler, IValidata
 	/**
 	 * @var string the name of the temporary file storing the uploaded file
 	 */
-	private $_localName='';
+	protected $_localName='';
 	/**
 	 * @var string the uploaded file mime type
 	 */

@@ -101,6 +101,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			// save the file so that it will persist past the end of this return.
 			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
 			parent::saveAs($localName);
+			$this->_localName = $localName;
 
 			$params = new TActiveFileUploadCallbackParams;
 			$params->localName = $localName;
