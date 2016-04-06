@@ -105,8 +105,6 @@ class PradoBase
 	public static function autoload($className)
 	{
 		include_once($className.self::CLASS_FILE_EXT);
-		if(!class_exists($className,false) && !interface_exists($className,false))
-			self::fatalError("Class file for '$className' cannot be found.");
 	}
 
 	/**
