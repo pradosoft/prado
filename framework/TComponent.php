@@ -555,7 +555,10 @@ class TComponent
 			return isset($args[0])?$args[0]:null;
 		}
 
-		throw new TApplicationException('component_method_undefined',get_class($this),$method);
+		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
+		if (!method_exists($this, $method)) {
+			throw new TApplicationException('component_method_undefined',get_class($this),$method);
+		}
 	}
 
 

@@ -919,7 +919,6 @@ class TMappedStatement extends TComponent implements IMappedStatement
 
 	public function __wakeup()
 	{
-		parent::__wakeup();
 		if (is_null($this->_selectQueue)) $this->_selectQueue = array();
 	}
 
