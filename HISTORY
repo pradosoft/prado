@@ -15,6 +15,7 @@ BUG: TJuiDialog: avoid "cannot call methods on dialog prior to initialization" e
 BUG: Fix callback update of TActiveCheckBoxList when initially empty (LCSKJ)
 ENH: Issue #562 - Added TClientStyleSheet::PradoStyles (ctrlaltca)
 ENH: Issue #569 - Improved TJavascriptLogger / browser console logging of errors (ctrlaltca)
+ENH: Issue #587 - Misc foxed for PHP7 compatibility (emkael)
 ENH: Applied some misc optimizations to class serialization (ctrlaltca)
 ENH: Intercept fatal errors using register_shutdown_function (ctrlaltca)
 ENH: Activecontrols: avoid updating client side if the value didn't change (ctrlaltca)

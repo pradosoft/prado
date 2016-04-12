@@ -9,6 +9,13 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.3.0
+---------------------
+- The long-time deprecated 'MySQL' translation source has been removed.
+  The 'Database' source can be used instead, specifying a valid ConnectionID
+  in the source parameter:
+  <translation type="Database" source="db1" autosave="true" cache="false" />
+
 Upgrading from v3.2.x
 ---------------------
 - Since PRADO 3.3.0, jQuery is the javascript framework of choice. All the existing PRADO controls have
