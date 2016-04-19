@@ -48,6 +48,7 @@ $(document).ready(function () {
 	<th nowrap="nowrap">Date </th>
 	<th nowrap="nowrap">Files</th>
 </tr>
+	<tr><td>3.3.0</td><td>Febr 15, 2016</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.3.0/prado-3.3.0.rd228958.zip">Source code and documentation</a></td></tr>
 	<tr><td>3.2.4</td><td>Aug 26, 2014</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.4/prado-3.2.4.re2e58b8.zip">Source code and documentation</a></td></tr>
 	<tr><td>3.2.3</td><td>Nov 26, 2013</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.3/prado-3.2.3.r2b11341.zip">Source code and documentation</a></td></tr>
 	<tr><td>3.2.2</td><td>July 20, 2013</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.2.r3297.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.2.r3297.zip">documentation</a></td></tr>
