@@ -9,6 +9,10 @@
 			<!-- the site lives in the demos directory -->
 			<parameter id="DemoUrl" value=".." />
 			<parameter id="DocsUrl" value="../docs" />
+<!--
+			<parameter id="DemoUrl" value="../demos" />
+			<parameter id="DocsUrl" value="http://pradosoft.github.io/docs" />
+-->
 		</module>
 		<module id="request" class="THttpRequest" UrlFormat="HiddenPath" UrlManager="friendly-url" />
 		<module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="true">
