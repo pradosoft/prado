@@ -25,7 +25,7 @@ class PradoBase
 	protected static $classExists = array();
 	public static function getVersion()
 	{
-		return '3.3.0';
+		return '3.3.1';
 	}
 	public static function initErrorHandlers()
 	{

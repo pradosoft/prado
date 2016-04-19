@@ -1,4 +1,4 @@
-Version 3.3.1 XXX XX, 2016
+Version 3.3.1 April 19, 2016
 
 BUG: Issue #540 - Fix TActiveFileUpload on IE11 (ctrlaltca)
 BUG: Issue #574 - Fix TActiveCustomValidator validation after error (ctrlaltca)
@@ -15,7 +15,7 @@ BUG: TJuiDialog: avoid "cannot call methods on dialog prior to initialization" e
 BUG: Fix callback update of TActiveCheckBoxList when initially empty (LCSKJ)
 ENH: Issue #562 - Added TClientStyleSheet::PradoStyles (ctrlaltca)
 ENH: Issue #569 - Improved TJavascriptLogger / browser console logging of errors (ctrlaltca)
-ENH: Issue #587 - Misc foxed for PHP7 compatibility (emkael)
+ENH: Issue #587 - Misc fixes for PHP7 compatibility (emkael)
 ENH: Applied some misc optimizations to class serialization (ctrlaltca)
 ENH: Intercept fatal errors using register_shutdown_function (ctrlaltca)
 ENH: Activecontrols: avoid updating client side if the value didn't change (ctrlaltca)
