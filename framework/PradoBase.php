@@ -104,7 +104,7 @@ class PradoBase
 	 */
 	public static function autoload($className)
 	{
-		include_once($className.self::CLASS_FILE_EXT);
+		@include_once($className.self::CLASS_FILE_EXT);
 	}
 
 	/**
