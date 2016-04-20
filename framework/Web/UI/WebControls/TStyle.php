@@ -73,6 +73,7 @@ class TStyle extends TComponent
 	 */
 	public function __construct($style=null)
 	{
+    parent::__construct();
 		if($style!==null)
 			$this->copyFrom($style);
 	}
