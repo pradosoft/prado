@@ -298,7 +298,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		if(this.options.PostInputs != false)
 		{
 			var form = this.getForm();
-			return jQuery(form).serialize() + '&' + jQuery.param(data);
+			return jQuery('input, select, textarea').serialize() + '&' + jQuery.param(data);
 		} else {
 			var pagestate = jQuery("#"+Prado.CallbackRequestManager.FIELD_CALLBACK_PAGESTATE);
 			if(pagestate)

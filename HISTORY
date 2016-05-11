@@ -1,8 +1,10 @@
 Version 3.3.2 xxx, 2016
 
 BUG: Issue #592 - Fix TActiveMultiView brokwn on 3.3.1 (ctrlaltca)
-ENH: Issue #591 Support for hyphenated attributes via <prop:*></prop:*> template syntax (emkael)
+BUG: Issue #588 - Fix reading values of controls inside TJuiDialog (ctrlaltca)
+ENH: Issue #591 - Support for hyphenated attributes via <prop:*></prop:*> template syntax (emkael)
 ENH: Allow TStyle behaviors (LCSKJ)
+
 
 Version 3.3.1 April 19, 2016
 
