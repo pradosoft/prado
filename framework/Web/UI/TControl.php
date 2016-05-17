@@ -196,6 +196,31 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 	}
 
 	/**
+	 * Checks for the existance of a property value by name or a control by ID.
+	 * This overrides the parent implementation by allowing checking for the
+	 * existance of a control via its ID using the following syntax,
+	 * <code>
+	 * $menuBarExists = isset($this->menuBar);
+	 * </code>
+	 * Do not call this method. This is a PHP magic method that we override
+	 * to allow using isset() to detect if a component property is set or not.
+	 * Note, the control must be configured in the template
+	 * with explicit ID. If the name matches both a property and a control ID,
+	 * the control ID will take the precedence.
+	 *
+	 * @param string the property name or control ID
+	 * @return bool wether the control or property exists
+	 * @see __get
+	 */
+	public function __isset($name) {
+		if(isset($this->_rf[self::RF_NAMED_OBJECTS][$name])) {
+			return true;
+		} else {
+			return parent::__isset($name);
+		}
+	}
+
+	/**
 	 * @return boolean whether there is an adapter for this control
 	 */
 	public function getHasAdapter()
