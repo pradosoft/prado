@@ -483,10 +483,19 @@ class TDatePicker extends TTextBox
 	{
 		$date = @getdate();
 
-		if(isset($values[$key.'$day']))
+		$pattern = $this->getDateFormat();
+		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter', $pattern);
+
+		$order = $formatter->getDayMonthYearOrdering();
+
+		if(isset($values[$key.'$day'])) {
 			$day = intval($values[$key.'$day']);
-		else
+		} elseif(in_array('day', $order)) {
 			$day = $date['mday'];
+		} else {
+			$day = 1;
+		}
 
 		if(isset($values[$key.'$month']))
 			$month = intval($values[$key.'$month']) + 1;
@@ -502,9 +511,6 @@ class TDatePicker extends TTextBox
 		$date = $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
-		$pattern = $this->getDateFormat();
-		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter', $pattern);
 		return $formatter->format($date);
 	}
 
