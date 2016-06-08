@@ -51,7 +51,7 @@ class Translation extends TComponent
 
 			$source->setCulture($app->getCulture());
 
-			if(TPropertyValue::ensureBoolean($config['cache']))
+			if(isset($config['cache']))
 				$source->setCache(new MessageCache($config['cache']));
 
 			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
