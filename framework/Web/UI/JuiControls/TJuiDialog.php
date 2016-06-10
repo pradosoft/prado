@@ -82,7 +82,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizeable', 'show', 'title', 'width');
+		return array('appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizable', 'show', 'title', 'width');
 	}
 
 	/**
