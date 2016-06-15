@@ -225,10 +225,10 @@ class TGlobalization extends TModule
 				chmod($config['cache'], PRADO_CHMOD); //make it deletable
 			}
 		}
-        else
-        {
-            unset($config['cache']);
-        }
+		else
+		{
+			unset($config['cache']);
+		}
 		$this->_translation = $config;
 	}
 
