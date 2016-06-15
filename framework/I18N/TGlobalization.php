@@ -214,7 +214,7 @@ class TGlobalization extends TModule
 				throw new TConfigurationException("invalid source dir '{$config['source']}'");
 			}
 		}
-		if($config['cache'])
+		if(isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache']))
 		{
 			$config['cache'] = $this->getApplication()->getRunTimePath().'/i18n';
 			if(!is_dir($config['cache']))
@@ -225,6 +225,10 @@ class TGlobalization extends TModule
 				chmod($config['cache'], PRADO_CHMOD); //make it deletable
 			}
 		}
+        else
+        {
+            unset($config['cache']);
+        }
 		$this->_translation = $config;
 	}
 
@@ -294,4 +298,3 @@ class TGlobalization extends TModule
 	}
 
 }
-
