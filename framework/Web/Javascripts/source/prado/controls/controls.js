@@ -316,7 +316,7 @@ Prado.WebUI.TImageButton = jQuery.klass(Prado.WebUI.PostBackControl,
 		y = y < 0 ? 0 : y;
 		var id = this.element.id;
 		var name = options['EventTarget'];
-		var form = this.element.form;
+		var form = this.element.form || jQuery('#PRADO_PAGESTATE').get(0).form;
 
 		var input=null;
 		input = document.createElement("input");
