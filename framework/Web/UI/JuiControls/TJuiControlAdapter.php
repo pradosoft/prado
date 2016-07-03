@@ -11,6 +11,7 @@
 
 Prado::using('System.Web.UI.ActiveControls.TActiveControlAdapter');
 Prado::using('System.Web.UI.JuiControls.TJuiControlOptions');
+Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
 
 /**
  * TJuiControlAdapter class
