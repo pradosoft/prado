@@ -92,6 +92,32 @@ Dialog with callbacks:
 </com:TJuiDialog>
 </td></tr>
 
+<tr><td class="samplenote">
+Collecting user input using a dialog:
+</td><td class="sampleaction">
+<com:TActiveButton
+  Text="Open Dialog"
+  OnClick="bt5Click"/>
+<com:TJuiDialog
+    ID="dlg5"
+    Options.Width="400"
+    Options.Title="Dialog with textbox"
+    Options.AutoOpen="False"
+    Options.Position="center center"
+    >
+    Write something: <com:TActiveTextBox ID="txtSomething" />
+    <com:TJuiDialogButton
+      Text="Ok"
+      OnClick="dlg5Ok"
+      />
+    <com:TJuiDialogButton
+      Text="Cancel"
+      OnClick="dlg5Cancel"
+      />
+</com:TJuiDialog>
+<com:TActiveLabel ID="lbl5" />
+</td></tr>
+
 </table>
 
 </com:TContent>

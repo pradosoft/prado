@@ -23,6 +23,11 @@ class Home extends TPage
 		$this->dlg4->open();
 	}
 
+	public function bt5Click($sender, $param)
+	{
+		$this->dlg5->open();
+	}
+
 	public function dlg3Ok($sender, $param)
 	{
 		$this->lbl3->Text="Button Ok clicked";
@@ -63,4 +68,15 @@ class Home extends TPage
 	  $this->dlg4->getOptions()->position = "$x $y";
 	}
 
+	public function dlg5Ok($sender, $param)
+	{
+		$this->lbl5->Text="Button Ok clicked. You wrote: ".$this->txtSomething->Text;
+		$this->dlg5->close();
+	}
+
+	public function dlg5Cancel($sender, $param)
+	{
+		$this->lbl5->Text="Button Cancel clicked. You wrote: ".$this->txtSomething->Text;
+		$this->dlg5->close();
+	}
 }
