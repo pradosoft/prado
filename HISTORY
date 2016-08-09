@@ -1,10 +1,11 @@
 Version 3.3.2 xxx, 2016
 
-BUG: Issue #592 - Fix TActiveMultiView brokwn on 3.3.1 (ctrlaltca)
+BUG: Issue #592 - Fix TActiveMultiView broken on 3.3.1 (ctrlaltca)
 BUG: Issue #588 - Fix reading values of controls inside TJuiDialog (ctrlaltca)
 BUG: Issue #597 - TDatePicker::getDateFromPostData selected month issue (Sachat)
 BUG: Issue #599 - Allowing translation message cache to be initialized (emkael)
 BUG: Issue #604 - TActiveImageButton inside TJuiDialog javascript problem (ctrlaltca)
+BUG: Issue #607 - TActiveFileUpload does not work inside TJuiDialog (ctrlaltca)
 ENH: Issue #591 - Support for hyphenated attributes via <prop:*></prop:*> template syntax (emkael)
 ENH: Issue #594 - Added ability to check for subcontrols using isset(), empty() (jojoinside)
 ENH: Allow TStyle behaviors (LCSKJ)

@@ -100,6 +100,9 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	protected function getPostBackOptions()
 	{
 		$options = $this->getOptions()->toArray();
+		// always make the dialog a child of the form, or its inner inputs won't be collected
+		if(!isset($options['appendTo']))
+			$options['appendTo'] = 'form:first';
 
 		foreach($this->getControls() as $control)
 			if($control instanceof TJuiDialogButton)
