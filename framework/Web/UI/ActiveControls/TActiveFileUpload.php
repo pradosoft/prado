@@ -36,6 +36,8 @@ Prado::using('System.Web.UI.WebControls.TFileUpload');
  * a status icon is displayed; either a green checkmark if the upload is successful,
  * or a red x if there was an error.
  *
+ * TActiveFileUpload needs either an application level cache or a security manager to work securely.
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @package System.Web.UI.ActiveControls
