@@ -180,6 +180,11 @@
   <target name="clean">
     <echo>Cleaning up the mess</echo>
     <delete dir="${build.base.dir}"/>
+    <delete includeemptydirs="true">
+      <fileset dir="demos">
+        <include name="**/assets/**"/>
+      </fileset>
+    </delete>
   </target>
 
   <target name="rebuild" depends="clean,build"/>
