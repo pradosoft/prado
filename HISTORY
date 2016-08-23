@@ -1,4 +1,4 @@
-Version 3.3.2 xxx, 2016
+Version 3.3.2 August 23, 2016
 
 BUG: Issue #592 - Fix TActiveMultiView broken on 3.3.1 (ctrlaltca)
 BUG: Issue #588 - Fix reading values of controls inside TJuiDialog (ctrlaltca)

@@ -53,6 +53,7 @@ The Demos folder has several different example prado applications. You can see m
 * northwind-db
 * personal
 * quickstart
+* site
 * soap
 * sqlmap
 * time-tracker
@@ -70,7 +71,7 @@ Buildfile: /yourcodepath/build.xml
 
 prado > help:
 
-     [echo]
+     [echo] 
 
     Welcome to use PRADO build script!
     ----------------------------------
@@ -81,10 +82,11 @@ prado > help:
     where <target name> can be one of the following:
 
     For all PRADO developers:
-    - test       : run unit tests (results are under /build/test-reports)
-    - coverage   : run unit tests collecting coverage informations
-    - lint       : run lint on framework
-    - lint-demos : run lint on demos
+    - test           : run unit tests (results are under /build/test-reports)
+    - coverage       : run unit tests collecting coverage informations
+    - functionaltest : run funcitonal tests (requires Selenium Server)
+    - lint           : run lint on framework
+    - lint-demos     : run lint on demos
 ```
 
 
