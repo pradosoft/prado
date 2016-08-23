@@ -795,10 +795,7 @@ class TControl extends TApplicationComponent implements IRenderable, IBindable
 		if($this->_trackViewState)
 		{
 			unset($this->_tempState[$key]);
-			if($value===$defaultValue)
-				unset($this->_viewState[$key]);
-			else
-				$this->_viewState[$key]=$value;
+			$this->_viewState[$key]=$value;
 		}
 		else
 		{
