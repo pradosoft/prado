@@ -20,6 +20,8 @@
  * is a multiline text box, the number of rows it displays is determined
  * by the {@link setRows Rows} property, and the {@link setWrap Wrap} property
  * can be used to determine whether to wrap the text in the component.
+ * Additional {@link setTextMode TextMode} types enable the use of new input types
+ * added with html5, eg. <b>Color</b>, <b>Date</b>, <b>Email</b>.
  *
  * To specify the display width of the text box, in characters, set
  * the {@link setColumns Columns} property. To prevent the text displayed
@@ -115,18 +117,58 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
 		}
 		else
 		{
-			if($textMode===TTextBoxMode::SingleLine)
+			switch($textMode)
 			{
-				$writer->addAttribute('type','text');
-				if(($text=$this->getText())!=='')
-					$writer->addAttribute('value',$text);
+				case TTextBoxMode::Password:
+					$writer->addAttribute('type','password');
+					break;
+				case TTextBoxMode::Color:
+					$writer->addAttribute('type','color');
+					break;
+				case TTextBoxMode::Date:
+					$writer->addAttribute('type','date');
+					break;
+				case TTextBoxMode::Datetime:
+					$writer->addAttribute('type','datetime');
+					break;
+				case TTextBoxMode::DatetimeLocal:
+					$writer->addAttribute('type','datetime-local');
+					break;
+				case TTextBoxMode::Email:
+					$writer->addAttribute('type','email');
+					break;
+				case TTextBoxMode::Month:
+					$writer->addAttribute('type','month');
+					break;
+				case TTextBoxMode::Number:
+					$writer->addAttribute('type','number');
+					break;
+				case TTextBoxMode::Range:
+					$writer->addAttribute('type','range');
+					break;
+				case TTextBoxMode::Search:
+					$writer->addAttribute('type','search');
+					break;
+				case TTextBoxMode::Tel:
+					$writer->addAttribute('type','tel');
+					break;
+				case TTextBoxMode::Time:
+					$writer->addAttribute('type','time');
+					break;
+				case TTextBoxMode::Url:
+					$writer->addAttribute('type','url');
+					break;
+				case TTextBoxMode::Week:
+					$writer->addAttribute('type','week');
+					break;
+				case TTextBoxMode::SingleLine:
+				default:
+					$writer->addAttribute('type','text');
+					break;
 			}
-			else
-			{
-				if($this->getPersistPassword() && ($text=$this->getText())!=='')
-					$writer->addAttribute('value',$text);
-				$writer->addAttribute('type','password');
-			}
+
+			if(($text=$this->getText())!=='' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
+				$writer->addAttribute('value',$text);					
 
 			if(($act=$this->getAutoCompleteType())!=='None')
 			{
@@ -589,7 +631,24 @@ class TTextBox extends TWebControl implements IPostBackDataHandler, IValidatable
  * - SingleLine: the textbox will be a regular single line input
  * - MultiLine: the textbox will be a textarea allowing multiple line input
  * - Password: the textbox will hide user input like a password input box
+ * 
+ * Html5 declares new types that will degrade as plain textboxes on unsupported browsers:
+ * - Color: a color picker can show up in the input field.
+ * - Date: a date picker can show up in the input field.
+ * - Datetime: a date / time / timezone picker can show up in the input field.
+ * - DatetimeLocal: a date / time picker can show up in the input field.
+ * - Email: the e-mail address can be automatically validated when submitted.
+ * - Month: a month / year picker can show up in the input field.
+ * - Number: a spinner can show up in the input field.
+ * - Range: a slider can show up in the input field.
+ * - Search: the textbox will be optimized for searches
+ * - Tel: the text will be formatted as a telephone number.
+ * - Time: a time picker can show up in the input field.
+ * - Url: the url can be automatically validated when submitted.
+ * - Week: a week / year picker can show up in the input field.
  *
+ * In order to use the new types introduced with html5, you need to declare a proper
+ * html doctype and use a browser supporting the specific inut type.
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package System.Web.UI.WebControls
  * @since 3.0.4
@@ -599,6 +658,19 @@ class TTextBoxMode extends TEnumerable
 	const SingleLine='SingleLine';
 	const MultiLine='MultiLine';
 	const Password='Password';
+	const Color='Color';
+	const Date='Date';
+	const Datetime='Datetime';
+	const DatetimeLocal='DatetimeLocal';
+	const Email='Email';
+	const Month='Month';
+	const Number='Number';
+	const Range='Range';
+	const Search='Search';
+	const Tel='Tel';
+	const Time='Time';
+	const Url='Url';
+	const Week='Week';
 }
 
 /**

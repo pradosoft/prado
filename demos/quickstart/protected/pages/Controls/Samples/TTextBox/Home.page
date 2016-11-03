@@ -106,7 +106,7 @@ Password with default setting
 </td></tr>
 
 <tr><td class="samplenote">
-Password with PersistPasswor set true
+Password with PersistPassword enabled
 </td>
 <td class="sampleaction">
 <com:TTextBox ID="Password2" TextMode="Password" PersistPassword="true" /> 
@@ -183,4 +183,107 @@ Auto postback text box causing validation:
 
 </table>
 
+<h2>Html5 new input types</h2>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Color picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Color" Text="#FF0000" />
+</td></tr>
+
+<tr><td class="samplenote">
+Date picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Date" />
+</td></tr>
+
+<tr><td class="samplenote">
+Date, time and timezone picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Datetime" />
+</td></tr>
+
+<tr><td class="samplenote">
+Local date and time picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="DatetimeLocal" />
+</td></tr>
+
+<tr><td class="samplenote">
+Email validation textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Email" />
+</td></tr>
+
+<tr><td class="samplenote">
+Month / year picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Month" />
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input a number, usually with a spinner
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Number" Text="15" />
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input a number, with properties min = 10, max = 20, step = 2
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Number" Text="15" Attributes.min="10" Attributes.max="20" Attributes.step="2" />
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input a value inside a range, usually with a slider
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Range" Attributes.min="0" Attributes.max="100"/>
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input a search term
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Search" />
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input a telephone number
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Tel" />
+</td></tr>
+
+<tr><td class="samplenote">
+Time picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Time" />
+</td></tr>
+
+<tr><td class="samplenote">
+Textbox optimized to input an URL address
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Url" />
+</td></tr>
+
+<tr><td class="samplenote">
+Week / year picker textbox
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Week" />
+</td></tr>
+
+</table>
 </com:TContent>
