@@ -9,6 +9,8 @@
  * @package System.Web.UI.WebControls
  */
 
+namespace Prado\Web\UI\WebControls;
+
 /**
  * TButtonTag class.
  * TButtonTag defines the enumerable type for the possible tag names that a {@link TButton} can use for rendering.
@@ -20,7 +22,7 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package System.Web.UI.WebControls
  */
-class TButtonTag extends TEnumerable
+class TButtonTag extends \Prado\TEnumerable
 {
 	const Input='Input';
 	const Button='Button';

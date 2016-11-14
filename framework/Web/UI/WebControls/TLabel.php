@@ -11,6 +11,7 @@
 
 namespace Prado\Web\UI\WebControls;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TLabel class
