@@ -51,17 +51,14 @@ class Home extends TPage
 
 	}
 
-
 	public function getShoppingListData ()
 	{
 		$a=$this->getViewState('ShoppingList', array ());
-		var_export($a);
 		return $this->getViewState('ShoppingList', array ());
 	}
 
 	public function setShoppingListData ($value)
 	{
-		var_export($value);
 		$this->setViewState('ShoppingList', TPropertyValue::ensureArray($value), array ());
 	}
 
