@@ -40,7 +40,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return 'TMysqlTableInfo';
+		return '\Prado\Data\Common\Mysql\TMysqlTableInfo';
 	}
 
 	/**

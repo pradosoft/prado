@@ -1,6 +1,6 @@
 <?php
 
-class LineItemCollection extends TList
+class LineItemCollection extends \Prado\Collections\TList
 {
 
 }

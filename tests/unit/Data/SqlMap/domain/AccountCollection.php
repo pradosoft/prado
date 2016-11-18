@@ -1,6 +1,6 @@
 <?php
 
-class AccountCollection extends TList
+class AccountCollection extends \Prado\Collections\TList
 {
 	public function addRange($accounts)
 	{

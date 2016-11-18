@@ -35,7 +35,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return 'TPgsqlTableInfo';
+		return '\Prado\Data\Common\Pgsql\TPgsqlTableInfo';
 	}
 
 	/**

@@ -5,7 +5,7 @@ use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
 
 /**
- * @package System.Data.\SqlMap\\DataMapper.DataMapper
+ * @package System.Data.DataMapper
  */
 class TPropertyAccessTest extends PHPUnit_Framework_TestCase
 {

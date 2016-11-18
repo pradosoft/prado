@@ -40,14 +40,13 @@
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",
-		"phpunit/phpunit" : "4.*",
-		"phpunit/dbunit": ">=1.2",
-		"phpunit/phpunit-selenium": ">=1.2",
+		"phpunit/phpunit" : "5.*",
+		"phpunit/dbunit": "*",
+		"phpunit/phpunit-selenium": "3.*",
 		"phpunit/php-invoker": "*",
-		"phpunit/phpunit-story": "*",
 		"phing/phing" : "2.*",
 		"apigen/apigen": "4.*",
-		"satooshi/php-coveralls": "dev-master"
+		"satooshi/php-coveralls": "*"
 	},
 	"provide" : {
 		"pradosoft/prado" : "3.3.99"

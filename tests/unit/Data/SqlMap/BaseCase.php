@@ -3,6 +3,8 @@
 require_once(dirname(__FILE__).'/common.php');
 Prado::using('System.Data.SqlMap.TSqlMapManager');
 
+use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
+
 /**
  * @package System.Data.SqlMap
  */

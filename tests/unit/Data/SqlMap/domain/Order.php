@@ -1,5 +1,7 @@
 <?php
 
+Prado::using('System.Collections.*');
+
 class Order
 {
 	private $_ID=-1;

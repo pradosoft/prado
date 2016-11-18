@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/BaseCase.php');
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
+Prado::using('System.Data.ActiveRecord.*');
 
 class ActiveAccount extends TActiveRecord
 {

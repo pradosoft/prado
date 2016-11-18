@@ -43,7 +43,7 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 			$rs = $finder->findByNameAndActive('Marketing');
 			$this->fail();
 		}
-		catch(TDbException $e)
+		catch(\Prado\Exceptions\TDbException $e)
 		{
 			return;
 		}
@@ -58,7 +58,7 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 			$rs = $finder->findByNameAndActive('Marketing',true,true);
 			$this->fail();
 		}
-		catch(TDbException $e)
+		catch(\Prado\Exceptions\TDbException $e)
 		{
 			return;
 		}

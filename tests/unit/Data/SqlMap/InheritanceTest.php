@@ -2,6 +2,8 @@
 
 require_once(dirname(__FILE__).'/BaseCase.php');
 
+use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
+
 /**
  * @package System.Data.SqlMap
  */

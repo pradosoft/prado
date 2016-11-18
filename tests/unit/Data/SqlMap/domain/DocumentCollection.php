@@ -1,6 +1,6 @@
 <?php
 
-class DocumentCollection extends TList
+class DocumentCollection extends \Prado\Collections\TList
 {
 
 }
