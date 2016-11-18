@@ -20,6 +20,8 @@ use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\TActiveTextBox;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\TTemplate;
+use Prado\Web\UI\WebControls\TRepeater;
+use Prado\Web\UI\WebControls\TPanel;
 
 /**
  * TJuiAutoComplete class.
@@ -310,7 +312,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	protected function createResultPanel()
 	{
-		$panel = Prado::createComponent('System.Web.UI.WebControls.TPanel');
+		$panel = new TPanel;
 		$this->getControls()->add($panel);
 		$panel->setID('result');
 		return $panel;
@@ -331,7 +333,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	protected function createRepeater()
 	{
-		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
+		$repeater = new TRepeater;
 		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>',null));
 		$this->getControls()->add($repeater);
 		return $repeater;

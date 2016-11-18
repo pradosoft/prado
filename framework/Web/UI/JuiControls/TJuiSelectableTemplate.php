@@ -11,7 +11,6 @@
 
 namespace Prado\Web\UI\JuiControls;
 use Prado\Web\UI\ITemplate;
-use Prado\Web\UI\ITemplate;
 
 /**
  * TJuiSelectableTemplate class.

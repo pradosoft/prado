@@ -214,7 +214,7 @@ class TDropContainer extends TPanel implements IActiveControl, ICallbackEventHan
 	{
 		if ($this->_container===null)
 		{
-			$this->_container=Prado::CreateComponent('System.Web.UI.ActiveControls.TActivePanel');
+			$this->_container= new TActivePanel;
 			$this->_container->setId($this->getId(false).'_content');
 			parent::getControls()->add($this->_container);
 		}

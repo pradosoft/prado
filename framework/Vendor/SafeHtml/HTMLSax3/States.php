@@ -37,6 +37,9 @@ define('TSAX3_STATE_ESCAPE', 6);
 define('TSAX3_STATE_JASP', 7);
 define('TSAX3_STATE_PI', 8);
 */
+
+namespace Prado\Vendor\SafeHtml\HTMLSax3;
+
 /**
 * StartingState searches for the start of any XML tag
 * @package System.Security.SafeHtml

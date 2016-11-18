@@ -438,7 +438,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImageButton');
+				$button= new TImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -449,7 +449,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			}
 			else if($text!=='')
 			{
-				$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TLinkButton');
+				$button= new TLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -463,7 +463,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		{
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$image=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImage');
+				$image= new TImage;
 				$image->setImageUrl($url);
 				if($text!=='')
 					$image->setAlternateText($text);

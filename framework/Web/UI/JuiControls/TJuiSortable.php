@@ -17,7 +17,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\TTemplate;
-
+use Prado\Web\UI\WebControls\TRepeater;
 
 /**
  * TJuiSortable class.
@@ -299,7 +299,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	protected function createRepeater()
 	{
-		$repeater = Prado::createComponent('System.Web.UI.WebControls.TRepeater');
+		$repeater = new TRepeater;
 		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="'.$this->getWidgetID().'">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
 		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));

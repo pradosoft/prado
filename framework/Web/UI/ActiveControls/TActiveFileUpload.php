@@ -19,7 +19,9 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\WebControls\TFileUpload;
-
+use Prado\Web\UI\WebControls\THiddenField;
+use Prado\Web\UI\WebControls\TImage;
+use Prado\Web\UI\WebControls\TInlineFrame;
 
 /**
  * TActiveFileUpload
@@ -306,37 +308,37 @@ EOS;
 		}
 	}
 
-	public function createChildControls(){
-		$this->_flag = Prado::createComponent('THiddenField');
+	public function createChildControls()
+	{
+		$this->_flag = new THiddenField;
 		$this->_flag->setID('Flag');
 		$this->getControls()->add($this->_flag);
 
-		$this->_busy = Prado::createComponent('TImage');
+		$this->_busy = new TImage;
 		$this->_busy->setID('Busy');
 		$this->_busy->setImageUrl($this->getAssetUrl('ActiveFileUploadIndicator.gif'));
 		$this->_busy->setStyle("display:none");
 		$this->getControls()->add($this->_busy);
 
-		$this->_success = Prado::createComponent('TImage');
+		$this->_success = new TImage;
 		$this->_success->setID('Success');
 		$this->_success->setImageUrl($this->getAssetUrl('ActiveFileUploadComplete.png'));
 		$this->_success->setStyle("display:none");
 		$this->getControls()->add($this->_success);
 
-		$this->_error = Prado::createComponent('TImage');
+		$this->_error = new TImage;
 		$this->_error->setID('Error');
 		$this->_error->setImageUrl($this->getAssetUrl('ActiveFileUploadError.png'));
 		$this->_error->setStyle("display:none");
 		$this->getControls()->add($this->_error);
 
-		$this->_target = Prado::createComponent('TInlineFrame');
+		$this->_target = new TInlineFrame;
 		$this->_target->setID('Target');
 		$this->_target->setFrameUrl($this->getAssetUrl('ActiveFileUploadBlank.html'));
 		$this->_target->setStyle("width:0px; height:0px;");
 		$this->_target->setShowBorder(false);
 		$this->getControls()->add($this->_target);
 	}
-
 
 	/**
 	 * Removes localfile on ending of the callback.

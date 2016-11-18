@@ -198,7 +198,7 @@ class TBoundColumn extends TDataGridColumn
 					}
 					else
 					{
-						$control=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TTextBox');
+						$control= new TTextBox;
 						$cell->getControls()->add($control);
 						$cell->registerObject('TextBox',$control);
 					}

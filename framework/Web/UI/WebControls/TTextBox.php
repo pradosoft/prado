@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Vendor\SafeHtml\TSafeHtmlParser;
 
 /**
  * TTextBox class
@@ -572,7 +573,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	protected function getSafeTextParser()
 	{
 		if(!self::$_safeTextParser)
-			self::$_safeTextParser=Prado::createComponent('System.Vendor.SafeHtml.TSafeHtmlParser');
+			self::$_safeTextParser= new TSafeHtmlParser;
 		return self::$_safeTextParser;
 	}
 

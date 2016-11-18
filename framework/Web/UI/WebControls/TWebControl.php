@@ -73,7 +73,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	public function getDecorator($create=true)
 	{
 		if($create && !$this->_decorator)
-			$this->_decorator = Prado::createComponent('TWebControlDecorator', $this);
+			$this->_decorator = new TWebControlDecorator($this);
 		return $this->_decorator;
 	}
 

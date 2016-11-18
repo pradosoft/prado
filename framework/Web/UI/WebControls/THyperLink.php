@@ -87,7 +87,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	protected function createImage($imageUrl)
 	{
-		$image=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImage');
+		$image= new TImage;
 		$image->setImageUrl($imageUrl);
 		if(($width=$this->getImageWidth())!=='')
 			$image->setWidth($width);

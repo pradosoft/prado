@@ -25,12 +25,14 @@
 * Main parser components
 * @package    System.Security.SafeHtml
 */
+
+namespace Prado\Vendor\SafeHtml\HTMLSax3;
+
 /**
 * Required classes
 */
-
-require_once(dirname(__FILE__).'/HTMLSax3/States.php');
-require_once(dirname(__FILE__).'/HTMLSax3/Decorators.php');
+require_once(dirname(__FILE__).'/States.php');
+require_once(dirname(__FILE__).'/Decorators.php');
 
 /**
 * Base State Parser

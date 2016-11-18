@@ -16,6 +16,8 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActiveTextBox;
 use Prado\Web\UI\INamingContainer;
+use Prado\Web\UI\WebControls\TTextBoxMode;
+use Prado\Util\TSimpleDateFormatter;
 
 /**
  * TJuiDatePicker class.
@@ -256,7 +258,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 		else
 		{
 			$date = TPropertyValue::ensureFloat($value);
-			$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$this->getDateFormat());
+			$formatter = new TSimpleDateFormatter($this->getDateFormat());
 			$this->setText($formatter->format($date));
 		}
 	}
@@ -269,7 +271,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	{
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter',$pattern);
+		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}
 

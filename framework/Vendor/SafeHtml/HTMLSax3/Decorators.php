@@ -26,6 +26,9 @@
 * @package System.Security.SafeHtml
 * @see TSax3::set_option
 */
+
+namespace Prado\Vendor\SafeHtml\HTMLSax3;
+
 /**
 * Trims the contents of element data from whitespace at start and end
 * @package System.Security.SafeHtml

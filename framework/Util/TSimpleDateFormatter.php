@@ -10,8 +10,10 @@
  */
 
 namespace Prado\Util;
-use Prado\Exceptions\TInvalidDataValueException;
+
 use Prado\Prado;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\TDateTimeStamp;
 
 /**
  * TSimpleDateFormatter class.
@@ -175,7 +177,7 @@ class TSimpleDateFormatter
 	 */
 	private function getDate($value)
 	{
-		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		$s = new TDateTimeStamp;
 		if(is_numeric($value))
 			return $s->getDate($value);
 		else
@@ -310,7 +312,7 @@ class TSimpleDateFormatter
 			}
 			$day = (int)$day <= 0 ? 1 : (int)$day;
 			$month = (int)$month <= 0 ? 1 : (int)$month;
-			$s = Prado::createComponent('System.Util.TDateTimeStamp');
+			$s = new TDateTimeStamp;
 			return $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		}
 	}

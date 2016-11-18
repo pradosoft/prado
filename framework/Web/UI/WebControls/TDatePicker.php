@@ -15,6 +15,9 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
+use Prado\Util\TSimpleDateFormatter;
+use Prado\Util\TDateTimeStamp;
+use Prado\I18N\core\CultureInfo;
 
 /**
  *
@@ -315,7 +318,7 @@ class TDatePicker extends TTextBox
 		else
 		{
 			$date = TPropertyValue::ensureFloat($value);
-			$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',$this->getDateFormat());
+			$formatter = new TSimpleDateFormatter($this->getDateFormat());
 			$this->setText($formatter->format($date));
 		}
 	}
@@ -487,7 +490,7 @@ class TDatePicker extends TTextBox
 
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('System.Util.TSimpleDateFormatter', $pattern);
+		$formatter = new TSimpleDateFormatter($pattern);
 
 		$order = $formatter->getDayMonthYearOrdering();
 
@@ -509,13 +512,14 @@ class TDatePicker extends TTextBox
 		else
 			$year = $date['year'];
 
-		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		$s = new TDateTimeStamp;
 		$date = $s->getTimeStamp(0, 0, 0, $month, $day, $year);
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter', $pattern);
+
+		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->format($date);
 	}
 
@@ -588,7 +592,7 @@ class TDatePicker extends TTextBox
 	{
 		//expensive operations
 		$culture = $this->getCurrentCulture();
-		$info = Prado::createComponent('System.I18N.core.CultureInfo', $culture);
+		$info = new CultureInfo($culture);
 		return $info->getDateTimeFormat();
 	}
 
@@ -608,7 +612,7 @@ class TDatePicker extends TTextBox
 			$writer->addAttribute('class', $class);
 		$writer->renderBeginTag('span');
 
-		$s = Prado::createComponent('System.Util.TDateTimeStamp');
+		$s = new TDateTimeStamp;
 		$date = $s->getDate($this->getTimeStampFromText());
 		//$date = @getdate($this->getTimeStampFromText());
 
@@ -626,8 +630,7 @@ class TDatePicker extends TTextBox
 
 	protected function hasDayPattern()
 	{
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
-						$this->getDateFormat());
+		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 		return ($formatter->getDayPattern()!==null);
 	}
 
@@ -638,8 +641,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarSelections($writer, $date)
 	{
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
-						$this->getDateFormat());
+		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 
 		foreach($formatter->getDayMonthYearOrdering() as $type)
 		{
@@ -660,7 +662,7 @@ class TDatePicker extends TTextBox
 	{
 		$pattern = $this->getDateFormat();
 		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',$pattern);
+		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}
 
@@ -706,8 +708,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getDropDownDayOptions()
 	{
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
-						$this->getDateFormat());
+		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 		$days = array();
 		$requiresPadding = $formatter->getDayPattern() === 'dd';
 		for($i=1;$i<=31;$i++)
@@ -745,8 +746,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getLocalizedMonthNames($info)
 	{
-		$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter',
-						$this->getDateFormat());
+		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 		switch($formatter->getMonthPattern())
 		{
 			case 'MMM': return $info->getAbbreviatedMonthNames();

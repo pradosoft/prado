@@ -1557,7 +1557,7 @@ class TComponent
 	 *
 	 * @param string the behavior's name. It should uniquely identify this behavior.
 	 * @param mixed the behavior configuration. This is passed as the first
-	 * parameter to {@link YiiBase::createComponent} to create the behavior object.
+	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */

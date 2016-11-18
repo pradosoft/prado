@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Util\TSimpleDateFormatter;
 
 /**
  * TCompareValidator class
@@ -200,7 +201,7 @@ class TCompareValidator extends TBaseValidator
 				$dateFormat = $this->getDateFormat();
 				if($dateFormat!=='')
 				{
-					$formatter = Prado::createComponent('\\Prado\\Util\\TSimpleDateFormatter', $dateFormat);
+					$formatter = new TSimpleDateFormatter($dateFormat);
 					return array($formatter->parse($value1), $formatter->parse($value2));
 				}
 				else

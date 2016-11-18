@@ -21,6 +21,7 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TDatePickerInputMode;
+use Prado\Util\TDateTimeStamp;
 
 
 /**
@@ -106,7 +107,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 			$cb->setValue($this, $value);
 			if ($this->getInputMode()==TDatePickerInputMode::DropDownList)
 			{
-				$s = Prado::createComponent('System.Util.TDateTimeStamp');
+				$s = new TDateTimeStamp;
 				$date = $s->getDate($this->getTimeStampFromText());
 				$id=$this->getClientID();
 				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $date['mday'], 'select');

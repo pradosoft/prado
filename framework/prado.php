@@ -50,3 +50,7 @@ Prado::using('Prado\TApplication');
 Prado::using('Prado\TModule');
 Prado::using('Prado\Web\Services\TPageService');
 Prado::using('Prado\Web\UI\TPage');
+Prado::using('Prado\Web\*');
+Prado::using('Prado\Exceptions\*');
+Prado::using('Prado\Util\*');
+Prado::using('Prado\Security\*');

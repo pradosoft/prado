@@ -12,6 +12,7 @@
 namespace Prado\Web\UI\WebControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Web\UI\TCompositeControl;
 
 /**
  * TWebControlDecorator class
@@ -318,14 +319,14 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 		if($this->getPreContentsTemplate())
 		{
-			$precontents = Prado::createComponent('TCompositeControl');
+			$precontents = new TCompositeControl;
 			$this->getPreContentsTemplate()->instantiateIn($precontents);
 			$control->getControls()->insertAt(0, $precontents);
 		}
 
 		if($this->getPostContentsTemplate())
 		{
-			$postcontents = Prado::createComponent('TCompositeControl');
+			$postcontents = new TCompositeControl;
 			$this->getPostContentsTemplate()->instantiateIn($postcontents);
 			$control->getControls()->add($postcontents);
 		}
@@ -336,14 +337,14 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 		if($this->getPreTagTemplate())
 		{
-			$pretag = Prado::createComponent('TCompositeControl');
+			$pretag = new TCompositeControl;
 			$this->getPreTagTemplate()->instantiateIn($pretag);
 			$outercontrol->getParent()->getControls()->insertBefore($outercontrol, $pretag);
 		}
 
 		if($this->getPostTagTemplate())
 		{
-			$posttag = Prado::createComponent('TCompositeControl');
+			$posttag = new TCompositeControl;
 			$this->getPostTagTemplate()->instantiateIn($posttag);
 			$outercontrol->getParent()->getControls()->insertAfter($outercontrol, $posttag);
 		}

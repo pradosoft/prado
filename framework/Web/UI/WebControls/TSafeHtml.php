@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Vendor\SafeHtml\TSafeHtmlParser;
 
 /**
  * TSafeHtml class
@@ -81,7 +82,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	 */
 	protected function parseSafeHtml($text)
 	{
-		$renderer = Prado::createComponent('System.Vendor.SafeHtml.TSafeHtmlParser');
+		$renderer = new TSafeHtmlParser;
 		return $renderer->parse($text, $this->getRepackUTF7());
 	}
 }

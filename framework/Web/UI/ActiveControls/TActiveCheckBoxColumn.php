@@ -83,7 +83,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$button=Prado::createComponent('System.Web.UI.WebControls.TActiveImageButton');
+				$button= new TActiveImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -94,7 +94,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 			}
 			else if($text!=='')
 			{
-				$button=Prado::createComponent('System.Web.UI.WebControls.TActiveLinkButton');
+				$button= new TActiveLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -108,7 +108,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 		{
 			if(($url=$this->getHeaderImageUrl())!=='')
 			{
-				$image=Prado::createComponent('System.Web.UI.WebControls.TActiveImage');
+				$image= new TActiveImage;
 				$image->setImageUrl($url);
 				if($text!=='')
 					$image->setAlternateText($text);

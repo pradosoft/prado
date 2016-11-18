@@ -238,12 +238,12 @@ class TEditCommandColumn extends TDataGridColumn
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup)
 	{
 		if($this->getButtonType()===TButtonColumnType::LinkButton)
-			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TLinkButton');
+			$button= new TLinkButton;
 		else if($this->getButtonType()===TButtonColumnType::PushButton)
-			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TButton');
+			$button= new TButton;
 		else	// image buttons
 		{
-			$button=Prado::createComponent('\\Prado\\Web\\UI\\WebControls\\TImageButton');
+			$button= new TImageButton;
 			if(strcasecmp($commandName,'Update')===0)
 				$url=$this->getUpdateImageUrl();
 			else if(strcasecmp($commandName,'Cancel')===0)

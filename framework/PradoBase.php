@@ -287,7 +287,6 @@ class PradoBase
 	public static function createComponent($requestedType)
 	{
 		$type = static::prado3NamespaceToPhpNamespace($requestedType);
-
 		if(!isset(self::$classExists[$type]))
 			self::$classExists[$type] = class_exists($type, false);
 
@@ -301,8 +300,9 @@ class PradoBase
 		 * old namespace syntax (eg. Application.Common.MyDataModule), assume that the calling
 		 * code expects the class not to be php5.3-namespaced (eg: MyDataModule instead of
 		 * \Application\Common\MyDataModule)
+		 * Skip this if the class is inside the Prado\* namespace, since all Prado classes are now namespaced
 		 */
-		if( ($pos = strrpos($type, '\\')) !== false & ($requestedType != $type))
+		if( ($pos = strrpos($type, '\\')) !== false && ($requestedType != $type) && strpos($type, 'Prado\\') !== 0)
 			$type = substr($type,$pos+1);
 
 		if(($n=func_num_args())>1)
