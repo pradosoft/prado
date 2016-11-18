@@ -181,7 +181,7 @@ class TMemCache extends TCache
         {
             foreach($this->_servers as $server)
             {
-                Prado::trace('Adding server '.$server['Host'].' from serverlist', 'System.Caching.TMemCache');
+                Prado::trace('Adding server '.$server['Host'].' from serverlist', '\Prado\Caching\TMemCache');
                 if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
                     $server['Weight'],$server['Timeout'],$server['RetryInterval'])===false)
                     throw new TConfigurationException('memcache_connection_failed',$server['Host'],$server['Port']);
@@ -189,7 +189,7 @@ class TMemCache extends TCache
         }
         else
         {
-            Prado::trace('Adding server '.$this->_host, 'System.Caching.TMemCache');
+            Prado::trace('Adding server '.$this->_host, '\Prado\Caching\TMemCache');
             if($this->_cache->addServer($this->_host,$this->_port)===false)
                 throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
         }

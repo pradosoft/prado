@@ -6,15 +6,17 @@
  * @link http://www.landwehr-software.de/
  * @copyright Copyright &copy; 2015 LANDWEHR Computer und Software GmbH
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.ActiveControls
+ * @package \Prado\Web\UI\JuiControls
  */
 
-/**
- * Load active text box.
- */
-Prado::using('System.Web.UI.ActiveControls.TActiveTextBox');
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
-Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
+namespace Prado\Web\UI\JuiControls;
+
+use Prado\TPropertyValue;
+use Prado\Exceptions\TNotSupportedException;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\UI\ActiveControls\TActiveTextBox;
+use Prado\Web\UI\INamingContainer;
+
 /**
  * TJuiDatePicker class.
  *
@@ -28,7 +30,7 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlAdapter');
  * </code>
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOptions

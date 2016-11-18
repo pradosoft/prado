@@ -10,8 +10,13 @@
  * @package System.Web.UI.WebControls
  */
 
-Prado::using('System.Web.UI.ActiveControls.TCallbackEventParameter');
-Prado::using('System.Web.UI.ActiveControls.TActivePanel');
+namespace Prado\Web\UI\WebControls;
+use Prado\TPropertyValue;
+use Prado\Web\Javascripts\TJavaScript;
+use Prado\Exceptions\TConfigurationException;
+// FIXME: this controls should be moved to activecontrols
+use Prado\Web\UI\ActiveControls\TActivePanel;
+use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 /**
  * TReCaptcha2 class.
@@ -53,7 +58,7 @@ Prado::using('System.Web.UI.ActiveControls.TActivePanel');
  * @since 3.3.1
  */
 
-class TReCaptcha2 extends TActivePanel implements ICallbackEventHandler, IValidatable
+class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
     const ChallengeFieldName = 'g-recaptcha-response';
     private $_widgetId=0;

@@ -196,7 +196,7 @@ class TDbCache extends TCache
 
 			if($this->_autoCreate && !$this -> _createCheck) {
 
-				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, 'System.Caching.TDbCache');
+				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
 				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
@@ -210,7 +210,7 @@ class TDbCache extends TCache
 			// DB table not exists
 			if($this->_autoCreate)
 			{
-				Prado::trace('Autocreate: ' . $this->_cacheTable, 'System.Caching.TDbCache');
+				Prado::trace('Autocreate: ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
 				$driver=$db->getDriverName();
 				if($driver==='mysql')
@@ -253,7 +253,7 @@ class TDbCache extends TCache
 		if($force || $next <= $now)
 		{
 			if(!$this->_cacheInitialized) $this->initializeCache();
-			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, 'System.Caching.TDbCache');
+			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 			$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.$now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this -> getApplication() -> setGlobalState($key, $now);

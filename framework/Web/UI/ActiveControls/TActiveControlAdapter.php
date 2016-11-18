@@ -16,7 +16,7 @@ namespace Prado\Web\UI\ActiveControls;
  */
 use Prado\Prado;
 use Prado\Web\UI\TControlAdapter;
-
+use Prado\TPropertyValue;
 
 /**
  * TActiveControlAdapter class.

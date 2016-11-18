@@ -189,7 +189,7 @@ class TDbCommand extends \Prado\TComponent
 		{
 			// Do not trace because it will remain even in
 			// Performance mode or when pradolite.php is used
-			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'Prado\Data');
 			if($this->_statement instanceof PDOStatement)
 			{
 				$this->_statement->execute();
@@ -225,7 +225,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		try
 		{
-			// Prado::trace('Query: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query: '.$this->getDebugStatementText(), 'Prado\Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -250,7 +250,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		try
 		{
-			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'Prado\Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
@@ -276,7 +276,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		try
 		{
-			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'System.Data');
+			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'Prado\Data');
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else

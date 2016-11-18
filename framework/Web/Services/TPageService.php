@@ -470,7 +470,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function run()
 	{
-		Prado::trace("Running page service",'System.Web.Services.TPageService');
+		Prado::trace("Running page service",'Prado\Web\Services\TPageService');
 		$this->_page=$this->createPage($this->getRequestedPagePath());
 		$this->runPage($this->_page,$this->_properties);
 	}

@@ -44,6 +44,8 @@
  * @link http://code.google.com/p/jsmin-php/
  */
 
+namespace Prado\Web\Javascripts;
+
 class JSMin {
   const ORD_LF    = 10;
   const ORD_SPACE = 32;

@@ -6,10 +6,13 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2015 PradoSoft
  * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
 
-Prado::using('System.Web.UI.JuiControls.TJuiControlOptions');
+namespace Prado\Web\UI\JuiControls;
+
+use Prado\TPropertyValue;
+use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 
 /**
  * TJuiCallbackPageStateTracker class.
@@ -17,7 +20,7 @@ Prado::using('System.Web.UI.JuiControls.TJuiControlOptions');
  * Tracking changes to the page state during callback, including {@link TJuiControlOptions}.
  *
  * @author LANDWEHR Computer und Software GmbH
- * @package System.Web.UI.JuiControls
+ * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {

@@ -44,5 +44,7 @@
  * @link http://code.google.com/p/jsmin-php/
  */
 
+namespace Prado\Web\Javascripts;
+
 // -- Exceptions ---------------------------------------------------------------
 class JSMinException extends Exception {}

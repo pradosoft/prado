@@ -755,7 +755,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function resolveRequest($serviceIDs)
 	{
-		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'System.Web.THttpRequest');
+		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'Prado\Web\THttpRequest');
 		$getParams=$this->parseUrl();
 		foreach($getParams as $name=>$value)
 			$_GET[$name]=$value;
@@ -824,7 +824,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_items);
 	}
 
 	/**

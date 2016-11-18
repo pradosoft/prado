@@ -10,8 +10,9 @@
  * @package System.Web.UI.WebControls
  */
 
-Prado::using('System.Web.UI.WebControls.TBaseValidator');
-Prado::using('System.Web.UI.WebControls.TReCaptcha2');
+namespace Prado\Web\UI\WebControls;
+use Exception;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TReCaptcha2Validator class

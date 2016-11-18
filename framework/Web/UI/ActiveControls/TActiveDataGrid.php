@@ -15,6 +15,7 @@ namespace Prado\Web\UI\ActiveControls;
  * Includes the following used classes
  */
 use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Web\UI\ISurroundable;
 use Prado\Web\UI\WebControls\TDataGrid;
 use Prado\Web\UI\WebControls\TDataGridPagerButtonType;

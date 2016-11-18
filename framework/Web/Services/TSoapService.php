@@ -273,21 +273,21 @@ class TSoapService extends \Prado\TService
 	 */
 	public function run()
 	{
-		Prado::trace("Running SOAP service",'System.Web.Services.TSoapService');
+		Prado::trace("Running SOAP service",'Prado\Web\Services\TSoapService');
 		$server=$this->createServer();
 		$this->getResponse()->setContentType('text/xml');
 		$this->getResponse()->setCharset($server->getEncoding());
 		if($this->getIsWsdlRequest())
 		{
 			// server WSDL file
-			Prado::trace("Generating WSDL",'System.Web.Services.TSoapService');
+			Prado::trace("Generating WSDL",'Prado\Web\Services\TSoapService');
 			$this->getResponse()->clear();
 			$this->getResponse()->write($server->getWsdl());
 		}
 		else
 		{
 			// provide SOAP service
-			Prado::trace("Handling SOAP request",'System.Web.Services.TSoapService');
+			Prado::trace("Handling SOAP request",'Prado\Web\Services\TSoapService');
 			$server->run();
 		}
 	}

@@ -56,7 +56,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 		else if($this->getAllowSorting()) {
 				$sortExpression=$this->getSortExpression();
 				if(($url=$this->getHeaderImageUrl())!=='') {
-					$button=Prado::createComponent('System.Web.UI.WebControls.TActiveImageButton');
+					$button= new TActiveImageButton;
 					$button->setImageUrl($url);
 					$button->setCommandName(TDataGrid::CMD_SORT);
 					$button->setCommandParameter($sortExpression);
@@ -68,7 +68,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 					$cell->getControls()->add($button);
 				}
 				else if($text!=='') {
-						$button=Prado::createComponent('System.Web.UI.WebControls.TActiveLinkButton');
+						$button= new TActiveLinkButton;
 						$button->setText($text);
 						$button->setCommandName(TDataGrid::CMD_SORT);
 						$button->setCommandParameter($sortExpression);
@@ -80,7 +80,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 			}
 			else {
 				if(($url=$this->getHeaderImageUrl())!=='') {
-					$image=Prado::createComponent('System.Web.UI.WebControls.TActiveImage');
+					$image= new TActiveImage;
 					$image->setImageUrl($url);
 					if($text!=='') {
 						$image->setAlternateText($text);
