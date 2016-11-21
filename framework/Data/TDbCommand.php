@@ -187,8 +187,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		try
 		{
-			// Do not trace because it will remain even in
-			// Performance mode or when pradolite.php is used
+			// Do not trace because it will remain even in Performance mode
 			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'Prado\Data');
 			if($this->_statement instanceof PDOStatement)
 			{

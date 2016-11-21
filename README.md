@@ -17,7 +17,7 @@ The complete API documentation can be found at http://pradosoft.github.io/docs/m
 
 Prado uses ApiGen (http://www.apigen.org) to generate its API documentation.
 An ApiGen configuration file is providen, to generate the documentation just execute
-```./vendor/bin/apigen generate --config=apigen.yaml```
+```./vendor/bin/apigen generate --config=.apigen.yaml```
 The documentation will be generated in the `build/docs/` directory.
 
 ## Install

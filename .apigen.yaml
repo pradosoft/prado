@@ -3,7 +3,6 @@ extensions:
 source:
   - ./framework
 exclude:
-  - "*pradolite.php"
   - "*prado-cli.php"
   - "*Vendor/*"
   - "*Javascripts/source/*"

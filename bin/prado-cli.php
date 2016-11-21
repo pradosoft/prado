@@ -42,7 +42,6 @@ if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCreateProject');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineCreateTests');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
-PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineUnitTest');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGen');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGenAll');
 
@@ -462,121 +461,6 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 		if(count($args) > 1)
 			$app = $this->initializePradoApplication($args[1]);
 		return true;
-	}
-}
-
-/**
- * Runs unit test cases.
- *
- * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @since 3.0.5
- */
-class PradoCommandLineUnitTest extends PradoCommandLineAction
-{
-	protected $action = 'test';
-	protected $parameters = array('directory');
-	protected $optional = array('testcase ...');
-	protected $description = 'Runs all unit test cases in the given <directory>. Use [testcase] option to run specific test cases.';
-
-	protected $matches = array();
-
-	public function performAction($args)
-	{
-		$dir = realpath($args[1]);
-		if($dir !== false && is_dir($dir))
-			$this->runUnitTests($dir,$args);
-		else
-			echo '** Unable to find directory "'.$args[1]."\".\n";
-		return true;
-	}
-
-	protected function initializeTestRunner()
-	{
-		$TEST_TOOLS = realpath(dirname(dirname(__FILE__))).'/tests/test_tools/';
-
-		require_once($TEST_TOOLS.'/simpletest/unit_tester.php');
-		require_once($TEST_TOOLS.'/simpletest/web_tester.php');
-		require_once($TEST_TOOLS.'/simpletest/mock_objects.php');
-		require_once($TEST_TOOLS.'/simpletest/reporter.php');
-	}
-
-	protected function runUnitTests($dir, $args)
-	{
-		$app_dir = $this->getAppDir($dir);
-		if($app_dir !== false)
-			$this->initializePradoApplication($app_dir.'/../');
-
-		$this->initializeTestRunner();
-		$test_dir = $this->getTestDir($dir);
-		if($test_dir !== false)
-		{
-			$test =$this->getUnitTestCases($test_dir,$args);
-			$running_dir = substr(str_replace(realpath('./'),'',$test_dir),1);
-			echo 'Running unit tests in directory "'.$running_dir."\":\n";
-			$test->run(new TextReporter());
-		}
-		else
-		{
-			$running_dir = substr(str_replace(realpath('./'),'',$dir),1);
-			echo '** Unable to find test directory "'.$running_dir.'/unit" or "'.$running_dir.'/tests/unit".'."\n";
-		}
-	}
-
-	protected function getAppDir($dir)
-	{
-		$app_dir = realpath($dir.'/protected');
-		if($app_dir !== false && is_dir($app_dir))
-			return $app_dir;
-		return realpath($dir.'/../protected');
-	}
-
-	protected function getTestDir($dir)
-	{
-		$test_dir = realpath($dir.'/unit');
-		if($test_dir !== false && is_dir($test_dir))
-			return $test_dir;
-		return realpath($dir.'/tests/unit/');
-	}
-
-	protected function getUnitTestCases($dir,$args)
-	{
-		$matches = null;
-		if(count($args) > 2)
-			$matches = array_slice($args,2);
-		$test=new GroupTest(' ');
-		$this->addTests($test,$dir,true,$matches);
-		$test->setLabel(implode(' ',$this->matches));
-		return $test;
-	}
-
-	protected function addTests($test,$path,$recursive=true,$match=null)
-	{
-		$dir=opendir($path);
-		while(($entry=readdir($dir))!==false)
-		{
-			if(is_file($path.'/'.$entry) && (preg_match('/[^\s]*test[^\s]*\.php/', strtolower($entry))))
-			{
-				if($match==null||($match!=null && $this->hasMatch($match,$entry)))
-					$test->addTestFile($path.'/'.$entry);
-			}
-			if($entry!=='.' && $entry!=='..' && is_dir($path.'/'.$entry) && $recursive)
-				$this->addTests($test,$path.'/'.$entry,$recursive,$match);
-		}
-		closedir($dir);
-	}
-
-	protected function hasMatch($match,$entry)
-	{
-		$file = strtolower(substr($entry,0,strrpos($entry,'.')));
-		foreach($match as $m)
-		{
-			if(strtolower($m) === $file)
-			{
-				$this->matches[] = $m;
-				return true;
-			}
-		}
-		return false;
 	}
 }
 
