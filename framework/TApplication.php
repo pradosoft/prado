@@ -982,7 +982,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		if(empty($this->_services))
-			$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
+			$this->_services=array($this->getPageServiceID()=>array('Prado\Web\Services\TPageService',array(),null));
 
 		// load parameters
 		foreach($config->getParameters() as $id=>$parameter)
