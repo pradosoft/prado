@@ -57,18 +57,19 @@
 		"pradosoft/prado4" : "4.0"
 	},
 	"suggest" : {
-		"ext-apc" : "*",
-		"ext-eaccelerator" : "*",
-		"ext-hash" : "*",
-		"ext-iconv" : "*",
-		"ext-mbstring" : "*",
-		"ext-mcrypt" : "*",
-		"ext-memcache" : "*",
-		"ext-pdo" : "*",
-		"ext-soap" : "*",
-		"ext-xcache" : "*",
-		"ext-xsl" : "*",
-		"ext-zlib" : "*"
+		"ext-apc" : "Enables the use of TAPCCache as a cache handler",
+		"ext-eaccelerator" : "Enables the use of TEACache as a cache handler",
+		"ext-hash" : "Enables use of hash functions other than md5 and sha1",
+		"ext-iconv" : "Used by some internationaization components",
+		"ext-mbstring" : "Prado can use the mbstring extension for locale-aware string operations",
+		"ext-mcrypt" : "Enables encryption of sensitive data, eg. page viewstate",
+		"ext-memcache" : "Enables the use of TMemCache as a cache handler",
+		"ext-pdo" : "Used by all the Prado\\Data components, eg. TActiveRecord",
+		"ext-soap" : "Used by TSoapService to provide a soap backend",
+		"ext-xcache" : "Enables the use of TXCache as a cache handler",
+		"ext-xsl" : "Used by the TXmlTransform component",
+		"ext-zlib" : "Enables compression to reduce page size",
+		"pradosoft/prado4-demos" : "Demo applications for Prado4"
 	},
     "autoload": {
         "psr-4": {

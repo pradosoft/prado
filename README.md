@@ -48,23 +48,8 @@ Then you can include the autoloader, and you will have access to the library cla
 require 'vendor/autoload.php';
 ```
 ## Demo Apps
-The Demos folder has several different example prado applications. You can see more information about these applications here: http://www.pradoframework.net/site/demos/ . When you create your own prado application you do NOT need these folders.
-
-* address-book
-* blog
-* blog-tutorial
-* chat
-* composer
-* currency-converter
-* helloworld
-* northwind-db
-* personal
-* quickstart
-* site
-* soap
-* sqlmap
-* time-tracker
-
+Several different example prado applications are provided in the https://github.com/pradosoft/prado4-demos repository. You can see these applications running here: http://www.pradoframework.net/site/demos/ .
+When you create your own prado application you do NOT need these folders.
 
 ## Testing
 
