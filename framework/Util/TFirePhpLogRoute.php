@@ -50,7 +50,6 @@ class TFirePhpLogRoute extends TLogRoute
 			return;
 		}
 
-		require_once Prado::getPathOfNamespace('System.Vendor.FirePHPCore') . '/FirePHP.class.php';
 		$firephp = FirePHP::getInstance(true);
 		$firephp->setOptions(array('useNativeJsonEncode' => false));
 		$firephp->group($this->getGroupLabel(), array('Collapsed' => true));

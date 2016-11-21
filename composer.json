@@ -38,11 +38,13 @@
     ],
 	"require": {
 		"php": ">=5.3.3",
-		"ext-ctype" : "*",
+		"ext-ctype": "*",
 		"ext-dom": "*",
 		"ext-json": "*",
 		"ext-pcre": "*",
-		"ext-spl": "*"
+		"ext-spl": "*",
+		"firephp/firephp-core": "*",
+		"erusev/parsedown": "*"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",

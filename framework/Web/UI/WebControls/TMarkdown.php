@@ -10,7 +10,6 @@
  */
 
 namespace Prado\Web\UI\WebControls;
-use Parsedown;
 
 /**
  * TMarkdown class
