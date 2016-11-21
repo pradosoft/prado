@@ -54,7 +54,7 @@
 		"pradosoft/prado4-apigen-theme" : "*"
 	},
 	"provide" : {
-		"pradosoft/prado" : "4.0"
+		"pradosoft/prado4" : "4.0"
 	},
 	"suggest" : {
 		"ext-apc" : "*",
