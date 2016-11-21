@@ -30,7 +30,7 @@
 				<com:SimpleMenuItem Path="Download" Text="Download" />
 				<com:SimpleMenuItem Path="Documentation" Text="Documentation" />
 				<!--- <com:SimpleMenuItem Path="Forum" Text="Forum" /> --->
-				<com:SimpleMenuItem Url="http://github.com/pradosoft/prado" Text="Development" Target="_blank"/>
+				<com:SimpleMenuItem Url="http://github.com/pradosoft/prado4" Text="Development" Target="_blank"/>
 				<!---  --->
 			</com:SimpleMenu>
 		</div>

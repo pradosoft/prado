@@ -9,7 +9,7 @@ A regular hyperlink:
 </td><td class="sampleaction">
 Welcome to
 <com:THyperLink
-	NavigateUrl="https://github.com/pradosoft/prado"
+	NavigateUrl="https://github.com/pradosoft/prado4"
 	Text="Prado framework"
 	Target="_blank" />.
 </td></tr>
@@ -19,7 +19,7 @@ A text hyperlink with css style:
 </td><td class="sampleaction">
 Welcome to
 <com:THyperLink
-	NavigateUrl="https://github.com/pradosoft/prado"
+	NavigateUrl="https://github.com/pradosoft/prado4"
 	Text="Prado framework"
 	Target="_blank"
 	BackColor="silver"
@@ -30,7 +30,7 @@ Welcome to
 An image hyperlink:
 </td><td class="sampleaction">
 <com:THyperLink
-	NavigateUrl="https://github.com/pradosoft/prado"
+	NavigateUrl="https://github.com/pradosoft/prado4"
 	ImageUrl=<%~hello_world.gif%>
 	Text="Hello World" />.
 </td></tr>
@@ -39,7 +39,7 @@ An image hyperlink:
 A hyerplink with body contents as link text:
 </td><td class="sampleaction">
 <com:THyperLink
-	NavigateUrl="https://github.com/pradosoft/prado"
+	NavigateUrl="https://github.com/pradosoft/prado4"
 	Target="_blank">
 Body contents
 </com:THyperLink>

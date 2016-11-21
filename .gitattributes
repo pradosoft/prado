@@ -1,5 +1,5 @@
 * text=auto !eol
-/COPYRIGHT -text
+/LICENSE -text
 /HISTORY -text
 /UPGRADE -text
 /build.xml -text

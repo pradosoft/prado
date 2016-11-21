@@ -3,9 +3,9 @@
  * UserList page class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2006 PradoSoft
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Demos
  */
 

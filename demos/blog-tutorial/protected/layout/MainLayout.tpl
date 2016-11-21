@@ -15,7 +15,7 @@
 
 <com:TPanel ID="MainMenu" CssClass="mainmenu">
 <a href="?">Home</a> |
-<a href="https://github.com/pradosoft/prado">Prado Project</a>
+<a href="https://github.com/pradosoft/prado4">Prado Project</a>
 </com:TPanel>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

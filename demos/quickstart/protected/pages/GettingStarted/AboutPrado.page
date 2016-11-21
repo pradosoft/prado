@@ -68,7 +68,7 @@ In May 2005, we decided to completely rewrite the PRADO framework to resolve a f
 In October 2008, the original development team released a new framework called <a href="http://www.yiiframework.com/">Yii</a>. Inheriting most of the PRADO code, Yii left the pages/events concept, focusing on a pure MVC design pattern. Since 2009 a lot of people contributed to PRADO fixing issues, developing new features or backporting them from Yii.
 </p>
 <p class="block-content">
-To promote a model of community-driven development, the project repositories were moved first on <a href="http://code.google.com/p/prado3/">Google Code</a> and then, in September 2013, on <a href="http://github.com/pradosoft/prado">GitHub</a>.
+To promote a model of community-driven development, the project repositories were moved first on <a href="http://code.google.com/p/prado3/">Google Code</a> and then, in September 2013, on <a href="http://github.com/pradosoft/prado4">GitHub</a>.
 </p>
 <p id="20017" class="block-content">
 Starting from version 3.0, significant efforts are allocated to ensure the quality and stability of PRADO. If we say PRADO v2.x and v1.x are proof-of-concept work, we can say PRADO 3.x has grown up to a project that is suitable for serious business application development.

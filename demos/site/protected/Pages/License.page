@@ -8,7 +8,7 @@
 The PRADO framework and the included demos are free software. They are released under the terms of the following BSD License.
 </p>
 <p>
-Copyright 2004-<%= date('Y') %> by The PRADO Group (https://github.com/pradosoft/prado)<br/>
+Copyright 2004-<%= date('Y') %> by The PRADO Group (https://github.com/pradosoft/prado4)<br/>
 All rights reserved.
 </p>
 <p>

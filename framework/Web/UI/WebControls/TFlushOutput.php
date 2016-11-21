@@ -3,8 +3,8 @@
  * TFlushOutput class file
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @link https://github.com/pradosoft/prado
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @link https://github.com/pradosoft/prado4
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Web\UI\WebControls
  */
 

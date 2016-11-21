@@ -22,7 +22,7 @@ Just create a composer.json file for your project:
 ```JSON
 {
     "require": {
-        "pradosoft/prado": "~3.3"
+        "pradosoft/prado": "~4.0"
     }
 }
 ```

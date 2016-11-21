@@ -3,9 +3,9 @@
  * PRADO Requirements Checker script
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package prado
  */
 
@@ -190,7 +190,7 @@ else
 $tokens = array(
 	'%%Conclusion%%' => $conclusion,
 	'%%Details%%' => $results,
-	'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.getPradoVersion(),
+	'%%Version%%' => $_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado4">PRADO</a>/'.getPradoVersion(),
 	'%%Time%%' => @strftime('%Y-%m-%d %H:%m',time()),
 );
 

@@ -3,9 +3,9 @@
  * TErrorHandler class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Exceptions
  */
 
@@ -189,7 +189,7 @@ class TErrorHandler extends \Prado\TModule
 
 		$errorMessage = $exception->getMessage();
 		if($isDebug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado4">PRADO</a>/'.Prado::getVersion();
 		else
 		{
 			$version='';
@@ -272,7 +272,7 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado4">PRADO</a>/'.Prado::getVersion();
 		else
 			$version='';
 

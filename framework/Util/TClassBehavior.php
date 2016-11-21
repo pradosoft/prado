@@ -3,9 +3,9 @@
  * TClassBehavior class file.
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2008-2011 Pradosoft
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  */
 
 namespace Prado\Util;

@@ -6,9 +6,9 @@
  * and error handling mechanism.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado
  */
 
@@ -83,7 +83,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '3.3.99';
+		return '4.0.0';
 	}
 
 	public static function init()
@@ -167,7 +167,7 @@ class PradoBase
 		}
 		else
 			$url='http://pradosoft.github.io/docs/'.$logoName.'.gif';
-		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
+		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado4" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
 	/**

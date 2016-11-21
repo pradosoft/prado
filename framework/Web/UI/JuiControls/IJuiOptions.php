@@ -3,9 +3,9 @@
  * TJuiControlAdapter class file.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2013-2014 PradoSoft
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Web\UI\JuiControls
  */
 

@@ -15,7 +15,7 @@
 
 <com:TPanel ID="MainMenu" CssClass="mainmenu">
 <a href="?">Home</a> |
-<a href="https://github.com/pradosoft/prado">Prado framework</a> |
+<a href="https://github.com/pradosoft/prado4">Prado framework</a> |
 <a href="../../docs/quickstart.pdf">PDF Version</a> |
 <com:THyperLink ID="PrinterLink" Text="Printer-friendly Version" />
 </com:TPanel>

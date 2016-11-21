@@ -35,7 +35,7 @@
 <com:MainMenu />
 <br/>
 Copyright &copy; 2006-2015 Your Name here.<br/>
-Powered by <a href="https://github.com/pradosoft/prado">PRADO</a>.
+Powered by <a href="https://github.com/pradosoft/prado4">PRADO</a>.
 </div>
 </div>
 

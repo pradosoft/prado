@@ -7,7 +7,7 @@
 <tr><td class="samplenote">
 Inline frame with default settings:
 </td><td class="sampleaction">
-<com:TInlineFrame FrameUrl="https://github.com/pradosoft/prado" />
+<com:TInlineFrame FrameUrl="https://github.com/pradosoft/prado4" />
 </td></tr>
 
 <tr><td class="samplenote">
@@ -17,7 +17,7 @@ Inline frame customized with margins and align:
 	MarginWidth="100"
 	MarginHeight="100"
 	Align="Right"
-	FrameUrl="https://github.com/pradosoft/prado" />
+	FrameUrl="https://github.com/pradosoft/prado4" />
 </td></tr>
 
 <tr><td class="samplenote">
@@ -26,7 +26,7 @@ Inline frame without scrollbars and border:
 <com:TInlineFrame
 	ScrollBars="None"
 	ShowBorder="false"
-	FrameUrl="https://github.com/pradosoft/prado" />
+	FrameUrl="https://github.com/pradosoft/prado4" />
 </td></tr>
 
 </table>

@@ -5,7 +5,7 @@
 	<key>content</key>
 	<string>&lt;com:TRectangleHotSpot
 	${1:HotspotMode="${2:Navigate}"
-	NavigateUrl="${3:https://github.com/pradosoft/prado}"}
+	NavigateUrl="${3:https://github.com/pradosoft/prado4}"}
 	AlternateText="${4:Navigate to Prado framework}"
 	Top="${5:10}" Left="${6:10}" Bottom="${7:110}" Right="${8:110}" /&gt;$0</string>
 	<key>name</key>

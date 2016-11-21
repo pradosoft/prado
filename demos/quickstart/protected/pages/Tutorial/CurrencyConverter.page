@@ -18,7 +18,7 @@
 
 	<h1 id="download">Downloading and Installing Prado</h1>
 	<p id="80055" class="block-content">To install Prado, simply download the latest version of Prado from the
-		<a href="https://github.com/pradosoft/prado">Prado project website</a>
+		<a href="https://github.com/pradosoft/prado4">Prado project website</a>
 		and unzip the file to a directory <b>not</b> accessible by your web server
 		(you may unzip it to a directory accessible by the web server if you wish
 		to see the demos and test). For further detailed installation, see the

@@ -9,6 +9,10 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v3.3.x
+---------------------
+- TBD
+
 Upgrading from v3.3.0
 ---------------------
 - The long-time deprecated 'MySQL' translation source has been removed.

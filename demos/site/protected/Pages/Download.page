@@ -3,10 +3,10 @@
 <div id="main">
 
 <h1>Download</h1>
-<p>PRADO is an open source project hosted on <a href="http://github.com/pradosoft/prado">GitHub</a>. It is released under the terms of
+<p>PRADO is an open source project hosted on <a href="http://github.com/pradosoft/prado4">GitHub</a>. It is released under the terms of
 <com:THyperLink NavigateUrl="<%= $this->Service->constructUrl('License')%>" Text="the BSD License" />.</p>
 <p>The latest stable version of PRADO is <b><span id="lastVersion"><%= Prado::getVersion() %></span></b><span id="lastVersionDate"></span>.</p>
-<div style="text-align:center"><a id="downloadLink" style="font-size:150%" href="https://github.com/pradosoft/prado/releases/latest">Download</a></div>
+<div style="text-align:center"><a id="downloadLink" style="font-size:150%" href="https://github.com/pradosoft/prado4/releases/latest">Download</a></div>
 
 <com:TClientScript PradoScripts="jquery" />
 <com:TClientScript>
@@ -48,9 +48,9 @@ $(document).ready(function () {
 	<th nowrap="nowrap">Date </th>
 	<th nowrap="nowrap">Files</th>
 </tr>
-	<tr><td>3.3.0</td><td>Febr 15, 2016</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.3.0/prado-3.3.0.rd228958.zip">Source code and documentation</a></td></tr>
-	<tr><td>3.2.4</td><td>Aug 26, 2014</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.4/prado-3.2.4.re2e58b8.zip">Source code and documentation</a></td></tr>
-	<tr><td>3.2.3</td><td>Nov 26, 2013</td><td><a href="https://github.com/pradosoft/prado/releases/download/3.2.3/prado-3.2.3.r2b11341.zip">Source code and documentation</a></td></tr>
+	<tr><td>3.3.0</td><td>Febr 15, 2016</td><td><a href="https://github.com/pradosoft/prado4/releases/download/3.3.0/prado-3.3.0.rd228958.zip">Source code and documentation</a></td></tr>
+	<tr><td>3.2.4</td><td>Aug 26, 2014</td><td><a href="https://github.com/pradosoft/prado4/releases/download/3.2.4/prado-3.2.4.re2e58b8.zip">Source code and documentation</a></td></tr>
+	<tr><td>3.2.3</td><td>Nov 26, 2013</td><td><a href="https://github.com/pradosoft/prado4/releases/download/3.2.3/prado-3.2.3.r2b11341.zip">Source code and documentation</a></td></tr>
 	<tr><td>3.2.2</td><td>July 20, 2013</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.2.r3297.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.2.r3297.zip">documentation</a></td></tr>
 	<tr><td>3.2.1</td><td>January 19, 2013</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.1.r3258.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.1.r3258.zip">documentation</a></td></tr>
 	<tr><td>3.2.0</td><td>June 25, 2012</td><td><a href="http://prado3.googlecode.com/files/prado-3.2.0.r3169.zip">Source code</a>, <a href="http://prado3.googlecode.com/files/prado-docs-3.2.0.r3169.zip">documentation</a></td></tr>
@@ -107,10 +107,10 @@ $(document).ready(function () {
 <br/>
 <br/>
 <h2>Git Access</h2>
-<p>You can obtain the latest development version of PRADO from our <a href="https://github.com/pradosoft/prado">Git repository</a>.</p>
+<p>You can obtain the latest development version of PRADO from our <a href="https://github.com/pradosoft/prado4">Git repository</a>.</p>
 <blockquote><b>WARNING:</b> Unreleased Source code in Git may contain known bugs and are subject to changes without prior notice.</blockquote>
 <p>The Source code repository can be accessed anonymously using the following command,</p>
-<pre class="instructions">git clone https://github.com/pradosoft/prado.git</pre>
+<pre class="instructions">git clone https://github.com/pradosoft/prado4.git</pre>
 
 <div style="clear: both;"></div>
 </div>

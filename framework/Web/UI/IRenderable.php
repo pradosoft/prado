@@ -3,9 +3,9 @@
  * Core interfaces essential for TApplication class.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Web\UI
  */
 

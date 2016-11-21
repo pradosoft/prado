@@ -53,6 +53,6 @@ You may refer to the following resources if you find this tutorial does not fulf
 </div>
 <ul class="block-content" id="intro-links">
   <li><a href="http://pradosoft.github.io/docs/manual/">PRADO API Documentation</a></li>
-  <li><a href="http://github.com/pradosoft/prado/issues">PRADO Issue Tracker</a></li>
+  <li><a href="http://github.com/pradosoft/prado4/issues">PRADO Issue Tracker</a></li>
 </ul>
 </com:TContent>

@@ -4,9 +4,9 @@
  * TOracleTableInfo class file.
  *
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
- * @link https://github.com/pradosoft/prado
+ * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado/blob/master/COPYRIGHT
+ * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Data\Common\Oracle
  */
 
