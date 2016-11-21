@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="./tests/test_tools/phpunit_bootstrap.php"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	stopOnFailure="false">
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">./tests/unit</directory>
+		</testsuite>
+		<testsuite name="functional">
+			<directory suffix="TestCase.php">./tests/FunctionalTests</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">framework/</directory>
+		</whitelist>
+	</filter>
+	<logging>
+		<log type="testdox-html" target="./build/tests/index.html"/>
+		<log type="coverage-html" target="./build/tests/coverage" lowUpperBound="35" highLowerBound="70"/>
+	</logging>
+</phpunit>

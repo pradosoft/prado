@@ -30,6 +30,12 @@
 			"role" : "Developer"
 		}
 	],
+    "repositories": [
+        {
+            "url": "https://github.com/pradosoft/prado4-apigen-theme.git",
+            "type": "git"
+        }
+    ],
 	"require": {
 		"php": ">=5.3.3",
 		"ext-ctype" : "*",
@@ -44,9 +50,8 @@
 		"phpunit/dbunit": "*",
 		"phpunit/phpunit-selenium": "3.*",
 		"phpunit/php-invoker": "*",
-		"phing/phing" : "2.*",
-		"apigen/apigen": "4.*",
-		"satooshi/php-coveralls": "*"
+		"apigen/apigen": "dev-master",
+		"pradosoft/prado4-apigen-theme" : "*"
 	},
 	"provide" : {
 		"pradosoft/prado" : "4.0"
@@ -77,8 +82,5 @@
 	},
 	"bin" : [
 		"bin/prado-cli"
-	],
-	"config" : {
-		"bin-dir" : "bin"
-	}
+	]
 }

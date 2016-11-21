@@ -1,3 +1,5 @@
+# Warning: this is prerelease, and is not usable yet.
+
 # Prado PHP Framework
 
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
@@ -12,6 +14,11 @@ PRADO stands for PHP Rapid Application Development Object-oriented.
 
 ## API Documentation
 The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
+
+Prado uses ApiGen (http://www.apigen.org) to generate its API documentation.
+An ApiGen configuration file is providen, to generate the documentation just execute
+```./vendor/bin/apigen generate --config=apigen.yaml```
+The documentation will be generated in the `build/docs/` directory.
 
 ## Install
 
@@ -61,34 +68,12 @@ The Demos folder has several different example prado applications. You can see m
 
 ## Testing
 
-Prado uses phpunit (https://phpunit.de/) for testing, phing (http://www.phing.info/) for building, and Selenum (http://www.seleniumhq.org/) for web browser emulation.
+Prado uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
+A phpunit configuration file is providen, to run the tests just execute
+```./vendor/bin/phpunit --testsuite unit``` to run unit tests and
+```./vendor/bin/phpunit --testsuite functional``` to run functional tests.
 
-Running `phing` with no arguments will show you the different tests/builds that are setup in build.xml.
-
-```
-$phing
-Buildfile: /yourcodepath/build.xml
-
-prado > help:
-
-     [echo] 
-
-    Welcome to use PRADO build script!
-    ----------------------------------
-    You may use the following command format to build a target:
-
-              phing   <target name>
-
-    where <target name> can be one of the following:
-
-    For all PRADO developers:
-    - test           : run unit tests (results are under /build/test-reports)
-    - coverage       : run unit tests collecting coverage informations
-    - functionaltest : run funcitonal tests (requires Selenium Server)
-    - lint           : run lint on framework
-    - lint-demos     : run lint on demos
-```
-
+Test results will be saved in in the `build/tests/` directory.
 
 ## Contributing
 
