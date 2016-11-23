@@ -125,7 +125,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 			self::$_first=false;
 		}
 		parent::addAttributesToRender($writer);
-		$options=TJavascript::encode($this->getOptions()->toArray());
+		$options=TJavaScript::encode($this->getOptions()->toArray());
 		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
