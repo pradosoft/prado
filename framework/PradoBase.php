@@ -63,6 +63,10 @@ class PradoBase
 		'Prado'=>PRADO_DIR
 		);
 	/**
+	 * @var array list of namespaces currently in use
+	 */
+	public static $classMap=array();	
+	/**
 	 * @var TApplication the application instance
 	 */
 	private static $_application=null;
@@ -108,6 +112,8 @@ class PradoBase
 			}
 
 		spl_autoload_register(array(get_called_class(), 'autoload'));
+
+		self::$classMap = require(__DIR__ . '/classes.php');
 	}
 
 	/**
@@ -275,7 +281,7 @@ class PradoBase
 	 * Creates a component with the specified type.
 	 * A component type can be either the component class name
 	 * or a namespace referring to the path of the component class file.
-	 * For example, 'TButton', '\Prado\Web|UI\WeControls\TButton' are both
+	 * For example, 'TButton', '\Prado\Web\UI\WebControls\TButton' are both
 	 * valid component type.
 	 * This method can also pass parameters to component constructors.
 	 * All parameters passed to this method except the first one (the component type)
@@ -349,8 +355,18 @@ class PradoBase
 
 		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false))
 			return;
-		if(($pos=strrpos($namespace,'\\'))===false)
+
+		if(array_key_exists($namespace, self::$classMap))
 		{
+			// fast autoload a Prado3 class name
+			$phpNamespace = self::$classMap[$namespace];
+			if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
+			{
+				if(!class_exists($namespace) && !interface_exists($namespace))
+					class_alias($phpNamespace, $namespace, true);
+				return;
+			}			
+		} elseif(($pos=strrpos($namespace,'\\'))===false) {
 			// trying to autoload an old class name
 			foreach(self::$_usings as $k => $v)
 			{
@@ -369,9 +385,7 @@ class PradoBase
 
 			if($checkClassExistence && !class_exists($namespace,false) && !interface_exists($namespace,false))
 				throw new TInvalidOperationException('prado_component_unknown',$namespace,'');
-		}
-		else if(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null)
-		{
+		} elseif(($path=self::getPathOfNamespace($namespace,self::CLASS_FILE_EXT))!==null) {
 			$className=substr($namespace,$pos+1);
 			if($className==='*')  // a directory
 			{

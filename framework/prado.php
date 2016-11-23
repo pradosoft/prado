@@ -22,9 +22,12 @@ class Prado extends PradoBase
 {
 }
 
+/**
+ * Initialize Prado autoloader and error handler
+ */
 Prado::init();
 
 /**
- * Defines Prago in global namespace
+ * Defines Prado in global namespace
  */
 class_alias('\Prado\Prado', 'Prado', true);
