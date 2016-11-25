@@ -30,12 +30,6 @@
 			"role" : "Developer"
 		}
 	],
-    "repositories": [
-        {
-            "url": "https://github.com/pradosoft/prado-apigen-theme.git",
-            "type": "git"
-        }
-    ],
 	"require": {
 		"php": ">=5.3.3",
 		"ext-ctype": "*",

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d4c834738bea2d8abbbc4ccb67b7b82b",
-    "content-hash": "609b61f92339940d55c0346c1bea2813",
+    "hash": "d231439dd155a94390df0f1b6c19622f",
+    "content-hash": "7c70f33110c0b1fe0bde6a55c252ed9f",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -2007,7 +2007,14 @@
                 "url": "https://github.com/pradosoft/prado-apigen-theme.git",
                 "reference": "664a2f0748eb012858bc3fba8f5073afcd4e9bb2"
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pradosoft/prado-apigen-theme/zipball/664a2f0748eb012858bc3fba8f5073afcd4e9bb2",
+                "reference": "664a2f0748eb012858bc3fba8f5073afcd4e9bb2",
+                "shasum": ""
+            },
             "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
