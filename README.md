@@ -1,4 +1,4 @@
-# Warning: this is prerelease, and is not usable yet.
+# Warning: this is development version of the upcoming Prado 4.
 
 # Prado PHP Framework
 
