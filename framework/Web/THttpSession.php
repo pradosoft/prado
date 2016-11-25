@@ -13,6 +13,7 @@ namespace Prado\Web;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Prado;
 
 /**
  * THttpSession class
@@ -251,8 +252,10 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if($this->_started)
 			throw new TInvalidOperationException('httpsession_savepath_unchangeable');
-		else if(is_dir($value))
-			session_save_path($value);
+		elseif(is_dir($value))
+			session_save_path(realpath($value));
+		elseif(null !== ($ns = Prado::getPathOfNamespace($value)) && is_dir($ns))
+			session_save_path(realpath($ns));
 		else
 			throw new TInvalidDataValueException('httpsession_savepath_invalid',$value);
 	}
