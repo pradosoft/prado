@@ -38,7 +38,8 @@
 		"ext-pcre": "*",
 		"ext-spl": "*",
 		"firephp/firephp-core": "*",
-		"erusev/parsedown": "*"
+		"erusev/parsedown": "*",
+		"ezyang/htmlpurifier": "*"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",

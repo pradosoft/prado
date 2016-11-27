@@ -11,7 +11,7 @@ for both A and B.
 
 Upgrading from v3.3.x
 ---------------------
-- TBD
+- Removed RepackUTF7 property from TSafeHtml.
 
 Upgrading from v3.3.0
 ---------------------

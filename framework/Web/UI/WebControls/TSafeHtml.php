@@ -13,30 +13,20 @@ namespace Prado\Web\UI\WebControls;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TPropertyValue;
-use Prado\Vendor\SafeHtml\TSafeHtmlParser;
 
 /**
  * TSafeHtml class
  *
- * TSafeHtml is a control that strips down all potentially dangerous
- * HTML content. It is mainly a wrapper of {@link http://pear.php.net/package/SafeHTML SafeHTML}
- * project. According to the SafeHTML project, it tries to safeguard
- * the following situations when the string is to be displayed to end-users,
- * - Opening tag without its closing tag
- * - closing tag without its opening tag
- * - any of these tags: base, basefont, head, html, body, applet, object,
- *   iframe, frame, frameset, script, layer, ilayer, embed, bgsound, link,
- *   meta, style, title, blink, xml, etc.
- * - any of these attributes: on*, data*, dynsrc
- * - javascript:/vbscript:/about: etc. protocols
- * - expression/behavior etc. in styles
- * - any other active content.
+ * TSafeHtml is a control that strips down all potentially dangerous HTML content.
+ * It is mainly a wrapper of {@link http://htmlpurifier.org/ HTMLPurifier} project.
  *
  * To use TSafeHtml, simply enclose the content to be secured within
  * the body of TSafeHtml in a template.
  *
- * If the content is encoded in UTF-7, you'll need to enable the  {@link setRepackUTF7 RepackUTF7} property
- * to ensure the contents gets parsed correctly.
+ * You can specify a custom configuration for HTMLPurifier using the
+ * {@link setConfig Config} property. Please refer to the
+ * {@link http://htmlpurifier.org/docs HTMLPurifier documentation} for the
+ * possibile configuration parameters.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\WebControls
@@ -45,27 +35,26 @@ use Prado\Vendor\SafeHtml\TSafeHtmlParser;
 class TSafeHtml extends \Prado\Web\UI\TControl
 {
 	/**
-	 * Sets whether to parse the contents as UTF-7. This property enables a routine
-	 * that repacks the content as UTF-7 before parsing it. Defaults to false.
-	 * @param boolean whether to parse the contents as UTF-7
+	 * Sets a custom configuration for HTMLPurifier.
+	 * @param \HTMLPurifier_Config custom configuration
 	 */
-	public function setRepackUTF7($value)
+	public function setConfig(\HTMLPurifier_Config $value)
 	{
-		$this->setViewState('RepackUTF7',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Config', $value, null);
 	}
 
 	/**
-	 * @return boolean whether to parse the contents as UTF-7. Defaults to false.
+	 * @return \HTMLPurifier_Config Configuration for HTMLPurifier.
 	 */
-	public function getRepackUTF7()
+	public function getConfig()
 	{
-		return $this->getViewState('RepackUTF7',false);
+		$config = $this->getViewState('Config', null);
+		return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
 	}
 
 	/**
 	 * Renders body content.
-	 * This method overrides parent implementation by removing
-	 * malicious javascript code from the body content
+	 * This method overrides parent implementation by removing malicious code from the body content
 	 * @param THtmlWriter writer
 	 */
 	public function render($writer)
@@ -76,14 +65,14 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * Use SafeHTML to remove malicous javascript from the HTML content.
+	 * Use HTMLPurifier to remove malicous content from HTML.
 	 * @param string HTML content
 	 * @return string safer HTML content
 	 */
 	protected function parseSafeHtml($text)
 	{
-		$renderer = new TSafeHtmlParser;
-		return $renderer->parse($text, $this->getRepackUTF7());
+		$purifier = new \HTMLPurifier($this->getConfig());
+		return $purifier->purify($text);
 	}
 }
 
