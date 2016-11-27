@@ -40,7 +40,7 @@
 		"firephp/firephp-core": "*",
 		"erusev/parsedown": "*",
 		"ezyang/htmlpurifier": "*",
-		"pradosoft/prado-wsdlgenerator": "dev-master"
+		"pradosoft/prado-wsdlgenerator": "*"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",
