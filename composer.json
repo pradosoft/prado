@@ -39,7 +39,8 @@
 		"ext-spl": "*",
 		"firephp/firephp-core": "*",
 		"erusev/parsedown": "*",
-		"ezyang/htmlpurifier": "*"
+		"ezyang/htmlpurifier": "*",
+		"pradosoft/prado-wsdlgenerator": "dev-master"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",
