@@ -342,7 +342,7 @@ class THtmlArea4 extends TTextBox
 	{
 		$scripts = $this->getPage()->getClientScript();
 		$scripts->registerPradoScript('htmlarea4');
-		$scripts->registerScriptFile('prado:THtmlArea4', $this->getScriptUrl());
+		$this->copyCustomPlugins();
 	}
 
 	/**
@@ -361,33 +361,15 @@ class THtmlArea4 extends TTextBox
 		$scripts->registerEndScript('prado:THtmlArea4'.$this->ClientID,$script);
 	}
 
-	/**
-	 * @return string editor script URL.
-	 */
-	protected function getScriptUrl()
-	{
-		return $this->getScriptDeploymentPath().'/tinymce.min.js';
-	}
-
-	/**
-	 * Gets the editor script base URL by publishing the tarred source via TTarAssetManager.
-	 * @return string URL base path to the published editor script
-	 */
-	protected function getScriptDeploymentPath()
-	{
-		$basedir = Prado::getPathOfNamespace('System.Web.Javascripts.source.tinymce-405');
-		$url = $this->getApplication()->getAssetManager()->publishFilePath($basedir);
-		$this->copyCustomPlugins($url);
-		return $url;
-	}
-
-	protected function copyCustomPlugins($url)
+	protected function copyCustomPlugins()
 	{
 		if($plugins = $this->getCustomPluginPath())
 		{
+			$basepath = $this->getPage()->getClientScript()->getPradoScriptAssetPath('tinymce');
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
-			$dest = $assets->getBasePath().'/'.basename($url).'/plugins/';
+			$name = basename($path);
+			$dest = $basepath.'/plugins/'.$name;
 			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}
@@ -478,4 +460,3 @@ class THtmlArea4 extends TTextBox
 		return 'Prado.WebUI.THtmlArea4';
 	}
 }
-

@@ -238,7 +238,20 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
-		return $assets->publishFilePath($base);
+		return $assets->getPublishedUrl($base);
+	}
+
+	/**
+	 * @return string Prado javascript library base asset path in local filesystem.
+	 */
+	public function getPradoScriptAssetPath($script='prado')
+	{
+		if(!array_key_exists($script, self::$_scriptsFolders))
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$script);
+		
+		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
+		$assets = Prado::getApplication()->getAssetManager();
+		return $assets->getPublishedPath($base);
 	}
 
 	/**

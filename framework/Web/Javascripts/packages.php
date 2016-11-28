@@ -8,6 +8,7 @@ $folders = array(
 	'bootstrap' => 'Vendor.bower-asset.bootstrap.dist',
 	'protoype' => 'Vendor.bower-asset.prototypejs-bower',
 	'scriptaculous' => 'Vendor.bower-asset.scriptaculous-bower',
+	'tinymce' => 'Vendor.bower-asset.tinymce',
 );
 
 //package names and its contents (files relative to the current directory)
@@ -85,7 +86,6 @@ $packages = array(
 	),
 	'jqueryui' => array(
 		'jquery-ui/jquery-ui.js',
-		'jquery-ui/jquery-ui-i18n.min.js',
 	),
 
 	// prototype + scriptaculous
@@ -98,6 +98,11 @@ $packages = array(
 	//bootstrap
 	'bootstrap' => array(
 		'bootstrap/js/bootstrap.js',
+	),
+
+	//tinymce
+	'tinymce' => array(
+		'tinymce/tinymce.js',
 	),
 
 	'dragdrop'=>array(
@@ -130,7 +135,7 @@ $dependencies = array(
 	'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
 	'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
 	'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
-	'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4'),
+	'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4', 'tinymce'),
 	'keyboard'			=> array('jquery', 'prado', 'keyboard'),
 	'slider'			=> array('jquery', 'prado', 'slider'),
 	'inlineeditor'		=> array('jquery', 'prado', 'ajax', 'inlineeditor'),
