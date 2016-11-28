@@ -27,8 +27,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  */
 class TJuiControlAdapter extends TActiveControlAdapter
 {
-	const SCRIPT_PATH = 'jquery';
-	const CSS_PATH = 'css';
+	const CSS_PATH = 'themes';
 	const BASE_CSS_FILENAME ='jquery-ui.css';
 
 	/**
@@ -69,13 +68,13 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	}
 
 	/**
-	 * @param string jQuery asset file in the self::SCRIPT_PATH directory.
+	 * @param string jQuery asset file in the jquery-ui directory.
 	 * @return string jQuery asset url.
 	 */
 	protected function getAssetUrl($file='')
 	{
-		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
-		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui');
+		return $base.'/'.$file;
 	}
 
 	/**

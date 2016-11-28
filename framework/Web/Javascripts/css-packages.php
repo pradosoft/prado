@@ -1,71 +1,70 @@
 <?php
 
-//$Id: packages.php 3319 2013-09-08 20:59:44Z ctrlaltca $
-
-// To make future upgrades easier
-if (!defined('JQUERY_DIR')) define ('JQUERY_DIR', 'jquery');
-if (!defined('BOOTSTRAP_DIR')) define ('BOOTSTRAP_DIR', 'bootstrap3');
+//package base folder in prado alias notation
+$folders = array(
+	'jquery-ui' => 'Vendor.bower-asset.jquery-ui',
+	'bootstrap' => 'Vendor.bower-asset.bootstrap.dist',
+);
 
 //package names and its contents (files relative to the current directory)
 $packages = array(
 	'jquery-ui' => array(
-		JQUERY_DIR.'/css/base/jquery-ui.css',
+		'jquery-ui/themes/base/jquery-ui.css',
 	),
 	'jquery.ui.accordion' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.accordion.css',
+		'jquery-ui/themes/base/jquery.ui.accordion.css',
 	),
 	'jquery.ui.autocomplete' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.autocomplete.css',
+		'jquery-ui/themes/base/jquery.ui.autocomplete.css',
 	),
 	'jquery.ui.button' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.button.css',
+		'jquery-ui/themes/base/jquery.ui.button.css',
 	),
 	'jquery.ui.core' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.core.css',
+		'jquery-ui/themes/base/jquery.ui.core.css',
 	),
 	'jquery.ui.datepicker' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.datepicker.css',
+		'jquery-ui/themes/base/jquery.ui.datepicker.css',
 	),
 	'jquery.ui.dialog' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.dialog.css',
+		'jquery-ui/themes/base/jquery.ui.dialog.css',
 	),
 	'jquery.ui.menu' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.menu.css',
+		'jquery-ui/themes/base/jquery.ui.menu.css',
 	),
 	'jquery.ui.progressbar' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.progressbar.css',
+		'jquery-ui/themes/base/jquery.ui.progressbar.css',
 	),
 	'jquery.ui.resizable' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.resizable.css',
+		'jquery-ui/themes/base/jquery.ui.resizable.css',
 	),
 	'jquery.ui.selectable' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.selectable.css',
+		'jquery-ui/themes/base/jquery.ui.selectable.css',
 	),
 	'jquery.ui.slider' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.slider.css',
+		'jquery-ui/themes/base/jquery.ui.slider.css',
 	),
 	'jquery.ui.spinner' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.spinner.css',
+		'jquery-ui/themes/base/jquery.ui.spinner.css',
 	),
 	'jquery.ui.tabs' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.tabs.css',
+		'jquery-ui/themes/base/jquery.ui.tabs.css',
 	),
 	'jquery.ui.theme' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.theme.css',
+		'jquery-ui/themes/base/jquery.ui.theme.css',
 	),
 	'jquery.ui.tooltip' => array(
-		JQUERY_DIR.'/css/base/jquery.ui.tooltip.css',
+		'jquery-ui/themes/base/jquery.ui.tooltip.css',
 	),
 
 	// bootstrap
 	'bootstrap' => array(
-		BOOTSTRAP_DIR.'/css/bootstrap.css',
+		'bootstrap/css/bootstrap.css',
 	),
 	'bootstrap-theme' => array(
-		BOOTSTRAP_DIR.'/css/bootstrap-theme.css',
+		'bootstrap/css/bootstrap-theme.css',
 	),
 );
-
 
 //package names and their dependencies
 $dependencies = array(
@@ -89,5 +88,5 @@ $dependencies = array(
 		'bootstrap-theme'		=> array('bootstrap', 'bootstrap-theme'),
 );
 
-return array($packages, $dependencies);
+return array($folders, $packages, $dependencies);
 

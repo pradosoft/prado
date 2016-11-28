@@ -30,6 +30,15 @@ if(!defined('PRADO_DIR'))
  */
 if(!defined('PRADO_CHMOD'))
 	define('PRADO_CHMOD',0777);
+/**
+ * Defines the Composer's vendor/ path.
+ */
+if(!defined('PRADO_VENDORDIR'))
+{
+	$reflector = new \ReflectionClass('\Composer\Autoload\ClassLoader');
+	define('PRADO_VENDORDIR',dirname(dirname($reflector->getFileName())));
+}
+
 
 /**
  * PradoBase class.
@@ -54,7 +63,8 @@ class PradoBase
 	 * @var array list of path aliases
 	 */
 	private static $_aliases=array(
-		'Prado'=>PRADO_DIR
+		'Prado'=>PRADO_DIR,
+		'Vendor'=>PRADO_VENDORDIR
 		);
 	/**
 	 * @var array list of namespaces currently in use
@@ -79,10 +89,6 @@ class PradoBase
 	 */
 	protected static $classExists = array();
 	/**
-	 * @var Autoloader instance
-	 */
-	private static $_loader=null;
-	/**
 	 * @return string the version of Prado framework
 	 */
 	public static function getVersion()
@@ -97,23 +103,13 @@ class PradoBase
 	}
 
 	/**
-	 * Registers the autoload function.
+	 * Loads the static classmap and registers the autoload function.
 	 */
 	public static function initAutoloader()
 	{
-		$autoloadPaths = array(
-			__DIR__ . '/../../../autoload.php', // prado as dependency
-			__DIR__ . '/../vendor/autoload.php', // prado itself
-		);
-		foreach($autoloadPaths as $autoloadPath)
-			if(file_exists($autoloadPath)) {
-				self::$_loader = $autoloadPath;
-				break;
-			}
+		self::$classMap = require(__DIR__ . '/classes.php');
 
 		spl_autoload_register(array(get_called_class(), 'autoload'));
-
-		self::$classMap = require(__DIR__ . '/classes.php');
 	}
 
 	/**
@@ -149,14 +145,6 @@ class PradoBase
 	public static function autoload($className)
 	{
 		static::using($className);
-	}
-
-	/**
-	 * retrieve the current autoloader object
-	 */
-	public static function getAutoloader()
-	{
-		return self::$_loader;
 	}
 
 	/**

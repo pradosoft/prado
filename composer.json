@@ -30,6 +30,12 @@
 			"role" : "Developer"
 		}
 	],
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		}
+	],
 	"require": {
 		"php": ">=5.3.3",
 		"ext-ctype": "*",
@@ -40,7 +46,13 @@
 		"firephp/firephp-core": "*",
 		"erusev/parsedown": "*",
 		"ezyang/htmlpurifier": "*",
-		"pradosoft/prado-wsdlgenerator": "*"
+		"pradosoft/prado-wsdlgenerator": "*",
+		"bower-asset/jquery": "^3.1",
+		"bower-asset/jquery-ui": "^1.12",
+		"bower-asset/bootstrap": "^3.3",
+		"bower-asset/prototypejs-bower": "^1.7",
+		"bower-asset/scriptaculous-bower": "^1.9",
+		"bower-asset/tinymce": "^4"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",

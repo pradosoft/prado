@@ -32,10 +32,6 @@ use Prado\Web\THttpUtility;
 class TClientScriptManager extends \Prado\TApplicationComponent
 {
 	/**
-	 * directory containing Prado javascript files
-	 */
-	const SCRIPT_PATH='Web/Javascripts/source';
-	/**
 	 * file containing javascript packages and their cross dependencies
 	 */
 	const PACKAGES_FILE='Web/Javascripts/packages.php';
@@ -82,38 +78,48 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * @var array registered PRADO script libraries
 	 */
-	private $_registeredPradoScripts=array();
+	private $_registeredScripts=array();
 	/**
 	 * Client-side javascript library dependencies, loads from PACKAGES_FILE;
 	 * @var array
 	 */
-	private static $_pradoScripts;
+	private static $_scripts;
 	/**
 	 * Client-side javascript library packages, loads from PACKAGES_FILE;
 	 * @var array
 	 */
-	private static $_pradoPackages;
+	private static $_scriptsPackages;
+	/**
+	 * Client-side javascript library source folders, loads from PACKAGES_FILE;
+	 * @var array
+	 */
+	private static $_scriptsFolders;
 	/**
 	 * @var array registered PRADO style libraries
 	 */
-	private $_registeredPradoStyles=array();
+	private $_registeredStyles=array();
 	/**
-	 * Client-side style library dependencies, loads from PACKAGES_FILE;
+	 * Client-side style library dependencies, loads from CSS_PACKAGES_FILE;
 	 * @var array
 	 */
-	private static $_pradoStyles;
+	private static $_styles;
 	/**
 	 * Client-side style library packages, loads from CSS_PACKAGES_FILE;
 	 * @var array
 	 */
-	private static $_pradoStylePackages;
+	private static $_stylesPackages;
+	/**
+	 * Client-side style library folders, loads from CSS_PACKAGES_FILE;
+	 * @var array
+	 */
+	private static $_stylesFolders;
 
 	private $_renderedHiddenFields;
 
 	private $_renderedScriptFiles=array();
 
-	private $_expandedPradoScripts;
-	private $_expandedPradoStyles;
+	private $_expandedScripts;
+	private $_expandedStyles;
 
 	/**
 	 * Constructor.
@@ -136,12 +142,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	public static function getPradoPackages()
 	{
-		return self::$_pradoPackages;
+		return self::$_scriptsPackages;
 	}
 
 	public static function getPradoScripts()
 	{
-		return self::$_pradoScripts;
+		return self::$_scripts;
 	}
 
 	/**
@@ -162,51 +168,55 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	protected function registerPradoScriptInternal($name)
 	{
 		// $this->checkIfNotInRender();
-		if(!isset($this->_registeredPradoScripts[$name]))
+		if(!isset($this->_registeredScripts[$name]))
 		{
-			if(self::$_pradoScripts === null)
+			if(self::$_scripts === null)
 			{
 				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::PACKAGES_FILE;
-				list($packages,$deps)= include($packageFile);
-				self::$_pradoScripts = $deps;
-				self::$_pradoPackages = $packages;
+				list($folders, $packages, $deps)= include($packageFile);
+				self::$_scriptsFolders = $folders;
+				self::$_scripts = $deps;
+				self::$_scriptsPackages = $packages;
 			}
 
-			if (isset(self::$_pradoScripts[$name]))
-				$this->_registeredPradoScripts[$name]=true;
+			if (isset(self::$_scripts[$name]))
+				$this->_registeredScripts[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
 
-			if(($packages=array_keys($this->_registeredPradoScripts))!==array())
+			if(($packages=array_keys($this->_registeredScripts))!==array())
 			{
-				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-				list($path,$baseUrl)=$this->getPackagePathUrl($base);
 				$packagesUrl=array();
 				$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
 				foreach ($packages as $p)
 				{
-					foreach (self::$_pradoScripts[$p] as $dep)
+					foreach (self::$_scripts[$p] as $dep)
 					{
-						foreach (self::$_pradoPackages[$dep] as $script)
-						if (!isset($this->_expandedPradoScripts[$script]))
+						foreach (self::$_scriptsPackages[$dep] as $script)
 						{
-							$this->_expandedPradoScripts[$script] = true;
-							if($isDebug)
+							if (!isset($this->_expandedScripts[$script]))
 							{
-								if (!in_array($url=$baseUrl.'/'.$script,$packagesUrl))
-									$packagesUrl[]=$url;
-							} else {
-								if (!in_array($url=$baseUrl.'/min/'.$script,$packagesUrl))
+								list($base, $subPath) = $this->getScriptPackageFolder($script);
+								list($path, $baseUrl) = $this->getPackagePathUrl($base);
+
+								$this->_expandedScripts[$script] = true;
+								if($isDebug)
 								{
-									if(!is_file($filePath=$path.'/min/'.$script))
+									if (!in_array($url=$baseUrl.'/'.$subPath, $packagesUrl))
+										$packagesUrl[]=$url;
+								} else {
+									if (!in_array($url=$baseUrl.'/min/'.$subPath, $packagesUrl))
 									{
-										$dirPath=dirname($filePath);
-										if(!is_dir($dirPath))
-											mkdir($dirPath, PRADO_CHMOD, true);
-										file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$script)));
-										chmod($filePath, PRADO_CHMOD);
+										if(!is_file($filePath=$path.'/min/'.$subPath))
+										{
+											$dirPath=dirname($filePath);
+											if(!is_dir($dirPath))
+												mkdir($dirPath, PRADO_CHMOD, true);
+											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$subPath)));
+											chmod($filePath, PRADO_CHMOD);
+										}
+										$packagesUrl[]=$url;
 									}
-									$packagesUrl[]=$url;
 								}
 							}
 						}
@@ -221,11 +231,14 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * @return string Prado javascript library base asset url.
 	 */
-	public function getPradoScriptAssetUrl()
+	public function getPradoScriptAssetUrl($script='prado')
 	{
-		$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
+		if(!array_key_exists($script, self::$_scriptsFolders))
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$script);
+		
+		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
-		return $assets->getPublishedUrl($base);
+		return $assets->publishFilePath($base);
 	}
 
 	/**
@@ -259,6 +272,34 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		{
 			return array($assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base);
 		}
+	}
+
+	/**
+	 * @param string javascript package source folder path.
+	 * @return array tuple($basepath,$subpath).
+	 */
+	protected function getScriptPackageFolder($script)
+	{
+		list($base, $subPath) = explode("/", $script, 2);
+
+		if(!array_key_exists($base, self::$_scriptsFolders))
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
+		
+		return array(self::$_scriptsFolders[$base], $subPath);
+	}
+
+	/**
+	 * @param string css package source folder path.
+	 * @return array tuple($basepath,$subpath).
+	 */
+	protected function getStylePackageFolder($script)
+	{
+		list($base, $subPath) = explode("/", $script, 2);
+
+		if(!array_key_exists($base, self::$_stylesFolders))
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
+		
+		return array(self::$_stylesFolders[$base], $subPath);
 	}
 
 	/**
@@ -393,40 +434,44 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	protected function registerPradoStyleInternal($name)
 	{
 		// $this->checkIfNotInRender();
-		if(!isset($this->_registeredPradoStyles[$name]))
+		if(!isset($this->_registeredStyles[$name]))
 		{
 			$base = $this->getPradoScriptAssetUrl();
 
-			if(self::$_pradoStyles === null)
+			if(self::$_styles === null)
 			{
 				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::CSS_PACKAGES_FILE;
-				list($packages,$deps)= include($packageFile);
-				self::$_pradoStyles = $deps;
-				self::$_pradoStylePackages = $packages;
+				list($folders, $packages,$deps)= include($packageFile);
+				self::$_stylesFolders = $folders;
+				self::$_styles = $deps;
+				self::$_stylesPackages = $packages;
 			}
 
-			if (isset(self::$_pradoStyles[$name]))
-				$this->_registeredPradoStyles[$name]=true;
+			if (isset(self::$_styles[$name]))
+				$this->_registeredStyles[$name]=true;
 			else
 				throw new TInvalidOperationException('csmanager_pradostyle_invalid',$name);
 
-			if(($packages=array_keys($this->_registeredPradoStyles))!==array())
+			if(($packages=array_keys($this->_registeredStyles))!==array())
 			{
-				$base = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::SCRIPT_PATH;
-				list($path,$baseUrl)=$this->getPackagePathUrl($base);
 				$packagesUrl=array();
 				$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
 				foreach ($packages as $p)
 				{
-					foreach (self::$_pradoStyles[$p] as $dep)
+					foreach (self::$_styles[$p] as $dep)
 					{
-						foreach (self::$_pradoStylePackages[$dep] as $style)
-						if (!isset($this->_expandedPradoStyles[$style]))
+						foreach (self::$_stylesPackages[$dep] as $style)
 						{
-							$this->_expandedPradoStyles[$style] = true;
-							// TODO minify css?
-							if (!in_array($url=$baseUrl.'/'.$style,$packagesUrl))
-								$packagesUrl[]=$url;
+							if (!isset($this->_expandedStyles[$style]))
+							{
+								list($base, $subPath) = $this->getStylePackageFolder($style);
+								list($path, $baseUrl) = $this->getPackagePathUrl($base);
+
+								$this->_expandedStyles[$style] = true;
+								// TODO minify css?
+								if (!in_array($url=$baseUrl.'/'.$subPath, $packagesUrl))
+									$packagesUrl[]=$url;
+							}
 						}
 					}
 				}
