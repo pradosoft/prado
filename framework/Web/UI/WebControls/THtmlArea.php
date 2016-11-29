@@ -49,29 +49,6 @@ use Prado\Web\Javascripts\TJavaScript;
  * </com:THtmlArea>
  * </code>
  *
- * Compatibility
- * The client-side visual editting capability is supported by
- * Internet Explorer 5.0+ for Windows and Gecko-based browser.
- * If the browser does not support the visual editting,
- * a traditional textarea will be displayed.
- *
- * Browser support
- *
- * <code>
- *                    Windows XP        MacOS X 10.4
- * ----------------------------------------------------
- * MSIE 6                  OK
- * MSIE 5.5 SP2            OK
- * MSIE 5.0                OK
- * Mozilla 1.7.x           OK              OK
- * Firefox 1.0.x           OK              OK
- * Firefox 1.5b2           OK              OK
- * Safari 2.0 (412)                        OK(1)
- * Opera 9 Preview 1       OK(1)           OK(1)
- * ----------------------------------------------------
- *    * (1) - Partialy working
- * ----------------------------------------------------
- * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\WebControls
@@ -326,15 +303,17 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @return boolean enable compression of the javascript files, default is true.
+	 * @return boolean enable compression of the javascript files, default is false.
+	 * @deprecated since 4.0
 	 */
 	public function getEnableCompression()
 	{
-		return $this->getViewState('EnableCompression', true);
+		return $this->getViewState('EnableCompression', false);
 	}
 
 	/**
-	 * @param boolean enable compression of the javascript files, default is true.
+	 * @param boolean enable compression of the javascript files, default is false.
+	 * @deprecated since 4.0
 	 */
 	public function setEnableCompression($value)
 	{
@@ -376,17 +355,6 @@ class THtmlArea extends TTextBox
 		return self::$_themes;
 	}
 
-	protected function getCompressionOptions()
-	{
-		return array(
-			'plugins' => implode(',', $this->getAvailablePlugins()),
-			'themes' => implode(',', $this->getAvailableThemes()),
-			'languages' => $this->getLanguageSuffix($this->getCulture()),
-			'disk_cache' => true,
-			'debug' => false
-		);
-	}
-
 	protected function loadJavascriptLibrary()
 	{
 		$scripts = $this->getPage()->getClientScript();
@@ -404,8 +372,6 @@ class THtmlArea extends TTextBox
 		$options = array(
 			'EditorOptions' => $this->getEditorOptions()
 		);
-		if($this->getEnableCompression())
-			$options['CompressionOptions'] = $this->getCompressionOptions();
 
 		$options = TJavaScript::encode($options,true,true);
 		$script = "new {$this->getClientClassName()}($options)";
@@ -417,10 +383,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptUrl()
 	{
-		if($this->getEnableCompression())
-			return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce_gzip.js';
-		else
-			return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce.js';
+		return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce.js';
 	}
 
 	/**
@@ -429,8 +392,8 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptDeploymentPath()
 	{
-		$tarfile = Prado::getPathOfNamespace('System.Vendor.TinyMCE.tiny_mce', '.tar');
-		$md5sum = Prado::getPathOfNamespace('System.Vendor.TinyMCE.tiny_mce', '.md5');
+		$tarfile = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.tar');
+		$md5sum = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.md5');
 		if($tarfile===null || $md5sum===null)
 			throw new TConfigurationException('htmlarea_tarfile_invalid');
 		$url = $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
@@ -444,7 +407,7 @@ class THtmlArea extends TTextBox
 		{
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
-			$dest = $assets->getBasePath().'/'.basename($url).'/tiny_mce/plugins/';
+			$dest = $assets->getBasePath().'/'.basename($url).'/tiny_mce/plugins/'.basename($path);
 			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}
@@ -535,4 +498,3 @@ class THtmlArea extends TTextBox
 		return 'Prado.WebUI.THtmlArea';
 	}
 }
-

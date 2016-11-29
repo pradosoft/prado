@@ -47,6 +47,7 @@
 		"erusev/parsedown": "*",
 		"ezyang/htmlpurifier": "*",
 		"pradosoft/prado-wsdlgenerator": "*",
+		"pradosoft/prado-tinymce3": "*",
 		"bower-asset/jquery": "^3.1",
 		"bower-asset/jquery-ui": "^1.12",
 		"bower-asset/bootstrap": "^3.3",

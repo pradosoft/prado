@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c8b2b5c16b2f776b785b41e397b062e0",
-    "content-hash": "c0d622dada5f5d77a0c4ca9a60f4f83b",
+    "hash": "d6eb139bcd64e4fb5f1e395865d9cc3f",
+    "content-hash": "b1aeb50cc306b6b21fc1d3ff0fec4c05",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -233,6 +233,36 @@
             "description": "Traditional FirePHPCore library for sending PHP variables to the browser.",
             "homepage": "https://github.com/firephp/firephp-core",
             "time": "2013-04-23 15:28:20"
+        },
+        {
+            "name": "pradosoft/prado-tinymce3",
+            "version": "3.5.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pradosoft/prado-tinymce3.git",
+                "reference": "3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pradosoft/prado-tinymce3/zipball/3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27",
+                "reference": "3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Fabio Bas",
+                    "email": "ctrlaltca@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Packaged tinyMCE 3 in Prado",
+            "homepage": "https://github.com/pradosoft/prado-tinymce3",
+            "time": "2016-11-29 08:52:28"
         },
         {
             "name": "pradosoft/prado-wsdlgenerator",

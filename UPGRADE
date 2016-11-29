@@ -12,6 +12,7 @@ for both A and B.
 Upgrading from v3.3.x
 ---------------------
 - Removed RepackUTF7 property from TSafeHtml.
+- The THtmlArea's EnableCompression property is deprecated.
 
 Upgrading from v3.3.0
 ---------------------
