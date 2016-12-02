@@ -12,9 +12,15 @@
 if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')
 	die('Must be run from the command line');
 
-$frameworkPath = realpath(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'framework'.DIRECTORY_SEPARATOR;
+if(file_exists($autoloader = realpath(__DIR__ . '/../vendor/autoload.php')))
+{
+	include($autoloader);
+} elseif(file_exists($autoloader = realpath(__DIR__ . '/../autoload.php'))) {
+	include($autoloader);
+}
 
-require_once($frameworkPath.'prado.php');
+use Prado\TApplication;
+use Prado\Prado;
 
 //stub application class
 class PradoShellApplication extends TApplication
@@ -26,16 +32,6 @@ class PradoShellApplication extends TApplication
 }
 
 restore_exception_handler();
-
-//config PHP shell
-if(count($_SERVER['argv']) > 1 && strtolower($_SERVER['argv'][1])==='shell')
-{
-	function __shell_print_var($shell,$var)
-	{
-		if(!$shell->has_semicolon) echo Prado::varDump($var);
-	}
-	include_once($frameworkPath.'/Vendor/PhpShell/php-shell-init.php');
-}
 
 
 //register action classes
@@ -166,8 +162,8 @@ abstract class PradoCommandLineAction
 
 	public function isValidAction($args)
 	{
-		return strtolower($args[0]) === $this->action &&
-				count($args)-1 >= count($this->parameters);
+		return 0 == strcasecmp($args[0], $this->action) &&
+			count($args)-1 >= count($this->parameters);
 	}
 
 	public function renderHelp()
@@ -192,6 +188,7 @@ EOD;
 
 	protected function initializePradoApplication($directory)
 	{
+		$_SERVER['SCRIPT_FILENAME'] = $directory.'/index.php';
 		$app_dir = realpath($directory.'/protected/');
 		if($app_dir !== false && is_dir($app_dir))
 		{
@@ -460,6 +457,8 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 	{
 		if(count($args) > 1)
 			$app = $this->initializePradoApplication($args[1]);
+
+		\Psy\Shell::debug([], Prado::getApplication());
 		return true;
 	}
 }
@@ -622,8 +621,8 @@ EOD;
  * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com>
  * @since 3.2
  */
-class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {
-
+class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
+{
     protected $action = 'generateAll';
     protected $parameters = array('output');
     protected $optional = array('directory', 'soap', 'overwrite', 'prefix', 'postfix');
@@ -646,10 +645,30 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {
             $manager = TActiveRecordManager::getInstance();
             $con = $manager->getDbConnection();
             $con->Active = true;
-            $command = $con->createCommand("Show Tables");
+
+            switch($con->getDriverName())
+           	{
+				case 'mysqli':
+				case 'mysql':
+					$command = $con->createCommand("SHOW TABLES");
+					break;
+				case 'sqlite': //sqlite 3
+				case 'sqlite2': //sqlite 2
+					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
+					break;
+				case 'pgsql':
+				case 'mssql': // Mssql driver on windows hosts
+				case 'sqlsrv': // sqlsrv driver on windows hosts
+				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+				case 'oci':
+//				case 'ibm':
+				default:
+					echo "\n    Sorry, generateAll is not implemented for ".$con->getDriverName()."\n";
+					
+           	}
+
             $dataReader = $command->query();
             $dataReader->bindColumn(1, $table);
-            $generator = new PHP_Shell_Extensions_ActiveRecord();
             $tables = array();
             while ($dataReader->read() !== false) {
                 $tables[] = $table;
@@ -658,11 +677,31 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {
             foreach ($tables as $key => $table) {
                 $output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
                 if ($config !== false && $output !== false) {
-                    $generator->generate("generate " . $table . " " . $output . " " . $this->_soap . " " . $this->_overwrite);
+                    $this->generate("generate " . $table . " " . $output . " " . $this->_soap . " " . $this->_overwrite);
                 }
             }
         }
         return true;
+    }
+
+    public function generate($l)
+    {
+		$input = explode(" ", trim($l));
+		if(count($input) > 2)
+		{
+			$app_dir = '.';
+			if(Prado::getApplication()!==null)
+				$app_dir = dirname(Prado::getApplication()->getBasePath());
+			$args = array($input[0],$input[1], $input[2],$app_dir);
+			if(count($input)>3)
+				$args = array($input[0],$input[1], $input[2],$app_dir,'soap');
+			$cmd = new PradoCommandLineActiveRecordGen;
+			$cmd->performAction($args);
+		}
+		else
+		{
+			echo "\n    Usage: generate table_name Application.pages.RecordClassName\n";
+		}
     }
 
     protected function getAppDir($dir=".") {
@@ -708,48 +747,4 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction {
         return false;
     }
 
-}
-
-//run PHP shell
-if(class_exists('PHP_Shell_Commands', false))
-{
-	class PHP_Shell_Extensions_ActiveRecord implements PHP_Shell_Extension {
-	    public function register()
-	    {
-
-	        $cmd = PHP_Shell_Commands::getInstance();
-			if(Prado::getApplication() !== null)
-			{
-		        $cmd->registerCommand('#^generate#', $this, 'generate', 'generate <table> <output> [soap]',
-		            'Generate Active Record skeleton for <table> to <output> file using'.PHP_EOL.
-		            '    application.xml in [directory]. May also generate [soap] properties.');
-			}
-	    }
-
-	    public function generate($l)
-	    {
-			$input = explode(" ", trim($l));
-			if(count($input) > 2)
-			{
-				$app_dir = '.';
-				if(Prado::getApplication()!==null)
-					$app_dir = dirname(Prado::getApplication()->getBasePath());
-				$args = array($input[0],$input[1], $input[2],$app_dir);
-				if(count($input)>3)
-					$args = array($input[0],$input[1], $input[2],$app_dir,'soap');
-				$cmd = new PradoCommandLineActiveRecordGen;
-				$cmd->performAction($args);
-			}
-			else
-			{
-				echo "\n    Usage: generate table_name Application.pages.RecordClassName\n";
-			}
-	    }
-	}
-
-	$__shell_exts = PHP_Shell_Extensions::getInstance();
-	$__shell_exts->registerExtensions(array(
-		    "active-record"        => new PHP_Shell_Extensions_ActiveRecord)); /* the :set command */
-
-	include_once(realpath(dirname(dirname(__FILE__))).'/framework/Vendor/PhpShell/php-shell-cmd.php');
 }

@@ -56,7 +56,8 @@
 		"bower-asset/tinymce": "^4",
 		"bower-asset/highlightjs": "^9",
 		"bower-asset/clipboard": "*",
-		"bower-asset/highlightjs-line-numbers.js": "*"
+		"bower-asset/highlightjs-line-numbers.js": "*",
+		"psy/psysh": "*"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",
