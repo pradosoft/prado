@@ -450,50 +450,42 @@ Prado.WebUI.DefaultButton = jQuery.klass(Prado.WebUI.Control,
 	}
 });
 
-Prado.WebUI.TTextHighlighter = jQuery.klass();
-Prado.WebUI.TTextHighlighter.prototype =
+Prado.WebUI.TTextHighlighter = jQuery.klass(Prado.WebUI.Control,
 {
-	initialize:function(id)
+	onInit : function(options)
 	{
-		if(!window.clipboardData) return;
-		var options =
+		this.options = options;
+
+		var code = jQuery('#'+this.options.ID+'_code');
+		var btn;
+
+		if(this.options.copycode)
 		{
-			href : 'javascript:;/'+'/copy code to clipboard',
-			onclick : 'Prado.WebUI.TTextHighlighter.copy(this)',
-			onmouseover : 'Prado.WebUI.TTextHighlighter.hover(this)',
-			onmouseout : 'Prado.WebUI.TTextHighlighter.out(this)'
-		}
-		var div = DIV({className:'copycode'}, A(options, 'Copy Code'));
-		document.write(DIV(null,div).innerHTML);
-	}
-};
+			btn = jQuery('<input type="button">')
+				.addClass("copycode")
+				.val('Copy code')
+				.attr({
+					'id': '#'+this.options.ID+'_copy',
+					'data-clipboard-text': code.text()
+				})
+				.css({'float': 'right'});
 
-jQuery.klass(Prado.WebUI.TTextHighlighter,
-{
-	copy : function(obj)
-	{
-		var parent = obj.parentNode.parentNode.parentNode;
-		var text = '';
-		for(var i = 0; i < parent.childNodes.length; i++)
+			var clipboard = new Clipboard(jQuery(btn).get(0));
+		}
+
+		hljs.configure({
+			tabReplace: options.tabsize || '    '
+		})
+		hljs.highlightBlock(code.get(0));
+
+		if(this.options.linenum) {
+			hljs.lineNumbersBlock(code.get(0));
+		}
+
+		if(this.options.copycode)
 		{
-			var node = parent.childNodes[i];
-			if(node.innerText)
-				text += node.innerText == 'Copy Code' ? '' : node.innerText;
-			else
-				text += node.nodeValue;
+			btn.prependTo('#'+this.options.ID+'_code');
 		}
-		if(text.length > 0)
-			window.clipboardData.setData("Text", text);
-	},
-
-	hover : function(obj)
-	{
-		obj.parentNode.className = "copycode copycode_hover";
-	},
-
-	out : function(obj)
-	{
-		obj.parentNode.className = "copycode";
 	}
 });
 

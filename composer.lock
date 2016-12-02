@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d6eb139bcd64e4fb5f1e395865d9cc3f",
-    "content-hash": "b1aeb50cc306b6b21fc1d3ff0fec4c05",
+    "hash": "07e38131e186fe5be49e908518221e2c",
+    "content-hash": "31b9f85fc606906db28af1086d79031d",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -23,6 +23,54 @@
             },
             "require": {
                 "bower-asset/jquery": ">=1.9.1,<4.0"
+            },
+            "type": "library"
+        },
+        {
+            "name": "bower-asset/clipboard",
+            "version": "1.5.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zenorocha/clipboard.js.git",
+                "reference": "8ad16a2c6cae573eb1f36114317ccaf3f130ae1f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zenorocha/clipboard.js/zipball/8ad16a2c6cae573eb1f36114317ccaf3f130ae1f",
+                "reference": "8ad16a2c6cae573eb1f36114317ccaf3f130ae1f",
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "bower-asset/highlightjs",
+            "version": "9.8.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/components/highlightjs.git",
+                "reference": "9f84fba3626a35c1482653b3f339aa49feba4c8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/components/highlightjs/zipball/9f84fba3626a35c1482653b3f339aa49feba4c8a",
+                "reference": "9f84fba3626a35c1482653b3f339aa49feba4c8a",
+                "shasum": null
+            },
+            "type": "library"
+        },
+        {
+            "name": "bower-asset/highlightjs-line-numbers.js",
+            "version": "1.1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wcoder/highlightjs-line-numbers.js.git",
+                "reference": "2acd76fda5e72d4eee9031221bd340c7fcf9eb79"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wcoder/highlightjs-line-numbers.js/zipball/2acd76fda5e72d4eee9031221bd340c7fcf9eb79",
+                "reference": "2acd76fda5e72d4eee9031221bd340c7fcf9eb79",
+                "shasum": null
             },
             "type": "library"
         },
@@ -1620,24 +1668,24 @@
         },
         {
             "name": "phpunit/dbunit",
-            "version": "2.0.2",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/dbunit.git",
-                "reference": "390cefcb101e07e1d6400dbdfc3b90ecf2c1279f"
+                "reference": "5c35d74549c21ba55d0ea74ba89d191a51f8cf25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/dbunit/zipball/390cefcb101e07e1d6400dbdfc3b90ecf2c1279f",
-                "reference": "390cefcb101e07e1d6400dbdfc3b90ecf2c1279f",
+                "url": "https://api.github.com/repos/sebastianbergmann/dbunit/zipball/5c35d74549c21ba55d0ea74ba89d191a51f8cf25",
+                "reference": "5c35d74549c21ba55d0ea74ba89d191a51f8cf25",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
                 "ext-simplexml": "*",
-                "php": ">=5.4",
-                "phpunit/phpunit": "~4|~5",
-                "symfony/yaml": "~2.1|~3.0"
+                "php": "^5.4 || ^7.0",
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0",
+                "symfony/yaml": "^2.1 || ^3.0"
             },
             "bin": [
                 "dbunit"
@@ -1671,7 +1719,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-11-03 11:17:01"
+            "time": "2016-12-02 14:39:14"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1965,16 +2013,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.6.7",
+            "version": "5.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "38810e97481723ef918f6e35c03cb1014a645bd5"
+                "reference": "0158307fae98f8013eeac2ff2803fe8d4f6bc1a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/38810e97481723ef918f6e35c03cb1014a645bd5",
-                "reference": "38810e97481723ef918f6e35c03cb1014a645bd5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0158307fae98f8013eeac2ff2803fe8d4f6bc1a0",
+                "reference": "0158307fae98f8013eeac2ff2803fe8d4f6bc1a0",
                 "shasum": ""
             },
             "require": {
@@ -1993,7 +2041,7 @@
                 "phpunit/phpunit-mock-objects": "^3.2",
                 "sebastian/comparator": "~1.2.2",
                 "sebastian/diff": "~1.2",
-                "sebastian/environment": "^1.3 || ^2.0",
+                "sebastian/environment": "^1.3.4 || ^2.0",
                 "sebastian/exporter": "~2.0",
                 "sebastian/global-state": "~1.0",
                 "sebastian/object-enumerator": "~2.0",
@@ -2017,7 +2065,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.6.x-dev"
+                    "dev-master": "5.7.x-dev"
                 }
             },
             "autoload": {
@@ -2043,7 +2091,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-11-28 16:04:24"
+            "time": "2016-12-02 12:03:05"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

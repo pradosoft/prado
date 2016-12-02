@@ -11,8 +11,9 @@ for both A and B.
 
 Upgrading from v3.3.x
 ---------------------
-- Removed RepackUTF7 property from TSafeHtml.
-- The THtmlArea's EnableCompression property is deprecated.
+- Removed RepackUTF7 property from TSafeHtml; it never became a standard.
+- Removed LineNumberStyle property from TTextHighlighter; use the css class "hljs-line-numbers" instead.
+- The THtmlArea's EnableCompression property is deprecated; enable gzip compression on the web server for better results.
 
 Upgrading from v3.3.0
 ---------------------

@@ -642,7 +642,6 @@ return [
 'TTextBoxAutoCompleteType' => 'Prado\Web\UI\WebControls\TTextBoxAutoCompleteType',
 'TTextBoxMode' => 'Prado\Web\UI\WebControls\TTextBoxMode',
 'TTextHighlighter' => 'Prado\Web\UI\WebControls\TTextHighlighter',
-'TTextHighlighterLineNumberStyle' => 'Prado\Web\UI\WebControls\TTextHighlighterLineNumberStyle',
 'TTextProcessor' => 'Prado\Web\UI\WebControls\TTextProcessor',
 'TValidationCompareOperator' => 'Prado\Web\UI\WebControls\TValidationCompareOperator',
 'TValidationDataType' => 'Prado\Web\UI\WebControls\TValidationDataType',

@@ -2,8 +2,9 @@
 
 //package base folder in prado alias notation
 $folders = array(
-	'jquery-ui' => 'Vendor.bower-asset.jquery-ui',
-	'bootstrap' => 'Vendor.bower-asset.bootstrap.dist',
+	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
+	'bootstrap' => 'Vendor\\bower-asset\\bootstrap\\dist',
+	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 );
 
 //package names and its contents (files relative to the current directory)
@@ -63,6 +64,11 @@ $packages = array(
 	),
 	'bootstrap-theme' => array(
 		'bootstrap/css/bootstrap-theme.css',
+	),
+
+	//highlightjs
+	'highlightjs' => array(
+		'highlightjs/styles/default.css'
 	),
 );
 

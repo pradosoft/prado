@@ -13,27 +13,6 @@ namespace Prado\Web\UI\WebControls;
 use Prado\TPropertyValue;
 use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
-use Text_Highlighter;
-use Text_Highlighter_Renderer_Html;
-
-// BC trick : only define constants if Text/Highlighter.php
-// is not yet included
-if (!defined('HL_NUMBERS_LI')) {
-    /**#@+
-     * Constant for use with $options['numbers']
-     */
-    /**
-     * use numbered list, deprecated, use HL_NUMBERS_OL instaed
-     * @deprecated
-     */
-    define ('HL_NUMBERS_LI'    ,    1);
-    /**
-     * Use 2-column table with line numbers in left column and code in  right column.
-     */
-    define ('HL_NUMBERS_TABLE'    , 2);
-    /**#@-*/
-}
-
 
 /**
  * TTextHighlighter class.
@@ -41,11 +20,14 @@ if (!defined('HL_NUMBERS_LI')) {
  * TTextHighlighter does syntax highlighting its body content, including
  * static text and rendering results of child controls.
  * You can set {@link setLanguage Language} to specify what kind of syntax
- * the body content is. Currently, TTextHighlighter supports the following
- * languages: ABAP, CPP, CSS, DIFF, DTD, HTML, JAVA, JAVASCRIPT, MYSQL, PERL,
- * PHP, PYTHON, RUBY, SQL, XML and PRADO, where PRADO refers to PRADO template
- * syntax. By setting {@link setShowLineNumbers ShowLineNumbers}
- * to true, the highlighted result may be shown with line numbers.
+ * the body content is and {@link setSyntaxStyle SyntaxStyle} to specify the
+ * style used to highlight the content.
+ *
+ * The list of supported syntaxes is available at https://github.com/isagalaev/highlight.js/tree/master/src/languages
+ * The list of supported styles is available at https://github.com/isagalaev/highlight.js/tree/master/src/styles
+ *
+ * By setting {@link setShowLineNumbers ShowLineNumbers} to true, the highlighted
+ * result may be shown with line numbers. To style lin numbers, use the css class "hljs-line-numbers".
  *
  * Note, TTextHighlighter requires {@link THead} to be placed on the page template
  * because it needs to insert some CSS styles.
@@ -54,16 +36,14 @@ if (!defined('HL_NUMBERS_LI')) {
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTextHighlighter extends TTextProcessor
+class TTextHighlighter extends TWebControl
 {
-	private static $_lineNumberStyle=array(TTextHighlighterLineNumberStyle::Li => HL_NUMBERS_LI, TTextHighlighterLineNumberStyle::Table => HL_NUMBERS_TABLE);
-
 	/**
 	 * @return string tag name of the panel
 	 */
 	protected function getTagName()
 	{
-		return 'div';
+		return 'pre';
 	}
 
 	/**
@@ -76,15 +56,11 @@ class TTextHighlighter extends TTextProcessor
 
 	/**
 	 * @param string language (case-insensitive) whose syntax is to be used for highlighting.
-	 * Valid values are those file names (without suffix) that are contained
-	 * in 'Vendor/TextHighlighter/Text/Highlighter'. Currently, the following languages are supported:
-	 * ABAP, CPP, CSS, DIFF, DTD, HTML, JAVA, JAVASCRIPT,
-	 * MYSQL, PERL, PHP, PRADO, PYTHON, RUBY, SQL, XML
 	 * If a language is not supported, it will be displayed as plain text.
 	 */
 	public function setLanguage($value)
 	{
-		$this->setViewState('Language', $value, 'php');
+		$this->setViewState('Language', strtolower($value), 'php');
 	}
 
 	/**
@@ -120,19 +96,19 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @return TTextHighlighterLineNumberStyle style of row number, Table by default
+	 * @return style of syntax highlightning
 	 */
-	public function getLineNumberStyle()
+	public function getSyntaxStyle()
 	{
-		return $this->getViewState('LineNumberStyle', TTextHighlighterLineNumberStyle::Table);
+		return $this->getViewState('SyntaxStyle', 'default');
 	}
 
 	/**
-	 * @param TTextHighlighterLineNumberStyle style of row number
+	 * @param style of syntax highlightning
 	 */
-	public function setLineNumberStyle($value)
+	public function setSyntaxStyle($value)
 	{
-		$this->setViewState('LineNumberStyle', TPropertyValue::ensureEnum($value,'TTextHighlighterLineNumberStyle'));
+		$this->setViewState('SyntaxStyle', TPropertyValue::ensureString($value), 'default');
 	}
 
 	/**
@@ -168,53 +144,60 @@ class TTextHighlighter extends TTextProcessor
 	protected function registerStyleSheet()
 	{
 		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('Prado\\Vendor\\TextHighlighter\\highlight','.css');
+		$cssFile=Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.'.$this->getSyntaxStyle(),'.css');
 		$cssKey='prado:TTextHighlighter:'.$cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
 	}
 
 	/**
-	 * Processes a text string.
-	 * This method is required by the parent class.
-	 * @param string text string to be processed
-	 * @return string the processed text result
+	 * Get javascript text highlighter options.
+	 * @return array text highlighter client-side options
 	 */
-	public function processText($text)
+	protected function getTextHighlightOptions()
 	{
-		try
-		{
-			$highlighter=Text_Highlighter::factory($this->getLanguage());
-		}
-		catch(\Exception $e)
-		{
-			$highlighter=false;
-		}
-		if($highlighter===false)
-			return ('<pre>'.htmlentities(trim($text)).'</pre>');
+		$options = array();
+		$options['ID'] = $this->getClientID();
+		$options['tabsize'] = str_repeat(' ', $this->getTabSize());
+		$options['copycode'] = $this->getEnableCopyCode();
+		$options['linenum'] = $this->getShowLineNumbers();
 
-		$options["use_language"]=true;
-		$options["tabsize"] = $this->getTabSize();
-		if ($this->getShowLineNumbers())
-			$options["numbers"] = self::$_lineNumberStyle[$this->getLineNumberStyle()];
-		$highlighter->setRenderer(new Text_Highlighter_Renderer_Html($options));
-		return $highlighter->highlight(trim($text));
+		return $options;
 	}
 
 	/**
-	 * @return string header template with "Copy code" link.
+	 * Renders the openning tag for the control (including attributes)
+	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
-	protected function getHeaderTemplate()
+	public function renderBeginTag($writer)
 	{
-		$id = $this->getClientID();
-		return TJavaScript::renderScriptBlock("new Prado.WebUI.TTextHighlighter('{$id}');");
+		$this->renderClientControlScript($writer);
+		$writer->addAttribute('id', $this->getClientID());
+		parent::renderBeginTag($writer);
+
+		$writer->addAttribute('id', $this->getClientID().'_code');
+		$writer->addAttribute('class', $this->getLanguage());
+		$writer->renderBeginTag('code');
 	}
 
-	public function render($writer)
+	/**
+	 * Renders the closing tag for the control
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function renderEndTag($writer)
 	{
-		$this->getPage()->getClientScript()->registerPradoScript('prado');
-		parent::render($writer);
+		$writer->renderEndTag();
+		parent::renderEndTag($writer);
 	}
 
+	protected function renderClientControlScript($writer)
+	{
+		$cs = $this->getPage()->getClientScript();
+		$cs->registerPradoScript('texthighlight');
 
+		$options = TJavaScript::encode($this->getTextHighlightOptions());
+		$code = "new Prado.WebUI.TTextHighlighter($options);";
+		$cs->registerEndScript("prado:".$this->getClientID(), $code);
+
+	}
 }

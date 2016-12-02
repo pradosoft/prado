@@ -262,7 +262,10 @@ class PradoBase
 		if(substr($type, 0, 6) === 'System')
 			$type='Prado'.substr($type, 6);
 
-		return str_replace('.', '\\', $type);
+		if(false === strpos($type, '\\'))
+			return str_replace('.', '\\', $type);
+		else
+			return $type;
 	}
 
 	/**

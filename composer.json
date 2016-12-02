@@ -53,7 +53,10 @@
 		"bower-asset/bootstrap": "^3.3",
 		"bower-asset/prototypejs-bower": "^1.7",
 		"bower-asset/scriptaculous-bower": "^1.9",
-		"bower-asset/tinymce": "^4"
+		"bower-asset/tinymce": "^4",
+		"bower-asset/highlightjs": "^9",
+		"bower-asset/clipboard": "*",
+		"bower-asset/highlightjs-line-numbers.js": "*"
 	},
 	"require-dev" : {
 		"ext-xdebug": "*",

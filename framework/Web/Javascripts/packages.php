@@ -2,13 +2,16 @@
 
 //package base folder in prado alias notation
 $folders = array(
-	'prado' => 'System.Web.Javascripts.source.prado',
-	'jquery' => 'Vendor.bower-asset.jquery.dist',
-	'jquery-ui' => 'Vendor.bower-asset.jquery-ui',
-	'bootstrap' => 'Vendor.bower-asset.bootstrap.dist',
-	'protoype' => 'Vendor.bower-asset.prototypejs-bower',
-	'scriptaculous' => 'Vendor.bower-asset.scriptaculous-bower',
-	'tinymce' => 'Vendor.bower-asset.tinymce',
+	'prado' => 'Prado\\Web\\Javascripts\\source\\prado',
+	'jquery' => 'Vendor\\bower-asset\\jquery\\dist',
+	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
+	'bootstrap' => 'Vendor\\bower-asset\\bootstrap\\dist',
+	'protoype' => 'Vendor\\bower-asset\\prototypejs-bower',
+	'scriptaculous' => 'Vendor\\bower-asset\\scriptaculous-bower',
+	'tinymce' => 'Vendor\\bower-asset\\tinymce',
+	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
+	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
+	'clipboard' => 'Vendor\\bower-asset\\clipboard\\dist',
 );
 
 //package names and its contents (files relative to the current directory)
@@ -16,7 +19,7 @@ $packages = array(
 	// base prado scripts
 	'prado' => array(
 		'prado/prado.js',
-		'prado/controls/controls.js'
+		'prado/controls/controls.js',
 	),
 
 	'logger' => array(
@@ -24,15 +27,15 @@ $packages = array(
 	),
 
 	'validator' => array(
-		'prado/validator/validation3.js'
+		'prado/validator/validation3.js',
 	),
 
 	'datepicker' => array(
-		'prado/datepicker/datepicker.js'
+		'prado/datepicker/datepicker.js',
 	),
 
 	'colorpicker' => array(
-		'prado/colorpicker/colorpicker.js'
+		'prado/colorpicker/colorpicker.js',
 	),
 
 	'ajax' => array(
@@ -41,39 +44,39 @@ $packages = array(
 	),
 
 	'slider'=>array(
-		'prado/controls/slider.js'
+		'prado/controls/slider.js',
 	),
 
 	'keyboard'=>array(
-		'prado/controls/keyboard.js'
+		'prado/controls/keyboard.js',
 	),
 
 	'tabpanel'=>array(
-		'prado/controls/tabpanel.js'
+		'prado/controls/tabpanel.js',
 	),
 
 	'activedatepicker' => array(
-		'prado/activecontrols/activedatepicker.js'
+		'prado/activecontrols/activedatepicker.js',
 	),
 
 	'activefileupload' => array(
-		'prado/activefileupload/activefileupload.js'
+		'prado/activefileupload/activefileupload.js',
 	),
 
 	'htmlarea'=>array(
-		'prado/controls/htmlarea.js'
+		'prado/controls/htmlarea.js',
 	),
 
 	'htmlarea4'=>array(
-		'prado/controls/htmlarea4.js'
+		'prado/controls/htmlarea4.js',
 	),
 
 	'accordion'=>array(
-		'prado/controls/accordion.js'
+		'prado/controls/accordion.js',
 	),
 
 	'inlineeditor' => array(
-		'prado/activecontrols/inlineeditor.js'
+		'prado/activecontrols/inlineeditor.js',
 	),
 
 	'ratings' => array(
@@ -92,7 +95,7 @@ $packages = array(
 	'prototype' => array(
 		'protoype/prototype.js',
 		'scriptaculous/builder.js',
-		'scriptaculous/effects.js'
+		'scriptaculous/effects.js',
 	),
 		
 	//bootstrap
@@ -105,9 +108,21 @@ $packages = array(
 		'tinymce/tinymce.js',
 	),
 
+	//highlightjs
+	'highlightjs' => array(
+		'highlightjs/highlight.pack.js',
+		'highlightjs-line-numbers/highlightjs-line-numbers.min.js',
+	),
+
+	//clipboard
+	'clipboard' => array(
+		'clipboard/clipboard.js',
+	),
+
+	// old stuff
 	'dragdrop'=>array(
 		'scriptaculous/dragdrop.js',
-		'prado/activecontrols/dragdrop.js'
+		'prado/activecontrols/dragdrop.js',
 	),
 
 	'dragdropextra'=>array(
@@ -116,7 +131,7 @@ $packages = array(
 
 	'autocomplete' => array(
 		'scriptaculous/controls.js',
-		'prado/activecontrols/autocomplete.js'
+		'prado/activecontrols/autocomplete.js',
 	),
 );
 
@@ -142,6 +157,7 @@ $dependencies = array(
 	'accordion'			=> array('jquery', 'prado', 'accordion'),
 	'ratings'			=> array('jquery', 'prado', 'ajax', 'ratings'),
 	'jqueryui'			=> array('jquery', 'jqueryui'),
+	'texthighlight'		=> array('jquery', 'prado', 'highlightjs', 'clipboard'),
 	'prototype'			=> array('prototype'),
 	'dragdrop'			=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop'),
 	'dragdropextra'		=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
