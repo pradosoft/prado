@@ -210,6 +210,7 @@ page_statepersister_invalid				= Page state persister must implement IPageStateP
 page_csmanagerclass_invalid				= ClientScriptManager class '{0}' must be an instance of TClientScriptManager.
 
 csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
+csmanager_pradoscript_notloaded			= Prado script library name '{0}' has not been loaded yet.
 csmanager_pradostyle_invalid			= Unknown Prado style library name '{0}'.
 csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages defined in '{0}'. Valid packages are '{2}'.
 

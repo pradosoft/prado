@@ -233,8 +233,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function getPradoScriptAssetUrl($script='prado')
 	{
-		if(!array_key_exists($script, self::$_scriptsFolders))
-			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$script);
+		if(!isset(self::$_scriptsFolders[$script]))
+			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
 		
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
@@ -246,8 +246,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function getPradoScriptAssetPath($script='prado')
 	{
-		if(!array_key_exists($script, self::$_scriptsFolders))
-			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$script);
+		if(!isset(self::$_scriptsFolders[$script]))
+			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
 		
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();

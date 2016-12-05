@@ -41,3 +41,4 @@ bin/sauce_*
 #OSX
 .DS_Store
 /nbproject
+tests/unit/Data/SqlMap/sqlite/tests.db

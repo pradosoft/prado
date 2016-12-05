@@ -310,6 +310,8 @@ EOS;
 
 	public function createChildControls()
 	{
+		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
+
 		$this->_flag = new THiddenField;
 		$this->_flag->setID('Flag');
 		$this->getControls()->add($this->_flag);
@@ -375,7 +377,6 @@ EOS;
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id',$this->getClientID());
 
-		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 		$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(),$this->getClientOptions());
 	}
 
