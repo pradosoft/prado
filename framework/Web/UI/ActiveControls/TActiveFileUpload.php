@@ -53,8 +53,7 @@ use Prado\Web\UI\WebControls\TInlineFrame;
  */
 class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallbackEventHandler, INamingContainer
 {
-
-	const SCRIPT_PATH = 'prado/activefileupload';
+	const SCRIPT_PATH = 'activefileupload';
 
 	/**
 	 * @var THiddenField a flag to tell which component is doing the callback.
