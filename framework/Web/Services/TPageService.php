@@ -510,7 +510,7 @@ class TPageService extends \Prado\TService
 				$className=substr($className,$pos+1);
 		}
 
- 		if(!class_exists($className,false) || ($className!=='TPage' && !is_subclass_of($className,'TPage')))
+ 		if(!class_exists($className,false) || ($className!=='\Prado\Web\UI\TPage' && !is_subclass_of($className,'\Prado\Web\UI\TPage')))
 			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
 
 		$page=Prado::createComponent($className);
