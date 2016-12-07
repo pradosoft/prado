@@ -62,7 +62,7 @@ class TTemplateManager extends \Prado\TModule
 	public function getTemplateByClassName($className)
 	{
 		$class=new \ReflectionClass($className);
-		$tplFile=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$className.self::TEMPLATE_FILE_EXT;
+		$tplFile=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$class->getShortName().self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}
 
