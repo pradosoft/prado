@@ -963,9 +963,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * @param string $method
 	 * @return boolean
 	 */
-	protected function isClassBehaviorMethod(ReflectionClass $class,$method)
+	protected function isClassBehaviorMethod(\ReflectionClass $class,$method)
 	{
-	  $component=new ReflectionClass('TComponent');
+	  $component=new \ReflectionClass('\Prado\TComponent');
 	  $behaviors=$component->getStaticProperties();
 	  if(!isset($behaviors['_um']))
 	    return false;
