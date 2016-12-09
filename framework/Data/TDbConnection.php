@@ -141,7 +141,7 @@ class TDbConnection extends \Prado\TComponent
 	public function __sleep()
 	{
 //		$this->close(); - DO NOT CLOSE the current connection as serializing doesn't neccessarily mean we don't this connection anymore in the current session
-		return array_diff(parent::__sleep(),array("\0TDbConnection\0_pdo","\0TDbConnection\0_active"));
+		return array_diff(parent::__sleep(),array("\0Prado\Data\TDbConnection\0_pdo","\0Prado\Data\TDbConnection\0_active"));
 	}
 
 	/**
