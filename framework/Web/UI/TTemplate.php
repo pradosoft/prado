@@ -491,8 +491,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$textStart=$matchEnd+1;
 					$type=$match[1][0];
 					$attributes=$this->parseAttributes($match[2][0],$match[2][1]);
-					$this->validateAttributes($type,$attributes);
-					$tpl[$c++]=array($container,$type,$attributes);
+					$class=$this->validateAttributes($type,$attributes);
+					$tpl[$c++]=array($container,$class,$attributes);
 					if($str[strlen($str)-2]!=='/')  // open tag
 					{
 						$stack[] = $type;
@@ -872,6 +872,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		}
 		else
 			throw new TConfigurationException('template_component_required',$type);
+		return $class->getName();
 	}
 
 	/**
