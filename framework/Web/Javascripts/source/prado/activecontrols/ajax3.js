@@ -259,6 +259,11 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		if(this.options.onPreDispatch)
 			this.options.onPreDispatch(this,null);
 
+		// prepare callback paramters
+		this.options.data = this.getParameters();
+		this.options.url = this.getCallbackUrl();
+		this.options.timeout = this.getRequestTimeOut();
+
 		// jQuery don't have all these states.. simulate them to avoid breaking old scripts
 		if (this.options.onLoading)
 			this.options.onLoading(this,null);
@@ -266,11 +271,6 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			this.options.onLoaded(this,null);
 		if (this.options.onInteractive)
 			this.options.onInteractive(this,null);
-
-		// go!
-		this.options.data = this.getParameters();
-		this.options.url = this.getCallbackUrl();
-		this.options.timeout = this.getRequestTimeOut();
 
 		this.request = Prado.CallbackRequestManager.ajax(this.options);
 	},
