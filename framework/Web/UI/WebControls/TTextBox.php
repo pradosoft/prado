@@ -14,7 +14,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Vendor\SafeHtml\TSafeHtmlParser;
 
 /**
  * TTextBox class
@@ -175,7 +174,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 			}
 
 			if(($text=$this->getText())!=='' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
-				$writer->addAttribute('value',$text);					
+				$writer->addAttribute('value',$text);
 
 			if(($act=$this->getAutoCompleteType())!=='None')
 			{
@@ -563,17 +562,17 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function getSafeText()
 	{
 		if($this->_safeText===null)
-			$this->_safeText=$this->getSafeTextParser()->parse($this->getText());
+			$this->_safeText=$this->getSafeTextParser()->purify($this->getText());
 		return $this->_safeText;
 	}
 
 	/**
-	 * @return mixed safe text parser
+	 * @return \HTMLPurifier safe text parser
 	 */
 	protected function getSafeTextParser()
 	{
 		if(!self::$_safeTextParser)
-			self::$_safeTextParser= new TSafeHtmlParser;
+			self::$_safeTextParser= new \HTMLPurifier($this->getConfig());
 		return self::$_safeTextParser;
 	}
 
@@ -626,5 +625,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function setWrap($value)
 	{
 		$this->setViewState('Wrap',TPropertyValue::ensureBoolean($value),true);
+	}
+
+	/**
+	 * Sets a custom configuration for HTMLPurifier.
+	 * @param \HTMLPurifier_Config custom configuration
+	 */
+	public function setConfig(\HTMLPurifier_Config $value)
+	{
+	  $this->setViewState('Config', $value, null);
+	}
+
+	/**
+	 * @return \HTMLPurifier_Config Configuration for HTMLPurifier.
+	 */
+	public function getConfig()
+	{
+	  $config = $this->getViewState('Config', null);
+	  return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
 	}
 }
