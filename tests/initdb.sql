@@ -197,7 +197,6 @@ DROP TABLE IF EXISTS `players`;
 CREATE TABLE `players` (
   `player_id` bigint(10) NOT NULL AUTO_INCREMENT,
   `age` SMALLINT(3) NOT NULL,
-  `team_name` varchar(50) NOT NULL,
   `team` varchar(50) NOT NULL,
   `skills` bigint(10) NOT NULL,
   `profile` bigint(10) NOT NULL,

@@ -14,7 +14,7 @@ class Ticket589Test extends PHPUnit_Framework_TestCase
 		{
 			$manager->configureXml(dirname(__FILE__).'/sqlmap.xml');
 			$this->fail();
-		}catch(TSqlMapConfigurationException $e)
+		}catch(\Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException $e)
 		{
 			$expect = 'Invalid property \'parametrClass\' for class \'TSqlMapStatement\' for tag \'<statement id="findNotVisitedWatchedTopicList"';
 			$this->assertEquals(strpos($e->getMessage(),$expect),0);
