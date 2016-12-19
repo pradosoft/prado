@@ -3,6 +3,7 @@
  * TSecurityManager class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
@@ -31,14 +32,18 @@ use Prado\TPropertyValue;
  * To prefix data with an HMAC, call {@link hashData()}.
  * To validate if data is tampered, call {@link validateData()}, which will
  * return the real data if it is not tampered.
- * The algorithm used to generated HMAC is specified by {@link setValidation Validation}.
+ * The algorithm used to generated HMAC is specified by {@link setHashAlgorithm HashAlgorithm}.
  *
  * To encrypt and decrypt data, call {@link encrypt()} and {@link decrypt()}
- * respectively. The encryption algorithm can be set by {@link setEncryption Encryption}.
+ * respectively. The encryption algorithm can be set by {@link setCryptAlgorithm CryptAlgorithm}.
  *
- * Note, to use encryption, the PHP Mcrypt extension must be loaded.
+ * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
+ * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
+ * default, which does not have an equivalent in OpenSSL. Developers should keep that in mind
+ * when migrating from Prado3 to Prado4.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Security
  * @since 3.0
  */
@@ -49,8 +54,8 @@ class TSecurityManager extends \Prado\TModule
 
 	private $_validationKey = null;
 	private $_encryptionKey = null;
-	private $_hashAlgorithm = 'sha1';
-	private $_cryptAlgorithm = 'rijndael-256';
+	private $_hashAlgorithm = 'sha256';
+	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_mbstring;
 
 	/**
@@ -127,17 +132,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * This method has been deprecated since version 3.2.1.
-	 * Please use {@link getHashAlgorithm()} instead.
-	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha1'.
-	 */
-	public function getValidation()
-	{
-		return $this->_hashAlgorithm;
-	}
-
-	/**
-	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha1'.
+	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha256'.
 	 */
 	public function getHashAlgorithm()
 	{
@@ -145,48 +140,19 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * This method has been deprecated since version 3.2.1.
-	 * Please use {@link setHashAlgorithm()} instead.
-	 * @param TSecurityManagerValidationMode hashing algorithm used to generate HMAC.
-	 */
-	public function setValidation($value)
-	{
-		$this->_hashAlgorithm = TPropertyValue::ensureEnum($value, 'Prado\\Security\\TSecurityManagerValidationMode');
-	}
-
-	/**
+	 * This method accepts all hash algorithms returned by hash_algos().
 	 * @param string hashing algorithm used to generate HMAC.
+	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
 	 */
 	public function setHashAlgorithm($value)
 	{
 		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
+		if(!in_array($this->_hashAlgorithm, hash_algos()))
+			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
 	}
 
 	/**
-	 * This method has been deprecated since version 3.2.1.
-	 * Please use {@link getCryptAlgorithm()} instead.
-	 * @return string the algorithm used to encrypt/decrypt data.
-	 */
-	public function getEncryption()
-	{
-		if(is_string($this->_cryptAlgorithm))
-			return $this->_cryptAlgorithm;
-		// fake the pre-3.2.1 answer
-		return "3DES";
-	}
-
-	/**
-	 * This method has been deprecated since version 3.2.1.
-	 * Please use {@link setCryptAlgorithm()} instead.
-	 * @param string cipther name
-	 */
-	public function setEncryption($value)
-	{
-		$this->_cryptAlgorithm = $value;
-	}
-
-	/**
-	 * @return mixed the algorithm used to encrypt/decrypt data. Defaults to the string 'rijndael-256'.
+	 * @return mixed the algorithm used to encrypt/decrypt data. Defaults to the string 'aes-256-cbc'.
 	 */
 	public function getCryptAlgorithm()
 	{
@@ -195,72 +161,49 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@link encrypt} and {@link decrypt}.
-	 * @param mixed either a string containing the cipther name or an array containing the full parameters to call mcrypt_module_open().
+	 * @param mixed either a string containing the cipther name.
 	 */
 	public function setCryptAlgorithm($value)
 	{
-		$this->_cryptAlgorithm = $value;
+		$this->_cryptAlgorithm = TPropertyValue::ensureString($value);
+		if(!in_array($this->_hashAlgorithm, openssl_get_cipher_methods()))
+			throw new TInvalidDataValueException('securitymanager_crypt_algorithm_invalid');
 	}
 
 	/**
 	 * Encrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string data to be encrypted.
 	 * @return string the encrypted data
-	 * @throws TNotSupportedException if PHP Mcrypt extension is not loaded
+	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 */
 	public function encrypt($data)
 	{
-		$module=$this->openCryptModule();
-		$key = $this->substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
-		srand();
-		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
-		mcrypt_generic_init($module, $key, $iv);
-		$encrypted = $iv.mcrypt_generic($module, $data);
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
-		return $encrypted;
+		if(extension_loaded('openssl'))
+		{
+			$key = md5($this->getEncryptionKey());
+			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
+			return $iv.openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
+		}
+		else
+			throw new TNotSupportedException('securitymanager_openssl_required');
 	}
 
 	/**
 	 * Decrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string data to be decrypted.
 	 * @return string the decrypted data
-	 * @throws TNotSupportedException if PHP Mcrypt extension is not loaded
+	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 */
 	public function decrypt($data)
 	{
-		$module=$this->openCryptModule();
-		$key = $this->substr(md5($this->getEncryptionKey()), 0, mcrypt_enc_get_key_size($module));
-		$ivSize = mcrypt_enc_get_iv_size($module);
-		$iv = $this->substr($data, 0, $ivSize);
-		mcrypt_generic_init($module, $key, $iv);
-		$decrypted = mdecrypt_generic($module, $this->substr($data, $ivSize, $this->strlen($data)));
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
-		return $decrypted;
-	}
-
-	/**
-	 * Opens the mcrypt module with the configuration specified in {@link cryptAlgorithm}.
-	 * @return resource the mycrypt module handle.
-	 * @since 3.2.1
-	 */
-	protected function openCryptModule()
-	{
-		if(extension_loaded('mcrypt'))
+		if(extension_loaded('openssl'))
 		{
-			if(is_array($this->_cryptAlgorithm))
-				$module=@call_user_func_array('mcrypt_module_open',$this->_cryptAlgorithm);
-			else
-				$module=@mcrypt_module_open($this->_cryptAlgorithm,'', MCRYPT_MODE_CBC,'');
-
-			if($module===false)
-				throw new TNotSupportedException('securitymanager_mcryptextension_initfailed');
-
-			return $module;
+			$key = md5($this->getEncryptionKey());
+			$iv = $this->substr($data, 0, openssl_cipher_iv_length($this->_cryptAlgorithm));
+			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, null, $iv);
 		}
 		else
-			throw new TNotSupportedException('securitymanager_mcryptextension_required');
+			throw new TNotSupportedException('securitymanager_openssl_required');
 	}
 
 	/**
@@ -300,22 +243,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function computeHMAC($data)
 	{
-		$key = $this->getValidationKey();
-
-		if(function_exists('hash_hmac'))
-			return hash_hmac($this->_hashAlgorithm, $data, $key);
-
-		if(!strcasecmp($this->_hashAlgorithm,'sha1'))
-		{
-			$pack = 'H40';
-			$func = 'sha1';
-		} else {
-			$pack = 'H32';
-			$func = 'md5';
-		}
-
-		$key = str_pad($func($key), 64, chr(0));
-		return $func((str_repeat(chr(0x5C), 64) ^ substr($key, 0, 64)) . pack($pack, $func((str_repeat(chr(0x36), 64) ^ substr($key, 0, 64)) . $data)));
+		return hash_hmac($this->_hashAlgorithm, $data, $this->getValidationKey());
 	}
 
 	/**
