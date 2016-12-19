@@ -1,5 +1,5 @@
 <?php
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
+\Prado\Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 require_once(dirname(__FILE__).'/records/DepSections.php');
 
