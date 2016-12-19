@@ -1,18 +1,14 @@
 <?php
 
-$basePath=dirname(__FILE__);
-$frameworkPath="../../../framework/prado.php";
-$assetsPath=$basePath."/assets";
-$runtimePath=$basePath."/protected/runtime";
+$assetsPath=__DIR__."/assets";
+$runtimePath=__DIR__."/protected/runtime";
 
-if(!is_file($frameworkPath))
-	die("Unable to find prado framework path $frameworkPath.");
 if(!is_writable($assetsPath))
 	die("Please make sure that the directory $assetsPath is writable by Web server process.");
 if(!is_writable($runtimePath))
 	die("Please make sure that the directory $runtimePath is writable by Web server process.");
 
-require_once($frameworkPath);
+require(__DIR__.'/../../../vendor/autoload.php');
 
 $application=new TApplication;
 $application->run();

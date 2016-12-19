@@ -19,7 +19,7 @@ namespace Prado;
  *
  * A typical usage of TShellApplication in a command-line PHP script is as follows:
  * <code>
- * require_once('path/to/prado.php');
+ * require 'path/to/vendor/autoload.php';
  * $application=new TShellApplication('path/to/application.xml');
  * $application->run();
  * // perform command-line tasks here
