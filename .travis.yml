@@ -12,7 +12,7 @@ before_script:
   - export PATH=./bin/:$PATH
 
 script:
-  - phing coverage
+  - php ./vendor/bin/phpunit --testsuite unit
 
 after_script:
   - php ./bin/coveralls -v
