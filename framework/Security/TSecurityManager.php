@@ -39,7 +39,7 @@ use Prado\TPropertyValue;
  *
  * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
  * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
- * default, which does not have an equivalent in OpenSLL. Developers should keep that in mind
+ * default, which does not have an equivalent in OpenSSL. Developers should keep that in mind
  * when migrating from Prado3 to Prado4.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
