@@ -798,6 +798,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	protected function validateAttributes($type,$attributes)
 	{
+		Prado::using($type);
 		if(($pos=strrpos($type,'.'))!==false)
 			$className=substr($type,$pos+1);
 		else
