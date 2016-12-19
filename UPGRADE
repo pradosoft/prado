@@ -1,5 +1,5 @@
 
-         Upgrading Instructions for PRADO Framework v3.3.0
+         Upgrading Instructions for PRADO Framework v4.0
          =================================================
 
 !!!IMPORTANT!!!
@@ -14,6 +14,9 @@ Upgrading from v3.3.x
 - Removed RepackUTF7 property from TSafeHtml; it never became a standard.
 - Removed LineNumberStyle property from TTextHighlighter; use the css class "hljs-line-numbers" instead.
 - The THtmlArea's EnableCompression property is deprecated; enable gzip compression on the web server for better results.
+- Removed mcrypt support in TSecurityManager; OpenSSL is now used instead. Since the old default encryption
+  cipher rijndael-256 has no equivalent in OpenSSL, the new default cipher in OpenSSL is aes-256-cbc; be sure to
+  migrate needed old encrypted data since it will become unencryptable afterwards.
 
 Upgrading from v3.3.0
 ---------------------

@@ -27,6 +27,7 @@
 		},
 		{
 			"name": "Jens Klaer",
+      "email": "kj.landwehr.software@gmail.com",
 			"role" : "Developer"
 		}
 	],
@@ -77,7 +78,7 @@
 		"ext-hash" : "Enables use of hash functions other than md5 and sha1",
 		"ext-iconv" : "Used by some internationaization components",
 		"ext-mbstring" : "Prado can use the mbstring extension for locale-aware string operations",
-		"ext-mcrypt" : "Enables encryption of sensitive data, eg. page viewstate",
+		"ext-openssl" : "Enables encryption of sensitive data, eg. page viewstate",
 		"ext-memcache" : "Enables the use of TMemCache as a cache handler",
 		"ext-pdo" : "Used by all the Prado\\Data components, eg. TActiveRecord",
 		"ext-soap" : "Used by TSoapService to provide a soap backend",
