@@ -62,12 +62,12 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 	public function testValidation() {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
-		$sec->setValidation ('MD5');
-		self::assertEquals('MD5',$sec->getValidation());
-		$sec->setValidation ('SHA1');
-		self::assertEquals('SHA1',$sec->getValidation());
+		$sec->setHashAlgorithm ('md5');
+		self::assertEquals('md5',$sec->getHashAlgorithm());
+		$sec->setHashAlgorithm ('sha256');
+		self::assertEquals('sha256',$sec->getHashAlgorithm());
 		try {
-			$sec->setValidation ('BAD');
+			$sec->setHashAlgorithm ('BAD');
 			self::fail ('Expected TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {}
 	}
@@ -79,7 +79,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 			$sec->setCryptAlgorithm('NotExisting');
 			$foo=$sec->encrypt('dummy');
 			self::fail ('Expected TNotSupportedException not thrown');
-		} catch (TNotSupportedException $e) {
+		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
 			self::assertEquals('NotExisting', $sec->getCryptAlgorithm());
 		}
 	}
@@ -96,13 +96,10 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 			try {
 				$encrypted = $sec->encrypt($plainText);
 			} catch (TNotSupportedException $e) {
-				self::markTestSkipped('mcrypt extension not loaded');
+				self::markTestSkipped('openssl extension not loaded');
 				return;
 			}
 			$decrypted = $sec->decrypt($encrypted);
-			// the decrypted string is padded with \0
-			$decrypted = strstr($decrypted, "\0", TRUE);
-
 			self::assertEquals($plainText,$decrypted);
 
 			// try change key
@@ -116,18 +113,18 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
 		$sec->setValidationKey('aKey');
-		$sec->setValidation('SHA1');
+		$sec->setHashAlgorithm('sha256');
 		$hashed=$sec->hashData('A text to hash');
-		// Lenght of SHA1 hashed data must be 54 (40 + strlen data)
-		self::assertEquals (54, strlen($hashed));
+		// Lenght of sha256 hashed data must be 78 (64 + strlen data)
+		self::assertEquals (78, strlen($hashed));
 		// The initial text should be after the initial hash
-		self::assertEquals ('A text to hash', substr($hashed,40));
+		self::assertEquals ('A text to hash', substr($hashed,64));
 
 		// Same tests with MD5
 		$sec->setValidationKey('AnotherKey');
-		$sec->setValidation('MD5');
+		$sec->setHashAlgorithm('md5');
 		$hashed=$sec->hashData('A text to hash');
-		// Lenght of SHA1 hashed data must be 46 (32 + strlen data)
+		// Lenght of md5 hashed data must be 46 (32 + strlen data)
 		self::assertEquals (46, strlen($hashed));
 		// The initial text should be after the initial hash
 		self::assertEquals ('A text to hash', substr($hashed,32));
@@ -137,7 +134,7 @@ class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
 		$sec=new TSecurityManager ();
 		$sec->init (null);
 		$sec->setValidationKey('aKey');
-		$sec->setValidation('SHA1');
+		$sec->setHashAlgorithm('sha256');
 		$hashed=$sec->hashData('A text to hash');
 		self::assertEquals('A text to hash', $sec->validateData($hashed));
 		// try to alter the hashed data
