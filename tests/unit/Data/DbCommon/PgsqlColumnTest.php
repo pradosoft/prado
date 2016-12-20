@@ -10,16 +10,16 @@ class PgsqlColumnTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!extension_loaded('pgsql')) {
+        if (!extension_loaded('pdo_pgsql')) {
             $this->markTestSkipped(
-              'The pgsql extension is not available.'
+              'The pdo_pgsql extension is not available.'
             );
         }
     }
 
 	function create_meta_data()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
 		return new TPgsqlMetaData($conn);
 	}
 

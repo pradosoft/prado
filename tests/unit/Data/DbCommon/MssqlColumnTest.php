@@ -13,7 +13,7 @@ class MssqlColumnTest extends PHPUnit_Framework_TestCase
     {
         if (!extension_loaded('mssql')) {
             $this->markTestSkipped(
-              'The pgsql extension is not available.'
+              'The mssql extension is not available.'
             );
         }
     }
