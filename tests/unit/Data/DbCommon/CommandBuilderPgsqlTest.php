@@ -9,9 +9,9 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!extension_loaded('pgsql')) {
+        if (!extension_loaded('pdo_pgsql')) {
             $this->markTestSkipped(
-              'The pgsql extension is not available.'
+              'The pdo_pgsql extension is not available.'
             );
         }
     }

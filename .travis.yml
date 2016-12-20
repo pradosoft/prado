@@ -13,7 +13,9 @@ before_script:
   - composer self-update
   - composer install --prefer-source
   - export PATH=./bin/:$PATH
-  - mysql -u root < ./tests/initdb.sql
+  - mysql -u root < ./tests/initdb_mysql.sql
+  - createdb prado_unitest
+  - psql -a -w prado_unitest -f ./tests/initdb_pgsql.sql 
 
 script:
   - php ./vendor/bin/phpunit --testsuite unit
