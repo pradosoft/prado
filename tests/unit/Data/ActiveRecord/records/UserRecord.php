@@ -17,7 +17,7 @@ class UserRecord extends TActiveRecord
 
 	private $_level=-1;
 
-	const TABLE='users';
+	const TABLE='Users';
 
 	public function getLevel()
 	{
