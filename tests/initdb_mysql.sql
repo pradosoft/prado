@@ -218,3 +218,22 @@ CREATE TABLE `skills` (
   PRIMARY KEY  (`skill_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `table1`;
+CREATE TABLE `table1` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `field1` TINYINT(4) NOT NULL,
+  `field2_text` TEXT NULL,
+  `field3_date` DATE NULL DEFAULT '2007-02-25',
+  `field4_float` FLOAT NOT NULL DEFAULT 10,
+  `field5_float` FLOAT(5, 4) NOT NULL,
+  `field6_double` DOUBLE NOT NULL,
+  `field7_datetime` DATETIME NOT NULL,
+  `field8_timestamp` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `field9_time` TIME NOT NULL,
+  `field10_year` YEAR NOT NULL,
+  `field11_enum` ENUM('one', 'two', 'three') NOT NULL DEFAULT 'one',
+  `field12_set` SET('blue', 'red', 'green') NOT NULL,
+  PRIMARY KEY  (`id`, `name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

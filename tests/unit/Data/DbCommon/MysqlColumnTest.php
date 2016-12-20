@@ -9,9 +9,9 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!extension_loaded('mysql')) {
+        if (!extension_loaded('pdo_mysql')) {
             $this->markTestSkipped(
-              'The mysql extension is not available.'
+              'The pdo_mysql extension is not available.'
             );
         }
     }
@@ -19,13 +19,16 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 	function create_meta_data()
 	{
 		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn->Active=true;
 		return new TMysqlMetaData($conn);
 	}
 
 	function test_columns()
 	{
 		$table = $this->create_meta_data()->getTableInfo('table1');
-		$this->assertEquals(count($table->getColumns()), 18);
+		$this->assertEquals(count($table->getColumns()), 14);
+
+		$columns=array();
 
 		$columns['id'] = array(
 			'ColumnName'       => '`id`',
@@ -223,8 +226,8 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 			'DbTypeValues'     => array('one', 'two', 'three'),
 		);
 
-		$columns['field12_SET'] = array(
-			'ColumnName'       => '`field12_SET`',
+		$columns['field12_set'] = array(
+			'ColumnName'       => '`field12_set`',
 			'ColumnSize'       => null,
 			'ColumnIndex'      => 13,
 			'DbType'           => 'set',
@@ -253,6 +256,7 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 			$column = $table->Columns[$id];
 			foreach($asserts as $property=>$assert)
 			{
+			
 				$ofAssert= var_export($assert,true);
 				$value = $column->{$property};
 				$ofValue = var_export($value, true);
