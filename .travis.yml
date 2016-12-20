@@ -14,11 +14,11 @@ before_script:
   - composer install --prefer-source
   - export PATH=./bin/:$PATH
 
+before_script:
+  - mysql -u root < ./tests/initdb.sql
+
 script:
   - php ./vendor/bin/phpunit --testsuite unit
-
-before_script:
-  - mysql -u root < ./tests/init_db.sql
 
 after_script:
   - php ./bin/coveralls -v
