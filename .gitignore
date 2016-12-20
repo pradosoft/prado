@@ -28,17 +28,7 @@ tests/unit/Data/db/test.db
 
 # Composer stuff
 vendor/*
-bin/phpunit
-bin/phing
-bin/apigen
-bin/coveralls
-bin/dbunit
-bin/jsonlint
-bin/validate-json
-bin/paratest
-bin/sauce_*
 
 #OSX
 .DS_Store
 /nbproject
-tests/unit/Data/SqlMap/sqlite/tests.db
