@@ -13,8 +13,6 @@ before_script:
   - composer self-update
   - composer install --prefer-source
   - export PATH=./bin/:$PATH
-
-before_script:
   - mysql -u root < ./tests/initdb.sql
 
 script:
