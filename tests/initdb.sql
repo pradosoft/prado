@@ -1,4 +1,4 @@
-DROP DATABASE `prado_unitest`;
+DROP DATABASE IF EXISTS `prado_unitest`;
 CREATE DATABASE `prado_unitest`;
 GRANT ALL ON `prado_unitest`.* TO prado_unitest@localhost identified by 'prado_unitest';
 FLUSH PRIVILEGES;
