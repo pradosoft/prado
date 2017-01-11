@@ -205,13 +205,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 									if (!in_array($url=$baseUrl.'/'.$subPath, $packagesUrl))
 										$packagesUrl[]=$url;
 								} else {
-									if (!in_array($url=$baseUrl.'/min/'.$subPath, $packagesUrl))
+								  $minPath=preg_replace('/^(.*)(?<!\.min)\.js$/', "\\1.min.js", $subPath);
+								  if (!in_array($url=$baseUrl.'/'.$minPath, $packagesUrl))
 									{
-										if(!is_file($filePath=$path.'/min/'.$subPath))
+										if(!is_file($filePath=$path.DIRECTORY_SEPARATOR.$minPath))
 										{
-											$dirPath=dirname($filePath);
-											if(!is_dir($dirPath))
-												mkdir($dirPath, PRADO_CHMOD, true);
 											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$subPath)));
 											chmod($filePath, PRADO_CHMOD);
 										}
@@ -235,7 +233,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		if(!isset(self::$_scriptsFolders[$script]))
 			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
-		
+
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
 		return $assets->getPublishedUrl($base);
@@ -248,7 +246,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		if(!isset(self::$_scriptsFolders[$script]))
 			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
-		
+
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
 		return $assets->getPublishedPath($base);
@@ -276,9 +274,6 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$assets = Prado::getApplication()->getAssetManager();
 		if(strpos($base, $assets->getBaseUrl())===false)
 		{
-			if(($dir = Prado::getPathOfNameSpace($base)) !== null) {
-				$base = $dir;
-			}
 			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
 		}
 		else
@@ -297,8 +292,13 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 		if(!array_key_exists($base, self::$_scriptsFolders))
 			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
-		
-		return array(self::$_scriptsFolders[$base], $subPath);
+
+		$namespace = self::$_scriptsFolders[$base];
+		if(($dir = Prado::getPathOfNameSpace($namespace)) !== null) {
+		  $namespace = $dir;
+		}
+
+		return array($namespace, $subPath);
 	}
 
 	/**
@@ -311,7 +311,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 		if(!array_key_exists($base, self::$_stylesFolders))
 			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
-		
+
 		return array(self::$_stylesFolders[$base], $subPath);
 	}
 

@@ -287,7 +287,7 @@ class TAssetManager extends \Prado\TModule
 		{
 			while($file=@readdir($folder))
 			{
-				if($file==='.' || $file==='..' || $file==='.svn')
+				if($file==='.' || $file==='..' || $file==='.svn' || $file==='.git')
 					continue;
 				else if(is_file($src.DIRECTORY_SEPARATOR.$file))
 				{
