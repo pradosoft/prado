@@ -1,3 +1,7 @@
+Version 3.3.X in development
+
+BUG: Issue #625 - The url tag produce an extra directory separator before the result (ctrlaltca)
+
 Version 3.3.2 August 23, 2016
 
 BUG: Issue #592 - Fix TActiveMultiView broken on 3.3.1 (ctrlaltca)
