@@ -549,7 +549,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					else if($str[2]==='~')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"));
 					else if($str[2]==='/')
-						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '/').'/$literal'"));
+						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"));
 					else if($str[2]==='[')
 					{
 						$literal=strtr(trim(substr($literal,0,strlen($literal)-1)),array("'"=>"\'","\\"=>"\\\\"));
@@ -789,7 +789,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				return array(self::CONFIG_PARAMETER,trim(substr($value,3,strlen($value)-5)));
 			elseif($value[2]==='/') {
 				$literal = trim(substr($value,3,strlen($value)-5));
-				return array(self::CONFIG_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '/').'/$literal'");
+				return array(self::CONFIG_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'");
 			}
 		}
 		else
