@@ -112,7 +112,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var string base path class in namespace format
 	 */
-	private $_basePageClass='TPage';
+	private $_basePageClass='\Prado\Web\UI\TPage';
 	/**
 	 * @var string clientscript manager class in namespace format
 	 * @since 3.1.7
@@ -510,7 +510,7 @@ class TPageService extends \Prado\TService
 				$className=substr($className,$pos+1);
 		}
 
- 		if(!class_exists($className,false) || ($className!=='\Prado\Web\UI\TPage' && !is_subclass_of($className,'\Prado\Web\UI\TPage')))
+ 		if($className!=='\Prado\Web\UI\TPage' && !is_subclass_of($className,'\Prado\Web\UI\TPage'))
 			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
 
 		$page=Prado::createComponent($className);
