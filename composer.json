@@ -69,7 +69,8 @@
 		"apigen/apigen": "dev-master",
 		"pradosoft/prado-apigen-theme" : "*",
 		"sauce/sausage": "*",
-		"sauce/connect": "*"
+		"sauce/connect": "*",
+		"brianium/paratest": "*"
 	},
 	"provide" : {
 		"pradosoft/prado" : "4.0"

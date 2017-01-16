@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "31380e615f59fd07a6f18574ed60f6db",
+    "content-hash": "3287517aed4353cd81778b332f5fee5f",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -1338,12 +1338,12 @@
             "version": "1.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/kherge-abandoned/php-json.git",
+                "url": "https://github.com/kherge-php/json.git",
                 "reference": "60c696c9370a1e5136816ca557c17f82a6fa83f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kherge-abandoned/php-json/zipball/60c696c9370a1e5136816ca557c17f82a6fa83f1",
+                "url": "https://api.github.com/repos/kherge-php/json/zipball/60c696c9370a1e5136816ca557c17f82a6fa83f1",
                 "reference": "60c696c9370a1e5136816ca557c17f82a6fa83f1",
                 "shasum": ""
             },
@@ -1391,6 +1391,7 @@
                 "schema",
                 "validate"
             ],
+            "abandoned": "kherge/json",
             "time": "2013-10-30T16:51:34+00:00"
         },
         {
@@ -1448,6 +1449,7 @@
                 "phar",
                 "update"
             ],
+            "abandoned": true,
             "time": "2013-11-09T17:13:13+00:00"
         },
         {
@@ -1499,6 +1501,7 @@
                 "semantic",
                 "version"
             ],
+            "abandoned": true,
             "time": "2014-05-27T05:29:25+00:00"
         },
         {
@@ -3046,7 +3049,7 @@
                 }
             ],
             "description": "ApiGen theme for Prado4",
-            "homepage": "https://github.com/pradosoft/prado4-apigen-theme",
+            "homepage": "https://github.com/pradosoft/prado-apigen-theme",
             "time": "2016-11-21T16:03:31+00:00"
         },
         {
