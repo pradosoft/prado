@@ -232,7 +232,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getPradoScriptAssetUrl($script='prado')
 	{
 		if(!isset(self::$_scriptsFolders[$script]))
-			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
+			$this->registerPradoScriptInternal($script);
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
@@ -245,7 +245,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getPradoScriptAssetPath($script='prado')
 	{
 		if(!isset(self::$_scriptsFolders[$script]))
-			throw new TInvalidOperationException('csmanager_pradoscript_notloaded',$script);
+			$this->registerPradoScriptInternal($script);
 
 		$base = Prado::getPathOfNameSpace(self::$_scriptsFolders[$script]);
 		$assets = Prado::getApplication()->getAssetManager();
@@ -449,8 +449,6 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		// $this->checkIfNotInRender();
 		if(!isset($this->_registeredStyles[$name]))
 		{
-			$base = $this->getPradoScriptAssetUrl();
-
 			if(self::$_styles === null)
 			{
 				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::CSS_PACKAGES_FILE;
