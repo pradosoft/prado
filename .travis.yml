@@ -7,7 +7,7 @@ services:
 
 php:
   - 5.6
-  - 7.0
+#  - 7.0
 
 matrix:
   fast_finish: true
@@ -28,11 +28,15 @@ before_script:
   - export PATH=./bin/:$PATH
   - mysql -u root < ./tests/initdb_mysql.sql
   - createdb prado_unitest
-  - psql -a -w prado_unitest -f ./tests/initdb_pgsql.sql 
+  - psql -a -w prado_unitest -f ./tests/initdb_pgsql.sql
   - export SAUCE_BUILD=$TRAVIS_BUILD_NUMBER
   - export SAUCE_TUNNEL_IDENTIFIER=$TRAVIS_JOB_NUMBER
   - php -S 0.0.0.0:8888 &
   - sleep 3
+  - git clone https://github.com/pradosoft/prado-demos
+  - cd prado-demos
+  - composer install
+  - cd ..
 
 script:
   - php ./vendor/bin/phpunit --testsuite unit
