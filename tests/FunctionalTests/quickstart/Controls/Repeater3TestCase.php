@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartRepeater3TestCase extends PradoGenericSelenium2Test
+class QuickstartRepeater3TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample3&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TRepeater.Sample3&amp;notheme=true&amp;lang=en");
 
 		// verify product name is required
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl0');

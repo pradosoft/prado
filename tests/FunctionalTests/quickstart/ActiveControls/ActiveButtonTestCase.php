@@ -1,10 +1,10 @@
 <?php
-//$Id: ActiveButtonTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
-class QuickstartActiveButtonTestCase extends PradoGenericSelenium2Test
+
+class QuickstartActiveButtonTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveButton.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=ActiveControls.Samples.TActiveButton.Home&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 

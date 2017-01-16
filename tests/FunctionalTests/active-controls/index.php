@@ -10,5 +10,5 @@ if(!is_writable($runtimePath))
 
 require(__DIR__.'/../../../vendor/autoload.php');
 
-$application=new TApplication;
+$application = new \Prado\TApplication;
 $application->run();

@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartWizard5TestCase extends PradoGenericSelenium2Test
+class QuickstartWizard5TestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample5&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TWizard.Sample5&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 

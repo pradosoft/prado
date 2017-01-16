@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartHangmanTestCase extends PradoGenericSelenium2Test
+class QuickstartHangmanTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Fundamentals.Samples.Hangman.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Fundamentals.Samples.Hangman.Home&amp;notheme=true&amp;lang=en");
 		$this->assertEquals("Hangman Game", $this->title());
 		$this->assertSourceContains("Medium game; you are allowed 5 misses.");
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();

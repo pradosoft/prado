@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartPanelTestCase extends PradoGenericSelenium2Test
+class QuickstartPanelTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TPanel.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TPanel.Home&amp;notheme=true&amp;lang=en");
 		$this->assertSourceContains("This is panel content with");
 		$this->assertElementPresent("//span[text()='label']");
 		$this->assertSourceContains("grouping text");

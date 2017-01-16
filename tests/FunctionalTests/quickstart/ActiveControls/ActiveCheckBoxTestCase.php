@@ -1,11 +1,10 @@
 <?php
 
-//$Id: ActiveCheckBoxTestCase.php 3187 2012-07-12 11:21:01Z ctrlaltca $
-class QuickstartActiveCheckBoxTestCase extends PradoGenericSelenium2Test
+class QuickstartActiveCheckBoxTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=ActiveControls.Samples.TActiveCheckBox.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=ActiveControls.Samples.TActiveCheckBox.Home&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 

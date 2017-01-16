@@ -1,7 +1,6 @@
 <?php
 require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 
-// TODO: stub
 class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 {
 	public static $browsers = array(
@@ -48,6 +47,15 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
 
 	static $timeout=5; //seconds
+
+    public function prepareSession()
+    {
+        $session = parent::prepareSession();
+        // Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/295
+        $this->url('/dummy.html');
+
+        return $session;
+    }
 
 	protected function setUp()
 	{
@@ -273,8 +281,9 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		}
 		$this->assertFalse($found, "Failed asserting that page source does not contain $text");
 	}
+}
 
-
-
-
+class PradoDemosSelenium2Test extends PradoGenericSelenium2Test
+{
+	static $baseurl='http://127.0.0.1/prado-demos/';
 }

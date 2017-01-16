@@ -1,11 +1,10 @@
 <?php
 
-//New Test
-class QuickstartListBoxTestCase extends PradoGenericSelenium2Test
+class QuickstartListBoxTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TListBox.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TListBox.Home&amp;notheme=true&amp;lang=en");
 
 		// a default single selection listbox
 		$this->assertAttribute("ctl0\$body\$ctl0@size","4");

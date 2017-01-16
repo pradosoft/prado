@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartMultiViewTestCase extends PradoGenericSelenium2Test
+class QuickstartMultiViewTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 

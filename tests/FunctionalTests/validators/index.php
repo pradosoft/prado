@@ -2,5 +2,5 @@
 
 require(__DIR__.'/../../../vendor/autoload.php');
 
-$app=new TApplication;
+$app=new \Prado\TApplication;
 $app->run();

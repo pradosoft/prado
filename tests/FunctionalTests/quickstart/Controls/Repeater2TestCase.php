@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartRepeater2TestCase extends PradoGenericSelenium2Test
+class QuickstartRepeater2TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRepeater.Sample2&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TRepeater.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
 		$this->assertSourceContains('North');

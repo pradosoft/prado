@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartDataGrid5TestCase extends PradoGenericSelenium2Test
+class QuickstartDataGrid5TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample5&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample5&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
 		// verify column headers

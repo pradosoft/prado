@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartDataList2TestCase extends PradoGenericSelenium2Test
+class QuickstartDataList2TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TDataList.Sample2&amp;notheme=true&amp;lang=en");
 
 		// verify initial presentation
 		$this->assertSourceContains("Motherboard");

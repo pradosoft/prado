@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartDataGrid6TestCase extends PradoGenericSelenium2Test
+class QuickstartDataGrid6TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true&amp;lang=en");
 
 		// verify column headers
 		$this->assertSourceContains('id');

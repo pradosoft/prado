@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartBulletedListTestCase extends PradoGenericSelenium2Test
+class QuickstartBulletedListTestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TBulletedList.Home&amp;notheme=true&amp;lang=en");
 
 		// verify if all required texts are present
 		$this->assertSourceContains('item 1');

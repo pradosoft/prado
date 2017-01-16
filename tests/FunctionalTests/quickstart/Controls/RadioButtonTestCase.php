@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartRadioButtonTestCase extends PradoGenericSelenium2Test
+class QuickstartRadioButtonTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButton.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TRadioButton.Home&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 

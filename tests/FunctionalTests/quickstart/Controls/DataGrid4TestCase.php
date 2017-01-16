@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartDataGrid4TestCase extends PradoGenericSelenium2Test
+class QuickstartDataGrid4TestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TDataGrid.Sample4&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample4&amp;notheme=true&amp;lang=en");
 
 		// verify the 2nd row of data
 		$this->assertSourceContains("Design Patterns: Elements of Reusable Object-Oriented Software");

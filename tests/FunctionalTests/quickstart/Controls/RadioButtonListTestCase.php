@@ -1,11 +1,11 @@
 <?php
 
 //New Test
-class QuickstartRadioButtonListTestCase extends PradoGenericSelenium2Test
+class QuickstartRadioButtonListTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TRadioButtonList.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TRadioButtonList.Home&amp;notheme=true&amp;lang=en");
 
 		// RadioButton list with default settings:
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0' and @value='value 3']")->click();

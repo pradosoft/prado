@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartTableTestCase extends PradoGenericSelenium2Test
+class QuickstartTableTestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TTable.Home&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TTable.Home&amp;notheme=true&amp;lang=en");
 
 		$this->assertElementPresent("//table[@rules='all' and @border='1']");
 		$this->assertElementPresent("//table/caption[@align='bottom' and text()='This is table caption']");

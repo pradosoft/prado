@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartPagerTestCase extends PradoGenericSelenium2Test
+class QuickstartPagerTestCase extends PradoDemosSelenium2Test
 {
 	function test()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en");
 
 		// verify datalist content
 		$this->assertSourceContains('ITN001');

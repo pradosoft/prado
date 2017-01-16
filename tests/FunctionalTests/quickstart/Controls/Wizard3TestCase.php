@@ -1,10 +1,10 @@
 <?php
 
-class QuickstartWizard3TestCase extends PradoGenericSelenium2Test
+class QuickstartWizard3TestCase extends PradoDemosSelenium2Test
 {
 	function test ()
 	{
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true&amp;lang=en");
+		$this->url("quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true&amp;lang=en");
 
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
 
@@ -33,7 +33,7 @@ class QuickstartWizard3TestCase extends PradoGenericSelenium2Test
 		$this->assertSourceContains('Your favorite sport is: Tennis');
 
 		// run the example again. this time we skip the page asking about major
-		$this->url("../../demos/quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true");
+		$this->url("quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true");
 
 		// step 1
 		$this->byName('ctl0$body$Wizard3$ctl4$ctl0')->click();
