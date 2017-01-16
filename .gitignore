@@ -32,3 +32,5 @@ vendor/*
 #OSX
 .DS_Store
 /nbproject
+
+sauce_connect.log

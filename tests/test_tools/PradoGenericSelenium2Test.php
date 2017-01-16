@@ -2,6 +2,7 @@
 
 class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
 {
+	protected $base_url = 'http://localhost:8888/tests/FunctionalTests/';
     public static $browsers = array(
         // run FF15 on Windows 8 on Sauce
         array(
@@ -12,9 +13,6 @@ class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
             )
         ),
     );
-
-    static $baseurl='http://localhost:8888/tests/FunctionalTests/';
-	static $timeout=5; //seconds
 
     public function prepareSession()
     {
@@ -27,9 +25,10 @@ class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		self::shareSession(true);
-		$this->setBrowserUrl(static::$baseurl);
-		$this->setSeleniumServerRequestsTimeout(static::$timeout);
+		$this->setBrowserUrl($this->base_url);
+		//$this->setSeleniumServerRequestsTimeout(5);
 	}
 
 	protected function assertAttribute($idattr, $txt)
@@ -253,5 +252,5 @@ class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
 
 class PradoDemosSelenium2Test extends PradoGenericSelenium2Test
 {
-	static $baseurl='http://127.0.0.1/prado-demos/';
+	protected $base_url = 'http://localhost:8888/prado-demos/';
 }
