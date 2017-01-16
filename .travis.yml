@@ -36,3 +36,4 @@ before_script:
 
 script:
   - php ./vendor/bin/phpunit --testsuite unit
+  - php ./vendor/bin/phpunit --testsuite functional
