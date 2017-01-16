@@ -1,8 +1,10 @@
-# Warning: this is development version of the upcoming Prado 4.
+# Warning: this is a development version of the upcoming Prado 4.
+Even if are trying hard to ensure that the framework is usable, your mileage may vary.
+We encourage you to test it and to report any problem that you find.
 
 # Prado PHP Framework
 
-PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5.
+PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5 and 7.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
 [![Build Status](https://travis-ci.org/pradosoft/prado.png?branch=master)](https://travis-ci.org/pradosoft/prado)
@@ -23,23 +25,44 @@ The documentation will be generated in the `build/docs/` directory.
 ## Install
 
 The best way to install Prado is [through composer](http://getcomposer.org).
+If you don't use composer yet, first install it:
+```sh
+	# download composer.phar
+	curl -s http://getcomposer.org/installer | php
+	# install it globally on the system
+	mv composer.phar /usr/local/bin/composer
+```
 
+Then, create the application structure using composer:
+```sh	
+	composer create-project pradosoft/prado-app app
+```
+
+The application will be installed in the "app" directory.
+
+#### Add Prado to an existing application
 Just create a composer.json file for your project:
 
 ```JSON
 {
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		}
+	],
     "require": {
         "pradosoft/prado": "~4.0"
     }
 }
 ```
 
-Then you can run these two commands to install it:
+The [asset-packagist](https://asset-packagist.org) repository is used to install javascript dependencies.
+Assuming you already installed composer, run
 
-    $ curl -s http://getcomposer.org/installer | php
-    $ php composer.phar install
-
-or simply run `composer install` if you have have already [installed the composer globally](http://getcomposer.org/doc/00-intro.md#globally).
+```sh
+    composer install
+```
 
 Then you can include the autoloader, and you will have access to the library classes:
 
@@ -48,7 +71,7 @@ Then you can include the autoloader, and you will have access to the library cla
 require 'vendor/autoload.php';
 ```
 ## Demo Apps
-Several different example prado applications are provided in the https://github.com/pradosoft/prado4-demos repository. You can see these applications running here: http://www.pradoframework.net/site/demos/ .
+Several different example prado applications are provided in the https://github.com/pradosoft/prado-demos repository. You can see these applications running here: http://www.pradoframework.net/site/demos/ .
 When you create your own prado application you do NOT need these folders.
 
 ## Testing

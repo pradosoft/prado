@@ -3,9 +3,9 @@
  * TSqliteCommandBuilder class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @link https://github.com/pradosoft/prado4
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Data\Common\Sqlite
  */
 

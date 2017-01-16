@@ -5,7 +5,7 @@
 	<key>content</key>
 	<string>&lt;com:TTCircleHotSpot
 	${1:HotspotMode="${2:Navigate}"
-	NavigateUrl="${3:https://github.com/pradosoft/prado4}"}
+	NavigateUrl="${3:https://github.com/pradosoft/prado}"}
 	AlternateText="${4:Navigate to Prado framework}"
 	X="${5:80}" Y="${6:80}" Radius="${7:55}" /&gt;$0</string>
 	<key>name</key>

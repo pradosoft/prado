@@ -10,6 +10,6 @@ class Layout extends TTemplateControl
 		$this->getPage()->setTitle("Verifying $type $num");
 		$this->ticketlink->setText("Verifying $type $num");
 		
-		$this->ticketlink->setNavigateUrl("https://github.com/pradosoft/prado4/issues/{$num}");	
+		$this->ticketlink->setNavigateUrl("https://github.com/pradosoft/prado/issues/{$num}");	
 	}
 }

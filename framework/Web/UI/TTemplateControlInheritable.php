@@ -6,7 +6,7 @@
  * @author Schlaue-Kids.net <info@schlaue-kids.net>
  * @link http://www.schlaue-kids.net/
  * @copyright Copyright &copy; 2010 Schlaue-Kids.net
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI
  */
 

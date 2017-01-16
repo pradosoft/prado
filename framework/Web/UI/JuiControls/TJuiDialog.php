@@ -3,9 +3,9 @@
  * TJuiDialog class file.
  *
  * @author  David Otto <ottodavid[at]gmx[dot]net>
- * @link https://github.com/pradosoft/prado4
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2015 PradoSoft
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\JuiControls
  */
 

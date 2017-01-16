@@ -3,9 +3,9 @@
  * TJuiControlAdapter class file.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @link https://github.com/pradosoft/prado4
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2014 PradoSoft
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\JuiControls
  */
 
@@ -38,7 +38,7 @@ use Prado\Web\UI\TControl;
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\JuiControls
  */
 class TJuiEventParameter extends TCallbackEventParameter

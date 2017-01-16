@@ -3,9 +3,9 @@
  * TJuiSlider class file.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @link https://github.com/pradosoft/prado4
+ * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2013-2016 PradoSoft
- * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\JuiControls
  */
 

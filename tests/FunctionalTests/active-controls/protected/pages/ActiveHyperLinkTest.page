@@ -2,7 +2,7 @@
 	<h1>Active HyperLink Test Case</h1>
 
 	<div style="margin:1em; padding:1em; border:1px solid #ccc; text-align:center;">
-	<com:TActiveHyperLink ID="link1" Text="Link 1" NavigateUrl="https://github.com/pradosoft/prado4" />
+	<com:TActiveHyperLink ID="link1" Text="Link 1" NavigateUrl="https://github.com/pradosoft/prado" />
 	</div>
 	<com:TActiveButton ID="button1" Text="Change Text" OnClick="change_text" />
 	<com:TActiveButton ID="button2" Text="Change Image" OnClick="change_image" />

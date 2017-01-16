@@ -19,7 +19,7 @@
             
             <div class="mainmenu">
                 <div style="float: right"><com:TLinkButton Text="Logout" OnClick="logout" /></div>
-                <div style="float: right"><com:THyperLink NavigateUrl="https://github.com/pradosoft/prado4" Text="Prado framework" Target="_blank" />&nbsp;|&nbsp;</div>
+                <div style="float: right"><com:THyperLink NavigateUrl="https://github.com/pradosoft/prado" Text="Prado framework" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="float: right"><com:THyperLink NavigateUrl="<%= $this->Service->DefaultPageUrl %>" Text="Web App" Target="_blank" />&nbsp;|&nbsp;</div>
                 <div style="clear: both"></div>
             </div> 
