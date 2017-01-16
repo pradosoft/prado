@@ -67,7 +67,9 @@
 		"phpunit/phpunit-selenium": "3.*",
 		"phpunit/php-invoker": "*",
 		"apigen/apigen": "dev-master",
-		"pradosoft/prado-apigen-theme" : "*"
+		"pradosoft/prado-apigen-theme" : "*",
+		"sauce/sausage": "*",
+		"sauce/connect": "*"
 	},
 	"provide" : {
 		"pradosoft/prado" : "4.0"

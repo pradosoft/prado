@@ -1,50 +1,18 @@
 <?php
-require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 
-class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
+class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
 {
-	public static $browsers = array(
-/*
-		array(
-			'name'    => 'Firefox on OSX',
-			'browserName' => '*firefox',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
-*/
-		array(
-			'name'    => 'Chrome on OSX',
-			'browserName' => 'chrome',
-			'sessionStrategy' => 'shared',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
-/*
-		array(
-			'name'    => 'Safari on OSX',
-			'browserName' => 'safari',
-			'sessionStrategy' => 'shared',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
-*/
-/*
-		array(
-			'name'    => 'Firefox on WindowsXP',
-			'browserName' => '*firefox',
-			'host'    => '127.0.0.1',
-			'port'    => 4445,
-		),
-		array(
-			'name'    => 'Internet Explorer 8 on WindowsXP',
-			'browserName' => '*iehta',
-			'host'    => '127.0.0.1',
-			'port'    => 4445,
-		)
-*/
+    protected $base_url = 'http://localhost:8888/tests/FunctionalTests/';
+    public static $browsers = array(
+        // run FF15 on Windows 8 on Sauce
+        array(
+            'browserName' => 'firefox',
+            'desiredCapabilities' => array(
+                'version' => '15',
+                'platform' => 'Windows 2012',
+            )
+        ),
 	);
-
-	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
 
 	static $timeout=5; //seconds
 
