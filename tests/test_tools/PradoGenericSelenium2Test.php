@@ -2,7 +2,6 @@
 
 class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
 {
-    protected $base_url = 'http://localhost:8888/tests/FunctionalTests/';
     public static $browsers = array(
         // run FF15 on Windows 8 on Sauce
         array(
@@ -12,8 +11,9 @@ class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
                 'platform' => 'Windows 2012',
             )
         ),
-	);
+    );
 
+    static $baseurl='http://localhost:8888/tests/FunctionalTests/';
 	static $timeout=5; //seconds
 
     public function prepareSession()
@@ -25,7 +25,7 @@ class PradoGenericSelenium2Test extends Sauce\Sausage\WebDriverTestCase
         return $session;
     }
 
-	protected function setUp()
+	public function setUp()
 	{
 		self::shareSession(true);
 		$this->setBrowserUrl(static::$baseurl);
