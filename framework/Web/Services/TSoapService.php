@@ -95,7 +95,7 @@ use Prado\Xml\TXmlDocument;
  */
 class TSoapService extends \Prado\TService
 {
-	const DEFAULT_SOAP_SERVER='TSoapServer';
+	const DEFAULT_SOAP_SERVER='Prado\Web\Services\TSoapServer';
 	private $_servers=array();
 	private $_configFile=null;
 	private $_wsdlRequest=false;
