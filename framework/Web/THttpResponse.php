@@ -426,13 +426,28 @@ class THttpResponse extends TModule implements ITextWriter
 	{
 		$this->ensureHeadersSent();
 
+		// Under IIS, explicitly send an HTTP response including the status code
+		// this is handled automatically by PHP on Apache and others
+		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if($url[0]==='/')
 			$url=$this->getRequest()->getBaseUrl().$url;
 		if ($this->_status >= 300 && $this->_status < 400)
+		{
 			// The status code has been modified to a valid redirection status, send it
+			if($isIIS)
+			{
+				header('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
+					array_key_exists($this->_status, self::$HTTP_STATUS_CODES)
+						? $this->_status
+						: 302
+					]);
+			}
 			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
-		else
+		} else {
+			if($isIIS)
+				header('HTTP/1.1 302 '.self::$HTTP_STATUS_CODES[302]);
 			header('Location: '.str_replace('&amp;','&',$url));
+		}
 
 		if(!$this->getApplication()->getRequestCompleted())
 			$this->getApplication()->onEndRequest();
@@ -719,4 +734,3 @@ class THttpResponse extends TModule implements ITextWriter
 		return Prado::createComponent($type, $writer);
 	}
 }
-

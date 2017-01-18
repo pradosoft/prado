@@ -534,6 +534,15 @@ class THttpRequest extends TApplicationComponent implements IteratorAggregate,Ar
 	}
 
 	/**
+	 * @return string server software
+	 * @since 3.3.3
+	 */
+	public function getServerSoftware()
+	{
+		return isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:null;
+	}
+
+	/**
 	 * @return integer server port number
 	 */
 	public function getServerPort()
@@ -1403,4 +1412,3 @@ class THttpRequestUrlFormat extends TEnumerable
 	const Path='Path';
 	const HiddenPath='HiddenPath';
 }
-
