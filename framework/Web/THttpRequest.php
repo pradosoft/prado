@@ -558,6 +558,15 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
+	 * @return string server software
+	 * @since 3.3.3
+	 */
+	public function getServerSoftware()
+	{
+		return isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:null;
+	}
+
+	/**
 	 * @return array user browser capabilities
 	 * @see get_browser
 	 */
