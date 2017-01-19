@@ -99,7 +99,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _read($id)
 	{
-	    return $this->_cache->get($this->calculateKey($id));
+	    return (string)$this->_cache->get($this->calculateKey($id));
 	}
 
 	/**
