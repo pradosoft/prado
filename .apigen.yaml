@@ -22,4 +22,4 @@ tree: true
 version: true
 sourceCode: no
 overwrite: yes
-templateConfig: ./vendor/pradosoft/prado4-apigen-theme/src/config.neon
+templateConfig: ./vendor/pradosoft/prado-apigen-theme/src/config.neon
