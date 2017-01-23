@@ -391,6 +391,10 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
+	 * Ensure that {@link setCookieMode CookieMode} is not set to "None" before enabling
+	 * the use of transparent session ids. Refer to the main documentation of the class 
+	 * THttpSession class for a configuration example.
+	 *
 	 * @param boolean whether transparent sid support is enabled or not.
 	 */
 	public function setUseTransparentSessionID($value)
