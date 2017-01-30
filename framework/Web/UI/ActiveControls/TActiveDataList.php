@@ -95,7 +95,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   private function renderPager()
   {
-    $pager=$this->getPage()->findControlsByType('TActivePager', false);
+    $pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
     foreach($pager as $item)
     {
       if($item->ControlToPaginate==$this->ID) {

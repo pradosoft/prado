@@ -154,7 +154,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 			// because the whole content will be replaced by the parent.
 			if ($this->getHasControls())
 			{
-				foreach ($this->findControlsByType('IActiveControl', false) as $control)
+				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control)
 					$control->getActiveControl()->setEnableUpdate(false);
 			}
 		}
