@@ -30,4 +30,4 @@ Prado::init();
 /**
  * Defines Prado in global namespace
  */
-class_alias('\Prado\Prado', 'Prado', true);
+class_alias('\Prado\Prado', 'Prado');

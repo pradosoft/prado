@@ -354,7 +354,7 @@ class PradoBase
 			if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
 			{
 				if(!class_exists($namespace) && !interface_exists($namespace))
-					class_alias($phpNamespace, $namespace, true);
+					class_alias($phpNamespace, $namespace);
 				return;
 			}			
 		} elseif(($pos=strrpos($namespace,'\\'))===false) {
@@ -368,7 +368,7 @@ class PradoBase
 					if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
 					{
 						if(!class_exists($namespace) && !interface_exists($namespace))
-							class_alias($phpNamespace, $namespace, true);
+							class_alias($phpNamespace, $namespace);
 						return;
 					}
 				}
@@ -391,7 +391,7 @@ class PradoBase
 					{
 						include_once($path);
 						if(class_exists($namespace, false) || interface_exists($namespace, false))
-							class_alias($namespace, $className, true);
+							class_alias($namespace, $className);
 					}
 					catch(\Exception $e)
 					{
