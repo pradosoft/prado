@@ -120,9 +120,15 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 		$cs=$this->getPage()->getClientScript();
 		if(self::$_first)
 		{
-			$code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$this->getCurrentCulture()}']);});";
-			$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
-			self::$_first=false;
+		  $culture=$this->getCurrentCulture();
+		  if($culture!='en')
+		  {
+		    $url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui')."/ui/i18n/datepicker-{$culture}.js";
+		    $cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
+		  }
+		  $code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
+		  $cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
+		  self::$_first=false;
 		}
 		parent::addAttributesToRender($writer);
 		$options=TJavaScript::encode($this->getOptions()->toArray());
