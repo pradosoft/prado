@@ -12,7 +12,6 @@
 namespace Prado\Web\UI\WebControls;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
-use Prado\TPropertyValue;
 
 /**
  * TSafeHtml class

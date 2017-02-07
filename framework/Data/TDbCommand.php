@@ -15,7 +15,6 @@ use PDO;
 use PDOStatement;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
-use Prado\TApplicationMode;
 
 /**
  * TDbCommand class.

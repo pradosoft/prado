@@ -13,7 +13,6 @@ namespace Prado\Web\UI;
 use Prado\Collections\TList;
 use Prado\Collections\TMap;
 use Prado\Collections\TStack;
-use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidDataValueException;

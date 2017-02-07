@@ -15,7 +15,6 @@ use Prado\TComponent;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TTemplateException;
-use Prado\Exceptions\TException;
 
 /**
  * TTemplate implements PRADO template parsing logic.

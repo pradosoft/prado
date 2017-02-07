@@ -21,7 +21,6 @@ use Prado\Data\SqlMap\Statements\TSimpleDynamicSql;
 use Prado\Data\SqlMap\Statements\TStaticSql;
 use Prado\Data\SqlMap\Statements\TUpdateMappedStatement;
 use Prado\Prado;
-use Prado\TApplicationMode;
 
 /**
  * Loads the statements, result maps, parameters maps from xml configuration.

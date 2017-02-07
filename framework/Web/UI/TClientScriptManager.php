@@ -13,7 +13,6 @@
 namespace Prado\Web\UI;
 use Prado\Prado;
 use Prado\TApplicationMode;
-use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
