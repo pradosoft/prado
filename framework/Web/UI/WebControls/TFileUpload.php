@@ -3,6 +3,7 @@
  * TFileUpload class file
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
@@ -15,9 +16,8 @@ use Prado\TPropertyValue;
 /**
  * TFileUpload class
  *
- * TFileUpload displays a file upload field on a page. Upon postback,
- * the text entered into the field will be treated as the name of the file
- * that will be uploaded to the server. The property {@link getHasFile HasFile}
+ * TFileUpload displays a file upload field on a page. Upon postback, the selected
+ * files will be uploaded to the server. The property {@link getHasFile HasFile}
  * indicates whether the file upload is successful. If successful, the file
  * may be obtained by calling {@link saveAs} to save it at a specified place.
  * You can use {@link getFileName FileName}, {@link getFileType FileType},
@@ -26,10 +26,25 @@ use Prado\TPropertyValue;
  * successful, {@link getErrorCode ErrorCode} contains the error code
  * describing the cause of failure.
  *
- * TFileUpload raises {@link onFileUpload OnFileUpload} event if a file is uploaded
- * (whether it succeeds or not).
+ * Since Prado 4.0 the TFileUpload supports uploading multiple files at once by
+ * setting {@link setMultiple Multiple} to true which renders the additional HTML5
+ * attribute and adds square brackets to the name attribute. A new method
+ * {@link getFiles} is introduced which returns an array of {@link TFileUploadItem}
+ * representing each uploaded file.
+ *
+ * All (old) methods mentioned in the first paragraph (getHasFile, getFileName, getFileType,
+ * getFileSize, getErrorCode and saveAs) also take a new optional parameter specifying
+ * the file index to get the desired information from. This is for backward compatibility
+ * so that old, single file uploads will still work - internally a {@link TFileUploadItem}
+ * is also used for a single file upload.
+ * If more than one file is uploaded {@link getValidationPropertyValue} returns a comma
+ * separated list of original file names instead of a single file name for validation.
+ *
+ * TFileUpload raises {@link onFileUpload OnFileUpload} event if one or more files are
+ * uploaded (whether it succeeds or not).
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
@@ -39,28 +54,17 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Maximum file size (in bytes) allowed to be uploaded, defaults to 1MB.
 	 */
 	const MAX_FILE_SIZE=1048576;
-	/**
-	 * @var integer the size of the uploaded file (in bytes)
-	 */
-	private $_fileSize=0;
-	/**
-	 * @var string The original name of the file on the client machine
-	 */
-	private $_fileName='';
-	/**
-	 * @var string the name of the temporary file storing the uploaded file
-	 */
-	protected $_localName='';
-	/**
-	 * @var string the uploaded file mime type
-	 */
-	private $_fileType='';
-	/**
-	 * @var integer error code of the current file upload
-	 */
-	protected $_errorCode=UPLOAD_ERR_NO_FILE;
+
 	private $_dataChanged=false;
 	private $_isValid=true;
+	/**
+	 * @var bool wether this file upload supports multiple files
+	 */
+	private $_multiple=false;
+	/**
+	 * @var array the list of uploaded files represented by {@link TFileUploadItem}
+	 */
+	private $_files=array();
 
 	/**
 	 * @return string tag name of the file upload control
@@ -80,7 +84,13 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		$this->getPage()->ensureRenderInForm($this);
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('type','file');
-		$writer->addAttribute('name',$this->getUniqueID());
+		$name=$this->getUniqueID();
+		if($this->getMultiple())
+		{
+		  $name.='[]';
+		  $writer->addAttribute('multiple','multiple');
+		}
+		$writer->addAttribute('name',$name);
 		$isEnabled=$this->getEnabled(true);
 		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
@@ -124,77 +134,93 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return string the original full path name of the file on the client machine
 	 */
-	public function getFileName()
+	public function getFileName($index=0)
 	{
-		return $this->_fileName;
+	  return isset($this->_files[$index])?$this->_files[$index]->getFileName():'';
 	}
 
 	/**
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return integer the actual size of the uploaded file in bytes
 	 */
-	public function getFileSize()
+	public function getFileSize($index=0)
 	{
-		return $this->_fileSize;
+	  return isset($this->_files[$index])?$this->_files[$index]->getFileSize():0;
 	}
 
 	/**
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return string the MIME-type of the uploaded file (such as "image/gif").
 	 * This mime type is not checked on the server side and do not take its value for granted.
 	 */
-	public function getFileType()
+	public function getFileType($index=0)
 	{
-		return $this->_fileType;
+	  return isset($this->_files[$index])?$this->_files[$index]->getFileType():'';
 	}
 
 	/**
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return string the local name of the file (where it is after being uploaded).
 	 * Note, PHP will delete this file automatically after finishing this round of request.
 	 */
-	public function getLocalName()
+	public function getLocalName($index=0)
 	{
-		return $this->_localName;
+	  return isset($this->_files[$index])?$this->_files[$index]->getLocalName():'';
 	}
 
 	/**
 	 * Returns an error code describing the status of this file uploading.
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return integer the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
-	public function getErrorCode()
+	public function getErrorCode($index=0)
 	{
-		return $this->_errorCode;
+		return isset($this->_files[$index])?$this->_files[$index]->getErrorCode():UPLOAD_ERR_NO_FILE;
 	}
 
 	/**
+	 * For backward compatibility, the first file is used by default.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return boolean whether the file is uploaded successfully
 	 */
-	public function getHasFile()
+	public function getHasFile($index=0)
 	{
-		return $this->_errorCode===UPLOAD_ERR_OK;
+	  return isset($this->_files[$index])?$this->_files[$index]->getHasFile():false;
+	}
+
+	/**
+	 * This method is used for multiple file uploads to indicate if all files were uploaded succsessfully.
+	 * @return boolean whether all files are uploaded successfully
+	 */
+	public function getHasAllFiles() {
+	  foreach($this->_files as $file)
+	    if(!$file->getHasFile())
+	      return false;
+	  return true;
 	}
 
 	/**
 	 * Saves the uploaded file.
+	 * Returns an error code describing the status of this file uploading.
+	 * For backward compatibility, the first file is used by default.
 	 * @param string the file name used to save the uploaded file
 	 * @param boolean whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
+	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName,$deleteTempFile=true)
+	public function saveAs($fileName,$deleteTempFile=true,$index=0)
 	{
-		if($this->_errorCode===UPLOAD_ERR_OK)
-		{
-			if($deleteTempFile)
-				return move_uploaded_file($this->_localName,$fileName);
-			else if(is_uploaded_file($this->_localName))
-				return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
-			else
-				return false;
-		}
-		else
-			return false;
+	  return isset($this->_files[$index])?$this->_files[$index]->saveAs($fileName,$deleteTempFile):false;
 	}
 
 	/**
@@ -208,11 +234,13 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	{
 		if(isset($_FILES[$key]))
 		{
-			$this->_fileName=$_FILES[$key]['name'];
-			$this->_fileSize=$_FILES[$key]['size'];
-			$this->_fileType=$_FILES[$key]['type'];
-			$this->_errorCode=$_FILES[$key]['error'];
-			$this->_localName=$_FILES[$key]['tmp_name'];
+		  if($this->getMultiple()||is_array($_FILES[$key]['name']))
+		  {
+        foreach($_FILES[$key]['name'] as $index => $name)
+          $this->_files[$index]=new TFileUploadItem($name,$_FILES[$key]['size'][$index],$_FILES[$key]['type'][$index],$_FILES[$key]['error'][$index],$_FILES[$key]['tmp_name'][$index]);
+		  }
+		  else
+		    $this->_files[0]=new TFileUploadItem($_FILES[$key]['name'],$_FILES[$key]['size'],$_FILES[$key]['type'],$_FILES[$key]['error'],$_FILES[$key]['tmp_name']);
 			return $this->_dataChanged=true;
 		}
 		else
@@ -252,13 +280,13 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * Returns the original file name as the property value to be validated.
+	 * Returns the comma separated list of original file names as the property value to be validated.
 	 * This method is required by \Prado\Web\UI\IValidatable property.
 	 * @return mixed the property value to be validated
 	 */
 	public function getValidationPropertyValue()
 	{
-		return $this->getFileName();
+		return array_implode(',',array_walk($this->_files,function($file){return $file->getFileName();}));
 	}
 
 	/**
@@ -268,14 +296,37 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+	  return $this->_isValid;
 	}
 	/**
 	 * @param bool wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+	  $this->_isValid=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool wether this file upload supports multiple files.
+	 */
+	public function getMultiple()
+	{
+	  return $this->_multiple;
+	}
+
+	/**
+	 * @param bool wether this file upload supports multiple files.
+	 */
+	public function setMultiple($value)
+	{
+	  $this->_multiple=TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return TFileUploadItem[] the array of uploaded files.
+	 */
+	public function getFiles() {
+	  return $this->_files;
 	}
 
 }

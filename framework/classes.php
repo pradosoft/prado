@@ -529,6 +529,7 @@ return array(
 'TEmailAddressValidator' => 'Prado\Web\UI\WebControls\TEmailAddressValidator',
 'TExpression' => 'Prado\Web\UI\WebControls\TExpression',
 'TFileUpload' => 'Prado\Web\UI\WebControls\TFileUpload',
+'TFileUploadItem' => 'Prado\Web\UI\WebControls\TFileUploadItem',
 'TFlushOutput' => 'Prado\Web\UI\WebControls\TFlushOutput',
 'TFont' => 'Prado\Web\UI\WebControls\TFont',
 'THead' => 'Prado\Web\UI\WebControls\THead',

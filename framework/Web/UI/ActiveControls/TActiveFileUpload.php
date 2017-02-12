@@ -5,6 +5,7 @@
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (issue 349 remote vulnerability fix)
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  */
 
@@ -47,8 +48,13 @@ use Prado\Web\UI\WebControls\TInlineFrame;
  *
  * TActiveFileUpload needs either an application level cache or a security manager to work securely.
  *
+ * Since Prado 4.0 the TActiveFileUpload supports HTML5 multiple file uploads by setting the
+ * {@link setMultiple Multiple} attribute to true. See the description of the parent class
+ * {@see TFileUpload} for further details.
+ *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
+ * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  */
 class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallbackEventHandler, INamingContainer
@@ -108,32 +114,24 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	public function onFileUpload($param)
 	{
 		if ($this->_flag->getValue() && $this->getPage()->getIsPostBack() && $param == $this->_target->getUniqueID()){
-			// save the file so that it will persist past the end of this return.
-			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
-			parent::saveAs($localName);
-			$this->_localName = $localName;
-
-			$params = new TActiveFileUploadCallbackParams;
-			$params->localName = $localName;
-			$params->fileName = addslashes($this->getFileName());
-			$params->fileSize = $this->getFileSize();
-			$params->fileType = $this->getFileType();
-			$params->errorCode = $this->getErrorCode();
+		  $params = new TActiveFileUploadCallbackParams;
+		  // save the files so that they will persist past the end of this return.
+		  foreach ($this->getFiles() as $file) {
+			  $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+			  $file->saveAs($localName);
+			  $file->setLocalName($localName);
+			  $params->files[] = $file->toArray();
+		  }
 
 			// return some javascript to display a completion status.
-			echo <<<EOS
-<script language="Javascript">
-	Options = new Object();
-	Options.clientID = '{$this->getClientID()}';
-	Options.targetID = '{$this->_target->getUniqueID()}';
-	Options.fileName = '{$params->fileName}';
-	Options.fileSize = '{$params->fileSize}';
-	Options.fileType = '{$params->fileType}';
-	Options.errorCode = '{$params->errorCode}';
-	Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
-	parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
-</script>
-EOS;
+			echo "<script language='Javascript'>
+          	 Options = new Object();
+          	 Options.clientID = '{$this->getClientID()}';
+          	 Options.targetID = '{$this->_target->getUniqueID()}';
+          	 Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
+          	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
+          	 parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
+           </script>";
 
 			exit();
 		}
@@ -205,12 +203,14 @@ EOS;
 		if ($key = $cp->targetID == $this->_target->getUniqueID()){
 
 			$params = $this->popParamsByToken($cp->callbackToken);
-
-			$_FILES[$key]['name'] = stripslashes($params->fileName);
-			$_FILES[$key]['size'] = intval($params->fileSize);
-			$_FILES[$key]['type'] = $params->fileType;
-			$_FILES[$key]['error'] = intval($params->errorCode);
-			$_FILES[$key]['tmp_name'] = $params->localName;
+      foreach($params->files as $index => $file)
+      {
+  			$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
+  			$_FILES[$key]['size'][$index] = intval($file['fileSize']);
+  			$_FILES[$key]['type'][$index] = $file['fileType'];
+  			$_FILES[$key]['error'][$index] = intval($file['errorCode']);
+  			$_FILES[$key]['tmp_name'][$index] = $file['localName'];
+      }
 			$this->loadPostData($key, null);
 
 			$this->raiseEvent('OnFileUpload', $this, $param);
@@ -279,31 +279,23 @@ EOS;
 
 		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())
 		{
-			// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
-			$this->_errorCode = UPLOAD_ERR_FORM_SIZE;
-			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
-			$fileName = addslashes($this->getFileName());
+		  $params = new TActiveFileUploadCallbackParams;
+		  foreach ($this->getFiles() as $file) {
+		    $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+		    $file->setLocalName($localName);
+		    // tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
+		    $file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
+		    $params->files[] = $file->toArray();
+		  }
 
-			$params = new TActiveFileUploadCallbackParams;
-			$params->localName = $localName;
-			$params->fileName = $fileName;
-			$params->fileSize = $this->getFileSize();
-			$params->fileType = $this->getFileType();
-			$params->errorCode = $this->getErrorCode();
-
-			echo <<<EOS
-<script language="Javascript">
-	Options = new Object();
-	Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
-	Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
-	Options.fileName = '{$params->fileName}';
-	Options.fileSize = '{$params->fileSize}';
-	Options.fileType = '{$params->fileType}';
-	Options.errorCode = '{$params->errorCode}';
-	Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
-	parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
-</script>
-EOS;
+			echo "<script language='Javascript'>
+          	 Options = new Object();
+          	 Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
+          	 Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
+			       Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
+          	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
+           	 parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
+           </script>";
 		}
 	}
 
@@ -345,10 +337,12 @@ EOS;
 	 * Removes localfile on ending of the callback.
 	 */
 	public function onUnload($param){
-		if ($this->getPage()->getIsCallback() &&
-			$this->getHasFile() &&
-			file_exists($this->getLocalName())){
-				unlink($this->getLocalName());
+		if ($this->getPage()->getIsCallback())
+		{
+		  foreach($this->getFiles() as $file)
+		    if($file->getHasFile() && file_exists($file->getLocalName())){
+		      unlink($file->getLocalName());
+		  }
 		}
 		parent::onUnload($param);
 	}
@@ -418,12 +412,12 @@ EOS;
 	 * If true, you will not be able to save the uploaded file again.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName,$deleteTempFile=true){
-		if (($this->getErrorCode()===UPLOAD_ERR_OK) && (file_exists($this->getLocalName()))){
+	public function saveAs($fileName,$deleteTempFile=true,$index=0){
+		if (($this->getErrorCode($index)===UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))){
 			if ($deleteTempFile)
-				return rename($this->getLocalName(),$fileName);
+				return rename($this->getLocalName($index),$fileName);
 			else
-				return copy($this->getLocalName(),$fileName);
+				return copy($this->getLocalName($index),$fileName);
 		} else
 			return false;
 	}
