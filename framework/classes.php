@@ -340,6 +340,8 @@ return array(
 'TActiveFileUpload' => 'Prado\Web\UI\ActiveControls\TActiveFileUpload',
 'TActiveFileUploadCallbackParams' => 'Prado\Web\UI\ActiveControls\TActiveFileUploadCallbackParams',
 'TActiveHiddenField' => 'Prado\Web\UI\ActiveControls\TActiveHiddenField',
+'TActiveHtmlArea' => 'Prado\Web\UI\ActiveControls\TActiveHtmlArea',
+'TActiveHtmlArea4' => 'Prado\Web\UI\ActiveControls\TActiveHtmlArea4',
 'TActiveHyperLink' => 'Prado\Web\UI\ActiveControls\TActiveHyperLink',
 'TActiveHyperLinkColumn' => 'Prado\Web\UI\ActiveControls\TActiveHyperLinkColumn',
 'TActiveImage' => 'Prado\Web\UI\ActiveControls\TActiveImage',
