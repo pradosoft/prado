@@ -311,7 +311,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		if(!array_key_exists($base, self::$_stylesFolders))
 			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
 
-		return array(self::$_stylesFolders[$base], $subPath);
+		$namespace = self::$_stylesFolders[$base];
+		if(($dir = Prado::getPathOfNameSpace($namespace)) !== null) {
+		  $namespace = $dir;
+		}
+
+		return array($namespace, $subPath);
 	}
 
 	/**
