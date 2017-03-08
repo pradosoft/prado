@@ -446,11 +446,14 @@ Prado.Element =
 
 	focus : function(element)
 	{
-		jQuery(document).ajaxStop(function () {
+		if(jQuery.active > 0)
+		{
 			setTimeout(function(){
 				jQuery("#"+element).focus();
 			}, 100);
-		});
+		} else {			
+			jQuery("#"+element).focus();
+		}
 	},
 
 	/**
