@@ -114,7 +114,7 @@ Prado.WebUI.TJuiAutoComplete = jQuery.klass(Prado.WebUI.TActiveTextBox,
 		.data( "ui-autocomplete")._renderItem = function( ul, item ) {
 			return jQuery( "<li>" )
 			.attr( "data-value", item.value )
-			.append( jQuery( "<a>" ).html( item.label ) )
+			.append( jQuery( "<div>" ).html( item.label ) )
 			.appendTo( ul );
 		};
 
