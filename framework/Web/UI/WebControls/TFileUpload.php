@@ -286,7 +286,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getValidationPropertyValue()
 	{
-		return implode(',',array_walk($this->_files,function($file){return $file->getFileName();}));
+		return implode(',',array_map(function($file){return $file->getFileName();},$this->_files));
 	}
 
 	/**
