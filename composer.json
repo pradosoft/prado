@@ -66,7 +66,7 @@
 		"phpunit/dbunit": "*",
 		"phpunit/phpunit-selenium": "3.*",
 		"phpunit/php-invoker": "*",
-		"apigen/apigen": "dev-master",
+		"apigen/apigen": "4.2.x-dev",
 		"pradosoft/prado-apigen-theme" : "*"
 	},
 	"provide" : {
