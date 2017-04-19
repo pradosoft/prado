@@ -1,8 +1,0 @@
-{
-    title: 'Edit Item'
-    tab_trigger: 'tpl'
-    scope: 'text.html.prado'
-    content: '<prop:EditItemTemplate>
-	$0
-</prop:EditItemTemplate>'
-}

@@ -1,8 +1,0 @@
-{
-    title: 'Panel'
-    tab_trigger: 'panel'
-    scope: 'text.html.prado'
-    content: '<com:TPanel>
-	$0
-</com:TPanel>'
-}

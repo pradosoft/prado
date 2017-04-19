@@ -1,8 +1,0 @@
-{
-    title: 'Header'
-    tab_trigger: 'tpl'
-    scope: 'text.html.prado'
-    content: '<prop:HeaderTemplate>
-	$0
-</prop:HeaderTemplate>'
-}

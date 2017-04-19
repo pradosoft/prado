@@ -83,6 +83,10 @@ A phpunit configuration file is providen, to run the tests just execute
 
 Test results will be saved in in the `build/tests/` directory.
 
+## Integration with your favorite IDE/editor
+
+Plugins providing syntax highlighting and code snippets can be found at https://github.com/pradosoft/editor-plugins
+
 ## Contributing
 
 In the spirit of free software, **everyone** is encouraged to help improve this project.

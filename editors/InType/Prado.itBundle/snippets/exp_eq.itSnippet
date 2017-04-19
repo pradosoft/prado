@@ -1,6 +1,0 @@
-{
-    title: 'Expression Tag'
-    tab_trigger: '='
-    scope: 'text.html.prado'
-    content: '<%= ${0:$SELECTED_TEXT} %>'
-}

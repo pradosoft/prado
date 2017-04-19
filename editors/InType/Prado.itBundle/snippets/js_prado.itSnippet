@@ -1,6 +1,0 @@
-{
-    title: 'Script (prado)'
-    tab_trigger: 'js'
-    scope: 'text.html.prado'
-    content: '<com:TClientScript PradoScripts="${1:prado}" />$0'
-}
