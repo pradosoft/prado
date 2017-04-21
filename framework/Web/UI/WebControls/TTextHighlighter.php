@@ -29,6 +29,10 @@ use Prado\Web\Javascripts\TJavaScript;
  * By setting {@link setShowLineNumbers ShowLineNumbers} to true, the highlighted
  * result may be shown with line numbers. To style lin numbers, use the css class "hljs-line-numbers".
  *
+ * By default the contents are encoded using {@link THttpUtility::htmlEncode} before being rendered, and
+ * any leading end-of-line character is removed to avoid an empty line being rendered.
+ * Setting {@link setEncodeHtml EncodeHtml} to false the original content will be rendered.
+ *
  * Note, TTextHighlighter requires {@link THead} to be placed on the page template
  * because it needs to insert some CSS styles.
  *
@@ -128,6 +132,22 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
+	 * @return boolean wether the contents are html encoded. Defaults to true.
+	 */
+	public function getEncodeHtml()
+	{
+		return $this->getViewState('EncodeHtml', true);
+	}
+
+	/**
+	 * @param boolean wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
+	 */
+	public function setEncodeHtml($value)
+	{
+		$this->setViewState('EncodeHtml', TPropertyValue::ensureBoolean($value), true);
+	}
+
+	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
 	 * @param THtmlWriter writer
@@ -178,6 +198,23 @@ class TTextHighlighter extends TWebControl
 		$writer->addAttribute('id', $this->getClientID().'_code');
 		$writer->addAttribute('class', $this->getLanguage());
 		$writer->renderBeginTag('code');
+	}
+
+	/**
+	 * Renders the body content enclosed between the control tag.
+	 * By default, child controls and text strings will be rendered.
+	 * You can override this method to provide customized content rendering.
+	 * @param THtmlWriter the writer used for the rendering purpose
+	 */
+	public function renderContents($writer)
+	{
+		if($this->getEncodeHtml())
+		{
+			$escapedWriter = new TTextHighlighterWriter($writer);
+			parent::renderChildren($escapedWriter);
+		} else {
+			parent::renderChildren($writer);
+		}
 	}
 
 	/**
