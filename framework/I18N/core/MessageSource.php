@@ -36,6 +36,7 @@ require_once(dirname(__FILE__).'/MessageCache.php');
  * using the factory method. The default valid sources are
  *
  *  # XLIFF -- using XML XLIFF format to store the translation messages.
+ *  # PHP -- using PHP arrays to store the translation messages.
  *  # gettext -- Translated messages are stored in the gettext format.
  *  # Database -- Use an existing TDbConnection to store the messages.
  *  # SQLite -- (Deprecated) Store the translation messages in a SQLite database.
@@ -109,9 +110,9 @@ abstract class MessageSource implements IMessageSource
 	
 	/**
 	 * Factory method to instantiate a new MessageSource depending on the
-	 * source type. The allowed source types are 'XLIFF', 'gettext' and
+	 * source type. The allowed source types are 'XLIFF', 'PHP', 'gettext' and
      * 'Database'. The source parameter depends on the source type. 
-     * For 'gettext' and 'XLIFF', 'source' should point to the directory 
+     * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory 
      * where the messages are stored. 
      * For 'Database', 'source' must be a valid connection id.
      * If a deprecated 'SQLite' type is used, 'source' must contain
@@ -128,7 +129,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{
-		$types = array('XLIFF','gettext','Database','SQLite');
+		$types = array('XLIFF','PHP','gettext','Database','SQLite');
 
 		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "'.$type.'", valid types are '.

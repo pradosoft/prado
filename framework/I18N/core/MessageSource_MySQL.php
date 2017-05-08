@@ -18,12 +18,7 @@
 
 namespace Prado\I18N\core;
 
-/**
- * Get the MessageSource class file.
- */
 use Exception;
-
-require_once(dirname(__FILE__).'/MessageSource.php');
 
 /**
  * Get the I18N utility file, contains the DSN parser.

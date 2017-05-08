@@ -18,14 +18,9 @@
 
 namespace Prado\I18N\core;
 
-/**
- * Get the MessageSource class file.
- */
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\Gettext\TGettext;
-
-require_once(dirname(__FILE__).'/MessageSource.php');
 
 /**
  * Get the Gettext class.

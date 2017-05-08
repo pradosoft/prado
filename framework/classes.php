@@ -199,6 +199,7 @@ return array(
 'MessageSource_Database' => 'Prado\I18N\core\MessageSource_Database',
 'MessageSource_gettext' => 'Prado\I18N\core\MessageSource_gettext',
 'MessageSource_MySQL' => 'Prado\I18N\core\MessageSource_MySQL',
+'MessageSource_PHP' => 'Prado\I18N\core\MessageSource_PHP',
 'MessageSource_SQLite' => 'Prado\I18N\core\MessageSource_SQLite',
 'MessageSource_XLIFF' => 'Prado\I18N\core\MessageSource_XLIFF',
 'NumberFormat' => 'Prado\I18N\core\NumberFormat',

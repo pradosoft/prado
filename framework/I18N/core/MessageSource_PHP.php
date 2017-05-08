@@ -1,49 +1,46 @@
 <?php
 
 /**
- * MessageSource_XLIFF class file.
+ * MessageSource_PHP class file.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the BSD License.
- *
- * Copyright(c) 2004 by Qiang Xue. All rights reserved.
  *
  * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
  * {@link http://prado.sourceforge.net/}
  *
- * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
+ * @since 4.0
  * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
 
-use DOMDocument;
-use DOMXPath;
+/**
+ * Get the MessageSource class file.
+ */
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 
 /**
- * MessageSource_XLIFF class.
+ * MessageSource_PHP class.
  *
- * Using XML XLIFF format as the message source for translation.
- * Details and example of XLIFF can be found in the following URLs.
- *
- * # http://www.opentag.com/xliff.htm
- * # http://www-106.ibm.com/developerworks/xml/library/x-localis2/
+ * Using PHP arrays as the message source for translation.
  *
  * See the MessageSource::factory() method to instantiate this class.
  *
- * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
+ * @since 4.0
  * @package Prado\I18N\core
  */
-class MessageSource_XLIFF extends MessageSource
+class MessageSource_PHP extends MessageSource
 {
 	/**
 	 * Message data filename extension.
 	 * @var string
 	 */
-	protected $dataExt = '.xml';
+	protected $dataExt = '.php';
 
 	/**
 	 * Separator between culture name and source.
@@ -62,27 +59,27 @@ class MessageSource_XLIFF extends MessageSource
 	}
 
 	/**
-	 * Load the messages from a XLIFF file.
-	 * @param string XLIFF file.
+	 * Load the messages from a PHP file.
+	 * @param string PHP file.
 	 * @return array of messages.
 	 */
 	protected function &loadData($filename)
 	{
 		//load it.
-		if(false === ($XML = simplexml_load_file($filename))) {
+		if(false === ($php = include($filename))) {
 			return false;
 		}
 
-		$translationUnit = $XML->xpath('//trans-unit');
+		$translationUnit = $php['trans-unit'];
 
 		$translations = array();
 
-		foreach($translationUnit as $unit)
+		foreach($translationUnit as $k => $unit)
 		{
-			$source = (string)$unit->source;
-			$translations[$source][] = (string)$unit->target;
-			$translations[$source][] = (string)$unit['id'];
-			$translations[$source][] = (string)$unit->note;
+			$source = (string)$unit['source'];
+			$translations[$source][] = (string)$unit['target'];
+			$translations[$source][] = (string)$k;
+			$translations[$source][] = array_key_exists('note', $unit) ? (string)$unit['note'] : '';
 		}
 
 		return $translations;
@@ -100,10 +97,10 @@ class MessageSource_XLIFF extends MessageSource
 	}
 
 	/**
-	 * Get the XLIFF file for a specific message catalogue and cultural
-	 * vairant.
+	 * Get the PHP file for a specific message catalogue and cultural
+	 * variant.
 	 * @param string message catalogue
-	 * @return string full path to the XLIFF file.
+	 * @return string full path to the PHP file.
 	 */
 	protected function getSource($variant)
 	{
@@ -111,8 +108,8 @@ class MessageSource_XLIFF extends MessageSource
 	}
 
 	/**
-	 * Determin if the XLIFF file source is valid.
-	 * @param string XLIFF file
+	 * Determin if the PHP file source is valid.
+	 * @param string PHP file
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
@@ -142,16 +139,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		$byDir = $this->getCatalogueByDir($catalogue);
-		$catalogues = array_merge($byDir,array_reverse($catalogues));
-		$files = array();
-
-		foreach($catalogues as $file)
-		{
-			$files[] = $file;
-			$files[] = preg_replace('/\.xml$/', '.xlf', $file);
-		}
-
-		return $files;
+		return array_merge($byDir,array_reverse($catalogues));
 	}
 
 	/**
@@ -258,6 +246,20 @@ class MessageSource_XLIFF extends MessageSource
 		return false;
 	}
 
+	protected function internalSaveFile($php, $filename)
+	{
+		$php['info']['date'] = @date('Y-m-d\TH:i:s\Z');
+
+		//save it and clear the cache for this variant
+		if(false === file_put_contents($filename, "<?php\nreturn " . var_export($php, true) . ';'))
+			return false;
+
+		if(!empty($this->cache))
+			$this->cache->clean($variant, $this->culture);
+
+		return true;
+	}
+
 	/**
 	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
@@ -284,55 +286,19 @@ class MessageSource_XLIFF extends MessageSource
 			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
 		}
 
-		//create a new dom, import the existing xml
-		$dom = new DOMDocument();
-		$dom->load($filename);
-
-		//find the body element
-		$xpath = new DomXPath($dom);
-    	$body = $xpath->query('//body')->item(0);
-
-		$lastNodes = $xpath->query('//trans-unit[last()]');
-		if(($last=$lastNodes->item(0))!==null) {
-			$count = (int)$last->getAttribute('id');
-		} else {
-			$count = 0;
-		}
+		//import the existing php file
+		$php = include($filename);
 
 		//for each message add it to the XML file using DOM
 		foreach($messages as $message)
 		{
-			$unit = $dom->createElement('trans-unit');
-			$unit->setAttribute('id',++$count);
-
-			$source = $dom->createElement('source');
-			$source->appendChild($dom->createCDATASection($message));
-
-			$target = $dom->createElement('target');
-			$target->appendChild($dom->createCDATASection(''));
-
-			$unit->appendChild($dom->createTextNode("\n"));
-			$unit->appendChild($source);
-			$unit->appendChild($dom->createTextNode("\n"));
-			$unit->appendChild($target);
-			$unit->appendChild($dom->createTextNode("\n"));
-
-			$body->appendChild($dom->createTextNode("\n"));
-			$body->appendChild($unit);
-			$body->appendChild($dom->createTextNode("\n"));
+			$php['trans-unit'][]= array(
+				'source' => $message,
+				'target' => '',
+			);
 		}
 
-
-		$fileNode = $xpath->query('//file')->item(0);
-		$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
-
-		//save it and clear the cache for this variant
-		$dom->save($filename);
-		if(!empty($this->cache)) {
-			$this->cache->clean($variant, $this->culture);
-		}
-
-		return true;
+		return $this->internalSaveFile($php, $filename);
 	}
 
 	/**
@@ -357,77 +323,23 @@ class MessageSource_XLIFF extends MessageSource
 			throw new TIOException("Unable to update file {$filename}, file must be writable.");
 		}
 
-		//create a new dom, import the existing xml
-		$dom = DOMDocument::load($filename);
-
-		//find the body element
-		$xpath = new DomXPath($dom);
-		$units = $xpath->query('//trans-unit');
+		//import the existing php file
+		$php = include($filename);
 
 		//for each of the existin units
-		foreach($units as $unit)
+		foreach($php['trans-unit'] as $k => $unit)
 		{
-			$found = false;
-			$targetted = false;
-			$commented = false;
-
-			//in each unit, need to find the source, target and comment nodes
-			//it will assume that the source is before the target.
-			foreach($unit->childNodes as $node)
+			if($unit['source'] == $text)
 			{
-				//source node
-				if($node->nodeName == 'source' && $node->firstChild->wholeText == $text) {
-					$found = true;
-				}
+				$php['trans-unit'][$k]['target'] = $target;
+				if(!empty($comments))
+					$php['trans-unit'][$k]['note'] = $comments;
 
-				//found source, get the target and notes
-				if($found)
-				{
-					//set the new translated string
-					if($node->nodeName == 'target')
-					{
-						$node->nodeValue = $target;
-						$targetted = true;
-					}
-
-					//set the notes
-					if(!empty($comments) && $node->nodeName == 'note')
-					{
-						$node->nodeValue = $comments;
-						$commented = true;
-					}
-				}
-			}
-
-			//append a target
-			if($found && !$targetted) {
-				$unit->appendChild($dom->createElement('target',$target));
-			}
-
-			//append a note
-			if($found && !$commented && !empty($comments)) {
-				$unit->appendChild($dom->createElement('note',$comments));
-			}
-
-			//finished searching
-			if($found) {
 				break;
 			}
 		}
 
-		$fileNode = $xpath->query('//file')->item(0);
-		$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
-
-		if($dom->save($filename) >0)
-		{
-			if(!empty($this->cache)) {
-				$this->cache->clean($variant, $this->culture);
-			}
-
-			return true;
-		}
-
-		return false;
+		return $this->internalSaveFile($php, $filename);
 	}
 
 	/**
@@ -449,37 +361,16 @@ class MessageSource_XLIFF extends MessageSource
 			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
 		}
 
-		//create a new dom, import the existing xml
-		$dom = DOMDocument::load($filename);
-
-		//find the body element
-		$xpath = new DomXPath($dom);
-		$units = $xpath->query('//trans-unit');
+		//import the existing php file
+		$php = include($filename);
 
 		//for each of the existin units
-		foreach($units as $unit)
+		foreach($php['trans-unit'] as $k => $unit)
 		{
-			//in each unit, need to find the source, target and comment nodes
-			//it will assume that the source is before the target.
-			foreach($unit->childNodes as $node)
+			if($unit['source'] == $message)
 			{
-				//source node
-				if($node->nodeName == 'source' && $node->firstChild->wholeText == $message)
-				{
-					//we found it, remove and save the xml file.
-					$unit->parentNode->removeChild($unit);
-					$fileNode = $xpath->query('//file')->item(0);
-					$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
-
-					if(false !== $dom->save($filename)) {
-						if(!empty($this->cache)) {
-							$this->cache->clean($variant, $this->culture);
-						}
-						return true;
-					}
-
-					return false;
-				}
+				unset($php['trans-unit'][$k]);
+				return $this->internalSaveFile($php, $filename);
 			}
 		}
 
@@ -514,16 +405,20 @@ class MessageSource_XLIFF extends MessageSource
 
 	protected function getTemplate($catalogue)
 	{
-		$date = @date('c');
-		$xml = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.0">
- <file source-language="EN" target-language="{$this->culture}" datatype="plaintext" original="$catalogue" date="$date" product-name="$catalogue">
-  <body>
-  </body>
- </file>
-</xliff>
+		$date = @date('Y-m-d\TH:i:s\Z');
+		$php = <<<EOD
+<?php
+return array(
+	'info' => array(
+		'source-language' => 'EN',
+		'target-language' => '{$this->culture}',
+		'original' => '$catalogue',
+		'date' => '$date'
+	),
+	'trans-unit' => array(
+	)
+);
 EOD;
-		return $xml;
+		return $php;
 	}
 }

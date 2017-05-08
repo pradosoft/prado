@@ -19,11 +19,6 @@
 namespace Prado\I18N\core;
 
 /**
- * Get the MessageSource classes.
- */
-require_once(dirname(__FILE__).'/MessageSource.php');
-
-/**
  * Get the encoding utilities
  */
 require_once(dirname(__FILE__).'/util.php');

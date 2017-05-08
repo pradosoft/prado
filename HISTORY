@@ -10,6 +10,7 @@ BUG: Fix missing language file in TJuiDatePicker when regional default is set (L
 ENH: Issue #633 - Added two new controls TActiveHtmlArea and TActiveHtmlArea4 (LCSKJ)
 ENH: Issue #635 - Added HTML5 multiple file upload support in TFileUpload and TActiveFileUpload (LCSKJ)
 ENH: Added two new cache modules based on key-value stores: Redis and etcd (LCSKJ)
+ENH: Issue #93 - Translation storage in php array (ctrlaltca)
 
 Version 3.3.2 August 23, 2016
 
