@@ -246,7 +246,7 @@ class MessageSource_PHP extends MessageSource
 		return false;
 	}
 
-	protected function internalSaveFile($php, $filename)
+	protected function internalSaveFile($php, $filename, $variant)
 	{
 		$php['info']['date'] = @date('Y-m-d\TH:i:s\Z');
 
@@ -298,7 +298,7 @@ class MessageSource_PHP extends MessageSource
 			);
 		}
 
-		return $this->internalSaveFile($php, $filename);
+		return $this->internalSaveFile($php, $filename, $variant);
 	}
 
 	/**
@@ -339,7 +339,7 @@ class MessageSource_PHP extends MessageSource
 			}
 		}
 
-		return $this->internalSaveFile($php, $filename);
+		return $this->internalSaveFile($php, $filename, $variant);
 	}
 
 	/**
@@ -370,7 +370,7 @@ class MessageSource_PHP extends MessageSource
 			if($unit['source'] == $message)
 			{
 				unset($php['trans-unit'][$k]);
-				return $this->internalSaveFile($php, $filename);
+				return $this->internalSaveFile($php, $filename, $variant);
 			}
 		}
 
