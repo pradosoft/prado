@@ -473,7 +473,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$matchEnd=0;
 		$c=0;
 		$this->_directive=null;
-		//try
+		try
 		{
 			for($i=0;$i<$n;++$i)
 			{
@@ -514,7 +514,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if($name!==$type)
 					{
 						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
-						throw new TConfigurationException('template_closingtag_expected',$tag);
+						throw new TConfigurationException('template_closingtag_expected',$tag, "</com:$type>");
 					}
 					$container=$tpl[$container][0];
 				}
@@ -600,7 +600,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if($name!=='@'.$prop)
 					{
 						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
-						throw new TConfigurationException('template_closingtag_expected',$tag);
+						throw new TConfigurationException('template_closingtag_expected',$tag,"</prop:$prop>");
 					}
 					if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
 					{
@@ -641,12 +641,11 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			{
 				$name=array_pop($stack);
 				$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
-				throw new TConfigurationException('template_closingtag_expected',$tag);
+				throw new TConfigurationException('template_closingtag_expected',$tag, "nothing");
 			}
 			if($textStart<strlen($input))
 				$tpl[$c++]=array($container,substr($input,$textStart));
 		}
-		/*
 		catch(\Exception $e)
 		{
 			if(($e instanceof TException) && ($e instanceof TTemplateException))
@@ -656,7 +655,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			else
 				$line=$this->_startingLine+count(explode("\n",substr($input,0,$matchEnd+1)));
 			$this->handleException($e,$line,$input);
-		} */
+		}
 
 		if($this->_directive===null)
 			$this->_directive=array();
