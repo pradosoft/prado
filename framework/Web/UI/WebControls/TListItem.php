@@ -76,15 +76,15 @@ class TListItem extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_attributes===null)
-			$exprops[] = "\0TListItem\0_attributes";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_attributes";
 		if($this->_text==='')
-			$exprops[] = "\0TListItem\0_text";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_text";
 		if($this->_value==='')
-			$exprops[] = "\0TListItem\0_value";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_value";
 		if ($this->_enabled===true)
-			$exprops[] = "\0TListItem\0_enabled";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_enabled";
 		if ($this->_selected===false)
-			$exprops[] = "\0TListItem\0_selected";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_selected";
 	}
 
 	/**

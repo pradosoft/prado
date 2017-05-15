@@ -45,11 +45,11 @@ class TTableItemStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_horizontalAlign===null)
-			$exprops[] = "\0TTableItemStyle\0_horizontalAlign";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_horizontalAlign";
 		if ($this->_verticalAlign===null)
-			$exprops[] = "\0TTableItemStyle\0_verticalAlign";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_verticalAlign";
 		if ($this->_wrap===null)
-			$exprops[] = "\0TTableItemStyle\0_wrap";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_wrap";
 	}
 
 	/**

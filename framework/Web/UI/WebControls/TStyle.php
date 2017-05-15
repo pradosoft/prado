@@ -54,15 +54,15 @@ class TStyle extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_fields===array())
-			$exprops[] = "\0TStyle\0_fields";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_fields";
 		if($this->_font===null)
-			$exprops[] = "\0TStyle\0_font";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_font";
 		if($this->_class===null)
-			$exprops[] = "\0TStyle\0_class";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_class";
 		if ($this->_customStyle===null)
-			$exprops[] = "\0TStyle\0_customStyle";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_customStyle";
 		if ($this->_displayStyle==='Fixed')
-			$exprops[] = "\0TStyle\0_displayStyle";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_displayStyle";
 	}
 
 	/**

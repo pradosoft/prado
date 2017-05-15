@@ -1739,12 +1739,12 @@ class TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		if($this->_listeningenabled===false)
-			$exprops[] = "\0TComponent\0_listeningenabled";
+			$exprops[] = "\0Prado\TComponent\0_listeningenabled";
 		if($this->_behaviorsenabled===true)
-			$exprops[] = "\0TComponent\0_behaviorsenabled";
+			$exprops[] = "\0Prado\TComponent\0_behaviorsenabled";
 		if ($this->_e===array())
-			$exprops[] = "\0TComponent\0_e";
+			$exprops[] = "\0Prado\TComponent\0_e";
 		if ($this->_m===null)
-			$exprops[] = "\0TComponent\0_m";
+			$exprops[] = "\0Prado\TComponent\0_m";
 	}
 }

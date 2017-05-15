@@ -53,15 +53,15 @@ class TPanelStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl===null)
-			$exprops[] = "\0TPanelStyle\0_backImageUrl";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_backImageUrl";
 		if ($this->_direction===null)
-			$exprops[] = "\0TPanelStyle\0_direction";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_direction";
 		if ($this->_horizontalAlign===null)
-			$exprops[] = "\0TPanelStyle\0_horizontalAlign";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_horizontalAlign";
 		if ($this->_scrollBars===null)
-			$exprops[] = "\0TPanelStyle\0_scrollBars";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_scrollBars";
 		if ($this->_wrap===null)
-			$exprops[] = "\0TPanelStyle\0_wrap";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_wrap";
 	}
 
 	/**

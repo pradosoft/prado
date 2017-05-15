@@ -66,11 +66,11 @@ class TFont extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_flags===0)
-			$exprops[] = "\0TFont\0_flags";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_flags";
 		if ($this->_name==='')
-			$exprops[] = "\0TFont\0_name";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_name";
 		if ($this->_size==='')
-			$exprops[] = "\0TFont\0_size";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_size";
 	}
 
 	/**

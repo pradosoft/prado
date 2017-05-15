@@ -44,23 +44,23 @@ class TDataGridPagerStyle extends TPanelStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_mode===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_mode";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_mode";
 		if ($this->_nextText===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_nextText";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_nextText";
 		if ($this->_prevText===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_prevText";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_prevText";
 		if ($this->_firstText===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_firstText";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_firstText";
 		if ($this->_lastText===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_lastText";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_lastText";
 		if ($this->_buttonCount===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_buttonCount";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonCount";
 		if ($this->_position===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_position";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_position";
 		if ($this->_visible===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_visible";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_visible";
 		if ($this->_buttonType===null)
-			$exprops[] = "\0TDataGridPagerStyle\0_buttonType";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonType";
 	}
 
 	/**

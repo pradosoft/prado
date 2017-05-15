@@ -58,17 +58,17 @@ class TTableStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl===null)
-			$exprops[] = "\0TTableStyle\0_backImageUrl";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_backImageUrl";
 		if ($this->_horizontalAlign===null)
-			$exprops[] = "\0TTableStyle\0_horizontalAlign";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_horizontalAlign";
 		if ($this->_cellPadding===null)
-			$exprops[] = "\0TTableStyle\0_cellPadding";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellPadding";
 		if ($this->_cellSpacing===null)
-			$exprops[] = "\0TTableStyle\0_cellSpacing";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellSpacing";
 		if ($this->_gridLines===null)
-			$exprops[] = "\0TTableStyle\0_gridLines";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_gridLines";
 		if ($this->_borderCollapse===null)
-			$exprops[] = "\0TTableStyle\0_borderCollapse";
+			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_borderCollapse";
 	}
 
 	/**

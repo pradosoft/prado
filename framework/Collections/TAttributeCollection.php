@@ -52,7 +52,7 @@ class TAttributeCollection extends TMap
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_caseSensitive===false)
-			$exprops[] = "\0TAttributeCollection\0_caseSensitive";
+			$exprops[] = "\0Prado\Collections\TAttributeCollection\0_caseSensitive";
 	}
 
 	/**
