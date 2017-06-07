@@ -3,6 +3,7 @@ Even if are trying hard to ensure that the framework is usable, your mileage may
 We encourage you to test it and to report any problem that you find.
 
 # Prado PHP Framework
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/pradosoft/prado?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5 and 7.
 PRADO stands for PHP Rapid Application Development Object-oriented.
