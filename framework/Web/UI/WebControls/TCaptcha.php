@@ -393,7 +393,7 @@ class TCaptcha extends TImage
 		$options['theme']=$this->getTokenImageTheme();
 		if(($randomSeed=$this->getViewState('RandomSeed',0))===0)
 		{
-			$randomSeed=(int)(microtime()*1000000);
+			$randomSeed=(int)(microtime(true)*1000000);
 			$this->setViewState('RandomSeed',$randomSeed);
 		}
 		$options['randomSeed']=$this->getChangingTokenBackground()?0:$randomSeed;
