@@ -531,10 +531,7 @@ class THttpResponse extends TModule implements ITextWriter
 		if($this->getRequest()->getHttpProtocolVersion() === null)
 			$protocol='HTTP/1.1';
 
-		$phpSapiName = substr(php_sapi_name(), 0, 3);
-		$cgi = $phpSapiName == 'cgi' || $phpSapiName == 'fpm';
-
-		header(($cgi ? 'Status:' : $protocol).' '.$this->_status.' '.$this->_reason, true, TPropertyValue::ensureInteger($this->_status));
+		header($protocol.' '.$this->_status.' '.$this->_reason, true, TPropertyValue::ensureInteger($this->_status));
 
 		$this->_httpHeaderSent = true;
 	}
