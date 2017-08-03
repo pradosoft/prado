@@ -883,8 +883,13 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
+	 * Renders hidden fields. To avoid browsers from trying to restore the previous
+	 * state of the fields after a page reload, the autocomplete="off" attribute is used.
+	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
+	 * rendered instead (#642).
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
+
 	protected function renderHiddenFieldsInt($writer, $initial)
  	{
 		if ($initial) $this->_renderedHiddenFields = array();
@@ -896,11 +901,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if(is_array($value))
 			{
 				foreach($value as $v)
-					$str.='<input type="hidden" name="'.$name.'[]" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+					$str.='<input type="text" style="display:none" autocomplete="off" name="'.$name.'[]" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
 			}
 			else
 			{
-				$str.='<input type="hidden" name="'.$name.'" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+				$str.='<input type="text" style="display:none" autocomplete="off" name="'.$name.'" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
 			}
 			$this->_renderedHiddenFields[] = $name;
 		}

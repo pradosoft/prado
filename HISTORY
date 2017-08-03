@@ -6,6 +6,7 @@ CHG: Drop bundled dependencies and use composer instead (ctrlaltca, david0, LCSK
 CHG: Split demos in another repo (ctrlaltca, david0, LCSKJ)
 BUG: Issue #625 - IIS: The url tag produce an extra directory separator before the result (ctrlaltca)
 BUG: Issue #610 - IIS: Page redirect dosn't work (ctrlaltca)
+BUG: Issue #642 - Firefox restores hidden field value after callback on F5-Reload (LCSKJ, ctrlaltca)
 BUG: Fix missing language file in TJuiDatePicker when regional default is set (LCSKJ)
 ENH: Issue #633 - Added two new controls TActiveHtmlArea and TActiveHtmlArea4 (LCSKJ)
 ENH: Issue #635 - Added HTML5 multiple file upload support in TFileUpload and TActiveFileUpload (LCSKJ)
