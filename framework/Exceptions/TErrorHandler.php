@@ -65,6 +65,10 @@ class TErrorHandler extends \Prado\TModule
 	 * number of lines before and after the error line to be displayed in case of an exception
 	 */
 	const SOURCE_LINES=12;
+	/**
+	 * number of prado internal function calls to be dropped from stack traces on fatal errors
+	 */
+	const FATAL_ERROR_TRACE_DROP_LINES=5;
 
 	/**
 	 * @var string error template directory
@@ -153,7 +157,14 @@ class TErrorHandler extends \Prado\TModule
 		$aRpl = array();
 		if($exception !== null && $exception instanceof \Exception)
 		{
-			$aTrace = $exception->getTrace();
+			if($exception instanceof TPhpFatalErrorException && 
+				function_exists('xdebug_get_function_stack'))
+			{
+				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+			} else {
+				$aTrace = $exception->getTrace();
+			}
+
 			foreach($aTrace as $item)
 			{
 				if(isset($item['file']))
@@ -243,7 +254,7 @@ class TErrorHandler extends \Prado\TModule
 		if(php_sapi_name()==='cli')
 		{
 			echo $exception->getMessage()."\n";
-			echo $exception->getTraceAsString();
+			echo $this->getExactTraceAsString($exception);
 			return;
 		}
 
@@ -281,7 +292,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
 			'%%SourceFile%%' => htmlspecialchars($fileName).' ('.$errorLine.')',
 			'%%SourceCode%%' => $source,
-			'%%StackTrace%%' => htmlspecialchars($exception->getTraceAsString()),
+			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
 		);
@@ -344,19 +355,23 @@ class TErrorHandler extends \Prado\TModule
 
 	private function getExactTrace($exception)
 	{
-		$trace=$exception->getTrace();
 		$result=null;
+		if($exception instanceof TPhpFatalErrorException && 
+			function_exists('xdebug_get_function_stack'))
+		{
+			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+		} else {
+			$trace=$exception->getTrace();
+		}
+		
 		// if PHP exception, we want to show the 2nd stack level context
 		// because the 1st stack level is of little use (it's in error handler)
-		if($exception instanceof TPhpErrorException)
-		{
+		if($exception instanceof TPhpErrorException) {
 			if(isset($trace[0]['file']))
 				$result=$trace[0];
 			elseif(isset($trace[1]))
 				$result=$trace[1];
-		}
-		else if($exception instanceof TInvalidOperationException)
-		{
+		} elseif($exception instanceof TInvalidOperationException) {
 			// in case of getter or setter error, find out the exact file and row
 			if(($result=$this->getPropertyAccessTrace($trace,'__get'))===null)
 				$result=$this->getPropertyAccessTrace($trace,'__set');
@@ -365,6 +380,33 @@ class TErrorHandler extends \Prado\TModule
 			return null;
 
 		return $result;
+	}
+
+	private function getExactTraceAsString($exception)
+	{
+		if($exception instanceof TPhpFatalErrorException && 
+			function_exists('xdebug_get_function_stack'))
+		{
+			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
+			$txt = '';
+			$row = 0;
+
+			// try to mimic Exception::getTraceAsString()
+			foreach($trace as $line)
+			{
+				if(array_key_exists('function', $line))
+					$func = $line['function'] . '(' . implode(',', $line['params']) . ')';
+				else
+					$func = 'unknown';
+
+				$txt .= '#' . $row . ' ' . $line['file'] . '(' . $line['line'] . '): ' . $func . "\n";
+				$row++;
+			}
+
+			return $txt;
+		}
+
+		return $exception->getTraceAsString();
 	}
 
 	private function getPropertyAccessTrace($trace,$pattern)

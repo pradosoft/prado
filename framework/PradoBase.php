@@ -16,6 +16,7 @@ namespace Prado;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
+use Prado\Exceptions\TPhpFatalErrorException;
 use Prado\Util\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
@@ -193,7 +194,7 @@ class PradoBase
 			TPhpErrorException::isFatalError($error) &&
 			error_reporting() & $error['type'])
 		{
-			self::exceptionHandler(new TPhpErrorException($error['type'],$error['message'],$error['file'],$error['line']));
+			self::exceptionHandler(new TPhpFatalErrorException($error['type'],$error['message'],$error['file'],$error['line']));
 		}
 	}
 
