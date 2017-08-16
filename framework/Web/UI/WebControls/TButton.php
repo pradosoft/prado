@@ -35,6 +35,9 @@ use Prado\TPropertyValue;
  *
  * TButton displays the {@link setText Text} property as the button caption.
  *
+ * TButton by default renders an input tag; the {@link setButtonTag ButtonTag}
+ * property can be used to render a button tag (introduced in html5).
+ *
  * TButton can be one of three {@link setButtonType ButtonType}: Submit, Button and Reset.
  * By default, it is a Submit button and the form submission uses the browser's
  * default submission capability. If it is Button or Reset, postback may occur
