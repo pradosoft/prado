@@ -23,8 +23,6 @@ namespace Prado\I18N\core;
 use Exception;
 use Prado\Prado;
 
-require_once(__DIR__ . '/DateTimeFormatInfo.php');
-
 /**
  * Get the encoding utilities
  */
@@ -47,6 +45,7 @@ require_once(__DIR__ . '/util.php');
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\I18N\core
+ * @deprecated since 4.0.2
  */
 class DateFormat
 {

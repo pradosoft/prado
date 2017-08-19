@@ -19,11 +19,6 @@
 namespace Prado\I18N\core;
 
 /**
- * Include the CultureInfo class.
- */
-require_once(__DIR__ . '/CultureInfo.php');
-
-/**
  * HTTPNegotiator class.
  *
  * Get the language and charset information from the client browser.
@@ -61,8 +56,6 @@ class HTTPNegotiator
 			return $this->languages;
 		}
 
-		//$basedir = CultureInfo::dataDir();
-		//$ext = CultureInfo::fileExt();
 		$info = new CultureInfo();
 
 		foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang) {

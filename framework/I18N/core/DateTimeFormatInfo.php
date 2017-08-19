@@ -13,18 +13,12 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
-
-/**
- * Get the CultureInfo class.
- */
 use Exception;
-
-require_once(__DIR__ . '/CultureInfo.php');
-
 
 /**
  * Defines how DateTime values are formatted and displayed, depending
@@ -75,15 +69,17 @@ require_once(__DIR__ . '/CultureInfo.php');
  * </code>
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @package Prado\I18N\core
+ * @deprecated since 4.0.0
  */
 class DateTimeFormatInfo
 {
 	/**
-	 * ICU date time formatting data.
-	 * @var array
+	 * Parent instance containing data
+	 * @var CultureInfo
 	 */
-	private $data = [];
+	private $cultureInfo = [];
 
 	/**
 	 * A list of properties that are accessable/writable.
@@ -132,24 +128,14 @@ class DateTimeFormatInfo
 	 * @param array $data ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	public function __construct($data = [])
+	public function __construct($cultureInfo)
 	{
 		$this->properties = get_class_methods($this);
 
-		if (empty($data)) {
-			throw new Exception('Please provide the ICU data to initialize.');
-		}
+		if(!($cultureInfo instanceof CultureInfo))
+			throw new Exception('Please provide a CultureInfo instance.');
 
-		$this->data = $data;
-	}
-
-	/**
-	 * Get the internal ICU data for date time formatting.
-	 * @return array ICU date time formatting data.
-	 */
-	protected function getData()
-	{
-		return $this->data;
+		$this->cultureInfo = $cultureInfo;
 	}
 
 	/**
@@ -157,10 +143,11 @@ class DateTimeFormatInfo
 	 * (invariant).
 	 * @return DateTimeFormatInfo default DateTimeFormatInfo.
 	 */
-	public static function getInvariantInfo()
+	static public function getInvariantInfo()
 	{
 		static $invariant;
-		if ($invariant === null) {
+		if($invariant === null)
+		{
 			$culture = CultureInfo::getInvariantCulture();
 			$invariant = $culture->getDateTimeFormat();
 		}
@@ -173,17 +160,30 @@ class DateTimeFormatInfo
 	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getInstance($culture = null)
+	public static function getInstance($culture=null)
 	{
-		if ($culture instanceof CultureInfo) {
+
+		if ($culture instanceof CultureInfo)
+		{
 			return $culture->getDateTimeFormat();
-		} elseif (is_string($culture)) {
+		} elseif(is_string($culture)) {
 			$cultureInfo = CultureInfo::getInstance($culture);
 			return $cultureInfo->getDateTimeFormat();
 		} else {
 			$cultureInfo = CultureInfo::getInvariantCulture();
 			return $cultureInfo->getDateTimeFormat();
 		}
+	}
+
+	public function getInfoByPath($path)
+	{
+		static $basePath = null;
+		if($basePath === null)
+		{
+			$basePath = 'calendar/' . $this->cultureInfo->getCalendar() . '/';
+		}
+
+		return $this->cultureInfo->findInfo($basePath . $path);
 	}
 
 	/**
@@ -195,20 +195,7 @@ class DateTimeFormatInfo
 	 */
 	public function getAbbreviatedDayNames()
 	{
-		return $this->data['dayNames']['format']['abbreviated'];
-		//return $this->data['dayNames/format/abbreviated'];
-	}
-
-	/**
-	 * Set the abbreviated day names. The value should be
-	 * an array of string starting with Sunday and ends in Saturady.
-	 * For example,
-	 * <code>array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");</code>
-	 * @param array $value abbreviated day names.
-	 */
-	public function setAbbreviatedDayNames($value)
-	{
-		$this->data['dayNames']['format']['abbreviated'] = $value;
+		return $this->getInfoByPath('dayNames/format/abbreviated');
 	}
 
 	/**
@@ -220,19 +207,7 @@ class DateTimeFormatInfo
 	 */
 	public function getNarrowDayNames()
 	{
-		return $this->data['dayNames']['format']['narrow'];
-	}
-
-	/**
-	 * Set the narrow day names. The value should be
-	 * an array of string starting with Sunday and ends in Saturady.
-	 * For example,
-	 * <code>array("S", "M", "T", "W", "T", "F", "S");</code>
-	 * @param array $value narrow day names.
-	 */
-	public function setNarrowDayNames($value)
-	{
-		$this->data['dayNames']['format']['narrow'] = $value;
+		return $this->getInfoByPath('dayNames/format/narrow');
 	}
 
 	/**
@@ -244,21 +219,7 @@ class DateTimeFormatInfo
 	 */
 	public function getDayNames()
 	{
-		return $this->data['dayNames']['format']['wide'];
-	}
-
-
-	/**
-	 * Set the day names. The value should be
-	 * an array of string starting with Sunday and ends in Saturady.
-	 * For example,
-	 * <code>array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-	 * "Friday", "Saturday".);</code>
-	 * @param array $value day names.
-	 */
-	public function setDayNames($value)
-	{
-		$this->data['dayNames']['format']['wide'] = $value;
+		return $this->getInfoByPath('dayNames/format/wide');
 	}
 
 	/**
@@ -270,19 +231,7 @@ class DateTimeFormatInfo
 	 */
 	public function getNarrowMonthNames()
 	{
-		return $this->data['monthNames']['format']['narrow'];
-	}
-
-	/**
-	 * Set the narrow month names. The value should be
-	 * an array of string starting with J and ends in D.
-	 * For example,
-	 * <code>array("J","F","M","A","M","J","J","A","S","O","N","D");</code>
-	 * @param array $value month names.
-	 */
-	public function setNarrowMonthNames($value)
-	{
-		$this->data['monthNames']['format']['narrow'] = $value;
+		return $this->getInfoByPath('monthNames/format/narrow');
 	}
 
 	/**
@@ -295,24 +244,11 @@ class DateTimeFormatInfo
 	 */
 	public function getAbbreviatedMonthNames()
 	{
-		if (isset($this->data['monthNames']['format']['abbreviated'])) {
-			return $this->data['monthNames']['format']['abbreviated'];
-		} else {
-			return $this->data['monthNames']['format']['wide'];
-		}
-	}
-
-	/**
-	 * Set the abbreviated month names. The value should be
-	 * an array of string starting with Jan and ends in Dec.
-	 * For example,
-	 * <code>array("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	 * "Jul", "Aug", "Sep","Oct","Nov","Dec");</code>
-	 * @param array $value month names.
-	 */
-	public function setAbbreviatedMonthNames($value)
-	{
-		$this->data['monthNames']['format']['abbreviated'] = $value;
+		$info = $this->getInfoByPath('monthNames/format/abbreviated');
+		if ($info)
+			return $info;
+		else
+			return $this->getMonthNames();
 	}
 
 	/**
@@ -325,20 +261,7 @@ class DateTimeFormatInfo
 	 */
 	public function getMonthNames()
 	{
-		return $this->data['monthNames']['format']['wide'];
-	}
-
-	/**
-	 * Set the month names. The value should be
-	 * an array of string starting with Janurary and ends in December.
-	 * For example,
-	 * <code>array("January", "February", "March", "April", "May", "June",
-	 * "July", "August", "September","October","November","December");</code>
-	 * @param array $value month names.
-	 */
-	public function setMonthNames($value)
-	{
-		$this->data['monthNames']['format']['wide'] = $value;
+		return $this->getInfoByPath('monthNames/format/wide');
 	}
 
 	/**
@@ -348,7 +271,7 @@ class DateTimeFormatInfo
 	 */
 	public function getEra($era)
 	{
-		$eraName = $this->data['eras']['abbreviated'];
+		$eraName = $this->getInfoByPath('eras/abbreviated');
 		return $eraName[$era];
 	}
 
@@ -364,17 +287,6 @@ class DateTimeFormatInfo
 	}
 
 	/**
-	 * Set the AM Designator. For example, 'AM'.
-	 * @param string $value AM designator.
-	 */
-	public function setAMDesignator($value)
-	{
-		$markers = $this->getAMPMMarkers();
-		$markers[0] = $value;
-		$this->setAMPMMarkers($markers);
-	}
-
-	/**
 	 * The string designator for hours that are "post meridiem" (after noon).
 	 * The default for InvariantInfo is "PM".
 	 * @return string PM designator.
@@ -386,34 +298,13 @@ class DateTimeFormatInfo
 	}
 
 	/**
-	 * Set the PM Designator. For example, 'PM'.
-	 * @param string $value PM designator.
-	 */
-	public function setPMDesignator($value)
-	{
-		$markers = $this->getAMPMMarkers();
-		$markers[1] = $value;
-		$this->setAMPMMarkers($markers);
-	}
-
-	/**
 	 * Get the AM and PM markers array.
 	 * Default InvariantInfo for AM and PM is <code>array('AM','PM');</code>
 	 * @return array AM and PM markers
 	 */
 	public function getAMPMMarkers()
 	{
-		return $this->data['AmPmMarkers'];
-	}
-
-	/**
-	 * Set the AM and PM markers array.
-	 * For example <code>array('AM','PM');</code>
-	 * @param array $value AM and PM markers
-	 */
-	public function setAMPMMarkers($value)
-	{
-		$this->data['AmPmMarkers'] = $value;
+		return $this->getInfoByPath('AmPmMarkers');
 	}
 
 	/**
@@ -423,7 +314,7 @@ class DateTimeFormatInfo
 	 */
 	public function getFullTimePattern()
 	{
-		return $this->data['DateTimePatterns'][0];
+		return $this->getInfoByPath('DateTimePatterns')[0];
 	}
 
 	/**
@@ -433,7 +324,7 @@ class DateTimeFormatInfo
 	 */
 	public function getLongTimePattern()
 	{
-		return $this->data['DateTimePatterns'][1];
+		return $this->getInfoByPath('DateTimePatterns')[1];
 	}
 
 	/**
@@ -443,7 +334,7 @@ class DateTimeFormatInfo
 	 */
 	public function getMediumTimePattern()
 	{
-		return $this->data['DateTimePatterns'][2];
+		return $this->getInfoByPath('DateTimePatterns')[2];
 	}
 
 	/**
@@ -453,7 +344,7 @@ class DateTimeFormatInfo
 	 */
 	public function getShortTimePattern()
 	{
-		return $this->data['DateTimePatterns'][3];
+		return $this->getInfoByPath('DateTimePatterns')[3];
 	}
 
 	/**
@@ -463,7 +354,7 @@ class DateTimeFormatInfo
 	 */
 	public function getFullDatePattern()
 	{
-		return $this->data['DateTimePatterns'][4];
+		return $this->getInfoByPath('DateTimePatterns')[4];
 	}
 
 	/**
@@ -473,7 +364,7 @@ class DateTimeFormatInfo
 	 */
 	public function getLongDatePattern()
 	{
-		return $this->data['DateTimePatterns'][5];
+		return $this->getInfoByPath('DateTimePatterns')[5];
 	}
 
 	/**
@@ -483,7 +374,7 @@ class DateTimeFormatInfo
 	 */
 	public function getMediumDatePattern()
 	{
-		return $this->data['DateTimePatterns'][6];
+		return $this->getInfoByPath('DateTimePatterns')[6];
 	}
 
 	/**
@@ -493,7 +384,7 @@ class DateTimeFormatInfo
 	 */
 	public function getShortDatePattern()
 	{
-		return $this->data['DateTimePatterns'][7];
+		return $this->getInfoByPath('DateTimePatterns')[7];
 	}
 
 	/**
@@ -503,7 +394,7 @@ class DateTimeFormatInfo
 	 */
 	public function getDateTimeOrderPattern()
 	{
-		return $this->data['DateTimePatterns'][8];
+		return $this->getInfoByPath('DateTimePatterns')[8];
 	}
 
 	/**
