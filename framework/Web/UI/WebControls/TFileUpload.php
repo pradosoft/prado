@@ -105,7 +105,12 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	{
 		parent::onPreRender($param);
 		if(($form=$this->getPage()->getForm())!==null)
-			$form->setEnctype('multipart/form-data');
+		{
+			if($this->getPage()->getIsCallback())
+				$this->getPage()->getCallbackClient()->setAttribute($form, 'enctype', 'multipart/form-data');
+			else
+				$form->setEnctype('multipart/form-data');
+		}
 		$this->getPage()->getClientScript()->registerHiddenField('MAX_FILE_SIZE',$this->getMaxFileSize());
 		if($this->getEnabled(true))
 			$this->getPage()->registerRequiresPostData($this);
