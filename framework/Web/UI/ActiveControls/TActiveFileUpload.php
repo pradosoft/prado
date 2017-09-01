@@ -131,10 +131,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
           	 Options.targetID = '{$this->_target->getUniqueID()}';
           	 Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
           	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
-          	 Options.fileName = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileName')) : $this->getFileName()) . "';
-             Options.fileSize = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileSize')) : $this->getFileSize()) . "';
-             Options.fileType = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileType')) : $this->getFileType()) . "';
-             Options.errorCode = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'errorCode')) : $this->getErrorCode()) . "';
+          	 Options.fileName = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileName') : $this->getFileName(), JSON_HEX_APOS) . "';
+             Options.fileSize = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileSize') : $this->getFileSize(), JSON_HEX_APOS) . "';
+             Options.fileType = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileType') : $this->getFileType(), JSON_HEX_APOS) . "';
+             Options.errorCode = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'errorCode') : $this->getErrorCode(), JSON_HEX_APOS) . "';
           	 parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
            </script>";
 
@@ -299,10 +299,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
           	 Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
 			       Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
           	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
-          	 Options.fileName = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileName')) : $this->getFileName()) . "';
-             Options.fileSize = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileSize')) : $this->getFileSize()) . "';
-             Options.fileType = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'fileType')) : $this->getFileType()) . "';
-             Options.errorCode = '" . ($this->getMultiple() ? TJavaScript::jsonEncode(array_column($params->files, 'errorCode')) : $this->getErrorCode()) . "';
+          	 Options.fileName = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileName') : $this->getFileName(), JSON_HEX_APOS) . "';
+             Options.fileSize = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileSize') : $this->getFileSize(), JSON_HEX_APOS) . "';
+             Options.fileType = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileType') : $this->getFileType(), JSON_HEX_APOS) . "';
+             Options.errorCode = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'errorCode') : $this->getErrorCode(), JSON_HEX_APOS) . "';
            	 parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
            </script>";
 		}
