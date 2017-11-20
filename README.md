@@ -39,9 +39,9 @@ Just create a composer.json file for your project:
 			"url": "https://asset-packagist.org"
 		}
 	],
-    "require": {
-        "pradosoft/prado": "~4.0"
-    }
+	"require": {
+		"pradosoft/prado": "~4.0"
+	}
 }
 ```
 
@@ -49,7 +49,7 @@ The [asset-packagist](https://asset-packagist.org) repository is used to install
 Assuming you already installed composer, run
 
 ```sh
-    composer install
+	composer install
 ```
 
 Then you can include the autoloader, and you will have access to the library classes:
