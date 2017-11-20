@@ -1,4 +1,8 @@
-Version 4.0.0 - in development
+Version 4.0.1 - in development
+
+None yet ;)
+
+Version 4.0.0 - November 20, 2017
 
 CHG: Add native php namespace support on all classes (ctrlaltca, david0, LCSKJ)
 CHG: Add native composer autoloader support (ctrlaltca, david0, LCSKJ)
