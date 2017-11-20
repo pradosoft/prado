@@ -1,7 +1,3 @@
-# Warning: this is a development version of the upcoming Prado 4.
-Even if are trying hard to ensure that the framework is usable, your mileage may vary.
-We encourage you to test it and to report any problem that you find.
-
 # Prado PHP Framework
 
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5 and 7.
@@ -13,14 +9,6 @@ PRADO stands for PHP Rapid Application Development Object-oriented.
 [![Latest Stable Version](https://poser.pugx.org/pradosoft/prado/v/stable.png)](https://packagist.org/packages/pradosoft/prado)
 
 [![Gitter](https://badges.gitter.im/pradosoft/prado.png)](https://gitter.im/pradosoft/prado?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-## API Documentation
-The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
-
-Prado uses ApiGen (http://www.apigen.org) to generate its API documentation.
-An ApiGen configuration file is providen, to generate the documentation just execute
-```./vendor/bin/apigen generate --config=.apigen.yaml```
-The documentation will be generated in the `build/docs/` directory.
 
 ## Install
 
@@ -74,15 +62,6 @@ require 'vendor/autoload.php';
 Several different example prado applications are provided in the https://github.com/pradosoft/prado-demos repository. You can see these applications running here: http://www.pradoframework.net/site/demos/ .
 When you create your own prado application you do NOT need these folders.
 
-## Testing
-
-Prado uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
-A phpunit configuration file is providen, to run the tests just execute
-```./vendor/bin/phpunit --testsuite unit``` to run unit tests and
-```./vendor/bin/phpunit --testsuite functional``` to run functional tests.
-
-Test results will be saved in in the `build/tests/` directory.
-
 ## Integration with your favorite IDE/editor
 
 Plugins providing syntax highlighting and code snippets can be found at https://github.com/pradosoft/editor-plugins
@@ -108,4 +87,21 @@ Starting point:
 * Make your changes
 * Write tests for your changes to ensure that later changes to prado won't break your code.
 * Submit your pull request
+
+## Testing
+
+Prado uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
+A phpunit configuration file is providen, to run the tests just execute
+```./vendor/bin/phpunit --testsuite unit``` to run unit tests and
+```./vendor/bin/phpunit --testsuite functional``` to run functional tests.
+
+Test results will be saved in in the `build/tests/` directory.
+
+## API Documentation
+The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
+
+Prado uses its own fork of ApiGen (http://www.apigen.org) to generate its API documentation.
+An ApiGen configuration file is providen, to generate the documentation just execute
+```./vendor/bin/apigen generate --config=.apigen.yaml```
+The documentation will be generated in the `build/docs/` directory.
 
