@@ -92,6 +92,11 @@
             "Prado\\": "framework"
         }
     },
+    "config": {
+        "platform": {
+            "php": "5.6"
+        }
+    },
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",
 		"source" : "https://github.com/pradosoft/prado",
