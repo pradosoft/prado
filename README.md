@@ -92,16 +92,19 @@ Starting point:
 
 Prado uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
 A phpunit configuration file is providen, to run the tests just execute
-```./vendor/bin/phpunit --testsuite unit``` to run unit tests and
-```./vendor/bin/phpunit --testsuite functional``` to run functional tests.
+
+```composer unittest``` to run unit tests and
+```composer functionaltest``` to run functional tests.
 
 Test results will be saved in in the `build/tests/` directory.
 
 ## API Documentation
 The complete API documentation can be found at http://pradosoft.github.io/docs/manual/
 
-Prado uses its own fork of ApiGen (http://www.apigen.org) to generate its API documentation.
+Prado uses its own fork of ApiGen 4 (http://www.apigen.org) to generate its API documentation.
 An ApiGen configuration file is providen, to generate the documentation just execute
-```./vendor/bin/apigen generate --config=.apigen.yaml```
+
+```composer gendoc```
+
 The documentation will be generated in the `build/docs/` directory.
 

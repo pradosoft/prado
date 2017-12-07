@@ -102,6 +102,11 @@
 		"source" : "https://github.com/pradosoft/prado",
 		"docs" : "http://www.pradoframework.net/site/documentation"
 	},
+    "scripts": {
+        "gendoc": "apigen generate --config=.apigen.yaml",
+        "unittest": "phpunit --testsuite unit",
+        "functionaltest": "phpunit --testsuite functional"
+    },
 	"bin" : [
 		"bin/prado-cli"
 	]
