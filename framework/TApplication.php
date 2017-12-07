@@ -93,15 +93,6 @@ use Prado\Util\TLogger;
 class TApplication extends \Prado\TComponent
 {
 	/**
-	 * possible application mode.
-	 * @deprecated deprecated since version 3.0.4 (use TApplicationMode constants instead)
-	 */
-	const STATE_OFF='Off';
-	const STATE_DEBUG='Debug';
-	const STATE_NORMAL='Normal';
-	const STATE_PERFORMANCE='Performance';
-
-	/**
 	 * Page service ID
 	 */
 	const PAGE_SERVICE_ID='page';
@@ -382,7 +373,7 @@ class TApplication extends \Prado\TComponent
 			$this->_requestCompleted=false;
 			while($this->_step<$n)
 			{
-				if($this->_mode===self::STATE_OFF)
+				if($this->_mode===TApplicationMode::Off)
 					throw new THttpException(503,'application_unavailable');
 				if($this->_requestCompleted)
 					break;

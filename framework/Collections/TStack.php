@@ -1,6 +1,6 @@
 <?php
 /**
- * TStack, TStackIterator classes
+ * TStack classes
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado

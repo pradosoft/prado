@@ -23,7 +23,7 @@ use Prado\TPropertyValue;
  * A TDataGridItem control represents an item in the {@link TDataGrid} control,
  * such as heading section, footer section, or a data item.
  * The index and data value of the item can be accessed via {@link getItemIndex ItemIndex}>
- * and {@link getDataItem DataItem} properties, respectively. The type of the item
+ * and {@link getData Data} properties, respectively. The type of the item
  * is given by {@link getItemType ItemType} property. Property {@link getDataSourceIndex DataSourceIndex}
  * gives the index of the item from the bound data source.
  *
@@ -116,26 +116,6 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	public function setData($value)
 	{
 		$this->_data=$value;
-	}
-
-	/**
-	 * This property is deprecated since v3.1.0.
-	 * @return mixed data associated with the item
-	 * @deprecated deprecated since v3.1.0. Use {@link getData} instead.
-	 */
-	public function getDataItem()
-	{
-		return $this->getData();
-	}
-
-	/**
-	 * This property is deprecated since v3.1.0.
-	 * @param mixed data to be associated with the item
-	 * @deprecated deprecated since version 3.1.0. Use {@link setData} instead.
-	 */
-	public function setDataItem($value)
-	{
-		return $this->setData($value);
 	}
 
 	/**

@@ -303,24 +303,6 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @return boolean enable compression of the javascript files, default is false.
-	 * @deprecated since 4.0
-	 */
-	public function getEnableCompression()
-	{
-		return $this->getViewState('EnableCompression', false);
-	}
-
-	/**
-	 * @param boolean enable compression of the javascript files, default is false.
-	 * @deprecated since 4.0
-	 */
-	public function setEnableCompression($value)
-	{
-		$this->setViewState('EnableCompression', TPropertyValue::ensureBoolean($value));
-	}
-
-	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.

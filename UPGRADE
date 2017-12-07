@@ -9,6 +9,23 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.0.0
+---------------------
+- Removed deprecated TSqliteCache class; use TDbCache instead 
+- Removed deprecated iterator classes: TListIterator, TMapIterator, TStackIterator; use ArrayIterator instead
+- Removed deprecated message source classes: MessageSource_MySQL and MessageSource_SQLite; use MessageSource_Database instead
+- Removed deprecated STATE_OFF, STATE_DEBUG, STATE_NORMAL, STATE_PERFORMANCE constants from TApplication; use TApplicationMode constants instead
+- Removed deprecated ST_AUTO, ST_START, ST_STEP, ST_FINISH and ST_COMPLETE constants from TWizard; use TWizardStepType constants instead
+- Removed deprecated DataItem property from TDataListItem, TRepeaterItem and TDataGridItem classes; use Data instead
+- Removed deprecated IT_HEADER, IT_FOOTER, IT_ITEM, IT_SEPARATOR, IT_ALTERNATINGITEM, IT_EDITITEM, IT_SELECTEDITEM, IT_PAGER constants from TRepeater and TDataGrid; use TListItemType constants instead.
+- Removed deprecated CompressionOptions and EnableCompression properties from THtmlArea and THtmlArea4
+- Removed deprecated quoteFunction() and isFunction() static methods from TJavaScript class; use quoteJsLiteral() and isJsLiteral() istead
+- Removed deprecated HasPriority property from TCallbackClientSide; no replacement available, as it was effectless since 3.3.0
+- Removed TDraggable, TDraggableConstraint, TDraggableGhostingOptions and TDraggableRevertOptions classes; use TJuiDraggable instead
+- Removed TDropContainer and TDropContainerEventParameter classes; use TJuiDroppable instead
+- Removed TAutoComplete, TAutoCompleteEventParameter and TAutoCompleteTemplate classes; use TJuiAutoComplete instead
+- Removed autocomplete, dragdrop, dragdropextra, prototype and scriptaculous PradoScript (javascript) packages
+
 Upgrading from v3.3.x
 ---------------------
 - Removed RepackUTF7 property from TSafeHtml; it never became a standard.

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4f34fd53090e0eedad2dff1dbc56944",
+    "content-hash": "04b1ed798c1aed570e9b48cdf03ff1d9",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -113,41 +113,6 @@
                 "bower-asset/jquery": ">=1.6"
             },
             "type": "library"
-        },
-        {
-            "name": "bower-asset/prototypejs-bower",
-            "version": "1.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/plynchnlm/prototypejs-bower.git",
-                "reference": "880a287e8cbdc08bd731ab3f013a1af486633f79"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/plynchnlm/prototypejs-bower/zipball/880a287e8cbdc08bd731ab3f013a1af486633f79",
-                "reference": "880a287e8cbdc08bd731ab3f013a1af486633f79",
-                "shasum": null
-            },
-            "type": "bower-asset"
-        },
-        {
-            "name": "bower-asset/scriptaculous-bower",
-            "version": "1.9.0",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:plynchnlm/scriptaculous-bower.git",
-                "reference": "cd5b0f19ef8c777e9dbf8a1f9389d1a5091ff34d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/plynchnlm/scriptaculous-bower/zipball/cd5b0f19ef8c777e9dbf8a1f9389d1a5091ff34d",
-                "reference": "cd5b0f19ef8c777e9dbf8a1f9389d1a5091ff34d",
-                "shasum": null
-            },
-            "require": {
-                "bower-asset/prototypejs-bower": "1.7.0"
-            },
-            "type": "bower-asset"
         },
         {
             "name": "bower-asset/tinymce",

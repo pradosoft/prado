@@ -39,7 +39,7 @@ class TCallbackErrorHandler extends TErrorHandler
 	 */
 	protected function displayException($exception)
 	{
-		if($this->getApplication()->getMode()===TApplication::STATE_DEBUG)
+		if($this->getApplication()->getMode()===TApplicationMode::Debug)
 		{
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);

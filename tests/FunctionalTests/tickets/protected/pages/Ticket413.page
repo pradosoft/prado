@@ -50,7 +50,7 @@
 			<com:TInPlaceTextBox id="edit_id"
 				OnTextChanged="Page.bla"
 				CssClass="textbox"
-				Text="<%#$this->Parent->DataItem['name']%>">
+				Text="<%#$this->Parent->Data['name']%>">
 					<prop:ActiveControl.ClientSide
 						OnLoading="Element.show('loader')"
 						OnComplete="Element.hide('loader')" />

@@ -27,14 +27,14 @@ require_once(dirname(__FILE__).'/util.php');
  * MessageFormat class.
  * 
  * Format a message, that is, for a particular message find the 
- * translated message. The following is an example using 
- * a SQLite database to store the translation message. 
+ * translated message. 
  * Create a new message format instance and echo "Hello"
  * in simplified Chinese. This assumes that the world "Hello"
  * is translated in the database.
  *
  * <code>
- *  $source = MessageSource::factory('SQLite', 'sqlite://messages.db');
+ *   // db1 must be already configured
+ *  $source = MessageSource::factory('Database', 'db1');
  *	$source->setCulture('zh_CN');
  *	$source->setCache(new MessageCache('./tmp'));
  *

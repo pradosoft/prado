@@ -164,7 +164,7 @@ class TScaffoldEditView extends TScaffoldBase
 		if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
 		{
 			$item = $param->getItem();
-			$column = $item->getDataItem();
+			$column = $item->getData();
 			if($column===null)
 				return;
 

@@ -94,16 +94,6 @@ use Prado\Util\TDataFieldAccessor;
 class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * Repeater item types
-	 * @deprecated deprecated since version 3.0.4. Use TListItemType constants instead.
-	 */
-	const IT_HEADER='Header';
-	const IT_FOOTER='Footer';
-	const IT_ITEM='Item';
-	const IT_SEPARATOR='Separator';
-	const IT_ALTERNATINGITEM='AlternatingItem';
-
-	/**
 	 * @var ITemplate template for repeater items
 	 */
 	private $_itemTemplate=null;

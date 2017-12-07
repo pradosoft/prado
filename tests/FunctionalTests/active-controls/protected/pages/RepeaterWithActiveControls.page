@@ -41,7 +41,7 @@
 <prop:ItemTemplate>
 	<com:TInPlaceTextBox
 		id="edit_box"
-		Text=<%# $this->DataItem %>
+		Text=<%# $this->Data %>
 		OnTextChanged="Page.label_changed"
 		AutoHideTextBox="false"
 		CssClass="textbox" />
