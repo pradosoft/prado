@@ -21,15 +21,15 @@ The PRADO framework and the included demos are free software. They are released 
 The best way to install PRADO is [through composer](http://getcomposer.org).
 If you don't use composer yet, first install it:
 ```sh
-	# download composer.phar
-	curl -s http://getcomposer.org/installer | php
-	# install it globally on the system
-	mv composer.phar /usr/local/bin/composer
+# download composer.phar
+curl -s http://getcomposer.org/installer | php
+# install it globally on the system
+mv composer.phar /usr/local/bin/composer
 ```
 
 Then, create the application structure using composer:
 ```sh	
-	composer create-project pradosoft/prado-app app
+composer create-project pradosoft/prado-app app
 ```
 
 The application will be installed in the "app" directory.
@@ -39,15 +39,15 @@ Just create a composer.json file for your project:
 
 ```JSON
 {
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "https://asset-packagist.org"
-		}
-	],
-	"require": {
-		"pradosoft/prado": "~4.0"
-	}
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+    "require": {
+      "pradosoft/prado": "~4.0"
+  }
 }
 ```
 
@@ -55,7 +55,7 @@ The [asset-packagist](https://asset-packagist.org) repository is used to install
 Assuming you already installed composer, run
 
 ```sh
-	composer install
+composer install
 ```
 
 Then you can include the autoloader, and you will have access to the library classes:
@@ -77,7 +77,9 @@ The complete API documentation can be found on the [API Manual](http://pradosoft
 PRADO uses its own fork of ApiGen 4 (http://www.apigen.org) to generate its API documentation.
 An ApiGen configuration file is providen, to generate the documentation just execute
 
-```composer gendoc```
+```sh
+composer gendoc
+```
 
 The documentation will be generated in the `build/docs/` directory.
 
