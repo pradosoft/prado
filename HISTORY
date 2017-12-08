@@ -1,6 +1,8 @@
 Version 4.0.1 - in development
 
-None yet ;)
+CHG: Removed all deprecated code (ctrlaltca)
+CHG: Removed deprecated components based on the prototype jajascript library (ctrlaltca)
+ENH: Added composer script commands to run phpunit and apigen (ctrlaltca)
 
 Version 4.0.0 - November 20, 2017
 
