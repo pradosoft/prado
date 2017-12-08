@@ -38,7 +38,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Constructor.
 	 * Create a new message source using a Database
-	 * @param string MySQL datasource, in PEAR's DB DSN format.
+	 * @param string Database datasource, in PEAR's DB DSN format.
 	 * @see MessageSource::factory();
 	 */
 	function __construct($source)

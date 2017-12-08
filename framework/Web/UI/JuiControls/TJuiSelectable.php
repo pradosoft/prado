@@ -250,7 +250,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 		$repeater = new TRepeater;
 		$repeater->setHeaderTemplate(new TJuiSelectableTemplate('<ul id="'.$this->getWidgetID().'">'));
 		$repeater->setFooterTemplate(new TJuiSelectableTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->DataItem %></li>',null));
+		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));
 		$repeater->setEmptyTemplate(new TJuiSelectableTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;

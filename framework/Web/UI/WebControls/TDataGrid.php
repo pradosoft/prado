@@ -147,19 +147,6 @@ use Prado\Web\UI\ITemplate;
 class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * datagrid item types
-	 * @deprecated deprecated since version 3.0.4. Use TListItemType constants instead.
-	 */
-	const IT_HEADER='Header';
-	const IT_FOOTER='Footer';
-	const IT_ITEM='Item';
-	const IT_SEPARATOR='Separator';
-	const IT_ALTERNATINGITEM='AlternatingItem';
-	const IT_EDITITEM='EditItem';
-	const IT_SELECTEDITEM='SelectedItem';
-	const IT_PAGER='Pager';
-
-	/**
 	 * Command name that TDataGrid understands.
 	 */
 	const CMD_SELECT='Select';

@@ -2,7 +2,7 @@
 <div class="item-header">
 <com:TRepeater ID="_header">
 	<prop:ItemTemplate>
-		<com:TLabel Text=<%# $this->DataItem %> CssClass="field field_<%# $this->ItemIndex %>"/>
+		<com:TLabel Text=<%# $this->Data %> CssClass="field field_<%# $this->ItemIndex %>"/>
 	</prop:ItemTemplate>
 </com:TRepeater>
 
@@ -25,7 +25,7 @@
 	<com:TRepeater ID="_properties">
 		<prop:ItemTemplate>
 		<span class="field field_<%# $this->ItemIndex %>">
-			<%# htmlspecialchars($this->DataItem) %>
+			<%# htmlspecialchars($this->Data) %>
 		</span>
 		</prop:ItemTemplate>
 	</com:TRepeater>

@@ -39,7 +39,6 @@ require_once(dirname(__FILE__).'/MessageCache.php');
  *  # PHP -- using PHP arrays to store the translation messages.
  *  # gettext -- Translated messages are stored in the gettext format.
  *  # Database -- Use an existing TDbConnection to store the messages.
- *  # SQLite -- (Deprecated) Store the translation messages in a SQLite database.
  *
  * A custom message source can be instantiated by specifying the filename
  * parameter to point to the custom class file. E.g.
@@ -115,8 +114,6 @@ abstract class MessageSource implements IMessageSource
      * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory 
      * where the messages are stored. 
      * For 'Database', 'source' must be a valid connection id.
-     * If a deprecated 'SQLite' type is used, 'source' must contain
-     * a valid DSN.
 	 *
  	 * Custom message source are possible by supplying the a filename parameter
  	 * in the factory method.
@@ -129,7 +126,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{
-		$types = array('XLIFF','PHP','gettext','Database','SQLite');
+		$types = array('XLIFF','PHP','gettext','Database');
 
 		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "'.$type.'", valid types are '.

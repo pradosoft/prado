@@ -109,28 +109,12 @@ class TJavaScript
 	}
 
 	/**
-	 * Deprecated, use {@link quoteJsLiteral} instead
-	 */
-	public static function quoteFunction($js)
-	{
-		return self::quoteJsLiteral($js);
-	}
-
-	/**
 	 * @return boolean true if the parameter is marked as a javascript function, i.e. if it's considered as a
 	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
 	public static function isJsLiteral($js)
 	{
 		return ($js instanceof TJavaScriptLiteral);
-	}
-
-	/**
-	 * Deprecated, use {@link isJsLiteral} instead
-	 */
-	public static function isFunction($js)
-	{
-		return self::isJsLiteral($js);
 	}
 
 	/**

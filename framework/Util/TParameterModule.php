@@ -54,9 +54,6 @@ use Prado\Xml\TXmlElement;
  */
 class TParameterModule extends \Prado\TModule
 {
-	/**
-	 * @deprecated since 3.2
-	 */
 	const PARAM_FILE_EXT='.xml';
 	private $_initialized=false;
 	private $_paramFile=null;

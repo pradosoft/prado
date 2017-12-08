@@ -7,7 +7,7 @@
 <com:TActivePanel ID="panel1">
 	<com:TPlaceHolder ID="subpanel1" Visible="false">
 <div id="repeats"><com:TRepeater ID="repeater1">
-<prop:ItemTemplate>result - <%# $this->DataItem %> </prop:ItemTemplate>
+<prop:ItemTemplate>result - <%# $this->Data %> </prop:ItemTemplate>
 </com:TRepeater></div>
 <span id="contents">Text box content: <%= $this->textbox1->SafeText %></span>
 	</com:TPlaceHolder>

@@ -238,30 +238,6 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @return boolean true if the callback request has priority and will abort
-	 * existing prioritized request in order to send immediately. It does not
-	 * affect callbacks that are not prioritized. Default is true.
-	 * @deprecated since 3.3.0
-	 */
-	public function getHasPriority()
-	{
-		return true;
-	}
-
-	/**
-	 * @param boolean true to ensure that the callback request will be sent
-	 * immediately and will abort existing prioritized requests. It does not
-	 * affect callbacks that are not prioritized.
-	 * @deprecated since 3.3.0
-	 */
-	public function setHasPriority($value)
-	{
-		// mimic the old behavior
-		if(!$value)
-			$this->setEnablePageStateUpdate(false);
-	}
-
-	/**
 	 * Set to true to enable the callback response to enable the viewstate
 	 * update. This will automatically set HasPrority to true.
 	 * @param boolean true enables the callback response to update the

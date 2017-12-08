@@ -81,15 +81,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * Wizard step types.
-	 * @deprecated deprecated since version 3.0.4 (use TWizardStepType constants instead)
-	 */
-	const ST_AUTO='Auto';
-	const ST_START='Start';
-	const ST_STEP='Step';
-	const ST_FINISH='Finish';
-	const ST_COMPLETE='Complete';
-	/**
 	 * Navigation commands.
 	 */
 	const CMD_PREVIOUS='PreviousStep';
@@ -925,9 +916,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			$this->_sideBar->setVisible(false);
 			$this->_header->setVisible(false);
 		}
-		$this->_startNavigation->setVisible($showStandard && $activeStepType===self::ST_START);
-		$this->_stepNavigation->setVisible($showStandard && $activeStepType===self::ST_STEP);
-		$this->_finishNavigation->setVisible($showStandard && $activeStepType===self::ST_FINISH);
+		$this->_startNavigation->setVisible($showStandard && $activeStepType===TWizardStepType::Start);
+		$this->_stepNavigation->setVisible($showStandard && $activeStepType===TWizardStepType::Step);
+		$this->_finishNavigation->setVisible($showStandard && $activeStepType===TWizardStepType::Finish);
 
 		if(($navigationStyle=$this->getViewState('NavigationStyle',null))!==null)
 			$this->_navigation->getStyle()->mergeWith($navigationStyle);
@@ -1365,7 +1356,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 			if(strcasecmp($command,self::CMD_NEXT)===0)
 			{
-				if($type!==self::ST_START && $type!==self::ST_STEP)
+				if($type!==TWizardStepType::Start && $type!==TWizardStepType::Step)
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_NEXT);
 				if($index<$this->getWizardSteps()->getCount()-1)
 					$navParam->setNextStepIndex($index+1);
@@ -1374,7 +1365,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			}
 			else if(strcasecmp($command,self::CMD_PREVIOUS)===0)
 			{
-				if($type!==self::ST_FINISH && $type!==self::ST_STEP)
+				if($type!==TWizardStepType::Finish && $type!==TWizardStepType::Step)
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_PREVIOUS);
 				$movePrev=true;
 				if(($prevIndex=$this->getPreviousStepIndex(false))>=0)
@@ -1384,7 +1375,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			}
 			else if(strcasecmp($command,self::CMD_COMPLETE)===0)
 			{
-				if($type!==self::ST_FINISH)
+				if($type!==TWizardStepType::Finish)
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_COMPLETE);
 				if($index<$this->getWizardSteps()->getCount()-1)
 					$navParam->setNextStepIndex($index+1);

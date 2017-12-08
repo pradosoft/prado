@@ -1,6 +1,6 @@
 <?php
 /**
- * TList, TListIterator classes
+ * TList class
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado

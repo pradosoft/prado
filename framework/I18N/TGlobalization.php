@@ -186,10 +186,9 @@ class TGlobalization extends \Prado\TModule
 	/**
 	 * Sets the translation configuration. Example configuration:
 	 * <code>
-	 * $config['type'] = 'XLIFF'; //XLIFF, gettext, PHP, Database or MySQL (deprecated)
+	 * $config['type'] = 'XLIFF'; //XLIFF, gettext, PHP or Database
 	 * $config['source'] = 'Path.to.directory'; // for types XLIFF, PHP and gettext
 	 * $config['source'] = 'connectionId'; // for type Database
-	 * $config['source'] = 'mysql://user:pw@host/db'; // for type MySQL (deprecated)
 	 * $config['catalogue'] = 'messages'; //default catalog
 	 * $config['autosave'] = 'true'; //save untranslated message
 	 * $config['cache'] = 'true'; //cache translated message

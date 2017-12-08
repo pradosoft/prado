@@ -278,24 +278,6 @@ class THtmlArea4 extends TTextBox
 	}
 
 	/**
-	 * @return boolean enable compression of the javascript files, default is true.
-	 * @deprecated since 3.2.3: tinyMCE 4 doesn't support this anymore
-	 */
-	public function getEnableCompression()
-	{
-		return $this->getViewState('EnableCompression', true);
-	}
-
-	/**
-	 * @param boolean enable compression of the javascript files, default is true.
-	 * @deprecated since 3.2.3: tinyMCE 4 doesn't support this anymore
-	 */
-	public function setEnableCompression($value)
-	{
-		$this->setViewState('EnableCompression', TPropertyValue::ensureBoolean($value));
-	}
-
-	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
@@ -328,14 +310,6 @@ class THtmlArea4 extends TTextBox
 	public function getAvailableThemes()
 	{
 		return self::$_themes;
-	}
-
-	/**
-	 * @deprecated since 3.2.3. tinyMCE4 doesn's use this anymore
-	 */
-	protected function getCompressionOptions()
-	{
-		return array();
 	}
 
 	protected function loadJavascriptLibrary()

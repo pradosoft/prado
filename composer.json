@@ -52,8 +52,6 @@
 		"bower-asset/jquery": "^3",
 		"bower-asset/jquery-ui": "^1",
 		"bower-asset/bootstrap": "^3.3",
-		"bower-asset/prototypejs-bower": "^1.7",
-		"bower-asset/scriptaculous-bower": "^1.9",
 		"bower-asset/tinymce": "^4",
 		"bower-asset/highlightjs": "^9",
 		"bower-asset/clipboard": "*",

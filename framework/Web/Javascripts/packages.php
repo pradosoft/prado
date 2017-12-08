@@ -6,8 +6,6 @@ $folders = array(
 	'jquery' => 'Vendor\\bower-asset\\jquery\\dist',
 	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
 	'bootstrap' => 'Vendor\\bower-asset\\bootstrap\\dist',
-	'protoype' => 'Vendor\\bower-asset\\prototypejs-bower',
-	'scriptaculous' => 'Vendor\\bower-asset\\scriptaculous-bower',
 	'tinymce' => 'Vendor\\bower-asset\\tinymce',
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
@@ -90,13 +88,6 @@ $packages = array(
 	'jqueryui' => array(
 		'jquery-ui/jquery-ui.js',
 	),
-
-	// prototype + scriptaculous
-	'prototype' => array(
-		'protoype/prototype.js',
-		'scriptaculous/builder.js',
-		'scriptaculous/effects.js',
-	),
 		
 	//bootstrap
 	'bootstrap' => array(
@@ -117,22 +108,7 @@ $packages = array(
 	//clipboard
 	'clipboard' => array(
 		'clipboard/clipboard.js',
-	),
-
-	// old stuff
-	'dragdrop'=>array(
-		'scriptaculous/dragdrop.js',
-		'prado/activecontrols/dragdrop.js',
-	),
-
-	'dragdropextra'=>array(
-		'prado/activecontrols/dragdropextra.js',
-	),
-
-	'autocomplete' => array(
-		'scriptaculous/controls.js',
-		'prado/activecontrols/autocomplete.js',
-	),
+	)
 );
 
 //package names and their dependencies
@@ -158,10 +134,6 @@ $dependencies = array(
 	'ratings'			=> array('jquery', 'prado', 'ajax', 'ratings'),
 	'jqueryui'			=> array('jquery', 'jqueryui'),
 	'texthighlight'		=> array('jquery', 'prado', 'highlightjs', 'clipboard'),
-	'prototype'			=> array('prototype'),
-	'dragdrop'			=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop'),
-	'dragdropextra'		=> array('prototype', 'jquery', 'prado', 'ajax', 'dragdrop','dragdropextra'),
-	'autocomplete'		=> array('prototype', 'jquery', 'prado', 'ajax', 'autocomplete'),
 );
 
 return array($folders, $packages, $dependencies);
