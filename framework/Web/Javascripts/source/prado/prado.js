@@ -1,3 +1,5 @@
+/*! PRADO main js file | github.com/pradosoft/prado */
+
 /*
  * Polyfill for ECMAScript5's bind() function.
  * ----------

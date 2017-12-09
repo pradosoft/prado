@@ -2,6 +2,7 @@ Version 4.0.1 - in development
 
 CHG: Removed all deprecated code (ctrlaltca)
 CHG: Removed deprecated components based on the prototype jajascript library (ctrlaltca)
+CHG: Removed bundled copy of JSMin-php library, get it from composer instead (ctrlaltca)
 ENH: Added composer script commands to run phpunit and apigen (ctrlaltca)
 
 Version 4.0.0 - November 20, 2017

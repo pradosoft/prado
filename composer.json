@@ -47,6 +47,7 @@
 		"firephp/firephp-core": "*",
 		"erusev/parsedown": "*",
 		"ezyang/htmlpurifier": "*",
+		"mrclay/jsmin-php": "*",
 		"pradosoft/prado-wsdlgenerator": "*",
 		"pradosoft/prado-tinymce3": "*",
 		"bower-asset/jquery": "^3",

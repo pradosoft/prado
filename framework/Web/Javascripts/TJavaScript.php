@@ -290,7 +290,7 @@ class TJavaScript
 	 */
 	public static function JSMin($code)
 	{
-		return JSMin::minify($code);
+		return \JSMin\JSMin::minify($code);
 	}
 }
 
