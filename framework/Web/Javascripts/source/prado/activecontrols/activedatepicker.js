@@ -1,6 +1,5 @@
-/**
- * TActiveDatePicker control
- */
+/*! PRADO TActiveDatePicker javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TActiveDatePicker = jQuery.klass(Prado.WebUI.TDatePicker,
 {
 	onInit : function(options)

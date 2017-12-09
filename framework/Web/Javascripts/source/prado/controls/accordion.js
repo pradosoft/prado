@@ -1,9 +1,15 @@
-/* Simple Accordion Script
+/*! PRADO TAccordion javascript file | github.com/pradosoft/prado */
+
+/* Based on:
+ *
+ * Simple Accordion Script
  * Requires Prototype and Script.aculo.us Libraries
  * By: Brian Crescimanno <brian.crescimanno@gmail.com>
  * http://briancrescimanno.com
+ *
  * Adapted to Prado & minor improvements: Gabor Berczi <gabor.berczi@devworx.hu>
  * jQuery port by Bas Fabio <ctrlaltca@gmail.com>
+ *
  * This work is licensed under the Creative Commons Attribution-Share Alike 3.0
  * http://creativecommons.org/licenses/by-sa/3.0/us/
  */

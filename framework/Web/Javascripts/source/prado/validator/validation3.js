@@ -1,6 +1,6 @@
+/*! PRADO client-side javascript validation fascade | github.com/pradosoft/prado */
+
 /**
- * Prado client-side javascript validation fascade.
- *
  * <p>There are 4 basic classes: {@link Prado.Validation},
  * {@link Prado.ValidationManager}, {@link Prado.WebUI.TValidationSummary}
  * and {@link Prado.WebUI.TBaseValidator},

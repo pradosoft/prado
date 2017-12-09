@@ -1,3 +1,5 @@
+/*! PRADO controls javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI = jQuery.klass();
 
 Prado.WebUI.Control = jQuery.klass({

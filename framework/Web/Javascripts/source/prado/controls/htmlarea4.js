@@ -1,3 +1,4 @@
+/*! PRADO THtmlArea4 javascript file | github.com/pradosoft/prado */
 
 /*
  *
@@ -6,7 +7,6 @@
  * @author Gabor Berczi <gabor.berczi@devworx.hu>
  *
 */
-
 
 Prado.WebUI.THtmlArea4 = jQuery.klass(Prado.WebUI.Control,
 {

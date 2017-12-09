@@ -1,3 +1,5 @@
+/*! PRADO TSlider javascript file | github.com/pradosoft/prado */
+
 /**
  * TSlider client class.
  * This clas is mainly based on Scriptaculous Slider control (http://script.aculo.us)

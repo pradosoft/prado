@@ -1,3 +1,5 @@
+/*! PRADO TTabPanel javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TTabPanel = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)

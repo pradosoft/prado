@@ -272,8 +272,6 @@ return array(
 'TSimpleDateFormatter' => 'Prado\Util\TSimpleDateFormatter',
 'TVarDumper' => 'Prado\Util\TVarDumper',
 'TXmlRpcClient' => 'Prado\Util\TXmlRpcClient',
-'JSMin' => 'Prado\Web\Javascripts\JSMin',
-'JSMinException' => 'Prado\Web\Javascripts\JSMinException',
 'TJavaScript' => 'Prado\Web\Javascripts\TJavaScript',
 'TJavaScriptLiteral' => 'Prado\Web\Javascripts\TJavaScriptLiteral',
 'TJavaScriptString' => 'Prado\Web\Javascripts\TJavaScriptString',

@@ -1,3 +1,5 @@
+/*! PRADO TRatingList javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TRatingList = jQuery.klass(Prado.WebUI.Control,
 {
 	selectedIndex : -1,

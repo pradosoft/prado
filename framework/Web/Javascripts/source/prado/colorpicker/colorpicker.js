@@ -1,3 +1,5 @@
+/*! PRADO TColorPicker javascript file | github.com/pradosoft/prado */
+
 //-------------------- ricoColor.js
 if(typeof(Rico) == "undefined") Rico = {};
 

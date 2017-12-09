@@ -1,3 +1,5 @@
+/*! PRADO TInPlaceTextBox javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TInPlaceTextBox = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)

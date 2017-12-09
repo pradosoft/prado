@@ -1,3 +1,5 @@
+/*! PRADO TDatePicker javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 {
 	MonthNames : [	"January",		"February",		"March",	"April",

@@ -1,3 +1,5 @@
+/*! PRADO Active controls javascript file | github.com/pradosoft/prado */
+
 /**
  * Generic postback control.
  */

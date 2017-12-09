@@ -1,3 +1,5 @@
+/*! PRADO TKeyboard javascript file | github.com/pradosoft/prado */
+
 Prado.WebUI.TKeyboard = jQuery.klass(Prado.WebUI.Control,
 {
 	onInit : function(options)
