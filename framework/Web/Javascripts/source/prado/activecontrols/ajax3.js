@@ -1,3 +1,5 @@
+/*! PRADO Ajax javascript file | github.com/pradosoft/prado */
+
 Prado.CallbackRequestManager =
 {
 	/**
