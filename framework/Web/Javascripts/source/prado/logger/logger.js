@@ -1,3 +1,5 @@
+/*! PRADO TJavascriptLogger javascript file | github.com/pradosoft/prado */
+
 /*
 
 Created By: Corey Johnson
