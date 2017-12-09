@@ -21,8 +21,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\WebControls\TDatePicker;
 use Prado\Web\UI\WebControls\TDatePickerInputMode;
-use Prado\Util\TDateTimeStamp;
-
 
 /**
  * TActiveDatePicker class
@@ -107,12 +105,12 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 			$cb->setValue($this, $value);
 			if ($this->getInputMode()==TDatePickerInputMode::DropDownList)
 			{
-				$s = new TDateTimeStamp;
-				$date = $s->getDate($this->getTimeStampFromText());
+				$dt = new \DateTime;
+				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id=$this->getClientID();
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $date['mday'], 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'month', 'Value', $date['mon']-1, 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'year', 'Value', $date['year'], 'select');
+				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $dt->format('j'), 'select');
+				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'month', 'Value', $dt->format('n')-1, 'select');
+				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'year', 'Value', $dt->format('Y'), 'select');
 
 			}
 		}

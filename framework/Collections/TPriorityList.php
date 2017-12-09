@@ -452,7 +452,6 @@ class TPriorityList extends TList
 		if($this->getReadOnly())
 			throw new TInvalidOperationException('list_readonly',get_class($this));
 
-		$d=array_reverse($this->_d,true);
 		foreach($this->_d as $priority=>$items) {
 			for($index=count($items)-1;$index>=0;$index--)
 				$this->removeAtIndexInPriority($index,$priority);

@@ -16,7 +16,6 @@ use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;
 use Prado\Util\TSimpleDateFormatter;
-use Prado\Util\TDateTimeStamp;
 use Prado\I18N\core\CultureInfo;
 
 /**
@@ -512,8 +511,10 @@ class TDatePicker extends TTextBox
 		else
 			$year = $date['year'];
 
-		$s = new TDateTimeStamp;
-		$date = $s->getTimeStamp(0, 0, 0, $month, $day, $year);
+		$s = new \DateTime;
+		$s->setDate($year, $month, $day);
+		$s->setTime(0, 0 , 0);
+		$date = $s->getTimeStamp();
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
@@ -612,10 +613,8 @@ class TDatePicker extends TTextBox
 			$writer->addAttribute('class', $class);
 		$writer->renderBeginTag('span');
 
-		$s = new TDateTimeStamp;
-		$date = $s->getDate($this->getTimeStampFromText());
-		//$date = @getdate($this->getTimeStampFromText());
-
+		$date = new \DateTime;
+		$date->setTimeStamp($this->getTimeStampFromText());
 		$this->renderCalendarSelections($writer, $date);
 
 		//render a hidden input field
@@ -646,11 +645,11 @@ class TDatePicker extends TTextBox
 		foreach($formatter->getDayMonthYearOrdering() as $type)
 		{
 			if($type == 'day')
-				$this->renderCalendarDayOptions($writer,$date['mday']);
+				$this->renderCalendarDayOptions($writer, $date->format('j'));
 			elseif($type == 'month')
-				$this->renderCalendarMonthOptions($writer,$date['mon']);
+				$this->renderCalendarMonthOptions($writer, $date->format('n'));
 			elseif($type == 'year')
-				$this->renderCalendarYearOptions($writer,$date['year']);
+				$this->renderCalendarYearOptions($writer, $date->format('Y'));
 		}
 	}
 

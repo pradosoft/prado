@@ -121,9 +121,8 @@ class DateFormat
 		if($pattern === null)
 			$pattern = 'F';
 
-		$s = Prado::createComponent('System.Util.TDateTimeStamp');
-
-		$date = $s->getDate($time);
+		$date = new \DateTime;
+		$date->setTimestamp($time);
 
 		$pattern = $this->getPattern($pattern);
 
@@ -319,13 +318,12 @@ class DateFormat
 	 */
 	protected function getYear($date, $pattern='yyyy')
 	{
-		$year = $date['year'];
 		switch($pattern)
 		{
 			case 'yy':
-				return substr($year,2);
+				return $date->format('y');
 			case 'yyyy':
-				return $year;
+				return $date->format('Y');
 			default:
 				throw new Exception('The pattern for year is either "yy" or "yyyy".');
 		}
@@ -343,22 +341,18 @@ class DateFormat
 	 */
 	protected function getMonth($date, $pattern='M')
 	{
-		$month = $date['mon'];
-
 		switch($pattern)
 		{
 			case 'M':
-				return $month;
+				return $date->format('n');
 			case 'MM':
-				return str_pad($month, 2,'0',STR_PAD_LEFT);
+				return $date->format('m');
 			case 'MMM':
-				return $this->formatInfo->AbbreviatedMonthNames[$month-1];
-				break;
+				return $this->formatInfo->AbbreviatedMonthNames[$date->format('n')-1];
 			case 'MMMM':
-				return $this->formatInfo->MonthNames[$month-1];
+				return $this->formatInfo->MonthNames[$date->format('n')-1];
 			default:
-				throw new Exception('The pattern for month '.
-						'is "M", "MM", "MMM", or "MMMM".');
+				throw new Exception('The pattern for month is "M", "MM", "MMM", or "MMMM".');
 		}
 	}
 
@@ -374,24 +368,19 @@ class DateFormat
 	 */
 	protected function getDayInWeek($date, $pattern='EEEE')
 	{
-		$day = $date['wday'];
-
+		$day = $date->format('w');
 		switch($pattern)
 		{
 			case 'E':
 				return $day;
-				break;
 			case 'EE':
 				return $this->formatInfo->NarrowDayNames[$day];
 			case 'EEE':
 				return $this->formatInfo->AbbreviatedDayNames[$day];
-				break;
 			case 'EEEE':
 				return $this->formatInfo->DayNames[$day];
-				break;
 			default:
-				throw new Exception('The pattern for day of the week '.
-						'is "E", "EE", "EEE", or "EEEE".');
+				throw new Exception('The pattern for day of the week is "E", "EE", "EEE", or "EEEE".');
 		}
 	}
 
@@ -404,17 +393,14 @@ class DateFormat
 	 */
 	protected function getDay($date, $pattern='d')
 	{
-		$day = $date['mday'];
-
 		switch($pattern)
 		{
 			case 'd':
-				return $day;
+				return $date->format('j');
 			case 'dd':
-				return str_pad($day, 2,'0',STR_PAD_LEFT);
+				return $date->format('d');
 			default:
-				throw new Exception('The pattern for day of '.
-						'the month is "d" or "dd".');
+				throw new Exception('The pattern for day of the month is "d" or "dd".');
 		}
 	}
 
@@ -428,11 +414,10 @@ class DateFormat
 	 */
 	protected function getEra($date, $pattern='G')
 	{
-
 		if($pattern != 'G')
 			throw new Exception('The pattern for era is "G".');
 
-		$year = $date['year'];
+		$year = $date->format('Y');
 		if($year > 0)
 			return $this->formatInfo->getEra(1);
 		else
@@ -448,17 +433,14 @@ class DateFormat
 	 */
 	protected function getHour24($date, $pattern='H')
 	{
-		$hour = $date['hours'];
-
 		switch($pattern)
 		{
 			case 'H':
-				return $hour;
+				return $date->format('G');
 			case 'HH':
-				return str_pad($hour, 2,'0',STR_PAD_LEFT);
+				return $date->format('H');
 			default:
-				throw new Exception('The pattern for 24 hour '.
-						'format is "H" or "HH".');
+				throw new Exception('The pattern for 24 hour format is "H" or "HH".');
 		}
 	}
 
@@ -473,7 +455,7 @@ class DateFormat
 		if($pattern != 'a')
 			throw new Exception('The pattern for AM/PM marker is "a".');
 
-		$hour = $date['hours'];
+		$hour = $date->format('G');
 		$ampm = (int)($hour/12);
 		return $this->formatInfo->AMPMMarkers[$ampm];
 	}
@@ -487,18 +469,14 @@ class DateFormat
 	 */
 	protected function getHour12($date, $pattern='h')
 	{
-		$hour = $date['hours'];
-		$hour = ($hour==12|$hour==0)?12:($hour)%12;
-
 		switch($pattern)
 		{
 			case 'h':
-				return $hour;
+				return $date->format('g');
 			case 'hh':
-				return str_pad($hour, 2,'0',STR_PAD_LEFT);
+				return $date->format('h');
 			default:
-				throw new Exception('The pattern for 24 hour '.
-						'format is "H" or "HH".');
+				throw new Exception('The pattern for 24 hour format is "H" or "HH".');
 		}
 	}
 
@@ -511,16 +489,14 @@ class DateFormat
 	 */
 	protected function getMinutes($date, $pattern='m')
 	{
-		$minutes = $date['minutes'];
-
 		switch($pattern)
 		{
 			case 'm':
-				return $minutes;
+				return (int) $date->format('i');
 			case 'mm':
-				return str_pad($minutes, 2,'0',STR_PAD_LEFT);
+				return $date->format('i');
 			default:
-			throw new Exception('The pattern for minutes is "m" or "mm".');
+				throw new Exception('The pattern for minutes is "m" or "mm".');
 		}
 	}
 
@@ -533,16 +509,14 @@ class DateFormat
 	 */
 	protected function getSeconds($date, $pattern='s')
 	{
-		$seconds = $date['seconds'];
-
 		switch($pattern)
 		{
 			case 's':
-				return $seconds;
+				return (int) $date->format('s');
 			case 'ss':
-				return str_pad($seconds, 2,'0',STR_PAD_LEFT);
+				return $date->format('s');
 			default:
-			throw new Exception('The pattern for seconds is "s" or "ss".');
+				throw new Exception('The pattern for seconds is "s" or "ss".');
 		}
 	}
 
@@ -558,7 +532,7 @@ class DateFormat
 		if($pattern != 'z')
 			throw new Exception('The pattern for time zone is "z".');
 
-		return @date('T', @mktime($date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']));
+		return $date->format('T');
 	}
 
 	/**
@@ -572,7 +546,7 @@ class DateFormat
 		if($pattern != 'D')
 			throw new Exception('The pattern for day in year is "D".');
 
-		return $date['yday'];
+		return $date->format('z');
 	}
 
 	/**
@@ -585,13 +559,11 @@ class DateFormat
 	{
 		switch ($pattern) {
 		    case 'F':
-		      return @date('j', @mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']));
-		      break;
+		    	return $date->format('j');
 		    case 'FF':
-		      return @date('d', @mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']));
-		      break;
+		    	return $date->format('d');
 		    default:
-		      throw new Exception('The pattern for day in month is "F" or "FF".');
+		    	throw new Exception('The pattern for day in month is "F" or "FF".');
 		}
 	}
 
@@ -606,7 +578,7 @@ class DateFormat
 		if($pattern != 'w')
 			throw new Exception('The pattern for week in year is "w".');
 
-		return @date('W', @mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']));
+		return $date->format('W');
 	}
 
 	/**
@@ -619,7 +591,9 @@ class DateFormat
 		if($pattern != 'W')
 			throw new Exception('The pattern for week in month is "W".');
 
-		return @date('W', @mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year'])) - date('W', mktime(0, 0, 0, $date['mon'], 1, $date['year']));
+		$firstInMonth = clone($date);
+		$firstInMonth->setDate($firstInMonth->format('Y'), $firstInMonth->format('m'), 1);
+		return $date->format('W') - $firstInMonth->format('W');
 	}
 
 	/**
@@ -633,7 +607,7 @@ class DateFormat
 		if($pattern != 'k')
 			throw new Exception('The pattern for hour in day is "k".');
 
-		return $date['hours']+1;
+		return $date->format('G')+1;
 	}
 
 	/**
@@ -647,8 +621,6 @@ class DateFormat
 		if($pattern != 'K')
 			throw new Exception('The pattern for hour in AM/PM is "K".');
 
-		return ($date['hours']+1)%12;
+		return $date->format('g')+1;
 	}
-
 }
-

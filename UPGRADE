@@ -25,6 +25,7 @@ Upgrading from v4.0.0
 - Removed TDropContainer and TDropContainerEventParameter classes; use TJuiDroppable instead
 - Removed TAutoComplete, TAutoCompleteEventParameter and TAutoCompleteTemplate classes; use TJuiAutoComplete instead
 - Removed autocomplete, dragdrop, dragdropextra, prototype and scriptaculous PradoScript (javascript) packages
+- Removed deprecated TDateTimeStamp class; use php's getdate() or preferably the \DateTime class instead
 
 Upgrading from v3.3.x
 ---------------------

@@ -11,7 +11,6 @@
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
-use Prado\Util\TDateTimeStamp;
 
 class TSqliteScaffoldInput extends TScaffoldInputCommon
 {
@@ -75,11 +74,11 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 		$time = parent::createDateTimeControl($container, $column, $record);
 		if(!empty($value) && preg_match('/timestamp/i', $column->getDbType()))
 		{
-			$s = new TDateTimeStamp;
-			$date = $s->getDate(intval($value));
-			$time[1]->setSelectedValue($date['hours']);
-			$time[2]->setSelectedValue($date['minutes']);
-			$time[3]->setSelectedValue($date['seconds']);
+			$dt = new \DateTime;
+			$dt->setTimestamp(intval($value));
+			$time[1]->setSelectedValue($dt->format('G'));
+			$time[2]->setSelectedValue($dt->format('i'));
+			$time[3]->setSelectedValue($dt->format('s'));
 		}
 		return $time;
 	}
@@ -89,12 +88,19 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 		if(preg_match('/timestamp/i', $column->getDbType()))
 		{
 			$time = $container->findControl(self::DEFAULT_ID)->getTimestamp();
-			$s = new TDateTimeStamp;
-			$date = $s->getDate($time);
+			$dt = new \DateTime;
+			$dt->setTimestamp($time);
 			$hour = $container->findControl('scaffold_time_hour')->getSelectedValue();
 			$mins = $container->findControl('scaffold_time_min')->getSelectedValue();
 			$secs = $container->findControl('scaffold_time_sec')->getSelectedValue();
-			return $s->getTimeStamp($hour,$mins,$secs,$date['mon'],$date['mday'],$date['year']);
+			return $s->getTimeStamp(
+				$hour,
+				$mins,
+				$secs,
+				$dt->format('n'),
+				$dt->format('j'),
+				$dt->format('Y')
+			);
 		}
 		else
 			return parent::getDateTimeValue($container, $column, $record);

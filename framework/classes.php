@@ -255,7 +255,6 @@ return array(
 'TClassBehavior' => 'Prado\Util\TClassBehavior',
 'TClassBehaviorEventParameter' => 'Prado\Util\TClassBehaviorEventParameter',
 'TDataFieldAccessor' => 'Prado\Util\TDataFieldAccessor',
-'TDateTimeStamp' => 'Prado\Util\TDateTimeStamp',
 'TDbLogRoute' => 'Prado\Util\TDbLogRoute',
 'TEmailLogRoute' => 'Prado\Util\TEmailLogRoute',
 'TFileLogRoute' => 'Prado\Util\TFileLogRoute',

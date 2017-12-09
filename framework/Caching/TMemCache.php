@@ -97,10 +97,6 @@ class TMemCache extends TCache
 	 */
 	private $_cache=null;
 	/**
-	 * @var string a unique prefix used to identify this cache instance from the others
-	 */
-	private $_prefix=null;
-	/**
 	 * @var string host name of the memcache server
 	 */
 	private $_host='localhost';
@@ -108,20 +104,9 @@ class TMemCache extends TCache
 	 * @var integer the port number of the memcache server
 	 */
 	private $_port=11211;
-	/**
-	 * @var boolean controls the use of a persistent connection. Default to true.
-	 */
-    private $_persistence = true;
-    /**
-     * @var integer number of buckets to create for this server which in turn control its
-     * probability of it being selected. The probability is relative to the total weight
-     * of all servers.
-     */
-    private $_weight = 1;
 
     private $_timeout = 360;
 
-    private $_retryInterval = 15;
 	/**
 	* @var integer Controls the minimum value length before attempting to compress automatically.
 	*/
@@ -131,10 +116,6 @@ class TMemCache extends TCache
 	* @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
 	*/
     private $_minSavings=0.0;
-
-    private $_status = true;
-
-    private $_failureCallback = null;
 
 	/**
 	 * @var boolean whether to use memcached or memcache as the underlying caching extension.

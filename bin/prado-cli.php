@@ -141,7 +141,7 @@ abstract class PradoCommandLineAction
 	 * @param array command line parameters
 	 * @return boolean true if action was handled
 	 */
-	public abstract function performAction($args);
+	abstract public function performAction($args);
 
 	protected function createDirectory($dir, $mask)
 	{
@@ -200,7 +200,6 @@ EOD;
 				$app = new PradoShellApplication($app_dir);
 				$app->run();
 				$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
-				$initialized=true;
 				PradoCommandLineInterpreter::printGreeting();
 				echo '** Loaded PRADO appplication in directory "'.$dir."\".\n";
 			}
@@ -459,9 +458,9 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 	public function performAction($args)
 	{
 		if(count($args) > 1)
-			$app = $this->initializePradoApplication($args[1]);
+			$this->initializePradoApplication($args[1]);
 
-		\Psy\Shell::debug([], Prado::getApplication());
+		\Psy\debug([], Prado::getApplication());
 		return true;
 	}
 }
@@ -548,7 +547,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected function generateActiveRecord($config, $tablename, $output)
 	{
 		$manager = TActiveRecordManager::getInstance();
-		if($connection = $manager->getDbConnection()) {
+		if($manager->getDbConnection()) {
 			$gateway = $manager->getRecordGateway();
 			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
 			if(count($tableInfo->getColumns()) === 0)

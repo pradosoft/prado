@@ -13,7 +13,6 @@ namespace Prado\Util;
 
 use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Util\TDateTimeStamp;
 
 /**
  * TSimpleDateFormatter class.
@@ -112,15 +111,15 @@ class TSimpleDateFormatter
 	 */
 	public function format($value)
 	{
-		$date = $this->getDate($value);
-		$bits['yyyy'] = $date['year'];
-		$bits['yy'] = substr("{$date['year']}", -2);
+		$dt = $this->getDate($value);
+		$bits['yyyy'] = $dt->format('Y');
+		$bits['yy'] = $dt->format('y');
 
-		$bits['MM'] = str_pad("{$date['mon']}", 2, '0', STR_PAD_LEFT);
-		$bits['M'] = $date['mon'];
+		$bits['MM'] = $dt->format('m');
+		$bits['M'] = $dt->format('n');
 
-		$bits['dd'] = str_pad("{$date['mday']}", 2, '0', STR_PAD_LEFT);
-		$bits['d'] = $date['mday'];
+		$bits['dd'] = $dt->format('d');
+		$bits['d'] = $dt->format('j');
 
 		$pattern = preg_replace('/M{3,4}/', 'MM', $this->pattern);
 		return str_replace(array_keys($bits), $bits, $pattern);
@@ -177,11 +176,14 @@ class TSimpleDateFormatter
 	 */
 	private function getDate($value)
 	{
-		$s = new TDateTimeStamp;
 		if(is_numeric($value))
-			return $s->getDate($value);
-		else
-			return $s->parseDate($value);
+		{
+			$date = new \DateTime;
+			$date->setTimeStamp($value);
+		} else {
+			$date = new \DateTime($value);
+		}
+		return $date;
 	}
 
 	/**
@@ -312,8 +314,11 @@ class TSimpleDateFormatter
 			}
 			$day = (int)$day <= 0 ? 1 : (int)$day;
 			$month = (int)$month <= 0 ? 1 : (int)$month;
-			$s = new TDateTimeStamp;
-			return $s->getTimeStamp(0, 0, 0, $month, $day, $year);
+
+			$s = new \DateTime;
+			$s->setDate($year, $month, $day);
+			$s->setTime(0, 0 , 0);
+			return $s->getTimeStamp();
 		}
 	}
 
