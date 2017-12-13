@@ -15,7 +15,7 @@ use Exception;
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
-use Prado\TApplication;
+use Prado\TApplicationMode;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
