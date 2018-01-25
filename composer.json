@@ -50,7 +50,7 @@
 		"satooshi/php-coveralls": "dev-master"
 	},
 	"provide" : {
-		"pradosoft/prado" : "3.3.2"
+		"pradosoft/prado" : "3.3.3"
 	},
 	"suggest" : {
 		"ext-apc" : "*",

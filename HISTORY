@@ -1,4 +1,4 @@
-Version 3.3.3 in development
+Version 3.3.3 Jan 25, 2018
 
 BUG: Issue #625 - The url tag produce an extra directory separator before the result (ctrlaltca)
 BUG: Issue #610 - IIS: Page redirect dosn't work (ctrlaltca)
