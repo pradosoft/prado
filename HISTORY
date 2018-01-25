@@ -1,7 +1,8 @@
-Version 3.3.X in development
+Version 3.3.3 in development
 
 BUG: Issue #625 - The url tag produce an extra directory separator before the result (ctrlaltca)
 BUG: Issue #610 - IIS: Page redirect dosn't work (ctrlaltca)
+BUG: Issue #648 - Fix status header in cgi/fpm mode (ctrlaltca)
 
 Version 3.3.2 August 23, 2016
 
