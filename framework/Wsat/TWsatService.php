@@ -42,7 +42,7 @@ use Prado\Web\UI\TThemeManager;
  */
 class TWsatService extends TPageService
 {
-
+        const PAGE_NAMESPACE_PREFIX = 'Prado\\Wsat\\pages\\';
         private $_pass = '';
 
         public function init($config)

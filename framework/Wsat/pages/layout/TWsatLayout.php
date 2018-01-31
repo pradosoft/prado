@@ -1,4 +1,7 @@
 <?php
+
+namespace Prado\Wsat\pages\layout;
+
 use Prado\Web\UI\TTemplateControl;
 use Prado\Wsat\pages\TWsatLogin;
 
