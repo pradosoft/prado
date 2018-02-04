@@ -16,9 +16,9 @@ namespace Prado\Web\UI\WebControls;
  *
  * TMetaTag represents a meta tag appearing in a page head section.
  * You can set its {@link setID ID}, {@link setHttpEquiv HttpEquiv},
- * {@link setName Name}, {@link setContent Content}, {@link setScheme Scheme}
- * properties, which correspond to id, http-equiv, name, content, and scheme
- * attributes for a meta tag, respectively.
+ * {@link setName Name}, {@link setContent Content}, {@link setScheme Scheme}, {@link setCharset Charset}
+ * properties, which correspond to 
+ * id, http-equiv, name, content, scheme and charset * attributes for a meta tag, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
@@ -46,6 +46,10 @@ class TMetaTag extends \Prado\TComponent
 	 * @var string scheme attribute of the meta tag
 	 */
 	private $_scheme='';
+	/**
+	 * @var string charset attribute of the meta tag
+	 */
+	private $_charset='';
 
 	/**
 	 * @return string id of the meta tag
@@ -128,6 +132,22 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
+	 * @return string charset attribute of the meta tag
+	 */
+	public function getCharset()
+	{
+		return $this->_charset;
+	}
+
+	/**
+	 * @param string charset attribute of the meta tag
+	 */
+	public function setCharset($value)
+	{
+		$this->_charset=$value;
+	}
+
+	/**
 	 * Renders the meta tag.
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
@@ -141,7 +161,10 @@ class TMetaTag extends \Prado\TComponent
 			$writer->addAttribute('http-equiv',$this->_httpEquiv);
 		if($this->_scheme!=='')
 			$writer->addAttribute('scheme',$this->_scheme);
-		$writer->addAttribute('content',$this->_content);
+		if($this->_charset!=='')
+			$writer->addAttribute('charset',$this->_charset);
+		if ($this->_charset === '')
+			$writer->addAttribute('content',$this->_content);
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();
 	}
