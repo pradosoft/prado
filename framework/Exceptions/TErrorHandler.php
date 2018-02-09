@@ -441,10 +441,27 @@ class TErrorHandler extends \Prado\TModule
 		return $source;
 	}
 
-	private function addLink($message)
-	{
-		$baseUrl='http://pradosoft.github.io/docs/manual/class-';
-		return preg_replace('/\b(T[A-Z]\w+)\b/',"<a href=\"$baseUrl\${1}\" target=\"_blank\">\${1}</a>",$message);
+	private function addLink($message) {
+		if (!is_null($class = $this->getErrorClassNameSpace($message))) {
+			return str_replace($class['name'], '<a href="' . $class['url'] . '" target="_blank">' . $class['name'] . '</a>', $message);
+		}
+		return $message;
 	}
+
+	private function getErrorClassNameSpace($message) {
+		$matches = [];
+		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
+		if (is_array($matches) && count($matches) > 0) {
+			$class = $matches[0];
+			$function = new \ReflectionClass($class);
+			$classname = $function->getNamespaceName();
+			return [
+			    'url' => 'http://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
+			    'name' => $class,
+			];
+		}
+		return null;
+	}
+
 }
 
