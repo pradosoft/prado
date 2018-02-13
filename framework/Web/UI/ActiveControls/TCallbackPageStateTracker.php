@@ -189,7 +189,7 @@ class TCallbackPageStateTracker
 	{
 		if($style['CssClass']!==null)
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
-		if(count($style['Style']) > 0)
+		if(is_array($style['Style']) && count($style['Style']) > 0)
 			$this->client()->setStyle($this->_control, $style['Style']);
 	}
 
