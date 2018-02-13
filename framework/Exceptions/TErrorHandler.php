@@ -453,7 +453,12 @@ class TErrorHandler extends \Prado\TModule
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
 		if (is_array($matches) && count($matches) > 0) {
 			$class = $matches[0];
-			$function = new \ReflectionClass($class);
+			try {
+				$function = new \ReflectionClass($class);
+			}
+			catch (\Exception $e) {
+				return null;
+			}
 			$classname = $function->getNamespaceName();
 			return [
 			    'url' => 'http://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
