@@ -29,6 +29,9 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
     self::assertEquals ($response, self::$app->getResponse());
   }
 
+  /**
+   * @runInSeparateProcess
+   */
   public function testSetCacheExpire() {
     $response=new THttpResponse ();
     $response->init (null);
@@ -36,6 +39,9 @@ class THttpResponseTest extends PHPUnit_Framework_TestCase {
     self::assertEquals(300, $response->getCacheExpire());
   }
 
+  /**
+   * @runInSeparateProcess
+   */
   public function testSetCacheControl() {
     $response=new THttpResponse ();
     $response->init (null);

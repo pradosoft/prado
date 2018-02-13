@@ -30,6 +30,6 @@ class FindBySqlTest extends PHPUnit_Framework_TestCase
 	function test_find_by_sql()
 	{
 		$deps = DepartmentRecord::finder()->findBySql('SELECT * FROM departments');
-		$this->assertTrue(count($deps) > 0);
+		$this->assertNotNull($deps);
 	}
 }

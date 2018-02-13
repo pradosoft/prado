@@ -17,8 +17,8 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 	public static $usrMgr = null;
 
 	public function setUp() {
-		ini_set('session.use_cookies',0);
-		ini_set('session.cache_limiter', 'none');
+		// ini_set('session.use_cookies',0);
+		// ini_set('session.cache_limiter', 'none');
 		if(self::$app === null) {
 			self::$app = new TApplication(dirname(__FILE__).'/app');
 		}

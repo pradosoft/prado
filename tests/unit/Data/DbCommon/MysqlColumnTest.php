@@ -171,7 +171,7 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 			'ColumnIndex'      => 9,
 			'DbType'           => 'timestamp',
 			'AllowNull'        => true,
-			'DefaultValue'     => 'CURRENT_TIMESTAMP',
+			'DefaultValue'     => 'current_timestamp()',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
@@ -256,7 +256,7 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 			$column = $table->Columns[$id];
 			foreach($asserts as $property=>$assert)
 			{
-			
+
 				$ofAssert= var_export($assert,true);
 				$value = $column->{$property};
 				$ofValue = var_export($value, true);

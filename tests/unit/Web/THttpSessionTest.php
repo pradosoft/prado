@@ -45,6 +45,9 @@ class THttpSessionTest extends PHPUnit_Framework_TestCase {
     throw new PHPUnit_Framework_IncompleteTestError();
   }
 
+  /**
+   * @runInSeparateProcess
+   */
   public function testSetCookieModeNone() {
     $session = new THttpSession();
     $session->CookieMode = THttpSessionCookieMode::None;
@@ -54,6 +57,9 @@ class THttpSessionTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(THttpSessionCookieMode::None, $session->CookieMode);
   }
 
+  /**
+   * @runInSeparateProcess
+   */
   public function testSetCookieModeAllow() {
     $session = new THttpSession();
     $session->CookieMode = THttpSessionCookieMode::Allow;
@@ -63,6 +69,9 @@ class THttpSessionTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(THttpSessionCookieMode::Allow, $session->CookieMode);
   }
 
+  /**
+   * @runInSeparateProcess
+   */
   public function testSetCookieModeAlways() {
     $session = new THttpSession();
     $session->CookieMode = THttpSessionCookieMode::Only;
