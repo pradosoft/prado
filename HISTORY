@@ -5,6 +5,8 @@ CHG: Removed deprecated components based on the prototype jajascript library (ct
 CHG: Removed bundled copy of JSMin-php library, get it from composer instead (ctrlaltca)
 ENH: Added composer script commands to run phpunit and apigen (ctrlaltca)
 BUG: Issue #660 - Wsat redirect broken (ctrlaltca)
+ENH: Added html5 charset attribute to meta (frkinta)
+BUG: Issue #662 - External links to API manual doesn't work anymore (frkinta)
 
 Version 3.3.3 Jan 25, 2018
 
