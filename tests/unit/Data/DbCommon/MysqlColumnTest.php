@@ -171,7 +171,7 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 			'ColumnIndex'      => 9,
 			'DbType'           => 'timestamp',
 			'AllowNull'        => true,
-			'DefaultValue'     => 'current_timestamp()',
+			'DefaultValue'     => 'CURRENT_TIMESTAMP',
 			'NumericPrecision' => null,
 			'NumericScale'     => null,
 			'IsPrimaryKey'     => false,
