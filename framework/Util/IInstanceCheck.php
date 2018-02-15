@@ -36,5 +36,5 @@ interface IInstanceCheck {
 	 * @return boolean|null if the this or the instance is of type class.  When null, no information could be derived and
 	 * the default mechanisms take over.
 	 */
-	public function isinstanceof($class, $instance=null);
+	public function isinstanceof($class, $instance = null);
 }

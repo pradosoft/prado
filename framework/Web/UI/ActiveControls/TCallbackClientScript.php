@@ -96,7 +96,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string javascript function name
 	 * @param array list of arguments for the function
 	 */
-	public function callClientFunction($function, $params=[])
+	public function callClientFunction($function, $params = [])
 	{
 		if(!is_array($params))
 			$params = [$params];
@@ -117,7 +117,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string jQuery method name
 	 * @param array list of arguments for the function
 	 */
-	public function jQuery($element, $method, $params=[])
+	public function jQuery($element, $method, $params = [])
 	{
 		if ($element instanceof ISurroundable)
 			$element = $element->getSurroundingTagID();
@@ -156,11 +156,11 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string|int the value or index to select/check.
 	 * @param string selection control type, either 'check' or 'select'
 	 */
-	public function select($control, $method='Value', $value=null, $type=null)
+	public function select($control, $method = 'Value', $value = null, $type = null)
 	{
 		$method = TPropertyValue::ensureEnum($method,
 				'Value', 'Index', 'Clear', 'Indices', 'Values', 'All', 'Invert');
-		$type = ($type===null) ? $this->getSelectionControlType($control) : $type;
+		$type = ($type === null) ? $this->getSelectionControlType($control) : $type;
 		$total = $this->getSelectionControlIsListType($control) ? $control->getItemCount() : 1;
 
 		// pass the ID to avoid getting the surrounding elements (ISurroundable)
@@ -201,7 +201,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param boolean check or uncheck the checkbox or radio button.
 	 */
-	public function check($checkbox, $checked=true)
+	public function check($checkbox, $checked = true)
 	{
 		$this->select($checkbox, "Value", $checked);
 	}
@@ -225,8 +225,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	public function setAttribute($control, $name, $value)
 	{
 		// Attributes should be applied on Surrounding tag, except for 'disabled' attribute
-		if ($control instanceof ISurroundable && strtolower($name)!=='disabled')
-			$control=$control->getSurroundingTagID();
+		if ($control instanceof ISurroundable && strtolower($name) !== 'disabled')
+			$control = $control->getSurroundingTagID();
 		$this->callClientFunction('Prado.Element.setAttribute', [$control, $name, $value]);
 	}
 
@@ -240,20 +240,20 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 		$options = [];
 		if($control instanceof TListControl)
 		{
-			$promptText		= $control->getPromptText();
-			$promptValue	= $control->getPromptValue();
+			$promptText = $control->getPromptText();
+			$promptValue = $control->getPromptValue();
 
-			if($promptValue==='')
+			if($promptValue === '')
 				$promptValue = $promptText;
 
-			if($promptValue!=='')
+			if($promptValue !== '')
 				$options[] = [$promptText, $promptValue];
 		}
 
 		foreach($items as $item)
 		{
 			if($item->getHasAttributes())
-				$options[] =  [$item->getText(),$item->getValue(), $item->getAttributes()->itemAt('Group')];
+				$options[] = [$item->getText(),$item->getValue(), $item->getAttributes()->itemAt('Group')];
 			else
 				$options[] = [$item->getText(),$item->getValue()];
 		}
@@ -284,21 +284,21 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string visual effect, such as, 'fade' or 'slide'.
 	 * @param array additional options.
 	 */
-	public function toggle($element, $effect=null, $options=[])
+	public function toggle($element, $effect = null, $options = [])
 	{
 		switch(strtolower($effect))
 		{
 			case 'fade':
-				$method='fadeToggle';
+				$method = 'fadeToggle';
 				break;
 			case 'slide':
-				$method='slideToggle';
+				$method = 'slideToggle';
 				break;
 			default:
-				$method='toggle';
+				$method = 'toggle';
 				// avoid fancy effect by default
 				if(!array_key_exists('duration', $options))
-					$options['duration']=0;
+					$options['duration'] = 0;
 				break;
 		}
 		$this->jQuery($element, $method, $options);
@@ -351,7 +351,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array additional options: 'duration' in ms, 'offset' from the top in pixels
 	 */
-	public function scrollTo($element, $options=[])
+	public function scrollTo($element, $options = [])
 	{
 		$this->callClientFunction('Prado.Element.scrollTo', [$element, $options]);
 	}
@@ -453,7 +453,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string HTML fragement or the control to be rendered.
 	 * @param boolean whether to fully replace the element or just its inner content, defaults to true.
 	 */
-	public function replaceContent($element, $content, $self=true)
+	public function replaceContent($element, $content, $self = true)
 	{
 		$this->replace($element, $content, $self);
 	}
@@ -535,7 +535,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function visualEffect($type, $element, $options=[])
+	public function visualEffect($type, $element, $options = [])
 	{
 		$this->jQuery($element, $type, $options);
 	}
@@ -548,7 +548,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function fadeIn($element, $options=[])
+	public function fadeIn($element, $options = [])
 	{
 		$this->visualEffect('fadeIn', $element, $options);
 	}
@@ -559,7 +559,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function fadeOut($element, $options=[])
+	public function fadeOut($element, $options = [])
 	{
 		$this->visualEffect('fadeOut', $element, $options);
 	}
@@ -570,7 +570,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param float opacity value between 1 and 0
 	 */
-	public function fadeTo($element, $value, $duration=500)
+	public function fadeTo($element, $value, $duration = 500)
 	{
 		$value = TPropertyValue::ensureFloat($value);
 		$this->visualEffect('fadeTo', $element, [$duration, $value]);
@@ -582,7 +582,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function slideDown($element, $options=[])
+	public function slideDown($element, $options = [])
 	{
 		$this->visualEffect('slideDown', $element, $options);
 	}
@@ -593,7 +593,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function slideUp($element, $options=[])
+	public function slideUp($element, $options = [])
 	{
 		$this->visualEffect('slideUp', $element, $options);
 	}
@@ -606,7 +606,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function appear($element, $options=[])
+	public function appear($element, $options = [])
 	{
 		$this->fadeIn($element, $options);
 	}
@@ -617,7 +617,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function fade($element, $options=[])
+	public function fade($element, $options = [])
 	{
 		$this->fadeOut($element, $options);
 	}
@@ -642,9 +642,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array effect options.
 	 */
-	public function juiEffect($element, $effect, $options=[])
+	public function juiEffect($element, $effect, $options = [])
 	{
-		$options['effect']=$effect;
+		$options['effect'] = $effect;
 		$this->jQuery($element, 'effect', [$options]);
 	}
 
@@ -654,7 +654,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function blind($element, $options=[])
+	public function blind($element, $options = [])
 	{
 		$this->juiEffect($element, 'blind', $options);
 	}
@@ -665,7 +665,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function drop($element, $options=[])
+	public function drop($element, $options = [])
 	{
 		$this->juiEffect($element, 'drop', $options);
 	}
@@ -676,7 +676,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function fold($element, $options=[])
+	public function fold($element, $options = [])
 	{
 		$this->juiEffect($element, 'fold', $options);
 	}
@@ -687,7 +687,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function size($element, $options=[])
+	public function size($element, $options = [])
 	{
 		$this->juiEffect($element, 'size', $options);
 	}
@@ -698,7 +698,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function puff($element, $options=[])
+	public function puff($element, $options = [])
 	{
 		$this->juiEffect($element, 'puff', $options);
 	}
@@ -709,7 +709,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function pulsate($element, $options=[])
+	public function pulsate($element, $options = [])
 	{
 		$this->juiEffect($element, 'pulsate', $options);
 	}
@@ -720,7 +720,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function shake($element, $options=[])
+	public function shake($element, $options = [])
 	{
 		$this->juiEffect($element, 'shake', $options);
 	}
@@ -731,7 +731,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function scale($element, $options=[])
+	public function scale($element, $options = [])
 	{
 		$this->juiEffect($element, 'scale', $options);
 	}
@@ -742,7 +742,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function highlight($element, $options=[])
+	public function highlight($element, $options = [])
 	{
 		$this->juiEffect($element, 'highlight', $options);
 	}
@@ -755,9 +755,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function blindDown($element, $options=[])
+	public function blindDown($element, $options = [])
 	{
-		$options['direction']='down';
+		$options['direction'] = 'down';
 		$this->blind($element, $options);
 	}
 
@@ -767,9 +767,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function blindUp($element, $options=[])
+	public function blindUp($element, $options = [])
 	{
-		$options['direction']='up';
+		$options['direction'] = 'up';
 		$this->blind($element, $options);
 	}
 
@@ -779,7 +779,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function dropOut($element, $options=[])
+	public function dropOut($element, $options = [])
 	{
 		$this->drop($element, $options);
 	}
@@ -790,7 +790,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function grow($element, $options=[])
+	public function grow($element, $options = [])
 	{
 		$this->size($element, $options);
 	}
@@ -801,9 +801,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function shrink($element, $options=[])
+	public function shrink($element, $options = [])
 	{
-		$options['percent']=0;
+		$options['percent'] = 0;
 		$this->scale($element, $options);
 	}
 
@@ -813,10 +813,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function squish($element, $options=[])
+	public function squish($element, $options = [])
 	{
-		$options['origin']=['top', 'left'];
-		$options['percent']=0;
+		$options['origin'] = ['top', 'left'];
+		$options['percent'] = 0;
 		$this->scale($element, $options);
 	}
 
@@ -826,10 +826,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
 	 */
-	public function switchOff($element, $options=[])
+	public function switchOff($element, $options = [])
 	{
-		$options['direction']='vertical';
-		$options['percent']=0;
+		$options['direction'] = 'vertical';
+		$options['percent'] = 0;
 		$this->scale($element, $options);
 	}
 

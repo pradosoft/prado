@@ -40,7 +40,7 @@ class TCallbackErrorHandler extends TErrorHandler
 	 */
 	protected function displayException($exception)
 	{
-		if($this->getApplication()->getMode()===TApplicationMode::Debug)
+		if($this->getApplication()->getMode() === TApplicationMode::Debug)
 		{
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);
@@ -75,24 +75,24 @@ class TCallbackErrorHandler extends TErrorHandler
 	 */
 	private function getExceptionStackTrace($exception)
 	{
-		$data['code']=$exception->getCode() > 0 ? $exception->getCode() : 500;
-		$data['file']=$exception->getFile();
-		$data['line']=$exception->getLine();
-		$data['trace']=$exception->getTrace();
+		$data['code'] = $exception->getCode() > 0 ? $exception->getCode() : 500;
+		$data['file'] = $exception->getFile();
+		$data['line'] = $exception->getLine();
+		$data['trace'] = $exception->getTrace();
 		if($exception instanceof TPhpErrorException)
 		{
 			// if PHP exception, we want to show the 2nd stack level context
 			// because the 1st stack level is of little use (it's in error handler)
 			if(isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line']))
 			{
-				$data['file']=$trace[0]['file'];
-				$data['line']=$trace[0]['line'];
+				$data['file'] = $trace[0]['file'];
+				$data['line'] = $trace[0]['line'];
 			}
 		}
-		$data['type']=get_class($exception);
-		$data['message']=$exception->getMessage();
-		$data['version']=$_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
-		$data['time']=@strftime('%Y-%m-%d %H:%M', time());
+		$data['type'] = get_class($exception);
+		$data['message'] = $exception->getMessage();
+		$data['version'] = $_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
+		$data['time'] = @strftime('%Y-%m-%d %H:%M', time());
 		return $data;
 	}
 }

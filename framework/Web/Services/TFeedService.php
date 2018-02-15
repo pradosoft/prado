@@ -64,7 +64,7 @@ use Prado\Exceptions\THttpException;
  */
 class TFeedService extends \Prado\TService
 {
-	private $_feeds=[];
+	private $_feeds = [];
 
 	/**
 	 * Initializes this module.
@@ -73,7 +73,7 @@ class TFeedService extends \Prado\TService
 	 */
 	public function init($config)
 	{
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 		{
 			if(is_array($config))
 			{
@@ -85,8 +85,8 @@ class TFeedService extends \Prado\TService
 		{
 			foreach($config->getElementsByTagName('feed') as $feed)
 			{
-				if(($id=$feed->getAttributes()->remove('id'))!==null)
-					$this->_feeds[$id]=$feed;
+				if(($id = $feed->getAttributes()->remove('id')) !== null)
+					$this->_feeds[$id] = $feed;
 				else
 					throw new TConfigurationException('feedservice_id_required');
 			}
@@ -107,19 +107,19 @@ class TFeedService extends \Prado\TService
 	 */
 	public function run()
 	{
-		$id=$this->getRequest()->getServiceParameter();
+		$id = $this->getRequest()->getServiceParameter();
 		if(isset($this->_feeds[$id]))
 		{
-			$feedConfig=$this->_feeds[$id];
+			$feedConfig = $this->_feeds[$id];
 			$properties = [];
 			$feed = null;
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 			{
 				if(isset($feedConfig['class']))
 				{
-					$feed=Prado::createComponent($feedConfig['class']);
+					$feed = Prado::createComponent($feedConfig['class']);
 					if($service instanceof IFeedContentProvider)
-						$properties=isset($feedConfig['properties'])?$feedConfig['properties']:[];
+						$properties = isset($feedConfig['properties'])?$feedConfig['properties']:[];
 					else
 						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 				}
@@ -128,10 +128,10 @@ class TFeedService extends \Prado\TService
 			}
 			else
 			{
-				$properties=$feedConfig->getAttributes();
-				if(($class=$properties->remove('class'))!==null)
+				$properties = $feedConfig->getAttributes();
+				if(($class = $properties->remove('class')) !== null)
 				{
-					$feed=Prado::createComponent($class);
+					$feed = Prado::createComponent($class);
 					if(!($feed instanceof IFeedContentProvider))
 						throw new TConfigurationException('feedservice_feedtype_invalid', $id);
 				}
@@ -140,11 +140,11 @@ class TFeedService extends \Prado\TService
 			}
 
 			// init feed properties
-			foreach($properties as $name=>$value)
+			foreach($properties as $name => $value)
 				$feed->setSubproperty($name, $value);
 			$feed->init($feedConfig);
 
-			$content=$feed->getFeedContent();
+			$content = $feed->getFeedContent();
 			//$this->getResponse()->setContentType('application/rss+xml');
 			$this->getResponse()->setContentType($feed->getContentType());
 			$this->getResponse()->write($content);

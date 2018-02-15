@@ -28,9 +28,9 @@ namespace Prado\Web\UI\WebControls;
  */
 class TWizardStepType extends \Prado\TEnumerable
 {
-	const Auto='Auto';
-	const Complete='Complete';
-	const Start='Start';
-	const Step='Step';
-	const Finish='Finish';
+	const Auto = 'Auto';
+	const Complete = 'Complete';
+	const Start = 'Start';
+	const Step = 'Step';
+	const Finish = 'Finish';
 }

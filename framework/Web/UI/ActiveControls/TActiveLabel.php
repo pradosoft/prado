@@ -81,7 +81,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 		parent::setForControl($value);
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
-			$id=$this->findControl($value)->getClientID();
+			$id = $this->findControl($value)->getClientID();
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);
 		}
 	}

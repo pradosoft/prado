@@ -32,10 +32,10 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 	 * @param integer row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
-	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit!==null ? intval($limit) : -1;
-		$offset = $offset!==null ? intval($offset) : -1;
+		$limit = $limit !== null ? intval($limit) : -1;
+		$offset = $offset !== null ? intval($offset) : -1;
 		if($limit > 0 || $offset > 0)
 		{
 			$limitStr = ' LIMIT ' . $limit;

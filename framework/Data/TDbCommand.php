@@ -45,7 +45,7 @@ use Prado\Prado;
 class TDbCommand extends \Prado\TComponent
 {
 	private $_connection;
-	private $_text='';
+	private $_text = '';
 	private $_statement;
 
 	/**
@@ -55,7 +55,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function __construct(TDbConnection $connection, $text)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 		$this->setText($text);
 	}
 
@@ -82,7 +82,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function setText($value)
 	{
-		$this->_text=$value;
+		$this->_text = $value;
 		$this->cancel();
 	}
 
@@ -112,11 +112,11 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function prepare()
 	{
-		if($this->_statement==null)
+		if($this->_statement == null)
 		{
 			try
 			{
-				$this->_statement=$this->getConnection()->getPdoInstance()->prepare($this->getText());
+				$this->_statement = $this->getConnection()->getPdoInstance()->prepare($this->getText());
 			}
 			catch(Exception $e)
 			{
@@ -130,7 +130,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function cancel()
 	{
-		$this->_statement=null;
+		$this->_statement = null;
 	}
 
 	/**
@@ -146,12 +146,12 @@ class TDbCommand extends \Prado\TComponent
 	 * @param int length of the data type
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
-	public function bindParameter($name, &$value, $dataType=null, $length=null)
+	public function bindParameter($name, &$value, $dataType = null, $length = null)
 	{
 		$this->prepare();
-		if($dataType===null)
+		if($dataType === null)
 			$this->_statement->bindParam($name, $value);
-		elseif($length===null)
+		elseif($length === null)
 			$this->_statement->bindParam($name, $value, $dataType);
 		else
 			$this->_statement->bindParam($name, $value, $dataType, $length);
@@ -167,10 +167,10 @@ class TDbCommand extends \Prado\TComponent
 	 * @param int SQL data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindValue.php
 	 */
-	public function bindValue($name, $value, $dataType=null)
+	public function bindValue($name, $value, $dataType = null)
 	{
 		$this->prepare();
-		if($dataType===null)
+		if($dataType === null)
 			$this->_statement->bindValue($name, $value);
 		else
 			$this->_statement->bindValue($name, $value, $dataType);
@@ -228,7 +228,7 @@ class TDbCommand extends \Prado\TComponent
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
 			return new TDbDataReader($this);
 		}
 		catch(Exception $e)
@@ -245,7 +245,7 @@ class TDbCommand extends \Prado\TComponent
 	 * @return array the first row of the query result, false if no result.
 	 * @throws TDbException execution failed
 	 */
-	public function queryRow($fetchAssociative=true)
+	public function queryRow($fetchAssociative = true)
 	{
 		try
 		{
@@ -253,8 +253,8 @@ class TDbCommand extends \Prado\TComponent
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
-			$result=$this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			$result = $this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 			$this->_statement->closeCursor();
 			return $result;
 		}
@@ -279,10 +279,10 @@ class TDbCommand extends \Prado\TComponent
 			if($this->_statement instanceof PDOStatement)
 				$this->_statement->execute();
 			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
-			$result=$this->_statement->fetchColumn();
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			$result = $this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
-			if(is_resource($result) && get_resource_type($result)==='stream')
+			if(is_resource($result) && get_resource_type($result) === 'stream')
 				return stream_get_contents($result);
 			else
 				return $result;
@@ -303,10 +303,10 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function queryColumn()
 	{
-		$rows=$this->query()->readAll();
-		$column=[];
+		$rows = $this->query()->readAll();
+		$column = [];
 		foreach($rows as $row)
-			$column[]=current($row);
+			$column[] = current($row);
 		return $column;
 	}
 }

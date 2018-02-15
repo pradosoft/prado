@@ -46,11 +46,11 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	/**
 	 * prefix for cache variable name used to store parsed themes
 	 */
-	const THEME_CACHE_PREFIX='prado:theme:';
+	const THEME_CACHE_PREFIX = 'prado:theme:';
 	/**
 	 * Extension name of skin files
 	 */
-	const SKIN_FILE_EXT='.skin';
+	const SKIN_FILE_EXT = '.skin';
 	/**
 	 * @var string theme path
 	 */
@@ -66,15 +66,15 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	/**
 	 * @var string theme name
 	 */
-	private $_name='';
+	private $_name = '';
 	/**
 	 * @var array list of css files
 	 */
-	private $_cssFiles=[];
+	private $_cssFiles = [];
 	/**
 	 * @var array list of js files
 	 */
-	private $_jsFiles=[];
+	private $_jsFiles = [];
 
 	/**
 	 * Constructor.
@@ -84,75 +84,75 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	public function __construct($themePath, $themeUrl)
 	{
-		$this->_themeUrl=$themeUrl;
-		$this->_themePath=realpath($themePath);
-		$this->_name=basename($themePath);
-		$cacheValid=false;
+		$this->_themeUrl = $themeUrl;
+		$this->_themePath = realpath($themePath);
+		$this->_name = basename($themePath);
+		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
-		if(($cache=$this->getApplication()->getCache())!==null)
+		if(($cache = $this->getApplication()->getCache()) !== null)
 		{
-			$array=$cache->get(self::THEME_CACHE_PREFIX . $themePath);
+			$array = $cache->get(self::THEME_CACHE_PREFIX . $themePath);
 			if(is_array($array))
 			{
-				list($skins, $cssFiles, $jsFiles, $timestamp)=$array;
-				if($this->getApplication()->getMode()!==TApplicationMode::Performance)
+				list($skins, $cssFiles, $jsFiles, $timestamp) = $array;
+				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
 				{
-					if(($dir=opendir($themePath))===false)
+					if(($dir = opendir($themePath)) === false)
 						throw new TIOException('theme_path_inexistent', $themePath);
-					$cacheValid=true;
-					while(($file=readdir($dir))!==false)
+					$cacheValid = true;
+					while(($file = readdir($dir)) !== false)
 					{
-						if($file==='.' || $file==='..')
+						if($file === '.' || $file === '..')
 							continue;
-						elseif(basename($file, '.css')!==$file)
-							$this->_cssFiles[]=$themeUrl . '/' . $file;
-						elseif(basename($file, '.js')!==$file)
-							$this->_jsFiles[]=$themeUrl . '/' . $file;
-						elseif(basename($file, self::SKIN_FILE_EXT)!==$file && filemtime($themePath . DIRECTORY_SEPARATOR . $file)>$timestamp)
+						elseif(basename($file, '.css') !== $file)
+							$this->_cssFiles[] = $themeUrl . '/' . $file;
+						elseif(basename($file, '.js') !== $file)
+							$this->_jsFiles[] = $themeUrl . '/' . $file;
+						elseif(basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp)
 						{
-							$cacheValid=false;
+							$cacheValid = false;
 							break;
 						}
 					}
 					closedir($dir);
 					if($cacheValid)
-						$this->_skins=$skins;
+						$this->_skins = $skins;
 				}
 				else
 				{
-					$cacheValid=true;
-					$this->_cssFiles=$cssFiles;
-					$this->_jsFiles=$jsFiles;
-					$this->_skins=$skins;
+					$cacheValid = true;
+					$this->_cssFiles = $cssFiles;
+					$this->_jsFiles = $jsFiles;
+					$this->_skins = $skins;
 				}
 			}
 		}
 		if(!$cacheValid)
 		{
-			$this->_cssFiles=[];
-			$this->_jsFiles=[];
-			$this->_skins=[];
-			if(($dir=opendir($themePath))===false)
+			$this->_cssFiles = [];
+			$this->_jsFiles = [];
+			$this->_skins = [];
+			if(($dir = opendir($themePath)) === false)
 				throw new TIOException('theme_path_inexistent', $themePath);
-			while(($file=readdir($dir))!==false)
+			while(($file = readdir($dir)) !== false)
 			{
-				if($file==='.' || $file==='..')
+				if($file === '.' || $file === '..')
 					continue;
-				elseif(basename($file, '.css')!==$file)
-					$this->_cssFiles[]=$themeUrl . '/' . $file;
-				elseif(basename($file, '.js')!==$file)
-					$this->_jsFiles[]=$themeUrl . '/' . $file;
-				elseif(basename($file, self::SKIN_FILE_EXT)!==$file)
+				elseif(basename($file, '.css') !== $file)
+					$this->_cssFiles[] = $themeUrl . '/' . $file;
+				elseif(basename($file, '.js') !== $file)
+					$this->_jsFiles[] = $themeUrl . '/' . $file;
+				elseif(basename($file, self::SKIN_FILE_EXT) !== $file)
 				{
-					$template=new TTemplate(file_get_contents($themePath . '/' . $file), $themePath, $themePath . '/' . $file);
+					$template = new TTemplate(file_get_contents($themePath . '/' . $file), $themePath, $themePath . '/' . $file);
 					foreach($template->getItems() as $skin)
 					{
 						if(!isset($skin[2]))  // a text string, ignored
 							continue;
-						elseif($skin[0]!==-1)
+						elseif($skin[0] !== -1)
 							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
-						$type=$skin[1];
-						$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
+						$type = $skin[1];
+						$id = isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
 						unset($skin[2]['skinid']);
 						if(isset($this->_skins[$type][$id]))
 							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));
@@ -163,14 +163,14 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 								throw new TConfigurationException('theme_databind_forbidden',dirname($themePath),$type,$id);
 						}
 						*/
-						$this->_skins[$type][$id]=$skin[2];
+						$this->_skins[$type][$id] = $skin[2];
 					}
 				}
 			}
 			closedir($dir);
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
-			if($cache!==null)
+			if($cache !== null)
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
 		}
 	}
@@ -204,7 +204,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setBaseUrl($value)
 	{
-		$this->_themeUrl=rtrim($value, '/');
+		$this->_themeUrl = rtrim($value, '/');
 	}
 
 	/**
@@ -220,7 +220,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setBasePath($value)
 	{
-		$this->_themePath=$value;
+		$this->_themePath = $value;
 	}
 
 	/**
@@ -250,12 +250,12 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	public function applySkin($control)
 	{
-		$type=get_class($control);
-		if(($id=$control->getSkinID())==='')
-			$id=0;
+		$type = get_class($control);
+		if(($id = $control->getSkinID()) === '')
+			$id = 0;
 		if(isset($this->_skins[$type][$id]))
 		{
-			foreach($this->_skins[$type][$id] as $name=>$value)
+			foreach($this->_skins[$type][$id] as $name => $value)
 			{
 				Prado::trace("Applying skin $name to $type", 'Prado\Web\UI\TThemeManager');
 				if(is_array($value))
@@ -263,10 +263,10 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 					switch($value[0])
 					{
 						case TTemplate::CONFIG_EXPRESSION:
-							$value=$this->evaluateExpression($value[1]);
+							$value = $this->evaluateExpression($value[1]);
 							break;
 						case TTemplate::CONFIG_ASSET:
-							$value=$this->_themeUrl . '/' . ltrim($value[1], '/');
+							$value = $this->_themeUrl . '/' . ltrim($value[1], '/');
 							break;
 						case TTemplate::CONFIG_DATABIND:
 							$control->bindProperty($name, $value[1]);
@@ -287,13 +287,13 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				}
 				if(!is_array($value))
 				{
-					if(strpos($name, '.')===false)	// is simple property or custom attribute
+					if(strpos($name, '.') === false)	// is simple property or custom attribute
 					{
 						if($control->hasProperty($name))
 						{
 							if($control->canSetProperty($name))
 							{
-								$setter='set' . $name;
+								$setter = 'set' . $name;
 								$control->$setter($value);
 							}
 							else
@@ -325,7 +325,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setStyleSheetFiles($value)
 	{
-		$this->_cssFiles=$value;
+		$this->_cssFiles = $value;
 	}
 
 	/**
@@ -341,6 +341,6 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setJavaScriptFiles($value)
 	{
-		$this->_jsFiles=$value;
+		$this->_jsFiles = $value;
 	}
 }

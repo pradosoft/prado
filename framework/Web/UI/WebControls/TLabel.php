@@ -35,14 +35,14 @@ use Prado\TPropertyValue;
  */
 class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
-	private $_forControl='';
+	private $_forControl = '';
 
 	/**
 	 * @return string tag name of the label, returns 'label' if there is an associated control, 'span' otherwise.
 	 */
 	protected function getTagName()
 	{
-		return ($this->getForControl()==='')?'span':'label';
+		return ($this->getForControl() === '')?'span':'label';
 	}
 
 	/**
@@ -52,7 +52,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->_forControl!=='')
+		if($this->_forControl !== '')
 			$writer->addAttribute('for', $this->_forControl);
 		parent::addAttributesToRender($writer);
 	}
@@ -65,13 +65,13 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function render($writer)
 	{
-		if(($aid=$this->getForControl())!=='')
+		if(($aid = $this->getForControl()) !== '')
 		{
-			if($control=$this->findControl($aid))
+			if($control = $this->findControl($aid))
 			{
 				if($control->getVisible(true))
 				{
-					$this->_forControl=$control->getClientID();
+					$this->_forControl = $control->getClientID();
 					parent::render($writer);
 				}
 			}
@@ -88,7 +88,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if(($text = $this->getText()) === '')
 			parent::renderContents($writer);
 		else
 			$writer->write($text);

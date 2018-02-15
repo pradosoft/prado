@@ -33,7 +33,7 @@ use Prado\Prado;
  */
 class TMysqlMetaData extends TDbMetaData
 {
-	private $_serverVersion=0;
+	private $_serverVersion = 0;
 
 	/**
 	 * @return string TDbTableInfo class name.
@@ -81,7 +81,7 @@ class TMysqlMetaData extends TDbMetaData
 	protected function createTableInfo($table)
 	{
 		list($schemaName, $tableName) = $this->getSchemaTableName($table);
-		$find = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
+		$find = $schemaName === null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$colCase = $this->getDbConnection()->getColumnCase();
 		if($colCase != TDbColumnCaseMode::Preserved)
 			$this->getDbConnection()->setColumnCase('Preserved');
@@ -89,13 +89,13 @@ class TMysqlMetaData extends TDbMetaData
 		$sql = "SHOW FULL FIELDS FROM {$find}";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$tableInfo = $this->createNewTableInfo($table);
-		$index=0;
+		$index = 0;
 		foreach($command->query() as $col)
 		{
 			$col['index'] = $index++;
 			$this->processColumn($tableInfo, $col);
 		}
-		if($index===0)
+		if($index === 0)
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
 		if($colCase != TDbColumnCaseMode::Preserved)
 			$this->getDbConnection()->setColumnCase($colCase);
@@ -110,9 +110,9 @@ class TMysqlMetaData extends TDbMetaData
 		if(!$this->_serverVersion)
 		{
 			$version = $this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION);
-			$digits=[];
+			$digits = [];
 			preg_match('/(\d+)\.(\d+)\.(\d+)/', $version, $digits);
-			$this->_serverVersion=floatval($digits[1] . '.' . $digits[2] . $digits[3]);
+			$this->_serverVersion = floatval($digits[1] . '.' . $digits[2] . $digits[3]);
 		}
 		return $this->_serverVersion;
 	}
@@ -128,24 +128,24 @@ class TMysqlMetaData extends TDbMetaData
 		$info['ColumnName'] = "`$columnId`"; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
-		if($col['Null']==='YES')
+		if($col['Null'] === 'YES')
 			$info['AllowNull'] = true;
 		if(is_int(strpos(strtolower($col['Extra']), 'auto_increment')))
-			$info['AutoIncrement']=true;
-		if($col['Default']!=="")
+			$info['AutoIncrement'] = true;
+		if($col['Default'] !== "")
 			$info['DefaultValue'] = $col['Default'];
 
-		if($col['Key']==='PRI' || in_array($columnId, $tableInfo->getPrimaryKeys()))
+		if($col['Key'] === 'PRI' || in_array($columnId, $tableInfo->getPrimaryKeys()))
 			$info['IsPrimaryKey'] = true;
 		if($this->isForeignKeyColumn($columnId, $tableInfo))
 			$info['IsForeignKey'] = true;
 
 		$info['DbType'] = $col['Type'];
-		$match=[];
+		$match = [];
 		//find SET/ENUM values, column size, precision, and scale
 		if(preg_match('/\((.*)\)/', $col['Type'], $match))
 		{
-			$info['DbType']= preg_replace('/\(.*\)/', '', $col['Type']);
+			$info['DbType'] = preg_replace('/\(.*\)/', '', $col['Type']);
 
 			//find SET/ENUM values
 			if($this->isEnumSetType($info['DbType']))
@@ -175,9 +175,9 @@ class TMysqlMetaData extends TDbMetaData
 	protected function isPrecisionType($type)
 	{
 		$type = strtolower(trim($type));
-		return $type==='decimal' || $type==='dec'
-				|| $type==='float' || $type==='double'
-				|| $type==='double precision' || $type==='real';
+		return $type === 'decimal' || $type === 'dec'
+				|| $type === 'float' || $type === 'double'
+				|| $type === 'double precision' || $type === 'real';
 	}
 
 	/**
@@ -186,7 +186,7 @@ class TMysqlMetaData extends TDbMetaData
 	protected function isEnumSetType($type)
 	{
 		$type = strtolower(trim($type));
-		return $type==='set' || $type==='enum';
+		return $type === 'set' || $type === 'enum';
 	}
 
 	/**
@@ -248,9 +248,9 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getIsView($schemaName, $tableName)
 	{
-		if($this->getServerVersion()<5.01)
+		if($this->getServerVersion() < 5.01)
 			return false;
-		if($schemaName!==null)
+		if($schemaName !== null)
 			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE :table";
 		else
 			$sql = "SHOW FULL TABLES LIKE :table";
@@ -259,11 +259,11 @@ class TMysqlMetaData extends TDbMetaData
 		$command->bindValue(':table', $tableName);
 		try
 		{
-			return count($result = $command->queryRow()) > 0 && $result['Table_type']==='VIEW';
+			return count($result = $command->queryRow()) > 0 && $result['Table_type'] === 'VIEW';
 		}
 		catch(TDbException $e)
 		{
-			$table = $schemaName===null?$tableName:$schemaName . '.' . $tableName;
+			$table = $schemaName === null?$tableName:$schemaName . '.' . $tableName;
 			throw new TDbException('dbcommon_invalid_table_name', $table, $e->getMessage());
 		}
 	}
@@ -276,13 +276,13 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
-		$table = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
+		$table = $schemaName === null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$sql = "SHOW INDEX FROM {$table}";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$primary = [];
 		foreach($command->query() as $row)
 		{
-			if($row['Key_name']==='PRIMARY')
+			if($row['Key_name'] === 'PRIMARY')
 				$primary[] = $row['Column_name'];
 		}
 				// MySQL version was increased to >=5.1.21 instead of 5.x
@@ -319,9 +319,9 @@ class TMysqlMetaData extends TDbMetaData
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		if($schemaName!==null)
+		if($schemaName !== null)
 			$command->bindValue(':schema', $schemaName);
-		$fkeys=[];
+		$fkeys = [];
 		foreach($command->query() as $col)
 		{
 			$fkeys[$col['con']]['keys'][$col['col']] = $col['fkcol'];
@@ -343,7 +343,7 @@ EOD;
 
 		//See http://netevil.org/node.php?nid=795&SC=1
 		$this->getDbConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-		if($schemaName!==null)
+		if($schemaName !== null)
 			$sql = "SHOW CREATE TABLE `{$schemaName}`.`{$tableName}`";
 		else
 			$sql = "SHOW CREATE TABLE `{$tableName}`";
@@ -361,7 +361,7 @@ EOD;
 	protected function findForeignConstraints($schemaName, $tableName)
 	{
 		$sql = $this->getShowCreateTable($schemaName, $tableName);
-		$matches =[];
+		$matches = [];
 		$regexp = '/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+`?([^`]+)`?\s\(([^\)]+)\)/mi';
 		preg_match_all($regexp, $sql, $matches, PREG_SET_ORDER);
 		$foreign = [];
@@ -369,8 +369,8 @@ EOD;
 		{
 			$fields = array_map('trim', explode(',', str_replace('`', '', $match[1])));
 			$fk_fields = array_map('trim', explode(',', str_replace('`', '', $match[3])));
-			$keys=[];
-			foreach($fields as $k=>$v)
+			$keys = [];
+			foreach($fields as $k => $v)
 				$keys[$v] = $fk_fields[$k];
 			$foreign[] = ['keys' => $keys, 'table' => trim($match[2])];
 		}
@@ -398,13 +398,13 @@ EOD;
 		 * If not empty, the returned table names will be prefixed with the schema name.
 		 * @return array all table names in the database.
 		 */
-	public function findTableNames($schema='')
+	public function findTableNames($schema = '')
 	{
-		if($schema==='')
+		if($schema === '')
 			return $this->getDbConnection()->createCommand('SHOW TABLES')->queryColumn();
-		$names=$this->getDbConnection()->createCommand('SHOW TABLES FROM ' . $this->quoteTableName($schema))->queryColumn();
+		$names = $this->getDbConnection()->createCommand('SHOW TABLES FROM ' . $this->quoteTableName($schema))->queryColumn();
 		foreach($names as &$name)
-			$name=$schema . '.' . $name;
+			$name = $schema . '.' . $name;
 		return $names;
 	}
 }

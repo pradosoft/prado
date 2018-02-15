@@ -31,7 +31,7 @@ use Prado\Prado;
  */
 abstract class TDbMetaData extends \Prado\TComponent
 {
-	private $_tableInfoCache=[];
+	private $_tableInfoCache = [];
 	private $_connection;
 
 	/**
@@ -44,7 +44,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 */
 	public function __construct($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -92,13 +92,13 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * @param string table or view name
 	 * @return TDbTableInfo table information.
 	 */
-	public function getTableInfo($tableName=null)
+	public function getTableInfo($tableName = null)
 	{
-		$key = $tableName===null?$this->getDbConnection()->getConnectionString():$tableName;
+		$key = $tableName === null?$this->getDbConnection()->getConnectionString():$tableName;
 		if(!isset($this->_tableInfoCache[$key]))
 		{
 			$class = $this->getTableInfoClass();
-			$tableInfo = $tableName===null ? new $class : $this->createTableInfo($tableName);
+			$tableInfo = $tableName === null ? new $class : $this->createTableInfo($tableName);
 			$this->_tableInfoCache[$key] = $tableInfo;
 		}
 		return $this->_tableInfoCache[$key];
@@ -109,7 +109,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * @param string table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
-	public function createCommandBuilder($tableName=null)
+	public function createCommandBuilder($tableName = null)
 	{
 		return $this->getTableInfo($tableName)->createCommandBuilder($this->getDbConnection());
 	}
@@ -143,9 +143,9 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$rgt = $lft = isset($args[1]) ? $args[1] : '';
 		$rgt = isset($args[2]) ? $args[2] : $rgt;
 
-		if(strpos($name, '.')===false)
+		if(strpos($name, '.') === false)
 			return $lft . $name . $rgt;
-		$names=explode('.', $name);
+		$names = explode('.', $name);
 		foreach($names as &$n)
 			$n = $lft . $n . $rgt;
 		return implode('.', $names);
@@ -191,6 +191,6 @@ abstract class TDbMetaData extends \Prado\TComponent
 		 * If not empty, the returned table names will be prefixed with the schema name.
 		 * @return array all table names in the database.
 		 */
-	abstract public function findTableNames($schema='');
+	abstract public function findTableNames($schema = '');
 }
 

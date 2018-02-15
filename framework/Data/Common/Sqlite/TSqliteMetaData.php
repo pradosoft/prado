@@ -79,9 +79,9 @@ class TSqliteMetaData extends TDbMetaData
 		$sql = "PRAGMA table_info({$table})";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$foreign = $this->getForeignKeys($table);
-		$index=0;
-		$columns=[];
-		$primary=[];
+		$index = 0;
+		$columns = [];
+		$primary = [];
 		foreach($command->query() as $col)
 		{
 			$col['index'] = $index++;
@@ -93,7 +93,7 @@ class TSqliteMetaData extends TDbMetaData
 		$info['TableName'] = $tableName;
 		if($this->getIsView($tableName))
 			$info['IsView'] = true;
-		if(count($columns)===0)
+		if(count($columns) === 0)
 			throw new TDbException('dbmetadata_invalid_table_view', $tableName);
 		$class = $this->getTableInfoClass();
 		$tableInfo = new $class($info, $primary, $foreign);
@@ -127,32 +127,32 @@ class TSqliteMetaData extends TDbMetaData
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 
-		if($col['notnull']!=='99')
+		if($col['notnull'] !== '99')
 			$info['AllowNull'] = true;
 
-		if($col['pk']==='1')
+		if($col['pk'] === '1')
 			$info['IsPrimaryKey'] = true;
 		if($this->isForeignKeyColumn($columnId, $foreign))
 			$info['IsForeignKey'] = true;
 
-		if($col['dflt_value']!==null)
+		if($col['dflt_value'] !== null)
 			$info['DefaultValue'] = $col['dflt_value'];
 
 		$type = strtolower($col['type']);
-		$info['AutoIncrement'] = $type==='integer' && $col['pk']==='1';
+		$info['AutoIncrement'] = $type === 'integer' && $col['pk'] === '1';
 
 		$info['DbType'] = $type;
-		$match=[];
-		if(is_int($pos=strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match))
+		$match = [];
+		if(is_int($pos = strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match))
 		{
 			$ps = explode(',', $match[1]);
-			if(count($ps)===2)
+			if(count($ps) === 2)
 			{
 				$info['NumericPrecision'] = intval($ps[0]);
 				$info['NumericScale'] = intval($ps[1]);
 			}
 			else
-				$info['ColumnSize']=intval($match[1]);
+				$info['ColumnSize'] = intval($match[1]);
 			$info['DbType'] = substr($type, 0, $pos);
 		}
 
@@ -198,9 +198,9 @@ class TSqliteMetaData extends TDbMetaData
 		 * @param string $schema the schema of the tables. This is not used for sqlite database.
 		 * @return array all table names in the database.
 		 */
-	public function findTableNames($schema='')
+	public function findTableNames($schema = '')
 	{
-		$sql="SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
+		$sql = "SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
 		return $this->getDbConnection()->createCommand($sql)->queryColumn();
 	}
 }

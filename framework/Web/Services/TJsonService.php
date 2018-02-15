@@ -62,7 +62,7 @@ class TJsonService extends \Prado\TService
 	/**
 	 * @var array registered services
 	 */
-	private $_services=[];
+	private $_services = [];
 
 	/**
 	 * Initializes this module.
@@ -80,7 +80,7 @@ class TJsonService extends \Prado\TService
 	 */
 	protected function loadJsonServices($config)
 	{
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 		{
 			if(is_array($config))
 			{
@@ -92,8 +92,8 @@ class TJsonService extends \Prado\TService
 		{
 			foreach($config->getElementsByTagName('json') as $json)
 			{
-				if(($id=$json->getAttribute('id'))!==null)
-					$this->_services[$id]=$json;
+				if(($id = $json->getAttribute('id')) !== null)
+					$this->_services[$id] = $json;
 				else
 					throw new TConfigurationException('jsonservice_id_required');
 			}
@@ -106,15 +106,15 @@ class TJsonService extends \Prado\TService
 	 */
 	public function run()
 	{
-		$id=$this->getRequest()->getServiceParameter();
+		$id = $this->getRequest()->getServiceParameter();
 		if(isset($this->_services[$id]))
 		{
-			$serviceConfig=$this->_services[$id];
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			$serviceConfig = $this->_services[$id];
+			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 			{
 				if(isset($serviceConfig['class']))
 				{
-					$service=Prado::createComponent($serviceConfig['class']);
+					$service = Prado::createComponent($serviceConfig['class']);
 					if($service instanceof TJsonResponse)
 					{
 						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:[];
@@ -128,10 +128,10 @@ class TJsonService extends \Prado\TService
 			}
 			else
 			{
-				$properties=$serviceConfig->getAttributes();
-				if(($class=$properties->remove('class'))!==null)
+				$properties = $serviceConfig->getAttributes();
+				if(($class = $properties->remove('class')) !== null)
 				{
-					$service=Prado::createComponent($class);
+					$service = Prado::createComponent($class);
 					if($service instanceof TJsonResponse)
 						$this->createJsonResponse($service, $properties, $serviceConfig);
 					else
@@ -152,12 +152,12 @@ class TJsonService extends \Prado\TService
 	protected function createJsonResponse($service, $properties, $config)
 	{
 		// init service properties
-		foreach($properties as $name=>$value)
+		foreach($properties as $name => $value)
 			$service->setSubproperty($name, $value);
 		$service->init($config);
 
 		//send content if not null
-		if(($content=$service->getJsonContent())!==null)
+		if(($content = $service->getJsonContent()) !== null)
 		{
 			$response = $this->getResponse();
 			$response->setContentType('application/json');

@@ -25,8 +25,8 @@ use Prado\TPropertyValue;
  */
 class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 {
-	private $_isValid=true;
-	private $_cacheTime=0;
+	private $_isValid = true;
+	private $_cacheTime = 0;
 
 	/**
 	 * @return boolean whether the dependency remains valid. Defaults to true.
@@ -41,7 +41,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -59,6 +59,6 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	 */
 	public function setCacheTime($value)
 	{
-		$this->_cacheTime=TPropertyValue::ensureInteger($value);
+		$this->_cacheTime = TPropertyValue::ensureInteger($value);
 	}
 }

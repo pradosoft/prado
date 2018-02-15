@@ -46,7 +46,7 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setTagName($value)
 	{
-		$this->_tagName=TPropertyValue::ensureString($value);
+		$this->_tagName = TPropertyValue::ensureString($value);
 	}
 
 	/**

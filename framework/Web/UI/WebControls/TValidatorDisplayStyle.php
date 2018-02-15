@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TValidatorDisplayStyle extends \Prado\TEnumerable
 {
-	const None='None';
-	const Dynamic='Dynamic';
-	const Fixed='Fixed';
+	const None = 'None';
+	const Dynamic = 'Dynamic';
+	const Fixed = 'Fixed';
 }

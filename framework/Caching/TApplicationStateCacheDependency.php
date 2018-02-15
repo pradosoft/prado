@@ -39,6 +39,6 @@ class TApplicationStateCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return Prado::getApplication()->getMode()!==TApplicationMode::Performance;
+		return Prado::getApplication()->getMode() !== TApplicationMode::Performance;
 	}
 }

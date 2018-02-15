@@ -40,7 +40,7 @@ class TPgsqlTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		if(($schema=$this->getSchemaName())!==null)
+		if(($schema = $this->getSchemaName()) !== null)
 			return $schema . '.' . $this->getTableName();
 		else
 			return $this->getTableName();

@@ -47,9 +47,9 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 	 */
 	public function findIndexByID($id)
 	{
-		foreach($this as $index=>$view)
+		foreach($this as $index => $view)
 		{
-			if($view->getID(false)===$id)
+			if($view->getID(false) === $id)
 				return $index;
 		}
 		return -1;

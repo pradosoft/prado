@@ -184,7 +184,7 @@ class MessageSource_PHP extends MessageSource
 	 * E.g. array('messages','en_AU')
 	 * @return array list of catalogues
 	 */
-	protected function getCatalogues($dir=null, $variant=null)
+	protected function getCatalogues($dir = null, $variant = null)
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
@@ -200,7 +200,7 @@ class MessageSource_PHP extends MessageSource
 			}
 
 			$pos = strpos($file, $this->dataExt);
-			if($pos >0 && substr($file, -1*strlen($this->dataExt)) == $this->dataExt)
+			if($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt)
 			{
 				$name = substr($file, 0, $pos);
 				$dot = strrpos($name, $this->dataSeparator);
@@ -209,7 +209,7 @@ class MessageSource_PHP extends MessageSource
 
 				if(is_int($dot))
 				{
-					$culture = substr($name, $dot+1, strlen($name));
+					$culture = substr($name, $dot + 1, strlen($name));
 					$cat = substr($name, 0, $dot);
 				}
 
@@ -230,7 +230,7 @@ class MessageSource_PHP extends MessageSource
 	 * @see update()
 	 * @see delete()
 	 */
-	private function getVariants($catalogue='messages')
+	private function getVariants($catalogue = 'messages')
 	{
 		if($catalogue === null) {
 			$catalogue = 'messages';
@@ -267,7 +267,7 @@ class MessageSource_PHP extends MessageSource
 	 * @param string the catalogue to add to
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
-	public function save($catalogue='messages')
+	public function save($catalogue = 'messages')
 	{
 		$messages = $this->untranslated;
 		if(count($messages) <= 0) {
@@ -292,7 +292,7 @@ class MessageSource_PHP extends MessageSource
 		//for each message add it to the XML file using DOM
 		foreach($messages as $message)
 		{
-			$php['trans-unit'][]= [
+			$php['trans-unit'][] = [
 				'source' => $message,
 				'target' => '',
 			];
@@ -309,7 +309,7 @@ class MessageSource_PHP extends MessageSource
 	 * @param string the catalogue to save to.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
-	public function update($text, $target, $comments, $catalogue='messages')
+	public function update($text, $target, $comments, $catalogue = 'messages')
 	{
 		$variants = $this->getVariants($catalogue);
 
@@ -348,7 +348,7 @@ class MessageSource_PHP extends MessageSource
 	 * @param string the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
-	public function delete($message, $catalogue='messages')
+	public function delete($message, $catalogue = 'messages')
 	{
 		$variants = $this->getVariants($catalogue);
 		if($variants) {

@@ -35,7 +35,7 @@ class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 	/**
 	 * @var string sort expression
 	 */
-	private $_sortExpression='';
+	private $_sortExpression = '';
 	/**
 	 * @var TControl original event sender
 	 */
@@ -48,8 +48,8 @@ class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($source, TDataGridCommandEventParameter $param)
 	{
-		$this->_source=$source;
-		$this->_sortExpression=$param->getCommandParameter();
+		$this->_source = $source;
+		$this->_sortExpression = $param->getCommandParameter();
 	}
 
 	/**

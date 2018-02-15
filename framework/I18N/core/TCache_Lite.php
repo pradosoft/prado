@@ -332,7 +332,7 @@ class TCache_Lite
 			}
 			if ($this->_writeControl) {
 				if (!$this->_writeAndControl($data)) {
-					@touch($this->_file, time() - 2*abs($this->_lifeTime));
+					@touch($this->_file, time() - 2 * abs($this->_lifeTime));
 					return false;
 				} else {
 					return true;
@@ -546,7 +546,7 @@ class TCache_Lite
 			if ($this->_readControl) {
 				$hashData = $this->_hash($data, $this->_readControlType);
 				if ($hashData != $hashControl) {
-					@touch($this->_file, time() - 2*abs($this->_lifeTime));
+					@touch($this->_file, time() - 2 * abs($this->_lifeTime));
 					return false;
 				}
 			}
@@ -593,7 +593,7 @@ class TCache_Lite
 	{
 		$this->_write($data);
 		$dataRead = $this->_read($data);
-		return ($dataRead==$data);
+		return ($dataRead == $data);
 	}
 
 	/**

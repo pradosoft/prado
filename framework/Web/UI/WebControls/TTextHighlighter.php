@@ -164,9 +164,9 @@ class TTextHighlighter extends TWebControl
 	 */
 	protected function registerStyleSheet()
 	{
-		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.' . $this->getSyntaxStyle(), '.css');
-		$cssKey='prado:TTextHighlighter:' . $cssFile;
+		$cs = $this->getPage()->getClientScript();
+		$cssFile = Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.' . $this->getSyntaxStyle(), '.css');
+		$cssKey = 'prado:TTextHighlighter:' . $cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
 	}

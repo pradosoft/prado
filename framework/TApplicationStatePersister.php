@@ -27,7 +27,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	/**
 	 * Name of the value stored in cache
 	 */
-	const CACHE_NAME='prado:appstate';
+	const CACHE_NAME = 'prado:appstate';
 
 	/**
 	 * Initializes module.
@@ -52,11 +52,11 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	public function load()
 	{
-		if(($cache=$this->getApplication()->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
+		if(($cache = $this->getApplication()->getCache()) !== null && ($value = $cache->get(self::CACHE_NAME)) !== false)
 			return unserialize($value);
 		else
 		{
-			if(($content=@file_get_contents($this->getStateFilePath()))!==false)
+			if(($content = @file_get_contents($this->getStateFilePath())) !== false)
 				return unserialize($content);
 			else
 				return null;
@@ -69,18 +69,18 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	public function save($state)
 	{
-		$content=serialize($state);
-		$saveFile=true;
-		if(($cache=$this->getApplication()->getCache())!==null)
+		$content = serialize($state);
+		$saveFile = true;
+		if(($cache = $this->getApplication()->getCache()) !== null)
 		{
-			if($cache->get(self::CACHE_NAME)===$content)
-				$saveFile=false;
+			if($cache->get(self::CACHE_NAME) === $content)
+				$saveFile = false;
 			else
 				$cache->set(self::CACHE_NAME, $content);
 		}
 		if($saveFile)
 		{
-			$fileName=$this->getStateFilePath();
+			$fileName = $this->getStateFilePath();
 			file_put_contents($fileName, $content, LOCK_EX);
 		}
 	}

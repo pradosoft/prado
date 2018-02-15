@@ -62,7 +62,7 @@ class TJuiControlOptions
 	{
 		if(!$control instanceof IJuiOptions)
 			throw new THttpException(500, 'juioptions_control_invalid', $control->ID);
-		$this->_control=$control;
+		$this->_control = $control;
 	}
 
 	/**
@@ -74,8 +74,8 @@ class TJuiControlOptions
 	 */
 	public function __set($name, $value)
 	{
-		if($this->_options===null)
-			$this->_options=[];
+		if($this->_options === null)
+			$this->_options = [];
 
 		foreach($this->_control->getValidOptions() as $option)
 		{
@@ -92,7 +92,7 @@ class TJuiControlOptions
 				} elseif(is_numeric($value)) {
 					// trick to get float or integer automatically when needed
 					$this->_options[$option] = $value + 0;
-				} elseif(substr($low, 0, 8)=='function') {
+				} elseif(substr($low, 0, 8) == 'function') {
 					$this->_options[$option] = new TJavaScriptLiteral($value);
 				} else {
 					$this->_options[$option] = $value;
@@ -112,8 +112,8 @@ class TJuiControlOptions
 	 */
 	public function __get($name)
 	{
-		if($this->_options===null)
-			$this->_options=[];
+		if($this->_options === null)
+			$this->_options = [];
 
 		foreach($this->_control->getValidOptions() as $option)
 		{
@@ -139,11 +139,11 @@ class TJuiControlOptions
 	 */
 	public function toArray()
 	{
-		$ret= ($this->_options===null) ? [] : $this->_options;
+		$ret = ($this->_options === null) ? [] : $this->_options;
 
 		foreach($this->_control->getValidEvents() as $event)
 			if($this->_control->hasEventHandler('on' . $event))
-				$ret[$event]=new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(" . TJavaScript::encode($this->_control->getUniqueID()) . ", " . TJavaScript::encode($event) . ", event, ui, this); }");
+				$ret[$event] = new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(" . TJavaScript::encode($this->_control->getUniqueID()) . ", " . TJavaScript::encode($event) . ", event, ui, this); }");
 
 		return $ret;
 	}
@@ -154,7 +154,7 @@ class TJuiControlOptions
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		$callbackParam=$param->CallbackParameter;
+		$callbackParam = $param->CallbackParameter;
 		if(isset($callbackParam->event))
 		{
 			$eventName = 'On' . ucfirst($callbackParam->event);

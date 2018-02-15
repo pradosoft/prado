@@ -50,7 +50,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * @var array list of routes available
 	 */
-	private $_routes=[];
+	private $_routes = [];
 	/**
 	 * @var string external configuration file
 	 */
@@ -64,18 +64,18 @@ class TLogRouter extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		if($this->_configFile!==null)
+		if($this->_configFile !== null)
 		{
 			if(is_file($this->_configFile))
 			{
-				if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+				if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 				{
 					$phpConfig = include $this->_configFile;
 					$this->loadConfig($phpConfig);
 				}
 				else
 				{
-					$dom=new TXmlDocument;
+					$dom = new TXmlDocument;
 					$dom->loadFromFile($this->_configFile);
 					$this->loadConfig($dom);
 				}
@@ -103,12 +103,12 @@ class TLogRouter extends \Prado\TModule
 					$properties = isset($route['properties'])?$route['properties']:[];
 					if(!isset($route['class']))
 						throw new TConfigurationException('logrouter_routeclass_required');
-					$route=Prado::createComponent($route['class']);
+					$route = Prado::createComponent($route['class']);
 					if(!($route instanceof TLogRoute))
 						throw new TConfigurationException('logrouter_routetype_invalid');
-					foreach($properties as $name=>$value)
+					foreach($properties as $name => $value)
 						$route->setSubproperty($name, $value);
-					$this->_routes[]=$route;
+					$this->_routes[] = $route;
 					$route->init($route);
 				}
 			}
@@ -117,15 +117,15 @@ class TLogRouter extends \Prado\TModule
 		{
 			foreach($config->getElementsByTagName('route') as $routeConfig)
 			{
-				$properties=$routeConfig->getAttributes();
-				if(($class=$properties->remove('class'))===null)
+				$properties = $routeConfig->getAttributes();
+				if(($class = $properties->remove('class')) === null)
 					throw new TConfigurationException('logrouter_routeclass_required');
-				$route=Prado::createComponent($class);
+				$route = Prado::createComponent($class);
 				if(!($route instanceof TLogRoute))
 					throw new TConfigurationException('logrouter_routetype_invalid');
-				foreach($properties as $name=>$value)
+				foreach($properties as $name => $value)
 					$route->setSubproperty($name, $value);
-				$this->_routes[]=$route;
+				$this->_routes[] = $route;
 				$route->init($routeConfig);
 			}
 		}
@@ -141,7 +141,7 @@ class TLogRouter extends \Prado\TModule
 	{
 		if(!($route instanceof TLogRoute))
 			throw new TInvalidDataTypeException('logrouter_routetype_invalid');
-		$this->_routes[]=$route;
+		$this->_routes[] = $route;
 		$route->init(null);
 	}
 
@@ -160,7 +160,7 @@ class TLogRouter extends \Prado\TModule
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt()))===null)
+		if(($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null)
 			throw new TConfigurationException('logrouter_configfile_invalid', $value);
 	}
 
@@ -171,7 +171,7 @@ class TLogRouter extends \Prado\TModule
 	 */
 	public function collectLogs($param)
 	{
-		$logger=Prado::getLogger();
+		$logger = Prado::getLogger();
 		foreach($this->_routes as $route)
 			$route->collectLogs($logger);
 	}

@@ -38,10 +38,10 @@ class TClassBehaviorEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($class, $name, $behavior, $priority)
 	{
-		$this->_class=$class;
-		$this->_name=$name;
-		$this->_behavior=$behavior;
-		$this->_priority=$priority;
+		$this->_class = $class;
+		$this->_name = $name;
+		$this->_behavior = $behavior;
+		$this->_priority = $priority;
 	}
 
 	/**

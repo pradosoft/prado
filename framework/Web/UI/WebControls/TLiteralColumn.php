@@ -106,15 +106,15 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
+		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::EditItem || $itemType === TListItemType::SelectedItem)
 		{
-			if($this->getDataField()!=='')
+			if($this->getDataField() !== '')
 			{
 				$cell->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			} else {
-				$text=$this->getText();
+				$text = $this->getText();
 				if($this->getEncode())
-					$text=THttpUtility::htmlEncode($text);
+					$text = THttpUtility::htmlEncode($text);
 				$cell->setText($text);
 			}
 		}
@@ -129,17 +129,17 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function dataBindColumn($sender, $param)
 	{
-		$item=$sender->getNamingContainer();
-		$data=$item->getData();
-		$formatString=$this->getDataFormatString();
-		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
+		$item = $sender->getNamingContainer();
+		$data = $item->getData();
+		$formatString = $this->getDataFormatString();
+		if(($field = $this->getDataField()) !== '')
+			$value = $this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
 		else
-			$value=$this->formatDataValue($formatString, $data);
+			$value = $this->formatDataValue($formatString, $data);
 		if($sender instanceof TTableCell)
 		{
 			if($this->getEncode())
-				$value=THttpUtility::htmlEncode($value);
+				$value = THttpUtility::htmlEncode($value);
 			$sender->setText($value);
 		}
 	}

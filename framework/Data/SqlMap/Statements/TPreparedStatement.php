@@ -23,7 +23,7 @@ use Prado\Collections\TMap;
  */
 class TPreparedStatement extends \Prado\TComponent
 {
-	private $_sqlString='';
+	private $_sqlString = '';
 	private $_parameterNames;
 	private $_parameterValues;
 
@@ -42,7 +42,7 @@ class TPreparedStatement extends \Prado\TComponent
 	public function getParameterValues($needed = true)
 	{
 		if (!$this->_parameterValues and $needed)
-			$this->_parameterValues=new TMap;
+			$this->_parameterValues = new TMap;
 		return $this->_parameterValues;
 	}
 

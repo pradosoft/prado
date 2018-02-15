@@ -33,9 +33,9 @@ class TJavaScript
 	 */
 	public static function renderScriptFiles($files)
 	{
-		$str='';
+		$str = '';
 		foreach($files as $file)
-			$str.= self::renderScriptFile($file);
+			$str .= self::renderScriptFile($file);
 		return $str;
 	}
 
@@ -139,7 +139,7 @@ class TJavaScript
 	 * @param boolean wether to encode empty strings too. Default to false for BC.
 	 * @return string the encoded string
 	 */
-	public static function encode($value, $toMap=true, $encodeEmptyStrings=false)
+	public static function encode($value, $toMap = true, $encodeEmptyStrings = false)
 	{
 		if(is_string($value))
 			return self::quoteString($value);
@@ -147,16 +147,16 @@ class TJavaScript
 			return $value?'true':'false';
 		elseif(is_array($value))
 		{
-			$results='';
-			if(($n=count($value))>0 && array_keys($value)!==range(0, $n-1))
+			$results = '';
+			if(($n = count($value)) > 0 && array_keys($value) !== range(0, $n - 1))
 			{
-				foreach($value as $k=>$v)
+				foreach($value as $k => $v)
 				{
-					if($v!=='' || $encodeEmptyStrings)
+					if($v !== '' || $encodeEmptyStrings)
 					{
-						if($results!=='')
-							$results.=',';
-						$results.="'$k':" . self::encode($v, $toMap, $encodeEmptyStrings);
+						if($results !== '')
+							$results .= ',';
+						$results .= "'$k':" . self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '{' . $results . '}';
@@ -165,11 +165,11 @@ class TJavaScript
 			{
 				foreach($value as $v)
 				{
-					if($v!=='' || $encodeEmptyStrings)
+					if($v !== '' || $encodeEmptyStrings)
 					{
-						if($results!=='')
-							$results.=',';
-						$results.=self::encode($v, $toMap, $encodeEmptyStrings);
+						if($results !== '')
+							$results .= ',';
+						$results .= self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '[' . $results . ']';
@@ -188,8 +188,8 @@ class TJavaScript
 					return 'Number.POSITIVE_INFINITY';
 					break;
 				default:
-					$locale=localeConv();
-					if($locale['decimal_point']=='.')
+					$locale = localeConv();
+					if($locale['decimal_point'] == '.')
 						return "$value";
 					else
 						return str_replace($locale['decimal_point'], '.', "$value");
@@ -201,7 +201,7 @@ class TJavaScript
 				return $value->toJavaScriptLiteral();
 			else
 				return self::encode(get_object_vars($value), $toMap);
-		elseif($value===null)
+		elseif($value === null)
 			return 'null';
 		else
 			return '';
@@ -214,8 +214,8 @@ class TJavaScript
 	 */
 	public static function jsonEncode($value, $options = 0)
 	{
-		if (($g=Prado::getApplication()->getGlobalization(false))!==null &&
-			strtoupper($enc=$g->getCharset())!='UTF-8') {
+		if (($g = Prado::getApplication()->getGlobalization(false)) !== null &&
+			strtoupper($enc = $g->getCharset()) != 'UTF-8') {
 			self::convertToUtf8($value, $enc);
 		}
 
@@ -231,7 +231,7 @@ class TJavaScript
 	 */
 	private static function convertToUtf8(&$value, $sourceEncoding) {
 		if(is_string($value))
-			$value=iconv($sourceEncoding, 'UTF-8', $value);
+			$value = iconv($sourceEncoding, 'UTF-8', $value);
 		elseif (is_array($value))
 		{
 			foreach($value as &$element)
@@ -249,7 +249,7 @@ class TJavaScript
 	 */
 	public static function jsonDecode($value, $assoc = false, $depth = 512)
 	{
-		$s= @json_decode($value, $assoc, $depth);
+		$s = @json_decode($value, $assoc, $depth);
 		self::checkJsonError();
 		return $s;
 	}

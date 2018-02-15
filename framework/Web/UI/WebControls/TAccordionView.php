@@ -29,7 +29,7 @@ use Prado\TPropertyValue;
  */
 class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 {
-	private $_active=false;
+	private $_active = false;
 
 	/**
 	 * @return the tag name for the view element
@@ -120,7 +120,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setActive($value)
 	{
-		$this->_active=TPropertyValue::ensureBoolean($value);
+		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -129,7 +129,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())!=='')
+		if(($text = $this->getText()) !== '')
 			$writer->write($text);
 		elseif($this->getHasControls())
 			parent::renderContents($writer);
@@ -145,7 +145,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 		{
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
-			$style=$this->getActive()?$this->getParent()->getActiveHeaderStyle():$this->getParent()->getHeaderStyle();
+			$style = $this->getActive()?$this->getParent()->getActiveHeaderStyle():$this->getParent()->getHeaderStyle();
 
 			$style->addAttributesToRender($writer);
 
@@ -165,13 +165,13 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	protected function renderHeaderContent($writer)
 	{
 		$url = $this->getNavigateUrl();
-		if(($caption=$this->getCaption())==='')
-			$caption='&nbsp;';
+		if(($caption = $this->getCaption()) === '')
+			$caption = '&nbsp;';
 
-		if ($url!='')
+		if ($url != '')
 			$writer->write("<a href=\"{$url}\">");
 		$writer->write("{$caption}");
-		if ($url!='')
+		if ($url != '')
 			$writer->write("</a>");
 	}
 }

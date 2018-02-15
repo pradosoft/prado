@@ -49,10 +49,10 @@ use Prado\Web\UI\ITemplate;
  */
 class TConditional extends \Prado\Web\UI\TControl
 {
-	private $_condition='true';
+	private $_condition = 'true';
 	private $_trueTemplate;
 	private $_falseTemplate;
-	private $_creatingChildren=false;
+	private $_creatingChildren = false;
 
 	/**
 	 * Processes an object that is created during parsing template.
@@ -74,11 +74,11 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function createChildControls()
 	{
-		$this->_creatingChildren=true;
-		$result=true;
+		$this->_creatingChildren = true;
+		$result = true;
 		try
 		{
-			$result=$this->getTemplateControl()->evaluateExpression($this->_condition);
+			$result = $this->getTemplateControl()->evaluateExpression($this->_condition);
 		}
 		catch(\Exception $e)
 		{
@@ -91,7 +91,7 @@ class TConditional extends \Prado\Web\UI\TControl
 		}
 		elseif($this->_falseTemplate)
 			$this->_falseTemplate->instantiateIn($this->getTemplateControl(), $this);
-		$this->_creatingChildren=false;
+		$this->_creatingChildren = false;
 	}
 
 	/**
@@ -109,7 +109,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setCondition($value)
 	{
-		$this->_condition=TPropertyValue::ensureString($value);
+		$this->_condition = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setTrueTemplate(ITemplate $value)
 	{
-		$this->_trueTemplate=$value;
+		$this->_trueTemplate = $value;
 	}
 
 	/**
@@ -141,7 +141,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setFalseTemplate(ITemplate $value)
 	{
-		$this->_falseTemplate=$value;
+		$this->_falseTemplate = $value;
 	}
 }
 

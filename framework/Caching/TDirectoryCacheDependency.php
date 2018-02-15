@@ -35,8 +35,8 @@ use Prado\TPropertyValue;
  */
 class TDirectoryCacheDependency extends TCacheDependency
 {
-	private $_recursiveCheck=true;
-	private $_recursiveLevel=-1;
+	private $_recursiveCheck = true;
+	private $_recursiveLevel = -1;
 	private $_timestamps;
 	private $_directory;
 
@@ -63,10 +63,10 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function setDirectory($directory)
 	{
-		if(($path=realpath($directory))===false || !is_dir($path))
+		if(($path = realpath($directory)) === false || !is_dir($path))
 			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
-		$this->_directory=$path;
-		$this->_timestamps=$this->generateTimestamps($path);
+		$this->_directory = $path;
+		$this->_timestamps = $this->generateTimestamps($path);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function setRecursiveCheck($value)
 	{
-		$this->_recursiveCheck=TPropertyValue::ensureBoolean($value);
+		$this->_recursiveCheck = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -105,7 +105,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function setRecursiveLevel($value)
 	{
-		$this->_recursiveLevel=TPropertyValue::ensureInteger($value);
+		$this->_recursiveLevel = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->generateTimestamps($this->_directory)!=$this->_timestamps;
+		return $this->generateTimestamps($this->_directory) != $this->_timestamps;
 	}
 
 	/**
@@ -152,23 +152,23 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * @param int level of the recursion
 	 * @return array list of file modification time indexed by the file path
 	 */
-	protected function generateTimestamps($directory, $level=0)
+	protected function generateTimestamps($directory, $level = 0)
 	{
-		if(($dir=opendir($directory))===false)
+		if(($dir = opendir($directory)) === false)
 			throw new TIOException('directorycachedependency_directory_invalid', $directory);
-		$timestamps=[];
-		while(($file=readdir($dir))!==false)
+		$timestamps = [];
+		while(($file = readdir($dir)) !== false)
 		{
-			$path=$directory . DIRECTORY_SEPARATOR . $file;
-			if($file==='.' || $file==='..')
+			$path = $directory . DIRECTORY_SEPARATOR . $file;
+			if($file === '.' || $file === '..')
 				continue;
 			elseif(is_dir($path))
 			{
-				if(($this->_recursiveLevel<0 || $level<$this->_recursiveLevel) && $this->validateDirectory($path))
-					$timestamps=array_merge($this->generateTimestamps($path, $level+1));
+				if(($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path))
+					$timestamps = array_merge($this->generateTimestamps($path, $level + 1));
 			}
 			elseif($this->validateFile($path))
-				$timestamps[$path]=filemtime($path);
+				$timestamps[$path] = filemtime($path);
 		}
 		closedir($dir);
 		return $timestamps;

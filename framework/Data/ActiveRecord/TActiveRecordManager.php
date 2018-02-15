@@ -45,7 +45,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
 
 	private $_gateway;
-	private $_meta=[];
+	private $_meta = [];
 	private $_connection;
 
 	private $_cache;
@@ -71,7 +71,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	 */
 	public function setCache($value)
 	{
-		$this->_cache=$value;
+		$this->_cache = $value;
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	 */
 	public function setDbConnection($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -93,12 +93,12 @@ class TActiveRecordManager extends \Prado\TComponent
 	/**
 	 * @return TActiveRecordManager static instance of record manager.
 	 */
-	public static function getInstance($self=null)
+	public static function getInstance($self = null)
 	{
 		static $instance;
-		if($self!==null)
-			$instance=$self;
-		elseif($instance===null)
+		if($self !== null)
+			$instance = $self;
+		elseif($instance === null)
 			$instance = new self;
 		return $instance;
 	}

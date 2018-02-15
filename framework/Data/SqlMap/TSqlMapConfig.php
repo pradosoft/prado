@@ -31,12 +31,12 @@ class TSqlMapConfig extends TDataSourceConfig
 {
 	private $_configFile;
 	private $_sqlmap;
-	private $_enableCache=false;
+	private $_enableCache = false;
 
 	/**
 	 * File extension of external configuration file
 	 */
-	const CONFIG_FILE_EXT='.xml';
+	const CONFIG_FILE_EXT = '.xml';
 
 	/**
 	 * @return string module ID + configuration file path.
@@ -66,10 +66,10 @@ class TSqlMapConfig extends TDataSourceConfig
 	 * @since 3.1.7
 	 */
 	public function getSqlMapManager() {
-		if(($manager = $this->loadCachedSqlMapManager())===null)
+		if(($manager = $this->loadCachedSqlMapManager()) === null)
 		{
 			$manager = new TSqlMapManager($this->getDbConnection());
-			if(strlen($file=$this->getConfigFile()) > 0)
+			if(strlen($file = $this->getConfigFile()) > 0)
 			{
 				$manager->configureXml($file);
 				$this->cacheSqlMapManager($manager);
@@ -135,7 +135,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	public function setConfigFile($value)
 	{
 		if(is_file($value))
-			$this->_configFile=$value;
+			$this->_configFile = $value;
 		else
 		{
 			$file = Prado::getPathOfNamespace($value, self::CONFIG_FILE_EXT);
@@ -177,8 +177,8 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	public function getClient()
 	{
-		if($this->_sqlmap===null)
-			$this->_sqlmap=$this->createSqlMapGateway();
+		if($this->_sqlmap === null)
+			$this->_sqlmap = $this->createSqlMapGateway();
 		return $this->_sqlmap;
 	}
 }

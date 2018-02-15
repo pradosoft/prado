@@ -103,7 +103,7 @@ class TTimeTriggeredCallback extends TCallback
 	protected function getTriggerOptions()
 	{
 		$options['ID'] = $this->getClientID();
-		$options['EventTarget']= $this->getUniqueID();
+		$options['EventTarget'] = $this->getUniqueID();
 		$options['Interval'] = $this->getInterval();
 		return $options;
 	}

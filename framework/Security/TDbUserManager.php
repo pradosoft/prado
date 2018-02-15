@@ -48,10 +48,10 @@ use Prado\Prado;
  */
 class TDbUserManager extends \Prado\TModule implements IUserManager
 {
-	private $_connID='';
+	private $_connID = '';
 	private $_conn;
-	private $_guestName='Guest';
-	private $_userClass='';
+	private $_guestName = 'Guest';
+	private $_userClass = '';
 	private $_userFactory;
 
 	/**
@@ -61,9 +61,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function init($config)
 	{
-		if($this->_userClass==='')
+		if($this->_userClass === '')
 			throw new TConfigurationException('dbusermanager_userclass_required');
-		$this->_userFactory=Prado::createComponent($this->_userClass, $this);
+		$this->_userFactory = Prado::createComponent($this->_userClass, $this);
 		if(!($this->_userFactory instanceof TDbUser))
 			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
 	}
@@ -81,7 +81,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setUserClass($value)
 	{
-		$this->_userClass=$value;
+		$this->_userClass = $value;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setGuestName($value)
 	{
-		$this->_guestName=$value;
+		$this->_guestName = $value;
 	}
 
 	/**
@@ -116,11 +116,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * @param string user name, null if it is a guest.
 	 * @return TUser the user instance, null if the specified username is not in the user database.
 	 */
-	public function getUser($username=null)
+	public function getUser($username = null)
 	{
-		if($username===null)
+		if($username === null)
 		{
-			$user=Prado::createComponent($this->_userClass, $this);
+			$user = Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
 			return $user;
 		}
@@ -144,7 +144,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -152,9 +152,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn===null)
+		if($this->_conn === null)
 		{
-			$this->_conn=$this->createDbConnection($this->_connID);
+			$this->_conn = $this->createDbConnection($this->_connID);
 			$this->_conn->setActive(true);
 		}
 		return $this->_conn;
@@ -168,9 +168,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	protected function createDbConnection($connectionID)
 	{
-		if($connectionID!=='')
+		if($connectionID !== '')
 		{
-			$conn=$this->getApplication()->getModule($connectionID);
+			$conn = $this->getApplication()->getModule($connectionID);
 			if($conn instanceof TDataSourceConfig)
 				return $conn->getDbConnection();
 			else
@@ -198,7 +198,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function saveUserToCookie($cookie)
 	{
-		$user=$this->getApplication()->getUser();
+		$user = $this->getApplication()->getUser();
 		if($user instanceof TDbUser)
 			$user->saveUserToCookie($cookie);
 	}

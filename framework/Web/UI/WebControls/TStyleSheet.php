@@ -106,11 +106,11 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 		$styles = preg_split('/,|\s+/', $this->getPradoStyles());
 		foreach($styles as $style)
 		{
-			if(($style = trim($style))!=='')
+			if(($style = trim($style)) !== '')
 				$cs->registerPradoStyle($style);
 		}
 
-		if(($url=$this->getStyleSheetUrl())!=='')
+		if(($url = $this->getStyleSheetUrl()) !== '')
 			$cs->registerStyleSheetFile($url, $url, $this->getMediaType());
 	}
 

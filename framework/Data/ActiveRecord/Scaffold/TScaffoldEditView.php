@@ -125,7 +125,7 @@ class TScaffoldEditView extends TScaffoldBase
 		}
 		else
 		{
-			if($this->_editRenderer===null)
+			if($this->_editRenderer === null)
 				$this->createEditRenderer($record, $classPath);
 			else
 				$this->_editRenderer->setData($record);
@@ -161,11 +161,11 @@ class TScaffoldEditView extends TScaffoldBase
 	protected function createRepeaterEditItem($sender, $param)
 	{
 		$type = $param->getItem()->getItemType();
-		if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
+		if($type == TListItemType::Item || $type == TListItemType::AlternatingItem)
 		{
 			$item = $param->getItem();
 			$column = $item->getData();
-			if($column===null)
+			if($column === null)
 				return;
 
 			$record = $this->getCurrentRecord();
@@ -202,7 +202,7 @@ class TScaffoldEditView extends TScaffoldBase
 		if($this->getPage()->getIsValid())
 		{
 			$record = $this->getCurrentRecord();
-			if($this->_editRenderer===null)
+			if($this->_editRenderer === null)
 			{
 				$table = $this->getTableInfo();
 				$builder = $this->getScaffoldInputBuilder($record);
@@ -219,7 +219,7 @@ class TScaffoldEditView extends TScaffoldBase
 			$record->save();
 			return true;
 		}
-		elseif($this->_editRenderer!==null)
+		elseif($this->_editRenderer !== null)
 		{
 			//preserve the form data.
 			$this->_editRenderer->updateRecord($this->getCurrentRecord());
@@ -271,7 +271,7 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	protected function getScaffoldInputBuilder($record)
 	{
-		static $_builders=[];
+		static $_builders = [];
 		$class = get_class($record);
 		if(!isset($_builders[$class]))
 		{

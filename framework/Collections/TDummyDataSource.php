@@ -36,7 +36,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function __construct($count)
 	{
-		$this->_count=$count;
+		$this->_count = $count;
 	}
 
 	/**

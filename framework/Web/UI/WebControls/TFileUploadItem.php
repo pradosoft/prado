@@ -28,23 +28,23 @@ class TFileUploadItem extends \Prado\TComponent
   /**
    * @var integer the size of the uploaded file (in bytes)
    */
-  private $_fileSize=0;
+  private $_fileSize = 0;
   /**
    * @var string The original name of the file on the client machine
    */
-  private $_fileName='';
+  private $_fileName = '';
   /**
    * @var string the name of the temporary file storing the uploaded file
    */
-  private $_localName='';
+  private $_localName = '';
   /**
    * @var string the uploaded file mime type
    */
-  private $_fileType='';
+  private $_fileType = '';
   /**
    * @var integer error code of the current file upload
    */
-  private $_errorCode=UPLOAD_ERR_NO_FILE;
+  private $_errorCode = UPLOAD_ERR_NO_FILE;
 
   public function __construct($fileName, $fileSize, $fileType, $errorCode, $localName)
   {
@@ -122,7 +122,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getHasFile()
   {
-	return $this->_errorCode===UPLOAD_ERR_OK;
+	return $this->_errorCode === UPLOAD_ERR_OK;
   }
 
   /**
@@ -132,14 +132,14 @@ class TFileUploadItem extends \Prado\TComponent
    * If true, you will not be able to save the uploaded file again.
    * @return boolean true if the file saving is successful
    */
-  public function saveAs($fileName, $deleteTempFile=true)
+  public function saveAs($fileName, $deleteTempFile = true)
   {
-	if($this->_errorCode===UPLOAD_ERR_OK)
+	if($this->_errorCode === UPLOAD_ERR_OK)
 	{
 	  if($deleteTempFile)
 		return move_uploaded_file($this->_localName, $fileName);
 	  elseif(is_uploaded_file($this->_localName))
-		return file_put_contents($fileName, file_get_contents($this->_localName))!==false;
+		return file_put_contents($fileName, file_get_contents($this->_localName)) !== false;
 	  else
 		return false;
 	}

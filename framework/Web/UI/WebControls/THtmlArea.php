@@ -377,7 +377,7 @@ class THtmlArea extends TTextBox
 	{
 		$tarfile = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.tar');
 		$md5sum = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.md5');
-		if($tarfile===null || $md5sum===null)
+		if($tarfile === null || $md5sum === null)
 			throw new TConfigurationException('htmlarea_tarfile_invalid');
 		$url = $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
 		$this->copyCustomPlugins($url);
@@ -391,7 +391,7 @@ class THtmlArea extends TTextBox
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
 			$dest = $assets->getBasePath() . '/' . basename($url) . '/tiny_mce/plugins/' . basename($path);
-			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			if(!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}
 	}
@@ -439,11 +439,11 @@ class THtmlArea extends TTextBox
 
 			if(count($option) == 2)
 			{
-				$value=trim(trim($option[1]), "'\"");
-				if (($s=strtolower($value))==='false')
-					$value=false;
-				elseif ($s==='true')
-					$value=true;
+				$value = trim(trim($option[1]), "'\"");
+				if (($s = strtolower($value)) === 'false')
+					$value = false;
+				elseif ($s === 'true')
+					$value = true;
 				$options[trim($option[0])] = $value;
 			}
 		}
@@ -456,10 +456,10 @@ class THtmlArea extends TTextBox
 	protected function getLanguageSuffix($culture)
 	{
 		$app = $this->getApplication()->getGlobalization();
-		if(empty($culture) && ($app!==null))
+		if(empty($culture) && ($app !== null))
 			$culture = $app->getCulture();
 		$variants = [];
-		if($app!==null)
+		if($app !== null)
 			$variants = $app->getCultureVariants($culture);
 
 		foreach($variants as $variant)

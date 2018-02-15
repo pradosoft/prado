@@ -29,12 +29,12 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 * the X coordinate of the clicking point
 	 * @var integer
 	 */
-	private $_x=0;
+	private $_x = 0;
 	/**
 	 * the Y coordinate of the clicking point
 	 * @var integer
 	 */
-	private $_y=0;
+	private $_y = 0;
 
 	/**
 	 * Constructor.
@@ -43,8 +43,8 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($x, $y)
 	{
-		$this->_x=$x;
-		$this->_y=$y;
+		$this->_x = $x;
+		$this->_y = $y;
 	}
 
 	/**
@@ -60,7 +60,7 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 */
 	public function setX($value)
 	{
-		$this->_x=TPropertyValue::ensureInteger($value);
+		$this->_x = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -76,6 +76,6 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 */
 	public function setY($value)
 	{
-		$this->_y=TPropertyValue::ensureInteger($value);
+		$this->_y = TPropertyValue::ensureInteger($value);
 	}
 }

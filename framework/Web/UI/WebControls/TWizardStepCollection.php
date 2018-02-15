@@ -36,7 +36,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 */
 	public function __construct(TWizard $wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -66,7 +66,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 */
 	public function removeAt($index)
 	{
-		$step=parent::removeAt($index);
+		$step = parent::removeAt($index);
 		$this->_wizard->getMultiView()->getViews()->remove($step);
 		$this->_wizard->removedWizardStep($step);
 		return $step;

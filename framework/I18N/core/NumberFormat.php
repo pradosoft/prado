@@ -88,7 +88,7 @@ class NumberFormat
 	 * @param mixed either null, a CultureInfo, a NumberFormatInfo, or string
 	 * @return NumberFormat
 	 */
-	public function __construct($formatInfo=null)
+	public function __construct($formatInfo = null)
 	{
 		if($formatInfo === null)
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
@@ -113,9 +113,9 @@ class NumberFormat
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
 	 * @return string formatted number string
 	 */
-	public function format($number, $pattern='d', $currency='USD', $charset='UTF-8')
+	public function format($number, $pattern = 'd', $currency = 'USD', $charset = 'UTF-8')
 	{
-		$oldLocale=setLocale(LC_NUMERIC, '0');
+		$oldLocale = setLocale(LC_NUMERIC, '0');
 		setlocale(LC_NUMERIC, 'C');
 
 		$this->setPattern($pattern);
@@ -128,7 +128,7 @@ class NumberFormat
 		$decimal = $this->formatDecimal($string);
 		$integer = $this->formatInteger(abs($number));
 
-		if(strlen($decimal)>0)
+		if(strlen($decimal) > 0)
 			$result = $integer . $decimal;
 		else
 			$result = $integer;
@@ -192,13 +192,13 @@ class NumberFormat
 		if(is_int($groupSize[0]))
 		{
 			//now for the integer groupings
-			for($i=0; $i<$len; $i++)
+			for($i = 0; $i < $len; $i++)
 			{
-				$char = $string{$len-$i-1};
+				$char = $string{$len - $i - 1};
 
 				if($multiGroup && $count == 0)
 				{
-					if($i != 0 && $i%$groupSize[0] == 0)
+					if($i != 0 && $i % $groupSize[0] == 0)
 					{
 						$integer = $groupSeparator . $integer;
 						$count++;
@@ -206,7 +206,7 @@ class NumberFormat
 				}
 				elseif($multiGroup && $count >= 1)
 				{
-					if($i != 0 && ($i-$groupSize[0])%$groupSize[1] == 0)
+					if($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0)
 					{
 						$integer = $groupSeparator . $integer;
 						$count++;
@@ -214,7 +214,7 @@ class NumberFormat
 				}
 				else
 				{
-					if($i != 0 && $i%$groupSize[0] == 0)
+					if($i != 0 && $i % $groupSize[0] == 0)
 					{
 						$integer = $groupSeparator . $integer;
 						$count++;
@@ -249,7 +249,7 @@ class NumberFormat
 		{
 			if($decimalDigits == -1)
 			{
-				$decimal = substr($string, $dp+1);
+				$decimal = substr($string, $dp + 1);
 			}
 			elseif(is_int($decimalDigits))
 			{
@@ -260,8 +260,8 @@ class NumberFormat
 				}
 				else
 				{
-					$decimal = substr($float, strpos($float, '.')+1);
-					if(strlen($decimal)<$decimalDigits)
+					$decimal = substr($float, strpos($float, '.') + 1);
+					if(strlen($decimal) < $decimalDigits)
 						$decimal = str_pad($decimal, $decimalDigits, '0');
 				}
 			}

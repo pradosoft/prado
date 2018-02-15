@@ -31,7 +31,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 * Regular expression used to validate the email address
 	 * @see http://www.regular-expressions.info/email.html
 	 */
-	const EMAIL_REGEXP='[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
+	const EMAIL_REGEXP = '[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.
@@ -48,8 +48,8 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function getRegularExpression()
 	{
-		$regex=parent::getRegularExpression();
-		return $regex===''?self::EMAIL_REGEXP:$regex;
+		$regex = parent::getRegularExpression();
+		return $regex === ''?self::EMAIL_REGEXP:$regex;
 	}
 
 	/**
@@ -58,17 +58,17 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function evaluateIsValid()
 	{
-		$value=$this->getValidationValue($this->getValidationTarget());
-		$valid=$valid=is_string($value) && strlen($value)<=254 && parent::evaluateIsValid();
+		$value = $this->getValidationValue($this->getValidationTarget());
+		$valid = $valid = is_string($value) && strlen($value) <= 254 && parent::evaluateIsValid();
 
 		if($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr'))
 		{
-			if($value!=='')
+			if($value !== '')
 			{
-				if(($pos=strpos($value, '@'))!==false)
+				if(($pos = strpos($value, '@')) !== false)
 				{
-					$domain=substr($value, $pos+1);
-					return $domain===''?false:checkdnsrr($domain, 'MX');
+					$domain = substr($value, $pos + 1);
+					return $domain === ''?false:checkdnsrr($domain, 'MX');
 				}
 				else
 					return false;

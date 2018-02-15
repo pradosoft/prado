@@ -35,13 +35,13 @@ use Prado\Web\UI\WebControls\TDataGrid;
  */
 class TActiveBoundColumn extends TBoundColumn {
 	protected function initializeHeaderCell($cell, $columnIndex) {
-		$text=$this->getHeaderText();
+		$text = $this->getHeaderText();
 
-		if(($classPath=$this->getHeaderRenderer())!=='') {
-			$control=Prado::createComponent($classPath);
+		if(($classPath = $this->getHeaderRenderer()) !== '') {
+			$control = Prado::createComponent($classPath);
 			if($control instanceof \Prado\IDataRenderer) {
 				if($control instanceof IItemDataRenderer) {
-					$item=$cell->getParent();
+					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
@@ -50,21 +50,21 @@ class TActiveBoundColumn extends TBoundColumn {
 			$cell->getControls()->add($control);
 		}
 		elseif($this->getAllowSorting()) {
-				$sortExpression=$this->getSortExpression();
-				if(($url=$this->getHeaderImageUrl())!=='') {
-					$button= new TActiveImageButton;
+				$sortExpression = $this->getSortExpression();
+				if(($url = $this->getHeaderImageUrl()) !== '') {
+					$button = new TActiveImageButton;
 					$button->setImageUrl($url);
 					$button->setCommandName(TDataGrid::CMD_SORT);
 					$button->setCommandParameter($sortExpression);
-					if($text!=='') {
+					if($text !== '') {
 						$button->setAlternateText($text);
 						$button->setToolTip($text);
 					}
 					$button->setCausesValidation(false);
 					$cell->getControls()->add($button);
 				}
-				elseif($text!=='') {
-						$button= new TActiveLinkButton;
+				elseif($text !== '') {
+						$button = new TActiveLinkButton;
 						$button->setText($text);
 						$button->setCommandName(TDataGrid::CMD_SORT);
 						$button->setCommandParameter($sortExpression);
@@ -75,16 +75,16 @@ class TActiveBoundColumn extends TBoundColumn {
 						$cell->setText('&nbsp;');
 			}
 			else {
-				if(($url=$this->getHeaderImageUrl())!=='') {
-					$image= new TActiveImage;
+				if(($url = $this->getHeaderImageUrl()) !== '') {
+					$image = new TActiveImage;
 					$image->setImageUrl($url);
-					if($text!=='') {
+					if($text !== '') {
 						$image->setAlternateText($text);
 						$image->setToolTip($text);
 					}
 					$cell->getControls()->add($image);
 				}
-				elseif($text!=='')
+				elseif($text !== '')
 						$cell->setText($text);
 					else
 						$cell->setText('&nbsp;');

@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 {
-	private $_isValid=true;
+	private $_isValid = true;
 
 	/**
 	 * @return boolean whether the event should be performed.

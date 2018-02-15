@@ -27,7 +27,7 @@ use Prado\Exceptions\THttpException;
 class TJsonRpcProtocol extends TRpcProtocol
 {
 	protected $_id;
-	protected $_specificationVersion=1.0;
+	protected $_specificationVersion = 1.0;
 
 	/**
 	 * Handles the RPC request
@@ -42,13 +42,13 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 			if(isset($_request['jsonrpc']))
 			{
-				$this->_specificationVersion=$_request['jsonrpc'];
+				$this->_specificationVersion = $_request['jsonrpc'];
 				if($this->_specificationVersion > 2.0)
 					throw new TRpcException('Unsupported specification version', '-32600');
 			}
 
 			if(isset($_request['id']))
-				$this->_id=$_request['id'];
+				$this->_id = $_request['id'];
 
 			if(!isset($_request['method']))
 					throw new TRpcException('Missing request method', '-32600');
@@ -64,7 +64,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 			// a request without an id is a notification that doesn't need a response
 			if($this->_id !== null)
 			{
-				if($this->_specificationVersion==2.0)
+				if($this->_specificationVersion == 2.0)
 				{
 					return $this->encode([
 						'jsonrpc' => '2.0',
@@ -101,23 +101,23 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		if($this->_specificationVersion==2.0)
+		if($this->_specificationVersion == 2.0)
 		{
 			return $this->encode([
 				'id' => $this->_id,
 				'result' => null,
-				'error'=> [
+				'error' => [
 					'code' => $exception->getCode(),
-					'message'=> $exception->getMessage(),
+					'message' => $exception->getMessage(),
 					'data' => null,
 					]
 			]);
 		} else {
 			return $this->encode([
 				'id' => $this->_id,
-				'error'=> [
+				'error' => [
 					'code' => $exception->getCode(),
-					'message'=> $exception->getMessage(),
+					'message' => $exception->getMessage(),
 					'data' => null,
 					]
 			]);

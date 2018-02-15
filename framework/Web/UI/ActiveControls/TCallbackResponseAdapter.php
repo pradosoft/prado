@@ -33,7 +33,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	/**
 	 * @var TCallbackResponseWriter[] list of writers.
 	 */
-	private $_writers=[];
+	private $_writers = [];
 	/**
 	 * @var mixed callback response data.
 	 */
@@ -86,9 +86,9 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	public function httpRedirect($url)
 	{
-		if($url[0]==='/')
-			$url=$this->getRequest()->getBaseUrl() . $url;
-		$this->_redirectUrl=str_replace('&amp;', '&', $url);
+		if($url[0] === '/')
+			$url = $this->getRequest()->getBaseUrl() . $url;
+		$this->_redirectUrl = str_replace('&amp;', '&', $url);
 	}
 
 	/**

@@ -96,7 +96,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	protected function buildListPager()
 	{
-		$list=new TActiveDropDownList;
+		$list = new TActiveDropDownList;
 
 		$list->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
@@ -125,19 +125,19 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
-		if($buttonType===TPagerButtonType::LinkButton)
+		if($buttonType === TPagerButtonType::LinkButton)
 		{
 			if($enabled)
-				$button=new TActiveLinkButton;
+				$button = new TActiveLinkButton;
 			else
 			{
-				$button=new TLabel;
+				$button = new TLabel;
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
 		}
-		elseif($buttonType===TPagerButtonType::ImageButton)
+		elseif($buttonType === TPagerButtonType::ImageButton)
 		{
 			$button = new TActiveImageButton;
 			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
@@ -148,12 +148,12 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		}
 		else
 		{
-			$button=new TActiveButton;
+			$button = new TActiveButton;
 			if(!$enabled)
 				$button->setEnabled(false);
 		}
 
-		if($buttonType===TPagerButtonType::ImageButton)
+		if($buttonType === TPagerButtonType::ImageButton)
 		{
 			$button->ImageUrl = $text;
 		}
@@ -183,10 +183,10 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		// Update all the buttons pagers attached to the same control.
 		// Dropdown pagers doesn't need to be re-rendered.
-		$controlToPaginate=$this->getControlToPaginate();
+		$controlToPaginate = $this->getControlToPaginate();
 		foreach ($this->getNamingContainer()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false) as $control)
 		{
-			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate()===$controlToPaginate)
+			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate() === $controlToPaginate)
 			{
 				$control->render($param->getNewWriter());
 				// FIXME : With some very fast machine, the getNewWriter() consecutive calls are in the same microsecond, resulting
@@ -202,7 +202,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		if($this->getHasPreRendered())
 		{
-			$this->setDisplay(($this->getPageCount()==1)?TDisplayStyle::None:TDisplayStyle::Dynamic);
+			$this->setDisplay(($this->getPageCount() == 1)?TDisplayStyle::None:TDisplayStyle::Dynamic);
 			TWebControl::render($writer);
 			if($this->getActiveControl()->canUpdateClientSide())
 				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);

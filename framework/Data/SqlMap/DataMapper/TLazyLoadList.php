@@ -22,9 +22,9 @@ class TLazyLoadList
 {
 	private $_param;
 	private $_target;
-	private $_propertyName='';
-	private $_statement='';
-	private $_loaded=false;
+	private $_propertyName = '';
+	private $_statement = '';
+	private $_loaded = false;
 	private $_innerList;
 	private $_connection;
 
@@ -41,7 +41,7 @@ class TLazyLoadList
 		$this->_param = $param;
 		$this->_target = $target;
 		$this->_statement = $mappedStatement;
-		$this->_connection=$mappedStatement->getManager()->getDbConnection();
+		$this->_connection = $mappedStatement->getManager()->getDbConnection();
 		$this->_propertyName = $propertyName;
 	}
 
@@ -57,7 +57,7 @@ class TLazyLoadList
 	{
 		$handler = new self($mappedStatement, $param, $target, $propertyName);
 		$statement = $mappedStatement->getStatement();
-		$registry=$mappedStatement->getManager()->getTypeHandlers();
+		$registry = $mappedStatement->getManager()->getTypeHandlers();
 		$list = $statement->createInstanceOfListClass($registry);
 		if(!is_object($list))
 			throw new TSqlMapExecutionException('sqlmap_invalid_lazyload_list', $statement->getID());

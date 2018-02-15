@@ -30,7 +30,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	/**
 	 * @var boolean whether the service is enabled
 	 */
-	private $_enabled=true;
+	private $_enabled = true;
 
 	/**
 	 * Initializes the service and attaches {@link run} to the RunService event of application.
@@ -54,7 +54,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -70,7 +70,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	 */
 	public function setEnabled($value)
 	{
-		$this->_enabled=TPropertyValue::ensureBoolean($value);
+		$this->_enabled = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

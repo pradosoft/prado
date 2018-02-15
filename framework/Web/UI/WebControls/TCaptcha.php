@@ -64,10 +64,10 @@ use Prado\TPropertyValue;
  */
 class TCaptcha extends TImage
 {
-	const MIN_TOKEN_LENGTH=2;
-	const MAX_TOKEN_LENGTH=40;
+	const MIN_TOKEN_LENGTH = 2;
+	const MAX_TOKEN_LENGTH = 40;
 	private $_privateKey;
-	private $_validated=false;
+	private $_validated = false;
 
 	/**
 	 * @return integer the theme of the token image. Defaults to 0.
@@ -92,8 +92,8 @@ class TCaptcha extends TImage
 	 */
 	public function setTokenImageTheme($value)
 	{
-		$value=TPropertyValue::ensureInteger($value);
-		if($value>=0 && $value<=63)
+		$value = TPropertyValue::ensureInteger($value);
+		if($value >= 0 && $value <= 63)
 			$this->setViewState('TokenImageTheme', $value, 0);
 		else
 			throw new TConfigurationException('captcha_tokenimagetheme_invalid', 0, 63);
@@ -115,8 +115,8 @@ class TCaptcha extends TImage
 	 */
 	public function setTokenFontSize($value)
 	{
-		$value=TPropertyValue::ensureInteger($value);
-		if($value>=20 && $value<=100)
+		$value = TPropertyValue::ensureInteger($value);
+		if($value >= 20 && $value <= 100)
 			$this->setViewState('TokenFontSize', $value, 30);
 		else
 			throw new TConfigurationException('captcha_tokenfontsize_invalid', 20, 100);
@@ -135,8 +135,8 @@ class TCaptcha extends TImage
 	 */
 	public function setMinTokenLength($value)
 	{
-		$length=TPropertyValue::ensureInteger($value);
-		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
+		$length = TPropertyValue::ensureInteger($value);
+		if($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH)
 			$this->setViewState('MinTokenLength', $length, 4);
 		else
 			throw new TConfigurationException('captcha_mintokenlength_invalid', self::MIN_TOKEN_LENGTH, self::MAX_TOKEN_LENGTH);
@@ -155,8 +155,8 @@ class TCaptcha extends TImage
 	 */
 	public function setMaxTokenLength($value)
 	{
-		$length=TPropertyValue::ensureInteger($value);
-		if($length>=self::MIN_TOKEN_LENGTH && $length<=self::MAX_TOKEN_LENGTH)
+		$length = TPropertyValue::ensureInteger($value);
+		if($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH)
 			$this->setViewState('MaxTokenLength', $length, 6);
 		else
 			throw new TConfigurationException('captcha_maxtokenlength_invalid', self::MIN_TOKEN_LENGTH, self::MAX_TOKEN_LENGTH);
@@ -191,7 +191,7 @@ class TCaptcha extends TImage
 	 */
 	public function setTokenAlphabet($value)
 	{
-		if(strlen($value)<2)
+		if(strlen($value) < 2)
 			throw new TConfigurationException('captcha_tokenalphabet_invalid');
 		$this->setViewState('TokenAlphabet', $value, '234578adefhijmnrtABDEFGHJLMNRT');
 	}
@@ -249,8 +249,8 @@ class TCaptcha extends TImage
 	 */
 	public function getIsTokenExpired()
 	{
-		if(($expiry=$this->getTokenExpiry())>0 && ($start=$this->getViewState('TokenGenerated', 0))>0)
-			return $expiry+$start<time();
+		if(($expiry = $this->getTokenExpiry()) > 0 && ($start = $this->getViewState('TokenGenerated', 0)) > 0)
+			return $expiry + $start < time();
 		else
 			return false;
 	}
@@ -260,9 +260,9 @@ class TCaptcha extends TImage
 	 */
 	public function getPublicKey()
 	{
-		if(($publicKey=$this->getViewState('PublicKey', ''))==='')
+		if(($publicKey = $this->getViewState('PublicKey', '')) === '')
 		{
-			$publicKey=$this->generateRandomKey();
+			$publicKey = $this->generateRandomKey();
 			$this->setPublicKey($publicKey);
 		}
 		return $publicKey;
@@ -289,16 +289,16 @@ class TCaptcha extends TImage
 	 */
 	protected function getTokenLength()
 	{
-		if(($tokenLength=$this->getViewState('TokenLength'))===null)
+		if(($tokenLength = $this->getViewState('TokenLength')) === null)
 		{
-			$minLength=$this->getMinTokenLength();
-			$maxLength=$this->getMaxTokenLength();
-			if($minLength>$maxLength)
-				$tokenLength=rand($maxLength, $minLength);
-			elseif($minLength<$maxLength)
-				$tokenLength=rand($minLength, $maxLength);
+			$minLength = $this->getMinTokenLength();
+			$maxLength = $this->getMaxTokenLength();
+			if($minLength > $maxLength)
+				$tokenLength = rand($maxLength, $minLength);
+			elseif($minLength < $maxLength)
+				$tokenLength = rand($minLength, $maxLength);
 			else
-				$tokenLength=$minLength;
+				$tokenLength = $minLength;
 			$this->setViewState('TokenLength', $tokenLength);
 		}
 		return $tokenLength;
@@ -309,13 +309,13 @@ class TCaptcha extends TImage
 	 */
 	public function getPrivateKey()
 	{
-		if($this->_privateKey===null)
+		if($this->_privateKey === null)
 		{
-			$fileName=$this->generatePrivateKeyFile();
-			$content=file_get_contents($fileName);
-			$matches=[];
-			if(preg_match("/privateKey='(.*?)'/ms", $content, $matches)>0)
-				$this->_privateKey=$matches[1];
+			$fileName = $this->generatePrivateKeyFile();
+			$content = file_get_contents($fileName);
+			$matches = [];
+			if(preg_match("/privateKey='(.*?)'/ms", $content, $matches) > 0)
+				$this->_privateKey = $matches[1];
 			else
 				throw new TConfigurationException('captcha_privatekey_unknown');
 		}
@@ -329,18 +329,18 @@ class TCaptcha extends TImage
 	 */
 	public function validate($input)
 	{
-		$number=$this->getViewState('TestNumber', 0);
+		$number = $this->getViewState('TestNumber', 0);
 		if(!$this->_validated)
 		{
 			$this->setViewState('TestNumber', ++$number);
-			$this->_validated=true;
+			$this->_validated = true;
 		}
-		if($this->getIsTokenExpired() || (($limit=$this->getTestLimit())>0 && $number>$limit))
+		if($this->getIsTokenExpired() || (($limit = $this->getTestLimit()) > 0 && $number > $limit))
 		{
 			$this->regenerateToken();
 			return false;
 		}
-		return ($this->getToken()===($this->getCaseSensitive()?$input:strtoupper($input)));
+		return ($this->getToken() === ($this->getCaseSensitive()?$input:strtoupper($input)));
 	}
 
 	/**
@@ -368,10 +368,10 @@ class TCaptcha extends TImage
 			throw new TConfigurationException('captcha_imagettftext_required');
 		if(!$this->getViewState('TokenGenerated', 0))
 		{
-			$manager=$this->getApplication()->getAssetManager();
+			$manager = $this->getApplication()->getAssetManager();
 			$manager->publishFilePath($this->getFontFile());
-			$url=$manager->publishFilePath($this->getCaptchaScriptFile());
-			$url.='?options=' . urlencode($this->getTokenImageOptions());
+			$url = $manager->publishFilePath($this->getCaptchaScriptFile());
+			$url .= '?options=' . urlencode($this->getTokenImageOptions());
 			$this->setImageUrl($url);
 
 			$this->setViewState('TokenGenerated', time());
@@ -383,22 +383,22 @@ class TCaptcha extends TImage
 	 */
 	protected function getTokenImageOptions()
 	{
-		$privateKey=$this->getPrivateKey();  // call this method to ensure private key is generated
-		$token=$this->getToken();
-		$options=[];
-		$options['publicKey']=$this->getPublicKey();
-		$options['tokenLength']=strlen($token);
-		$options['caseSensitive']=$this->getCaseSensitive();
-		$options['alphabet']=$this->getTokenAlphabet();
-		$options['fontSize']=$this->getTokenFontSize();
-		$options['theme']=$this->getTokenImageTheme();
-		if(($randomSeed=$this->getViewState('RandomSeed', 0))===0)
+		$privateKey = $this->getPrivateKey();  // call this method to ensure private key is generated
+		$token = $this->getToken();
+		$options = [];
+		$options['publicKey'] = $this->getPublicKey();
+		$options['tokenLength'] = strlen($token);
+		$options['caseSensitive'] = $this->getCaseSensitive();
+		$options['alphabet'] = $this->getTokenAlphabet();
+		$options['fontSize'] = $this->getTokenFontSize();
+		$options['theme'] = $this->getTokenImageTheme();
+		if(($randomSeed = $this->getViewState('RandomSeed', 0)) === 0)
 		{
-			$randomSeed=(int)(microtime(true)*1000000);
+			$randomSeed = (int)(microtime(true) * 1000000);
 			$this->setViewState('RandomSeed', $randomSeed);
 		}
-		$options['randomSeed']=$this->getChangingTokenBackground()?0:$randomSeed;
-		$str=serialize($options);
+		$options['randomSeed'] = $this->getChangingTokenBackground()?0:$randomSeed;
+		$str = serialize($options);
 		return base64_encode(md5($privateKey . $str) . $str);
 	}
 
@@ -421,14 +421,14 @@ class TCaptcha extends TImage
 	 */
 	protected function generatePrivateKeyFile()
 	{
-		$captchaScript=$this->getCaptchaScriptFile();
-		$path=dirname($this->getApplication()->getAssetManager()->getPublishedPath($captchaScript));
-		$fileName=$path . DIRECTORY_SEPARATOR . 'captcha_key.php';
+		$captchaScript = $this->getCaptchaScriptFile();
+		$path = dirname($this->getApplication()->getAssetManager()->getPublishedPath($captchaScript));
+		$fileName = $path . DIRECTORY_SEPARATOR . 'captcha_key.php';
 		if(!is_file($fileName))
 		{
 			@mkdir($path);
-			$key=$this->generateRandomKey();
-			$content="<?php
+			$key = $this->generateRandomKey();
+			$content = "<?php
 \$privateKey='$key';
 ?>";
 			file_put_contents($fileName, $content);
@@ -454,7 +454,7 @@ class TCaptcha extends TImage
 	 */
 	protected function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
 	{
-		$token=substr($this->hash2string(md5($publicKey . $privateKey), $alphabet) . $this->hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
+		$token = substr($this->hash2string(md5($publicKey . $privateKey), $alphabet) . $this->hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
 		return $caseSensitive?$token:strtoupper($token);
 	}
 
@@ -464,20 +464,20 @@ class TCaptcha extends TImage
 	 * @param string the alphabet used to represent the converted string. If empty, it means '234578adefhijmnrtwyABDEFGHIJLMNQRTWY', which excludes those confusing characters.
 	 * @return string the converted string
 	 */
-	protected function hash2string($hex, $alphabet='')
+	protected function hash2string($hex, $alphabet = '')
 	{
-		if(strlen($alphabet)<2)
-			$alphabet='234578adefhijmnrtABDEFGHJLMNQRT';
-		$hexLength=strlen($hex);
-		$base=strlen($alphabet);
-		$result='';
-		for($i=0;$i<$hexLength;$i+=6)
+		if(strlen($alphabet) < 2)
+			$alphabet = '234578adefhijmnrtABDEFGHJLMNQRT';
+		$hexLength = strlen($hex);
+		$base = strlen($alphabet);
+		$result = '';
+		for($i = 0;$i < $hexLength;$i += 6)
 		{
-			$number=hexdec(substr($hex, $i, 6));
+			$number = hexdec(substr($hex, $i, 6));
 			while($number)
 			{
-				$result.=$alphabet[$number%$base];
-				$number=floor($number/$base);
+				$result .= $alphabet[$number % $base];
+				$number = floor($number / $base);
 			}
 		}
 		return $result;

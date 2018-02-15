@@ -52,14 +52,14 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 */
 	public function getControl($id)
 	{
-		$control=null;
-		$service=Prado::getApplication()->getService();
+		$control = null;
+		$service = Prado::getApplication()->getService();
 		if ($service instanceof TPageService)
 		{
 			// Find the control
 			// Warning, this will not work if you have a '_' in your control Id !
-			$controlId=str_replace(TControl::CLIENT_ID_SEPARATOR, TControl::ID_SEPARATOR, $id);
-			$control=$service->getRequestedPage()->findControl($controlId);
+			$controlId = str_replace(TControl::CLIENT_ID_SEPARATOR, TControl::ID_SEPARATOR, $id);
+			$control = $service->getRequestedPage()->findControl($controlId);
 		}
 		return $control;
 	}
@@ -72,11 +72,11 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 */
 	public function __get($name)
 	{
-		$pos=strpos($name, 'Control', 1);
-		$name=strtolower(substr($name, 0, $pos));
+		$pos = strpos($name, 'Control', 1);
+		$name = strtolower(substr($name, 0, $pos));
 
-		$cp=$this->getCallbackParameter();
-		if(!isset($cp->$name) || $cp->$name=='')
+		$cp = $this->getCallbackParameter();
+		if(!isset($cp->$name) || $cp->$name == '')
 			return null;
 
 		return $this->getControl($cp->$name);

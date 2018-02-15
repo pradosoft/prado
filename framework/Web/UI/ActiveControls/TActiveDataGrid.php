@@ -53,7 +53,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
   /**
    * @var string the tag used to render the surrounding container
    */
-  protected $_surroundingTag='div';
+  protected $_surroundingTag = 'div';
 
 	/**
 	 * @return string Name of the class used in AutoGenerateColumns mode
@@ -107,7 +107,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param string $value container tag
 	 */
 	public function setSurroundingTag($value) {
-	$this->_surroundingTag=TPropertyValue::ensureString($value);
+	$this->_surroundingTag = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -133,17 +133,17 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @return mixed the button instance
 	 */
 	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter) {
-		if($buttonType===TDataGridPagerButtonType::LinkButton) {
+		if($buttonType === TDataGridPagerButtonType::LinkButton) {
 			if($enabled)
-				$button=new TActiveLinkButton;
+				$button = new TActiveLinkButton;
 			else {
-				$button=new TLabel;
+				$button = new TLabel;
 				$button->setText($text);
 				return $button;
 			}
 		}
 		else {
-			$button=new TActiveButton;
+			$button = new TActiveButton;
 			if(!$enabled)
 				$button->setEnabled(false);
 		}
@@ -159,7 +159,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 
 	protected function createPager()
 	{
-		$pager=new TActiveDataGridPager($this);
+		$pager = new TActiveDataGridPager($this);
 		$this->buildPager($pager);
 		$this->onPagerCreated(new TActiveDataGridPagerEventParameter($pager));
 		$this->getControls()->add($pager);
@@ -188,10 +188,10 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * data source changed.
 	 */
 	private function renderPager() {
-		$pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
+		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
 		foreach($pager as $item) {
-			if($item->ControlToPaginate==$this->ID) {
-				$writer=$this->getResponse()->createHtmlWriter();
+			if($item->ControlToPaginate == $this->ID) {
+				$writer = $this->getResponse()->createHtmlWriter();
 				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}
 		}

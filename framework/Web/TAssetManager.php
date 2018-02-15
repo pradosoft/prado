@@ -55,7 +55,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Default web accessible base path for storing private files
 	 */
-	const DEFAULT_BASEPATH='assets';
+	const DEFAULT_BASEPATH = 'assets';
 	/**
 	 * @var string base web accessible path for storing private files
 	 */
@@ -67,7 +67,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */
-	private $_checkTimestamp=false;
+	private $_checkTimestamp = false;
 	/**
 	 * @var TApplication application instance
 	 */
@@ -75,11 +75,11 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * @var array published assets
 	 */
-	private $_published=[];
+	private $_published = [];
 	/**
 	 * @var boolean whether the module is initialized
 	 */
-	private $_initialized=false;
+	private $_initialized = false;
 
 	/**
 	 * Initializes the module.
@@ -88,15 +88,15 @@ class TAssetManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$application=$this->getApplication();
-		if($this->_basePath===null)
-			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
+		$application = $this->getApplication();
+		if($this->_basePath === null)
+			$this->_basePath = dirname($application->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
 			throw new TConfigurationException('assetmanager_basepath_invalid', $this->_basePath);
-		if($this->_baseUrl===null)
-			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationUrl()), '/\\') . '/' . self::DEFAULT_BASEPATH;
+		if($this->_baseUrl === null)
+			$this->_baseUrl = rtrim(dirname($application->getRequest()->getApplicationUrl()), '/\\') . '/' . self::DEFAULT_BASEPATH;
 		$application->setAssetManager($this);
-		$this->_initialized=true;
+		$this->_initialized = true;
 	}
 
 	/**
@@ -119,8 +119,8 @@ class TAssetManager extends \Prado\TModule
 			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
 		else
 		{
-			$this->_basePath=Prado::getPathOfNamespace($value);
-			if($this->_basePath===null || !is_dir($this->_basePath) || !is_writable($this->_basePath))
+			$this->_basePath = Prado::getPathOfNamespace($value);
+			if($this->_basePath === null || !is_dir($this->_basePath) || !is_writable($this->_basePath))
 				throw new TInvalidDataValueException('assetmanager_basepath_invalid', $value);
 		}
 	}
@@ -142,7 +142,7 @@ class TAssetManager extends \Prado\TModule
 		if($this->_initialized)
 			throw new TInvalidOperationException('assetmanager_baseurl_unchangeable');
 		else
-			$this->_baseUrl=rtrim($value, '/');
+			$this->_baseUrl = rtrim($value, '/');
 	}
 
 	/**
@@ -159,30 +159,30 @@ class TAssetManager extends \Prado\TModule
 	 * @throws TInvalidDataValueException if the file path to be published is
 	 * invalid
 	 */
-	public function publishFilePath($path, $checkTimestamp=false)
+	public function publishFilePath($path, $checkTimestamp = false)
 	{
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
-		elseif(empty($path) || ($fullpath=realpath($path))===false)
+		elseif(empty($path) || ($fullpath = realpath($path)) === false)
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid', $path);
 		elseif(is_file($fullpath))
 		{
-			$dir=$this->hash(dirname($fullpath));
-			$fileName=basename($fullpath);
-			$dst=$this->_basePath . DIRECTORY_SEPARATOR . $dir;
-			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dir = $this->hash(dirname($fullpath));
+			$fileName = basename($fullpath);
+			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
+			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance)
 				$this->copyFile($fullpath, $dst);
-			return $this->_published[$path]=$this->_baseUrl . '/' . $dir . '/' . $fileName;
+			return $this->_published[$path] = $this->_baseUrl . '/' . $dir . '/' . $fileName;
 		}
 		else
 		{
-			$dir=$this->hash($fullpath);
-			if(!is_dir($this->_basePath . DIRECTORY_SEPARATOR . $dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dir = $this->hash($fullpath);
+			if(!is_dir($this->_basePath . DIRECTORY_SEPARATOR . $dir) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance)
 			{
 				Prado::trace("Publishing directory $fullpath", 'Prado\Web\TAssetManager');
 				$this->copyDirectory($fullpath, $this->_basePath . DIRECTORY_SEPARATOR . $dir);
 			}
-			return $this->_published[$path]=$this->_baseUrl . '/' . $dir;
+			return $this->_published[$path] = $this->_baseUrl . '/' . $dir;
 		}
 	}
 
@@ -199,7 +199,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param $values List of published assets
 	 * @since 3.1.6
 	 */
-	protected function setPublished($values=[])
+	protected function setPublished($values = [])
 	{
 		$this->_published = $values;
 	}
@@ -213,7 +213,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	public function getPublishedPath($path)
 	{
-		$path=realpath($path);
+		$path = realpath($path);
 		if(is_file($path))
 			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash(dirname($path)) . DIRECTORY_SEPARATOR . basename($path);
 		else
@@ -229,7 +229,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	public function getPublishedUrl($path)
 	{
-		$path=realpath($path);
+		$path = realpath($path);
 		if(is_file($path))
 			return $this->_baseUrl . '/' . $this->hash(dirname($path)) . '/' . basename($path);
 		else
@@ -261,8 +261,8 @@ class TAssetManager extends \Prado\TModule
 			@mkdir($dst);
 			@chmod($dst, PRADO_CHMOD);
 		}
-		$dstFile=$dst . DIRECTORY_SEPARATOR . basename($src);
-		if(@filemtime($dstFile)<@filemtime($src))
+		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
+		if(@filemtime($dstFile) < @filemtime($src))
 		{
 			Prado::trace("Publishing file $src to $dstFile", 'Prado\Web\TAssetManager');
 			@copy($src, $dstFile);
@@ -284,15 +284,15 @@ class TAssetManager extends \Prado\TModule
 			@mkdir($dst);
 			@chmod($dst, PRADO_CHMOD);
 		}
-		if($folder=@opendir($src))
+		if($folder = @opendir($src))
 		{
-			while($file=@readdir($folder))
+			while($file = @readdir($folder))
 			{
-				if($file==='.' || $file==='..' || $file==='.svn' || $file==='.git')
+				if($file === '.' || $file === '..' || $file === '.svn' || $file === '.git')
 					continue;
 				elseif(is_file($src . DIRECTORY_SEPARATOR . $file))
 				{
-					if(@filemtime($dst . DIRECTORY_SEPARATOR . $file)<@filemtime($src . DIRECTORY_SEPARATOR . $file))
+					if(@filemtime($dst . DIRECTORY_SEPARATOR . $file) < @filemtime($src . DIRECTORY_SEPARATOR . $file))
 					{
 						@copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
 						@chmod($dst . DIRECTORY_SEPARATOR . $file, PRADO_CHMOD);
@@ -318,26 +318,26 @@ class TAssetManager extends \Prado\TModule
 	 * @param boolean Wether or not to check the time stamp of the file for publishing. Defaults to false.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
-	public function publishTarFile($tarfile, $md5sum, $checkTimestamp=false)
+	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)
 	{
 		if(isset($this->_published[$md5sum]))
 			return $this->_published[$md5sum];
-		elseif(($fullpath=realpath($md5sum))===false || !is_file($fullpath))
+		elseif(($fullpath = realpath($md5sum)) === false || !is_file($fullpath))
 			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid', $md5sum);
 		else
 		{
-			$dir=$this->hash(dirname($fullpath));
-			$fileName=basename($fullpath);
-			$dst=$this->_basePath . DIRECTORY_SEPARATOR . $dir;
-			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dir = $this->hash(dirname($fullpath));
+			$fileName = basename($fullpath);
+			$dst = $this->_basePath . DIRECTORY_SEPARATOR . $dir;
+			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance)
 			{
-				if(@filemtime($dst . DIRECTORY_SEPARATOR . $fileName)<@filemtime($fullpath))
+				if(@filemtime($dst . DIRECTORY_SEPARATOR . $fileName) < @filemtime($fullpath))
 				{
 					$this->copyFile($fullpath, $dst);
 					$this->deployTarFile($tarfile, $dst);
 				}
 			}
-			return $this->_published[$md5sum]=$this->_baseUrl . '/' . $dir;
+			return $this->_published[$md5sum] = $this->_baseUrl . '/' . $dir;
 		}
 	}
 
@@ -350,7 +350,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	protected function deployTarFile($path, $destination)
 	{
-		if(($fullpath=realpath($path))===false || !is_file($fullpath))
+		if(($fullpath = realpath($path)) === false || !is_file($fullpath))
 			throw new TIOException('assetmanager_tarfile_invalid', $path);
 		else
 		{

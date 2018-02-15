@@ -69,7 +69,7 @@ class TDataFieldAccessor
 			}
 			elseif(is_object($data))
 			{
-				if(strpos($field, '.')===false)  // simple field
+				if(strpos($field, '.') === false)  // simple field
 				{
 					if(method_exists($data, 'get' . $field))
 						return call_user_func([$data,'get' . $field]);
@@ -78,7 +78,7 @@ class TDataFieldAccessor
 				}
 				else // field in the format of xxx.yyy.zzz
 				{
-					$object=$data;
+					$object = $data;
 					foreach(explode('.', $field) as $f)
 						$object = TDataFieldAccessor::getDataFieldValue($object, $f);
 					return $object;

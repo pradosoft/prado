@@ -140,7 +140,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options=TBaseValidator::getClientScriptOptions();
+		$options = TBaseValidator::getClientScriptOptions();
 		$options['EventTarget'] = $this->getUniqueID();
 		return $options;
 	}

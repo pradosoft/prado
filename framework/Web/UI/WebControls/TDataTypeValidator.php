@@ -87,7 +87,7 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	protected function evaluateDataTypeCheck($value)
 	{
-		if($value=='')
+		if($value == '')
 			return true;
 
 		switch($this->getDataType())
@@ -116,9 +116,9 @@ class TDataTypeValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['DataType']=$this->getDataType();
-		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['DateFormat']=$dateFormat;
+		$options['DataType'] = $this->getDataType();
+		if(($dateFormat = $this->getDateFormat()) !== '')
+			$options['DateFormat'] = $dateFormat;
 		return $options;
 	}
 
@@ -131,7 +131,7 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if(($value = $this->getValidationValue($this->getValidationTarget())) === '')
 			return true;
 
 		return $this->evaluateDataTypeCheck($value);

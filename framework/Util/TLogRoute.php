@@ -37,26 +37,26 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @var array lookup table for level names
 	 */
-	protected static $_levelNames=[
-		TLogger::DEBUG=>'Debug',
-		TLogger::INFO=>'Info',
-		TLogger::NOTICE=>'Notice',
-		TLogger::WARNING=>'Warning',
-		TLogger::ERROR=>'Error',
-		TLogger::ALERT=>'Alert',
-		TLogger::FATAL=>'Fatal'
+	protected static $_levelNames = [
+		TLogger::DEBUG => 'Debug',
+		TLogger::INFO => 'Info',
+		TLogger::NOTICE => 'Notice',
+		TLogger::WARNING => 'Warning',
+		TLogger::ERROR => 'Error',
+		TLogger::ALERT => 'Alert',
+		TLogger::FATAL => 'Fatal'
 	];
 	/**
 	 * @var array lookup table for level values
 	 */
-	protected static $_levelValues=[
-		'debug'=>TLogger::DEBUG,
-		'info'=>TLogger::INFO,
-		'notice'=>TLogger::NOTICE,
-		'warning'=>TLogger::WARNING,
-		'error'=>TLogger::ERROR,
-		'alert'=>TLogger::ALERT,
-		'fatal'=>TLogger::FATAL
+	protected static $_levelValues = [
+		'debug' => TLogger::DEBUG,
+		'info' => TLogger::INFO,
+		'notice' => TLogger::NOTICE,
+		'warning' => TLogger::WARNING,
+		'error' => TLogger::ERROR,
+		'alert' => TLogger::ALERT,
+		'fatal' => TLogger::FATAL
 	];
 	/**
 	 * @var integer log level filter (bits)
@@ -91,16 +91,16 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	public function setLevels($levels)
 	{
 		if(is_int($levels))
-			$this->_levels=$levels;
+			$this->_levels = $levels;
 		else
 		{
-			$this->_levels=null;
-			$levels=strtolower($levels);
+			$this->_levels = null;
+			$levels = strtolower($levels);
 			foreach(explode(',', $levels) as $level)
 			{
-				$level=trim($level);
+				$level = trim($level);
 				if(isset(self::$_levelValues[$level]))
-					$this->_levels|=self::$_levelValues[$level];
+					$this->_levels |= self::$_levelValues[$level];
 			}
 		}
 	}
@@ -120,14 +120,14 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	public function setCategories($categories)
 	{
 		if(is_array($categories))
-			$this->_categories=$categories;
+			$this->_categories = $categories;
 		else
 		{
-			$this->_categories=null;
+			$this->_categories = null;
 			foreach(explode(',', $categories) as $category)
 			{
-				if(($category=trim($category))!=='')
-					$this->_categories[]=$category;
+				if(($category = trim($category)) !== '')
+					$this->_categories[] = $category;
 			}
 		}
 	}
@@ -169,7 +169,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function collectLogs(TLogger $logger)
 	{
-		$logs=$logger->getLogs($this->getLevels(), $this->getCategories());
+		$logs = $logger->getLogs($this->getLevels(), $this->getCategories());
 		if(!empty($logs))
 			$this->processLogs($logs);
 	}

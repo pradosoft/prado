@@ -67,7 +67,7 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	public function setID($value)
 	{
-		$this->_ID=$value;
+		$this->_ID = $value;
 	}
 
 	/**
@@ -147,12 +147,12 @@ class TParameterMap extends \Prado\TComponent
 	{
 		$value = $this->getObjectValue($parameterValue, $property);
 
-		if(($handler=$this->createTypeHandler($property, $registry))!==null)
+		if(($handler = $this->createTypeHandler($property, $registry)) !== null)
 			$value = $handler->getParameter($value);
 
 		$value = $this->nullifyDefaultValue($property, $value);
 
-		if(($type = $property->getType())!==null)
+		if(($type = $property->getType()) !== null)
 			$value = $registry->convertToType($type, $value);
 
 		return $value;
@@ -167,9 +167,9 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	protected function createTypeHandler($property, $registry)
 	{
-		$type=$property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
-		$handler=$registry->getTypeHandler($type);
-		if($handler===null && $property->getTypeHandler())
+		$type = $property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
+		$handler = $registry->getTypeHandler($type);
+		if($handler === null && $property->getTypeHandler())
 			$handler = Prado::createComponent($type);
 		return $handler;
 	}
@@ -207,7 +207,7 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	protected function nullifyDefaultValue($property, $value)
 	{
-		if(($nullValue = $property->getNullValue())!==null)
+		if(($nullValue = $property->getNullValue()) !== null)
 		{
 			if($nullValue === $value)
 				$value = null;

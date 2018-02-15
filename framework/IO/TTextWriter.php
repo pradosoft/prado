@@ -24,7 +24,7 @@ namespace Prado\IO;
  */
 class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 {
-	private $_str='';
+	private $_str = '';
 
 	/**
 	 * Flushes the content that has been written.
@@ -32,8 +32,8 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function flush()
 	{
-		$str=$this->_str;
-		$this->_str='';
+		$str = $this->_str;
+		$this->_str = '';
 		return $str;
 	}
 
@@ -43,7 +43,7 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function write($str)
 	{
-		$this->_str.=$str;
+		$this->_str .= $str;
 	}
 
 	/**
@@ -51,7 +51,7 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 * @param string content to be written
 	 * @see write
 	 */
-	public function writeLine($str='')
+	public function writeLine($str = '')
 	{
 		$this->write($str . "\n");
 	}

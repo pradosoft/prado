@@ -43,7 +43,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	 */
 	public function setPreviousButton($value)
 	{
-		$this->_previousButton=$value;
+		$this->_previousButton = $value;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	 */
 	public function setNextButton($value)
 	{
-		$this->_nextButton=$value;
+		$this->_nextButton = $value;
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	 */
 	public function setCancelButton($value)
 	{
-		$this->_cancelButton=$value;
+		$this->_cancelButton = $value;
 	}
 
 	/**
@@ -91,6 +91,6 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	 */
 	public function setCompleteButton($value)
 	{
-		$this->_completeButton=$value;
+		$this->_completeButton = $value;
 	}
 }

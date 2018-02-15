@@ -49,18 +49,18 @@ use Prado\Collections\TMap;
  */
 abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 {
-	private $_initialized=false;
+	private $_initialized = false;
 	private $_dataSource;
-	private $_requiresBindToNull=false;
-	private $_requiresDataBinding=false;
-	private $_prerendered=false;
+	private $_requiresBindToNull = false;
+	private $_requiresDataBinding = false;
+	private $_prerendered = false;
 	private $_currentView;
 	private $_currentDataSource;
-	private $_currentViewValid=false;
-	private $_currentDataSourceValid=false;
-	private $_currentViewIsFromDataSourceID=false;
+	private $_currentViewValid = false;
+	private $_currentDataSourceValid = false;
+	private $_currentViewIsFromDataSourceID = false;
 	private $_parameters;
-	private $_isDataBound=false;
+	private $_isDataBound = false;
 
 	/**
 	 * @return Traversable data source object, defaults to null.
@@ -79,7 +79,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDataSource($value)
 	{
-		$this->_dataSource=$this->validateDataSource($value);
+		$this->_dataSource = $this->validateDataSource($value);
 		$this->onDataSourceChanged();
 	}
 
@@ -97,9 +97,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDataSourceID($value)
 	{
-		$dsid=$this->getViewState('DataSourceID', '');
-		if($dsid!=='' && $value==='')
-			$this->_requiresBindToNull=true;
+		$dsid = $this->getViewState('DataSourceID', '');
+		if($dsid !== '' && $value === '')
+			$this->_requiresBindToNull = true;
 		$this->setViewState('DataSourceID', $value, '');
 		$this->onDataSourceChanged();
 	}
@@ -111,7 +111,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function getUsingDataSourceID()
 	{
-		return $this->getDataSourceID()!=='';
+		return $this->getDataSourceID() !== '';
 	}
 
 	/**
@@ -120,8 +120,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function onDataSourceChanged()
 	{
-		$this->_currentViewValid=false;
-		$this->_currentDataSourceValid=false;
+		$this->_currentViewValid = false;
+		$this->_currentDataSourceValid = false;
 		if($this->getInitialized())
 			$this->setRequiresDataBinding(true);
 	}
@@ -144,7 +144,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function setInitialized($value)
 	{
-		$this->_initialized=TPropertyValue::ensureBoolean($value);
+		$this->_initialized = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -160,7 +160,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function setIsDataBound($value)
 	{
-		$this->_isDataBound=$value;
+		$this->_isDataBound = $value;
 	}
 
 	/**
@@ -221,8 +221,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setCurrentPageIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = 0;
 		$this->setViewState('CurrentPageIndex', $value, 0);
 	}
 
@@ -240,7 +240,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setPageSize($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<1)
+		if(($value = TPropertyValue::ensureInteger($value)) < 1)
 			throw new TInvalidDataValueException('databoundcontrol_pagesize_invalid', get_class($this));
 		$this->setViewState('PageSize', TPropertyValue::ensureInteger($value), 10);
 	}
@@ -269,7 +269,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setVirtualItemCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
 			throw new TInvalidDataValueException('databoundcontrol_virtualitemcount_invalid', get_class($this));
 		$this->setViewState('VirtualItemCount', $value, 0);
 	}
@@ -282,14 +282,14 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function setRequiresDataBinding($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
+		$value = TPropertyValue::ensureBoolean($value);
 		if($value && $this->_prerendered)
 		{
-			$this->_requiresDataBinding=true;
+			$this->_requiresDataBinding = true;
 			$this->ensureDataBound();
 		}
 		else
-			$this->_requiresDataBinding=$value;
+			$this->_requiresDataBinding = $value;
 	}
 
 	/**
@@ -303,7 +303,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 		if($this->_requiresDataBinding && ($this->getUsingDataSourceID() || $this->_requiresBindToNull))
 		{
 			$this->dataBind();
-			$this->_requiresBindToNull=false;
+			$this->_requiresBindToNull = false;
 		}
 	}
 
@@ -312,7 +312,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createPagedDataSource()
 	{
-		$ds=new TPagedDataSource;
+		$ds = new TPagedDataSource;
 		$ds->setCurrentPageIndex($this->getCurrentPageIndex());
 		$ds->setPageSize($this->getPageSize());
 		$ds->setAllowPaging($this->getAllowPaging());
@@ -333,21 +333,21 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 		$this->dataBindProperties();
 		$this->onDataBinding(null);
 
-		if(($view=$this->getDataSourceView())!==null)
-			$data=$view->select($this->getSelectParameters());
+		if(($view = $this->getDataSourceView()) !== null)
+			$data = $view->select($this->getSelectParameters());
 		else
-			$data=null;
+			$data = null;
 
 		if($data instanceof \Traversable)
 		{
 			if($this->getAllowPaging())
 			{
-				$ds=$this->createPagedDataSource();
+				$ds = $this->createPagedDataSource();
 				$ds->setDataSource($data);
 				$this->setViewState('PageCount', $ds->getPageCount());
-				if($ds->getCurrentPageIndex()>=$ds->getPageCount())
+				if($ds->getCurrentPageIndex() >= $ds->getPageCount())
 				{
-					$ds->setCurrentPageIndex($ds->getPageCount()-1);
+					$ds->setCurrentPageIndex($ds->getPageCount() - 1);
 					$this->setCurrentPageIndex($ds->getCurrentPageIndex());
 				}
 				$this->performDataBinding($ds);
@@ -374,17 +374,17 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 		{
 			if($this->_currentView && $this->_currentViewIsFromDataSourceID)
 				$this->_currentView->detachEventHandler('DataSourceViewChanged', [$this,'dataSourceViewChanged']);
-			if(($dataSource=$this->determineDataSource())!==null)
+			if(($dataSource = $this->determineDataSource()) !== null)
 			{
-				if(($view=$dataSource->getView($this->getDataMember()))===null)
+				if(($view = $dataSource->getView($this->getDataMember())) === null)
 					throw new TInvalidDataValueException('databoundcontrol_datamember_invalid', $this->getDataMember());
-				if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
+				if($this->_currentViewIsFromDataSourceID = $this->getUsingDataSourceID())
 					$view->attachEventHandler('OnDataSourceViewChanged', [$this,'dataSourceViewChanged']);
-				$this->_currentView=$view;
+				$this->_currentView = $view;
 			}
 			else
-				$this->_currentView=null;
-			$this->_currentViewValid=true;
+				$this->_currentView = null;
+			$this->_currentViewValid = true;
 		}
 		return $this->_currentView;
 	}
@@ -393,20 +393,20 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if(!$this->_currentDataSourceValid)
 		{
-			if(($dsid=$this->getDataSourceID())!=='')
+			if(($dsid = $this->getDataSourceID()) !== '')
 			{
-				if(($dataSource=$this->getNamingContainer()->findControl($dsid))===null)
+				if(($dataSource = $this->getNamingContainer()->findControl($dsid)) === null)
 					throw new TInvalidDataValueException('databoundcontrol_datasourceid_inexistent', $dsid);
 				elseif(!($dataSource instanceof IDataSource))
 					throw new TInvalidDataValueException('databoundcontrol_datasourceid_invalid', $dsid);
 				else
-					$this->_currentDataSource=$dataSource;
+					$this->_currentDataSource = $dataSource;
 			}
-			elseif(($dataSource=$this->getDataSource())!==null)
-				$this->_currentDataSource=new TReadOnlyDataSource($dataSource, $this->getDataMember());
+			elseif(($dataSource = $this->getDataSource()) !== null)
+				$this->_currentDataSource = new TReadOnlyDataSource($dataSource, $this->getDataMember());
 			else
-				$this->_currentDataSource=null;
-			$this->_currentDataSourceValid=true;
+				$this->_currentDataSource = null;
+			$this->_currentDataSourceValid = true;
 		}
 		return $this->_currentDataSource;
 	}
@@ -433,7 +433,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	public function onInit($param)
 	{
 		parent::onInit($param);
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->attachEventHandler('OnPreLoad', [$this,'pagePreLoad']);
 	}
 
@@ -445,8 +445,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function pagePreLoad($sender, $param)
 	{
-		$this->_initialized=true;
-		$isPostBack=$this->getPage()->getIsPostBack();
+		$this->_initialized = true;
+		$isPostBack = $this->getPage()->getIsPostBack();
 		if(!$isPostBack || ($isPostBack && (!$this->getEnableViewState(true) || !$this->getIsDataBound())))
 			$this->setRequiresDataBinding(true);
 	}
@@ -458,7 +458,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function onPreRender($param)
 	{
-		$this->_prerendered=true;
+		$this->_prerendered = true;
 		$this->ensureDataBound();
 		parent::onPreRender($param);
 	}
@@ -474,8 +474,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if(is_string($value))
 		{
-			$list=new TList;
-			foreach(TPropertyValue::ensureArray($value) as $key=>$value)
+			$list = new TList;
+			foreach(TPropertyValue::ensureArray($value) as $key => $value)
 			{
 				if(is_array($value))
 					$list->add($value);
@@ -490,7 +490,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 			// read array from TDbDataReader since it's forward-only stream and can only be traversed once
 			return $value->readAll();
 		}
-		elseif(($value instanceof \Traversable) || $value===null)
+		elseif(($value instanceof \Traversable) || $value === null)
 			return $value;
 		else
 			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid', get_class($this));
@@ -509,7 +509,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	public function getSelectParameters()
 	{
 		if(!$this->_parameters)
-			$this->_parameters=new TDataSourceSelectParameters;
+			$this->_parameters = new TDataSourceSelectParameters;
 		return $this->_parameters;
 	}
 }

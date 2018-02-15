@@ -49,10 +49,10 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			$this->updateListItems();
 			// if a prompt is set, we mimic the postback behaviour of not counting it
 			// in the index. We assume the prompt is _always_ the first item (Issue #368)
-			$promptValue=$this->getControl()->getPromptValue();
-			if($promptValue==='')
-				$promptValue=$this->getControl()->getPromptText();
-			if($promptValue!=='')
+			$promptValue = $this->getControl()->getPromptValue();
+			if($promptValue === '')
+				$promptValue = $this->getControl()->getPromptText();
+			if($promptValue !== '')
 				$index++;
 
 			if($index >= 0 && $index <= $this->getControl()->getItemCount())
@@ -72,15 +72,15 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			$this->updateListItems();
 			$n = $this->getControl()->getItemCount();
 
-			$promptValue=$this->getControl()->getPromptValue();
-			if($promptValue==='')
-				$promptValue=$this->getControl()->getPromptText();
+			$promptValue = $this->getControl()->getPromptValue();
+			if($promptValue === '')
+				$promptValue = $this->getControl()->getPromptText();
 
 			$list = [];
 			foreach($indices as $index)
 			{
 				$index = intval($index);
-				if($promptValue!=='')
+				if($promptValue !== '')
 					$index++;
 				if($index >= 0 && $index <= $n)
 					$list[] = $index;

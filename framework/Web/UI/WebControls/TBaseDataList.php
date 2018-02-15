@@ -149,9 +149,9 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeys()
 	{
-		if(($dataKeys=$this->getViewState('DataKeys', null))===null)
+		if(($dataKeys = $this->getViewState('DataKeys', null)) === null)
 		{
-			$dataKeys=new TList;
+			$dataKeys = new TList;
 			$this->setViewState('DataKeys', $dataKeys, null);
 		}
 		return $dataKeys;

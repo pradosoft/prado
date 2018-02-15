@@ -36,7 +36,7 @@ class TSqlMapFifoCache extends TSqlMapCache
 	 * @param string cache key
 	 * @param mixed value to cache.
 	 */
-	public function set($key, $value, $expire=0, $dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);

@@ -49,13 +49,13 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$isEnabled=$this->getEnabled(true);
+		$isEnabled = $this->getEnabled(true);
 		if($this->getEnabled() && !$isEnabled)
 			$writer->addAttribute('disabled', 'disabled');
 		parent::addAttributesToRender($writer);
-		if(($url=$this->getNavigateUrl())!=='' && $isEnabled)
+		if(($url = $this->getNavigateUrl()) !== '' && $isEnabled)
 			$writer->addAttribute('href', $url);
-		if(($target=$this->getTarget())!=='')
+		if(($target = $this->getTarget()) !== '')
 			$writer->addAttribute('target', $target);
 	}
 
@@ -65,9 +65,9 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function renderContents($writer)
 	{
-		if(($imageUrl=$this->getImageUrl())==='')
+		if(($imageUrl = $this->getImageUrl()) === '')
 		{
-			if(($text=$this->getText())!=='')
+			if(($text = $this->getText()) !== '')
 				$writer->write(THttpUtility::htmlEncode($text));
 			elseif($this->getHasControls())
 				parent::renderContents($writer);
@@ -88,17 +88,17 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	protected function createImage($imageUrl)
 	{
-		$image= new TImage;
+		$image = new TImage;
 		$image->setImageUrl($imageUrl);
-		if(($width=$this->getImageWidth())!=='')
+		if(($width = $this->getImageWidth()) !== '')
 			$image->setWidth($width);
-		if(($height=$this->getImageHeight())!=='')
+		if(($height = $this->getImageHeight()) !== '')
 			$image->setHeight($height);
-		if(($toolTip=$this->getToolTip())!=='')
+		if(($toolTip = $this->getToolTip()) !== '')
 			$image->setToolTip($toolTip);
-		if(($text=$this->getText())!=='')
+		if(($text = $this->getText()) !== '')
 			$image->setAlternateText($text);
-		if(($align=$this->getImageAlign())!=='')
+		if(($align = $this->getImageAlign()) !== '')
 			$image->setImageAlign($align);
 		$image->setBorderWidth('0');
 		return $image;

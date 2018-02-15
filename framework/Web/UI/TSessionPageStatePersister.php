@@ -49,11 +49,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
-	const STATE_SESSION_KEY='PRADO_SESSION_PAGESTATE';
-	const QUEUE_SESSION_KEY='PRADO_SESSION_STATEQUEUE';
+	const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
+	const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
 
 	private $_page;
-	private $_historySize=10;
+	private $_historySize = 10;
 
 	/**
 	 * @param TPage the page that this persister works for
@@ -68,7 +68,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function setPage(TPage $page)
 	{
-		$this->_page=$page;
+		$this->_page = $page;
 	}
 
 	/**
@@ -85,8 +85,8 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function setHistorySize($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))>0)
-			$this->_historySize=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) > 0)
+			$this->_historySize = $value;
 		else
 			throw new TInvalidDataValueException('sessionpagestatepersister_historysize_invalid');
 	}
@@ -96,18 +96,18 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function save($state)
 	{
-		$session=$this->_page->getSession();
+		$session = $this->_page->getSession();
 		$session->open();
-		$data=serialize($state);
-		$timestamp=(string)microtime(true);
-		$key=self::STATE_SESSION_KEY . $timestamp;
+		$data = serialize($state);
+		$timestamp = (string)microtime(true);
+		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
-		if(($queue=$session->itemAt(self::QUEUE_SESSION_KEY))===null)
-			$queue=[];
-		$queue[]=$key;
-		if(count($queue)>$this->getHistorySize())
+		if(($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null)
+			$queue = [];
+		$queue[] = $key;
+		if(count($queue) > $this->getHistorySize())
 		{
-			$expiredKey=array_shift($queue);
+			$expiredKey = array_shift($queue);
 			$session->remove($expiredKey);
 		}
 		$session->add(self::QUEUE_SESSION_KEY, $queue);
@@ -121,12 +121,12 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function load()
 	{
-		if(($timestamp=TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState()))!==null)
+		if(($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null)
 		{
-			$session=$this->_page->getSession();
+			$session = $this->_page->getSession();
 			$session->open();
-			$key=self::STATE_SESSION_KEY . $timestamp;
-			if(($data=$session->itemAt($key))!==null)
+			$key = self::STATE_SESSION_KEY . $timestamp;
+			if(($data = $session->itemAt($key)) !== null)
 				return unserialize($data);
 		}
 		throw new THttpException(400, 'sessionpagestatepersister_pagestate_corrupted');

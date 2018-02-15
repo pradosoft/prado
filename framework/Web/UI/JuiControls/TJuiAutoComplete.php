@@ -131,9 +131,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
+		if (($options = $this->getViewState('JuiOptions')) === null)
 		{
-		  $options=new TJuiControlOptions($this);
+		  $options = new TJuiControlOptions($this);
 		  $this->setViewState('JuiOptions', $options);
 		}
 		return $options;
@@ -302,7 +302,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getResultPanel()
 	{
-		if($this->_resultPanel===null)
+		if($this->_resultPanel === null)
 			$this->_resultPanel = $this->createResultPanel();
 		return $this->_resultPanel;
 	}
@@ -323,7 +323,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getSuggestions()
 	{
-		if($this->_repeater===null)
+		if($this->_repeater === null)
 			$this->_repeater = $this->createRepeater();
 		return $this->_repeater;
 	}
@@ -374,14 +374,14 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	{
 		if($this->getActiveControl()->canUpdateClientSide(true))
 		{
-			$data=[];
-			$items=$this->getSuggestions()->getItems();
+			$data = [];
+			$items = $this->getSuggestions()->getItems();
 			$writer = new TTextWriter;
-			for($i=0; $i<$items->Count; $i++)
+			for($i = 0; $i < $items->Count; $i++)
 			{
 				$items->itemAt($i)->render($writer);
-				$item=$writer->flush();
-				$data[]=[ 'id' => $i, 'label' => $item];
+				$item = $writer->flush();
+				$data[] = [ 'id' => $i, 'label' => $item];
 			}
 
 			$this->getResponse()->getAdapter()->setResponseData($data);
@@ -406,7 +406,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 		if(strlen($textCssClass = $this->getTextCssClass()))
 			$options['textCssClass'] = $textCssClass;
 		$options['minLength'] = $this->getMinChars();
-		$options['delay'] = $this->getFrequency()*1000.0;
+		$options['delay'] = $this->getFrequency() * 1000.0;
 		$options['appendTo'] = '#' . $this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();

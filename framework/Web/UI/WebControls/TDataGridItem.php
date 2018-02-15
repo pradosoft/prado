@@ -37,16 +37,16 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	/**
 	 * @var integer index of the data item in the Items collection of datagrid
 	 */
-	private $_itemIndex='';
+	private $_itemIndex = '';
 	/**
 	 * @var integer index of the item from the bound data source
 	 */
-	private $_dataSourceIndex=0;
+	private $_dataSourceIndex = 0;
 	/**
 	 * type of the TDataGridItem
 	 * @var string
 	 */
-	private $_itemType='';
+	private $_itemType = '';
 	/**
 	 * value of the data item
 	 * @var mixed
@@ -60,12 +60,12 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
-		$this->_itemIndex=$itemIndex;
-		$this->_dataSourceIndex=$dataSourceIndex;
+		$this->_itemIndex = $itemIndex;
+		$this->_dataSourceIndex = $dataSourceIndex;
 		$this->setItemType($itemType);
-		if($itemType===TListItemType::Header)
+		if($itemType === TListItemType::Header)
 			$this->setTableSection(TTableRowSection::Header);
-		elseif($itemType===TListItemType::Footer)
+		elseif($itemType === TListItemType::Footer)
 			$this->setTableSection(TTableRowSection::Footer);
 	}
 
@@ -82,7 +82,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 
 	/**

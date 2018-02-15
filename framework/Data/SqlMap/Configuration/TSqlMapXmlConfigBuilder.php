@@ -48,9 +48,9 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param SimpleXmlNode property node
 	 * @param array exception property name
 	 */
-	protected function setObjectPropFromNode($obj, $node, $except=[])
+	protected function setObjectPropFromNode($obj, $node, $except = [])
 	{
-		foreach($node->attributes() as $name=>$value)
+		foreach($node->attributes() as $name => $value)
 		{
 			if(!in_array($name, $except))
 			{

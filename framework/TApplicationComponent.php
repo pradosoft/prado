@@ -96,12 +96,12 @@ class TApplicationComponent extends \Prado\TComponent
 	 * @param string name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
 	 * @return string URL to the asset path.
 	 */
-	public function publishAsset($assetPath, $className=null)
+	public function publishAsset($assetPath, $className = null)
 	{
-		if($className===null)
-			$className=get_class($this);
-		$class=new \ReflectionClass($className);
-		$fullPath=dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $assetPath;
+		if($className === null)
+			$className = get_class($this);
+		$class = new \ReflectionClass($className);
+		$fullPath = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $assetPath;
 		return $this->publishFilePath($fullPath);
 	}
 
@@ -110,7 +110,7 @@ class TApplicationComponent extends \Prado\TComponent
 	 * @param string absolute path of the file or directory to be published
 	 * @return string URL to the published file or directory
 	 */
-	public function publishFilePath($fullPath, $checkTimestamp=false)
+	public function publishFilePath($fullPath, $checkTimestamp = false)
 	{
 		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
 	}

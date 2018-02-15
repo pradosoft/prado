@@ -35,10 +35,10 @@ class TListItemCollection extends TList
 	 * If -1, the item will be appended to the end.
 	 * @return TListItem list item object
 	 */
-	public function createListItem($index=-1)
+	public function createListItem($index = -1)
 	{
-		$item=$this->createNewListItem();
-		if($index<0)
+		$item = $this->createNewListItem();
+		if($index < 0)
 			$this->add($item);
 		else
 			$this->insertAt($index, $item);
@@ -48,10 +48,10 @@ class TListItemCollection extends TList
 	/**
 	 * @return TListItem new item.
 	 */
-	protected function createNewListItem($text=null)
+	protected function createNewListItem($text = null)
 	{
-		$item =  new TListItem;
-		if($text!==null)
+		$item = new TListItem;
+		if($text !== null)
 			$item->setText($text);
 		return $item;
 	}
@@ -78,13 +78,13 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByValue($value, $includeDisabled=true)
+	public function findIndexByValue($value, $includeDisabled = true)
 	{
-		$value=TPropertyValue::ensureString($value);
-		$index=0;
+		$value = TPropertyValue::ensureString($value);
+		$index = 0;
 		foreach($this as $item)
 		{
-			if($item->getValue()===$value && ($includeDisabled || $item->getEnabled()))
+			if($item->getValue() === $value && ($includeDisabled || $item->getEnabled()))
 				return $index;
 			$index++;
 		}
@@ -97,13 +97,13 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByText($text, $includeDisabled=true)
+	public function findIndexByText($text, $includeDisabled = true)
 	{
-		$text=TPropertyValue::ensureString($text);
-		$index=0;
+		$text = TPropertyValue::ensureString($text);
+		$index = 0;
 		foreach($this as $item)
 		{
-			if($item->getText()===$text && ($includeDisabled || $item->getEnabled()))
+			if($item->getText() === $text && ($includeDisabled || $item->getEnabled()))
 				return $index;
 			$index++;
 		}
@@ -116,9 +116,9 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByValue($value, $includeDisabled=true)
+	public function findItemByValue($value, $includeDisabled = true)
 	{
-		if(($index=$this->findIndexByValue($value, $includeDisabled))>=0)
+		if(($index = $this->findIndexByValue($value, $includeDisabled)) >= 0)
 			return $this->itemAt($index);
 		else
 			return null;
@@ -130,9 +130,9 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByText($text, $includeDisabled=true)
+	public function findItemByText($text, $includeDisabled = true)
 	{
-		if(($index=$this->findIndexByText($text, $includeDisabled))>=0)
+		if(($index = $this->findIndexByText($text, $includeDisabled)) >= 0)
 			return $this->itemAt($index);
 		else
 			return null;
@@ -146,7 +146,7 @@ class TListItemCollection extends TList
 	public function loadState($state)
 	{
 		$this->clear();
-		if($state!==null)
+		if($state !== null)
 			$this->copyFrom($state);
 	}
 
@@ -157,6 +157,6 @@ class TListItemCollection extends TList
 	 */
 	public function saveState()
 	{
-		return ($this->getCount()>0) ? $this->toArray() : null;
+		return ($this->getCount() > 0) ? $this->toArray() : null;
 	}
 }

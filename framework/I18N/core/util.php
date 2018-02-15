@@ -45,14 +45,14 @@ namespace Prado\I18N\core;
 		}
 
 		$parsed = [
-			'phptype'  => false,
+			'phptype' => false,
 			'dbsyntax' => false,
 			'username' => false,
 			'password' => false,
 			'protocol' => false,
 			'hostspec' => false,
-			'port'     => false,
-			'socket'   => false,
+			'port' => false,
+			'socket' => false,
 			'database' => false
 		];
 
@@ -68,10 +68,10 @@ namespace Prado\I18N\core;
 		// Get phptype and dbsyntax
 		// $str => phptype(dbsyntax)
 		if (preg_match('|^(.+?)\((.*?)\)$|', $str, $arr)) {
-			$parsed['phptype']  = $arr[1];
+			$parsed['phptype'] = $arr[1];
 			$parsed['dbsyntax'] = (empty($arr[2])) ? $arr[1] : $arr[2];
 		} else {
-			$parsed['phptype']  = $str;
+			$parsed['phptype'] = $str;
 			$parsed['dbsyntax'] = $str;
 		}
 
@@ -96,9 +96,9 @@ namespace Prado\I18N\core;
 
 		// $dsn => proto(proto_opts)/database
 		if (preg_match('|^([^(]+)\((.*?)\)/?(.*?)$|', $dsn, $match)) {
-			$proto       = $match[1];
-			$proto_opts  = (!empty($match[2])) ? $match[2] : false;
-			$dsn         = $match[3];
+			$proto = $match[1];
+			$proto_opts = (!empty($match[2])) ? $match[2] : false;
+			$dsn = $match[3];
 
 		// $dsn => protocol+hostspec/database (old format)
 		} else {

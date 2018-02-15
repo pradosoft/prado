@@ -34,7 +34,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	 * @return string SQL search condition matching on a set of columns.
 	 */
 	public function getSearchExpression($fields, $keywords) {
-		$columns =  [];
+		$columns = [];
 		foreach ($fields as $field) {
 			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
 				$columns[] = $field;
@@ -88,14 +88,14 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		$niniDoSelect = strpos($sql, 'SELECT') + 6;
 		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
 
-		$WhereInSubSelect="";
-		if(strpos($sql, 'WHERE')!==false)
-			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE')+5, $nfimDoWhere - $niniDoWhere);
+		$WhereInSubSelect = "";
+		if(strpos($sql, 'WHERE') !== false)
+			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE') + 5, $nfimDoWhere - $niniDoWhere);
 
 		$sORDERBY = '';
 		if (stripos($sql, 'ORDER') !== false) {
 			$p = stripos($sql, 'ORDER');
-			$sORDERBY = substr($sql, $p +8);
+			$sORDERBY = substr($sql, $p + 8);
 		}
 
 		$fields = substr($sql, 0, $nfimDoSelect);
@@ -138,13 +138,13 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$offset=(int)$offset;
+		$offset = (int)$offset;
 		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY))
-			$sORDERBY="ROWNUM";
+			$sORDERBY = "ROWNUM";
 
-		$newSql = 	" SELECT $fields FROM " .
+		$newSql = " SELECT $fields FROM " .
 					"(					" .
 					"		SELECT ROW_NUMBER() OVER ( ORDER BY {$sORDERBY} ) -1 as {$pradoNUMLIN} {$aliasedFields} " .
 					"		FROM {$fullTableName} {$fieldsALIAS} $WhereInSubSelect" .

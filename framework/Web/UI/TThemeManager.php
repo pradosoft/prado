@@ -47,7 +47,7 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * default themes base path
 	 */
-	const DEFAULT_BASEPATH='themes';
+	const DEFAULT_BASEPATH = 'themes';
 
 	/**
 	 * default theme class
@@ -57,12 +57,12 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * @var string
 	 */
-	private $_themeClass=self::DEFAULT_THEMECLASS;
+	private $_themeClass = self::DEFAULT_THEMECLASS;
 
 	/**
 	 * @var boolean whether this module has been initialized
 	 */
-	private $_initialized=false;
+	private $_initialized = false;
 	/**
 	 * @var string the directory containing all themes
 	 */
@@ -79,8 +79,8 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$this->_initialized=true;
-		$service=$this->getService();
+		$this->_initialized = true;
+		$service = $this->getService();
 		if($service instanceof TPageService)
 			$service->setThemeManager($this);
 		else
@@ -93,8 +93,8 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function getTheme($name)
 	{
-		$themePath=$this->getBasePath() . DIRECTORY_SEPARATOR . $name;
-		$themeUrl=rtrim($this->getBaseUrl(), '/') . '/' . $name;
+		$themePath = $this->getBasePath() . DIRECTORY_SEPARATOR . $name;
+		$themeUrl = rtrim($this->getBaseUrl(), '/') . '/' . $name;
 		return Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl);
 	}
 
@@ -102,7 +102,7 @@ class TThemeManager extends \Prado\TModule
 	 * @param string|null $class Theme class name in namespace format
 	 */
 	public function setThemeClass($class) {
-		$this->_themeClass = $class===null ? self::DEFAULT_THEMECLASS : (string)$class;
+		$this->_themeClass = $class === null ? self::DEFAULT_THEMECLASS : (string)$class;
 	}
 
 	/**
@@ -117,13 +117,13 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function getAvailableThemes()
 	{
-		$themes=[];
-		$basePath=$this->getBasePath();
-		$folder=@opendir($basePath);
-		while($file=@readdir($folder))
+		$themes = [];
+		$basePath = $this->getBasePath();
+		$folder = @opendir($basePath);
+		while($file = @readdir($folder))
 		{
-			if($file!=='.' && $file!=='..' && $file!=='.svn' && is_dir($basePath . DIRECTORY_SEPARATOR . $file))
-				$themes[]=$file;
+			if($file !== '.' && $file !== '..' && $file !== '.svn' && is_dir($basePath . DIRECTORY_SEPARATOR . $file))
+				$themes[] = $file;
 		}
 		closedir($folder);
 		return $themes;
@@ -135,12 +135,12 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function getBasePath()
 	{
-		if($this->_basePath===null)
+		if($this->_basePath === null)
 		{
-			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
-			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
+			$this->_basePath = dirname($this->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
+			if(($basePath = realpath($this->_basePath)) === false || !is_dir($basePath))
 				throw new TConfigurationException('thememanager_basepath_invalid2', $this->_basePath);
-			$this->_basePath=$basePath;
+			$this->_basePath = $basePath;
 		}
 		return $this->_basePath;
 	}
@@ -155,8 +155,8 @@ class TThemeManager extends \Prado\TModule
 			throw new TInvalidOperationException('thememanager_basepath_unchangeable');
 		else
 		{
-			$this->_basePath=Prado::getPathOfNamespace($value);
-			if($this->_basePath===null || !is_dir($this->_basePath))
+			$this->_basePath = Prado::getPathOfNamespace($value);
+			if($this->_basePath === null || !is_dir($this->_basePath))
 				throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
 		}
 	}
@@ -167,14 +167,14 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function getBaseUrl()
 	{
-		if($this->_baseUrl===null)
+		if($this->_baseUrl === null)
 		{
-			$appPath=dirname($this->getRequest()->getApplicationFilePath());
-			$basePath=$this->getBasePath();
-			if(strpos($basePath, $appPath)===false)
+			$appPath = dirname($this->getRequest()->getApplicationFilePath());
+			$basePath = $this->getBasePath();
+			if(strpos($basePath, $appPath) === false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=rtrim(dirname($this->getRequest()->getApplicationUrl()), '/\\');
-			$this->_baseUrl=$appUrl . strtr(substr($basePath, strlen($appPath)), '\\', '/');
+			$appUrl = rtrim(dirname($this->getRequest()->getApplicationUrl()), '/\\');
+			$this->_baseUrl = $appUrl . strtr(substr($basePath, strlen($appPath)), '\\', '/');
 		}
 		return $this->_baseUrl;
 	}
@@ -184,6 +184,6 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function setBaseUrl($value)
 	{
-		$this->_baseUrl=rtrim($value, '/');
+		$this->_baseUrl = rtrim($value, '/');
 	}
 }

@@ -94,12 +94,12 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	const DEFAULT_TRANSACTION_CLASS = 'System.Data.TDbTransaction';
 
-	private $_dsn='';
-	private $_username='';
-	private $_password='';
-	private $_charset='';
-	private $_attributes=[];
-	private $_active=false;
+	private $_dsn = '';
+	private $_username = '';
+	private $_password = '';
+	private $_charset = '';
+	private $_attributes = [];
+	private $_active = false;
 	private $_pdo;
 	private $_transaction;
 
@@ -112,7 +112,7 @@ class TDbConnection extends \Prado\TComponent
 	 * @var string
 	 * @since 3.1.7
 	 */
-	private $_transactionClass=self::DEFAULT_TRANSACTION_CLASS;
+	private $_transactionClass = self::DEFAULT_TRANSACTION_CLASS;
 
 	/**
 	 * Constructor.
@@ -127,12 +127,12 @@ class TDbConnection extends \Prado\TComponent
 	 * @param string Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
-	public function __construct($dsn='', $username='', $password='', $charset='')
+	public function __construct($dsn = '', $username = '', $password = '', $charset = '')
 	{
-		$this->_dsn=$dsn;
-		$this->_username=$username;
-		$this->_password=$password;
-		$this->_charset=$charset;
+		$this->_dsn = $dsn;
+		$this->_username = $username;
+		$this->_password = $password;
+		$this->_charset = $charset;
 	}
 
 	/**
@@ -168,8 +168,8 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setActive($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
-		if($value!==$this->_active)
+		$value = TPropertyValue::ensureBoolean($value);
+		if($value !== $this->_active)
 		{
 			if($value)
 				$this->open();
@@ -184,17 +184,17 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	protected function open()
 	{
-		if($this->_pdo===null)
+		if($this->_pdo === null)
 		{
 			try
 			{
-				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),
+				$this->_pdo = new PDO($this->getConnectionString(),$this->getUsername(),
 									$this->getPassword(), $this->_attributes);
 				// This attribute is only useful for PDO::MySql driver.
 				// Ignore the warning if a driver doesn't understand this.
 				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$this->_active=true;
+				$this->_active = true;
 				$this->setConnectionCharset();
 			}
 			catch(PDOException $e)
@@ -210,8 +210,8 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	protected function close()
 	{
-		$this->_pdo=null;
-		$this->_active=false;
+		$this->_pdo = null;
+		$this->_active = false;
 	}
 
 	/*
@@ -252,7 +252,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setConnectionString($value)
 	{
-		$this->_dsn=$value;
+		$this->_dsn = $value;
 	}
 
 	/**
@@ -268,7 +268,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setUsername($value)
 	{
-		$this->_username=$value;
+		$this->_username = $value;
 	}
 
 	/**
@@ -284,7 +284,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setPassword($value)
 	{
-		$this->_password=$value;
+		$this->_password = $value;
 	}
 
 	/**
@@ -300,7 +300,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setCharset ($value)
 	{
-		$this->_charset=$value;
+		$this->_charset = $value;
 		$this->setConnectionCharset();
 	}
 
@@ -331,7 +331,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getCurrentTransaction()
 	{
-		if($this->_transaction!==null)
+		if($this->_transaction !== null)
 		{
 			if($this->_transaction->getActive())
 				return $this->_transaction;
@@ -349,7 +349,7 @@ class TDbConnection extends \Prado\TComponent
 		if($this->getActive())
 		{
 			$this->_pdo->beginTransaction();
-			return $this->_transaction=Prado::createComponent($this->getTransactionClass(), $this);
+			return $this->_transaction = Prado::createComponent($this->getTransactionClass(), $this);
 		}
 		else
 			throw new TDbException('dbconnection_connection_inactive');
@@ -380,7 +380,7 @@ class TDbConnection extends \Prado\TComponent
 	 * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
 	 * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php
 	 */
-	public function getLastInsertID($sequenceName='')
+	public function getLastInsertID($sequenceName = '')
 	{
 		if($this->getActive())
 			return $this->_pdo->lastInsertId($sequenceName);
@@ -437,7 +437,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getDbMetaData()
 	{
-		if($this->_dbMeta===null)
+		if($this->_dbMeta === null)
 		{
 			$this->_dbMeta = TDbMetaData::getInstance($this);
 		}
@@ -468,13 +468,13 @@ class TDbConnection extends \Prado\TComponent
 		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode'))
 		{
 			case TDbColumnCaseMode::Preserved:
-				$value=PDO::CASE_NATURAL;
+				$value = PDO::CASE_NATURAL;
 				break;
 			case TDbColumnCaseMode::LowerCase:
-				$value=PDO::CASE_LOWER;
+				$value = PDO::CASE_LOWER;
 				break;
 			case TDbColumnCaseMode::UpperCase:
-				$value=PDO::CASE_UPPER;
+				$value = PDO::CASE_UPPER;
 				break;
 		}
 		$this->setAttribute(PDO::ATTR_CASE, $value);
@@ -504,13 +504,13 @@ class TDbConnection extends \Prado\TComponent
 		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode'))
 		{
 			case TDbNullConversionMode::Preserved:
-				$value=PDO::NULL_NATURAL;
+				$value = PDO::NULL_NATURAL;
 				break;
 			case TDbNullConversionMode::EmptyStringToNull:
-				$value=PDO::NULL_EMPTY_STRING;
+				$value = PDO::NULL_EMPTY_STRING;
 				break;
 			case TDbNullConversionMode::NullToEmptyString:
-				$value=PDO::NULL_TO_STRING;
+				$value = PDO::NULL_TO_STRING;
 				break;
 		}
 		$this->setAttribute(PDO::ATTR_ORACLE_NULLS, $value);
@@ -634,6 +634,6 @@ class TDbConnection extends \Prado\TComponent
 		if($this->_pdo instanceof PDO)
 			$this->_pdo->setAttribute($name, $value);
 		else
-			$this->_attributes[$name]=$value;
+			$this->_attributes[$name] = $value;
 	}
 }

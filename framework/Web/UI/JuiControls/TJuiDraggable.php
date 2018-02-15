@@ -77,9 +77,9 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
+		if (($options = $this->getViewState('JuiOptions')) === null)
 		{
-		  $options=new TJuiControlOptions($this);
+		  $options = new TJuiControlOptions($this);
 		  $this->setViewState('JuiOptions', $options);
 		}
 		return $options;
@@ -120,9 +120,9 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		parent::addAttributesToRender($writer);
 
 		$writer->addAttribute('id', $this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

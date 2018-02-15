@@ -32,6 +32,6 @@ class TActiveDataGridPagerEventParameter extends TDataGridPagerEventParameter
 	 */
 	public function __construct(TActiveDataGridPager $pager)
 	{
-		$this->_pager=$pager;
+		$this->_pager = $pager;
 	}
 }

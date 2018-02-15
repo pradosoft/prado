@@ -128,8 +128,8 @@ class TRequiredFieldValidator extends TBaseValidator
 	private function validateStandardControl($control)
 	{
 		$initial = trim($this->getInitialValue());
-		$value=$this->getValidationValue($control);
-		return (is_bool($value) && $value) || trim($value)!==$initial;
+		$value = $this->getValidationValue($control);
+		return (is_bool($value) && $value) || trim($value) !== $initial;
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['InitialValue']=$this->getInitialValue();
+		$options['InitialValue'] = $this->getInitialValue();
 		$control = $this->getValidationTarget();
 		if($control instanceof TListControl)
 			$options['TotalItems'] = $control->getItemCount();

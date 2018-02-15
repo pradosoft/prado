@@ -53,8 +53,8 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 */
 	public function setStateName($value)
 	{
-		$this->_stateName=$value;
-		$this->_stateValue=Prado::getApplication()->getGlobalState($value);
+		$this->_stateName = $value;
+		$this->_stateValue = Prado::getApplication()->getGlobalState($value);
 	}
 
 	/**
@@ -64,6 +64,6 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->_stateValue!==Prado::getApplication()->getGlobalState($this->_stateName);
+		return $this->_stateValue !== Prado::getApplication()->getGlobalState($this->_stateName);
 	}
 }

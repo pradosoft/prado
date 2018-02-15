@@ -59,7 +59,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function getRecordPropertyValues($record)
 	{
 		$data = [];
-		foreach($this->getTableInfo()->getColumns() as $name=>$column)
+		foreach($this->getTableInfo()->getColumns() as $name => $column)
 			$data[] = $record->getColumnValue($name);
 		return $data;
 	}
@@ -70,8 +70,8 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordPkValues($record)
 	{
-		$data=[];
-		foreach($this->getTableInfo()->getColumns() as $name=>$column)
+		$data = [];
+		foreach($this->getTableInfo()->getColumns() as $name => $column)
 		{
 			if($column->getIsPrimaryKey())
 				$data[] = $record->getColumnValue($name);
@@ -113,7 +113,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function clearRecordObject()
 	{
-		$this->_record=null;
+		$this->_record = null;
 	}
 
 	/**
@@ -122,22 +122,22 @@ abstract class TScaffoldBase extends TTemplateControl
 	 * @param array primary key value
 	 * @return TActiveRecord record instance
 	 */
-	protected function getRecordObject($pk=null)
+	protected function getRecordObject($pk = null)
 	{
-		if($this->_record===null)
+		if($this->_record === null)
 		{
-			if($pk!==null)
+			if($pk !== null)
 			{
-				$this->_record=$this->getRecordFinder()->findByPk($pk);
-				if($this->_record===null)
+				$this->_record = $this->getRecordFinder()->findByPk($pk);
+				if($this->_record === null)
 					throw new TConfigurationException('scaffold_invalid_record_pk',
 						$this->getRecordClass(), $pk);
 			}
 			else
 			{
 				$class = $this->getRecordClass();
-				if($class!==null)
-					$this->_record=Prado::createComponent($class);
+				if($class !== null)
+					$this->_record = Prado::createComponent($class);
 				else
 				{
 					throw new TConfigurationException('scaffold_invalid_record_class',
@@ -153,7 +153,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{
-		$this->_record=$value;
+		$this->_record = $value;
 	}
 
 	/**

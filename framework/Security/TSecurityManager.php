@@ -66,7 +66,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$this->_mbstring=extension_loaded('mbstring');
+		$this->_mbstring = extension_loaded('mbstring');
 		$this->getApplication()->setSecurityManager($this);
 	}
 
@@ -227,13 +227,13 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function validateData($data)
 	{
-		$len=$this->strlen($this->computeHMAC('test'));
+		$len = $this->strlen($this->computeHMAC('test'));
 
 		if($this->strlen($data) < $len)
 			return false;
 
 		$hmac = $this->substr($data, 0, $len);
-		$data2=$this->substr($data, $len, $this->strlen($data));
+		$data2 = $this->substr($data, $len, $this->strlen($data));
 		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
 	}
 

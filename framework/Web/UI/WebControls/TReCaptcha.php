@@ -58,7 +58,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable
 {
-	private $_isValid=true;
+	private $_isValid = true;
 
 	const ChallengeFieldName = 'recaptcha_challenge_field';
 	const ResponseFieldName = 'recaptcha_response_field';
@@ -86,7 +86,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 	
 	public function getValidationPropertyValue()
@@ -312,7 +312,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
 
 		// Cut the last '&'
-		$req=substr($req, 0, strlen($req)-1);
+		$req = substr($req, 0, strlen($req) - 1);
 		return $req;
 	}
 
@@ -328,7 +328,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$req = $this->recaptcha_qsencode($data);
 
-		$http_request  = "POST $path HTTP/1.0\r\n";
+		$http_request = "POST $path HTTP/1.0\r\n";
 		$http_request .= "Host: $host\r\n";
 		$http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
 		$http_request .= "Content-Length: " . strlen($req) . "\r\n";

@@ -44,15 +44,15 @@ class TResultProperty extends \Prado\TComponent
 	private $_nullValue;
 	private $_propertyName;
 	private $_columnName;
-	private $_columnIndex=-1;
+	private $_columnIndex = -1;
 	private $_nestedResultMapName;
 	private $_nestedResultMap;
 	private $_valueType;
 	private $_typeHandler;
-	private $_isLazyLoad=false;
+	private $_isLazyLoad = false;
 	private $_select;
 
-	private $_hostResultMapID='inplicit internal mapping';
+	private $_hostResultMapID = 'inplicit internal mapping';
 
 	const LIST_TYPE = 0;
 	const ARRAY_TYPE = 1;
@@ -61,7 +61,7 @@ class TResultProperty extends \Prado\TComponent
 	 * Gets the containing result map ID.
 	 * @param TResultMap containing result map.
 	 */
-	public function __construct($resultMap=null)
+	public function __construct($resultMap = null)
 	{
 		if($resultMap instanceof TResultMap)
 			$this->_hostResultMapID = $resultMap->getID();
@@ -248,7 +248,7 @@ class TResultProperty extends \Prado\TComponent
 			$value = $this->getTypedValue($registry, $row[$index]);
 		elseif(isset($row[$name]))
 			$value = $this->getTypedValue($registry, $row[$name]);
-		if(($value===null) && ($this->getNullValue()!==null))
+		if(($value === null) && ($this->getNullValue() !== null))
 			$value = $this->getTypedValue($registry, $this->getNullValue());
 		return $value;
 	}
@@ -260,7 +260,7 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	protected function getTypedValue($registry, $value)
 	{
-		if(($handler = $this->createTypeHandler($registry))!==null)
+		if(($handler = $this->createTypeHandler($registry)) !== null)
 			return $handler->getResult($value);
 		else
 			return $registry->convertToType($this->getType(), $value);
@@ -273,9 +273,9 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	protected function createTypeHandler($registry)
 	{
-		$type=$this->getTypeHandler() ? $this->getTypeHandler() : $this->getType();
-		$handler=$registry->getTypeHandler($type);
-		if($handler===null && $this->getTypeHandler())
+		$type = $this->getTypeHandler() ? $this->getTypeHandler() : $this->getType();
+		$handler = $registry->getTypeHandler($type);
+		if($handler === null && $this->getTypeHandler())
 			$handler = Prado::createComponent($type);
 		return $handler;
 	}
@@ -288,7 +288,7 @@ class TResultProperty extends \Prado\TComponent
 	{
 		if(class_exists($type = $this->getType(), false)) //NO force autoloading
 		{
-			if($type==='TList')
+			if($type === 'TList')
 				return self::LIST_TYPE;
 			$class = new ReflectionClass($type);
 			if($class->isSubclassOf('TList'))
@@ -308,7 +308,7 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	public function instanceOfListType($target)
 	{
-		if($this->getType()===null)
+		if($this->getType() === null)
 			return  TPropertyAccess::get($target, $this->getProperty()) instanceof TList;
 		return $this->getPropertyValueType() == self::LIST_TYPE;
 	}
@@ -321,7 +321,7 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	public function instanceOfArrayType($target)
 	{
-		if($this->getType()===null)
+		if($this->getType() === null)
 		{
 			$prop = TPropertyAccess::get($target, $this->getProperty());
 			if(is_object($prop))
@@ -334,16 +334,16 @@ class TResultProperty extends \Prado\TComponent
 	public function __sleep()
 	{
 		$exprops = []; $cn = 'TResultProperty';
-		if ($this->_nullValue===null) $exprops[] = "\0$cn\0_nullValue";
-		if ($this->_propertyName===null) $exprops[] = "\0$cn\0_propertyNama";
-		if ($this->_columnName===null) $exprops[] = "\0$cn\0_columnName";
-		if ($this->_columnIndex==-1) $exprops[] = "\0$cn\0_columnIndex";
-		if ($this->_nestedResultMapName===null) $exprops[] = "\0$cn\0_nestedResultMapName";
-		if ($this->_nestedResultMap===null) $exprops[] = "\0$cn\0_nestedResultMap";
-		if ($this->_valueType===null) $exprops[] = "\0$cn\0_valueType";
-		if ($this->_typeHandler===null) $exprops[] = "\0$cn\0_typeHandler";
-		if ($this->_isLazyLoad===false) $exprops[] = "\0$cn\0_isLazyLoad";
-		if ($this->_select===null) $exprops[] = "\0$cn\0_select";
+		if ($this->_nullValue === null) $exprops[] = "\0$cn\0_nullValue";
+		if ($this->_propertyName === null) $exprops[] = "\0$cn\0_propertyNama";
+		if ($this->_columnName === null) $exprops[] = "\0$cn\0_columnName";
+		if ($this->_columnIndex == -1) $exprops[] = "\0$cn\0_columnIndex";
+		if ($this->_nestedResultMapName === null) $exprops[] = "\0$cn\0_nestedResultMapName";
+		if ($this->_nestedResultMap === null) $exprops[] = "\0$cn\0_nestedResultMap";
+		if ($this->_valueType === null) $exprops[] = "\0$cn\0_valueType";
+		if ($this->_typeHandler === null) $exprops[] = "\0$cn\0_typeHandler";
+		if ($this->_isLazyLoad === false) $exprops[] = "\0$cn\0_isLazyLoad";
+		if ($this->_select === null) $exprops[] = "\0$cn\0_select";
 		return array_diff(parent::__sleep(), $exprops);
 	}
 }

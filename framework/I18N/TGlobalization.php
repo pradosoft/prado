@@ -63,7 +63,7 @@ class TGlobalization extends \Prado\TModule
 	/**
 	 * @var boolean whether we should translate the default culture
 	 */
-	private $_translateDefaultCulture=true;
+	private $_translateDefaultCulture = true;
 
 	/**
 	 * Initialize the Culture and Charset for this application.
@@ -74,14 +74,14 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		if($this->_charset===null)
-			$this->_charset=$this->getDefaultCharset();
-		if($this->_culture===null)
-			$this->_culture=$this->getDefaultCulture();
+		if($this->_charset === null)
+			$this->_charset = $this->getDefaultCharset();
+		if($this->_culture === null)
+			$this->_culture = $this->getDefaultCulture();
 
-		if($config!==null)
+		if($config !== null)
 		{
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 				$translation = isset($config['translate'])?$config['translate']:null;
 			else
 			{
@@ -200,14 +200,14 @@ class TGlobalization extends \Prado\TModule
 	 */
 	protected function setTranslationConfiguration($config)
 	{
-		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext'  || $config['type'] == 'PHP')
+		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext' || $config['type'] == 'PHP')
 		{
 			if($config['source'])
 			{
 				$config['source'] = Prado::getPathOfNamespace($config['source']);
 				if(!is_dir($config['source']))
 				{
-					if(@mkdir($config['source'])===false)
+					if(@mkdir($config['source']) === false)
 					throw new TConfigurationException('globalization_source_path_failed',
 						$config['source']);
 					chmod($config['source'], PRADO_CHMOD); //make it deletable
@@ -223,7 +223,7 @@ class TGlobalization extends \Prado\TModule
 			$config['cache'] = $this->getApplication()->getRunTimePath() . '/i18n';
 			if(!is_dir($config['cache']))
 			{
-				if(@mkdir($config['cache'])===false)
+				if(@mkdir($config['cache']) === false)
 					throw new TConfigurationException('globalization_cache_path_failed',
 						$config['cache']);
 				chmod($config['cache'], PRADO_CHMOD); //make it deletable
@@ -258,9 +258,9 @@ class TGlobalization extends \Prado\TModule
 	 * @param string $culture the Culture string
 	 * @return array variants of the culture.
 	 */
-	public function getCultureVariants($culture=null)
+	public function getCultureVariants($culture = null)
 	{
-		if($culture===null) $culture = $this->getCulture();
+		if($culture === null) $culture = $this->getCulture();
 		$variants = explode('_', $culture);
 		$result = [];
 		for(; count($variants) > 0; array_pop($variants))
@@ -287,7 +287,7 @@ class TGlobalization extends \Prado\TModule
 	 * @param string culture string, null to use current culture
 	 * @return array list of possible localized resource files.
 	 */
-	public function getLocalizedResource($file, $culture=null)
+	public function getLocalizedResource($file, $culture = null)
 	{
 		$files = [];
 		$variants = $this->getCultureVariants($culture);

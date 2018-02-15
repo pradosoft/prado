@@ -41,23 +41,23 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * @var integer number of items in each page
 	 */
-	private $_pageSize=10;
+	private $_pageSize = 10;
 	/**
 	 * @var integer current page index
 	 */
-	private $_currentPageIndex=0;
+	private $_currentPageIndex = 0;
 	/**
 	 * @var boolean whether to allow paging
 	 */
-	private $_allowPaging=false;
+	private $_allowPaging = false;
 	/**
 	 * @var boolean whether to allow custom paging
 	 */
-	private $_allowCustomPaging=false;
+	private $_allowCustomPaging = false;
 	/**
 	 * @var integer user-assigned number of items in data source
 	 */
-	private $_virtualCount=0;
+	private $_virtualCount = 0;
 
 	/**
 	 * @return mixed original data source. Defaults to null.
@@ -75,13 +75,13 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 		if(!($value instanceof TMap) && !($value instanceof TList))
 		{
 			if(is_array($value))
-				$value=new TMap($value);
+				$value = new TMap($value);
 			elseif($value instanceof \Traversable)
-				$value=new TList($value);
-			elseif($value!==null)
+				$value = new TList($value);
+			elseif($value !== null)
 				throw new TInvalidDataTypeException('pageddatasource_datasource_invalid');
 		}
-		$this->_dataSource=$value;
+		$this->_dataSource = $value;
 	}
 
 	/**
@@ -97,8 +97,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function setPageSize($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))>0)
-			$this->_pageSize=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) > 0)
+			$this->_pageSize = $value;
 		else
 			throw new TInvalidDataValueException('pageddatasource_pagesize_invalid');
 	}
@@ -116,9 +116,9 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function setCurrentPageIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_currentPageIndex=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = 0;
+		$this->_currentPageIndex = $value;
 	}
 
 	/**
@@ -134,7 +134,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function setAllowPaging($value)
 	{
-		$this->_allowPaging=TPropertyValue::ensureBoolean($value);
+		$this->_allowPaging = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function setAllowCustomPaging($value)
 	{
-		$this->_allowCustomPaging=TPropertyValue::ensureBoolean($value);
+		$this->_allowCustomPaging = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -166,8 +166,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function setVirtualItemCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))>=0)
-			$this->_virtualCount=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) >= 0)
+			$this->_virtualCount = $value;
 		else
 			throw new TInvalidDataValueException('pageddatasource_virtualitemcount_invalid');
 	}
@@ -177,12 +177,12 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function getCount()
 	{
-		if($this->_dataSource===null)
+		if($this->_dataSource === null)
 			return 0;
 		if(!$this->_allowPaging)
 			return $this->getDataSourceCount();
 		if(!$this->_allowCustomPaging && $this->getIsLastPage())
-			return $this->getDataSourceCount()-$this->getFirstIndexInPage();
+			return $this->getDataSourceCount() - $this->getFirstIndexInPage();
 		return $this->_pageSize;
 	}
 
@@ -201,12 +201,12 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function getPageCount()
 	{
-		if($this->_dataSource===null)
+		if($this->_dataSource === null)
 			return 0;
-		$count=$this->getDataSourceCount();
-		if(!$this->_allowPaging || $count<=0)
+		$count = $this->getDataSourceCount();
+		if(!$this->_allowPaging || $count <= 0)
 			return 1;
-		return (int)(($count+$this->_pageSize-1)/$this->_pageSize);
+		return (int)(($count + $this->_pageSize - 1) / $this->_pageSize);
 	}
 
 	/**
@@ -215,7 +215,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	public function getIsFirstPage()
 	{
 		if($this->_allowPaging)
-			return $this->_currentPageIndex===0;
+			return $this->_currentPageIndex === 0;
 		else
 			return true;
 	}
@@ -226,7 +226,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	public function getIsLastPage()
 	{
 		if($this->_allowPaging)
-			return $this->_currentPageIndex===$this->getPageCount()-1;
+			return $this->_currentPageIndex === $this->getPageCount() - 1;
 		else
 			return true;
 	}
@@ -237,8 +237,8 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function getFirstIndexInPage()
 	{
-		if($this->_dataSource!==null && $this->_allowPaging && !$this->_allowCustomPaging)
-			return $this->_currentPageIndex*$this->_pageSize;
+		if($this->_dataSource !== null && $this->_allowPaging && !$this->_allowCustomPaging)
+			return $this->_currentPageIndex * $this->_pageSize;
 		else
 			return 0;
 	}
@@ -248,7 +248,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	public function getDataSourceCount()
 	{
-		if($this->_dataSource===null)
+		if($this->_dataSource === null)
 			return 0;
 		elseif($this->_allowCustomPaging)
 			return $this->_virtualCount;

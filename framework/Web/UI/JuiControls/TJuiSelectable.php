@@ -81,9 +81,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
+		if (($options = $this->getViewState('JuiOptions')) === null)
 		{
-		  $options=new TJuiControlOptions($this);
+		  $options = new TJuiControlOptions($this);
 		  $this->setViewState('JuiOptions', $options);
 		}
 		return $options;
@@ -116,7 +116,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 		// overload the "OnStop" event to add information about the current selected items
 		if(isset($options['stop']))
 		{
-			$options['stop']=new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#' . $this->getClientID() . ' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'stop\', event, ui, this); }');
+			$options['stop'] = new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#' . $this->getClientID() . ' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'stop\', event, ui, this); }');
 		}
 		return $options;
 	}
@@ -129,9 +129,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -237,7 +237,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getSelectables()
 	{
-		if($this->_repeater===null)
+		if($this->_repeater === null)
 			$this->_repeater = $this->createRepeater();
 		return $this->_repeater;
 	}

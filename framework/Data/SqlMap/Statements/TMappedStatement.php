@@ -52,7 +52,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * @var TPostSelectBinding[] post select statement queue.
 	 */
-	private $_selectQueue=[];
+	private $_selectQueue = [];
 
 	/**
 	 * @var boolean true when data is mapped to a particular row.
@@ -174,10 +174,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function executeSQLQueryLimit($connection, $command, $max, $skip)
 	{
-		if($max>-1 || $skip > -1)
+		if($max > -1 || $skip > -1)
 		{
-			$maxStr=$max>0?' LIMIT ' . $max:'';
-			$skipStr=$skip>0?' OFFSET ' . $skip:'';
+			$maxStr = $max > 0?' LIMIT ' . $max:'';
+			$skipStr = $skip > 0?' OFFSET ' . $skip:'';
 			$command->setText($command->getText() . $maxStr . $skipStr);
 		}
 		$connection->setActive(true);
@@ -212,7 +212,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param callback row delegate handler
 	 * @see executeQueryForList()
 	 */
-	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
+	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1, $delegate = null)
 	{
 		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter, $skip, $max);
 		return $this->runQueryForList($connection, $parameter, $sql, $result, $delegate);
@@ -234,15 +234,15 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @return array a list of result objects
 	 * @see executeQueryForList()
 	 */
-	public function runQueryForList($connection, $parameter, $sql, $result, $delegate=null)
+	public function runQueryForList($connection, $parameter, $sql, $result, $delegate = null)
 	{
-		$registry=$this->getManager()->getTypeHandlers();
+		$registry = $this->getManager()->getTypeHandlers();
 		$list = $result instanceof \ArrayAccess ? $result :
 							$this->_statement->createInstanceOfListClass($registry);
 		$connection->setActive(true);
 		$reader = $sql->query();
 		//$reader = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
-		if($delegate!==null)
+		if($delegate !== null)
 		{
 			foreach($reader as $row)
 			{
@@ -285,7 +285,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param callback row delegate handler
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 */
-	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty=null, $skip=-1, $max=-1, $delegate=null)
+	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null)
 	{
 		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter, $skip, $max);
 		return $this->runQueryForMap($connection, $parameter, $sql, $keyProperty, $valueProperty, $delegate);
@@ -309,20 +309,20 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 * @see executeQueryForMap()
 	 */
-	public function runQueryForMap($connection, $parameter, $command, $keyProperty, $valueProperty=null, $delegate=null)
+	public function runQueryForMap($connection, $parameter, $command, $keyProperty, $valueProperty = null, $delegate = null)
 	{
 		$map = [];
 		//$recordSet = $this->executeSQLQuery($connection, $sql);
 		$connection->setActive(true);
 		$reader = $command->query();
-		if($delegate!==null)
+		if($delegate !== null)
 		{
 			//while($row = $recordSet->fetchRow())
 			foreach($reader as $row)
 			{
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
-				$value = ($valueProperty===null) ? $obj :
+				$value = ($valueProperty === null) ? $obj :
 							TPropertyAccess::get($obj, $valueProperty);
 				$param = new TResultSetMapItemParameter($key, $value, $parameter, $map);
 				$this->raiseRowDelegate($delegate, $param);
@@ -335,7 +335,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			{
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
-				$map[$key] = ($valueProperty===null) ? $obj :
+				$map[$key] = ($valueProperty === null) ? $obj :
 								TPropertyAccess::get($obj, $valueProperty);
 			}
 		}
@@ -358,15 +358,15 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		elseif(is_callable($handler, true))
 		{
 			// an array: 0 - object, 1 - method name/path
-			list($object, $method)=$handler;
+			list($object, $method) = $handler;
 			if(is_string($object))	// static method call
 				call_user_func($handler, $this, $param);
 			else
 			{
-				if(($pos=strrpos($method, '.'))!==false)
+				if(($pos = strrpos($method, '.')) !== false)
 				{
-					$object=$this->getSubProperty(substr($method, 0, $pos));
-					$method=substr($method, $pos+1);
+					$object = $this->getSubProperty(substr($method, 0, $pos));
+					$method = substr($method, $pos + 1);
 				}
 				$object->$method($this, $param);
 			}
@@ -383,7 +383,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param mixed The result object.
 	 * @return ${return}
 	 */
-	public function executeQueryForObject($connection, $parameter, $result=null)
+	public function executeQueryForObject($connection, $parameter, $result = null)
 	{
 		$sql = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter);
 		return $this->runQueryForObject($connection, $sql, $result);
@@ -437,7 +437,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 //		var_dump($command,$parameter);
 		$result = $command->execute();
 
-		if($generatedKey===null)
+		if($generatedKey === null)
 			$generatedKey = $this->getPostGeneratedSelectKey($connection, $parameter);
 
 		$this->executePostSelect($connection);
@@ -456,7 +456,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if($this->_statement instanceof TSqlMapInsert)
 		{
 			$selectKey = $this->_statement->getSelectKey();
-			if(($selectKey!==null) && !$selectKey->getIsAfter())
+			if(($selectKey !== null) && !$selectKey->getIsAfter())
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 		}
 	}
@@ -472,7 +472,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if($this->_statement instanceof TSqlMapInsert)
 		{
 			$selectKey = $this->_statement->getSelectKey();
-			if(($selectKey!==null) && $selectKey->getIsAfter())
+			if(($selectKey !== null) && $selectKey->getIsAfter())
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 		}
 	}
@@ -557,14 +557,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param object the result object, will create if necessary.
 	 * @return object the result filled with data, null if not filled.
 	 */
-	protected function applyResultMap($row, &$resultObject=null)
+	protected function applyResultMap($row, &$resultObject = null)
 	{
 		if($row === false) return null;
 
 		$resultMapName = $this->_statement->getResultMap();
 		$resultClass = $this->_statement->getResultClass();
 
-		$obj=null;
+		$obj = null;
 		if($this->getManager()->getResultMaps()->contains($resultMapName))
 			$obj = $this->fillResultMap($resultMapName, $row, null, $resultObject);
 		elseif(strlen($resultClass) > 0)
@@ -573,7 +573,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			$obj = $this->fillDefaultResultMap(null, $row, $resultObject);
 		if(class_exists('TActiveRecord', false) && $obj instanceof TActiveRecord)
 			//Create a new clean active record.
-			$obj=TActiveRecord::createRecord(get_class($obj), $obj);
+			$obj = TActiveRecord::createRecord(get_class($obj), $obj);
 		return $obj;
 	}
 
@@ -586,7 +586,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function fillResultClass($resultClass, $row, $resultObject)
 	{
-		if($resultObject===null)
+		if($resultObject === null)
 		{
 			$registry = $this->getManager()->getTypeHandlers();
 			$resultObject = $this->_statement->createInstanceOfResultClass($registry, $row);
@@ -626,8 +626,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function fillResultObjectProperty($row, $resultObject)
 	{
 		$index = 0;
-		$registry=$this->getManager()->getTypeHandlers();
-		foreach($row as $k=>$v)
+		$registry = $this->getManager()->getTypeHandlers();
+		foreach($row as $k => $v)
 		{
 			$property = new TResultProperty;
 			if(is_string($k) && strlen($k) > 0)
@@ -648,13 +648,13 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param object result object to fill, will create new instances if required.
 	 * @return object result object filled with data.
 	 */
-	protected function fillResultMap($resultMapName, $row, $parentGroup=null, &$resultObject=null)
+	protected function fillResultMap($resultMapName, $row, $parentGroup = null, &$resultObject = null)
 	{
 		$resultMap = $this->getManager()->getResultMap($resultMapName);
 		$registry = $this->getManager()->getTypeHandlers();
 		$resultMap = $resultMap->resolveSubMap($registry, $row);
 
-		if($resultObject===null)
+		if($resultObject === null)
 			$resultObject = $resultMap->createInstanceOfResult($registry);
 
 		if(is_object($resultObject))
@@ -686,7 +686,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 		if(empty($parent))
 		{
-			$rootObject = ['object'=>$resultObject, 'property' => null];
+			$rootObject = ['object' => $resultObject, 'property' => null];
 			$this->_groupBy->add(null, $group, $rootObject);
 		}
 
@@ -710,7 +710,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				$value = $this->fillResultMap($nested, $row, $groupKey);
 
 				//add it to the object tree graph
-				$groupObject = ['object'=>$value, 'property' => $property->getProperty()];
+				$groupObject = ['object' => $value, 'property' => $property->getProperty()];
 				if(empty($parent))
 					$this->_groupBy->add($group, $groupKey, $groupObject);
 				else
@@ -745,16 +745,16 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function fillDefaultResultMap($resultMap, $row, $resultObject)
 	{
-		if($resultObject===null)
-			$resultObject='';
+		if($resultObject === null)
+			$resultObject = '';
 
-		if($resultMap!==null)
+		if($resultMap !== null)
 			$result = $this->fillArrayResultMap($resultMap, $row, $resultObject);
 		else
 			$result = $row;
 
 		//if scalar result types
-		if(count($result) == 1 && ($type = gettype($resultObject))!= 'array')
+		if(count($result) == 1 && ($type = gettype($resultObject)) != 'array')
 			return $this->getScalarResult($result, $type);
 		else
 			return $result;
@@ -770,11 +770,11 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function fillArrayResultMap($resultMap, $row, $resultObject)
 	{
 		$result = [];
-		$registry=$this->getManager()->getTypeHandlers();
+		$registry = $this->getManager()->getTypeHandlers();
 		foreach($resultMap->getColumns() as $column)
 		{
-			if(($column->getType()===null)
-				&& ($resultObject!==null) && !is_object($resultObject))
+			if(($column->getType() === null)
+				&& ($resultObject !== null) && !is_object($resultObject))
 			$column->setType(gettype($resultObject));
 			$result[$column->getProperty()] = $column->getPropertyValue($registry, $row);
 		}
@@ -806,12 +806,12 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$select = $property->getSelect();
 		$key = $property->getProperty();
 		$nested = $property->getNestedResultMap();
-		$registry=$this->getManager()->getTypeHandlers();
+		$registry = $this->getManager()->getTypeHandlers();
 		if($key === '')
 		{
 			$resultObject = $property->getPropertyValue($registry, $row);
 		}
-		elseif(strlen($select) == 0 && ($nested===null))
+		elseif(strlen($select) == 0 && ($nested === null))
 		{
 			$value = $property->getPropertyValue($registry, $row);
 
@@ -821,7 +821,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			else
 				$resultObject = $value;
 		}
-		elseif($nested!==null)
+		elseif($nested !== null)
 		{
 			if($property->instanceOfListType($resultObject) || $property->instanceOfArrayType($resultObject))
 			{
@@ -898,14 +898,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			$keys = [];
 			foreach(explode(',', $value) as $entry)
 			{
-				$pair =explode('=', $entry);
+				$pair = explode('=', $entry);
 				$keys[trim($pair[0])] = $row[trim($pair[1])];
 			}
 			return $keys;
 		}
 		else
 		{
-			$registry=$this->getManager()->getTypeHandlers();
+			$registry = $this->getManager()->getTypeHandlers();
 			return $property->getPropertyValue($registry, $row);
 		}
 	}

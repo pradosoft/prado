@@ -9,7 +9,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-if(!isset($_SERVER['argv']) || php_sapi_name()!=='cli')
+if(!isset($_SERVER['argv']) || php_sapi_name() !== 'cli')
 	die('Must be run from the command line');
 
 // Locate composer's autoloader
@@ -62,7 +62,7 @@ class PradoCommandLineInterpreter
 	/**
 	 * @var array command action classes
 	 */
-	protected $_actions=[];
+	protected $_actions = [];
 
 	/**
 	 * @param string action class name
@@ -166,7 +166,7 @@ abstract class PradoCommandLineAction
 	public function isValidAction($args)
 	{
 		return 0 == strcasecmp($args[0], $this->action) &&
-			count($args)-1 >= count($this->parameters);
+			count($args) - 1 >= count($this->parameters);
 	}
 
 	public function renderHelp()
@@ -179,7 +179,7 @@ abstract class PradoCommandLineAction
 		foreach($this->optional as $v)
 			$options[] = '[' . $v . ']';
 		$optional = (strlen($parameters) ? ' ' : '') . implode($options, ' ');
-		$description='';
+		$description = '';
 		foreach(explode("\n", wordwrap($this->description, 65)) as $line)
 			$description .= '    ' . $line . "\n";
 		return <<<EOD
@@ -195,7 +195,7 @@ EOD;
 		$app_dir = realpath($directory . '/protected/');
 		if($app_dir !== false && is_dir($app_dir))
 		{
-			if(Prado::getApplication()===null)
+			if(Prado::getApplication() === null)
 			{
 				$app = new PradoShellApplication($app_dir);
 				$app->run();
@@ -248,13 +248,13 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 		$rootPath = realpath(dirname(trim($dir)));
 
-		if(basename($dir)!=='.')
+		if(basename($dir) !== '.')
 			$basePath = $rootPath . DIRECTORY_SEPARATOR . basename($dir);
 		else
 			$basePath = $rootPath;
 		$appName = basename($basePath);
 		$assetPath = $basePath . DIRECTORY_SEPARATOR . 'assets';
-		$protectedPath  = $basePath . DIRECTORY_SEPARATOR . 'protected';
+		$protectedPath = $basePath . DIRECTORY_SEPARATOR . 'protected';
 		$runtimePath = $basePath . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'runtime';
 		$pagesPath = $protectedPath . DIRECTORY_SEPARATOR . 'pages';
 
@@ -477,7 +477,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected $parameters = ['table', 'output'];
 	protected $optional = ['directory', 'soap'];
 	protected $description = 'Generate Active Record skeleton for <table> to <output> file using application.xml in [directory]. May also generate [soap] properties.';
-	private $_soap=false;
+	private $_soap = false;
 
 	public function performAction($args)
 	{
@@ -495,7 +495,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return true;
 	}
 
-	protected function getAppDir($dir=".")
+	protected function getAppDir($dir = ".")
 	{
 		if(is_dir($dir))
 			return realpath($dir);
@@ -517,9 +517,9 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	protected function getActiveRecordConfig($app_dir)
 	{
-		if(false === ($xml=$this->getXmlFile($app_dir)))
+		if(false === ($xml = $this->getXmlFile($app_dir)))
 			return false;
-		if(false !== ($app=$this->initializePradoApplication($app_dir)))
+		if(false !== ($app = $this->initializePradoApplication($app_dir)))
 		{
 			Prado::using('System.Data.ActiveRecord.TActiveRecordConfig');
 			foreach($app->getModules() as $module)
@@ -532,12 +532,12 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	protected function getOutputFile($app_dir, $namespace)
 	{
-		if(is_file($namespace) && strpos($namespace, $app_dir)===0)
+		if(is_file($namespace) && strpos($namespace, $app_dir) === 0)
 				return $namespace;
 		$file = Prado::getPathOfNamespace($namespace, ".php");
 		if($file !== null && false !== ($path = realpath(dirname($file))) && is_dir($path))
 		{
-			if(strpos($path, $app_dir)===0)
+			if(strpos($path, $app_dir) === 0)
 				return $file;
 		}
 		echo '** Output file ' . $file . ' must be within directory ' . $app_dir . "\n";
@@ -558,7 +558,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			else
 			{
 				$properties = [];
-				foreach($tableInfo->getColumns() as $field=>$column)
+				foreach($tableInfo->getColumns() as $field => $column)
 					$properties[] = $this->generateProperty($field, $column);
 			}
 
@@ -692,10 +692,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		if(count($input) > 2)
 		{
 			$app_dir = '.';
-			if(Prado::getApplication()!==null)
+			if(Prado::getApplication() !== null)
 				$app_dir = dirname(Prado::getApplication()->getBasePath());
 			$args = [$input[0],$input[1], $input[2],$app_dir];
-			if(count($input)>3)
+			if(count($input) > 3)
 				$args = [$input[0],$input[1], $input[2],$app_dir,'soap'];
 			$cmd = new PradoCommandLineActiveRecordGen;
 			$cmd->performAction($args);
@@ -706,7 +706,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		}
 	}
 
-	protected function getAppDir($dir=".") {
+	protected function getAppDir($dir = ".") {
 		if (is_dir($dir))
 			return realpath($dir);
 		if (false !== ($app_dir = realpath($dir . '/protected/')) && is_dir($app_dir))

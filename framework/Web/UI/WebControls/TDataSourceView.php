@@ -27,8 +27,8 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	public function __construct(IDataSource $owner, $viewName)
 	{
-		$this->_owner=$owner;
-		$this->_name=$viewName;
+		$this->_owner = $owner;
+		$this->_name = $viewName;
 	}
 
 	/**

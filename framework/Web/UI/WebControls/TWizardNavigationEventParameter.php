@@ -33,7 +33,7 @@ use Prado\TPropertyValue;
  */
 class TWizardNavigationEventParameter extends \Prado\TEventParameter
 {
-	private $_cancel=false;
+	private $_cancel = false;
 	private $_currentStep;
 	private $_nextStep;
 
@@ -43,8 +43,8 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($currentStep)
 	{
-		$this->_currentStep=$currentStep;
-		$this->_nextStep=$currentStep;
+		$this->_currentStep = $currentStep;
+		$this->_nextStep = $currentStep;
 	}
 
 	/**
@@ -68,7 +68,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	 */
 	public function setNextStepIndex($index)
 	{
-		$this->_nextStep=TPropertyValue::ensureInteger($index);
+		$this->_nextStep = TPropertyValue::ensureInteger($index);
 	}
 
 	/**
@@ -84,6 +84,6 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	 */
 	public function setCancelNavigation($value)
 	{
-		$this->_cancel=TPropertyValue::ensureBoolean($value);
+		$this->_cancel = TPropertyValue::ensureBoolean($value);
 	}
 }

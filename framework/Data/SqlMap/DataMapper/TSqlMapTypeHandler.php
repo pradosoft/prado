@@ -30,14 +30,14 @@ namespace Prado\Data\SqlMap\DataMapper;
  */
 abstract class TSqlMapTypeHandler extends \Prado\TComponent
 {
-	private $_dbType='NULL';
+	private $_dbType = 'NULL';
 	private $_type;
 	/**
 	 * @param string database field type.
 	 */
 	public function setDbType($value)
 	{
-		$this->_dbType=$value;
+		$this->_dbType = $value;
 	}
 
 	/**
@@ -50,7 +50,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 
 	public function getType()
 	{
-		if($this->_type===null)
+		if($this->_type === null)
 			return get_class($this);
 		else
 			return $this->_type;
@@ -58,7 +58,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 
 	public function setType($value)
 	{
-		$this->_type=$value;
+		$this->_type = $value;
 	}
 
 	/**
@@ -90,5 +90,5 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * @param array result row.
 	 * @return mixed
 	 */
-	abstract public function createNewInstance($row=null);
+	abstract public function createNewInstance($row = null);
 }

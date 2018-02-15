@@ -70,7 +70,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function createIntegerControl($container, $column, $record)
 	{
-		if($column->getColumnSize()==1)
+		if($column->getColumnSize() == 1)
 			return $this->createBooleanControl($container, $column, $record);
 		else
 			parent::createIntegerControl($container, $column, $record);
@@ -78,7 +78,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function getIntBooleanValue($container, $column, $record)
 	{
-		if($column->getColumnSize()==1)
+		if($column->getColumnSize() == 1)
 			return (int)$container->findControl(self::DEFAULT_ID)->getChecked();
 		else
 			return $this->getDefaultControlValue($container, $column, $record);

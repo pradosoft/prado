@@ -39,7 +39,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 * @var mixed
 	 * @since 3.1.7
 	 */
-	private $_select='*';
+	private $_select = '*';
 	private $_condition;
 	private $_parameters;
 	private $_ordersBy;
@@ -51,14 +51,14 @@ class TSqlCriteria extends \Prado\TComponent
 	 * @param string sql string after the WHERE stanza
 	 * @param mixed named or indexed parameters, accepts as multiple arguments.
 	 */
-	public function __construct($condition=null, $parameters=[])
+	public function __construct($condition = null, $parameters = [])
 	{
 		if(!is_array($parameters) && func_num_args() > 1)
 			$parameters = array_slice(func_get_args(), 1);
-		$this->_parameters=new TAttributeCollection;
+		$this->_parameters = new TAttributeCollection;
 		$this->_parameters->setCaseSensitive(true);
 		$this->_parameters->copyFrom((array)$parameters);
-		$this->_ordersBy=new TAttributeCollection;
+		$this->_ordersBy = new TAttributeCollection;
 		$this->_ordersBy->setCaseSensitive(true);
 
 		$this->setCondition($condition);
@@ -198,7 +198,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function getIsNamedParameters()
 	{
-		foreach($this->getParameters() as $k=>$v)
+		foreach($this->getParameters() as $k => $v)
 			return is_string($k);
 	}
 
@@ -219,12 +219,12 @@ class TSqlCriteria extends \Prado\TComponent
 			$this->_ordersBy->copyFrom($value);
 		else
 		{
-			$value=trim(preg_replace('/\s+/', ' ', (string)$value));
-			$orderBys=[];
+			$value = trim(preg_replace('/\s+/', ' ', (string)$value));
+			$orderBys = [];
 			foreach(explode(',', $value) as $orderBy)
 			{
-				$vs=explode(' ', trim($orderBy));
-				$orderBys[$vs[0]]=isset($vs[1])?$vs[1]:'asc';
+				$vs = explode(' ', trim($orderBy));
+				$orderBys[$vs[0]] = isset($vs[1])?$vs[1]:'asc';
 			}
 			$this->_ordersBy->copyFrom($orderBys);
 		}
@@ -243,7 +243,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function setLimit($value)
 	{
-		$this->_limit=$value;
+		$this->_limit = $value;
 	}
 
 	/**
@@ -259,7 +259,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function setOffset($value)
 	{
-		$this->_offset=$value;
+		$this->_offset = $value;
 	}
 
 	/**
@@ -271,16 +271,16 @@ class TSqlCriteria extends \Prado\TComponent
 		if(strlen((string)$this->getCondition()) > 0)
 			$str .= '"' . (string)$this->getCondition() . '"';
 		$params = [];
-		foreach($this->getParameters() as $k=>$v)
+		foreach($this->getParameters() as $k => $v)
 			$params[] = "{$k} => ${v}";
 		if(count($params) > 0)
 			$str .= ', "' . implode(', ', $params) . '"';
 		$orders = [];
-		foreach($this->getOrdersBy() as $k=>$v)
+		foreach($this->getOrdersBy() as $k => $v)
 			$orders[] = "{$k} => ${v}";
 		if(count($orders) > 0)
 			$str .= ', "' . implode(', ', $orders) . '"';
-		if($this->_limit !==null)
+		if($this->_limit !== null)
 			$str .= ', ' . $this->_limit;
 		if($this->_offset !== null)
 			$str .= ', ' . $this->_offset;

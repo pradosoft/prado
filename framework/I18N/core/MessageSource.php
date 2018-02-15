@@ -124,7 +124,7 @@ abstract class MessageSource implements IMessageSource
 	 * @return MessageSource a new message source of the specified type.
 	 * @throws InvalidMessageSourceTypeException
 	 */
-	public static function &factory($type, $source='.', $filename='')
+	public static function &factory($type, $source = '.', $filename = '')
 	{
 		$types = ['XLIFF','PHP','gettext','Database'];
 
@@ -142,7 +142,7 @@ abstract class MessageSource implements IMessageSource
 						
 		include_once $filename;
 		
-		$obj =  new $class($source);
+		$obj = new $class($source);
 		
 		return $obj;
 	}
@@ -166,7 +166,7 @@ abstract class MessageSource implements IMessageSource
 	 * @return boolean true if loaded, false otherwise.
 	 * @see read()
 	 */
-	public function load($catalogue='messages')
+	public function load($catalogue = 'messages')
 	{
 		$variants = $this->getCatalogueList($catalogue);
 		

@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TPagerMode extends \Prado\TEnumerable
 {
-	const NextPrev='NextPrev';
-	const Numeric='Numeric';
-	const DropDownList='DropDownList';
+	const NextPrev = 'NextPrev';
+	const Numeric = 'Numeric';
+	const DropDownList = 'DropDownList';
 }

@@ -41,9 +41,9 @@ class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($pageIndex, $offset, $limit)
 	{
-		$this->_pageIndex=$pageIndex;
-		$this->_offset=$offset;
-		$this->_limit=$limit;
+		$this->_pageIndex = $pageIndex;
+		$this->_offset = $offset;
+		$this->_limit = $limit;
 	}
 
 	/**
@@ -83,6 +83,6 @@ class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 }

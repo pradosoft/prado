@@ -37,14 +37,14 @@ class Translation extends \Prado\TComponent
 	 * This is a class static variable.
 	 * @var array
 	 */
-	protected static $formatters=[];
+	protected static $formatters = [];
 
 	/**
 	 * Initialize the TTranslate translation components
 	 */
-	public static function init($catalogue='messages')
+	public static function init($catalogue = 'messages')
 	{
-		static $saveEventHandlerAttached=false;
+		static $saveEventHandlerAttached = false;
 
 		//initialized the default class wide formatter
 		if(!isset(self::$formatters[$catalogue]))
@@ -63,7 +63,7 @@ class Translation extends \Prado\TComponent
 			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
 
 			//mark untranslated text
-			if($ps=$config['marker'])
+			if($ps = $config['marker'])
 				self::$formatters[$catalogue]->setUntranslatedPS([$ps,$ps]);
 
 			//save the message on end request
@@ -72,7 +72,7 @@ class Translation extends \Prado\TComponent
 			{
 				Prado::getApplication()->attachEventHandler(
 				'OnEndRequest', ['Translation', 'saveMessages']);
-				$saveEventHandlerAttached=true;
+				$saveEventHandlerAttached = true;
 			}
 		}
 	}
@@ -82,7 +82,7 @@ class Translation extends \Prado\TComponent
 	 * @return MessageFormat formattter.
 	 * @see localize()
 	 */
-	public static function formatter($catalogue='messages')
+	public static function formatter($catalogue = 'messages')
 	{
 		return self::$formatters[$catalogue];
 	}
@@ -96,7 +96,7 @@ class Translation extends \Prado\TComponent
 
 		if($onceonly)
 		{
-			foreach (self::$formatters as $catalogue=>$formatter)
+			foreach (self::$formatters as $catalogue => $formatter)
 			{
 				$app = Prado::getApplication()->getGlobalization();
 				$config = $app->getTranslationConfiguration();

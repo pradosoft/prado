@@ -81,7 +81,7 @@ class TReCaptchaValidator extends TBaseValidator
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
-		return ($this->_isvalid==true);
+		return ($this->_isvalid == true);
 	}
 
 	public function onPreRender($param)
@@ -92,7 +92,7 @@ class TReCaptchaValidator extends TBaseValidator
 		$cs->registerPradoScript('validator');
 
 		// communicate validation status to the client side
-		$value = $this->_isvalid===false ? '0' : '1';
+		$value = $this->_isvalid === false ? '0' : '1';
 		$cs->registerHiddenField($this->getClientID() . '_1', $value);
 		
 		// update validator display

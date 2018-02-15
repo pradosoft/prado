@@ -128,8 +128,8 @@ class TInPlaceTextBox extends TActiveTextBox
 	protected function getExternalControlID()
 	{
 		$extID = $this->getEditTriggerControlID();
-		if($extID===null) return '';
-		if(($control = $this->findControl($extID))!==null)
+		if($extID === null) return '';
+		if(($control = $this->findControl($extID)) !== null)
 			return $control->getClientID();
 		return $extID;
 	}
@@ -160,7 +160,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function setReadOnly ($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
+		$value = TPropertyValue::ensureBoolean($value);
 		if(TTextBox::getReadOnly() === $value)
 			return;
 
@@ -185,7 +185,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if(($text = $this->getText()) === '')
 			parent::renderContents($writer);
 		else
 			$writer->write($text);
@@ -229,10 +229,10 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
 		$options['Columns'] = $this->getColumns();
-		if($this->getTextMode()==='MultiLine')
+		if($this->getTextMode() === 'MultiLine')
 		{
 			$options['Rows'] = $this->getRows();
-			$options['Wrap'] = $this->getWrap()== false ? '' : true;
+			$options['Wrap'] = $this->getWrap() == false ? '' : true;
 		}
 		else
 		{
@@ -243,7 +243,7 @@ class TInPlaceTextBox extends TActiveTextBox
 		if($this->hasEventHandler('OnLoadingText'))
 			$options['LoadTextOnEdit'] = true;
 
-		$options['ReadOnly']=$this->getReadOnly();
+		$options['ReadOnly'] = $this->getReadOnly();
 		return $options;
 	}
 
@@ -294,7 +294,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	protected function registerClientScript()
 	{
-		$cs=$this->getPage()->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('inlineeditor');
 	}
 }

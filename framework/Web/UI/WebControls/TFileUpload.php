@@ -54,18 +54,18 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Maximum file size (in bytes) allowed to be uploaded, defaults to 1MB.
 	 */
-	const MAX_FILE_SIZE=1048576;
+	const MAX_FILE_SIZE = 1048576;
 
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 	/**
 	 * @var bool wether this file upload supports multiple files
 	 */
-	private $_multiple=false;
+	private $_multiple = false;
 	/**
 	 * @var array the list of uploaded files represented by {@link TFileUploadItem}
 	 */
-	private $_files=[];
+	private $_files = [];
 
 	/**
 	 * @return string tag name of the file upload control
@@ -85,14 +85,14 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		$this->getPage()->ensureRenderInForm($this);
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('type', 'file');
-		$name=$this->getUniqueID();
+		$name = $this->getUniqueID();
 		if($this->getMultiple())
 		{
-		  $name.='[]';
+		  $name .= '[]';
 		  $writer->addAttribute('multiple', 'multiple');
 		}
 		$writer->addAttribute('name', $name);
-		$isEnabled=$this->getEnabled(true);
+		$isEnabled = $this->getEnabled(true);
 		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
 	}
@@ -105,7 +105,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(($form=$this->getPage()->getForm())!==null)
+		if(($form = $this->getPage()->getForm()) !== null)
 		{
 			if($this->getPage()->getIsCallback())
 				$this->getPage()->getCallbackClient()->setAttribute($form, 'enctype', 'multipart/form-data');
@@ -144,7 +144,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return string the original full path name of the file on the client machine
 	 */
-	public function getFileName($index=0)
+	public function getFileName($index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->getFileName():'';
 	}
@@ -154,7 +154,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return integer the actual size of the uploaded file in bytes
 	 */
-	public function getFileSize($index=0)
+	public function getFileSize($index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->getFileSize():0;
 	}
@@ -165,7 +165,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @return string the MIME-type of the uploaded file (such as "image/gif").
 	 * This mime type is not checked on the server side and do not take its value for granted.
 	 */
-	public function getFileType($index=0)
+	public function getFileType($index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->getFileType():'';
 	}
@@ -176,7 +176,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @return string the local name of the file (where it is after being uploaded).
 	 * Note, PHP will delete this file automatically after finishing this round of request.
 	 */
-	public function getLocalName($index=0)
+	public function getLocalName($index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->getLocalName():'';
 	}
@@ -188,7 +188,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @return integer the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
-	public function getErrorCode($index=0)
+	public function getErrorCode($index = 0)
 	{
 		return isset($this->_files[$index])?$this->_files[$index]->getErrorCode():UPLOAD_ERR_NO_FILE;
 	}
@@ -198,7 +198,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return boolean whether the file is uploaded successfully
 	 */
-	public function getHasFile($index=0)
+	public function getHasFile($index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->getHasFile():false;
 	}
@@ -224,7 +224,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName, $deleteTempFile=true, $index=0)
+	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
 	{
 	  return isset($this->_files[$index])?$this->_files[$index]->saveAs($fileName, $deleteTempFile):false;
 	}
@@ -240,14 +240,14 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	{
 		if(isset($_FILES[$key]))
 		{
-		  if($this->getMultiple()||is_array($_FILES[$key]['name']))
+		  if($this->getMultiple() || is_array($_FILES[$key]['name']))
 		  {
 		foreach($_FILES[$key]['name'] as $index => $name)
-		  $this->_files[$index]=new TFileUploadItem($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
+		  $this->_files[$index] = new TFileUploadItem($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
 		  }
 		  else
-			$this->_files[0]=new TFileUploadItem($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
-			return $this->_dataChanged=true;
+			$this->_files[0] = new TFileUploadItem($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
+			return $this->_dataChanged = true;
 		}
 		else
 			return false;
@@ -309,7 +309,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setIsValid($value)
 	{
-	  $this->_isValid=TPropertyValue::ensureBoolean($value);
+	  $this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -325,7 +325,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setMultiple($value)
 	{
-	  $this->_multiple=TPropertyValue::ensureBoolean($value);
+	  $this->_multiple = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

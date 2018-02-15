@@ -33,7 +33,7 @@ interface IUserManager
 	 * @param string user name, null if it is a guest.
 	 * @return TUser the user instance, null if the specified username is not in the user database.
 	 */
-	public function getUser($username=null);
+	public function getUser($username = null);
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
 	 * @param THttpCookie the cookie storing user authentication information

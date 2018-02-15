@@ -16,7 +16,7 @@
 namespace Prado;
 
 class TEventResults extends \Prado\TEnumerable {
-	const EVENT_RESULT_FEED_FORWARD=1;
-	const EVENT_RESULT_FILTER=2;
-	const EVENT_RESULT_ALL=4;
+	const EVENT_RESULT_FEED_FORWARD = 1;
+	const EVENT_RESULT_FILTER = 2;
+	const EVENT_RESULT_ALL = 4;
 }

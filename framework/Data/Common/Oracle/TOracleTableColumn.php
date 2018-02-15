@@ -27,7 +27,7 @@ use Prado\Prado;
  */
 class TOracleTableColumn extends TDbTableColumn
 {
-	private static $types=[
+	private static $types = [
 		'numeric' => [ 'numeric' ]
 //		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
 //		'boolean' => array('boolean'),

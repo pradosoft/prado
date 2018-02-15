@@ -28,7 +28,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TJuiControlAdapter extends TActiveControlAdapter
 {
 	const CSS_PATH = 'themes';
-	const BASE_CSS_FILENAME ='jquery-ui.css';
+	const BASE_CSS_FILENAME = 'jquery-ui.css';
 
 	/**
 	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
@@ -71,7 +71,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 * @param string jQuery asset file in the jquery-ui directory.
 	 * @return string jQuery asset url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui');
 		return $base . '/' . $file;

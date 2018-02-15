@@ -48,7 +48,7 @@ abstract class TDataRenderer extends TTemplateControl implements \Prado\IDataRen
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 }
 

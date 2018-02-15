@@ -32,17 +32,17 @@ class TBrowserLogRoute extends TLogRoute
 
 	public function processLogs($logs)
 	{
-		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
+		if(empty($logs) || $this->getApplication()->getMode() === 'Performance') return;
 		$first = $logs[0][3];
 		$even = true;
 		$response = $this->getApplication()->getResponse();
 		$response->write($this->renderHeader());
-		for($i=0,$n=count($logs);$i<$n;++$i)
+		for($i = 0,$n = count($logs);$i < $n;++$i)
 		{
-			if ($i<$n-1)
+			if ($i < $n - 1)
 			{
-				$timing['delta'] = $logs[$i+1][3] - $logs[$i][3];
-				$timing['total'] = $logs[$i+1][3] - $first;
+				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];
+				$timing['total'] = $logs[$i + 1][3] - $first;
 			}
 			else
 			{
@@ -74,7 +74,7 @@ class TBrowserLogRoute extends TLogRoute
 	protected function renderHeader()
 	{
 		$string = '';
-		if($className=$this->getCssClass())
+		if($className = $this->getCssClass())
 		{
 			$string = <<<EOD
 <table class="$className">

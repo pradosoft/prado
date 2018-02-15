@@ -29,7 +29,7 @@ class TCompositeControl extends TControl implements INamingContainer
 	 * Only framework developers should use this method.
 	 * @param TControl the naming container control
 	 */
-	protected function initRecursive($namingContainer=null)
+	protected function initRecursive($namingContainer = null)
 	{
 		$this->ensureChildControls();
 		parent::initRecursive($namingContainer);

@@ -7,6 +7,7 @@ $config = PhpCsFixer\Config::create()
 	->setRules([
 		'align_multiline_comment' => true,
 		'array_syntax' => ['syntax' => 'short'],
+		'binary_operator_spaces' => true,
 		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
 		'concat_space' => ['spacing' => 'one'],

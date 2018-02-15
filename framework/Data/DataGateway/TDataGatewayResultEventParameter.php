@@ -27,8 +27,8 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 
 	public function __construct($command, $result)
 	{
-		$this->_command=$command;
-		$this->_result=$result;
+		$this->_command = $command;
+		$this->_result = $result;
 	}
 
 	/**
@@ -52,6 +52,6 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	 */
 	public function setResult($value)
 	{
-		$this->_result=$value;
+		$this->_result = $value;
 	}
 }

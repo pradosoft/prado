@@ -62,14 +62,14 @@ class TSqlMapManager extends \Prado\TComponent
 	 * @param TDbConnection database connection
 	 * @param string configuration file.
 	 */
-	public function __construct($connection=null)
+	public function __construct($connection = null)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 
-		$this->_mappedStatements=new TMap;
-		$this->_resultMaps=new TMap;
-		$this->_parameterMaps=new TMap;
-		$this->_cacheModels=new TMap;
+		$this->_mappedStatements = new TMap;
+		$this->_resultMaps = new TMap;
+		$this->_parameterMaps = new TMap;
+		$this->_cacheModels = new TMap;
 	}
 
 	/**
@@ -77,7 +77,7 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function setDbConnection($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -93,8 +93,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getTypeHandlers()
 	{
-		if($this->_typeHandlers===null)
-			$this->_typeHandlers= new TSqlMapTypeHandlerRegistry();
+		if($this->_typeHandlers === null)
+			$this->_typeHandlers = new TSqlMapTypeHandlerRegistry();
 		return $this->_typeHandlers;
 	}
 
@@ -103,8 +103,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getSqlmapGateway()
 	{
-		if($this->_gateway===null)
-			$this->_gateway=$this->createSqlMapGateway();
+		if($this->_gateway === null)
+			$this->_gateway = $this->createSqlMapGateway();
 		return $this->_gateway;
 	}
 
@@ -125,7 +125,7 @@ class TSqlMapManager extends \Prado\TComponent
 	public function getCacheDependencies()
 	{
 		if($this->_cacheDependencies === null)
-			$this->_cacheDependencies=new TChainedCacheDependency();
+			$this->_cacheDependencies = new TChainedCacheDependency();
 
 		return $this->_cacheDependencies;
 	}

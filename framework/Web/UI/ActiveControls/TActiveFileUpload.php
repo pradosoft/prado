@@ -99,7 +99,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @param string asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
 		return $base . '/' . self::SCRIPT_PATH . '/' . $file;
@@ -237,8 +237,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		if ($cache = Prado::getApplication()->getCache())
 			{
 				// this is the most secure method, file info can't be forged from client side, no matter what
-				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000*1000, 9999*1000));
-				$cache->set($token, serialize($params), 5*60); // expire in 5 minutes - the callback should arrive back in seconds, actually
+				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000 * 1000, 9999 * 1000));
+				$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
 			}
 		elseif ($mgr = Prado::getApplication()->getSecurityManager())
 			{
@@ -256,7 +256,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		if ($cache = Prado::getApplication()->getCache())
 			{
 				$v = $cache->get($token);
-				assert($v!='');
+				assert($v != '');
 				$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
 				$params = unserialize($v);
 			}
@@ -419,8 +419,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * If true, you will not be able to save the uploaded file again.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName, $deleteTempFile=true, $index=0){
-		if (($this->getErrorCode($index)===UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))){
+	public function saveAs($fileName, $deleteTempFile = true, $index = 0){
+		if (($this->getErrorCode($index) === UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))){
 			if ($deleteTempFile)
 				return rename($this->getLocalName($index), $fileName);
 			else

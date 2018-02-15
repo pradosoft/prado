@@ -36,7 +36,7 @@ class TFirePhpLogRoute extends TLogRoute
 
 	public function processLogs($logs)
 	{
-		if(empty($logs) || $this->getApplication()->getMode()==='Performance')
+		if(empty($logs) || $this->getApplication()->getMode() === 'Performance')
 			return;
 
 		if(headers_sent()) {
@@ -58,16 +58,16 @@ class TFirePhpLogRoute extends TLogRoute
 
 		$first = $logs[0][3];
 		$c = count($logs);
-		for($i=0,$n=$c;$i<$n;++$i)
+		for($i = 0,$n = $c;$i < $n;++$i)
 		{
-			$message	= $logs[$i][0];
-			$level		= $logs[$i][1];
-			$category	= $logs[$i][2];
+			$message = $logs[$i][0];
+			$level = $logs[$i][1];
+			$category = $logs[$i][2];
 
-			if ($i<$n-1)
+			if ($i < $n - 1)
 			{
-				$delta = $logs[$i+1][3] - $logs[$i][3];
-				$total = $logs[$i+1][3] - $first;
+				$delta = $logs[$i + 1][3] - $logs[$i][3];
+				$total = $logs[$i + 1][3] - $first;
 			}
 			else
 			{
@@ -112,8 +112,8 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	public function getGroupLabel()
 	{
-		if($this->_groupLabel===null)
-			$this->_groupLabel=self::DEFAULT_LABEL;
+		if($this->_groupLabel === null)
+			$this->_groupLabel = self::DEFAULT_LABEL;
 
 		return $this->_groupLabel;
 	}
@@ -123,6 +123,6 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	public function setGroupLabel($value)
 	{
-		$this->_groupLabel=$value;
+		$this->_groupLabel = $value;
 	}
 }

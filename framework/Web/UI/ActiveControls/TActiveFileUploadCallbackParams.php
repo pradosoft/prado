@@ -21,5 +21,5 @@ namespace Prado\Web\UI\ActiveControls;
  */
 class TActiveFileUploadCallbackParams
 {
-	public $files=[];
+	public $files = [];
 }

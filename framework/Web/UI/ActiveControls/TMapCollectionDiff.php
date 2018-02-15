@@ -27,9 +27,9 @@ class TMapCollectionDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if($this->_old===null)
+		if($this->_old === null)
 		{
-			return ($this->_new!==null) ? $this->_new->toArray() : $this->_null;
+			return ($this->_new !== null) ? $this->_new->toArray() : $this->_null;
 		}
 		else
 		{

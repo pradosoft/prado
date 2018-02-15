@@ -40,7 +40,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	public function getPHPType()
 	{
 		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($this->getDbType())));
-		if($dbtype==='tinyint' && $this->getColumnSize()===1)
+		if($dbtype === 'tinyint' && $this->getColumnSize() === 1)
 			return 'boolean';
 		foreach(self::$types as $type => $dbtypes)
 		{

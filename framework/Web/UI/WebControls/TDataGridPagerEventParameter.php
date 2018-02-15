@@ -41,7 +41,7 @@ class TDataGridPagerEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct(TDataGridPager $pager)
 	{
-		$this->_pager=$pager;
+		$this->_pager = $pager;
 	}
 
 	/**

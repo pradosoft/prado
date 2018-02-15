@@ -68,9 +68,9 @@ use Prado\Web\UI\TControl;
  */
 abstract class TDataGridColumn extends \Prado\TApplicationComponent
 {
-	private $_id='';
+	private $_id = '';
 	private $_owner;
-	private $_viewState=[];
+	private $_viewState = [];
 
 	/**
 	 * @return string the ID of the column.
@@ -91,7 +91,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	{
 		if(!preg_match(TControl::ID_FORMAT, $value))
 			throw new TInvalidDataValueException('datagridcolumn_id_invalid', get_class($this), $value);
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -154,11 +154,11 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for header
 	 */
-	public function getHeaderStyle($createStyle=true)
+	public function getHeaderStyle($createStyle = true)
 	{
-		if(($style=$this->getViewState('HeaderStyle', null))===null && $createStyle)
+		if(($style = $this->getViewState('HeaderStyle', null)) === null && $createStyle)
 		{
-			$style=new TTableItemStyle;
+			$style = new TTableItemStyle;
 			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
@@ -208,11 +208,11 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for footer
 	 */
-	public function getFooterStyle($createStyle=true)
+	public function getFooterStyle($createStyle = true)
 	{
-		if(($style=$this->getViewState('FooterStyle', null))===null && $createStyle)
+		if(($style = $this->getViewState('FooterStyle', null)) === null && $createStyle)
 		{
-			$style=new TTableItemStyle;
+			$style = new TTableItemStyle;
 			$this->setViewState('FooterStyle', $style, null);
 		}
 		return $style;
@@ -222,11 +222,11 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * @param boolean whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for item
 	 */
-	public function getItemStyle($createStyle=true)
+	public function getItemStyle($createStyle = true)
 	{
-		if(($style=$this->getViewState('ItemStyle', null))===null && $createStyle)
+		if(($style = $this->getViewState('ItemStyle', null)) === null && $createStyle)
 		{
-			$style=new TTableItemStyle;
+			$style = new TTableItemStyle;
 			$this->setViewState('ItemStyle', $style, null);
 		}
 		return $style;
@@ -269,7 +269,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * @return boolean whether the column is visible. Defaults to true.
 	 */
-	public function getVisible($checkParents=true)
+	public function getVisible($checkParents = true)
 	{
 		return $this->getViewState('Visible', true);
 	}
@@ -289,7 +289,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
-	protected function getViewState($key, $defaultValue=null)
+	protected function getViewState($key, $defaultValue = null)
 	{
 		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
 	}
@@ -302,12 +302,12 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * @param mixed the viewstate value to be set
 	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
-	protected function setViewState($key, $value, $defaultValue=null)
+	protected function setViewState($key, $value, $defaultValue = null)
 	{
-		if($value===$defaultValue)
+		if($value === $defaultValue)
 			unset($this->_viewState[$key]);
 		else
-			$this->_viewState[$key]=$value;
+			$this->_viewState[$key] = $value;
 	}
 
 	/**
@@ -316,7 +316,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function loadState($state)
 	{
-		$this->_viewState=$state;
+		$this->_viewState = $state;
 	}
 
 	/**
@@ -341,7 +341,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function setOwner(TDataGrid $value)
 	{
-		$this->_owner=$value;
+		$this->_owner = $value;
 	}
 
 	/**
@@ -384,9 +384,9 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Header)
+		if($itemType === TListItemType::Header)
 			$this->initializeHeaderCell($cell, $columnIndex);
-		elseif($itemType===TListItemType::Footer)
+		elseif($itemType === TListItemType::Footer)
 			$this->initializeFooterCell($cell, $columnIndex);
 	}
 
@@ -398,7 +398,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function getAllowSorting()
 	{
-		return $this->getSortExpression()!=='' && (!$this->_owner || $this->_owner->getAllowSorting());
+		return $this->getSortExpression() !== '' && (!$this->_owner || $this->_owner->getAllowSorting());
 	}
 
 	/**
@@ -417,17 +417,17 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
-		$text=$this->getHeaderText();
+		$text = $this->getHeaderText();
 
-		if(($classPath=$this->getHeaderRenderer())!=='')
+		if(($classPath = $this->getHeaderRenderer()) !== '')
 		{
-			$control=Prado::createComponent($classPath);
+			$control = Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
 			if($control instanceof \Prado\IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
 				{
-					$item=$cell->getParent();
+					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
@@ -436,21 +436,21 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		}
 		elseif($this->getAllowSorting())
 		{
-			$sortExpression=$this->getSortExpression();
-			if(($url=$this->getHeaderImageUrl())!=='')
+			$sortExpression = $this->getSortExpression();
+			if(($url = $this->getHeaderImageUrl()) !== '')
 			{
-				$button= new TImageButton;
+				$button = new TImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
-				if($text!=='')
+				if($text !== '')
 					$button->setAlternateText($text);
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			}
-			elseif($text!=='')
+			elseif($text !== '')
 			{
-				$button= new TLinkButton;
+				$button = new TLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -462,15 +462,15 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		}
 		else
 		{
-			if(($url=$this->getHeaderImageUrl())!=='')
+			if(($url = $this->getHeaderImageUrl()) !== '')
 			{
-				$image= new TImage;
+				$image = new TImage;
 				$image->setImageUrl($url);
-				if($text!=='')
+				if($text !== '')
 					$image->setAlternateText($text);
 				$cell->getControls()->add($image);
 			}
-			elseif($text!=='')
+			elseif($text !== '')
 				$cell->setText($text);
 			else
 				$cell->setText('&nbsp;');
@@ -489,23 +489,23 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function initializeFooterCell($cell, $columnIndex)
 	{
-		$text=$this->getFooterText();
-		if(($classPath=$this->getFooterRenderer())!=='')
+		$text = $this->getFooterText();
+		if(($classPath = $this->getFooterRenderer()) !== '')
 		{
-			$control=Prado::createComponent($classPath);
+			$control = Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
 			if($control instanceof \Prado\IDataRenderer)
 			{
 				if($control instanceof IItemDataRenderer)
 				{
-					$item=$cell->getParent();
+					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
 				$control->setData($text);
 			}
 		}
-		elseif($text!=='')
+		elseif($text !== '')
 			$cell->setText($text);
 		else
 			$cell->setText('&nbsp;');
@@ -525,14 +525,14 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function formatDataValue($formatString, $value)
 	{
-		if($formatString==='')
+		if($formatString === '')
 			return TPropertyValue::ensureString($value);
-		elseif($formatString[0]==='#')
+		elseif($formatString[0] === '#')
 		{
-			$expression=strtr(substr($formatString, 1), ['{0}'=>'$value']);
+			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
 			try
 			{
-				if(eval("\$result=$expression;")===false)
+				if(eval("\$result=$expression;") === false)
 					throw new Exception('');
 				return $result;
 			}

@@ -29,17 +29,17 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * Log levels.
 	 */
-	const DEBUG=0x01;
-	const INFO=0x02;
-	const NOTICE=0x04;
-	const WARNING=0x08;
-	const ERROR=0x10;
-	const ALERT=0x20;
-	const FATAL=0x40;
+	const DEBUG = 0x01;
+	const INFO = 0x02;
+	const NOTICE = 0x04;
+	const WARNING = 0x08;
+	const ERROR = 0x10;
+	const ALERT = 0x20;
+	const FATAL = 0x40;
 	/**
 	 * @var array log messages
 	 */
-	private $_logs=[];
+	private $_logs = [];
 	/**
 	 * @var integer log levels (bits) to be filtered
 	 */
@@ -67,7 +67,7 @@ class TLogger extends \Prado\TComponent
 	 * @param string category of the message
 	 * @param string|TControl control of the message
 	 */
-	public function log($message, $level, $category='Uncategorized', $ctl=null)
+	public function log($message, $level, $category = 'Uncategorized', $ctl = null)
 	{
 		if($ctl) {
 			if($ctl instanceof TControl)
@@ -76,7 +76,7 @@ class TLogger extends \Prado\TComponent
 				$ctl = null;
 		} else
 			$ctl = null;
-		$this->_logs[]=[$message,$level,$category,microtime(true),memory_get_usage(),$ctl];
+		$this->_logs[] = [$message,$level,$category,microtime(true),memory_get_usage(),$ctl];
 	}
 
 	/**
@@ -112,12 +112,12 @@ class TLogger extends \Prado\TComponent
 	 *   [4] => memory in bytes
 	 *   [5] => control client id
 	 */
-	public function getLogs($levels=null, $categories=null, $controls=null, $timestamp=null)
+	public function getLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{
-		$this->_levels=$levels;
-		$this->_categories=$categories;
-		$this->_controls=$controls;
-		$this->_timestamp=$timestamp;
+		$this->_levels = $levels;
+		$this->_categories = $categories;
+		$this->_controls = $controls;
+		$this->_timestamp = $timestamp;
 		if(empty($levels) && empty($categories) && empty($controls) && null === $timestamp)
 			return $this->_logs;
 		$logs = $this->_logs;
@@ -156,15 +156,15 @@ class TLogger extends \Prado\TComponent
 	 * @param array category filter
 	 * @param array control filter
 	 */
-	public function deleteLogs($levels=null, $categories=null, $controls=null, $timestamp=null)
+	public function deleteLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{
-		$this->_levels=$levels;
-		$this->_categories=$categories;
-		$this->_controls=$controls;
-		$this->_timestamp=$timestamp;
+		$this->_levels = $levels;
+		$this->_categories = $categories;
+		$this->_controls = $controls;
+		$this->_timestamp = $timestamp;
 		if(empty($levels) && empty($categories) && empty($controls) && null === $timestamp)
 		{
-			$this->_logs=[];
+			$this->_logs = [];
 			return;
 		}
 		$logs = $this->_logs;
@@ -188,7 +188,7 @@ class TLogger extends \Prado\TComponent
 		foreach($this->_categories as $category)
 		{
 			// element 2 is the category
-			if($value[2]===$category || strpos($value[2], $category . '.')===0)
+			if($value[2] === $category || strpos($value[2], $category . '.') === 0)
 				return $value;
 		}
 		return false;
@@ -216,7 +216,7 @@ class TLogger extends \Prado\TComponent
 		// element 5 are the control client ids
 		foreach($this->_controls as $control)
 		{
-			if($value[5]===$control || strpos($value[5], $control)===0)
+			if($value[5] === $control || strpos($value[5], $control) === 0)
 				return $value;
 		}
 		return false;

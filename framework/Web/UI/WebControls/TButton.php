@@ -102,12 +102,12 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 		$writer->addAttribute('type', strtolower($this->getButtonType()));
-		if(($uniqueID=$this->getUniqueID())!=='')
+		if(($uniqueID = $this->getUniqueID()) !== '')
 			$writer->addAttribute('name', $uniqueID);
-		if($this->getButtonTag()===TButtonTag::Button)
+		if($this->getButtonTag() === TButtonTag::Button)
 		  $this->addParsedObject($this->getText());
 		else
 		  $writer->addAttribute('value', $this->getText());
@@ -148,8 +148,8 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		if($this->getCausesValidation())
 		{
-			$group=$this->getValidationGroup();
-			return $this->getPage()->getValidators($group)->getCount()>0;
+			$group = $this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount() > 0;
 		}
 		else
 			return false;
@@ -176,7 +176,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function needPostBackScript()
 	{
-		return $this->canCauseValidation() || ($this->getButtonType()!==TButtonType::Submit &&
+		return $this->canCauseValidation() || ($this->getButtonType() !== TButtonType::Submit &&
 			($this->hasEventHandler('OnClick') || $this->hasEventHandler('OnCommand')))
 			|| $this->getIsDefaultButton();
 	}
@@ -188,10 +188,10 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function getPostBackOptions()
 	{
-		$options['ID']=$this->getClientID();
-		$options['CausesValidation']=$this->getCausesValidation();
+		$options['ID'] = $this->getClientID();
+		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['EventTarget'] = $this->getUniqueID();
-		$options['ValidationGroup']=$this->getValidationGroup();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 
 		return $options;
 	}
@@ -204,7 +204,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getButtonTag()===TButtonTag::Button)
+		if($this->getButtonTag() === TButtonTag::Button)
 			parent::renderContents($writer);
 	}
 

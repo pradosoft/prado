@@ -60,7 +60,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$control = new TTextBox();
 		$control->setText($value);
 		$control->setCssClass('default-textbox scaffold_input');
-		if(($len=$column->getColumnSize())!==null)
+		if(($len = $column->getColumnSize()) !== null)
 			$control->setMaxLength($len);
 		$this->setNotNullProperty($container, $control, $column, $record);
 		return $control;
@@ -92,7 +92,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$control = new TDropDownList();
 		$years = [];
 		$current = intval(@date('Y'));
-		$from = $current-10; $to=$current+10;
+		$from = $current - 10; $to = $current + 10;
 		for($i = $from; $i <= $to; $i++)
 			$years[$i] = $i;
 		$control->setDataSource($years);
@@ -117,7 +117,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$val = $this->createTypeValidator($container, $column, $record);
 		$val->setDataType(TValidationDataType::Float);
 		$val->setErrorMessage('Please entery a decimal number.');
-		if(($max= $column->getMaxiumNumericConstraint())!==null)
+		if(($max = $column->getMaxiumNumericConstraint()) !== null)
 		{
 			$val = $this->createRangeValidator($container, $column, $record);
 			$val->setDataType(TValidationDataType::Float);
@@ -168,22 +168,22 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	protected function createTimeControl($container, $column, $record)
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
-		$hours=[];
-		for($i=0;$i<24;$i++) $hours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
-		$mins=[];
-		for($i=0;$i<60;$i++) $mins[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+		$hours = [];
+		for($i = 0;$i < 24;$i++) $hours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+		$mins = [];
+		for($i = 0;$i < 60;$i++) $mins[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		$hour = intval(@date('H'));
 		$min = intval(@date('i'));
 		$sec = intval(@date('s'));
 		if(!empty($value))
 		{
-			$match=[];
+			$match = [];
 			if(preg_match('/(\d+):(\d+):?(\d+)?/', $value, $match))
 			{
 				$hour = $match[1];
 				$min = $match[2];
 				if(isset($match[3]))
-					$sec=$match[3];
+					$sec = $match[3];
 			}
 		}
 
@@ -236,7 +236,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$time = $this->createTimeControl($container, $column, $record);
 		if(!empty($value))
 		{
-			$match=[];
+			$match = [];
 			if(preg_match('/(\d+):(\d+):?(\d+)?/', substr($value, 11), $match))
 			{
 				$time[0]->setSelectedValue(intval($match[1]));
@@ -283,8 +283,8 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 
 	protected function getMatchingIndices($checks, $values)
 	{
-		$index=[];
-		for($i=0, $k=count($checks); $i<$k; $i++)
+		$index = [];
+		for($i = 0, $k = count($checks); $i < $k; $i++)
 		{
 			if(in_array($checks[$i], $values))
 				$index[] = $i;
@@ -311,7 +311,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 
 	protected function getSetValue($container, $column, $record)
 	{
-		$value=[];
+		$value = [];
 		foreach($container->findControl(self::DEFAULT_ID)->getItems() as $item)
 		{
 			if($item->getSelected())

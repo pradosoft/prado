@@ -146,11 +146,11 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameters()
 	{
-		if($parameters=$this->getViewState('Parameters', null))
+		if($parameters = $this->getViewState('Parameters', null))
 			return $parameters;
 		else
 		{
-			$parameters=new TAttributeCollection;
+			$parameters = new TAttributeCollection;
 			$parameters->setCaseSensitive(true);
 			$this->setViewState('Parameters', $parameters, null);
 			return $parameters;
@@ -162,7 +162,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function hasParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters', null))
+		if($parameters = $this->getViewState('Parameters', null))
 			return $parameters->contains($name);
 		else
 			return false;
@@ -173,7 +173,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters', null))
+		if($parameters = $this->getViewState('Parameters', null))
 			return $parameters->itemAt($name);
 		else
 			return null;
@@ -195,7 +195,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function removeParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters', null))
+		if($parameters = $this->getViewState('Parameters', null))
 			return $parameters->remove($name);
 		else
 			return null;
@@ -221,7 +221,7 @@ class TTranslate extends TI18NControl
 		}
 
 		$text = $this->getText();
-		if(strlen($text)==0)
+		if(strlen($text) == 0)
 			$text = $htmlWriter->flush();
 		if($this->getTrim())
 			$text = trim($text);
@@ -240,13 +240,13 @@ class TTranslate extends TI18NControl
 		$app = $this->getApplication()->getGlobalization();
 
 		//no translation handler provided
-		if(($config = $app->getTranslationConfiguration())===null)
+		if(($config = $app->getTranslationConfiguration()) === null)
 			return strtr($text, $subs);
 
 		$catalogue = $this->getCatalogue();
 		if(empty($catalogue) && isset($config['catalogue']))
 			$catalogue = $config['catalogue'];
-		if (empty($catalogue)) $catalogue='messages';
+		if (empty($catalogue)) $catalogue = 'messages';
 		Translation::init($catalogue);
 
 		$key = $this->getKey();

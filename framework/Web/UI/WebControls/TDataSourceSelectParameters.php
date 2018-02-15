@@ -22,10 +22,10 @@ use Prado\TPropertyValue;
  */
 class TDataSourceSelectParameters extends \Prado\TComponent
 {
-	private $_retrieveTotalRowCount=false;
-	private $_startRowIndex=0;
-	private $_totalRowCount=0;
-	private $_maximumRows=0;
+	private $_retrieveTotalRowCount = false;
+	private $_startRowIndex = 0;
+	private $_totalRowCount = 0;
+	private $_maximumRows = 0;
 
 	public function getStartRowIndex()
 	{
@@ -34,9 +34,9 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setStartRowIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_startRowIndex=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = 0;
+		$this->_startRowIndex = $value;
 	}
 
 	public function getMaximumRows()
@@ -46,9 +46,9 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setMaximumRows($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_maximumRows=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = 0;
+		$this->_maximumRows = $value;
 	}
 
 	public function getRetrieveTotalRowCount()
@@ -58,7 +58,7 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setRetrieveTotalRowCount($value)
 	{
-		$this->_retrieveTotalRowCount=TPropertyValue::ensureBoolean($value);
+		$this->_retrieveTotalRowCount = TPropertyValue::ensureBoolean($value);
 	}
 
 	public function getTotalRowCount()
@@ -68,8 +68,8 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setTotalRowCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=0;
-		$this->_totalRowCount=$value;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = 0;
+		$this->_totalRowCount = $value;
 	}
 }

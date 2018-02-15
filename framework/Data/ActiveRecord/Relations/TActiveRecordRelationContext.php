@@ -36,11 +36,11 @@ class TActiveRecordRelationContext
 	private $_relation; //data from an entry of TActiveRecord::$RELATION
 	private $_fkeys;
 
-	public function __construct($record, $property=null, $relation=null)
+	public function __construct($record, $property = null, $relation = null)
 	{
-		$this->_record=$record;
-		$this->_property=$property;
-		$this->_relation=$relation;
+		$this->_record = $record;
+		$this->_property = $property;
+		$this->_relation = $relation;
 	}
 
 	/**
@@ -49,7 +49,7 @@ class TActiveRecordRelationContext
 	 */
 	public function hasRecordRelation()
 	{
-		return $this->_relation!==null;
+		return $this->_relation !== null;
 	}
 
 	public function getPropertyValue()
@@ -81,8 +81,8 @@ class TActiveRecordRelationContext
 	 */
 	public function getRelationForeignKeys()
 	{
-		if($this->_fkeys===null)
-			$this->_fkeys=$this->getRelationHandler()->getRelationForeignKeys();
+		if($this->_fkeys === null)
+			$this->_fkeys = $this->getRelationHandler()->getRelationForeignKeys();
 		return $this->_fkeys;
 	}
 
@@ -172,14 +172,14 @@ class TActiveRecordRelationContext
 	 * @return TActiveRecordRelation record relationship handler instnace.
 	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
-	public function getRelationHandler($criteria=null)
+	public function getRelationHandler($criteria = null)
 	{
 		if(!$this->hasRecordRelation())
 		{
 			throw new TActiveRecordException('ar_undefined_relation_prop',
 				$this->_property, get_class($this->_record), 'RELATIONS');
 		}
-		if($criteria===null)
+		if($criteria === null)
 			$criteria = new TActiveRecordCriteria($this->getCondition(), $this->getParameters());
 		switch($this->getRelationType())
 		{
@@ -199,13 +199,13 @@ class TActiveRecordRelationContext
 	/**
 	 * @return TActiveRecordRelationCommand
 	 */
-	public function updateAssociatedRecords($updateBelongsTo=false)
+	public function updateAssociatedRecords($updateBelongsTo = false)
 	{
-		$success=true;
+		$success = true;
 		foreach($this->_record->getRecordRelations() as $data)
 		{
 			list($property, $relation) = $data;
-			$belongsTo = $relation[0]==TActiveRecord::BELONGS_TO;
+			$belongsTo = $relation[0] == TActiveRecord::BELONGS_TO;
 			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
 			{
 				$obj = $this->getSourceRecord();
@@ -224,7 +224,7 @@ class TActiveRecordRelationContext
 		if(is_object($obj))
 			return $obj instanceof TList ? $obj->count() === 0 : false;
 		elseif(is_array($obj))
-			return count($obj)===0;
+			return count($obj) === 0;
 		else
 			return empty($obj);
 	}

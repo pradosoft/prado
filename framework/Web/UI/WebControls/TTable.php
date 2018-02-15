@@ -102,15 +102,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$border=0;
+		$border = 0;
 		if($this->getHasStyle())
 		{
-			if($this->getGridLines()!==TTableGridLines::None)
+			if($this->getGridLines() !== TTableGridLines::None)
 			{
-				if(($border=$this->getBorderWidth())==='')
-					$border=1;
+				if(($border = $this->getBorderWidth()) === '')
+					$border = 1;
 				else
-					$border=(int)$border;
+					$border = (int)$border;
 			}
 		}
 		$writer->addAttribute('border', "$border");
@@ -269,9 +269,9 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($caption=$this->getCaption())!=='')
+		if(($caption = $this->getCaption()) !== '')
 		{
-			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
+			if(($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet)
 				$writer->addAttribute('align', strtolower($align));
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
@@ -287,46 +287,46 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if($this->getHasControls())
 		{
-			$renderTableSection=false;
+			$renderTableSection = false;
 			foreach($this->getControls() as $row)
 			{
-				if($row->getTableSection()!==TTableRowSection::Body)
+				if($row->getTableSection() !== TTableRowSection::Body)
 				{
-					$renderTableSection=true;
+					$renderTableSection = true;
 					break;
 				}
 			}
 			if($renderTableSection)
 			{
-				$currentSection=TTableRowSection::Header;
+				$currentSection = TTableRowSection::Header;
 				$writer->writeLine();
-				foreach($this->getControls() as $index=>$row)
+				foreach($this->getControls() as $index => $row)
 				{
-					if(($section=$row->getTableSection())===$currentSection)
+					if(($section = $row->getTableSection()) === $currentSection)
 					{
-						if($index===0 && $currentSection===TTableRowSection::Header)
+						if($index === 0 && $currentSection === TTableRowSection::Header)
 							$writer->renderBeginTag('thead');
 					}
 					else
 					{
-						if($currentSection===TTableRowSection::Header)
+						if($currentSection === TTableRowSection::Header)
 						{
-							if($index>0)
+							if($index > 0)
 								$writer->renderEndTag();
-							if($section===TTableRowSection::Body)
+							if($section === TTableRowSection::Body)
 								$writer->renderBeginTag('tbody');
 							else
 								$writer->renderBeginTag('tfoot');
-							$currentSection=$section;
+							$currentSection = $section;
 						}
-						elseif($currentSection===TTableRowSection::Body)
+						elseif($currentSection === TTableRowSection::Body)
 						{
 							$writer->renderEndTag();
-							if($section===TTableRowSection::Footer)
+							if($section === TTableRowSection::Footer)
 								$writer->renderBeginTag('tfoot');
 							else
 								throw new TConfigurationException('table_tablesection_outoforder');
-							$currentSection=$section;
+							$currentSection = $section;
 						}
 						else // Footer
 							throw new TConfigurationException('table_tablesection_outoforder');

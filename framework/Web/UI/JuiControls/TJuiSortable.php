@@ -78,9 +78,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
+		if (($options = $this->getViewState('JuiOptions')) === null)
 		{
-		  $options=new TJuiControlOptions($this);
+		  $options = new TJuiControlOptions($this);
 		  $this->setViewState('JuiOptions', $options);
 		}
 		return $options;
@@ -113,8 +113,8 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		// overload some events to add information about the items order
 		foreach($options as $event => $implementation)
 		{
-			if($event=='sort' || $event=='stop')
-				$options[$event]=new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'' . $event . '\', event, ui, this); }');
+			if($event == 'sort' || $event == 'stop')
+				$options[$event] = new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'' . $event . '\', event, ui, this); }');
 		}
 		return $options;
 	}
@@ -127,9 +127,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -289,7 +289,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getSortables()
 	{
-		if($this->_repeater===null)
+		if($this->_repeater === null)
 			$this->_repeater = $this->createRepeater();
 		return $this->_repeater;
 	}

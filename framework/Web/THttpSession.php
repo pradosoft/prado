@@ -79,15 +79,15 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var boolean whether this module has been initialized
 	 */
-	private $_initialized=false;
+	private $_initialized = false;
 	/**
 	 * @var boolean whether the session has started
 	 */
-	private $_started=false;
+	private $_started = false;
 	/**
 	 * @var boolean whether the session should be started when the module is initialized
 	 */
-	private $_autoStart=false;
+	private $_autoStart = false;
 	/**
 	 * @var THttpCookie cookie to be used to store session ID and other data
 	 */
@@ -99,7 +99,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var boolean
 	 */
-	private $_customStorage=false;
+	private $_customStorage = false;
 
 	/**
 	 * @return string id of this module
@@ -114,7 +114,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -127,7 +127,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if($this->_autoStart)
 			$this->open();
-		$this->_initialized=true;
+		$this->_initialized = true;
 		$this->getApplication()->setSession($this);
 		register_shutdown_function([$this, "close"]);
 	}
@@ -141,11 +141,11 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		{
 			if($this->_customStorage)
 				session_set_save_handler([$this,'_open'], [$this,'_close'], [$this,'_read'], [$this,'_write'], [$this,'_destroy'], [$this,'_gc']);
-			if($this->_cookie!==null)
+			if($this->_cookie !== null)
 				session_set_cookie_params($this->_cookie->getExpire(), $this->_cookie->getPath(), $this->_cookie->getDomain(), $this->_cookie->getSecure(), $this->_cookie->getHttpOnly());
-			if(ini_get('session.auto_start')!=='1')
+			if(ini_get('session.auto_start') !== '1')
 				session_start();
-			$this->_started=true;
+			$this->_started = true;
 		}
 	}
 
@@ -157,7 +157,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if($this->_started)
 		{
 			session_write_close();
-			$this->_started=false;
+			$this->_started = false;
 		}
 	}
 
@@ -169,7 +169,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if($this->_started)
 		{
 			session_destroy();
-			$this->_started=false;
+			$this->_started = false;
 		}
 	}
 
@@ -180,7 +180,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @return string old session id
 	 * @link http://php.net/manual/en/function.session-regenerate-id.php
 	 */
-	public function regenerate($deleteOld=false)
+	public function regenerate($deleteOld = false)
 	{
 		$old = $this->getSessionID();
 		session_regenerate_id($deleteOld);
@@ -277,7 +277,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setUseCustomStorage($value)
 	{
-		$this->_customStorage=TPropertyValue::ensureBoolean($value);
+		$this->_customStorage = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -285,8 +285,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getCookie()
 	{
-		if($this->_cookie===null)
-			$this->_cookie=new THttpCookie($this->getSessionName(), $this->getSessionID());
+		if($this->_cookie === null)
+			$this->_cookie = new THttpCookie($this->getSessionName(), $this->getSessionID());
 		return $this->_cookie;
 	}
 
@@ -295,9 +295,9 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getCookieMode()
 	{
-		if(ini_get('session.use_cookies')==='0')
+		if(ini_get('session.use_cookies') === '0')
 			return THttpSessionCookieMode::None;
-		elseif(ini_get('session.use_only_cookies')==='0')
+		elseif(ini_get('session.use_only_cookies') === '0')
 			return THttpSessionCookieMode::Allow;
 		else
 			return THttpSessionCookieMode::Only;
@@ -313,13 +313,13 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			throw new TInvalidOperationException('httpsession_cookiemode_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpSessionCookieMode');
-			if($value===THttpSessionCookieMode::None)
+			$value = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpSessionCookieMode');
+			if($value === THttpSessionCookieMode::None)
 	  {
 				ini_set('session.use_cookies', '0');
 			  ini_set('session.use_only_cookies', '0');
 	  }
-			elseif($value===THttpSessionCookieMode::Allow)
+			elseif($value === THttpSessionCookieMode::Allow)
 			{
 				ini_set('session.use_cookies', '1');
 				ini_set('session.use_only_cookies', '0');
@@ -350,7 +350,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if($this->_initialized)
 			throw new TInvalidOperationException('httpsession_autostart_unchangeable');
 		else
-			$this->_autoStart=TPropertyValue::ensureBoolean($value);
+			$this->_autoStart = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -372,8 +372,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			throw new TInvalidOperationException('httpsession_gcprobability_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureInteger($value);
-			if($value>=0 && $value<=100)
+			$value = TPropertyValue::ensureInteger($value);
+			if($value >= 0 && $value <= 100)
 			{
 				ini_set('session.gc_probability', $value);
 				ini_set('session.gc_divisor', '100');
@@ -388,7 +388,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUseTransparentSessionID()
 	{
-		return ini_get('session.use_trans_sid')==='1';
+		return ini_get('session.use_trans_sid') === '1';
 	}
 
 	/**
@@ -404,8 +404,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			throw new TInvalidOperationException('httpsession_transid_unchangeable');
 		else
 		{
-			$value=TPropertyValue::ensureBoolean($value);
-			if ($value && $this->getCookieMode()==THttpSessionCookieMode::Only)
+			$value = TPropertyValue::ensureBoolean($value);
+			if ($value && $this->getCookieMode() == THttpSessionCookieMode::Only)
 					throw new TInvalidOperationException('httpsession_transid_cookieonly');
 			ini_set('session.use_trans_sid', $value?'1':'0');
 		}
@@ -555,7 +555,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function add($key, $value)
 	{
-		$_SESSION[$key]=$value;
+		$_SESSION[$key] = $value;
 	}
 
 	/**
@@ -567,7 +567,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if(isset($_SESSION[$key]))
 		{
-			$value=$_SESSION[$key];
+			$value = $_SESSION[$key];
 			unset($_SESSION[$key]);
 			return $value;
 		}
@@ -628,7 +628,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function offsetSet($offset, $item)
 	{
-		$_SESSION[$offset]=$item;
+		$_SESSION[$offset] = $item;
 	}
 
 	/**

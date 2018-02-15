@@ -45,7 +45,7 @@ class TWizardStep extends TView
 	 */
 	public function setWizard($wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -95,8 +95,8 @@ class TWizardStep extends TView
 	 */
 	public function setStepType($type)
 	{
-		$type=TPropertyValue::ensureEnum($type, 'Prado\\Web\\UI\\WebControls\\TWizardStepType');
-		if($type!==$this->getStepType())
+		$type = TPropertyValue::ensureEnum($type, 'Prado\\Web\\UI\\WebControls\\TWizardStepType');
+		if($type !== $this->getStepType())
 		{
 			$this->setViewState('StepType', $type, TWizardStepType::Auto);
 			if($this->_wizard)

@@ -41,7 +41,7 @@ class TSqlMapLruCache extends TSqlMapCache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 */
-	public function set($key, $value, $expire=0, $dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);

@@ -36,11 +36,11 @@ abstract class TSqlMapCache implements ICache
 	 * Create a new cache with limited cache size.
 	 * @param TSqlMapCacheModel $cacheModel.
 	 */
-	public function __construct($cacheModel=null)
+	public function __construct($cacheModel = null)
 	{
 		$this->_cache = new TMap;
 		$this->_keyList = new TList;
-		$this->_cacheModel=$cacheModel;
+		$this->_cacheModel = $cacheModel;
 	}
 
 	/**
@@ -49,7 +49,7 @@ abstract class TSqlMapCache implements ICache
 	 */
 	public function setCacheSize($value)
 	{
-		$this->_cacheSize=TPropertyValue::ensureInteger($value, 100);
+		$this->_cacheSize = TPropertyValue::ensureInteger($value, 100);
 	}
 
 	/**
@@ -83,7 +83,7 @@ abstract class TSqlMapCache implements ICache
 	/**
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id, $value, $expire=0, $dependency=null)
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

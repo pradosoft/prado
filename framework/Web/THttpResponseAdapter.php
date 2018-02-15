@@ -34,7 +34,7 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	 */
 	public function __construct($response)
 	{
-		$this->_response=$response;
+		$this->_response = $response;
 	}
 
 	/**

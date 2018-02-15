@@ -43,7 +43,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	private $_data;
 
-	private $_tagName='span';
+	private $_tagName = 'span';
 
 	/**
 	 * Returns the tag name used for this control.
@@ -59,7 +59,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setTagName($value)
 	{
-		$this->_tagName=$value;
+		$this->_tagName = $value;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -103,7 +103,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setItemIndex($value)
 	{
-		$this->_itemIndex=TPropertyValue::ensureInteger($value);
+		$this->_itemIndex = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 
 	/**

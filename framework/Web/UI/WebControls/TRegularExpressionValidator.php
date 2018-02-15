@@ -79,9 +79,9 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if(($value = $this->getValidationValue($this->getValidationTarget())) === '')
 			return true;
-		if(($expression=addcslashes($this->getRegularExpression(), "/"))!=='')
+		if(($expression = addcslashes($this->getRegularExpression(), "/")) !== '')
 		{
 			$mods = $this->getPatternModifiers();
 			return preg_match("/^$expression\$/{$mods}", $value);
@@ -131,8 +131,8 @@ class TRegularExpressionValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['ValidationExpression']=$this->getRegularExpression();
-		$options['PatternModifiers']=$this->getClientSidePatternModifiers();
+		$options['ValidationExpression'] = $this->getRegularExpression();
+		$options['PatternModifiers'] = $this->getClientSidePatternModifiers();
 		return $options;
 	}
 }

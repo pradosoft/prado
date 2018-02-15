@@ -50,8 +50,8 @@ class TStyleDiff extends TViewStateDiff
 
 		foreach(explode(';', $string) as $sub)
 		{
-			$arr=explode(':', $sub);
-			if(isset($arr[1]) && trim($arr[0])!=='')
+			$arr = explode(':', $sub);
+			if(isset($arr[1]) && trim($arr[0]) !== '')
 				$style[trim($arr[0])] = trim($arr[1]);
 		}
 		return $style;
@@ -62,9 +62,9 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	protected function getCssClassDiff()
 	{
-		if($this->_old===null)
+		if($this->_old === null)
 		{
-			return ($this->_new!==null) && $this->_new->hasCssClass()
+			return ($this->_new !== null) && $this->_new->hasCssClass()
 						? $this->_new->getCssClass() : null;
 		}
 		else
@@ -90,13 +90,13 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if($this->_new===null)
+		if($this->_new === null)
 			return $this->_null;
 		else
 		{
 			$css = $this->getCssClassDiff();
 			$style = $this->getStyleDiff();
-			if(($css!==null) || ($style!==null))
+			if(($css !== null) || ($style !== null))
 				return ['CssClass' => $css, 'Style' => $style];
 			else
 				$this->_null;

@@ -22,7 +22,7 @@ namespace Prado\Data\SqlMap\Configuration;
  */
 class TSqlMapCacheTypes extends \Prado\TEnumerable
 {
-	const Basic='Basic';
-	const FIFO='FIFO';
-	const LRU='LRU';
+	const Basic = 'Basic';
+	const FIFO = 'FIFO';
+	const LRU = 'LRU';
 }

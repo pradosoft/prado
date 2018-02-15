@@ -54,7 +54,7 @@ class TResultMap extends \Prado\TComponent
 	 */
 	public function __construct()
 	{
-		$this->_columns=new TMap;
+		$this->_columns = new TMap;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TResultMap extends \Prado\TComponent
 	 */
 	public function setID($value)
 	{
-		$this->_ID=$value;
+		$this->_ID = $value;
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TResultMap extends \Prado\TComponent
 		$handler = $registry->getTypeHandler($this->getClass());
 		try
 		{
-			if($handler!==null)
+			if($handler !== null)
 				return $handler->createNewInstance();
 			else
 				return $registry->createInstanceOf($this->getClass());
@@ -187,12 +187,12 @@ class TResultMap extends \Prado\TComponent
 	public function resolveSubMap($registry, $row)
 	{
 		$subMap = $this;
-		if(($disc = $this->getDiscriminator())!==null)
+		if(($disc = $this->getDiscriminator()) !== null)
 		{
 			$value = $disc->getMapping()->getPropertyValue($registry, $row);
 			$subMap = $disc->getSubMap((string)$value);
 
-			if($subMap===null)
+			if($subMap === null)
 				$subMap = $this;
 			elseif($subMap !== $this)
 				$subMap = $subMap->resolveSubMap($registry, $row);

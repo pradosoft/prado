@@ -22,9 +22,9 @@ use PDO;
  */
 class TDbTableColumn extends \Prado\TComponent
 {
-	const UNDEFINED_VALUE= INF; //use infinity for undefined value
+	const UNDEFINED_VALUE = INF; //use infinity for undefined value
 
-	private $_info=[];
+	private $_info = [];
 
 	/**
 	 * Sets the table column meta data.
@@ -32,7 +32,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function __construct($columnInfo)
 	{
-		$this->_info=$columnInfo;
+		$this->_info = $columnInfo;
 	}
 
 	/**
@@ -40,7 +40,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 * @param mixed default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name, $default=null)
+	protected function getInfo($name, $default = null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -51,7 +51,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	protected function setInfo($name, $value)
 	{
-		$this->_info[$name]=$value;
+		$this->_info[$name] = $value;
 	}
 
 	/**
@@ -151,10 +151,10 @@ class TDbTableColumn extends \Prado\TComponent
 
 	public function getMaxiumNumericConstraint()
 	{
-		if(($precision=$this->getNumericPrecision())!==null)
+		if(($precision = $this->getNumericPrecision()) !== null)
 		{
-			$scale=$this->getNumericScale();
-			return $scale===null ? pow(10, $precision) : pow(10, $precision-$scale);
+			$scale = $this->getNumericScale();
+			return $scale === null ? pow(10, $precision) : pow(10, $precision - $scale);
 		}
 	}
 
@@ -187,7 +187,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function hasSequence()
 	{
-		return $this->getSequenceName()!==null;
+		return $this->getSequenceName() !== null;
 	}
 
 	/**

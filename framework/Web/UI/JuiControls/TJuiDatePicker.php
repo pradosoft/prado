@@ -78,9 +78,9 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
+		if (($options = $this->getViewState('JuiOptions')) === null)
 		{
-		  $options=new TJuiControlOptions($this);
+		  $options = new TJuiControlOptions($this);
 		  $this->setViewState('JuiOptions', $options);
 		}
 		return $options;
@@ -117,22 +117,22 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$cs=$this->getPage()->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 		if(self::$_first)
 		{
-		  $culture=$this->getCurrentCulture();
-		  if($culture!='en')
+		  $culture = $this->getCurrentCulture();
+		  if($culture != 'en')
 		  {
-			$url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
+			$url = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
 			$cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
 		  }
-		  $code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
+		  $code = "jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
 		  $cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
-		  self::$_first=false;
+		  self::$_first = false;
 		}
 		parent::addAttributesToRender($writer);
-		$options=TJavaScript::encode($this->getOptions()->toArray());
-		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
+		$options = TJavaScript::encode($this->getOptions()->toArray());
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -247,7 +247,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getTimeStamp()
 	{
-		if(trim($this->getText())==='')
+		if(trim($this->getText()) === '')
 			return null;
 		else
 			return $this->getTimeStampFromText();
@@ -259,7 +259,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function setTimeStamp($value)
 	{
-		if($value===null || (is_string($value) && trim($value)===''))
+		if($value === null || (is_string($value) && trim($value) === ''))
 			$this->setText('');
 		else
 		{

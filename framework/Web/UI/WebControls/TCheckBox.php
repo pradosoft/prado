@@ -45,8 +45,8 @@ use Prado\TPropertyValue;
  */
 class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer, \Prado\Web\UI\ISurroundable
 {
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * @return string tag name of the button
@@ -65,11 +65,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key, $values)
 	{
-		$checked=$this->getChecked();
-		if($newChecked=isset($values[$key]))
+		$checked = $this->getChecked();
+		if($newChecked = isset($values[$key]))
 			$this->setValue($values[$key]);
 		$this->setChecked($newChecked);
-		return $this->_dataChanged=($newChecked!==$checked);
+		return $this->_dataChanged = ($newChecked !== $checked);
 	}
 
 	/**
@@ -143,7 +143,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -315,31 +315,31 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$this->getPage()->ensureRenderInForm($this);
 		if($this->getHasStyle())
 			$this->getStyle()->addAttributesToRender($writer);
-		if(($tooltip=$this->getToolTip())!=='')
+		if(($tooltip = $this->getToolTip()) !== '')
 			$writer->addAttribute('title', $tooltip);
 		if($this->getHasAttributes())
 		{
-			$attributes=$this->getAttributes();
-			$value=$attributes->remove('value');
+			$attributes = $this->getAttributes();
+			$value = $attributes->remove('value');
 			// onclick js should only be added to input tag
-			if(($onclick=$attributes->remove('onclick'))===null)
-				$onclick='';
+			if(($onclick = $attributes->remove('onclick')) === null)
+				$onclick = '';
 			if($attributes->getCount())
 				$writer->addAttributes($attributes);
-			if($value!==null)
+			if($value !== null)
 				$attributes->add('value', $value);
 		}
 		else
-			$onclick='';
-	if($needspan=$this->getSpanNeeded())
+			$onclick = '';
+	if($needspan = $this->getSpanNeeded())
 	{
 	  $writer->addAttribute('id', $this->getSurroundingTagID());
 	  $writer->renderBeginTag($this->getSurroundingTag());
 	}
-		$clientID=$this->getClientID();
-		if(($text=$this->getText())!=='')
+		$clientID = $this->getClientID();
+		if(($text = $this->getText()) !== '')
 		{
-			if($this->getTextAlign()===TTextAlign::Left)
+			if($this->getTextAlign() === TTextAlign::Left)
 			{
 				$this->renderLabel($writer, $clientID, $text);
 				$this->renderInputTag($writer, $clientID, $onclick);
@@ -361,11 +361,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getLabelAttributes()
 	{
-		if($attributes=$this->getViewState('LabelAttributes', null))
+		if($attributes = $this->getViewState('LabelAttributes', null))
 			return $attributes;
 		else
 		{
-			$attributes=new TAttributeCollection;
+			$attributes = new TAttributeCollection;
 			$this->setViewState('LabelAttributes', $attributes, null);
 			return $attributes;
 		}
@@ -376,11 +376,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getInputAttributes()
 	{
-		if($attributes=$this->getViewState('InputAttributes', null))
+		if($attributes = $this->getViewState('InputAttributes', null))
 			return $attributes;
 		else
 		{
-			$attributes=new TAttributeCollection;
+			$attributes = new TAttributeCollection;
 			$this->setViewState('InputAttributes', $attributes, null);
 			return $attributes;
 		}
@@ -391,11 +391,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function getValueAttribute()
 	{
-		if(($value=$this->getValue())!=='')
+		if(($value = $this->getValue()) !== '')
 			return $value;
 		else
 		{
-			$attributes=$this->getViewState('InputAttributes', null);
+			$attributes = $this->getViewState('InputAttributes', null);
 			if($attributes && $attributes->contains('value'))
 				return $attributes->itemAt('value');
 			elseif($this->hasAttribute('value'))
@@ -428,7 +428,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * @return bool wether this control needs a surrounding span tag
 	 */
 	protected function getSpanNeeded() {
-		return $this->getText()!=='';
+		return $this->getText() !== '';
 	}
 
 	/**
@@ -440,7 +440,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	protected function renderLabel($writer, $clientID, $text)
 	{
 		$writer->addAttribute('for', $clientID);
-		if($attributes=$this->getViewState('LabelAttributes', null))
+		if($attributes = $this->getViewState('LabelAttributes', null))
 			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('label');
 		$writer->write($text);
@@ -455,21 +455,21 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		if($clientID!=='')
+		if($clientID !== '')
 			$writer->addAttribute('id', $clientID);
 		$writer->addAttribute('type', 'checkbox');
-		if(($value=$this->getValueAttribute())!=='')
+		if(($value = $this->getValueAttribute()) !== '')
 			$writer->addAttribute('value', $value);
 		if(!empty($onclick))
 			$writer->addAttribute('onclick', $onclick);
-		if(($uniqueID=$this->getUniqueID())!=='')
+		if(($uniqueID = $this->getUniqueID()) !== '')
 			$writer->addAttribute('name', $uniqueID);
 		if($this->getChecked())
 			$writer->addAttribute('checked', 'checked');
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
 
-		$page=$this->getPage();
+		$page = $this->getPage();
 		if($this->getEnabled(true)
 			&& $this->getEnableClientScript()
 			&& $this->getAutoPostBack()
@@ -478,11 +478,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$this->renderClientControlScript($writer);
 		}
 
-		if(($accesskey=$this->getAccessKey())!=='')
+		if(($accesskey = $this->getAccessKey()) !== '')
 			$writer->addAttribute('accesskey', $accesskey);
-		if(($tabindex=$this->getTabIndex())>0)
+		if(($tabindex = $this->getTabIndex()) > 0)
 			$writer->addAttribute('tabindex', "$tabindex");
-		if($attributes=$this->getViewState('InputAttributes', null))
+		if($attributes = $this->getViewState('InputAttributes', null))
 			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();

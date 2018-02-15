@@ -108,7 +108,7 @@ class MessageCache
 	 * @return mixed Boolean FALSE if no cache hit. Otherwise, translation
 	 * table data for the specified section and locale.
 	 */
-	public function get($catalogue, $culture, $lastmodified=0)
+	public function get($catalogue, $culture, $lastmodified = 0)
 	{
 		$ID = $this->getID($catalogue, $culture);
 		$group = $this->getGroup($catalogue, $culture);

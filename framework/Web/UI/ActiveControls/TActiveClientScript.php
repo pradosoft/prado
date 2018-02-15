@@ -45,12 +45,12 @@ class TActiveClientScript extends TClientScript
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
-		if(($scriptUrl = $this->getScriptUrl())!=='')
+		if(($scriptUrl = $this->getScriptUrl()) !== '')
 		{
 			if($this->getPage()->getIsCallback())
 			{
 				$cs = $this->getPage()->getClientScript();
-				$uniqueid=$this->ClientID . '_custom';
+				$uniqueid = $this->ClientID . '_custom';
 				if(!$cs->isScriptFileRegistered($uniqueid))
 					$cs->registerScriptFile($uniqueid, $scriptUrl);
 			} else {
@@ -69,7 +69,7 @@ class TActiveClientScript extends TClientScript
 		{
 			if($this->getPage()->getIsCallback())
 			{
-				$extWriter= $this->getPage()->getResponse()->createHtmlWriter();
+				$extWriter = $this->getPage()->getResponse()->createHtmlWriter();
 				$extWriter->write("/*<![CDATA[*/\n");
 				$this->renderChildren($extWriter);
 				$extWriter->write("\n/*]]>*/");

@@ -133,7 +133,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	protected function getFindCommand($criteria)
 	{
-		if($criteria===null)
+		if($criteria === null)
 			return $this->getBuilder()->createFindCommand();
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
@@ -151,7 +151,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function findByPk($keys)
 	{
-		if($keys===null)
+		if($keys === null)
 			return null;
 		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
@@ -172,7 +172,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function findAllByIndex($criteria, $fields, $values)
 	{
 		$index = $this->getIndexKeyCondition($this->getTableInfo(), $fields, $values);
-		if(strlen($where = $criteria->getCondition())>0)
+		if(strlen($where = $criteria->getCondition()) > 0)
 			$criteria->setCondition("({$index}) AND ({$where})");
 		else
 			$criteria->setCondition($index);
@@ -187,7 +187,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function deleteByPk($keys)
 	{
-		if(count($keys)==0)
+		if(count($keys) == 0)
 			return 0;
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
@@ -216,7 +216,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$primary = $this->getTableInfo()->getPrimaryKeys();
 		$count = count($primary);
-		if($count===0)
+		if($count === 0)
 		{
 			throw new TDbException('dbtablegateway_no_primary_key_found',
 				$this->getTableInfo()->getTableFullName());
@@ -226,7 +226,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 			throw new TDbException('dbtablegateway_missing_pk_values',
 				$this->getTableInfo()->getTableFullName());
 		}
-		if($count>1 && (!isset($values[0]) || !is_array($values[0])))
+		if($count > 1 && (!isset($values[0]) || !is_array($values[0])))
 			$values = [$values];
 		if($count > 1 && count($values[0]) !== $count)
 		{
@@ -245,7 +245,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$conn = $this->getDbConnection();
 		$data = [];
-		foreach($array as $k=>$v)
+		foreach($array as $k => $v)
 			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
 		return '(' . implode(', ', $data) . ')';
 	}
@@ -258,13 +258,13 @@ class TDataGatewayCommand extends \Prado\TComponent
 	protected function getPrimaryKeyCondition($values)
 	{
 		$primary = $this->getTableInfo()->getPrimaryKeys();
-		if(count($primary)===0)
+		if(count($primary) === 0)
 		{
 			throw new TDbException('dbtablegateway_no_primary_key_found',
 				$this->getTableInfo()->getTableFullName());
 		}
-		$criteria=[];
-		$bindings=[];
+		$criteria = [];
+		$bindings = [];
 		$i = 0;
 		foreach($primary as $key)
 		{
@@ -310,7 +310,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$offset = $criteria->getOffset();
 		if(count($ordering) > 0)
 			$sql = $this->getBuilder()->applyOrdering($sql, $ordering);
-		if($limit>=0 || $offset>=0)
+		if($limit >= 0 || $offset >= 0)
 			$sql = $this->getBuilder()->applyLimitOffset($sql, $limit, $offset);
 		$command = $this->getBuilder()->createCommand($sql);
 		$this->getBuilder()->bindArrayValues($command, $criteria->getParameters()->toArray());
@@ -324,7 +324,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function count($criteria)
 	{
-		if($criteria===null)
+		if($criteria === null)
 			return (int)$this->getBuilder()->createCountCommand()->queryScalar();
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
@@ -345,7 +345,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function insert($data)
 	{
-		$command=$this->getBuilder()->createInsertCommand($data);
+		$command = $this->getBuilder()->createInsertCommand($data);
 		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
 		$command->prepare();
 		if($this->onExecuteCommand($command, $command->execute()) > 0)
@@ -375,8 +375,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function createCriteriaFromString($method, $condition, $args)
 	{
 		$fields = $this->extractMatchingConditions($method, $condition);
-		$args=count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
-		if(count($fields)>count($args))
+		$args = count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
+		if(count($fields) > count($args))
 		{
 			throw new TDbException('dbtablegateway_mismatch_args_exception',
 				$method, count($fields), count($args));

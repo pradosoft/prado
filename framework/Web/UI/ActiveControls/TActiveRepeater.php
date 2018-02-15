@@ -34,7 +34,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
   /**
    * @var string the tag used to render the surrounding container
    */
-  protected $_surroundingTag='div';
+  protected $_surroundingTag = 'div';
 
   /**
    * Creates a new callback control, sets the adapter to
@@ -80,7 +80,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * @param string $value container tag
 	 */
 	public function setSurroundingTag($value) {
-	  $this->_surroundingTag=TPropertyValue::ensureString($value);
+	  $this->_surroundingTag = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -113,10 +113,10 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * data source changed.
 	 */
 	private function renderPager() {
-		$pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
+		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
 		foreach($pager as $item) {
-			if($item->ControlToPaginate==$this->ID) {
-				$writer=$this->getResponse()->createHtmlWriter();
+			if($item->ControlToPaginate == $this->ID) {
+				$writer = $this->getResponse()->createHtmlWriter();
 				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}
 		}

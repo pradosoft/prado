@@ -40,9 +40,9 @@ class TWizardNavigationButtonStyle extends TStyle
 	public function reset()
 	{
 		parent::reset();
-		$this->_imageUrl=null;
-		$this->_buttonText=null;
-		$this->_buttonType=null;
+		$this->_imageUrl = null;
+		$this->_buttonText = null;
+		$this->_buttonType = null;
 	}
 
 	/**
@@ -56,12 +56,12 @@ class TWizardNavigationButtonStyle extends TStyle
 		parent::copyFrom($style);
 		if($style instanceof TWizardNavigationButtonStyle)
 		{
-			if($this->_imageUrl===null && $style->_imageUrl!==null)
-				$this->_imageUrl=$style->_imageUrl;
-			if($this->_buttonText===null && $style->_buttonText!==null)
-				$this->_buttonText=$style->_buttonText;
-			if($this->_buttonType===null && $style->_buttonType!==null)
-				$this->_buttonType=$style->_buttonType;
+			if($this->_imageUrl === null && $style->_imageUrl !== null)
+				$this->_imageUrl = $style->_imageUrl;
+			if($this->_buttonText === null && $style->_buttonText !== null)
+				$this->_buttonText = $style->_buttonText;
+			if($this->_buttonType === null && $style->_buttonType !== null)
+				$this->_buttonType = $style->_buttonType;
 		}
 	}
 
@@ -76,12 +76,12 @@ class TWizardNavigationButtonStyle extends TStyle
 		parent::mergeWith($style);
 		if($style instanceof TWizardNavigationButtonStyle)
 		{
-			if($style->_imageUrl!==null)
-				$this->_imageUrl=$style->_imageUrl;
-			if($style->_buttonText!==null)
-				$this->_buttonText=$style->_buttonText;
-			if($style->_buttonType!==null)
-				$this->_buttonType=$style->_buttonType;
+			if($style->_imageUrl !== null)
+				$this->_imageUrl = $style->_imageUrl;
+			if($style->_buttonText !== null)
+				$this->_buttonText = $style->_buttonText;
+			if($style->_buttonType !== null)
+				$this->_buttonType = $style->_buttonType;
 		}
 	}
 
@@ -90,7 +90,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getImageUrl()
 	{
-		return $this->_imageUrl===null?'':$this->_imageUrl;
+		return $this->_imageUrl === null?'':$this->_imageUrl;
 	}
 
 	/**
@@ -98,7 +98,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function setImageUrl($value)
 	{
-		$this->_imageUrl=$value;
+		$this->_imageUrl = $value;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonText()
 	{
-		return $this->_buttonText===null?'':$this->_buttonText;
+		return $this->_buttonText === null?'':$this->_buttonText;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function setButtonText($value)
 	{
-		$this->_buttonText=$value;
+		$this->_buttonText = $value;
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType===null? TWizardNavigationButtonType::Button :$this->_buttonType;
+		return $this->_buttonType === null? TWizardNavigationButtonType::Button :$this->_buttonType;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TWizardNavigationButtonType');
+		$this->_buttonType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TWizardNavigationButtonType');
 	}
 
 	/**
@@ -141,10 +141,10 @@ class TWizardNavigationButtonStyle extends TStyle
 	{
 		if($button instanceof TImageButton)
 		{
-			if($button->getImageUrl()==='')
+			if($button->getImageUrl() === '')
 				$button->setImageUrl($this->getImageUrl());
 		}
-		if($button->getText()==='')
+		if($button->getText() === '')
 			$button->setText($this->getButtonText());
 		$button->getStyle()->mergeWith($this);
 	}

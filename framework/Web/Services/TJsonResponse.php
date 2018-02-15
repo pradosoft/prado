@@ -26,7 +26,7 @@ namespace Prado\Web\Services;
  */
 abstract class TJsonResponse extends \Prado\TApplicationComponent
 {
-	private $_id='';
+	private $_id = '';
 
 	/**
 	 * Initializes the feed.
@@ -49,7 +49,7 @@ abstract class TJsonResponse extends \Prado\TApplicationComponent
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**

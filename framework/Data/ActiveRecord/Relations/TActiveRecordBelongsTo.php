@@ -111,10 +111,10 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 		{
 			if(count($collections[$hash]) > 1)
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
-			$source->$prop=$collections[$hash][0];
+			$source->$prop = $collections[$hash][0];
 		}
 		else
-			$source->$prop=null;
+			$source->$prop = null;
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObject = $obj->getColumnValue($this->getContext()->getProperty());
-		if($fkObject!==null)
+		if($fkObject !== null)
 		{
 			$fkObject->save();
 			$source = $this->getSourceRecord();

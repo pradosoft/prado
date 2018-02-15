@@ -44,7 +44,7 @@ interface IMappedStatement
 	 * @param string The property of the result object to be used as the value (or null)
 	 * @return TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
 	 */
-	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty=null);
+	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null);
 
 
 	/**
@@ -66,7 +66,7 @@ interface IMappedStatement
 	 * @param integer The maximum number of rows to return.
 	 * @return TList A TList of result objects.
 	 */
-	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1);
+	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1);
 
 
 	/**
@@ -77,6 +77,6 @@ interface IMappedStatement
 	 * @param object The result object.
 	 * @return object result.
 	 */
-	public function executeQueryForObject($connection, $parameter, $result=null);
+	public function executeQueryForObject($connection, $parameter, $result = null);
 }
 

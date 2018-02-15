@@ -38,19 +38,19 @@ class TListItem extends \Prado\TComponent
 	/**
 	 * @var string text of the item
 	 */
-	private $_text='';
+	private $_text = '';
 	/**
 	 * @var string value of the item
 	 */
-	private $_value='';
+	private $_value = '';
 	/**
 	 * @var boolean whether the item is enabled
 	 */
-	private $_enabled=true;
+	private $_enabled = true;
 	/**
 	 * @var boolean whether the item is selected
 	 */
-	private $_selected=false;
+	private $_selected = false;
 
 	/**
 	 * Constructor.
@@ -59,7 +59,7 @@ class TListItem extends \Prado\TComponent
 	 * @param boolean whether the item is enabled
 	 * @param boolean whether the item is selected
 	 */
-	public function __construct($text='', $value='', $enabled=true, $selected=false)
+	public function __construct($text = '', $value = '', $enabled = true, $selected = false)
 	{
 		$this->setText($text);
 		$this->setValue($value);
@@ -76,15 +76,15 @@ class TListItem extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_attributes===null)
+		if ($this->_attributes === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_attributes";
-		if($this->_text==='')
+		if($this->_text === '')
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_text";
-		if($this->_value==='')
+		if($this->_value === '')
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_value";
-		if ($this->_enabled===true)
+		if ($this->_enabled === true)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_enabled";
-		if ($this->_selected===false)
+		if ($this->_selected === false)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_selected";
 	}
 
@@ -101,7 +101,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function setEnabled($value)
 	{
-		$this->_enabled=TPropertyValue::ensureBoolean($value);
+		$this->_enabled = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function setSelected($value)
 	{
-		$this->_selected=TPropertyValue::ensureBoolean($value);
+		$this->_selected = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getText()
 	{
-		return $this->_text===''?$this->_value:$this->_text;
+		return $this->_text === ''?$this->_value:$this->_text;
 	}
 
 	/**
@@ -133,7 +133,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function setText($value)
 	{
-		$this->_text=TPropertyValue::ensureString($value);
+		$this->_text = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -141,7 +141,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getValue()
 	{
-		return $this->_value===''?$this->_text:$this->_value;
+		return $this->_value === ''?$this->_text:$this->_value;
 	}
 
 	/**
@@ -149,7 +149,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function setValue($value)
 	{
-		$this->_value=TPropertyValue::ensureString($value);
+		$this->_value = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -158,7 +158,7 @@ class TListItem extends \Prado\TComponent
 	public function getAttributes()
 	{
 		if(!$this->_attributes)
-			$this->_attributes=new TAttributeCollection;
+			$this->_attributes = new TAttributeCollection;
 		return $this->_attributes;
 	}
 
@@ -167,7 +167,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getHasAttributes()
 	{
-		return $this->_attributes && $this->_attributes->getCount()>0;
+		return $this->_attributes && $this->_attributes->getCount() > 0;
 	}
 
 	/**

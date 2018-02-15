@@ -89,7 +89,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 
 		$writer->addAttribute('id', $this->getClientID());
@@ -178,7 +178,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if(($text = $this->getText()) === '')
 			parent::renderContents($writer);
 		else
 			$writer->write($text);

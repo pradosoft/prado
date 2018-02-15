@@ -135,9 +135,9 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getMetaTags()
 	{
-		if(($metaTags=$this->getViewState('MetaTags', null))===null)
+		if(($metaTags = $this->getViewState('MetaTags', null)) === null)
 		{
-			$metaTags=new TMetaTagCollection;
+			$metaTags = new TMetaTagCollection;
 			$this->setViewState('MetaTags', $metaTags, null);
 		}
 		return $metaTags;
@@ -149,15 +149,15 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		$page=$this->getPage();
-		$title=$this->getTitle();
+		$page = $this->getPage();
+		$title = $this->getTitle();
 		$writer->write("<head>\n<title>" . THttpUtility::htmlEncode($title) . "</title>\n");
-		if(($baseUrl=$this->getBaseUrl())!=='')
+		if(($baseUrl = $this->getBaseUrl()) !== '')
 			$writer->write('<base href="' . $baseUrl . "\" />\n");
-		if(($icon=$this->getShortcutIcon())!=='')
+		if(($icon = $this->getShortcutIcon()) !== '')
 			$writer->write('<link rel="shortcut icon" href="' . $icon . "\" />\n");
 
-		if(($metaTags=$this->getMetaTags())!==null)
+		if(($metaTags = $this->getMetaTags()) !== null)
 		{
 			foreach($metaTags as $metaTag)
 			{
@@ -165,7 +165,7 @@ class THead extends \Prado\Web\UI\TControl
 				$writer->writeLine();
 			}
 		}
-		$cs=$page->getClientScript();
+		$cs = $page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);
 		$cs->renderStyleSheets($writer);
 		if($page->getClientSupportsJavaScript())

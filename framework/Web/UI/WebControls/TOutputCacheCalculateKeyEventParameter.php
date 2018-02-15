@@ -28,7 +28,7 @@ class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 	/**
 	 * @var string cache key to be appended to the default calculation scheme.
 	 */
-	private $_cacheKey='';
+	private $_cacheKey = '';
 
 	/**
 	 * @return string cache key to be appended to the default calculation scheme.
@@ -43,6 +43,6 @@ class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 	 */
 	public function setCacheKey($value)
 	{
-		$this->_cacheKey=TPropertyValue::ensureString($value);
+		$this->_cacheKey = TPropertyValue::ensureString($value);
 	}
 }

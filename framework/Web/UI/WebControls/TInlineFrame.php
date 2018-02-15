@@ -162,8 +162,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setWidth($value)
 	{
-	  if(($value=TPropertyValue::ensureInteger($value))<0)
-		$value=-1;
+	  if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		$value = -1;
 	  $this->setViewState('Width', $value, -1);
 	}
 	
@@ -180,8 +180,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setHeight($value)
 	{
-	  if(($value=TPropertyValue::ensureInteger($value))<0)
-		$value=-1;
+	  if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		$value = -1;
 	  $this->setViewState('Height', $value, -1);
 	}
 	
@@ -200,8 +200,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setMarginWidth($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = -1;
 		$this->setViewState('MarginWidth', $value, -1);
 	}
 
@@ -220,8 +220,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setMarginHeight($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = -1;
 		$this->setViewState('MarginHeight', $value, -1);
 	}
 
@@ -232,37 +232,37 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getID()!=='')
+		if($this->getID() !== '')
 			$writer->addAttribute('name', $this->getUniqueID());
 
-		if(($src=$this->getFrameUrl())!=='')
+		if(($src = $this->getFrameUrl()) !== '')
 			$writer->addAttribute('src', $src);
 
-		if(($align=strtolower($this->getAlign()))!=='notset')
+		if(($align = strtolower($this->getAlign())) !== 'notset')
 			$writer->addAttribute('align', $align);
 
-		$scrollBars=$this->getScrollBars();
-		if($scrollBars===TInlineFrameScrollBars::None)
+		$scrollBars = $this->getScrollBars();
+		if($scrollBars === TInlineFrameScrollBars::None)
 			$writer->addAttribute('scrolling', 'no');
-		elseif($scrollBars===TInlineFrameScrollBars::Both)
+		elseif($scrollBars === TInlineFrameScrollBars::Both)
 			$writer->addAttribute('scrolling', 'yes');
 
 		if (!$this->getShowBorder())
 			$writer->addAttribute('frameborder', '0');
 
-		if(($longdesc=$this->getDescriptionUrl())!=='')
+		if(($longdesc = $this->getDescriptionUrl()) !== '')
 			$writer->addAttribute('longdesc', $longdesc);
 		
-		if (($width=$this->getWidth())!==-1)
+		if (($width = $this->getWidth()) !== -1)
 		  $writer->addAttribute('width', $width);
 		
-		if (($height=$this->getHeight())!==-1)
+		if (($height = $this->getHeight()) !== -1)
 		  $writer->addAttribute('height', $height);
 
-		if(($marginheight=$this->getMarginHeight())!==-1)
+		if(($marginheight = $this->getMarginHeight()) !== -1)
 			$writer->addAttribute('marginheight', $marginheight);
 
-		if(($marginwidth=$this->getMarginWidth())!==-1)
+		if(($marginwidth = $this->getMarginWidth()) !== -1)
 			$writer->addAttribute('marginwidth', $marginwidth);
 
 		parent::addAttributesToRender($writer);

@@ -127,7 +127,7 @@ class DateTimeFormatInfo
 	 * @param array ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	public function __construct($data=[])
+	public function __construct($data = [])
 	{
 		$this->properties = get_class_methods($this);
 
@@ -168,7 +168,7 @@ class DateTimeFormatInfo
 	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getInstance($culture=null)
+	public static function getInstance($culture = null)
 	{
 
 		if ($culture instanceof CultureInfo)

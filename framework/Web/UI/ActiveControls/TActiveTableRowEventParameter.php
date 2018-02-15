@@ -38,7 +38,7 @@ class TActiveTableRowEventParameter extends TCallbackEventParameter
 	/**
 	 * Creates a new TActiveTableRowEventParameter.
 	 */
-	public function __construct($response, $parameter, $index=-1)
+	public function __construct($response, $parameter, $index = -1)
 	{
 		parent::__construct($response, $parameter);
 		$this->_selectedRowIndex = $index;

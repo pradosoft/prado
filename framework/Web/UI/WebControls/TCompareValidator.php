@@ -151,18 +151,18 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if(($value = $this->getValidationValue($this->getValidationTarget())) === '')
 			return true;
 
-		if(($controlToCompare=$this->getControlToCompare())!=='')
+		if(($controlToCompare = $this->getControlToCompare()) !== '')
 		{
-			if(($control2=$this->findControl($controlToCompare))===null)
+			if(($control2 = $this->findControl($controlToCompare)) === null)
 				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
-			if(($value2=$this->getValidationValue($control2))==='')
+			if(($value2 = $this->getValidationValue($control2)) === '')
 				return false;
 		}
 		else
-			$value2=$this->getValueToCompare();
+			$value2 = $this->getValueToCompare();
 
 		$values = $this->getComparisonValues($value, $value2);
 		switch($this->getOperator())
@@ -200,7 +200,7 @@ class TCompareValidator extends TBaseValidator
 				return [floatval($value1), floatval($value2)];
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
-				if($dateFormat!=='')
+				if($dateFormat !== '')
 				{
 					$formatter = new TSimpleDateFormatter($dateFormat);
 					return [$formatter->parse($value1), $formatter->parse($value2)];
@@ -218,18 +218,18 @@ class TCompareValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		if(($name=$this->getControlToCompare())!=='')
+		if(($name = $this->getControlToCompare()) !== '')
 		{
-			if(($control=$this->findControl($name))!==null)
-				$options['ControlToCompare']=$control->getClientID();
+			if(($control = $this->findControl($name)) !== null)
+				$options['ControlToCompare'] = $control->getClientID();
 		}
-		if(($value=$this->getValueToCompare())!=='')
-			$options['ValueToCompare']=$value;
-		if(($operator=$this->getOperator())!==TValidationCompareOperator::Equal)
-			$options['Operator']=$operator;
-		$options['DataType']=$this->getDataType();
-		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['DateFormat']=$dateFormat;
+		if(($value = $this->getValueToCompare()) !== '')
+			$options['ValueToCompare'] = $value;
+		if(($operator = $this->getOperator()) !== TValidationCompareOperator::Equal)
+			$options['Operator'] = $operator;
+		$options['DataType'] = $this->getDataType();
+		if(($dateFormat = $this->getDateFormat()) !== '')
+			$options['DateFormat'] = $dateFormat;
 		return $options;
 	}
 }

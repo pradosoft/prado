@@ -54,7 +54,7 @@ class TDbTransaction extends \Prado\TComponent
 	 */
 	public function __construct(TDbConnection $connection)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 		$this->setActive(true);
 	}
 
@@ -67,7 +67,7 @@ class TDbTransaction extends \Prado\TComponent
 		if($this->_active && $this->_connection->getActive())
 		{
 			$this->_connection->getPdoInstance()->commit();
-			$this->_active=false;
+			$this->_active = false;
 		}
 		else
 			throw new TDbException('dbtransaction_transaction_inactive');
@@ -82,7 +82,7 @@ class TDbTransaction extends \Prado\TComponent
 		if($this->_active && $this->_connection->getActive())
 		{
 			$this->_connection->getPdoInstance()->rollBack();
-			$this->_active=false;
+			$this->_active = false;
 		}
 		else
 			throw new TDbException('dbtransaction_transaction_inactive');
@@ -109,7 +109,7 @@ class TDbTransaction extends \Prado\TComponent
 	 */
 	protected function setActive($value)
 	{
-		$this->_active=TPropertyValue::ensureBoolean($value);
+		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 }
 

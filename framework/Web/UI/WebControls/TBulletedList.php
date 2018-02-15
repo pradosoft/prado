@@ -99,32 +99,32 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$needStart=false;
+		$needStart = false;
 		switch($this->getBulletStyle())
 		{
 			case TBulletStyle::None:
 				$writer->addStyleAttribute('list-style-type', 'none');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::Numbered:
 				$writer->addStyleAttribute('list-style-type', 'decimal');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::LowerAlpha:
 				$writer->addStyleAttribute('list-style-type', 'lower-alpha');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::UpperAlpha:
 				$writer->addStyleAttribute('list-style-type', 'upper-alpha');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::LowerRoman:
 				$writer->addStyleAttribute('list-style-type', 'lower-roman');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::UpperRoman:
 				$writer->addStyleAttribute('list-style-type', 'upper-roman');
-				$needStart=true;
+				$needStart = true;
 				break;
 			case TBulletStyle::Disc:
 				$writer->addStyleAttribute('list-style-type', 'disc');
@@ -136,11 +136,11 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 				$writer->addStyleAttribute('list-style-type', 'square');
 				break;
 			case TBulletStyle::CustomImage:
-				$url=$this->getBulletImageUrl();
+				$url = $this->getBulletImageUrl();
 				$writer->addStyleAttribute('list-style-image', "url($url)");
 				break;
 		}
-		if($needStart && ($start=$this->getFirstBulletNumber())!=1)
+		if($needStart && ($start = $this->getFirstBulletNumber()) != 1)
 			$writer->addAttribute('start', "$start");
 		parent::addAttributesToRender($writer);
 	}
@@ -259,10 +259,10 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	public function renderContents($writer)
 	{
-		$this->_isEnabled=$this->getEnabled(true);
-		$this->_postBackOptions=$this->getPostBackOptions();
+		$this->_isEnabled = $this->getEnabled(true);
+		$this->_postBackOptions = $this->getPostBackOptions();
 		$writer->writeLine();
-		foreach($this->getItems() as $index=>$item)
+		foreach($this->getItems() as $index => $item)
 		{
 			if($item->getHasAttributes())
 				$writer->addAttributes($item->getAttributes());
@@ -315,10 +315,10 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		else
 		{
 			$writer->addAttribute('href', $item->getValue());
-			if(($target=$this->getTarget())!=='')
+			if(($target = $this->getTarget()) !== '')
 				$writer->addAttribute('target', $target);
 		}
-		if(($accesskey=$this->getAccessKey())!=='')
+		if(($accesskey = $this->getAccessKey()) !== '')
 			$writer->addAttribute('accesskey', $accesskey);
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -337,7 +337,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 		}
-		if(($accesskey=$this->getAccessKey())!=='')
+		if(($accesskey = $this->getAccessKey()) !== '')
 			$writer->addAttribute('accesskey', $accesskey);
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -361,7 +361,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	protected function canCauseValidation()
 	{
 		$group = $this->getValidationGroup();
-		$hasValidators = $this->getPage()->getValidators($group)->getCount()>0;
+		$hasValidators = $this->getPage()->getValidators($group)->getCount() > 0;
 		return $this->getCausesValidation() && $hasValidators;
 	}
 

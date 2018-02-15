@@ -50,7 +50,7 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 }
 

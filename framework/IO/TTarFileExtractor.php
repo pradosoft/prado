@@ -40,17 +40,17 @@ class TTarFileExtractor
 	/**
 	 * @var string Name of the Tar
 	 */
-	private $_tarname='';
+	private $_tarname = '';
 
 	/**
 	 * @var file descriptor
 	 */
-	private $_file=0;
+	private $_file = 0;
 
 	/**
 	 * @var string Local Tar name of a remote Tar (http:// or ftp://)
 	 */
-	private $_temp_tarname='';
+	private $_temp_tarname = '';
 
 	/**
 	 * Archive_Tar Class constructor. This flavour of the constructor only
@@ -73,7 +73,7 @@ class TTarFileExtractor
 			@unlink($this->_temp_tarname);
 	}
 
-	public function extract($p_path='')
+	public function extract($p_path = '')
 	{
 		return $this->extractModify($p_path, '');
 	}
@@ -129,7 +129,7 @@ class TTarFileExtractor
 		throw new \Exception($p_message);
 	}
 
-	private function _isArchive($p_filename=null)
+	private function _isArchive($p_filename = null)
 	{
 		if ($p_filename == null) {
 			$p_filename = $this->_tarname;
@@ -226,20 +226,20 @@ class TTarFileExtractor
 	  return $v_block;
 	}
 
-	private function _jumpBlock($p_len=null)
+	private function _jumpBlock($p_len = null)
 	{
 	  if (is_resource($this->_file)) {
 		  if ($p_len === null)
 			  $p_len = 1;
 
-			  @fseek($this->_file, @ftell($this->_file)+($p_len*512));
+			  @fseek($this->_file, @ftell($this->_file) + ($p_len * 512));
 	  }
 	  return true;
 	}
 
 	private function _readHeader($v_binary_data, &$v_header)
 	{
-		if (strlen($v_binary_data)==0) {
+		if (strlen($v_binary_data) == 0) {
 			$v_header['filename'] = '';
 			return true;
 		}
@@ -253,14 +253,14 @@ class TTarFileExtractor
 		// ----- Calculate the checksum
 		$v_checksum = 0;
 		// ..... First part of the header
-		for ($i=0; $i<148; $i++)
-			$v_checksum+=ord(substr($v_binary_data, $i, 1));
+		for ($i = 0; $i < 148; $i++)
+			$v_checksum += ord(substr($v_binary_data, $i, 1));
 		// ..... Ignore the checksum value and replace it by ' ' (space)
-		for ($i=148; $i<156; $i++)
+		for ($i = 148; $i < 156; $i++)
 			$v_checksum += ord(' ');
 		// ..... Last part of the header
-		for ($i=156; $i<512; $i++)
-		   $v_checksum+=ord(substr($v_binary_data, $i, 1));
+		for ($i = 156; $i < 512; $i++)
+		   $v_checksum += ord(substr($v_binary_data, $i, 1));
 
 		$v_data = unpack("a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/"
 						 . "a8checksum/a1typeflag/a100link/a6magic/a2version/"
@@ -298,8 +298,8 @@ class TTarFileExtractor
 	private function _readLongHeader(&$v_header)
 	{
 	  $v_filename = '';
-	  $n = floor($v_header['size']/512);
-	  for ($i=0; $i<$n; $i++) {
+	  $n = floor($v_header['size'] / 512);
+	  for ($i = 0; $i < $n; $i++) {
 		$v_content = $this->_readBlock();
 		$v_filename .= $v_content;
 	  }
@@ -322,7 +322,7 @@ class TTarFileExtractor
 	protected function _extractList($p_path, &$p_list_detail, $p_mode,
 						  $p_file_list, $p_remove_path)
 	{
-	$v_result=true;
+	$v_result = true;
 	$v_nb = 0;
 	$v_extract_all = true;
 	$v_listing = false;
@@ -381,7 +381,7 @@ class TTarFileExtractor
 		// ----- By default no unzip if the file is not found
 		$v_extract_file = false;
 
-		for ($i=0; $i<count($p_file_list); $i++) {
+		for ($i = 0; $i < count($p_file_list); $i++) {
 		  // ----- Look if it is a directory
 		  if (substr($p_file_list[$i], -1) == '/') {
 			// ----- Look if the directory is in the filename path
@@ -413,7 +413,7 @@ class TTarFileExtractor
 										 $p_remove_path_size);
 		if (($p_path != './') && ($p_path != '/')) {
 		  while (substr($p_path, -1) == '/')
-			$p_path = substr($p_path, 0, strlen($p_path)-1);
+			$p_path = substr($p_path, 0, strlen($p_path) - 1);
 
 		  if (substr($v_header['filename'], 0, 1) == '/')
 			  $v_header['filename'] = $p_path . $v_header['filename'];
@@ -468,8 +468,8 @@ class TTarFileExtractor
 								. '} in write binary mode');
 				  return false;
 			  } else {
-				  $n = floor($v_header['size']/512);
-				  for ($i=0; $i<$n; $i++) {
+				  $n = floor($v_header['size'] / 512);
+				  for ($i = 0; $i < $n; $i++) {
 					  $v_content = $this->_readBlock();
 					  fwrite($v_dest_file, $v_content, 512);
 				  }
@@ -498,10 +498,10 @@ class TTarFileExtractor
 		  }
 		  }
 		} else {
-		  $this->_jumpBlock(ceil(($v_header['size']/512)));
+		  $this->_jumpBlock(ceil(($v_header['size'] / 512)));
 		}
 	  } else {
-		  $this->_jumpBlock(ceil(($v_header['size']/512)));
+		  $this->_jumpBlock(ceil(($v_header['size'] / 512)));
 	  }
 
 	  /* TBC : Seems to be unused ...
@@ -555,13 +555,13 @@ class TTarFileExtractor
 		return true;
 	}
 
-	protected function _translateWinPath($p_path, $p_remove_disk_letter=true)
+	protected function _translateWinPath($p_path, $p_remove_disk_letter = true)
 	{
 	  if (substr(PHP_OS, 0, 3) == 'WIN') {
 		  // ----- Look for potential disk letter
 		  if (($p_remove_disk_letter)
 			  && (($v_position = strpos($p_path, ':')) != false)) {
-			  $p_path = substr($p_path, $v_position+1);
+			  $p_path = substr($p_path, $v_position + 1);
 		  }
 		  // ----- Change potential windows directory separator
 		  if ((strpos($p_path, '\\') > 0) || (substr($p_path, 0, 1) == '\\')) {

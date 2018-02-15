@@ -29,27 +29,27 @@ class TMetaTag extends \Prado\TComponent
 	/**
 	 * @var string id of the meta tag
 	 */
-	private $_id='';
+	private $_id = '';
 	/**
 	 * @var string http-equiv attribute of the meta tag
 	 */
-	private $_httpEquiv='';
+	private $_httpEquiv = '';
 	/**
 	 * @var string name attribute of the meta tag
 	 */
-	private $_name='';
+	private $_name = '';
 	/**
 	 * @var string content attribute of the meta tag
 	 */
-	private $_content='';
+	private $_content = '';
 	/**
 	 * @var string scheme attribute of the meta tag
 	 */
-	private $_scheme='';
+	private $_scheme = '';
 	/**
 	 * @var string charset attribute of the meta tag
 	 */
-	private $_charset='';
+	private $_charset = '';
 
 	/**
 	 * @return string id of the meta tag
@@ -64,7 +64,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -80,7 +80,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setHttpEquiv($value)
 	{
-		$this->_httpEquiv=$value;
+		$this->_httpEquiv = $value;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setName($value)
 	{
-		$this->_name=$value;
+		$this->_name = $value;
 	}
 
 	/**
@@ -112,7 +112,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setContent($value)
 	{
-		$this->_content=$value;
+		$this->_content = $value;
 	}
 
 	/**
@@ -128,7 +128,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setScheme($value)
 	{
-		$this->_scheme=$value;
+		$this->_scheme = $value;
 	}
 
 	/**
@@ -144,7 +144,7 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function setCharset($value)
 	{
-		$this->_charset=$value;
+		$this->_charset = $value;
 	}
 
 	/**
@@ -153,15 +153,15 @@ class TMetaTag extends \Prado\TComponent
 	 */
 	public function render($writer)
 	{
-		if($this->_id!=='')
+		if($this->_id !== '')
 			$writer->addAttribute('id', $this->_id);
-		if($this->_name!=='')
+		if($this->_name !== '')
 			$writer->addAttribute('name', $this->_name);
-		if($this->_httpEquiv!=='')
+		if($this->_httpEquiv !== '')
 			$writer->addAttribute('http-equiv', $this->_httpEquiv);
-		if($this->_scheme!=='')
+		if($this->_scheme !== '')
 			$writer->addAttribute('scheme', $this->_scheme);
-		if($this->_charset!=='')
+		if($this->_charset !== '')
 			$writer->addAttribute('charset', $this->_charset);
 		if ($this->_charset === '')
 			$writer->addAttribute('content', $this->_content);

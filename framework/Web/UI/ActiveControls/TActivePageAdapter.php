@@ -85,7 +85,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private $_callbackClient;
 
-	private $_controlsToRender=[];
+	private $_controlsToRender = [];
 
 	/**
 	 * Constructor, trap errors and exception to let the callback response
@@ -139,7 +139,7 @@ class TActivePageAdapter extends TControlAdapter
 	public function renderCallbackResponse($writer)
 	{
 		Prado::trace("ActivePage renderCallbackResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
-		if(($url = $this->getResponse()->getAdapter()->getRedirectedUrl())===null)
+		if(($url = $this->getResponse()->getAdapter()->getRedirectedUrl()) === null)
 			$this->renderResponse($writer);
 		else
 			$this->redirect($url);
@@ -173,7 +173,7 @@ class TActivePageAdapter extends TControlAdapter
 		if($response->getHasAdapter())
 		{
 			$responseData = $response->getAdapter()->getResponseData();
-			if($responseData!==null)
+			if($responseData !== null)
 			{
 				$data = TJavaScript::jsonEncode($responseData);
 
@@ -212,22 +212,22 @@ class TActivePageAdapter extends TControlAdapter
 
 		// collect all stylesheet file references
 		$stylesheets = $cs->getStyleSheetUrls();
-		if (count($stylesheets)>0)
+		if (count($stylesheets) > 0)
 		$this->appendContentPart($response, self::CALLBACK_STYLESHEETLIST_HEADER, TJavaScript::jsonEncode($stylesheets));
 
 		// collect all stylesheet snippets references
 		$stylesheets = $cs->getStyleSheetCodes();
-		if (count($stylesheets)>0)
+		if (count($stylesheets) > 0)
 		$this->appendContentPart($response, self::CALLBACK_STYLESHEET_HEADER, TJavaScript::jsonEncode($stylesheets));
 
 		// collect all script file references
 		$scripts = $cs->getScriptUrls();
-		if (count($scripts)>0)
+		if (count($scripts) > 0)
 		$this->appendContentPart($response, self::CALLBACK_SCRIPTLIST_HEADER, TJavaScript::jsonEncode($scripts));
 
 		// collect all hidden field references
 		$fields = $cs->getHiddenFields();
-		if (count($fields)>0)
+		if (count($fields) > 0)
 		$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
 	}
 
@@ -249,7 +249,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private function raiseCallbackEvent()
 	{
-		 if(($callbackHandler=$this->getCallbackEventTarget())!==null)
+		 if(($callbackHandler = $this->getCallbackEventTarget()) !== null)
 		 {
 			if($callbackHandler instanceof ICallbackEventHandler)
 			{
@@ -276,11 +276,11 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackEventTarget()
 	{
-		if($this->_callbackEventTarget===null)
+		if($this->_callbackEventTarget === null)
 		{
-			$eventTarget=$this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
+			$eventTarget = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
 			if(!empty($eventTarget))
-				$this->_callbackEventTarget=$this->getPage()->findControl($eventTarget);
+				$this->_callbackEventTarget = $this->getPage()->findControl($eventTarget);
 		}
 		return $this->_callbackEventTarget;
 	}
@@ -291,7 +291,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
-		$this->_callbackEventTarget=$control;
+		$this->_callbackEventTarget = $control;
 	}
 
 	/**
@@ -300,10 +300,10 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackEventParameter()
 	{
-		if($this->_callbackEventParameter===null)
+		if($this->_callbackEventParameter === null)
 		{
 			$param = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
-			$this->_callbackEventParameter=$param;
+			$this->_callbackEventParameter = $param;
 		}
 		return $this->_callbackEventParameter;
 	}
@@ -313,7 +313,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function setCallbackEventParameter($value)
 	{
-		$this->_callbackEventParameter=$value;
+		$this->_callbackEventParameter = $value;
 	}
 
 	/**
@@ -323,7 +323,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackClientHandler()
 	{
-		if($this->_callbackClient===null)
+		if($this->_callbackClient === null)
 			$this->_callbackClient = new TCallbackClientScript;
 		return $this->_callbackClient;
 	}

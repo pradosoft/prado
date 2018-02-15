@@ -31,7 +31,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 		$languages = $http->getLanguages();
 		if(count($languages) > 0)
 		{
-			$this->_detectedLanguage=$languages[0];
+			$this->_detectedLanguage = $languages[0];
 			$this->setCulture($languages[0]);
 		}
 	}

@@ -68,8 +68,8 @@ class TActiveHtmlArea extends THtmlArea implements ICallbackEventHandler, IActiv
 	{
 	  if($this->getEnableVisualEdit())
 	  {
-		$value=str_ireplace(["\r\n", "\n"], "", $value);
-		$command="tinyMCE.getInstanceById('{$this->getClientID()}').execCommand('mceSetContent',false,'{$value}')";
+		$value = str_ireplace(["\r\n", "\n"], "", $value);
+		$command = "tinyMCE.getInstanceById('{$this->getClientID()}').execCommand('mceSetContent',false,'{$value}')";
 		$this->getPage()->getCallbackClient()->evaluateScript($command);
 	  }
 	  else

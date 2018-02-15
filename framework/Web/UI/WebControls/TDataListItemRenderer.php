@@ -44,7 +44,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getHasStyle()
 	{
-		return $this->getViewState('Style', null)!==null;
+		return $this->getViewState('Style', null) !== null;
 	}
 
 	/**
@@ -52,11 +52,11 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style=$this->getViewState('Style', null))
+		if($style = $this->getViewState('Style', null))
 			return $style;
 		else
 		{
-			$style=$this->createStyle();
+			$style = $this->createStyle();
 			$this->setViewState('Style', $style, null);
 			return $style;
 		}
@@ -108,7 +108,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($style=$this->getViewState('Style', null))
+		if($style = $this->getViewState('Style', null))
 			$style->addAttributesToRender($writer);
 	}
 
@@ -124,7 +124,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function render($writer)
 	{
-		if($this->getTagName()!=='')
+		if($this->getTagName() !== '')
 		{
 			$this->renderBeginTag($writer);
 			$this->renderContents($writer);

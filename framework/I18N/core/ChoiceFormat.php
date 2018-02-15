@@ -125,17 +125,17 @@ class ChoiceFormat
 		}
 
 		$leftBracket = $matches[0][0];
-		$rightBracket = $matches[$n-1][0];
+		$rightBracket = $matches[$n - 1][0];
 
 		$i = 0;
 		$elements = [];
 		foreach($matches as $match)
 		{
 			$string = $match[0];
-			if($i != 0 && $i != $n-1 && $string !== ',')
+			if($i != 0 && $i != $n - 1 && $string !== ',')
 			{
 				if($string == '-Inf')
-					$elements[] = -1*$this->inf;
+					$elements[] = -1 * $this->inf;
 				elseif ($string == '+Inf' || $string == 'Inf')
 					$elements[] = $this->inf;
 				else
@@ -156,10 +156,10 @@ class ChoiceFormat
 			$left = $number > $elements[0];
 
 		$right = false;
-		if($rightBracket==']')
-			$right = $number <= $elements[$total-1];
+		if($rightBracket == ']')
+			$right = $number <= $elements[$total - 1];
 		elseif($rightBracket == ')')
-			$right = $number < $elements[$total-1];
+			$right = $number < $elements[$total - 1];
 
 		if($left && $right) return true;
 
@@ -198,7 +198,7 @@ class ChoiceFormat
 		{
 			$len = strlen($offset[$i][0]);
 			$begin = $i == 0? $len : $offset[$i][1] + $len;
-			$end = $i == $n-1 ? strlen($string) : $offset[$i+1][1];
+			$end = $i == $n - 1 ? strlen($string) : $offset[$i + 1][1];
 			$strings[] = substr($string, $begin, $end - $begin);
 		}
 		return [$sets, $strings];

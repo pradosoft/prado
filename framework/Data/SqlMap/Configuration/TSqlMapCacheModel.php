@@ -41,7 +41,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	private $_hits = 0;
 	private $_requests = 0;
 	private $_id;
-	private $_implementation=TSqlMapCacheTypes::Basic;
+	private $_implementation = TSqlMapCacheTypes::Basic;
 	private $_properties = [];
 	private $_flushInterval = 0;
 
@@ -92,7 +92,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function setFlushInterval($value)
 	{
-		$this->_flushInterval=TPropertyValue::ensureInteger($value);
+		$this->_flushInterval = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -107,12 +107,12 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 * Initialize the cache implementation, sets the actual cache contain if supplied.
 	 * @param ISqLMapCache cache implementation instance.
 	 */
-	public function initialize($cache=null)
+	public function initialize($cache = null)
 	{
-		if($cache===null)
-			$this->_cache= Prado::createComponent($this->getImplementationClass(), $this);
+		if($cache === null)
+			$this->_cache = Prado::createComponent($this->getImplementationClass(), $this);
 		else
-			$this->_cache=$cache;
+			$this->_cache = $cache;
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 		//if flush ?
 		$value = $this->_cache->get($key);
 		$this->_requests++;
-		if($value!==null)
+		if($value !== null)
 			$this->_hits++;
 		return $value;
 	}
@@ -174,7 +174,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 		if($key instanceof TSqlMapCacheKey)
 			$key = $key->getHash();
 
-		if($value!==null)
+		if($value !== null)
 			$this->_cache->set($key, $value, $this->_flushInterval);
 	}
 

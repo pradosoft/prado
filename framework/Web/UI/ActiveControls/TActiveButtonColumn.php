@@ -32,15 +32,15 @@ use Prado\Web\UI\WebControls\TListItemType;
  */
 class TActiveButtonColumn extends TButtonColumn {
 	public function initializeCell($cell, $columnIndex, $itemType) {
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem) {
-			$buttonType=$this->getButtonType();
-			if($buttonType===TButtonColumnType::LinkButton)
-				$button=new TActiveLinkButton;
-			elseif($buttonType===TButtonColumnType::PushButton)
-					$button=new TActiveButton;
+		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
+			$buttonType = $this->getButtonType();
+			if($buttonType === TButtonColumnType::LinkButton)
+				$button = new TActiveLinkButton;
+			elseif($buttonType === TButtonColumnType::PushButton)
+					$button = new TActiveButton;
 				else // image button
 				{
-					$button=new TActiveImageButton;
+					$button = new TActiveImageButton;
 					$button->setImageUrl($this->getImageUrl());
 					$button->setToolTip($this->getText());
 				}
@@ -48,7 +48,7 @@ class TActiveButtonColumn extends TButtonColumn {
 			$button->setCommandName($this->getCommandName());
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
-			if($this->getDataTextField()!=='' || ($buttonType===TButtonColumnType::ImageButton && $this->getDataImageUrlField()!==''))
+			if($this->getDataTextField() !== '' || ($buttonType === TButtonColumnType::ImageButton && $this->getDataImageUrlField() !== ''))
 				$button->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			$cell->getControls()->add($button);
 			$cell->registerObject('Button', $button);

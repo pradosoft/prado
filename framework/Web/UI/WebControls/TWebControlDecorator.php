@@ -85,7 +85,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	/**
 	 * @var boolean This tells if the Templates have been
 	 */
-	private $_addedTemplateDecoration=false;
+	private $_addedTemplateDecoration = false;
 
 
 	/**
@@ -306,7 +306,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	 * control
 	 * @return boolean returns true if the template decorations have been added
 	 */
-	public function ensureTemplateDecoration($sender=null, $param=null) {
+	public function ensureTemplateDecoration($sender = null, $param = null) {
 
 		$control = $this->_control;
 		$outercontrol = $this->_outercontrol;

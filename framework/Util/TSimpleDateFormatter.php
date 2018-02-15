@@ -66,7 +66,7 @@ class TSimpleDateFormatter
 	 * @param string formatting pattern.
 	 * @param string pattern and value charset
 	 */
-	public function __construct($pattern, $charset='UTF-8')
+	public function __construct($pattern, $charset = 'UTF-8')
 	{
 		$this->setPattern($pattern);
 		$this->setCharset($charset);
@@ -159,11 +159,11 @@ class TSimpleDateFormatter
 	public function getDayMonthYearOrdering()
 	{
 		$ordering = [];
-		if(is_int($day= strpos($this->pattern, 'd')))
+		if(is_int($day = strpos($this->pattern, 'd')))
 			$ordering['day'] = $day;
-		if(is_int($month= strpos($this->pattern, 'M')))
+		if(is_int($month = strpos($this->pattern, 'M')))
 			$ordering['month'] = $month;
-		if(is_int($year= strpos($this->pattern, 'yy')))
+		if(is_int($year = strpos($this->pattern, 'yy')))
 			$ordering['year'] = $year;
 		asort($ordering);
 		return array_keys($ordering);
@@ -204,7 +204,7 @@ class TSimpleDateFormatter
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
-	public function parse($value, $defaultToCurrentTime=true)
+	public function parse($value, $defaultToCurrentTime = true)
 	{
 		if(is_int($value) || is_float($value))
 			return $value;
@@ -224,8 +224,8 @@ class TSimpleDateFormatter
 		$i_format = 0;
 		$pattern_length = $this->length($pattern);
 		$c = '';
-		$token='';
-		$x=null; $y=null;
+		$token = '';
+		$x = null; $y = null;
 
 
 		if($defaultToCurrentTime)
@@ -244,18 +244,18 @@ class TSimpleDateFormatter
 		while ($i_format < $pattern_length)
 		{
 			$c = $this->charAt($pattern, $i_format);
-			$token='';
+			$token = '';
 			while ($this->charEqual($pattern, $i_format, $c)
 						&& ($i_format < $pattern_length))
 			{
 				$token .= $this->charAt($pattern, $i_format++);
 			}
 
-			if ($token=='yyyy' || $token=='yy' || $token=='y')
+			if ($token == 'yyyy' || $token == 'yy' || $token == 'y')
 			{
-				if ($token=='yyyy') { $x=4;$y=4; }
-				if ($token=='yy')   { $x=2;$y=2; }
-				if ($token=='y')    { $x=2;$y=4; }
+				if ($token == 'yyyy') { $x = 4;$y = 4; }
+				if ($token == 'yy')   { $x = 2;$y = 2; }
+				if ($token == 'y')    { $x = 2;$y = 4; }
 				$year = $this->getInteger($value, $i_val, $x, $y);
 				if($year === null)
 					return null;
@@ -271,9 +271,9 @@ class TSimpleDateFormatter
 				}
 				$year = (int)$year;
 			}
-			elseif($token=='MM' || $token=='M')
+			elseif($token == 'MM' || $token == 'M')
 			{
-				$month=$this->getInteger($value,$i_val,
+				$month = $this->getInteger($value,$i_val,
 									$this->length($token), 2);
 				$iMonth = (int)$month;
 				if($month === null || $iMonth < 1 || $iMonth > 12)
@@ -282,12 +282,12 @@ class TSimpleDateFormatter
 				$i_val += strlen($month);
 				$month = $iMonth;
 			}
-			elseif ($token=='dd' || $token=='d')
+			elseif ($token == 'dd' || $token == 'd')
 			{
 				$day = $this->getInteger($value,$i_val,
 									$this->length($token), 2);
 				$iDay = (int)$day;
-				if($day === null || $iDay < 1 || $iDay >31)
+				if($day === null || $iDay < 1 || $iDay > 31)
 					return null;
 					//throw new TInvalidDataValueException('Invalid day', $value);
 				$i_val += strlen($day);
@@ -368,7 +368,7 @@ class TSimpleDateFormatter
 		//match for digits backwards
 		for ($x = $maxlength; $x >= $minlength; $x--)
 		{
-			$token= $this->substring($str, $i, $x);
+			$token = $this->substring($str, $i, $x);
 			if ($this->length($token) < $minlength)
 				return null;
 			if (preg_match('/^\d+$/', $token))

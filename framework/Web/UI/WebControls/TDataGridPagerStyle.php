@@ -44,23 +44,23 @@ class TDataGridPagerStyle extends TPanelStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_mode===null)
+		if ($this->_mode === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_mode";
-		if ($this->_nextText===null)
+		if ($this->_nextText === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_nextText";
-		if ($this->_prevText===null)
+		if ($this->_prevText === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_prevText";
-		if ($this->_firstText===null)
+		if ($this->_firstText === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_firstText";
-		if ($this->_lastText===null)
+		if ($this->_lastText === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_lastText";
-		if ($this->_buttonCount===null)
+		if ($this->_buttonCount === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonCount";
-		if ($this->_position===null)
+		if ($this->_position === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_position";
-		if ($this->_visible===null)
+		if ($this->_visible === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_visible";
-		if ($this->_buttonType===null)
+		if ($this->_buttonType === null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonType";
 	}
 
@@ -69,7 +69,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getMode()
 	{
-		return $this->_mode===null?TDataGridPagerMode::NextPrev : $this->_mode;
+		return $this->_mode === null?TDataGridPagerMode::NextPrev : $this->_mode;
 	}
 
 	/**
@@ -77,7 +77,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerMode');
+		$this->_mode = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerMode');
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType===null?TDataGridPagerButtonType::LinkButton:$this->_buttonType;
+		return $this->_buttonType === null?TDataGridPagerButtonType::LinkButton:$this->_buttonType;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerButtonType');
+		$this->_buttonType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerButtonType');
 	}
 
 	/**
@@ -101,7 +101,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getNextPageText()
 	{
-		return $this->_nextText===null?'>':$this->_nextText;
+		return $this->_nextText === null?'>':$this->_nextText;
 	}
 
 	/**
@@ -109,7 +109,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setNextPageText($value)
 	{
-		$this->_nextText=$value;
+		$this->_nextText = $value;
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPrevPageText()
 	{
-		return $this->_prevText===null?'<':$this->_prevText;
+		return $this->_prevText === null?'<':$this->_prevText;
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setPrevPageText($value)
 	{
-		$this->_prevText=$value;
+		$this->_prevText = $value;
 	}
 
 	/**
@@ -133,7 +133,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getFirstPageText()
 	{
-		return $this->_firstText===null?'<<':$this->_firstText;
+		return $this->_firstText === null?'<<':$this->_firstText;
 	}
 
 	/**
@@ -141,7 +141,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setFirstPageText($value)
 	{
-		$this->_firstText=$value;
+		$this->_firstText = $value;
 	}
 
 	/**
@@ -149,7 +149,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getLastPageText()
 	{
-		return $this->_lastText===null?'>>':$this->_lastText;
+		return $this->_lastText === null?'>>':$this->_lastText;
 	}
 
 	/**
@@ -157,7 +157,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setLastPageText($value)
 	{
-		$this->_lastText=$value;
+		$this->_lastText = $value;
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPageButtonCount()
 	{
-		return $this->_buttonCount===null?10:$this->_buttonCount;
+		return $this->_buttonCount === null?10:$this->_buttonCount;
 	}
 
 	/**
@@ -174,9 +174,9 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setPageButtonCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<1)
+		if(($value = TPropertyValue::ensureInteger($value)) < 1)
 			throw new TInvalidDataValueException('datagridpagerstyle_pagebuttoncount_invalid');
-		$this->_buttonCount=$value;
+		$this->_buttonCount = $value;
 	}
 
 	/**
@@ -184,7 +184,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPosition()
 	{
-		return $this->_position===null?TDataGridPagerPosition::Bottom:$this->_position;
+		return $this->_position === null?TDataGridPagerPosition::Bottom:$this->_position;
 	}
 
 	/**
@@ -192,7 +192,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setPosition($value)
 	{
-		$this->_position=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerPosition');
+		$this->_position = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerPosition');
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getVisible()
 	{
-		return $this->_visible===null?true:$this->_visible;
+		return $this->_visible === null?true:$this->_visible;
 	}
 
 	/**
@@ -208,7 +208,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setVisible($value)
 	{
-		$this->_visible=TPropertyValue::ensureBoolean($value);
+		$this->_visible = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -217,13 +217,13 @@ class TDataGridPagerStyle extends TPanelStyle
 	public function reset()
 	{
 		parent::reset();
-		$this->_visible=null;
-		$this->_position=null;
-		$this->_buttonCount=null;
-		$this->_prevText=null;
-		$this->_nextText=null;
-		$this->_mode=null;
-		$this->_buttonType=null;
+		$this->_visible = null;
+		$this->_position = null;
+		$this->_buttonCount = null;
+		$this->_prevText = null;
+		$this->_nextText = null;
+		$this->_mode = null;
+		$this->_buttonType = null;
 	}
 
 	/**
@@ -237,20 +237,20 @@ class TDataGridPagerStyle extends TPanelStyle
 		parent::copyFrom($style);
 		if($style instanceof TDataGridPagerStyle)
 		{
-			if($style->_visible!==null)
-				$this->_visible=$style->_visible;
-			if($style->_position!==null)
-				$this->_position=$style->_position;
-			if($style->_buttonCount!==null)
-				$this->_buttonCount=$style->_buttonCount;
-			if($style->_prevText!==null)
-				$this->_prevText=$style->_prevText;
-			if($style->_nextText!==null)
-				$this->_nextText=$style->_nextText;
-			if($style->_mode!==null)
-				$this->_mode=$style->_mode;
-			if($style->_buttonType!==null)
-				$this->_buttonType=$style->_buttonType;
+			if($style->_visible !== null)
+				$this->_visible = $style->_visible;
+			if($style->_position !== null)
+				$this->_position = $style->_position;
+			if($style->_buttonCount !== null)
+				$this->_buttonCount = $style->_buttonCount;
+			if($style->_prevText !== null)
+				$this->_prevText = $style->_prevText;
+			if($style->_nextText !== null)
+				$this->_nextText = $style->_nextText;
+			if($style->_mode !== null)
+				$this->_mode = $style->_mode;
+			if($style->_buttonType !== null)
+				$this->_buttonType = $style->_buttonType;
 		}
 	}
 
@@ -265,20 +265,20 @@ class TDataGridPagerStyle extends TPanelStyle
 		parent::mergeWith($style);
 		if($style instanceof TDataGridPagerStyle)
 		{
-			if($this->_visible===null)
-				$this->_visible=$style->_visible;
-			if($this->_position===null)
-				$this->_position=$style->_position;
-			if($this->_buttonCount===null)
-				$this->_buttonCount=$style->_buttonCount;
-			if($this->_prevText===null)
-				$this->_prevText=$style->_prevText;
-			if($this->_nextText===null)
-				$this->_nextText=$style->_nextText;
-			if($this->_mode===null)
-				$this->_mode=$style->_mode;
-			if($this->_buttonType===null)
-				$this->_buttonType=$style->_buttonType;
+			if($this->_visible === null)
+				$this->_visible = $style->_visible;
+			if($this->_position === null)
+				$this->_position = $style->_position;
+			if($this->_buttonCount === null)
+				$this->_buttonCount = $style->_buttonCount;
+			if($this->_prevText === null)
+				$this->_prevText = $style->_prevText;
+			if($this->_nextText === null)
+				$this->_nextText = $style->_nextText;
+			if($this->_mode === null)
+				$this->_mode = $style->_mode;
+			if($this->_buttonType === null)
+				$this->_buttonType = $style->_buttonType;
 		}
 	}
 }

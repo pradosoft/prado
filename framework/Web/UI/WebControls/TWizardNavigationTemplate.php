@@ -31,7 +31,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 */
 	public function __construct($wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -65,13 +65,13 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 		switch($buttonStyle->getButtonType())
 		{
 			case TWizardNavigationButtonType::Button:
-				$button=new TButton;
+				$button = new TButton;
 				break;
 			case TWizardNavigationButtonType::Link:
-				$button=new TLinkButton;
+				$button = new TLinkButton;
 				break;
 			case TWizardNavigationButtonType::Image:
-				$button=new TImageButton;
+				$button = new TImageButton;
 				$button->setImageUrl($buttonStyle->getImageUrl());
 				break;
 			default:

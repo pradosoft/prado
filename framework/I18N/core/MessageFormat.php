@@ -97,7 +97,7 @@ class MessageFormat
 	 * @param MessageSource the source of translation messages.
 	 * @param string charset for the message output.
 	 */
-	public function __construct(IMessageSource $source, $charset='UTF-8')
+	public function __construct(IMessageSource $source, $charset = 'UTF-8')
 	{
 		$this->source = $source;
 		$this->setCharset($charset);
@@ -153,7 +153,7 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	public function format($string, $args=[], $catalogue=null, $charset=null)
+	public function format($string, $args = [], $catalogue = null, $charset = null)
 	{
 		if(empty($charset)) $charset = $this->getCharset();
 		
@@ -172,7 +172,7 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	protected function formatString($string, $args=[], $catalogue=null)
+	protected function formatString($string, $args = [], $catalogue = null)
 	{
 		if(empty($catalogue))
 		{
@@ -240,7 +240,7 @@ class MessageFormat
 	 */
 	public function setUntranslatedPS($postscript)
 	{
-		if(is_array($postscript) && count($postscript)>=2)
+		if(is_array($postscript) && count($postscript) >= 2)
 		{
 			$this->postscript[0] = $postscript[0];
 			$this->postscript[1] = $postscript[1];

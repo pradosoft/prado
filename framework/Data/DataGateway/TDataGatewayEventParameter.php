@@ -26,8 +26,8 @@ class TDataGatewayEventParameter extends \Prado\TEventParameter
 
 	public function __construct($command, $criteria)
 	{
-		$this->_command=$command;
-		$this->_criteria=$criteria;
+		$this->_command = $command;
+		$this->_criteria = $criteria;
 	}
 
 	/**

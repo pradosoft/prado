@@ -65,7 +65,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
-	private $_dataChanged=false;
+	private $_dataChanged = false;
 
 	/**
 	 * @return string tag name for the control
@@ -135,34 +135,34 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveView()
 	{
-		$activeView=null;
-		$views=$this->getViews();
-		if(($id=$this->getActiveViewID())!=='')
+		$activeView = null;
+		$views = $this->getViews();
+		if(($id = $this->getActiveViewID()) !== '')
 		{
-			if(($index=$views->findIndexByID($id))>=0)
-				$activeView=$views->itemAt($index);
+			if(($index = $views->findIndexByID($id)) >= 0)
+				$activeView = $views->itemAt($index);
 			else
 				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid', $id);
 		}
-		elseif(($index=$this->getActiveViewIndex())>=0)
+		elseif(($index = $this->getActiveViewIndex()) >= 0)
 		{
-			if($index<$views->getCount())
-				$activeView=$views->itemAt($index);
+			if($index < $views->getCount())
+				$activeView = $views->itemAt($index);
 			else
 				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid', $index);
 		}
 		else
 		{
-			foreach($views as $index=>$view)
+			foreach($views as $index => $view)
 			{
 				if($view->getActive())
 				{
-					$activeView=$view;
+					$activeView = $view;
 					break;
 				}
 			}
 		}
-		if($activeView!==null)
+		if($activeView !== null)
 			$this->activateView($activeView);
 		return $activeView;
 	}
@@ -173,7 +173,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setActiveView($view)
 	{
-		if($this->getViews()->indexOf($view)>=0)
+		if($this->getViews()->indexOf($view) >= 0)
 			$this->activateView($view);
 		else
 			throw new TInvalidOperationException('tabpanel_view_inexistent');
@@ -217,8 +217,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getCssClass()
 	{
-		$cssClass=parent::getCssClass();
-		return $cssClass===''?'tab-panel':$cssClass;
+		$cssClass = parent::getCssClass();
+		return $cssClass === ''?'tab-panel':$cssClass;
 	}
 
 	/**
@@ -242,9 +242,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getViewStyle()
 	{
-		if(($style=$this->getViewState('ViewStyle', null))===null)
+		if(($style = $this->getViewState('ViewStyle', null)) === null)
 		{
-			$style=new TStyle;
+			$style = new TStyle;
 			$style->setCssClass('tab-view');
 			$this->setViewState('ViewStyle', $style, null);
 		}
@@ -272,9 +272,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getTabStyle()
 	{
-		if(($style=$this->getViewState('TabStyle', null))===null)
+		if(($style = $this->getViewState('TabStyle', null)) === null)
 		{
-			$style=new TStyle;
+			$style = new TStyle;
 			$style->setCssClass('tab-normal');
 			$this->setViewState('TabStyle', $style, null);
 		}
@@ -302,9 +302,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveTabStyle()
 	{
-		if(($style=$this->getViewState('ActiveTabStyle', null))===null)
+		if(($style = $this->getViewState('ActiveTabStyle', null)) === null)
 		{
-			$style=new TStyle;
+			$style = new TStyle;
 			$style->setCssClass('tab-active');
 			$this->setViewState('ActiveTabStyle', $style, null);
 		}
@@ -320,9 +320,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$this->setActiveViewIndex(-1);
 		$this->setActiveViewID('');
-		foreach($this->getViews() as $index=>$v)
+		foreach($this->getViews() as $index => $v)
 		{
-			if($view===$v)
+			if($view === $v)
 			{
 				$this->setActiveViewIndex($index);
 				$this->setActiveViewID($view->getID(false));
@@ -342,15 +342,15 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key, $values)
 	{
-		if(($index=$values[$this->getClientID() . '_1'])!==null)
+		if(($index = $values[$this->getClientID() . '_1']) !== null)
 		{
-			$index=(int)$index;
-			$currentIndex=$this->getActiveViewIndex();
-			if($currentIndex!==$index)
+			$index = (int)$index;
+			$currentIndex = $this->getActiveViewIndex();
+			if($currentIndex !== $index)
 			{
 				$this->setActiveViewID(''); // clear up view ID
 				$this->setActiveViewIndex($index);
-				return $this->_dataChanged=true;
+				return $this->_dataChanged = true;
 			}
 		}
 		return false;
@@ -400,7 +400,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$this->getActiveView();  // determine the active view
 		$this->registerStyleSheet();
 
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->registerRequiresPostData($this);
 		$page->registerRequiresPostData($this->getClientID() . "_1");
 	}
@@ -432,17 +432,17 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function registerClientScript()
 	{
-		$id=$this->getClientID();
-		$options=TJavaScript::encode($this->getClientOptions());
-		$className=$this->getClientClassName();
-		$cs=$this->getPage()->getClientScript();
+		$id = $this->getClientID();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('tabpanel');
-		$code="new $className($options);";
+		$code = "new $className($options);";
 		$cs->registerEndScript("prado:$id", $code);
 		// ensure an item is always active and visible
 		$index = $this->getActiveViewIndex();
 		if(!$this->getViews()->itemAt($index)->Visible)
-			$index=0;
+			$index = 0;
 		$cs->registerHiddenField($id . '_1', $index);
 	}
 
@@ -507,8 +507,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function renderContents($writer)
 	{
-		$views=$this->getViews();
-		if($views->getCount()>0)
+		$views = $this->getViews();
+		if($views->getCount() > 0)
 		{
 			$writer->writeLine();
 			// render tab bar

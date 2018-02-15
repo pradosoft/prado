@@ -179,7 +179,7 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateEnabled($enable)
 	{
-		$this->client()->setAttribute($this->_control, 'disabled', $enable===false);
+		$this->client()->setAttribute($this->_control, 'disabled', $enable === false);
 	}
 
 	/**
@@ -188,7 +188,7 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateStyle($style)
 	{
-		if($style['CssClass']!==null)
+		if($style['CssClass'] !== null)
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
 		if(is_array($style['Style']) && count($style['Style']) > 0)
 			$this->client()->setStyle($this->_control, $style['Style']);

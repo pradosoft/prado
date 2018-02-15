@@ -167,7 +167,7 @@ class CultureInfo
 	 * @param string a culture name, e.g. "en_AU".
 	 * @return return new CultureInfo.
 	 */
-	public function __construct($culture='en')
+	public function __construct($culture = 'en')
 	{
 		$this->properties = get_class_methods($this);
 
@@ -317,7 +317,7 @@ class CultureInfo
 	 * @param boolean merge the data from its parents.
 	 * @return mixed the specific ICU data.
 	 */
-	protected function findInfo($path='/', $merge=false)
+	protected function findInfo($path = '/', $merge = false)
 	{
 		$result = [];
 		foreach($this->dataFiles as $section)
@@ -344,7 +344,7 @@ class CultureInfo
 	 * @param string slash "/" separated array path.
 	 * @return mixed the value array using the path
 	 */
-	private function searchArray($info, $path='/')
+	private function searchArray($info, $path = '/')
 	{
 		$index = explode('/', $path);
 
@@ -353,9 +353,9 @@ class CultureInfo
 		for($i = 0, $k = count($index); $i < $k; ++$i)
 		{
 			$value = $index[$i];
-			if($i < $k-1 && isset($array[$value]))
+			if($i < $k - 1 && isset($array[$value]))
 				$array = $array[$value];
-			elseif ($i == $k-1 && isset($array[$value]))
+			elseif ($i == $k - 1 && isset($array[$value]))
 				return $array[$value];
 		}
 	}
@@ -485,8 +485,8 @@ class CultureInfo
 			$elements = $this->findInfo('NumberElements');
 			$patterns = $this->findInfo('NumberPatterns');
 			$currencies = $this->getCurrencies();
-			$data = [	'NumberElements'=>$elements,
-							'NumberPatterns'=>$patterns,
+			$data = [	'NumberElements' => $elements,
+							'NumberPatterns' => $patterns,
 							'Currencies' => $currencies];
 
 			$this->setNumberFormat(new NumberFormatInfo($data));
@@ -526,7 +526,7 @@ class CultureInfo
 	 * or CultureInfo::SPECIFIC.
 	 * @return array list of culture information available.
 	 */
-	public static function getCultures($type=CultureInfo::ALL)
+	public static function getCultures($type = CultureInfo::ALL)
 	{
 		$dataDir = CultureInfo::dataDir();
 		$dataExt = CultureInfo::fileExt();
@@ -553,7 +553,7 @@ class CultureInfo
 		switch($type)
 		{
 			case CultureInfo::ALL :
-				$all = 	array_merge($neutral, $specific);
+				$all = array_merge($neutral, $specific);
 				sort($all);
 				return $all;
 				break;
@@ -575,7 +575,7 @@ class CultureInfo
 	 */
 	private function simplify($array)
 	{
-		for($i = 0, $k = count($array); $i<$k; ++$i)
+		for($i = 0, $k = count($array); $i < $k; ++$i)
 		{
 			$key = key($array);
 			if(is_array($array[$key])

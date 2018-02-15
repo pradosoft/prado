@@ -51,7 +51,7 @@ use Prado\TPropertyValue;
 abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 {
 	private $_prefix;
-	private $_primary=true;
+	private $_primary = true;
 
 	/**
 	 * Initializes the cache module.
@@ -61,11 +61,11 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function init($config)
 	{
-		if($this->_prefix===null)
-			$this->_prefix=$this->getApplication()->getUniqueID();
+		if($this->_prefix === null)
+			$this->_prefix = $this->getApplication()->getUniqueID();
 		if($this->_primary)
 		{
-			if($this->getApplication()->getCache()===null)
+			if($this->getApplication()->getCache() === null)
 				$this->getApplication()->setCache($this);
 			else
 				throw new TConfigurationException('cache_primary_duplicated', get_class($this));
@@ -88,7 +88,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function setPrimaryCache($value)
 	{
-		$this->_primary=TPropertyValue::ensureBoolean($value);
+		$this->_primary = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -105,7 +105,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function setKeyPrefix($value)
 	{
-		$this->_prefix=$value;
+		$this->_prefix = $value;
 	}
 
 	/**
@@ -124,7 +124,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function get($id)
 	{
-		if(($data=$this->getValue($this->generateUniqueKey($id)))!==false)
+		if(($data = $this->getValue($this->generateUniqueKey($id))) !== false)
 		{
 			if(!is_array($data))
 				return false;
@@ -146,13 +146,13 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set($id, $value, $expire=0, $dependency=null)
+	public function set($id, $value, $expire = 0, $dependency = null)
 	{
 		if(empty($value) && $expire === 0)
 			$this->delete($id);
 		else
 		{
-			$data=[$value,$dependency];
+			$data = [$value,$dependency];
 			return $this->setValue($this->generateUniqueKey($id), $data, $expire);
 		}
 	}
@@ -166,11 +166,11 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add($id, $value, $expire=0, $dependency=null)
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		if(empty($value) && $expire === 0)
 			return false;
-		$data=[$value,$dependency];
+		$data = [$value,$dependency];
 		return $this->addValue($this->generateUniqueKey($id), $data, $expire);
 	}
 

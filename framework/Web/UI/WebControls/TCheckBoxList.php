@@ -41,9 +41,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 {
 	private $_repeatedControl;
 	private $_isEnabled;
-	private $_changedEventRaised=false;
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_changedEventRaised = false;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * Constructor.
@@ -52,7 +52,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_repeatedControl=$this->createRepeatedControl();
+		$this->_repeatedControl = $this->createRepeatedControl();
 		$this->_repeatedControl->setEnableViewState(false);
 		$this->_repeatedControl->setID('c0');
 		$this->getControls()->add($this->_repeatedControl);
@@ -74,9 +74,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * @param string control ID
 	 * @return TControl control being found
 	 */
-	public function findControl($id, $real=false)
+	public function findControl($id, $real = false)
 	{
-		if ($real===true)
+		if ($real === true)
 			return parent::findControl($id);
 		return $this;
 	}
@@ -121,9 +121,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	protected function getRepeatInfo()
 	{
-		if(($repeatInfo=$this->getViewState('RepeatInfo', null))===null)
+		if(($repeatInfo = $this->getViewState('RepeatInfo', null)) === null)
 		{
-			$repeatInfo=new TRepeatInfo;
+			$repeatInfo = new TRepeatInfo;
 			$this->setViewState('RepeatInfo', $repeatInfo, null);
 		}
 		return $repeatInfo;
@@ -265,7 +265,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 			$items = $this->getItems();
 			$cs = $this->getPage()->getCallbackClient();
 			$baseClientID = $this->getClientID() . '_c';
-			foreach($items as $index=>$item)
+			foreach($items as $index => $item)
 			{
 				$cs->setAttribute($baseClientID . $index, 'disabled', $value);
 			}
@@ -294,8 +294,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{
-		$repeatedControl=$this->_repeatedControl;
-		$item=$this->getItems()->itemAt($index);
+		$repeatedControl = $this->_repeatedControl;
+		$item = $this->getItems()->itemAt($index);
 		if($item->getHasAttributes())
 			$repeatedControl->getAttributes()->copyFrom($item->getAttributes());
 		elseif($repeatedControl->getHasAttributes())
@@ -320,21 +320,21 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	{
 		if($this->getEnabled(true))
 		{
-			$index=(int)substr($key, strlen($this->getUniqueID())+2);
+			$index = (int)substr($key, strlen($this->getUniqueID()) + 2);
 			$this->ensureDataBound();
-			if($index>=0 && $index<$this->getItemCount())
+			if($index >= 0 && $index < $this->getItemCount())
 			{
-				$item=$this->getItems()->itemAt($index);
+				$item = $this->getItems()->itemAt($index);
 				if($item->getEnabled())
 				{
-					$checked=isset($values[$key]);
-					if($item->getSelected()!==$checked)
+					$checked = isset($values[$key]);
+					if($item->getSelected() !== $checked)
 					{
 						$item->setSelected($checked);
 						if(!$this->_changedEventRaised)
 						{
-							$this->_changedEventRaised=true;
-							return $this->_dataChanged=true;
+							$this->_changedEventRaised = true;
+							return $this->_dataChanged = true;
 						}
 					}
 				}
@@ -368,9 +368,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$this->_repeatedControl->setAutoPostBack($this->getAutoPostBack());
 		$this->_repeatedControl->setCausesValidation($this->getCausesValidation());
 		$this->_repeatedControl->setValidationGroup($this->getValidationGroup());
-		$page=$this->getPage();
-		$n=$this->getItemCount();
-		for($i=0;$i<$n;++$i)
+		$page = $this->getPage();
+		$n = $this->getItemCount();
+		for($i = 0;$i < $n;++$i)
 		{
 			$this->_repeatedControl->setID("c$i");
 			$page->registerRequiresPostData($this->_repeatedControl);
@@ -384,7 +384,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	protected function getSpanNeeded ()
 	{
-		return $this->getRepeatLayout()===TRepeatLayout::Raw;
+		return $this->getRepeatLayout() === TRepeatLayout::Raw;
 	}
 
 	/**
@@ -394,17 +394,17 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function render($writer)
 	{
-	  if ($needSpan=$this->getSpanNeeded())
+	  if ($needSpan = $this->getSpanNeeded())
 	  {
 		$writer->addAttribute('id', $this->getClientId());
 		$writer->renderBeginTag('span');
 	  }
-		if($this->getItemCount()>0)
+		if($this->getItemCount() > 0)
 		{
-			$this->_isEnabled=$this->getEnabled(true);
-			$repeatInfo=$this->getRepeatInfo();
-			$accessKey=$this->getAccessKey();
-			$tabIndex=$this->getTabIndex();
+			$this->_isEnabled = $this->getEnabled(true);
+			$repeatInfo = $this->getRepeatInfo();
+			$accessKey = $this->getAccessKey();
+			$tabIndex = $this->getTabIndex();
 			$this->_repeatedControl->setTextAlign($this->getTextAlign());
 			$this->_repeatedControl->setAccessKey($accessKey);
 			$this->_repeatedControl->setTabIndex($tabIndex);
@@ -462,7 +462,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

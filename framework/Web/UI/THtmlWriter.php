@@ -43,34 +43,34 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	/**
 	 * @var array list of tags are do not need a closing tag
 	 */
-	private static $_simpleTags=[
-		'area'=>true,
-		'base'=>true,
-		'basefont'=>true,
-		'bgsound'=>true,
-		'col'=>true,
-		'embed'=>true,
-		'frame'=>true,
-		'hr'=>true,
-		'img'=>true,
-		'input'=>true,
-		'isindex'=>true,
-		'link'=>true,
-		'meta'=>true,
-		'wbr'=>true,
+	private static $_simpleTags = [
+		'area' => true,
+		'base' => true,
+		'basefont' => true,
+		'bgsound' => true,
+		'col' => true,
+		'embed' => true,
+		'frame' => true,
+		'hr' => true,
+		'img' => true,
+		'input' => true,
+		'isindex' => true,
+		'link' => true,
+		'meta' => true,
+		'wbr' => true,
 	];
 	/**
 	 * @var array list of attributes to be rendered for a tag
 	 */
-	private $_attributes=[];
+	private $_attributes = [];
 	/**
 	 * @var array list of openning tags
 	 */
-	private $_openTags=[];
+	private $_openTags = [];
 	/**
 	 * @var array list of style attributes
 	 */
-	private $_styles=[];
+	private $_styles = [];
 	/**
 	 * @var ITextWriter writer
 	 */
@@ -82,7 +82,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function __construct($writer)
 	{
-		$this->_writer=$writer;
+		$this->_writer = $writer;
 	}
 
 	public function getWriter()
@@ -100,8 +100,8 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function addAttributes($attrs)
 	{
-		foreach($attrs as $name=>$value)
-			$this->_attributes[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
+		foreach($attrs as $name => $value)
+			$this->_attributes[THttpUtility::htmlStrip($name)] = THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function addAttribute($name, $value)
 	{
-		$this->_attributes[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
+		$this->_attributes[THttpUtility::htmlStrip($name)] = THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -129,8 +129,8 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function addStyleAttributes($attrs)
 	{
-		foreach($attrs as $name=>$value)
-			$this->_styles[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
+		foreach($attrs as $name => $value)
+			$this->_styles[THttpUtility::htmlStrip($name)] = THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function addStyleAttribute($name, $value)
 	{
-		$this->_styles[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
+		$this->_styles[THttpUtility::htmlStrip($name)] = THttpUtility::htmlEncode($value);
 	}
 
 	/**
@@ -175,7 +175,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 * Renders a string and appends a newline to it.
 	 * @param string string to be rendered
 	 */
-	public function writeLine($str='')
+	public function writeLine($str = '')
 	{
 		$this->_writer->write($str . "\n");
 	}
@@ -194,29 +194,29 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function renderBeginTag($tagName)
 	{
-		$str='<' . $tagName;
-		foreach($this->_attributes as $name=>$value)
-			$str.=' ' . $name . '="' . $value . '"';
+		$str = '<' . $tagName;
+		foreach($this->_attributes as $name => $value)
+			$str .= ' ' . $name . '="' . $value . '"';
 		if(!empty($this->_styles))
 		{
-			$str.=' style="';
-			foreach($this->_styles as $name=>$value)
-				$str.=$name . ':' . $value . ';';
-			$str.='"';
+			$str .= ' style="';
+			foreach($this->_styles as $name => $value)
+				$str .= $name . ':' . $value . ';';
+			$str .= '"';
 		}
 		if(isset(self::$_simpleTags[$tagName]))
 		{
-			$str.=' />';
+			$str .= ' />';
 			$this->_openTags[] = '';
 		}
 		else
 		{
-			$str.='>';
+			$str .= '>';
 			$this->_openTags[] = $tagName;
 		}
 		$this->_writer->write($str);
-		$this->_attributes=[];
-		$this->_styles=[];
+		$this->_attributes = [];
+		$this->_styles = [];
 	}
 
 	/**
@@ -224,7 +224,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function renderEndTag()
 	{
-		if(!empty($this->_openTags) && ($tagName=array_pop($this->_openTags))!=='')
+		if(!empty($this->_openTags) && ($tagName = array_pop($this->_openTags)) !== '')
 			$this->_writer->write('</' . $tagName . '>');
 	}
 }

@@ -27,7 +27,7 @@ use Prado\Prado;
  */
 class TPgsqlTableColumn extends TDbTableColumn
 {
-	private static $types=[
+	private static $types = [
 		'integer' => ['bit', 'bit varying', 'real', 'serial', 'int', 'integer'],
 		'boolean' => ['boolean'],
 		'float' => ['bigint', 'bigserial', 'double precision', 'money', 'numeric']

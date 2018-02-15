@@ -35,7 +35,7 @@ class TPreparedStatementFactory
 	{
 		$this->_preparedStatement = new TPreparedStatement();
 		$this->_preparedStatement->setPreparedSql($this->_commandText);
-		if($this->_statement->parameterMap()!==null)
+		if($this->_statement->parameterMap() !== null)
 			$this->createParametersForTextCommand();
 		return $this->_preparedStatement;
 	}

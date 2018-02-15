@@ -132,7 +132,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientSide===null)
+		if($this->_clientSide === null)
 			$this->_clientSide = $this->createClientSide();
 		return $this->_clientSide;
 	}
@@ -170,7 +170,7 @@ class TColorPicker extends TTextBox
 	 * @param string asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
 		return $base . '/' . self::SCRIPT_PATH . '/' . $file;

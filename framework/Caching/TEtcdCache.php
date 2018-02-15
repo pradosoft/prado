@@ -208,7 +208,7 @@ class TEtcdCache extends TCache
    * @param array the additional post data to send with the request
    * @return \stdClass the response from the etcd instance
    */
-  protected function request($method, $key, $value=[]) {
+  protected function request($method, $key, $value = []) {
 	$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 	curl_setopt($curl, CURLOPT_HEADER, false);

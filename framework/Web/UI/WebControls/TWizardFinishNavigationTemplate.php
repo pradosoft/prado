@@ -27,11 +27,11 @@ class TWizardFinishNavigationTemplate extends TWizardNavigationTemplate
 	 */
 	public function instantiateIn($parent)
 	{
-		$previousButton=$this->createNavigationButton($this->getWizard()->getFinishPreviousButtonStyle(), false, TWizard::CMD_PREVIOUS);
-		$completeButton=$this->createNavigationButton($this->getWizard()->getFinishCompleteButtonStyle(), true, TWizard::CMD_COMPLETE);
-		$cancelButton=$this->createNavigationButton($this->getWizard()->getCancelButtonStyle(), false, TWizard::CMD_CANCEL);
+		$previousButton = $this->createNavigationButton($this->getWizard()->getFinishPreviousButtonStyle(), false, TWizard::CMD_PREVIOUS);
+		$completeButton = $this->createNavigationButton($this->getWizard()->getFinishCompleteButtonStyle(), true, TWizard::CMD_COMPLETE);
+		$cancelButton = $this->createNavigationButton($this->getWizard()->getCancelButtonStyle(), false, TWizard::CMD_CANCEL);
 
-		$controls=$parent->getControls();
+		$controls = $parent->getControls();
 		$controls->add($previousButton);
 		$controls->add("\n");
 		$controls->add($completeButton);

@@ -106,6 +106,6 @@ class TValidatorClientSide extends TClientSideOptions
 	public function getObserveChanges()
 	{
 		$changes = $this->getOption('ObserveChanges');
-		return ($changes===null) ? true : $changes;
+		return ($changes === null) ? true : $changes;
 	}
 }

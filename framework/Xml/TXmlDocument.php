@@ -78,7 +78,7 @@ class TXmlDocument extends TXmlElement
 	 * @param string version of this XML document
 	 * @param string encoding of this XML document
 	 */
-	public function __construct($version='1.0', $encoding='')
+	public function __construct($version = '1.0', $encoding = '')
 	{
 		parent::__construct('');
 		$this->setVersion($version);
@@ -98,7 +98,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function setVersion($version)
 	{
-		$this->_version=$version;
+		$this->_version = $version;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function setEncoding($encoding)
 	{
-		$this->_encoding=$encoding;
+		$this->_encoding = $encoding;
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function loadFromFile($file)
 	{
-		if(($str=@file_get_contents($file))!==false)
+		if(($str = @file_get_contents($file)) !== false)
 			return $this->loadFromString($str);
 		else
 			throw new TIOException('xmldocument_file_read_failed', $file);
@@ -140,18 +140,18 @@ class TXmlDocument extends TXmlElement
 	public function loadFromString($string)
 	{
 		// TODO: since PHP 5.1, we can get parsing errors and throw them as exception
-		$doc=new \DOMDocument();
-		if($doc->loadXML($string)===false)
+		$doc = new \DOMDocument();
+		if($doc->loadXML($string) === false)
 			return false;
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->xmlVersion);
 
-		$element=$doc->documentElement;
+		$element = $doc->documentElement;
 		$this->setTagName($element->tagName);
 		$this->setValue($element->nodeValue);
-		$elements=$this->getElements();
-		$attributes=$this->getAttributes();
+		$elements = $this->getElements();
+		$attributes = $this->getAttributes();
 		$elements->clear();
 		$attributes->clear();
 
@@ -173,7 +173,7 @@ class TXmlDocument extends TXmlElement
 			}
 		}
 
-		foreach($element->attributes as $name=>$attr)
+		foreach($element->attributes as $name => $attr)
 			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 		foreach($element->childNodes as $child)
 		{
@@ -191,7 +191,7 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToFile($file)
 	{
-		if(($fw=fopen($file, 'w'))!==false)
+		if(($fw = fopen($file, 'w')) !== false)
 		{
 			fwrite($fw, $this->saveToString());
 			fclose($fw);
@@ -206,8 +206,8 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToString()
 	{
-		$version=empty($this->_version)?' version="1.0"':' version="' . $this->_version . '"';
-		$encoding=empty($this->_encoding)?'':' encoding="' . $this->_encoding . '"';
+		$version = empty($this->_version)?' version="1.0"':' version="' . $this->_version . '"';
+		$encoding = empty($this->_encoding)?'':' encoding="' . $this->_encoding . '"';
 		return "<?xml{$version}{$encoding}?>\n" . $this->toString(0);
 	}
 
@@ -238,9 +238,9 @@ class TXmlDocument extends TXmlElement
 	 */
 	protected function buildElement($node)
 	{
-		$element=new TXmlElement($node->tagName);
+		$element = new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
-		foreach($node->attributes as $name=>$attr)
+		foreach($node->attributes as $name => $attr)
 			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 
 		foreach($node->childNodes as $child)

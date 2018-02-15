@@ -52,14 +52,14 @@ class TActiveControlAdapter extends TControlAdapter
 	/**
 	 * @var string view state tracker class.
 	 */
-	private $_stateTrackerClass='TCallbackPageStateTracker';
+	private $_stateTrackerClass = 'TCallbackPageStateTracker';
 
 	/**
 	 * Constructor.
 	 * @param IActiveControl active control to adapt.
 	 * @param string Base active control class name.
 	 */
-	public function __construct(IActiveControl $control, $baseCallbackClass=null)
+	public function __construct(IActiveControl $control, $baseCallbackClass = null)
 	{
 		parent::__construct($control);
 		$this->setBaseControlClass($baseCallbackClass);
@@ -70,7 +70,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	protected function setBaseControlClass($type)
 	{
-		if($type===null)
+		if($type === null)
 		{
 			if($this->getControl() instanceof ICallbackEventHandler)
 				$this->_activeControlType = 'Prado\\Web\UI\\ActiveControls\\TBaseActiveCallbackControl';
@@ -108,7 +108,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function setBaseActiveControl($control)
 	{
-		$this->_baseActiveControl=$control;
+		$this->_baseActiveControl = $control;
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function getBaseActiveControl()
 	{
-		if($this->_baseActiveControl===null)
+		if($this->_baseActiveControl === null)
 		{
 			$type = $this->_activeControlType;
 			$this->_baseActiveControl = new $type($this->getControl());
@@ -161,7 +161,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	public function saveState()
 	{
-		if(($this->_stateTracker!==null)
+		if(($this->_stateTracker !== null)
 			&& $this->getControl()->getActiveControl()->canUpdateClientSide(true))
 		{
 			$this->_stateTracker->respondToChanges();

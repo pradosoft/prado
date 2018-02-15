@@ -31,7 +31,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param TDbConnection database connection.
 	 * @param TDbTableInfo table information.
 	 */
-	public function __construct($connection=null, $tableInfo=null)
+	public function __construct($connection = null, $tableInfo = null)
 	{
 		$this->setDbConnection($connection);
 		$this->setTableInfo($tableInfo);
@@ -50,7 +50,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function setDbConnection($value)
 	{
-		$this->_connection=$value;
+		$this->_connection = $value;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function setTableInfo($value)
 	{
-		$this->_tableInfo=$value;
+		$this->_tableInfo = $value;
 	}
 
 	/**
@@ -91,10 +91,10 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param integer row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
-	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit!==null ? (int)$limit : -1;
-		$offset = $offset!==null ? (int)$offset : -1;
+		$limit = $limit !== null ? (int)$limit : -1;
+		$offset = $offset !== null ? (int)$offset : -1;
 		$limitStr = $limit >= 0 ? ' LIMIT ' . $limit : '';
 		$offsetStr = $offset >= 0 ? ' OFFSET ' . $offset : '';
 		return $sql . $limitStr . $offsetStr;
@@ -107,7 +107,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function applyOrdering($sql, $ordering)
 	{
-		$orders=[];
+		$orders = [];
 		foreach($ordering as $name => $direction)
 		{
 			$direction = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
@@ -153,7 +153,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	protected function getSearchCondition($column, $words)
 	{
-		$conditions=[];
+		$conditions = [];
 		foreach($words as $word)
 			$conditions[] = $column . ' LIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
 		return '(' . implode(' AND ', $conditions) . ')';
@@ -198,7 +198,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @todo add support for table aliasing
 	 * @todo add support for quoting of column aliasing
 	 */
-	public function getSelectFieldList($data='*') {
+	public function getSelectFieldList($data = '*') {
 		if(is_scalar($data)) {
 			$tmp = explode(',', $data);
 			$result = [];
@@ -211,28 +211,28 @@ class TDbCommandBuilder extends \Prado\TComponent
 		$result = [];
 		if(is_array($data) || $data instanceof Traversable) {
 			$columns = $this->getTableInfo()->getColumns();
-			foreach($data as $key=>$value) {
-				if($key==='*' || $value==='*') {
+			foreach($data as $key => $value) {
+				if($key === '*' || $value === '*') {
 					$bHasWildcard = true;
 					continue;
 				}
 
-				if(strToUpper($key)==='NULL') {
+				if(strToUpper($key) === 'NULL') {
 					$result[] = 'NULL';
 					continue;
 				}
 
-				if(strpos($key, '(')!==false && strpos($key, ')')!==false) {
+				if(strpos($key, '(') !== false && strpos($key, ')') !== false) {
 					$result[] = $key;
 					continue;
 				}
 
-				if(stripos($key, 'AS')!==false) {
+				if(stripos($key, 'AS') !== false) {
 					$result[] = $key;
 					continue;
 				}
 
-				if(stripos($value, 'AS')!==false) {
+				if(stripos($value, 'AS') !== false) {
 					$result[] = $value;
 					continue;
 				}
@@ -244,7 +244,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 					$k = $v;
 				}
 
-				if(strToUpper($value)==='NULL') {
+				if(strToUpper($value) === 'NULL') {
 					if($k)
 						$result[] = 'NULL AS ' . $columns[$key]->getColumnName();
 					else
@@ -252,7 +252,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 					continue;
 				}
 
-				if(strpos($value, '(')!==false && strpos($value, ')')!==false) {
+				if(strpos($value, '(') !== false && strpos($value, ')') !== false) {
 					if($k)
 						$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
 					else
@@ -260,12 +260,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 					continue;
 				}
 
-				if($v && $key==$value) {
+				if($v && $key == $value) {
 					$result[] = $columns[$value]->getColumnName();
 					continue;
 				}
 
-				if($k && $value==null) {
+				if($k && $value == null) {
 					$result[] = $columns[$key]->getColumnName();
 					continue;
 				}
@@ -294,7 +294,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 			}
 		}
 
-		if($data===null || count($result) == 0 || $bHasWildcard)
+		if($data === null || count($result) == 0 || $bHasWildcard)
 			$result = $result = array_merge($this->getTableInfo()->getColumnNames(), $result);
 
 		return $result;
@@ -307,7 +307,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array condition parameters.
 	 * @return TDbCommand query command.
 	 */
-	public function createFindCommand($where='1=1', $parameters=[], $ordering=[], $limit=-1, $offset=-1, $select='*')
+	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		$fields = implode(', ', $this -> getSelectFieldList($select));
@@ -317,11 +317,11 @@ class TDbCommandBuilder extends \Prado\TComponent
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
-	public function applyCriterias($sql, $parameters=[], $ordering=[], $limit=-1, $offset=-1)
+	public function applyCriterias($sql, $parameters = [], $ordering = [], $limit = -1, $offset = -1)
 	{
 		if(count($ordering) > 0)
 			$sql = $this->applyOrdering($sql, $ordering);
-		if($limit>=0 || $offset>=0)
+		if($limit >= 0 || $offset >= 0)
 			$sql = $this->applyLimitOffset($sql, $limit, $offset);
 		$command = $this->createCommand($sql);
 		$this->bindArrayValues($command, $parameters);
@@ -334,7 +334,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array binding parameters.
 	 * @return TDbCommand count command.
 	 */
-	public function createCountCommand($where='1=1', $parameters=[], $ordering=[], $limit=-1, $offset=-1)
+	public function createCountCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1)
 	{
 		return $this->createFindCommand($where, $parameters, $ordering, $limit, $offset, 'COUNT(*)');
 	}
@@ -347,7 +347,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array delete parameters.
 	 * @return TDbCommand delete command.
 	 */
-	public function createDeleteCommand($where, $parameters=[])
+	public function createDeleteCommand($where, $parameters = [])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		if (!empty($where))
@@ -382,7 +382,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array update parameters.
 	 * @return TDbCommand update command.
 	 */
-	public function createUpdateCommand($data, $where, $parameters=[])
+	public function createUpdateCommand($data, $where, $parameters = [])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		if($this->hasIntegerKey($parameters))
@@ -404,7 +404,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	protected function getInsertFieldBindings($values)
 	{
-		$fields = []; $bindings=[];
+		$fields = []; $bindings = [];
 		foreach(array_keys($values) as $name)
 		{
 			$fields[] = $this->getTableInfo()->getColumn($name)->getColumnName();
@@ -419,9 +419,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param boolean true to bind as position values.
 	 * @return string update column names with corresponding binding substrings.
 	 */
-	protected function getColumnBindings($values, $position=false)
+	protected function getColumnBindings($values, $position = false)
 	{
-		$bindings=[];
+		$bindings = [];
 		foreach(array_keys($values) as $name)
 		{
 			$column = $this->getTableInfo()->getColumn($name)->getColumnName();
@@ -447,7 +447,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function bindColumnValues($command, $values)
 	{
-		foreach($values as $name=>$value)
+		foreach($values as $name => $value)
 		{
 			$column = $this->getTableInfo()->getColumn($name);
 			if($value === null && $column->getAllowNull())
@@ -466,14 +466,14 @@ class TDbCommandBuilder extends \Prado\TComponent
 		if($this->hasIntegerKey($values))
 		{
 			$values = array_values($values);
-			for($i = 0, $max=count($values); $i<$max; $i++)
-				$command->bindValue($i+1, $values[$i], $this->getPdoType($values[$i]));
+			for($i = 0, $max = count($values); $i < $max; $i++)
+				$command->bindValue($i + 1, $values[$i], $this->getPdoType($values[$i]));
 		}
 		else
 		{
-			foreach($values as $name=>$value)
+			foreach($values as $name => $value)
 			{
-				$prop = $name[0]===':' ? $name : ':' . $name;
+				$prop = $name[0] === ':' ? $name : ':' . $name;
 				$command->bindValue($prop, $value, $this->getPdoType($value));
 			}
 		}
@@ -500,9 +500,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	protected function hasIntegerKey($array)
 	{
-		foreach($array as $k=>$v)
+		foreach($array as $k => $v)
 		{
-			if(gettype($k)==='integer')
+			if(gettype($k) === 'integer')
 				return true;
 		}
 		return false;

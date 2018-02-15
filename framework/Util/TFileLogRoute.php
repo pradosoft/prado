@@ -37,11 +37,11 @@ class TFileLogRoute extends TLogRoute
 	/**
 	 * @var integer maximum log file size
 	 */
-	private $_maxFileSize=512; // in KB
+	private $_maxFileSize = 512; // in KB
 	/**
 	 * @var integer number of log files used for rotation
 	 */
-	private $_maxLogFiles=2;
+	private $_maxLogFiles = 2;
 	/**
 	 * @var string directory storing log files
 	 */
@@ -49,15 +49,15 @@ class TFileLogRoute extends TLogRoute
 	/**
 	 * @var string log file name
 	 */
-	private $_logFile='prado.log';
+	private $_logFile = 'prado.log';
 
 	/**
 	 * @return string directory storing log files. Defaults to application runtime path.
 	 */
 	public function getLogPath()
 	{
-		if($this->_logPath===null)
-			$this->_logPath=$this->getApplication()->getRuntimePath();
+		if($this->_logPath === null)
+			$this->_logPath = $this->getApplication()->getRuntimePath();
 		return $this->_logPath;
 	}
 
@@ -67,7 +67,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setLogPath($value)
 	{
-		if(($this->_logPath=Prado::getPathOfNamespace($value))===null || !is_dir($this->_logPath) || !is_writable($this->_logPath))
+		if(($this->_logPath = Prado::getPathOfNamespace($value)) === null || !is_dir($this->_logPath) || !is_writable($this->_logPath))
 			throw new TConfigurationException('filelogroute_logpath_invalid', $value);
 	}
 
@@ -84,7 +84,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setLogFile($value)
 	{
-		$this->_logFile=$value;
+		$this->_logFile = $value;
 	}
 
 	/**
@@ -101,8 +101,8 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setMaxFileSize($value)
 	{
-		$this->_maxFileSize=TPropertyValue::ensureInteger($value);
-		if($this->_maxFileSize<=0)
+		$this->_maxFileSize = TPropertyValue::ensureInteger($value);
+		if($this->_maxFileSize <= 0)
 			throw new TInvalidDataValueException('filelogroute_maxfilesize_invalid');
 	}
 
@@ -119,8 +119,8 @@ class TFileLogRoute extends TLogRoute
 	 */
 	public function setMaxLogFiles($value)
 	{
-		$this->_maxLogFiles=TPropertyValue::ensureInteger($value);
-		if($this->_maxLogFiles<1)
+		$this->_maxLogFiles = TPropertyValue::ensureInteger($value);
+		if($this->_maxLogFiles < 1)
 			throw new TInvalidDataValueException('filelogroute_maxlogfiles_invalid');
 	}
 
@@ -130,8 +130,8 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function processLogs($logs)
 	{
-		$logFile=$this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
-		if(@filesize($logFile)>$this->_maxFileSize*1024)
+		$logFile = $this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
+		if(@filesize($logFile) > $this->_maxFileSize * 1024)
 			$this->rotateFiles();
 		foreach($logs as $log)
 			error_log($this->formatLogMessage($log[0], $log[1], $log[2], $log[3]), 3, $logFile);
@@ -142,16 +142,16 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function rotateFiles()
 	{
-		$file=$this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
-		for($i=$this->_maxLogFiles;$i>0;--$i)
+		$file = $this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
+		for($i = $this->_maxLogFiles;$i > 0;--$i)
 		{
-			$rotateFile=$file . '.' . $i;
+			$rotateFile = $file . '.' . $i;
 			if(is_file($rotateFile))
 			{
-				if($i===$this->_maxLogFiles)
+				if($i === $this->_maxLogFiles)
 					unlink($rotateFile);
 				else
-					rename($rotateFile, $file . '.' . ($i+1));
+					rename($rotateFile, $file . '.' . ($i + 1));
 			}
 		}
 		if(is_file($file))

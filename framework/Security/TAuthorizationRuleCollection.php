@@ -34,11 +34,11 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	{
 		if($user instanceof IUser)
 		{
-			$verb=strtolower(trim($verb));
+			$verb = strtolower(trim($verb));
 			foreach($this as $rule)
 			{
-				if(($decision=$rule->isUserAllowed($user, $verb, $ip))!==0)
-					return ($decision>0);
+				if(($decision = $rule->isUserAllowed($user, $verb, $ip)) !== 0)
+					return ($decision > 0);
 			}
 			return true;
 		}

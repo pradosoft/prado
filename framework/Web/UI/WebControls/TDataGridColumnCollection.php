@@ -42,7 +42,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 */
 	public function __construct(TDataGrid $owner)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**

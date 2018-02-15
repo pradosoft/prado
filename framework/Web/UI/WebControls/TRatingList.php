@@ -95,7 +95,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function setRepeatLayout($value)
 	{
-		if($value!==TRepeatLayout::Table)
+		if($value !== TRepeatLayout::Table)
 			throw new TInvalidDataValueException('ratinglist_table_layout_only');
 		else
 			parent::setRepeatLayout($value);
@@ -108,7 +108,7 @@ class TRatingList extends TRadioButtonList
 	{
 		$rating = $this->getViewState('Rating', null);
 		if ($rating === null)
-			return $this->getSelectedIndex()+1;
+			return $this->getSelectedIndex() + 1;
 		else
 			return $rating;
 	}
@@ -126,7 +126,7 @@ class TRatingList extends TRadioButtonList
 
 	public function setSelectedIndex($value)
 	{
-		$this->setRating($value+1);
+		$this->setRating($value + 1);
 		parent::setSelectedIndex($value);
 	}
 
@@ -137,9 +137,9 @@ class TRatingList extends TRadioButtonList
 	protected function getRatingIndex($rating)
 	{
 		$interval = $this->getHalfRatingInterval();
-		$base = intval($rating)-1;
-		$remainder = $rating-$base-1;
-		return $remainder > $interval[1] ? $base+1 : $base;
+		$base = intval($rating) - 1;
+		$remainder = $rating - $base - 1;
+		return $remainder > $interval[1] ? $base + 1 : $base;
 	}
 
 	/**
@@ -171,11 +171,11 @@ class TRatingList extends TRadioButtonList
 
 	protected function getCaptionControl()
 	{
-		if(($id=$this->getCaptionID())!=='')
+		if(($id = $this->getCaptionID()) !== '')
 		{
-			if($control=$this->getPage()->findControl($id))
+			if($control = $this->getPage()->findControl($id))
 				return $control;
-			if($control=$this->getNamingContainer()->findControl($id))
+			if($control = $this->getNamingContainer()->findControl($id))
 				return $control;
 		}
 		throw new TInvalidDataValueException(
@@ -262,9 +262,9 @@ class TRatingList extends TRadioButtonList
 	 */
 	protected function getCaptionControlID()
 	{
-		if(($id=$this->getCaptionID())!=='')
+		if(($id = $this->getCaptionID()) !== '')
 		{
-			if($control=$this->getParent()->findControl($id))
+			if($control = $this->getParent()->findControl($id))
 			{
 				if($control->getVisible(true))
 					return $control->getClientID();
@@ -304,7 +304,7 @@ class TRatingList extends TRadioButtonList
 	 * @param string rating image file extension, default is '.gif'
 	 * @return array URL of publish the rating images
 	 */
-	protected function publishImages($style, $fileExt='.gif')
+	protected function publishImages($style, $fileExt = '.gif')
 	{
 		$types = ['blank', 'selected', 'half', 'combined'];
 		$files = [];
@@ -318,7 +318,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	protected function registerClientScript()
 	{
-		$cs=$this->getPage()->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('ratings');
 	}
 
@@ -326,7 +326,7 @@ class TRatingList extends TRadioButtonList
 	 * @param string asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
 		return $base . '/' . self::SCRIPT_PATH . '/' . $file;

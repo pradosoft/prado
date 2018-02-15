@@ -49,7 +49,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getClientSide()
 	{
-		if(($client = $this->getOption('ClientSide'))===null)
+		if(($client = $this->getOption('ClientSide')) === null)
 		{
 			$client = $this->createClientSide();
 			$this->setOption('ClientSide', $client);
@@ -63,7 +63,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setClientSide($client)
 	{
-		if($this->getOption('ClientSide')===null)
+		if($this->getOption('ClientSide') === null)
 			$this->setOption('ClientSide', $client);
 		else
 			throw new TConfigurationException(
@@ -108,20 +108,20 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	protected function getDefaultClientSideOptions()
 	{
-		if(($id=$this->getCallbackOptions())!=='')
+		if(($id = $this->getCallbackOptions()) !== '')
 		{
-			if(($pos=strrpos($id, '.'))!==false)
+			if(($pos = strrpos($id, '.')) !== false)
 			{
-				$control=$this->getControl()->getSubProperty(substr($id, 0, $pos));
-				$newid=substr($id, $pos+1);
-				if ($control!==null)
-					$control=$control->$newid;
+				$control = $this->getControl()->getSubProperty(substr($id, 0, $pos));
+				$newid = substr($id, $pos + 1);
+				if ($control !== null)
+					$control = $control->$newid;
 			}
 			else
 			{
 				// TCheckBoxList overrides findControl() with a fake implementation
 				// but accepts a second parameter to use the standard one
-				$control=$this->getControl()->findControl($id, true);
+				$control = $this->getControl()->findControl($id, true);
 			}
 
 			if($control instanceof TCallbackOptions)
@@ -177,8 +177,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	{
 		if($this->getCausesValidation())
 		{
-			$group=$this->getValidationGroup();
-			return $this->getPage()->getValidators($group)->getCount()>0;
+			$group = $this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount() > 0;
 		}
 		else
 			return false;
@@ -209,8 +209,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		$default = $this->getDefaultClientSideOptions();
 		$options = array_merge($default, $this->getClientSide()->getOptions()->toArray());
 		$validate = $this->getCausesValidation();
-		$options['CausesValidation']= $validate ? '' : false;
-		$options['ValidationGroup']=$this->getValidationGroup();
+		$options['CausesValidation'] = $validate ? '' : false;
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CallbackParameter'] = $this->getCallbackParameter();
 		// needed for TCallback
 		if(!isset($options['EventTarget']))
@@ -227,7 +227,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * @param string client side javascript class name.
 	 * @param array additional callback options.
 	 */
-	public function registerCallbackClientScript($class, $options=null)
+	public function registerCallbackClientScript($class, $options = null)
 	{
 		$cs = $this->getPage()->getClientScript();
 		if(is_array($options))
@@ -236,8 +236,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 			$options = $this->getClientSideOptions();
 
 		//remove true as default to save bytes
-		if($options['CausesValidation']===true)
-			$options['CausesValidation']='';
+		if($options['CausesValidation'] === true)
+			$options['CausesValidation'] = '';
 		$cs->registerCallbackControl($class, $options);
 	}
 

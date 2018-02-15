@@ -84,8 +84,8 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function setMinSelection($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = -1;
 		$this->setViewState('MinSelection', $value, -1);
 	}
 
@@ -102,8 +102,8 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function setMaxSelection($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+			$value = -1;
 		$this->setViewState('MaxSelection', $value, -1);
 	}
 
@@ -133,7 +133,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	protected function evaluateIsValid()
 	{
-		$control=$this->getValidationTarget();
+		$control = $this->getValidationTarget();
 
 		$exists = true;
 		$values = $this->getSelection($control);
@@ -210,12 +210,12 @@ class TListControlValidator extends TBaseValidator
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
 		if($min !== -1)
-			$options['Min']= $min;
+			$options['Min'] = $min;
 		if($max !== -1)
-			$options['Max']= $max;
+			$options['Max'] = $max;
 		$required = $this->getRequiredSelections();
 		if(strlen($required) > 0)
-			$options['Required']= $required;
+			$options['Required'] = $required;
 		$options['TotalItems'] = $control->getItemCount();
 
 		return $options;

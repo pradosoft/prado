@@ -24,7 +24,7 @@ class TPostSelectBinding
 	private $_property;
 	private $_resultObject;
 	private $_keys;
-	private $_method=TMappedStatement::QUERY_FOR_LIST;
+	private $_method = TMappedStatement::QUERY_FOR_LIST;
 
 	public function getStatement(){ return $this->_statement; }
 	public function setStatement($value){ $this->_statement = $value; }

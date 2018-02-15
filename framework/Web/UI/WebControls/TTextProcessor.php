@@ -48,7 +48,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	public function addParsedObject($object)
 	{
 		if(is_string($object))
-			$object=html_entity_decode($object, ENT_QUOTES, 'UTF-8');
+			$object = html_entity_decode($object, ENT_QUOTES, 'UTF-8');
 		parent::addParsedObject($object);
 	}
 
@@ -76,13 +76,13 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='' && $this->getHasControls())
+		if(($text = $this->getText()) === '' && $this->getHasControls())
 		{
 			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 			parent::renderContents($htmlWriter);
-			$text=$htmlWriter->flush();
+			$text = $htmlWriter->flush();
 		}
-		if($text!=='')
+		if($text !== '')
 			$writer->write($this->processText($text));
 	}
 

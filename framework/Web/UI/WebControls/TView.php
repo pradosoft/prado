@@ -31,7 +31,7 @@ use Prado\TPropertyValue;
  */
 class TView extends \Prado\Web\UI\TControl
 {
-	private $_active=false;
+	private $_active = false;
 
 	/**
 	 * Raises <b>OnActivate</b> event.
@@ -64,8 +64,8 @@ class TView extends \Prado\Web\UI\TControl
 	 */
 	public function setActive($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
-		$this->_active=$value;
+		$value = TPropertyValue::ensureBoolean($value);
+		$this->_active = $value;
 		parent::setVisible($value);
 	}
 
@@ -74,9 +74,9 @@ class TView extends \Prado\Web\UI\TControl
 	 * @return boolean whether this view is visible.
 	 * The view is visible if it is active and its parent is visible.
 	 */
-	public function getVisible($checkParents=true)
+	public function getVisible($checkParents = true)
 	{
-		if(($parent=$this->getParent())===null)
+		if(($parent = $this->getParent()) === null)
 			return $this->getActive();
 		elseif($this->getActive())
 			return $parent->getVisible($checkParents);

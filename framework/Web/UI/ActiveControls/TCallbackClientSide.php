@@ -257,7 +257,7 @@ class TCallbackClientSide extends TClientSideOptions
 	public function getEnablePageStateUpdate()
 	{
 		$option = $this->getOption('EnablePageStateUpdate');
-		return ($option===null) ? true : $option;
+		return ($option === null) ? true : $option;
 	}
 
 	/**

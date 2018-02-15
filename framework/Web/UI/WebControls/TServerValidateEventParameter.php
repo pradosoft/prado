@@ -29,12 +29,12 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	 * the value to be validated
 	 * @var string
 	 */
-	private $_value='';
+	private $_value = '';
 	/**
 	 * whether the value is valid
 	 * @var boolean
 	 */
-	private $_isValid=true;
+	private $_isValid = true;
 
 	/**
 	 * Constructor.
@@ -43,7 +43,7 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($value, $isValid)
 	{
-		$this->_value=$value;
+		$this->_value = $value;
 		$this->setIsValid($isValid);
 	}
 
@@ -68,6 +68,6 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 }

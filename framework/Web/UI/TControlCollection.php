@@ -36,9 +36,9 @@ class TControlCollection extends \Prado\Collections\TList
 	 * @param TControl the control that owns this collection.
 	 * @param boolean whether the list is read-only
 	 */
-	public function __construct(TControl $owner, $readOnly=false)
+	public function __construct(TControl $owner, $readOnly = false)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 		parent::__construct(null, $readOnly);
 	}
 
@@ -80,7 +80,7 @@ class TControlCollection extends \Prado\Collections\TList
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
+		$item = parent::removeAt($index);
 		if($item instanceof TControl)
 			$this->_o->removedControl($item);
 		return $item;

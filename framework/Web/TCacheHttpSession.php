@@ -45,8 +45,8 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TCacheHttpSession extends THttpSession
 {
-	private $_prefix='session';
-	private $_cacheModuleID='';
+	private $_prefix = 'session';
+	private $_cacheModuleID = '';
 	private $_cache;
 
 	/**
@@ -57,12 +57,12 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function init($config)
 	{
-		if($this->_cacheModuleID==='')
+		if($this->_cacheModuleID === '')
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
-		elseif(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
+		elseif(($cache = $this->getApplication()->getModule($this->_cacheModuleID)) === null)
 			throw new TConfigurationException('cachesession_cachemodule_inexistent', $this->_cacheModuleID);
 		elseif($cache instanceof ICache)
-			$this->_cache=$cache;
+			$this->_cache = $cache;
 		else
 			throw new TConfigurationException('cachesession_cachemodule_invalid', $this->_cacheModuleID);
 		$this->setUseCustomStorage(true);
@@ -82,7 +82,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function setCacheModuleID($value)
 	{
-		$this->_cacheModuleID=$value;
+		$this->_cacheModuleID = $value;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function setKeyPrefix($value)
 	{
-		$this->_prefix=$value;
+		$this->_prefix = $value;
 	}
 
 	/**

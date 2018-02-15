@@ -26,6 +26,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TRepeatDirection extends \Prado\TEnumerable
 {
-	const Vertical='Vertical';
-	const Horizontal='Horizontal';
+	const Vertical = 'Vertical';
+	const Horizontal = 'Horizontal';
 }

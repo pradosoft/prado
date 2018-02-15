@@ -106,6 +106,6 @@ class TChoiceFormat extends TTranslate
 		$value = $this->getValue();
 		$string = $choice->format($text, $value);
 		if($string)
-			return strtr($string, ['{Value}'=> $value]);
+			return strtr($string, ['{Value}' => $value]);
 	}
 }

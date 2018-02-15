@@ -55,23 +55,23 @@ class DateFormat
 	 * @var array
 	 */
 	protected $tokens = [
-			'G'=>'Era',
-			'y'=>'Year',
-			'M'=>'Month',
-			'd'=>'Day',
-			'h'=>'Hour12',
-			'H'=>'Hour24',
-			'm'=>'Minutes',
-			's'=>'Seconds',
-			'E'=>'DayInWeek',
-			'D'=>'DayInYear',
-			'F'=>'DayInMonth',
-			'w'=>'WeekInYear',
-			'W'=>'WeekInMonth',
-			'a'=>'AMPM',
-			'k'=>'HourInDay',
-			'K'=>'HourInAMPM',
-			'z'=>'TimeZone'
+			'G' => 'Era',
+			'y' => 'Year',
+			'M' => 'Month',
+			'd' => 'Day',
+			'h' => 'Hour12',
+			'H' => 'Hour24',
+			'm' => 'Minutes',
+			's' => 'Seconds',
+			'E' => 'DayInWeek',
+			'D' => 'DayInYear',
+			'F' => 'DayInMonth',
+			'w' => 'WeekInYear',
+			'W' => 'WeekInMonth',
+			'a' => 'AMPM',
+			'k' => 'HourInDay',
+			'K' => 'HourInAMPM',
+			'z' => 'TimeZone'
 			];
 
 	/**
@@ -92,7 +92,7 @@ class DateFormat
 	 * a DateTimeFormatInfo instance, or a locale.
 	 * @return DateFormat instance
 	 */
-	public function __construct($formatInfo=null)
+	public function __construct($formatInfo = null)
 	{
 		if($formatInfo === null)
 			$this->formatInfo = DateTimeFormatInfo::getInvariantInfo();
@@ -111,7 +111,7 @@ class DateFormat
 	 * @param mixed the time as integer or string in strtotime format.
 	 * @return string formatted date time.
 	 */
-	public function format($time, $pattern='F', $charset='UTF-8')
+	public function format($time, $pattern = 'F', $charset = 'UTF-8')
 	{
 		if (is_numeric($time)) //assumes unix epoch
 			$time = floatval($time);
@@ -128,14 +128,14 @@ class DateFormat
 
 		$tokens = $this->getTokens($pattern);
 
-		for($i = 0, $k = count($tokens); $i<$k; ++$i)
+		for($i = 0, $k = count($tokens); $i < $k; ++$i)
 		{
 			$pattern = $tokens[$i];
 			if($pattern{0} == "'"
-				&& $pattern{strlen($pattern)-1} == "'")
+				&& $pattern{strlen($pattern) - 1} == "'")
 			{
 				$sub = preg_replace('/(^\')|(\'$)/', '', $pattern);
-				$tokens[$i] =  str_replace('``````', '\'', $sub);
+				$tokens[$i] = str_replace('``````', '\'', $sub);
 			}
 			elseif($pattern == '``````')
 			{
@@ -284,7 +284,7 @@ class DateFormat
 
 		for($i = 0; $i < strlen($pattern); $i++)
 		{
-			if($char==null || $pattern{$i} == $char || $text)
+			if($char == null || $pattern{$i} == $char || $text)
 			{
 				$token .= $pattern{$i};
 			}
@@ -316,7 +316,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string year
 	 */
-	protected function getYear($date, $pattern='yyyy')
+	protected function getYear($date, $pattern = 'yyyy')
 	{
 		switch($pattern)
 		{
@@ -339,7 +339,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string month name
 	 */
-	protected function getMonth($date, $pattern='M')
+	protected function getMonth($date, $pattern = 'M')
 	{
 		switch($pattern)
 		{
@@ -348,9 +348,9 @@ class DateFormat
 			case 'MM':
 				return $date->format('m');
 			case 'MMM':
-				return $this->formatInfo->AbbreviatedMonthNames[$date->format('n')-1];
+				return $this->formatInfo->AbbreviatedMonthNames[$date->format('n') - 1];
 			case 'MMMM':
-				return $this->formatInfo->MonthNames[$date->format('n')-1];
+				return $this->formatInfo->MonthNames[$date->format('n') - 1];
 			default:
 				throw new Exception('The pattern for month is "M", "MM", "MMM", or "MMMM".');
 		}
@@ -366,7 +366,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string day of the week.
 	 */
-	protected function getDayInWeek($date, $pattern='EEEE')
+	protected function getDayInWeek($date, $pattern = 'EEEE')
 	{
 		$day = $date->format('w');
 		switch($pattern)
@@ -391,7 +391,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string day of the month
 	 */
-	protected function getDay($date, $pattern='d')
+	protected function getDay($date, $pattern = 'd')
 	{
 		switch($pattern)
 		{
@@ -412,7 +412,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string era
 	 */
-	protected function getEra($date, $pattern='G')
+	protected function getEra($date, $pattern = 'G')
 	{
 		if($pattern != 'G')
 			throw new Exception('The pattern for era is "G".');
@@ -431,7 +431,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string hours in 24 hour format.
 	 */
-	protected function getHour24($date, $pattern='H')
+	protected function getHour24($date, $pattern = 'H')
 	{
 		switch($pattern)
 		{
@@ -450,13 +450,13 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string AM or PM designator
 	 */
-	protected function getAMPM($date, $pattern='a')
+	protected function getAMPM($date, $pattern = 'a')
 	{
 		if($pattern != 'a')
 			throw new Exception('The pattern for AM/PM marker is "a".');
 
 		$hour = $date->format('G');
-		$ampm = (int)($hour/12);
+		$ampm = (int)($hour / 12);
 		return $this->formatInfo->AMPMMarkers[$ampm];
 	}
 
@@ -467,7 +467,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string hours in 12 hour format.
 	 */
-	protected function getHour12($date, $pattern='h')
+	protected function getHour12($date, $pattern = 'h')
 	{
 		switch($pattern)
 		{
@@ -487,7 +487,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string minutes.
 	 */
-	protected function getMinutes($date, $pattern='m')
+	protected function getMinutes($date, $pattern = 'm')
 	{
 		switch($pattern)
 		{
@@ -507,7 +507,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string seconds
 	 */
-	protected function getSeconds($date, $pattern='s')
+	protected function getSeconds($date, $pattern = 's')
 	{
 		switch($pattern)
 		{
@@ -527,7 +527,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return string time zone
 	 */
-	protected function getTimeZone($date, $pattern='z')
+	protected function getTimeZone($date, $pattern = 'z')
 	{
 		if($pattern != 'z')
 			throw new Exception('The pattern for time zone is "z".');
@@ -541,7 +541,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return int hours in AM/PM format.
 	 */
-	protected function getDayInYear($date, $pattern='D')
+	protected function getDayInYear($date, $pattern = 'D')
 	{
 		if($pattern != 'D')
 			throw new Exception('The pattern for day in year is "D".');
@@ -555,7 +555,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return int day in month
 	 */
-	protected function getDayInMonth($date, $pattern='FF')
+	protected function getDayInMonth($date, $pattern = 'FF')
 	{
 		switch ($pattern) {
 			case 'F':
@@ -573,7 +573,7 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return int week in year
 	 */
-	protected function getWeekInYear($date, $pattern='w')
+	protected function getWeekInYear($date, $pattern = 'w')
 	{
 		if($pattern != 'w')
 			throw new Exception('The pattern for week in year is "w".');
@@ -586,7 +586,7 @@ class DateFormat
 	 * @param array getdate format.
 	 * @return int week in month
 	 */
-	protected function getWeekInMonth($date, $pattern='W')
+	protected function getWeekInMonth($date, $pattern = 'W')
 	{
 		if($pattern != 'W')
 			throw new Exception('The pattern for week in month is "W".');
@@ -602,12 +602,12 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return int hours [1-24]
 	 */
-	protected function getHourInDay($date, $pattern='k')
+	protected function getHourInDay($date, $pattern = 'k')
 	{
 		if($pattern != 'k')
 			throw new Exception('The pattern for hour in day is "k".');
 
-		return $date->format('G')+1;
+		return $date->format('G') + 1;
 	}
 
 	/**
@@ -616,11 +616,11 @@ class DateFormat
 	 * @param string a pattern.
 	 * @return int hours in AM/PM format.
 	 */
-	protected function getHourInAMPM($date, $pattern='K')
+	protected function getHourInAMPM($date, $pattern = 'K')
 	{
 		if($pattern != 'K')
 			throw new Exception('The pattern for hour in AM/PM is "K".');
 
-		return $date->format('g')+1;
+		return $date->format('g') + 1;
 	}
 }

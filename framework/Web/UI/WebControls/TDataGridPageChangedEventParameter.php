@@ -48,8 +48,8 @@ class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($source, $newPageIndex)
 	{
-		$this->_source=$source;
-		$this->_newIndex=$newPageIndex;
+		$this->_source = $source;
+		$this->_newIndex = $newPageIndex;
 	}
 
 	/**

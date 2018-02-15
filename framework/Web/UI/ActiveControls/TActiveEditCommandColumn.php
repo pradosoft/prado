@@ -36,20 +36,20 @@ use Prado\Web\UI\WebControls\TEditCommandColumn;
  */
 class TActiveEditCommandColumn extends TEditCommandColumn {
 	protected function createButton($commandName, $text, $causesValidation, $validationGroup) {
-		if($this->getButtonType()===TButtonColumnType::LinkButton)
-			$button= new TActiveLinkButton;
-		elseif($this->getButtonType()===TButtonColumnType::PushButton)
-				$button= new TActiveButton;
+		if($this->getButtonType() === TButtonColumnType::LinkButton)
+			$button = new TActiveLinkButton;
+		elseif($this->getButtonType() === TButtonColumnType::PushButton)
+				$button = new TActiveButton;
 			else  // image buttons
 			{
-				$button= new TActiveImageButton;
+				$button = new TActiveImageButton;
 				$button->setToolTip($text);
-				if(strcasecmp($commandName, 'Update')===0)
-					$url=$this->getUpdateImageUrl();
-				elseif(strcasecmp($commandName, 'Cancel')===0)
-						$url=$this->getCancelImageUrl();
+				if(strcasecmp($commandName, 'Update') === 0)
+					$url = $this->getUpdateImageUrl();
+				elseif(strcasecmp($commandName, 'Cancel') === 0)
+						$url = $this->getCancelImageUrl();
 					else
-						$url=$this->getEditImageUrl();
+						$url = $this->getEditImageUrl();
 				$button->setImageUrl($url);
 			}
 		$button->setText($text);

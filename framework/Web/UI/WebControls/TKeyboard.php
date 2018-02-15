@@ -147,8 +147,8 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function registerStyleSheet()
 	{
-		if(($url=$this->getCssUrl())==='')
-			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
+		if(($url = $this->getCssUrl()) === '')
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}
 
@@ -157,9 +157,9 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function registerClientScript()
 	{
-		$options=TJavaScript::encode($this->getClientOptions());
-		$className=$this->getClientClassName();
-		$cs=$this->getPage()->getClientScript();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('keyboard');
 		$cs->registerEndScript('prado:' . $this->getClientID(), "new $className($options);");
 	}
@@ -177,9 +177,9 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function getClientOptions()
 	{
-		if(($forControl=$this->getForControl())==='')
+		if(($forControl = $this->getForControl()) === '')
 			throw new TConfigurationException('keyboard_forcontrol_required');
-		if(($target=$this->findControl($forControl))===null)
+		if(($target = $this->findControl($forControl)) === null)
 			throw new TConfigurationException('keyboard_forcontrol_invalid', $forControl);
 
 		$options['ID'] = $this->getClientID();

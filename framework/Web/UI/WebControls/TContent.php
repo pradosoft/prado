@@ -43,7 +43,7 @@ class TContent extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingCo
 	 */
 	public function createdOnTemplate($parent)
 	{
-		if(($id=$this->getID())==='')
+		if(($id = $this->getID()) === '')
 			throw new TConfigurationException('content_id_required');
 		$this->getTemplateControl()->registerContent($id, $this);
 	}

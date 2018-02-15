@@ -65,8 +65,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	protected function getDatePickerOptions()
 	{
 		$options = parent::getDatePickerOptions();
-		$options['CausesValidation']=$this->getCausesValidation();
-		$options['ValidationGroup']=$this->getValidationGroup();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['ShowCalendar'] = $this->getShowCalendar();
 		$options['AutoPostBack'] = $this->getAutoPostBack();
@@ -101,15 +101,15 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 
 		parent::setText($value);
 		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()){
-			$cb=$this->getPage()->getCallbackClient();
+			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
-			if ($this->getInputMode()==TDatePickerInputMode::DropDownList)
+			if ($this->getInputMode() == TDatePickerInputMode::DropDownList)
 			{
 				$dt = new \DateTime;
 				$dt->setTimeStamp($this->getTimeStampFromText());
-				$id=$this->getClientID();
+				$id = $this->getClientID();
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
-				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n')-1, 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n') - 1, 'select');
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'year', 'Value', $dt->format('Y'), 'select');
 
 			}

@@ -50,7 +50,7 @@ use Prado\TPropertyValue;
  */
 class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\IDataRenderer
 {
-	const MAX_STEPS=200;
+	const MAX_STEPS = 200;
 	/**
 	 * @var TSliderHandle handle component
 	 */
@@ -58,7 +58,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/*
 	 * @var boolean Wether the data has changed during postback
 	 */
-	private $_dataChanged=false;
+	private $_dataChanged = false;
 	/**
 	 * @var TSliderClientScript Clients side javascripts
 	 */
@@ -296,11 +296,11 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key, $values)
 	{
-		$value=(float)$values[$this->getClientID() . '_1'];
-		if($this->getValue()!==$value)
+		$value = (float)$values[$this->getClientID() . '_1'];
+		if($this->getValue() !== $value)
 		{
 			$this->setValue($value);
-			return $this->_dataChanged=true;
+			return $this->_dataChanged = true;
 		}
 		else
 			return false;
@@ -319,7 +319,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientScript===null)
+		if($this->_clientScript === null)
 			$this->_clientScript = $this->createClientScript();
 		return $this->_clientScript;
 	}
@@ -348,9 +348,9 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->getCssClass()==='')
+		if ($this->getCssClass() === '')
 		{
-			$class=($this->getDirection()==TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
+			$class = ($this->getDirection() == TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
 			$writer->addAttribute('class', 'Slider ' . $class);
 		}
 
@@ -418,12 +418,12 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function registerStyleSheet()
 	{
-		if(($url=$this->getCssUrl())==='')
+		if(($url = $this->getCssUrl()) === '')
 		{
-			$manager=$this->getApplication()->getAssetManager();
+			$manager = $this->getApplication()->getAssetManager();
 			// publish the assets
-			$url=$manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
-			$url.='/TSlider.css';
+			$url = $manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
+			$url .= '/TSlider.css';
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}
@@ -433,10 +433,10 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function registerSliderClientScript()
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$cs = $page->getClientScript();
 		$cs->registerPradoScript("slider");
-		$id=$this->getClientID();
+		$id = $this->getClientID();
 		$cs->registerHiddenField($id . '_1', $this->getValue());
 		$page->registerRequiresPostData($this);
 		$cs->registerPostBackControl($this->getClientClassName(), $this->getSliderOptions());
@@ -454,22 +454,22 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['AutoPostBack'] = $this->getAutoPostBack();
 
 		// Slider Control options
-		$minValue=$this->getMinValue();
-		$maxValue=$this->getMaxValue();
+		$minValue = $this->getMinValue();
+		$maxValue = $this->getMaxValue();
 		$options['axis'] = strtolower($this->getDirection());
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
 		$options['range'] = [$minValue, $maxValue];
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
-		$values=$this->getValues();
+		$values = $this->getValues();
 		if (!empty($values))
 		{
 			// Values are provided. Check if min/max are present in them
-			if (!in_array($minValue, $values)) $values[]=$minValue;
-			if (!in_array($maxValue, $values)) $values[]=$maxValue;
+			if (!in_array($minValue, $values)) $values[] = $minValue;
+			if (!in_array($maxValue, $values)) $values[] = $maxValue;
 			// Remove all values outsize the range [min..max]
-			foreach ($values as $idx=>$value)
+			foreach ($values as $idx => $value)
 			{
 				if ($value < $minValue) unset($values[$idx]);
 				if ($value > $maxValue) unset($values[$idx]);
@@ -478,20 +478,20 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		else
 		{
 			// Values are not provided, generate automatically using stepsize
-			$step=$this->getStepSize();
+			$step = $this->getStepSize();
 			// We want at most self::MAX_STEPS values, so, change the step if necessary
-			if (($maxValue-$minValue)/$step > self::MAX_STEPS)
+			if (($maxValue - $minValue) / $step > self::MAX_STEPS)
 			{
-				$step=($maxValue-$minValue)/self::MAX_STEPS;
+				$step = ($maxValue - $minValue) / self::MAX_STEPS;
 			}
-			$values=[];
-			for ($i=$minValue;$i<=$maxValue;$i+=$step)
-				$values[]=$i;
+			$values = [];
+			for ($i = $minValue;$i <= $maxValue;$i += $step)
+				$values[] = $i;
 			// Add max if it's not in the array because of step
-			if (!in_array($maxValue, $values)) $values[]=$maxValue;
+			if (!in_array($maxValue, $values)) $values[] = $maxValue;
 		}
 		$options['values'] = $values;
-		if($this->_clientScript!==null)
+		if($this->_clientScript !== null)
 			$options = array_merge($options, $this->_clientScript->getOptions()->toArray());
 		return $options;
 	}

@@ -86,8 +86,8 @@ class TCustomValidator extends TBaseValidator
 	public function evaluateIsValid()
 	{
 		$value = '';
-		if($this->getValidationTarget()!==null)
-			$value=$this->getValidationValue($this->getValidationTarget());
+		if($this->getValidationTarget() !== null)
+			$value = $this->getValidationValue($this->getValidationTarget());
 		return $this->onServerValidate($value);
 	}
 
@@ -102,7 +102,7 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function onServerValidate($value)
 	{
-		$param=new TServerValidateEventParameter($value, true);
+		$param = new TServerValidateEventParameter($value, true);
 		$this->raiseEvent('OnServerValidate', $this, $param);
 		return $param->getIsValid();
 	}
@@ -112,9 +112,9 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function getValidationTarget()
 	{
-		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
+		if(($id = $this->getControlToValidate()) !== '' && ($control = $this->findControl($id)) !== null)
 			return $control;
-		elseif(($id=$this->getControlToValidate())!=='')
+		elseif(($id = $this->getControlToValidate()) !== '')
 			throw new TInvalidDataTypeException('basevalidator_validatable_required', get_class($this));
 		else
 			return null;
@@ -126,9 +126,9 @@ class TCustomValidator extends TBaseValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options=parent::getClientScriptOptions();
-		if(($clientJs=$this->getClientValidationFunction())!=='')
-			$options['ClientValidationFunction']=$clientJs;
+		$options = parent::getClientScriptOptions();
+		if(($clientJs = $this->getClientValidationFunction()) !== '')
+			$options['ClientValidationFunction'] = $clientJs;
 		return $options;
 	}
 
@@ -138,7 +138,7 @@ class TCustomValidator extends TBaseValidator
 	 */
 	protected function registerClientScriptValidator()
 	{
-		if($this->getClientValidationFunction()!=='')
+		if($this->getClientValidationFunction() !== '')
 			parent::registerClientScriptValidator();
 	}
 }

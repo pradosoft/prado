@@ -23,7 +23,7 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
 class TInsertMappedStatement extends TMappedStatement
 {
 	public function executeQueryForMap($connection, $parameter,
-								$keyProperty, $valueProperty=null, $skip=-1, $max=-1, $delegate=null)
+								$keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null)
 	{
 		throw new TSqlMapExecutionException(
 				'sqlmap_cannot_execute_query_for_map', get_class($this), $this->getID());
@@ -35,14 +35,14 @@ class TInsertMappedStatement extends TMappedStatement
 				'sqlmap_cannot_execute_update', get_class($this), $this->getID());
 	}
 
-	public function executeQueryForList($connection, $parameter, $result=null,
-										$skip=-1, $max=-1, $delegate=null)
+	public function executeQueryForList($connection, $parameter, $result = null,
+										$skip = -1, $max = -1, $delegate = null)
 	{
 		throw new TSqlMapExecutionException(
 				'sqlmap_cannot_execute_query_for_list', get_class($this), $this->getID());
 	}
 
-	public function executeQueryForObject($connection, $parameter, $result=null)
+	public function executeQueryForObject($connection, $parameter, $result = null)
 	{
 		throw new TSqlMapExecutionException(
 				'sqlmap_cannot_execute_query_for_object', get_class($this), $this->getID());

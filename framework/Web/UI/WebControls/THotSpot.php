@@ -27,7 +27,7 @@ use Prado\TPropertyValue;
  */
 abstract class THotSpot extends \Prado\TComponent
 {
-	private $_viewState=[];
+	private $_viewState = [];
 
 	/**
 	 * Returns a viewstate value.
@@ -38,7 +38,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
-	protected function getViewState($key, $defaultValue=null)
+	protected function getViewState($key, $defaultValue = null)
 	{
 		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
 	}
@@ -53,12 +53,12 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param mixed the viewstate value to be set
 	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
-	protected function setViewState($key, $value, $defaultValue=null)
+	protected function setViewState($key, $value, $defaultValue = null)
 	{
-		if($value===$defaultValue)
+		if($value === $defaultValue)
 			unset($this->_viewState[$key]);
 		else
-			$this->_viewState[$key]=$value;
+			$this->_viewState[$key] = $value;
 	}
 
 	/**
@@ -221,8 +221,8 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHasAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes', null))
-			return $attributes->getCount()>0;
+		if($attributes = $this->getViewState('Attributes', null))
+			return $attributes->getCount() > 0;
 		else
 			return false;
 	}
@@ -235,11 +235,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes', null))
+		if($attributes = $this->getViewState('Attributes', null))
 			return $attributes;
 		else
 		{
-			$attributes=new TAttributeCollection;
+			$attributes = new TAttributeCollection;
 			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
 		}
@@ -250,7 +250,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function hasAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes', null))
+		if($attributes = $this->getViewState('Attributes', null))
 			return $attributes->contains($name);
 		else
 			return false;
@@ -261,7 +261,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes', null))
+		if($attributes = $this->getViewState('Attributes', null))
 			return $attributes->itemAt($name);
 		else
 			return null;
@@ -284,7 +284,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function removeAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes', null))
+		if($attributes = $this->getViewState('Attributes', null))
 			return $attributes->remove($name);
 		else
 			return null;
@@ -298,26 +298,26 @@ abstract class THotSpot extends \Prado\TComponent
 	{
 		$writer->addAttribute('shape', $this->getShape());
 		$writer->addAttribute('coords', $this->getCoordinates());
-		if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
-			$mode=THotSpotMode::Navigate;
-		if($mode===THotSpotMode::Navigate)
+		if(($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet)
+			$mode = THotSpotMode::Navigate;
+		if($mode === THotSpotMode::Navigate)
 		{
 			$writer->addAttribute('href', $this->getNavigateUrl());
-			if(($target=$this->getTarget())!=='')
+			if(($target = $this->getTarget()) !== '')
 				$writer->addAttribute('target', $target);
 		}
-		elseif($mode===THotSpotMode::Inactive)
+		elseif($mode === THotSpotMode::Inactive)
 			$writer->addAttribute('nohref', 'true');
-		$text=$this->getAlternateText();
+		$text = $this->getAlternateText();
 		$writer->addAttribute('title', $text);
 		$writer->addAttribute('alt', $text);
-		if(($accessKey=$this->getAccessKey())!=='')
+		if(($accessKey = $this->getAccessKey()) !== '')
 			$writer->addAttribute('accesskey', $accessKey);
-		if(($tabIndex=$this->getTabIndex())!==0)
+		if(($tabIndex = $this->getTabIndex()) !== 0)
 			$writer->addAttribute('tabindex', "$tabIndex");
 		if($this->getHasAttributes())
 		{
-			foreach($this->getAttributes() as $name=>$value)
+			foreach($this->getAttributes() as $name => $value)
 				$writer->addAttribute($name, $value);
 		}
 		$writer->renderBeginTag('area');

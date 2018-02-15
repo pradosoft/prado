@@ -75,7 +75,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	 */
 	public function setContentTemplate($value)
 	{
-		$this->_contentTemplate=$value;
+		$this->_contentTemplate = $value;
 	}
 
 	/**
@@ -91,7 +91,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	 */
 	public function setNavigationTemplate($value)
 	{
-		$this->_navigationTemplate=$value;
+		$this->_navigationTemplate = $value;
 	}
 
 	/**
@@ -110,7 +110,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	{
 		if(!$this->_navigationContainer && $this->_navigationTemplate)
 		{
-			$this->_navigationContainer=new TWizardNavigationContainer;
+			$this->_navigationContainer = new TWizardNavigationContainer;
 			$this->_navigationTemplate->instantiateIn($this->_navigationContainer);
 		}
 	}

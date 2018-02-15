@@ -39,9 +39,9 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * Constructor.
 	 * @param mixed owner of this collection.
 	 */
-	public function __construct($owner=null)
+	public function __construct($owner = null)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**
@@ -73,7 +73,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
+		$item = parent::removeAt($index);
 		if($this->_o instanceof THttpResponse)
 			$this->_o->removeCookie($item);
 		return $item;
@@ -99,7 +99,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	public function findCookieByName($name)
 	{
 		foreach($this as $cookie)
-			if($cookie->getName()===$name)
+			if($cookie->getName() === $name)
 				return $cookie;
 		return null;
 	}

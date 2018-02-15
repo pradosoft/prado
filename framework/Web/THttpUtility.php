@@ -20,9 +20,9 @@ namespace Prado\Web;
  */
 class THttpUtility
 {
-	private static $_encodeTable=['<'=>'&lt;','>'=>'&gt;','"'=>'&quot;'];
-	private static $_decodeTable=['&lt;'=>'<','&gt;'=>'>','&quot;'=>'"'];
-	private static $_stripTable=['&lt;'=>'','&gt;'=>'','&quot;'=>''];
+	private static $_encodeTable = ['<' => '&lt;','>' => '&gt;','"' => '&quot;'];
+	private static $_decodeTable = ['&lt;' => '<','&gt;' => '>','&quot;' => '"'];
+	private static $_stripTable = ['&lt;' => '','&gt;' => '','&quot;' => ''];
 
 	/**
 	 * HTML-encodes a string.

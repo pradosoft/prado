@@ -35,8 +35,8 @@ use Prado\TPropertyValue;
  */
 class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
@@ -45,9 +45,9 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$rows=$this->getRows();
+		$rows = $this->getRows();
 		$writer->addAttribute('size', "$rows");
-		if($this->getSelectionMode()===TListSelectionMode::Multiple)
+		if($this->getSelectionMode() === TListSelectionMode::Multiple)
 			$writer->addAttribute('name', $this->getUniqueID() . '[]');
 		else
 			$writer->addAttribute('name', $this->getUniqueID());
@@ -88,55 +88,55 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		if(!$this->getEnabled(true))
 			return false;
 		$this->ensureDataBound();
-		$selections=isset($values[$key])?$values[$key]:null;
-		if($selections!==null)
+		$selections = isset($values[$key])?$values[$key]:null;
+		if($selections !== null)
 		{
-			$items=$this->getItems();
-			if($this->getSelectionMode()===TListSelectionMode::Single)
+			$items = $this->getItems();
+			if($this->getSelectionMode() === TListSelectionMode::Single)
 			{
-				$selection=is_array($selections)?$selections[0]:$selections;
-				$index=$items->findIndexByValue($selection, false);
-				if($this->getSelectedIndex()!==$index)
+				$selection = is_array($selections)?$selections[0]:$selections;
+				$index = $items->findIndexByValue($selection, false);
+				if($this->getSelectedIndex() !== $index)
 				{
 					$this->setSelectedIndex($index);
-					return $this->_dataChanged=true;
+					return $this->_dataChanged = true;
 				}
 				else
 					return false;
 			}
 			if(!is_array($selections))
-				$selections=[$selections];
-			$list=[];
+				$selections = [$selections];
+			$list = [];
 			foreach($selections as $selection)
-				$list[]=$items->findIndexByValue($selection, false);
-			$list2=$this->getSelectedIndices();
-			$n=count($list);
-			$flag=false;
-			if($n===count($list2))
+				$list[] = $items->findIndexByValue($selection, false);
+			$list2 = $this->getSelectedIndices();
+			$n = count($list);
+			$flag = false;
+			if($n === count($list2))
 			{
 				sort($list, SORT_NUMERIC);
-				for($i=0;$i<$n;++$i)
+				for($i = 0;$i < $n;++$i)
 				{
-					if($list[$i]!==$list2[$i])
+					if($list[$i] !== $list2[$i])
 					{
-						$flag=true;
+						$flag = true;
 						break;
 					}
 				}
 			}
 			else
-				$flag=true;
+				$flag = true;
 			if($flag)
 			{
 				$this->setSelectedIndices($list);
-				$this->_dataChanged=true;
+				$this->_dataChanged = true;
 			}
 			return $flag;
 		}
-		elseif($this->getSelectedIndex()!==-1)
+		elseif($this->getSelectedIndex() !== -1)
 		{
 			$this->clearSelection();
-			return $this->_dataChanged=true;
+			return $this->_dataChanged = true;
 		}
 		else
 			return false;
@@ -171,7 +171,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	protected function getIsMultiSelect()
 	{
-		return $this->getSelectionMode()===TListSelectionMode::Multiple;
+		return $this->getSelectionMode() === TListSelectionMode::Multiple;
 	}
 
 	/**
@@ -187,9 +187,9 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	public function setRows($value)
 	{
-		$value=TPropertyValue::ensureInteger($value);
-		if($value<=0)
-			$value=4;
+		$value = TPropertyValue::ensureInteger($value);
+		if($value <= 0)
+			$value = 4;
 		$this->setViewState('Rows', $value, 4);
 	}
 
@@ -233,6 +233,6 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 }

@@ -60,7 +60,7 @@ class TMssqlTableColumn extends TDbTableColumn
 	 */
 	public function getIsExcluded()
 	{
-		return strtolower($this->getDbType())==='timestamp';
+		return strtolower($this->getDbType()) === 'timestamp';
 	}
 }
 

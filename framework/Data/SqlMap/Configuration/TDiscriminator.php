@@ -35,8 +35,8 @@ class TDiscriminator extends \Prado\TComponent
 	private $_columnIndex;
 	private $_nullValue;
 	private $_mapping;
-	private $_resultMaps=[];
-	private $_subMaps=[];
+	private $_resultMaps = [];
+	private $_subMaps = [];
 
 	/**
 	 * @return string the name of the column in the result set from which the

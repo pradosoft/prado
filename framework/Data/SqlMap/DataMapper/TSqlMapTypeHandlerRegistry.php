@@ -23,16 +23,16 @@ use Prado\Prado;
  */
 class TSqlMapTypeHandlerRegistry
 {
-	private $_typeHandlers=[];
+	private $_typeHandlers = [];
 
 	/**
 	 * @param string database field type
 	 * @return TSqlMapTypeHandler type handler for give database field type.
 	 */
-	public function getDbTypeHandler($dbType='NULL')
+	public function getDbTypeHandler($dbType = 'NULL')
 	{
 		foreach($this->_typeHandlers as $handler)
-			if($handler->getDbType()===$dbType)
+			if($handler->getDbType() === $dbType)
 				return $handler;
 	}
 
@@ -61,7 +61,7 @@ class TSqlMapTypeHandlerRegistry
 	 * @return mixed default type value, if no type is specified null is returned.
 	 * @throws TSqlMapException if class name is not found.
 	 */
-	public function createInstanceOf($type='')
+	public function createInstanceOf($type = '')
 	{
 		if(strlen($type) > 0)
 		{

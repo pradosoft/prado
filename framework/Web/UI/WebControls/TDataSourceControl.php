@@ -62,7 +62,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 		throw new TNotSupportedException('datasourcecontrol_skinid_unsupported');
 	}
 
-	public function getVisible($checkParents=true)
+	public function getVisible($checkParents = true)
 	{
 		return false;
 	}

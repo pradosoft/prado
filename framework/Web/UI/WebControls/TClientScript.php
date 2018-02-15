@@ -113,7 +113,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 		$cs = $this->getPage()->getClientScript();
 		foreach($scripts as $script)
 		{
-			if(($script = trim($script))!=='')
+			if(($script = trim($script)) !== '')
 				$cs->registerPradoScript($script);
 		}
 	}
@@ -138,7 +138,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
-		if(($scriptUrl = $this->getScriptUrl())!=='')
+		if(($scriptUrl = $this->getScriptUrl()) !== '')
 			$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
 	}
 

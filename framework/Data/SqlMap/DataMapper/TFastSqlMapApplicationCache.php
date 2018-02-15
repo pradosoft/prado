@@ -29,7 +29,7 @@ class TFastSqlMapApplicationCache implements ICache
 	protected $_cacheModel;
 	protected $_cache;
 
-	public function __construct($cacheModel=null)
+	public function __construct($cacheModel = null)
 	{
 		$this->_cacheModel = $cacheModel;
 	}
@@ -73,7 +73,7 @@ class TFastSqlMapApplicationCache implements ICache
 		return $result === false ? null : $result;
 	}
 
-	public function set($key, $value, $expire=0, $dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
 		$this->getCache()->set($this->getCacheKey($key), $value, $expire, $dependency);
 	}
@@ -85,7 +85,7 @@ class TFastSqlMapApplicationCache implements ICache
 		return $this->_cache;
 	}
 
-	public function add($id, $value, $expire=0, $dependency=null)
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

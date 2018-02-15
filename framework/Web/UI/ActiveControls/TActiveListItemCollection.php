@@ -37,7 +37,7 @@ class TActiveListItemCollection extends TListItemCollection
 	/**
 	 * @var boolean true if list items were changed.
 	 */
-	private $_hasChanged=false;
+	private $_hasChanged = false;
 
 	/**
 	 * @return boolean true if active controls can update client-side and
@@ -80,7 +80,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		$client = $this->getControl()->getPage()->getCallbackClient();
 		$client->setListItems($this->getControl(), $this);
-		$this->_hasChanged=false;
+		$this->_hasChanged = false;
 	}
 
 	/**

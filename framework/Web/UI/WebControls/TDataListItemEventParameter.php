@@ -38,7 +38,7 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($item)
 	{
-		$this->_item=$item;
+		$this->_item = $item;
 	}
 
 	/**

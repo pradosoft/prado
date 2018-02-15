@@ -57,7 +57,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function setID($value)
 	{
-		$this->_ID=$value;
+		$this->_ID = $value;
 	}
 
 	/**
@@ -272,10 +272,10 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * @param array result data.
 	 * @return mixed result object.
 	 */
-	protected function createInstanceOf($registry, $type, $row=null)
+	protected function createInstanceOf($registry, $type, $row = null)
 	{
 		$handler = $registry->getTypeHandler($type);
-		if($handler!==null)
+		if($handler !== null)
 			return $handler->createNewInstance($row);
 		else
 			return $registry->createInstanceOf($type);
@@ -289,7 +289,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function createInstanceOfResultClass($registry, $row)
 	{
-		if(strlen($type= $this->getResultClass()) > 0)
+		if(strlen($type = $this->getResultClass()) > 0)
 			return $this->createInstanceOf($registry, $type, $row);
 	}
 

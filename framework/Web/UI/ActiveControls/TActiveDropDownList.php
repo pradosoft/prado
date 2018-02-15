@@ -86,7 +86,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	 */
 	protected function createListItemCollection()
 	{
-		$collection  = new TActiveListItemCollection;
+		$collection = new TActiveListItemCollection;
 		$collection->setControl($this);
 		return $collection;
 	}

@@ -62,8 +62,8 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
 	const ChallengeFieldName = 'g-recaptcha-response';
-	private $_widgetId=0;
-	private $_isValid=true;
+	private $_widgetId = 0;
+	private $_isValid = true;
 
 	public function __construct()
 	{
@@ -100,7 +100,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 	public function getValidationPropertyValue()
 	{
@@ -280,11 +280,11 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	protected function registerClientScript()
 	{
-		$id         = $this->getClientID();
-		$options    = TJavaScript::encode($this->getClientOptions());
-		$className  = $this->getClientClassName();
-		$cs         = $this->Page->ClientScript;
-		$code       = "new $className($options);";
+		$id = $this->getClientID();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->Page->ClientScript;
+		$code = "new $className($options);";
 
 		$cs->registerPradoScript('ajax');
 		$cs->registerEndScript("grecaptcha:$id", $code);

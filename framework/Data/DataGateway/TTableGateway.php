@@ -92,7 +92,7 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function __construct($table, $connection)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 		if(is_string($table))
 			$this->setTableName($table);
 		elseif($table instanceof TDbTableInfo)
@@ -189,7 +189,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array binding parameters, positional or named.
 	 * @return array query results.
 	 */
-	public function findBySql($sql, $parameters=[])
+	public function findBySql($sql, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		$criteria = $this->getCriteria($sql, $parameters, $args);
@@ -202,7 +202,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array binding parameters, positional or named.
 	 * @return TDbDataReader query results.
 	 */
-	public function findAllBySql($sql, $parameters=[])
+	public function findAllBySql($sql, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		$criteria = $this->getCriteria($sql, $parameters, $args);
@@ -226,7 +226,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return array matching record object.
 	 */
-	public function find($criteria, $parameters=[])
+	public function find($criteria, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		$criteria = $this->getCriteria($criteria, $parameters, $args);
@@ -239,10 +239,10 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return TDbDataReader matching records.
 	 */
-	public function findAll($criteria=null, $parameters=[])
+	public function findAll($criteria = null, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
-		if($criteria!==null)
+		if($criteria !== null)
 			$criteria = $this->getCriteria($criteria, $parameters, $args);
 		return $this->getCommand()->findAll($criteria);
 	}
@@ -301,7 +301,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array condition parameters.
 	 * @return integer number of records deleted.
 	 */
-	public function deleteAll($criteria, $parameters=[])
+	public function deleteAll($criteria, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		$criteria = $this->getCriteria($criteria, $parameters, $args);
@@ -354,10 +354,10 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records.
 	 */
-	public function count($criteria=null, $parameters=[])
+	public function count($criteria = null, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
-		if($criteria!==null)
+		if($criteria !== null)
 			$criteria = $this->getCriteria($criteria, $parameters, $args);
 		return $this->getCommand()->count($criteria);
 	}
@@ -376,7 +376,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array additional binding name-value pairs.
 	 * @return integer number of records updated.
 	 */
-	public function update($data, $criteria, $parameters=[])
+	public function update($data, $criteria, $parameters = [])
 	{
 		$args = func_num_args() > 2 ? array_slice(func_get_args(), 2) : null;
 		$criteria = $this->getCriteria($criteria, $parameters, $args);
@@ -456,15 +456,15 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function __call($method, $args)
 	{
-		$delete =false;
-		if($findOne = substr(strtolower($method), 0, 6)==='findby')
-			$condition = $method[6]==='_' ? substr($method, 7) : substr($method, 6);
-		elseif(substr(strtolower($method), 0, 9)==='findallby')
-			$condition = $method[9]==='_' ? substr($method, 10) : substr($method, 9);
-		elseif($delete = substr(strtolower($method), 0, 8)==='deleteby')
-			$condition = $method[8]==='_' ? substr($method, 9) : substr($method, 8);
-		elseif($delete = substr(strtolower($method), 0, 11)==='deleteallby')
-			$condition = $method[11]==='_' ? substr($method, 12) : substr($method, 11);
+		$delete = false;
+		if($findOne = substr(strtolower($method), 0, 6) === 'findby')
+			$condition = $method[6] === '_' ? substr($method, 7) : substr($method, 6);
+		elseif(substr(strtolower($method), 0, 9) === 'findallby')
+			$condition = $method[9] === '_' ? substr($method, 10) : substr($method, 9);
+		elseif($delete = substr(strtolower($method), 0, 8) === 'deleteby')
+			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
+		elseif($delete = substr(strtolower($method), 0, 11) === 'deleteallby')
+			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
 		else
 			return null;
 

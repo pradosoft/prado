@@ -92,7 +92,7 @@ class TMemCache extends TCache
 	/**
 	 * @var boolean if the module is initialized
 	 */
-	private $_initialized=false;
+	private $_initialized = false;
 	/**
 	 * @var Memcache the Memcache instance
 	 */
@@ -100,23 +100,23 @@ class TMemCache extends TCache
 	/**
 	 * @var string host name of the memcache server
 	 */
-	private $_host='localhost';
+	private $_host = 'localhost';
 	/**
 	 * @var integer the port number of the memcache server
 	 */
-	private $_port=11211;
+	private $_port = 11211;
 
 	private $_timeout = 360;
 
 	/**
 	 * @var integer Controls the minimum value length before attempting to compress automatically.
 	 */
-	private $_threshold=0;
+	private $_threshold = 0;
 
 	/**
 	 * @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
 	 */
-	private $_minSavings=0.0;
+	private $_minSavings = 0.0;
 
 	/**
 	 * @var boolean whether to use memcached or memcache as the underlying caching extension.
@@ -124,12 +124,12 @@ class TMemCache extends TCache
 	 * If false {@link http://pecl.php.net/package/memcache memcache}. will be used.
 	 * Defaults to false.
 	 */
-	private $_useMemcached=false;
+	private $_useMemcached = false;
 	
 	/**
 	 * @var array list of servers available
 	 */
-	private $_servers=[];
+	private $_servers = [];
 
 	/**
 	 * Destructor.
@@ -137,7 +137,7 @@ class TMemCache extends TCache
 	 */
 	public function __destruct()
 	{
-		if($this->_cache!==null && !$this->_useMemcached)
+		if($this->_cache !== null && !$this->_useMemcached)
 			$this->_cache->close();
 	}
 
@@ -165,19 +165,19 @@ class TMemCache extends TCache
 			{
 				Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', '\Prado\Caching\TMemCache');
 				if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
-					$server['Weight'], $server['Timeout'], $server['RetryInterval'])===false)
+					$server['Weight'], $server['Timeout'], $server['RetryInterval']) === false)
 					throw new TConfigurationException('memcache_connection_failed', $server['Host'], $server['Port']);
 			}
 		}
 		else
 		{
 			Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
-			if($this->_cache->addServer($this->_host, $this->_port)===false)
+			if($this->_cache->addServer($this->_host, $this->_port) === false)
 				throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
 		}
-		if($this->_threshold!==0)
+		if($this->_threshold !== 0)
 			$this->_cache->setCompressThreshold($this->_threshold, $this->_minSavings);
-		$this->_initialized=true;
+		$this->_initialized = true;
 		parent::init($config);
 	}
 
@@ -192,29 +192,29 @@ class TMemCache extends TCache
 		{
 			foreach($xml->getElementsByTagName('server') as $serverConfig)
 			{
-				$properties=$serverConfig->getAttributes();
-				if(($host=$properties->remove('Host'))===null)
+				$properties = $serverConfig->getAttributes();
+				if(($host = $properties->remove('Host')) === null)
 					throw new TConfigurationException('memcache_serverhost_required');
-				if(($port=$properties->remove('Port'))===null)
+				if(($port = $properties->remove('Port')) === null)
 					throw new TConfigurationException('memcache_serverport_required');
 				if(!is_numeric($port))
 					throw new TConfigurationException('memcache_serverport_invalid');
-				$server = ['Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true];
+				$server = ['Host' => $host,'Port' => $port,'Weight' => 1,'Timeout' => 1800,'RetryInterval' => 15,'Persistent' => true];
 				$checks = [
-					'Weight'=>'memcache_serverweight_invalid',
-					'Timeout'=>'memcache_servertimeout_invalid',
-					'RetryInterval'=>'memcach_serverretryinterval_invalid'
+					'Weight' => 'memcache_serverweight_invalid',
+					'Timeout' => 'memcache_servertimeout_invalid',
+					'RetryInterval' => 'memcach_serverretryinterval_invalid'
 				];
-				foreach($checks as $property=>$exception)
+				foreach($checks as $property => $exception)
 				{
-					$value=$properties->remove($property);
-					if($value!==null && is_numeric($value))
-						$server[$property]=$value;
-					elseif($value!==null)
+					$value = $properties->remove($property);
+					if($value !== null && is_numeric($value))
+						$server[$property] = $value;
+					elseif($value !== null)
 						throw new TConfigurationException($exception);
 				}
-				$server['Persistent']= TPropertyValue::ensureBoolean($properties->remove('Persistent'));
-				$this->_servers[]=$server;
+				$server['Persistent'] = TPropertyValue::ensureBoolean($properties->remove('Persistent'));
+				$this->_servers[] = $server;
 			}
 		}
 	}
@@ -236,7 +236,7 @@ class TMemCache extends TCache
 		if($this->_initialized)
 			throw new TInvalidOperationException('memcache_host_unchangeable');
 		else
-			$this->_host=$value;
+			$this->_host = $value;
 	}
 
 	/**
@@ -256,7 +256,7 @@ class TMemCache extends TCache
 		if($this->_initialized)
 			throw new TInvalidOperationException('memcache_port_unchangeable');
 		else
-			$this->_port=TPropertyValue::ensureInteger($value);
+			$this->_port = TPropertyValue::ensureInteger($value);
 	}
 	
 	/**
@@ -276,7 +276,7 @@ class TMemCache extends TCache
 		if($this->_initialized)
 			throw new TInvalidOperationException('memcache_host_unchangeable');
 		else
-			$this->_useMemcached=$value;
+			$this->_useMemcached = $value;
 	}
 	
 	/**
@@ -296,7 +296,7 @@ class TMemCache extends TCache
 		if($this->_initialized)
 			throw new TInvalidOperationException('memcache_threshold_unchangeable');
 		else
-			$this->_threshold=TPropertyValue::ensureInteger($value);
+			$this->_threshold = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -316,7 +316,7 @@ class TMemCache extends TCache
 		if($this->_initialized)
 			throw new TInvalidOperationException('memcache_min_savings_unchangeable');
 		else
-			$this->_minSavings=TPropertyValue::ensureFloat($value);
+			$this->_minSavings = TPropertyValue::ensureFloat($value);
 	}
 
 	/**

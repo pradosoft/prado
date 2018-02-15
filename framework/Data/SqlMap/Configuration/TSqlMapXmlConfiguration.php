@@ -35,14 +35,14 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * @var array global properties.
 	 */
-	private $_properties=[];
+	private $_properties = [];
 
 	/**
 	 * @param TSqlMapManager manager instance.
 	 */
 	public function __construct($manager)
 	{
-		$this->_manager=$manager;
+		$this->_manager = $manager;
 	}
 
 	public function getManager()
@@ -59,9 +59,9 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 * Configure the TSqlMapManager using the given xml file.
 	 * @param string SqlMap configuration xml file.
 	 */
-	public function configure($filename=null)
+	public function configure($filename = null)
 	{
-		$this->_configFile=$filename;
+		$this->_configFile = $filename;
 		$document = $this->loadXmlDocument($filename, $this);
 
 		foreach($document->xpath('//property') as $property)
@@ -151,7 +151,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 								$resultMap, $this->_configFile, $entry->getID());
 				}
 			}
-			if($entry->getDiscriminator()!==null)
+			if($entry->getDiscriminator() !== null)
 				$entry->getDiscriminator()->initialize($this->_manager);
 		}
 	}

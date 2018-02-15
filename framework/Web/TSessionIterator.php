@@ -40,7 +40,7 @@ class TSessionIterator implements \Iterator
 	 */
 	public function __construct()
 	{
-		$this->_keys=array_keys($_SESSION);
+		$this->_keys = array_keys($_SESSION);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class TSessionIterator implements \Iterator
 	 */
 	public function rewind()
 	{
-		$this->_key=reset($this->_keys);
+		$this->_key = reset($this->_keys);
 	}
 
 	/**
@@ -80,9 +80,9 @@ class TSessionIterator implements \Iterator
 	{
 		do
 		{
-			$this->_key=next($this->_keys);
+			$this->_key = next($this->_keys);
 		}
-		while(!isset($_SESSION[$this->_key]) && $this->_key!==false);
+		while(!isset($_SESSION[$this->_key]) && $this->_key !== false);
 	}
 
 	/**
@@ -92,6 +92,6 @@ class TSessionIterator implements \Iterator
 	 */
 	public function valid()
 	{
-		return $this->_key!==false;
+		return $this->_key !== false;
 	}
 }

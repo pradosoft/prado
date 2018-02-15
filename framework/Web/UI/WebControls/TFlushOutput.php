@@ -40,7 +40,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	/**
 	 * @var boolean whether to continue buffering of output
 	 */
-	private $_continueBuffering=true;
+	private $_continueBuffering = true;
 
 
 	/**

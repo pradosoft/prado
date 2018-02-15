@@ -31,7 +31,7 @@ class TPagedListPageChangedEventParameter extends \Prado\TEventParameter
 	 */
 	public function __construct($oldPage)
 	{
-		$this->_oldPage=$oldPage;
+		$this->_oldPage = $oldPage;
 	}
 
 	/**

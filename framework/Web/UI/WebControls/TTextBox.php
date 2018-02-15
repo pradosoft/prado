@@ -60,28 +60,28 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Default number of rows (for MultiLine text box)
 	 */
-	const DEFAULT_ROWS=4;
+	const DEFAULT_ROWS = 4;
 	/**
 	 * Default number of columns (for MultiLine text box)
 	 */
-	const DEFAULT_COLUMNS=20;
+	const DEFAULT_COLUMNS = 20;
 	/**
 	 * @var mixed safe text parser
 	 */
-	private static $_safeTextParser=null;
+	private static $_safeTextParser = null;
 	/**
 	 * @var string safe textbox content with javascript stripped off
 	 */
 	private $_safeText;
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * @return string tag name of the textbox
 	 */
 	protected function getTagName()
 	{
-		return ($this->getTextMode()==='MultiLine')?'textarea':'input';
+		return ($this->getTextMode() === 'MultiLine')?'textarea':'input';
 	}
 
 	/**
@@ -107,16 +107,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if(($uid=$this->getUniqueID())!=='')
+		if(($uid = $this->getUniqueID()) !== '')
 			$writer->addAttribute('name', $uid);
-		if(($textMode=$this->getTextMode())===TTextBoxMode::MultiLine)
+		if(($textMode = $this->getTextMode()) === TTextBoxMode::MultiLine)
 		{
-			if(($rows=$this->getRows())<=0)
-				$rows=self::DEFAULT_ROWS;
-			if(($cols=$this->getColumns())<=0)
-				$cols=self::DEFAULT_COLUMNS;
+			if(($rows = $this->getRows()) <= 0)
+				$rows = self::DEFAULT_ROWS;
+			if(($cols = $this->getColumns()) <= 0)
+				$cols = self::DEFAULT_COLUMNS;
 			$writer->addAttribute('rows', "$rows");
 			$writer->addAttribute('cols', "$cols");
 			if(!$this->getWrap())
@@ -174,42 +174,42 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 					break;
 			}
 
-			if(($text=$this->getText())!=='' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
+			if(($text = $this->getText()) !== '' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
 				$writer->addAttribute('value', $text);
 
-			if(($act=$this->getAutoCompleteType())!=='None')
+			if(($act = $this->getAutoCompleteType()) !== 'None')
 			{
-				if($act==='Disabled')
+				if($act === 'Disabled')
 					$writer->addAttribute('autocomplete', 'off');
-				elseif($act==='Search')
+				elseif($act === 'Search')
 					$writer->addAttribute('vcard_name', 'search');
-				elseif($act==='HomeCountryRegion')
+				elseif($act === 'HomeCountryRegion')
 					$writer->addAttribute('vcard_name', 'HomeCountry');
-				elseif($act==='BusinessCountryRegion')
+				elseif($act === 'BusinessCountryRegion')
 					$writer->addAttribute('vcard_name', 'BusinessCountry');
 				else
 				{
-					if(strpos($act, 'Business')===0)
-						$act='Business' . '.' . substr($act, 8);
-					elseif(strpos($act, 'Home')===0)
-						$act='Home' . '.' . substr($act, 4);
+					if(strpos($act, 'Business') === 0)
+						$act = 'Business' . '.' . substr($act, 8);
+					elseif(strpos($act, 'Home') === 0)
+						$act = 'Home' . '.' . substr($act, 4);
 					$writer->addAttribute('vcard_name', 'vCard.' . $act);
 				}
 			}
 
-			if(($cols=$this->getColumns())>0)
+			if(($cols = $this->getColumns()) > 0)
 				$writer->addAttribute('size', "$cols");
-			if(($maxLength=$this->getMaxLength())>0)
+			if(($maxLength = $this->getMaxLength()) > 0)
 				$writer->addAttribute('maxlength', "$maxLength");
 		}
 		if($this->getReadOnly())
 			$writer->addAttribute('readonly', 'readonly');
-		$isEnabled=$this->getEnabled(true);
+		$isEnabled = $this->getEnabled(true);
 		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
 		if($isEnabled
 			&& $this->getEnableClientScript()
-			&& ($this->getAutoPostBack() || $textMode===TTextBoxMode::SingleLine)
+			&& ($this->getAutoPostBack() || $textMode === TTextBoxMode::SingleLine)
 			&& $page->getClientSupportsJavaScript())
 		{
 			$this->renderClientControlScript($writer);
@@ -261,13 +261,13 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function loadPostData($key, $values)
 	{
-		$value=$values[$key];
+		$value = $values[$key];
 		if($this->getAutoTrim())
-			$value=trim($value);
-		if(!$this->getReadOnly() && $this->getText()!==$value)
+			$value = trim($value);
+		if(!$this->getReadOnly() && $this->getText() !== $value)
 		{
 			$this->setText($value);
-			return $this->_dataChanged=true;
+			return $this->_dataChanged = true;
 		}
 		else
 			return false;
@@ -307,7 +307,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -343,7 +343,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getTextMode()==='MultiLine')
+		if($this->getTextMode() === 'MultiLine')
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
 	}
 
@@ -355,7 +355,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if($this->getTextMode()==='MultiLine')
+		if($this->getTextMode() === 'MultiLine')
 			$writer->write("\n");
 	}
 
@@ -562,8 +562,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getSafeText()
 	{
-		if($this->_safeText===null)
-			$this->_safeText=$this->getSafeTextParser()->purify($this->getText());
+		if($this->_safeText === null)
+			$this->_safeText = $this->getSafeTextParser()->purify($this->getText());
 		return $this->_safeText;
 	}
 
@@ -573,7 +573,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	protected function getSafeTextParser()
 	{
 		if(!self::$_safeTextParser)
-			self::$_safeTextParser= new \HTMLPurifier($this->getConfig());
+			self::$_safeTextParser = new \HTMLPurifier($this->getConfig());
 		return self::$_safeTextParser;
 	}
 

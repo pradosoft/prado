@@ -73,7 +73,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	public function setDefaultSchema($schema)
 	{
-		$this->_defaultSchema=$schema;
+		$this->_defaultSchema = $schema;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function getSchemaTableName($table)
 	{
-		if(count($parts= explode('.', str_replace('"', '', $table))) > 1)
+		if(count($parts = explode('.', str_replace('"', '', $table))) > 1)
 			return [$parts[0], $parts[1]];
 		else
 			return [$this->getDefaultSchema(),$parts[0]];
@@ -143,13 +143,13 @@ EOD;
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
 		$tableInfo = $this->createNewTableInfo($schemaName, $tableName);
-		$index=0;
+		$index = 0;
 		foreach($command->query() as $col)
 		{
 			$col['index'] = $index++;
 			$this->processColumn($tableInfo, $col);
 		}
-		if($index===0)
+		if($index === 0)
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
 		return $tableInfo;
 	}
@@ -177,7 +177,7 @@ EOD;
 	 */
 	protected function assertIdentifier($name)
 	{
-		if(strpos($name, '"')!==false)
+		if(strpos($name, '"') !== false)
 		{
 			$ref = 'http://www.postgresql.org/docs/7.4/static/sql-syntax.html#SQL-SYNTAX-IDENTIFIERS';
 			throw new TDbException('dbcommon_invalid_identifier_name', $name, $ref);
@@ -224,12 +224,12 @@ EOD;
 			$info['IsForeignKey'] = true;
 
 		if($col['atttypmod'] > 0)
-			$info['ColumnSize'] =  $col['atttypmod'] - 4;
+			$info['ColumnSize'] = $col['atttypmod'] - 4;
 		if($col['atthasdef'])
 			$info['DefaultValue'] = $col['adsrc'];
 		if($col['attisserial'] || substr($col['adsrc'], 0, 8) === 'nextval(')
 		{
-			if(($sequence = $this->getSequenceName($tableInfo, $col['adsrc']))!==null)
+			if(($sequence = $this->getSequenceName($tableInfo, $col['adsrc'])) !== null)
 			{
 				$info['SequenceName'] = $sequence;
 				unset($info['DefaultValue']);
@@ -275,7 +275,7 @@ EOD;
 	protected function isPrecisionType($type)
 	{
 		$type = strtolower(trim($type));
-		return $type==='numeric' || $type==='interval' || strpos($type, 'time')===0;
+		return $type === 'numeric' || $type === 'interval' || strpos($type, 'time') === 0;
 	}
 
 	/**
@@ -347,7 +347,7 @@ EOD;
 					$primary = $this->getPrimaryKeys($tableName, $schemaName, $row['indkey']);
 					break;
 				case 'f':
-					if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
+					if(($fkey = $this->getForeignKeys($row['consrc'])) !== null)
 						$foreign[] = $fkey;
 					break;
 			}
@@ -427,24 +427,24 @@ EOD;
 		 * If not empty, the returned table names will be prefixed with the schema name.
 		 * @return array all table names in the database.
 		 */
-	public function findTableNames($schema='public')
+	public function findTableNames($schema = 'public')
 	{
-		if($schema==='')
-			$schema=self::DEFAULT_SCHEMA;
-		$sql=<<<EOD
+		if($schema === '')
+			$schema = self::DEFAULT_SCHEMA;
+		$sql = <<<EOD
 SELECT table_name, table_schema FROM information_schema.tables
 WHERE table_schema=:schema AND table_type='BASE TABLE'
 EOD;
-		$command=$this->getDbConnection()->createCommand($sql);
+		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindParam(':schema', $schema);
-		$rows=$command->queryAll();
-		$names=[];
+		$rows = $command->queryAll();
+		$names = [];
 		foreach($rows as $row)
 		{
-			if($schema===self::DEFAULT_SCHEMA)
-				$names[]=$row['table_name'];
+			if($schema === self::DEFAULT_SCHEMA)
+				$names[] = $row['table_name'];
 			else
-				$names[]=$row['table_schema'] . '.' . $row['table_name'];
+				$names[] = $row['table_schema'] . '.' . $row['table_name'];
 		}
 		return $names;
 	}

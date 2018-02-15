@@ -81,10 +81,10 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * @param integer row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
-	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit!==null ? intval($limit) : -1;
-		$offset = $offset!==null ? intval($offset) : -1;
+		$limit = $limit !== null ? intval($limit) : -1;
+		$offset = $offset !== null ? intval($offset) : -1;
 		if ($limit > 0 && $offset <= 0) //just limit
 			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
 		elseif($limit > 0 && $offset > 0)
@@ -102,7 +102,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)
 	{
-		$fetch = $limit+$offset;
+		$fetch = $limit + $offset;
 		$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $fetch", $sql);
 		$ordering = $this->findOrdering($sql);
 
@@ -122,15 +122,15 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	{
 		if(!preg_match('/ORDER BY/i', $sql))
 			return [];
-		$matches=[];
-		$ordering=[];
+		$matches = [];
+		$ordering = [];
 		preg_match_all('/(ORDER BY)[\s"\[](.*)(ASC|DESC)?(?:[\s"\[]|$|COMPUTE|FOR)/i', $sql, $matches);
-		if(count($matches)>1 && count($matches[2]) > 0)
+		if(count($matches) > 1 && count($matches[2]) > 0)
 		{
 			$parts = explode(',', $matches[2][0]);
 			foreach($parts as $part)
 			{
-				$subs=[];
+				$subs = [];
 				if(preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs))
 				{
 					if(count($subs) > 1 && count($subs[2]) > 0)
@@ -152,9 +152,9 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function joinOrdering($orders)
 	{
-		if(count($orders)>0)
+		if(count($orders) > 0)
 		{
-			$str=[];
+			$str = [];
 			foreach($orders as $column => $direction)
 				$str[] = $column . ' ' . $direction;
 			return 'ORDER BY ' . implode(', ', $str);
@@ -168,7 +168,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	protected function reverseDirection($orders)
 	{
 		foreach($orders as $column => $direction)
-			$orders[$column] = strtolower(trim($direction))==='desc' ? 'ASC' : 'DESC';
+			$orders[$column] = strtolower(trim($direction)) === 'desc' ? 'ASC' : 'DESC';
 		return $orders;
 	}
 }

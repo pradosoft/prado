@@ -109,7 +109,7 @@ class NumberFormatInfo
 	 * @param array ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	public function __construct($data=[], $type=NumberFormatInfo::DECIMAL)
+	public function __construct($data = [], $type = NumberFormatInfo::DECIMAL)
 	{
 		$this->properties = get_class_methods($this);
 
@@ -127,7 +127,7 @@ class NumberFormatInfo
 	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
 	 * @param int pattern type.
 	 */
-	public function setPattern($type=NumberFormatInfo::DECIMAL)
+	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{
 		if(is_int($type))
 			$this->pattern =
@@ -154,7 +154,7 @@ class NumberFormatInfo
 	 * (invariant).
 	 * @return NumberFormatInfo default NumberFormatInfo.
 	 */
-	public static function getInvariantInfo($type=NumberFormatInfo::DECIMAL)
+	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
 		static $invariant;
 		if($invariant === null)
@@ -178,8 +178,8 @@ class NumberFormatInfo
 	 * @see getPercentageInstance();
 	 * @see getScientificInstance();
 	 */
-	public static function getInstance($culture=null,
-									   $type=NumberFormatInfo::DECIMAL)
+	public static function getInstance($culture = null,
+									   $type = NumberFormatInfo::DECIMAL)
 	{
 		if ($culture instanceof CultureInfo)
 		{
@@ -209,7 +209,7 @@ class NumberFormatInfo
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getCurrencyInstance($culture=null)
+	public static function getCurrencyInstance($culture = null)
 	{
 		return self::getInstance($culture, self::CURRENCY);
 	}
@@ -220,7 +220,7 @@ class NumberFormatInfo
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getPercentageInstance($culture=null)
+	public static function getPercentageInstance($culture = null)
 	{
 		return self::getInstance($culture, self::PERCENTAGE);
 	}
@@ -231,7 +231,7 @@ class NumberFormatInfo
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getScientificInstance($culture=null)
+	public static function getScientificInstance($culture = null)
 	{
 		return self::getInstance($culture, self::SCIENTIFIC);
 	}
@@ -292,16 +292,16 @@ class NumberFormatInfo
 			//get the number of decimal digits
 			if(is_int($decimalPos))
 			{
-				$groupSize1 = $decimalPos - $groupPos1-1;
+				$groupSize1 = $decimalPos - $groupPos1 - 1;
 
 			}
 			else
 			{
 				//no decimal point, so traverse from the back
 				//to find the groupsize 1.
-				for($i=strlen($pattern)-1; $i>=0; $i--)
+				for($i = strlen($pattern) - 1; $i >= 0; $i--)
 				{
-					if($pattern{$i} == $digit || $pattern{$i}==$hash)
+					if($pattern{$i} == $digit || $pattern{$i} == $hash)
 					{
 						$groupSize1 = $i - $groupPos1;
 						break;
@@ -311,12 +311,12 @@ class NumberFormatInfo
 
 			//get the second group size
 			if(is_int($groupPos2))
-				$groupSize2 = $groupPos1 - $groupPos2-1;
+				$groupSize2 = $groupPos1 - $groupPos2 - 1;
 		}
 
 		if(is_int($decimalPos))
 		{
-			for($i=strlen($pattern)-1; $i>=0; $i--)
+			for($i = strlen($pattern) - 1; $i >= 0; $i--)
 			{
 				if($pattern{$i} == $dot) break;
 				if($pattern{$i} == $digit)
@@ -330,9 +330,9 @@ class NumberFormatInfo
 		if(is_int($decimalPos))
 			$digitPattern = substr($pattern, 0, $decimalPos);
 		else
-			$digitPattern  = $pattern;
+			$digitPattern = $pattern;
 
-		$digitPattern  = preg_replace('/[^0]/', '', $digitPattern);
+		$digitPattern = preg_replace('/[^0]/', '', $digitPattern);
 
 		$info['groupPos1'] = $groupPos1;
 		$info['groupSize1'] = $groupSize1;
@@ -505,7 +505,7 @@ class NumberFormatInfo
 	 * Gets the string to use as the currency symbol.
 	 * @return string currency symbol.
 	 */
-	public function getCurrencySymbol($currency='USD')
+	public function getCurrencySymbol($currency = 'USD')
 	{
 		if(isset($this->pattern['symbol']))
 			return $this->pattern['symbol'];

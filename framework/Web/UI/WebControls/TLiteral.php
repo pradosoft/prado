@@ -101,7 +101,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function render($writer)
 	{
-		if(($text=$this->getText())!=='')
+		if(($text = $this->getText()) !== '')
 		{
 			if($this->getEncode())
 				$writer->write(THttpUtility::htmlEncode($text));

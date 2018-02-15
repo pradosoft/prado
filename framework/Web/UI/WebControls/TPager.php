@@ -58,13 +58,13 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	/**
 	 * Command name that TPager understands.
 	 */
-	const CMD_PAGE='Page';
-	const CMD_PAGE_NEXT='Next';
-	const CMD_PAGE_PREV='Previous';
-	const CMD_PAGE_FIRST='First';
-	const CMD_PAGE_LAST='Last';
+	const CMD_PAGE = 'Page';
+	const CMD_PAGE_NEXT = 'Next';
+	const CMD_PAGE_PREV = 'Previous';
+	const CMD_PAGE_FIRST = 'First';
+	const CMD_PAGE_LAST = 'Last';
 
-	private $_pageCount=0;
+	private $_pageCount = 0;
 
 	/**
 	 * Restores the pager state.
@@ -324,7 +324,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function setPageButtonCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<1)
+		if(($value = TPropertyValue::ensureInteger($value)) < 1)
 			throw new TInvalidDataValueException('pager_pagebuttoncount_invalid');
 		$this->setViewState('PageButtonCount', $value, 10);
 	}
@@ -343,7 +343,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function setCurrentPageIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
 			throw new TInvalidDataValueException('pager_currentpageindex_invalid');
 		$this->setViewState('CurrentPageIndex', $value, 0);
 	}
@@ -362,7 +362,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function setPageCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
+		if(($value = TPropertyValue::ensureInteger($value)) < 0)
 			throw new TInvalidDataValueException('pager_pagecount_invalid');
 		$this->setViewState('PageCount', $value, 0);
 	}
@@ -372,7 +372,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function getIsFirstPage()
 	{
-		return $this->getCurrentPageIndex()===0;
+		return $this->getCurrentPageIndex() === 0;
 	}
 
 	/**
@@ -380,7 +380,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function getIsLastPage()
 	{
-		return $this->getCurrentPageIndex()===$this->getPageCount()-1;
+		return $this->getCurrentPageIndex() === $this->getPageCount() - 1;
 	}
 
 	/**
@@ -393,20 +393,20 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	{
 		parent::onPreRender($param);
 
-		$controlID=$this->getControlToPaginate();
-		if(($targetControl=$this->getNamingContainer()->findControl($controlID))===null || !($targetControl instanceof TDataBoundControl))
+		$controlID = $this->getControlToPaginate();
+		if(($targetControl = $this->getNamingContainer()->findControl($controlID)) === null || !($targetControl instanceof TDataBoundControl))
 			throw new TConfigurationException('pager_controltopaginate_invalid', $controlID);
 
 		if($targetControl->getAllowPaging())
 		{
-			$this->_pageCount=$targetControl->getPageCount();
+			$this->_pageCount = $targetControl->getPageCount();
 			$this->getControls()->clear();
 			$this->setPageCount($targetControl->getPageCount());
 			$this->setCurrentPageIndex($targetControl->getCurrentPageIndex());
 			$this->buildPager();
 		}
 		else
-			$this->_pageCount=0;
+			$this->_pageCount = 0;
 	}
 
 	/**
@@ -417,7 +417,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function render($writer)
 	{
-		if($this->_pageCount>1)
+		if($this->_pageCount > 1)
 			parent::render($writer);
 	}
 
@@ -456,13 +456,13 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
-		if($buttonType===TPagerButtonType::LinkButton)
+		if($buttonType === TPagerButtonType::LinkButton)
 		{
 			if($enabled)
-				$button=new TLinkButton;
+				$button = new TLinkButton;
 			else
 			{
-				$button=new TLabel;
+				$button = new TLabel;
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
@@ -470,13 +470,13 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		}
 		else
 		{
-			if($buttonType===TPagerButtonType::ImageButton)
+			if($buttonType === TPagerButtonType::ImageButton)
 			{
-				$button=new TImageButton;
+				$button = new TImageButton;
 				$button->setImageUrl($this->getPageImageUrl($text, $commandName));
 			}
 			else
-				$button=new TButton;
+				$button = new TButton;
 			if(!$enabled)
 				$button->setEnabled(false);
 		}
@@ -498,7 +498,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		switch($commandName)
 		{
 			case self::CMD_PAGE:
-				$url=$this->getNumericPageImageUrl();
+				$url = $this->getNumericPageImageUrl();
 				return str_replace('{0}', $text, $url);
 			case self::CMD_PAGE_NEXT:
 				return $this->getNextPageImageUrl();
@@ -518,50 +518,50 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function buildNextPrevPager()
 	{
-		$buttonType=$this->getButtonType();
-		$controls=$this->getControls();
+		$buttonType = $this->getButtonType();
+		$controls = $this->getControls();
 		if($this->getIsFirstPage())
 		{
-			if(($text=$this->getFirstPageText())!=='')
+			if(($text = $this->getFirstPageText()) !== '')
 			{
-				$label=$this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_FIRST, '');
+				$label = $this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_FIRST, '');
 				$controls->add($label);
 				$controls->add("\n");
 			}
-			$label=$this->createPagerButton($buttonType, false, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$label = $this->createPagerButton($buttonType, false, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
 			$controls->add($label);
 		}
 		else
 		{
-			if(($text=$this->getFirstPageText())!=='')
+			if(($text = $this->getFirstPageText()) !== '')
 			{
-				$button=$this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
+				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
 				$controls->add($button);
 				$controls->add("\n");
 			}
-			$button=$this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
+			$button = $this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE_PREV, '');
 			$controls->add($button);
 		}
 		$controls->add("\n");
 		if($this->getIsLastPage())
 		{
-			$label=$this->createPagerButton($buttonType, false, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$label = $this->createPagerButton($buttonType, false, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
 			$controls->add($label);
-			if(($text=$this->getLastPageText())!=='')
+			if(($text = $this->getLastPageText()) !== '')
 			{
 				$controls->add("\n");
-				$label=$this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_LAST, '');
+				$label = $this->createPagerButton($buttonType, false, $text, self::CMD_PAGE_LAST, '');
 				$controls->add($label);
 			}
 		}
 		else
 		{
-			$button=$this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
+			$button = $this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE_NEXT, '');
 			$controls->add($button);
-			if(($text=$this->getLastPageText())!=='')
+			if(($text = $this->getLastPageText()) !== '')
 			{
 				$controls->add("\n");
-				$button=$this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
+				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
 				$controls->add($button);
 			}
 		}
@@ -572,66 +572,66 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function buildNumericPager()
 	{
-		$buttonType=$this->getButtonType();
-		$controls=$this->getControls();
-		$pageCount=$this->getPageCount();
-		$pageIndex=$this->getCurrentPageIndex()+1;
-		$maxButtonCount=$this->getPageButtonCount();
-		$buttonCount=$maxButtonCount>$pageCount?$pageCount:$maxButtonCount;
-		$startPageIndex=1;
-		$endPageIndex=$buttonCount;
-		if($pageIndex>$endPageIndex)
+		$buttonType = $this->getButtonType();
+		$controls = $this->getControls();
+		$pageCount = $this->getPageCount();
+		$pageIndex = $this->getCurrentPageIndex() + 1;
+		$maxButtonCount = $this->getPageButtonCount();
+		$buttonCount = $maxButtonCount > $pageCount?$pageCount:$maxButtonCount;
+		$startPageIndex = 1;
+		$endPageIndex = $buttonCount;
+		if($pageIndex > $endPageIndex)
 		{
-			$startPageIndex=((int)(($pageIndex-1)/$maxButtonCount))*$maxButtonCount+1;
-			if(($endPageIndex=$startPageIndex+$maxButtonCount-1)>$pageCount)
-				$endPageIndex=$pageCount;
-			if($endPageIndex-$startPageIndex+1<$maxButtonCount)
+			$startPageIndex = ((int)(($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
+			if(($endPageIndex = $startPageIndex + $maxButtonCount - 1) > $pageCount)
+				$endPageIndex = $pageCount;
+			if($endPageIndex - $startPageIndex + 1 < $maxButtonCount)
 			{
-				if(($startPageIndex=$endPageIndex-$maxButtonCount+1)<1)
-					$startPageIndex=1;
+				if(($startPageIndex = $endPageIndex - $maxButtonCount + 1) < 1)
+					$startPageIndex = 1;
 			}
 		}
 
-		if($startPageIndex>1)
+		if($startPageIndex > 1)
 		{
-			if(($text=$this->getFirstPageText())!=='')
+			if(($text = $this->getFirstPageText()) !== '')
 			{
-				$button=$this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
+				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_FIRST, '');
 				$controls->add($button);
 				$controls->add("\n");
 			}
-			$prevPageIndex=$startPageIndex-1;
-			$button=$this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
+			$prevPageIndex = $startPageIndex - 1;
+			$button = $this->createPagerButton($buttonType, true, $this->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
 			$controls->add($button);
 			$controls->add("\n");
 		}
 
-		for($i=$startPageIndex;$i<=$endPageIndex;++$i)
+		for($i = $startPageIndex;$i <= $endPageIndex;++$i)
 		{
-			if($i===$pageIndex)
+			if($i === $pageIndex)
 			{
-				$label=$this->createPagerButton($buttonType, false, "$i", self::CMD_PAGE, '');
+				$label = $this->createPagerButton($buttonType, false, "$i", self::CMD_PAGE, '');
 				$controls->add($label);
 			}
 			else
 			{
-				$button=$this->createPagerButton($buttonType, true, "$i", self::CMD_PAGE, "$i");
+				$button = $this->createPagerButton($buttonType, true, "$i", self::CMD_PAGE, "$i");
 				$controls->add($button);
 			}
-			if($i<$endPageIndex)
+			if($i < $endPageIndex)
 				$controls->add("\n");
 		}
 
-		if($pageCount>$endPageIndex)
+		if($pageCount > $endPageIndex)
 		{
 			$controls->add("\n");
-			$nextPageIndex=$endPageIndex+1;
-			$button=$this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
+			$nextPageIndex = $endPageIndex + 1;
+			$button = $this->createPagerButton($buttonType, true, $this->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
 			$controls->add($button);
-			if(($text=$this->getLastPageText())!=='')
+			if(($text = $this->getLastPageText()) !== '')
 			{
 				$controls->add("\n");
-				$button=$this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
+				$button = $this->createPagerButton($buttonType, true, $text, self::CMD_PAGE_LAST, '');
 				$controls->add($button);
 			}
 		}
@@ -642,7 +642,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function buildListPager()
 	{
-		$list=new TDropDownList;
+		$list = new TDropDownList;
 		$this->getControls()->add($list);
 		$list->setDataSource(range(1, $this->getPageCount()));
 		$list->dataBind();
@@ -659,7 +659,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function listIndexChanged($sender, $param)
 	{
-		$pageIndex=$sender->getSelectedIndex();
+		$pageIndex = $sender->getSelectedIndex();
 		$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $pageIndex));
 	}
 
@@ -684,33 +684,33 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	{
 		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
-			$command=$param->getCommandName();
-			if(strcasecmp($command, self::CMD_PAGE)===0)
+			$command = $param->getCommandName();
+			if(strcasecmp($command, self::CMD_PAGE) === 0)
 			{
-				$pageIndex=TPropertyValue::ensureInteger($param->getCommandParameter())-1;
+				$pageIndex = TPropertyValue::ensureInteger($param->getCommandParameter()) - 1;
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $pageIndex));
 				return true;
 			}
-			elseif(strcasecmp($command, self::CMD_PAGE_NEXT)===0)
+			elseif(strcasecmp($command, self::CMD_PAGE_NEXT) === 0)
 			{
-				$pageIndex=$this->getCurrentPageIndex()+1;
+				$pageIndex = $this->getCurrentPageIndex() + 1;
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $pageIndex));
 				return true;
 			}
-			elseif(strcasecmp($command, self::CMD_PAGE_PREV)===0)
+			elseif(strcasecmp($command, self::CMD_PAGE_PREV) === 0)
 			{
-				$pageIndex=$this->getCurrentPageIndex()-1;
+				$pageIndex = $this->getCurrentPageIndex() - 1;
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $pageIndex));
 				return true;
 			}
-			elseif(strcasecmp($command, self::CMD_PAGE_FIRST)===0)
+			elseif(strcasecmp($command, self::CMD_PAGE_FIRST) === 0)
 			{
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, 0));
 				return true;
 			}
-			elseif(strcasecmp($command, self::CMD_PAGE_LAST)===0)
+			elseif(strcasecmp($command, self::CMD_PAGE_LAST) === 0)
 			{
-				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $this->getPageCount()-1));
+				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender, $this->getPageCount() - 1));
 				return true;
 			}
 			return false;

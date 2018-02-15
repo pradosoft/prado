@@ -50,8 +50,8 @@ class TFileCacheDependency extends TCacheDependency
 	 */
 	public function setFileName($value)
 	{
-		$this->_fileName=$value;
-		$this->_timestamp=@filemtime($value);
+		$this->_fileName = $value;
+		$this->_timestamp = @filemtime($value);
 	}
 
 	/**
@@ -69,6 +69,6 @@ class TFileCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return @filemtime($this->_fileName)!==$this->_timestamp;
+		return @filemtime($this->_fileName) !== $this->_timestamp;
 	}
 }

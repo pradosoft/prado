@@ -49,8 +49,8 @@ class TDataGridCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	 */
 	public function __construct($item, $source, \Prado\Web\UI\TCommandEventParameter $param)
 	{
-		$this->_item=$item;
-		$this->_source=$source;
+		$this->_item = $item;
+		$this->_source = $source;
 		parent::__construct($param->getCommandName(), $param->getCommandParameter());
 	}
 

@@ -38,16 +38,16 @@ class THttpException extends TSystemException
 	 */
 	public function __construct($statusCode, $errorMessage)
 	{
-		$this->_statusCode=$statusCode;
+		$this->_statusCode = $statusCode;
 		$this->setErrorCode($errorMessage);
-		$errorMessage=$this->translateErrorMessage($errorMessage);
-		$args=func_get_args();
+		$errorMessage = $this->translateErrorMessage($errorMessage);
+		$args = func_get_args();
 		array_shift($args);
 		array_shift($args);
-		$n=count($args);
-		$tokens=[];
-		for($i=0;$i<$n;++$i)
-			$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
+		$n = count($args);
+		$tokens = [];
+		for($i = 0;$i < $n;++$i)
+			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		parent::__construct(strtr($errorMessage, $tokens));
 	}
 

@@ -94,7 +94,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	 */
 	private $_manager;
 
-	private $_enableCache=false;
+	private $_enableCache = false;
 
 	/**
 	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'

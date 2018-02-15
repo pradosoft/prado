@@ -37,7 +37,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 *	@param string the name of the function call
 	 */
 	public function __construct($method) {
-		$this->_method=$method;
+		$this->_method = $method;
 		parent::__construct();
 	}
 
@@ -94,25 +94,25 @@ class TCallChain extends TList implements IDynamicMethods
 	 */
 	public function call()
 	{
-		$args=func_get_args();
-		if($this->getCount()===0)
+		$args = func_get_args();
+		if($this->getCount() === 0)
 			return isset($args[0])?$args[0]:null;
 
 		if(!$this->_iterator)
 		{
-			$chain_array=array_reverse($this->toArray());
-			$this->_iterator=new \ArrayIterator($chain_array);
+			$chain_array = array_reverse($this->toArray());
+			$this->_iterator = new \ArrayIterator($chain_array);
 		}
 		if($this->_iterator->valid())
 			do {
-				$handler=$this->_iterator->current();
+				$handler = $this->_iterator->current();
 				$this->_iterator->next();
-				if(is_array($handler[0])&&$handler[0][0] instanceof IClassBehavior)
+				if(is_array($handler[0]) && $handler[0][0] instanceof IClassBehavior)
 					array_splice($handler[1], 1, count($args), $args);
 				else
 					array_splice($handler[1], 0, count($args), $args);
-				$handler[1][]=$this;
-				$result=call_user_func_array($handler[0], $handler[1]);
+				$handler[1][] = $this;
+				$result = call_user_func_array($handler[0], $handler[1]);
 			} while($this->_iterator->valid());
 		else
 			$result = $args[0];
@@ -143,7 +143,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 */
 	public function __dycall($method, $args)
 	{
-		if($this->_method==$method)
+		if($this->_method == $method)
 			return call_user_func_array([$this,'call'], $args);
 		return null;
 	}

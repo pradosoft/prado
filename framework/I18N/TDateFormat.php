@@ -73,12 +73,12 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * @var array
 	 */
 	private static $_patternPresets = [
-			'fulldate'=>'P','full'=>'P',
-			'longdate'=>'D','long'=>'d',
-			'mediumdate'=>'p','medium'=>'p',
-			'shortdate'=>'d','short'=>'d',
-			'fulltime'=>'Q', 'longtime'=>'T',
-			'mediumtime'=>'q', 'shorttime'=>'t'];
+			'fulldate' => 'P','full' => 'P',
+			'longdate' => 'D','long' => 'd',
+			'mediumdate' => 'p','medium' => 'p',
+			'shortdate' => 'd','short' => 'd',
+			'fulltime' => 'Q', 'longtime' => 'T',
+			'mediumtime' => 'q', 'shorttime' => 't'];
 
 	/**
 	 * Sets the date time formatting pattern.
@@ -102,7 +102,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		//try the subpattern of "date time" presets
 		$subpatterns = explode(' ', $string, 2);
 		$datetime = [];
-		if(count($subpatterns)==2)
+		if(count($subpatterns) == 2)
 		{
 			$datetime[] = $this->getPreset($subpatterns[0]);
 			$datetime[] = $this->getPreset($subpatterns[1]);
@@ -120,7 +120,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		//no presets found, use the string as the pattern
 		//and let the DateFormat handle it.
-		if($pattern===null)
+		if($pattern === null)
 			$pattern = $string;
 		if (!is_array($pattern) && strlen($pattern) == 0)
 			$pattern = null;
@@ -227,7 +227,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter
-		if(self::$formatter===null)
+		if(self::$formatter === null)
 			self::$formatter = new DateFormat($app->getCulture());
 
 		$culture = $this->getCulture();

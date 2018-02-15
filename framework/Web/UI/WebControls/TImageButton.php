@@ -59,12 +59,12 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	/**
 	 * @var integer x coordinate that the image is being clicked at
 	 */
-	private $_x=0;
+	private $_x = 0;
 	/**
 	 * @var integer y coordinate that the image is being clicked at
 	 */
-	private $_y=0;
-	private $_dataChanged=false;
+	private $_y = 0;
+	private $_dataChanged = false;
 
 	/**
 	 * @return string tag name of the button
@@ -97,10 +97,10 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 		$writer->addAttribute('type', 'image');
-		if(($uniqueID=$this->getUniqueID())!=='')
+		if(($uniqueID = $this->getUniqueID()) !== '')
 			$writer->addAttribute('name', $uniqueID);
 		if($this->getEnabled(true))
 		{
@@ -139,8 +139,8 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	{
 		if($this->getCausesValidation())
 		{
-			$group=$this->getValidationGroup();
-			return $this->getPage()->getValidators($group)->getCount()>0;
+			$group = $this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount() > 0;
 		}
 		else
 			return false;
@@ -194,14 +194,14 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function loadPostData($key, $values)
 	{
-		$uid=$this->getUniqueID();
+		$uid = $this->getUniqueID();
 		if(isset($values["{$uid}_x"]) && isset($values["{$uid}_y"]))
 		{
-			$this->_x=intval($values["{$uid}_x"]);
-			$this->_y=intval($values["{$uid}_y"]);
-			if($this->getPage()->getPostBackEventTarget()===null)
+			$this->_x = intval($values["{$uid}_x"]);
+			$this->_y = intval($values["{$uid}_y"]);
+			if($this->getPage()->getPostBackEventTarget() === null)
 				$this->getPage()->setPostBackEventTarget($this);
-			$this->_dataChanged=true;
+			$this->_dataChanged = true;
 		}
 		return false;
 	}

@@ -55,10 +55,10 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param string new node id
 	 * @param mixed node value
 	 */
-	public function add($parent, $node, $object='')
+	public function add($parent, $node, $object = '')
 	{
-		if(isset($this->_entries[$parent]) && ($this->_entries[$parent]!==null)
-			&& isset($this->_entries[$node]) && ($this->_entries[$node]!==null))
+		if(isset($this->_entries[$parent]) && ($this->_entries[$parent] !== null)
+			&& isset($this->_entries[$node]) && ($this->_entries[$node] !== null))
 		{
 			$this->_entries[$node] = $object;
 			return;

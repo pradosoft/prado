@@ -50,18 +50,18 @@ class TForm extends TControl
 	{
 		$writer->addAttribute('id', $this->getClientID());
 		$writer->addAttribute('method', $this->getMethod());
-		$uri=$this->getRequest()->getRequestURI();
+		$uri = $this->getRequest()->getRequestURI();
 		$writer->addAttribute('action', str_replace('&', '&amp;', str_replace('&amp;', '&', $uri)));
-		if(($enctype=$this->getEnctype())!=='')
+		if(($enctype = $this->getEnctype()) !== '')
 			$writer->addAttribute('enctype', $enctype);
 
-		$attributes=$this->getAttributes();
+		$attributes = $this->getAttributes();
 		$attributes->remove('action');
 		$writer->addAttributes($attributes);
 
-		if(($butt=$this->getDefaultButton())!=='')
+		if(($butt = $this->getDefaultButton()) !== '')
 		{
-			if(($button=$this->findControl($butt))!==null)
+			if(($button = $this->findControl($butt)) !== null)
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 			else
 				throw new TInvalidDataValueException('form_defaultbutton_invalid', $butt);
@@ -74,12 +74,12 @@ class TForm extends TControl
 	 */
 	public function render($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');
 
-		$cs=$page->getClientScript();
+		$cs = $page->getClientScript();
 		if($page->getClientSupportsJavaScript())
 		{
 			$cs->renderHiddenFieldsBegin($writer);

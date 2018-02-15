@@ -345,7 +345,7 @@ class THtmlArea4 extends TTextBox
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
 			$name = basename($path);
 			$dest = $basepath . '/plugins/' . $name;
-			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			if(!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}
 	}
@@ -393,11 +393,11 @@ class THtmlArea4 extends TTextBox
 
 			if(count($option) == 2)
 			{
-				$value=trim(trim($option[1]), "'\"");
-				if (($s=strtolower($value))==='false')
-					$value=false;
-				elseif ($s==='true')
-					$value=true;
+				$value = trim(trim($option[1]), "'\"");
+				if (($s = strtolower($value)) === 'false')
+					$value = false;
+				elseif ($s === 'true')
+					$value = true;
 				$options[trim($option[0])] = $value;
 			}
 		}
@@ -410,10 +410,10 @@ class THtmlArea4 extends TTextBox
 	protected function getLanguageSuffix($culture)
 	{
 		$app = $this->getApplication()->getGlobalization();
-		if(empty($culture) && ($app!==null))
+		if(empty($culture) && ($app !== null))
 			$culture = $app->getCulture();
 		$variants = [];
-		if($app!==null)
+		if($app !== null)
 			$variants = $app->getCultureVariants($culture);
 
 		foreach($variants as $variant)

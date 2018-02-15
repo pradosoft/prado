@@ -75,61 +75,61 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param string verb, can be empty, 'get', or 'post'
 	 * @param string IP rules (separated by comma, can contain wild card *)
 	 */
-	public function __construct($action, $users, $roles, $verb='', $ipRules='')
+	public function __construct($action, $users, $roles, $verb = '', $ipRules = '')
 	{
-		$action=strtolower(trim($action));
-		if($action==='allow' || $action==='deny')
-			$this->_action=$action;
+		$action = strtolower(trim($action));
+		if($action === 'allow' || $action === 'deny')
+			$this->_action = $action;
 		else
 			throw new TInvalidDataValueException('authorizationrule_action_invalid', $action);
-		$this->_users=[];
-		$this->_roles=[];
-		$this->_ipRules=[];
-		$this->_everyone=false;
-		$this->_guest=false;
-		$this->_authenticated=false;
+		$this->_users = [];
+		$this->_roles = [];
+		$this->_ipRules = [];
+		$this->_everyone = false;
+		$this->_guest = false;
+		$this->_authenticated = false;
 
-		if(trim($users)==='')
-			$users='*';
+		if(trim($users) === '')
+			$users = '*';
 		foreach(explode(',', $users) as $user)
 		{
-			if(($user=trim(strtolower($user)))!=='')
+			if(($user = trim(strtolower($user))) !== '')
 			{
-				if($user==='*')
+				if($user === '*')
 				{
-					$this->_everyone=true;
+					$this->_everyone = true;
 					break;
 				}
-				elseif($user==='?')
-					$this->_guest=true;
-				elseif($user==='@')
-					$this->_authenticated=true;
+				elseif($user === '?')
+					$this->_guest = true;
+				elseif($user === '@')
+					$this->_authenticated = true;
 				else
-					$this->_users[]=$user;
+					$this->_users[] = $user;
 			}
 		}
 
-		if(trim($roles)==='')
-			$roles='*';
+		if(trim($roles) === '')
+			$roles = '*';
 		foreach(explode(',', $roles) as $role)
 		{
-			if(($role=trim(strtolower($role)))!=='')
-				$this->_roles[]=$role;
+			if(($role = trim(strtolower($role))) !== '')
+				$this->_roles[] = $role;
 		}
 
-		if(($verb=trim(strtolower($verb)))==='')
-			$verb='*';
-		if($verb==='*' || $verb==='get' || $verb==='post')
-			$this->_verb=$verb;
+		if(($verb = trim(strtolower($verb))) === '')
+			$verb = '*';
+		if($verb === '*' || $verb === 'get' || $verb === 'post')
+			$this->_verb = $verb;
 		else
 			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
 
-		if(trim($ipRules)==='')
-			$ipRules='*';
+		if(trim($ipRules) === '')
+			$ipRules = '*';
 		foreach(explode(',', $ipRules) as $ipRule)
 		{
-			if(($ipRule=trim($ipRule))!=='')
-				$this->_ipRules[]=$ipRule;
+			if(($ipRule = trim($ipRule)) !== '')
+				$this->_ipRules[] = $ipRule;
 		}
 	}
 
@@ -207,7 +207,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	public function isUserAllowed(IUser $user, $verb, $ip)
 	{
 		if($this->isVerbMatched($verb) && $this->isIpMatched($ip) && $this->isUserMatched($user) && $this->isRoleMatched($user))
-			return ($this->_action==='allow')?1:-1;
+			return ($this->_action === 'allow')?1:-1;
 		else
 			return 0;
 	}
@@ -218,7 +218,7 @@ class TAuthorizationRule extends \Prado\TComponent
 			return 1;
 		foreach($this->_ipRules as $rule)
 		{
-			if($rule==='*' || $rule===$ip || (($pos=strpos($rule, '*'))!==false && strncmp($ip, $rule, $pos)===0))
+			if($rule === '*' || $rule === $ip || (($pos = strpos($rule, '*')) !== false && strncmp($ip, $rule, $pos) === 0))
 				return 1;
 		}
 		return 0;
@@ -233,7 +233,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	{
 		foreach($this->_roles as $role)
 		{
-			if($role==='*' || $user->isInRole($role))
+			if($role === '*' || $user->isInRole($role))
 				return true;
 		}
 		return false;
@@ -241,6 +241,6 @@ class TAuthorizationRule extends \Prado\TComponent
 
 	private function isVerbMatched($verb)
 	{
-		return ($this->_verb==='*' || strcasecmp($verb, $this->_verb)===0);
+		return ($this->_verb === '*' || strcasecmp($verb, $this->_verb) === 0);
 	}
 }

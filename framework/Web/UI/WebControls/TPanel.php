@@ -42,7 +42,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * @var string ID path to the default button
 	 */
-	private $_defaultButton='';
+	private $_defaultButton = '';
 
 	/**
 	 * @return string tag name of the panel
@@ -70,7 +70,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($butt=$this->getDefaultButton())!=='')
+		if(($butt = $this->getDefaultButton()) !== '')
 			$writer->addAttribute('id', $this->getClientID());
 	}
 
@@ -160,7 +160,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDefaultButton($value)
 	{
-		$this->_defaultButton=$value;
+		$this->_defaultButton = $value;
 	}
 
 	/**
@@ -203,7 +203,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($text=$this->getGroupingText())!=='')
+		if(($text = $this->getGroupingText()) !== '')
 		{
 			$writer->renderBeginTag('fieldset');
 			$writer->renderBeginTag('legend');
@@ -218,7 +218,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderEndTag($writer)
 	{
-		if($this->getGroupingText()!=='')
+		if($this->getGroupingText() !== '')
 			$writer->renderEndTag();
 		parent::renderEndTag($writer);
 	}
@@ -227,9 +227,9 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::render($writer);
 
-		if(($butt=$this->getDefaultButton())!=='')
+		if(($butt = $this->getDefaultButton()) !== '')
 		{
-			if(($button=$this->findControl($butt))===null)
+			if(($button = $this->findControl($butt)) === null)
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid', $butt);
 			else
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);

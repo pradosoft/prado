@@ -72,7 +72,7 @@ interface IMessageSource
 	 * @param string the catalogue to add to
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
-	public function save($catalogue='messages');
+	public function save($catalogue = 'messages');
 	
 	/**
 	 * Add a untranslated message to the source. Need to call save()
@@ -88,7 +88,7 @@ interface IMessageSource
 	 * @param string the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
-	public function delete($message, $catalogue='messages');
+	public function delete($message, $catalogue = 'messages');
 		
 	/**
 	 * Update the translation.
@@ -98,7 +98,7 @@ interface IMessageSource
 	 * @param string the catalogue of the translation.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
-	public function update($text, $target, $comments, $catalogue='messages');
+	public function update($text, $target, $comments, $catalogue = 'messages');
 	
 	/**
 	 * Returns a list of catalogue as key and all it variants as value.

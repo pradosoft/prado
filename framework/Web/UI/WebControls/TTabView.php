@@ -37,7 +37,7 @@ use Prado\TPropertyValue;
  */
 class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 {
-	private $_active=false;
+	private $_active = false;
 
 	/**
 	 * @return the tag name for the view element
@@ -128,7 +128,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setActive($value)
 	{
-		$this->_active=TPropertyValue::ensureBoolean($value);
+		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -137,7 +137,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())!=='')
+		if(($text = $this->getText()) !== '')
 			$writer->write($text);
 		elseif($this->getHasControls())
 			parent::renderContents($writer);
@@ -153,7 +153,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 		{
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
-			$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
+			$style = $this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
 			$style->addAttributesToRender($writer);
 
 			$writer->renderBeginTag($this->getTagName());
@@ -171,10 +171,10 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function renderTabContent($writer)
 	{
-		if(($url=$this->getNavigateUrl())==='')
-			$url='javascript://';
-		if(($caption=$this->getCaption())==='')
-			$caption='&nbsp;';
+		if(($url = $this->getNavigateUrl()) === '')
+			$url = 'javascript://';
+		if(($caption = $this->getCaption()) === '')
+			$caption = '&nbsp;';
 		$writer->write("<a href=\"{$url}\">{$caption}</a>");
 	}
 }

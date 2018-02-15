@@ -34,12 +34,12 @@ class TSimpleDynamicParser
 		$matches = [];
 		$mappings = [];
 		preg_match_all(self::PARAMETER_TOKEN_REGEXP, $sqlText, $matches);
-		for($i = 0, $k=count($matches[1]); $i<$k; $i++)
+		for($i = 0, $k = count($matches[1]); $i < $k; $i++)
 		{
 			$mappings[] = $matches[1][$i];
 			$sqlText = str_replace($matches[0][$i], self::DYNAMIC_TOKEN, $sqlText);
 		}
-		return ['sql'=>$sqlText, 'parameters'=>$mappings];
+		return ['sql' => $sqlText, 'parameters' => $mappings];
 	}
 }
 

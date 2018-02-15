@@ -43,8 +43,8 @@ use Prado\TPropertyValue;
  */
 class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * Adds attributes to renderer.
@@ -78,14 +78,14 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 		if(!$this->getEnabled(true))
 			return false;
 		$this->ensureDataBound();
-		$selection=isset($values[$key])?$values[$key]:null;
-		if($selection!==null)
+		$selection = isset($values[$key])?$values[$key]:null;
+		if($selection !== null)
 		{
-			$index=$this->getItems()->findIndexByValue($selection, false);
-			if($this->getSelectedIndex()!==$index)
+			$index = $this->getItems()->findIndexByValue($selection, false);
+			if($this->getSelectedIndex() !== $index)
 			{
 				$this->setSelectedIndex($index);
-				return $this->_dataChanged=true;
+				return $this->_dataChanged = true;
 			}
 		}
 		return false;
@@ -147,6 +147,6 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 }

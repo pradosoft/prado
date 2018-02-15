@@ -50,9 +50,9 @@ use Prado\TApplication;
  */
 class TDataSourceConfig extends \Prado\TModule
 {
-	private $_connID='';
+	private $_connID = '';
 	private $_conn;
-	private $_connClass='System.Data.TDbConnection';
+	private $_connClass = 'System.Data.TDbConnection';
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
@@ -60,21 +60,21 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function init($xml)
 	{
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
+		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
 		{
 			if(isset($xml['database']) && is_array($xml['database']))
 			{
-				$db=$this->getDbConnection();
-				foreach($xml['database'] as $name=>$value)
+				$db = $this->getDbConnection();
+				foreach($xml['database'] as $name => $value)
 					$db->setSubProperty($name, $value);
 			}
 		}
 		else
 		{
-			if($prop=$xml->getElementByTagName('database'))
+			if($prop = $xml->getElementByTagName('database'))
 			{
-				$db=$this->getDbConnection();
-				foreach($prop->getAttributes() as $name=>$value)
+				$db = $this->getDbConnection();
+				foreach($prop->getAttributes() as $name => $value)
 					$db->setSubproperty($name, $value);
 			}
 		}
@@ -88,7 +88,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -107,9 +107,9 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn===null)
+		if($this->_conn === null)
 		{
-			if($this->_connID!=='')
+			if($this->_connID !== '')
 				$this->_conn = $this->findConnectionByID($this->getConnectionID());
 			else
 				$this->_conn = Prado::createComponent($this->getConnectionClass());
@@ -145,9 +145,9 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function setConnectionClass($value)
 	{
-		if($this->_conn!==null)
+		if($this->_conn !== null)
 			throw new TConfigurationException('datasource_dbconnection_exists', $value);
-		$this->_connClass=$value;
+		$this->_connClass = $value;
 	}
 
 	/**

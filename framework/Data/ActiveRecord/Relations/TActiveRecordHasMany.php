@@ -104,12 +104,12 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObjects = &$obj->{$this->getContext()->getProperty()};
-		$success=true;
-		if(($total = count($fkObjects))> 0)
+		$success = true;
+		if(($total = count($fkObjects)) > 0)
 		{
 			$source = $this->getSourceRecord();
 			$fkeys = $this->findForeignKeys($fkObjects[0], $source);
-			for($i=0;$i<$total;$i++)
+			for($i = 0;$i < $total;$i++)
 			{
 				foreach($fkeys as $fKey => $srcKey)
 					$fkObjects[$i]->setColumnValue($fKey, $source->getColumnValue($srcKey));

@@ -48,10 +48,10 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 */
 	public function findIndexByID($id)
 	{
-		$index=0;
+		$index = 0;
 		foreach($this as $item)
 		{
-			if($item->getID()===$id)
+			if($item->getID() === $id)
 				return $index;
 			$index++;
 		}
@@ -65,7 +65,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 */
 	public function findMetaTagByID($id)
 	{
-		if(($index=$this->findIndexByID($id))>=0)
+		if(($index = $this->findIndexByID($id)) >= 0)
 			return $this->itemAt($index);
 		else
 			return null;

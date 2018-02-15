@@ -27,35 +27,35 @@ class TFont extends \Prado\TComponent
 	/**
 	 * Bits indicating the font states.
 	 */
-	const IS_BOLD=0x01;
-	const IS_ITALIC=0x02;
-	const IS_OVERLINE=0x04;
-	const IS_STRIKEOUT=0x08;
-	const IS_UNDERLINE=0x10;
+	const IS_BOLD = 0x01;
+	const IS_ITALIC = 0x02;
+	const IS_OVERLINE = 0x04;
+	const IS_STRIKEOUT = 0x08;
+	const IS_UNDERLINE = 0x10;
 
 	/**
 	 * Bits indicating whether particular font states are changed.
 	 */
-	const IS_SET_BOLD=0x01000;
-	const IS_SET_ITALIC=0x02000;
-	const IS_SET_OVERLINE=0x04000;
-	const IS_SET_STRIKEOUT=0x08000;
-	const IS_SET_UNDERLINE=0x10000;
-	const IS_SET_SIZE=0x20000;
-	const IS_SET_NAME=0x40000;
+	const IS_SET_BOLD = 0x01000;
+	const IS_SET_ITALIC = 0x02000;
+	const IS_SET_OVERLINE = 0x04000;
+	const IS_SET_STRIKEOUT = 0x08000;
+	const IS_SET_UNDERLINE = 0x10000;
+	const IS_SET_SIZE = 0x20000;
+	const IS_SET_NAME = 0x40000;
 
 	/**
 	 * @var integer bits representing various states
 	 */
-	private $_flags=0;
+	private $_flags = 0;
 	/**
 	 * @var string font name
 	 */
-	private $_name='';
+	private $_name = '';
 	/**
 	 * @var string font size
 	 */
-	private $_size='';
+	private $_size = '';
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -66,11 +66,11 @@ class TFont extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_flags===0)
+		if ($this->_flags === 0)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_flags";
-		if ($this->_name==='')
+		if ($this->_name === '')
 			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_name";
-		if ($this->_size==='')
+		if ($this->_size === '')
 			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_size";
 	}
 
@@ -79,7 +79,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function getBold()
 	{
-		return ($this->_flags & self::IS_BOLD)!==0;
+		return ($this->_flags & self::IS_BOLD) !== 0;
 	}
 
 	/**
@@ -99,7 +99,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function getItalic()
 	{
-		return ($this->_flags & self::IS_ITALIC)!==0;
+		return ($this->_flags & self::IS_ITALIC) !== 0;
 	}
 
 	/**
@@ -119,7 +119,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function getOverline()
 	{
-		return ($this->_flags & self::IS_OVERLINE)!==0;
+		return ($this->_flags & self::IS_OVERLINE) !== 0;
 	}
 
 	/**
@@ -148,7 +148,7 @@ class TFont extends \Prado\TComponent
 	public function setSize($value)
 	{
 		$this->_flags |= self::IS_SET_SIZE;
-		$this->_size=$value;
+		$this->_size = $value;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function getStrikeout()
 	{
-		return ($this->_flags & self::IS_STRIKEOUT)!==0;
+		return ($this->_flags & self::IS_STRIKEOUT) !== 0;
 	}
 
 	/**
@@ -176,7 +176,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function getUnderline()
 	{
-		return ($this->_flags & self::IS_UNDERLINE)!==0;
+		return ($this->_flags & self::IS_UNDERLINE) !== 0;
 	}
 
 	/**
@@ -205,7 +205,7 @@ class TFont extends \Prado\TComponent
 	public function setName($value)
 	{
 		$this->_flags |= self::IS_SET_NAME;
-		$this->_name=$value;
+		$this->_name = $value;
 	}
 
 	/**
@@ -221,9 +221,9 @@ class TFont extends \Prado\TComponent
 	 */
 	public function reset()
 	{
-		$this->_flags=0;
-		$this->_name='';
-		$this->_size='';
+		$this->_flags = 0;
+		$this->_name = '';
+		$this->_size = '';
 	}
 
 	/**
@@ -234,7 +234,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function mergeWith($font)
 	{
-		if($font===null || $font->_flags===0)
+		if($font === null || $font->_flags === 0)
 			return;
 		if(!($this->_flags & self::IS_SET_BOLD) && ($font->_flags & self::IS_SET_BOLD))
 			$this->setBold($font->getBold());
@@ -260,7 +260,7 @@ class TFont extends \Prado\TComponent
 	 */
 	public function copyFrom($font)
 	{
-		if($font===null || $font->_flags===0)
+		if($font === null || $font->_flags === 0)
 			return;
 		if($font->_flags & self::IS_SET_BOLD)
 			$this->setBold($font->getBold());
@@ -283,27 +283,27 @@ class TFont extends \Prado\TComponent
 	 */
 	public function toString()
 	{
-		if($this->_flags===0)
+		if($this->_flags === 0)
 			return '';
-		$str='';
+		$str = '';
 		if($this->_flags & self::IS_SET_BOLD)
-			$str.='font-weight:' . (($this->_flags & self::IS_BOLD)?'bold;':'normal;');
+			$str .= 'font-weight:' . (($this->_flags & self::IS_BOLD)?'bold;':'normal;');
 		if($this->_flags & self::IS_SET_ITALIC)
-			$str.='font-style:' . (($this->_flags & self::IS_ITALIC)?'italic;':'normal;');
-		$textDec='';
+			$str .= 'font-style:' . (($this->_flags & self::IS_ITALIC)?'italic;':'normal;');
+		$textDec = '';
 		if($this->_flags & self::IS_UNDERLINE)
-			$textDec.='underline';
+			$textDec .= 'underline';
 		if($this->_flags & self::IS_OVERLINE)
-			$textDec.=' overline';
+			$textDec .= ' overline';
 		if($this->_flags & self::IS_STRIKEOUT)
-			$textDec.=' line-through';
-		$textDec=ltrim($textDec);
-		if($textDec!=='')
-			$str.='text-decoration:' . $textDec . ';';
-		if($this->_size!=='')
-			$str.='font-size:' . $this->_size . ';';
-		if($this->_name!=='')
-			$str.='font-family:' . $this->_name . ';';
+			$textDec .= ' line-through';
+		$textDec = ltrim($textDec);
+		if($textDec !== '')
+			$str .= 'text-decoration:' . $textDec . ';';
+		if($this->_size !== '')
+			$str .= 'font-size:' . $this->_size . ';';
+		if($this->_name !== '')
+			$str .= 'font-family:' . $this->_name . ';';
 		return $str;
 	}
 
@@ -313,25 +313,25 @@ class TFont extends \Prado\TComponent
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if($this->_flags===0)
+		if($this->_flags === 0)
 			return;
 		if($this->_flags & self::IS_SET_BOLD)
 			$writer->addStyleAttribute('font-weight', (($this->_flags & self::IS_BOLD)?'bold':'normal'));
 		if($this->_flags & self::IS_SET_ITALIC)
 			$writer->addStyleAttribute('font-style', (($this->_flags & self::IS_ITALIC)?'italic':'normal'));
-		$textDec='';
+		$textDec = '';
 		if($this->_flags & self::IS_UNDERLINE)
-			$textDec.='underline';
+			$textDec .= 'underline';
 		if($this->_flags & self::IS_OVERLINE)
-			$textDec.=' overline';
+			$textDec .= ' overline';
 		if($this->_flags & self::IS_STRIKEOUT)
-			$textDec.=' line-through';
-		$textDec=ltrim($textDec);
-		if($textDec!=='')
+			$textDec .= ' line-through';
+		$textDec = ltrim($textDec);
+		if($textDec !== '')
 			$writer->addStyleAttribute('text-decoration', $textDec);
-		if($this->_size!=='')
+		if($this->_size !== '')
 			$writer->addStyleAttribute('font-size', $this->_size);
-		if($this->_name!=='')
+		if($this->_name !== '')
 			$writer->addStyleAttribute('font-family', $this->_name);
 	}
 }

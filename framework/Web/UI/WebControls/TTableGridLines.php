@@ -27,8 +27,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTableGridLines extends \Prado\TEnumerable
 {
-	const None='None';
-	const Horizontal='Horizontal';
-	const Vertical='Vertical';
-	const Both='Both';
+	const None = 'None';
+	const Horizontal = 'Horizontal';
+	const Vertical = 'Vertical';
+	const Both = 'Both';
 }

@@ -65,7 +65,7 @@ class TScaffoldListView extends TScaffoldBase
 		$table = $this->getTableInfo();
 		$sorts = ['Sort By', str_repeat('-', 15)];
 		$headers = [];
-		foreach($table->getColumns() as $name=>$colum)
+		foreach($table->getColumns() as $name => $colum)
 		{
 			$fname = ucwords(str_replace('_', ' ', $name));
 			$sorts[$name . ' ASC'] = $fname . ' Ascending';
@@ -84,7 +84,7 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(!$this->getPage()->getIsPostBack() || $this->getViewState('CurrentClass')!=$this->getRecordClass())
+		if(!$this->getPage()->getIsPostBack() || $this->getViewState('CurrentClass') != $this->getRecordClass())
 		{
 			$this->initializeSort();
 			$this->setViewState('CurrentClass', $this->getRecordClass());
@@ -112,7 +112,7 @@ class TScaffoldListView extends TScaffoldBase
 	{
 		$total = $this->_list->getVirtualItemCount();
 		$limit = $this->_list->getPageSize();
-		$offset = $this->_list->getCurrentPageIndex()*$limit;
+		$offset = $this->_list->getCurrentPageIndex() * $limit;
 		if($offset + $limit > $total)
 			$limit = $total - $offset;
 		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
@@ -181,7 +181,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function initializeEdit($sender, $param)
 	{
-		if(($ctrl=$this->getEditViewControl())!==null)
+		if(($ctrl = $this->getEditViewControl()) !== null)
 		{
 			if($param instanceof TRepeaterCommandEventParameter)
 			{
@@ -213,7 +213,7 @@ class TScaffoldListView extends TScaffoldBase
 		if($item instanceof IItemDataRenderer)
 		{
 			$type = $item->getItemType();
-			if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
+			if($type == TListItemType::Item || $type == TListItemType::AlternatingItem)
 				$this->populateField($sender, $param);
 		}
 	}
@@ -228,7 +228,7 @@ class TScaffoldListView extends TScaffoldBase
 		if(($data = $item->getData()) !== null)
 		{
 			$item->setCustomData($this->getRecordPkValues($data));
-			if(($prop = $item->findControl('_properties'))!==null)
+			if(($prop = $item->findControl('_properties')) !== null)
 			{
 				$item->_properties->setDataSource($this->getRecordPropertyValues($data));
 				$item->_properties->dataBind();
@@ -301,10 +301,10 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function getEditViewControl()
 	{
-		if(($id=$this->getEditViewID())!==null)
+		if(($id = $this->getEditViewID()) !== null)
 		{
 			$ctrl = $this->getParent()->findControl($id);
-			if($ctrl===null)
+			if($ctrl === null)
 				throw new TConfigurationException('scaffold_unable_to_find_edit_view', $id);
 			return $ctrl;
 		}

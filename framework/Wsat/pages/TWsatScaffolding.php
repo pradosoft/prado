@@ -58,7 +58,7 @@ class TWsatScaffolding extends TPage
 								{
 										$id = "cb_$tableName";
 										$obj = $this->tableNames->findControl($id);
-										if($obj!==null && $obj->Checked)
+										if($obj !== null && $obj->Checked)
 										{
 												$scf_generator->generateCRUD($tableName);
 										}

@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTableRowSection extends \Prado\TEnumerable
 {
-	const Header='Header';
-	const Body='Body';
-	const Footer='Footer';
+	const Header = 'Header';
+	const Body = 'Body';
+	const Footer = 'Footer';
 }

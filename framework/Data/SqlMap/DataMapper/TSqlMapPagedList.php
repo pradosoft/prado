@@ -47,12 +47,12 @@ class TSqlMapPagedList extends TPagedList
 	 * @param mixed delegate for each data row retrieved.
 	 * @param int number of page to fetch on initialization
 	 */
-	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate=null, $page=0)
+	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate = null, $page = 0)
 	{
 		parent::__construct();
 		parent::setCustomPaging(true);
 		$this->initialize($statement, $parameter, $pageSize, $page);
-		$this->_delegate=$delegate;
+		$this->_delegate = $delegate;
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TSqlMapPagedList extends TPagedList
 			else
 			{
 				$param->setData(array_slice($data, 0, $pageSize));
-				$this->_nextPageList = array_slice($data, $pageSize-1, $total);
+				$this->_nextPageList = array_slice($data, $pageSize - 1, $total);
 			}
 		}
 		else
@@ -150,7 +150,7 @@ class TSqlMapPagedList extends TPagedList
 				$param->setData([]);
 				$this->_nextPageList = null;
 			}
-			elseif($total <= $pageSize*2)
+			elseif($total <= $pageSize * 2)
 			{
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $total));
@@ -160,7 +160,7 @@ class TSqlMapPagedList extends TPagedList
 			{
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $pageSize));
-				$this->_nextPageList = array_slice($data, $pageSize*2, $total-$pageSize*2);
+				$this->_nextPageList = array_slice($data, $pageSize * 2, $total - $pageSize * 2);
 			}
 		}
 	}
@@ -174,7 +174,7 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$index = $param->getNewPageIndex();
 		$pageSize = $this->getPageSize();
-		return $index < 1 ? [$index, $pageSize*2] : [($index-1)*$pageSize, $pageSize*3];
+		return $index < 1 ? [$index, $pageSize * 2] : [($index - 1) * $pageSize, $pageSize * 3];
 	}
 
 	/**
@@ -182,7 +182,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsNextPageAvailable()
 	{
-		return $this->_nextPageList!==null;
+		return $this->_nextPageList !== null;
 	}
 
 	/**
@@ -190,7 +190,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsPreviousPageAvailable()
 	{
-		return $this->_prevPageList!==null;
+		return $this->_prevPageList !== null;
 	}
 
 	/**
@@ -198,7 +198,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsLastPage()
 	{
-		return ($this->_nextPageList===null) || $this->_nextPageList->getCount() < 1;
+		return ($this->_nextPageList === null) || $this->_nextPageList->getCount() < 1;
 	}
 
 	/**

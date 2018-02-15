@@ -33,12 +33,12 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * template file extension.
 	 */
-	const EXT_TEMPLATE='.tpl';
+	const EXT_TEMPLATE = '.tpl';
 
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class
 	 */
-	private static $_template=[];
+	private static $_template = [];
 	/**
 	 * @var ITemplate the parsed template structure specific for this control instance
 	 */
@@ -50,15 +50,15 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * @var string master control class name
 	 */
-	private $_masterClass='';
+	private $_masterClass = '';
 	/**
 	 * @var array list of TContent controls
 	 */
-	private $_contents=[];
+	private $_contents = [];
 	/**
 	 * @var array list of TContentPlaceHolder controls
 	 */
-	private $_placeholders=[];
+	private $_placeholders = [];
 
 	/**
 	 * Returns the template object associated with this control object.
@@ -66,11 +66,11 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getTemplate()
 	{
-		if($this->_localTemplate===null)
+		if($this->_localTemplate === null)
 		{
-			$class=get_class($this);
+			$class = get_class($this);
 			if(!isset(self::$_template[$class]))
-				self::$_template[$class]=$this->loadTemplate();
+				self::$_template[$class] = $this->loadTemplate();
 			return self::$_template[$class];
 		}
 		else
@@ -85,7 +85,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function setTemplate($value)
 	{
-		$this->_localTemplate=$value;
+		$this->_localTemplate = $value;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getIsSourceTemplateControl()
 	{
-		if(($template=$this->getTemplate())!==null)
+		if(($template = $this->getTemplate()) !== null)
 			return $template->getIsSourceTemplate();
 		else
 			return false;
@@ -106,7 +106,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getTemplateDirectory()
 	{
-		if(($template=$this->getTemplate())!==null)
+		if(($template = $this->getTemplate()) !== null)
 			return $template->getContextPath();
 		else
 			return '';
@@ -119,7 +119,7 @@ class TTemplateControl extends TCompositeControl
 	protected function loadTemplate()
 	{
 		Prado::trace("Loading template " . get_class($this), '\Prado\Web\UI\TTemplateControl');
-		$template=$this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
+		$template = $this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
 		return $template;
 	}
 
@@ -130,9 +130,9 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function createChildControls()
 	{
-		if($tpl=$this->getTemplate())
+		if($tpl = $this->getTemplate())
 		{
-			foreach($tpl->getDirective() as $name=>$value)
+			foreach($tpl->getDirective() as $name => $value)
 			{
 				if(is_string($value))
 					$this->setSubProperty($name, $value);
@@ -153,7 +153,7 @@ class TTemplateControl extends TCompositeControl
 		if(isset($this->_contents[$id]))
 			throw new TConfigurationException('templatecontrol_contentid_duplicated', $id);
 		else
-			$this->_contents[$id]=$object;
+			$this->_contents[$id] = $object;
 	}
 
 	/**
@@ -167,7 +167,7 @@ class TTemplateControl extends TCompositeControl
 		if(isset($this->_placeholders[$id]))
 			throw new TConfigurationException('templatecontrol_placeholderid_duplicated', $id);
 		else
-			$this->_placeholders[$id]=$object;
+			$this->_placeholders[$id] = $object;
 	}
 
 	/**
@@ -183,7 +183,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function setMasterClass($value)
 	{
-		$this->_masterClass=$value;
+		$this->_masterClass = $value;
 	}
 
 	/**
@@ -204,9 +204,9 @@ class TTemplateControl extends TCompositeControl
 	{
 		if(isset($this->_placeholders[$id]))
 		{
-			$placeholder=$this->_placeholders[$id];
-			$controls=$placeholder->getParent()->getControls();
-			$loc=$controls->remove($placeholder);
+			$placeholder = $this->_placeholders[$id];
+			$controls = $placeholder->getParent()->getControls();
+			$loc = $controls->remove($placeholder);
 			$controls->insertAt($loc, $content);
 		}
 		else
@@ -221,19 +221,19 @@ class TTemplateControl extends TCompositeControl
 	 * Only framework developers should use this method.
 	 * @param TControl the naming container control
 	 */
-	protected function initRecursive($namingContainer=null)
+	protected function initRecursive($namingContainer = null)
 	{
 		$this->ensureChildControls();
-		if($this->_masterClass!=='')
+		if($this->_masterClass !== '')
 		{
-			$master=Prado::createComponent($this->_masterClass);
+			$master = Prado::createComponent($this->_masterClass);
 			if(!($master instanceof TTemplateControl))
 				throw new TInvalidDataValueException('templatecontrol_mastercontrol_invalid');
-			$this->_master=$master;
+			$this->_master = $master;
 			$this->getControls()->clear();
 			$this->getControls()->add($master);
 			$master->ensureChildControls();
-			foreach($this->_contents as $id=>$content)
+			foreach($this->_contents as $id => $content)
 				$master->injectContent($id, $content);
 		}
 		elseif(!empty($this->_contents))

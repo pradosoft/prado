@@ -41,15 +41,15 @@ $packages = [
 		'prado/activecontrols/activecontrols3.js',
 	],
 
-	'slider'=>[
+	'slider' => [
 		'prado/controls/slider.js',
 	],
 
-	'keyboard'=>[
+	'keyboard' => [
 		'prado/controls/keyboard.js',
 	],
 
-	'tabpanel'=>[
+	'tabpanel' => [
 		'prado/controls/tabpanel.js',
 	],
 
@@ -61,15 +61,15 @@ $packages = [
 		'prado/activefileupload/activefileupload.js',
 	],
 
-	'htmlarea'=>[
+	'htmlarea' => [
 		'prado/controls/htmlarea.js',
 	],
 
-	'htmlarea4'=>[
+	'htmlarea4' => [
 		'prado/controls/htmlarea4.js',
 	],
 
-	'accordion'=>[
+	'accordion' => [
 		'prado/controls/accordion.js',
 	],
 
@@ -113,27 +113,27 @@ $packages = [
 
 //package names and their dependencies
 $dependencies = [
-	'jquery'			=> ['jquery'],
-	'prado'				=> ['jquery', 'prado'],
-	'bootstrap'			=> ['jquery', 'bootstrap'],
-	'validator'			=> ['jquery', 'prado', 'validator'],
-	'tabpanel'			=> ['jquery', 'prado', 'tabpanel'],
-	'ajax'				=> ['jquery', 'prado', 'ajax'],
-	'logger'			=> ['jquery', 'prado', 'logger'],
-	'activefileupload'	=> ['jquery', 'prado', 'ajax', 'activefileupload'],
-	'effects'			=> ['jquery', 'jqueryui'],
-	'datepicker'		=> ['jquery', 'prado', 'datepicker'],
-	'activedatepicker'	=> ['jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'],
-	'colorpicker'		=> ['jquery', 'prado', 'colorpicker'],
-	'htmlarea'			=> ['jquery', 'prado', 'htmlarea'],
-	'htmlarea4'			=> ['jquery', 'prado', 'htmlarea4', 'tinymce'],
-	'keyboard'			=> ['jquery', 'prado', 'keyboard'],
-	'slider'			=> ['jquery', 'prado', 'slider'],
-	'inlineeditor'		=> ['jquery', 'prado', 'ajax', 'inlineeditor'],
-	'accordion'			=> ['jquery', 'prado', 'accordion'],
-	'ratings'			=> ['jquery', 'prado', 'ajax', 'ratings'],
-	'jqueryui'			=> ['jquery', 'jqueryui'],
-	'texthighlight'		=> ['jquery', 'prado', 'highlightjs', 'clipboard'],
+	'jquery' => ['jquery'],
+	'prado' => ['jquery', 'prado'],
+	'bootstrap' => ['jquery', 'bootstrap'],
+	'validator' => ['jquery', 'prado', 'validator'],
+	'tabpanel' => ['jquery', 'prado', 'tabpanel'],
+	'ajax' => ['jquery', 'prado', 'ajax'],
+	'logger' => ['jquery', 'prado', 'logger'],
+	'activefileupload' => ['jquery', 'prado', 'ajax', 'activefileupload'],
+	'effects' => ['jquery', 'jqueryui'],
+	'datepicker' => ['jquery', 'prado', 'datepicker'],
+	'activedatepicker' => ['jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'],
+	'colorpicker' => ['jquery', 'prado', 'colorpicker'],
+	'htmlarea' => ['jquery', 'prado', 'htmlarea'],
+	'htmlarea4' => ['jquery', 'prado', 'htmlarea4', 'tinymce'],
+	'keyboard' => ['jquery', 'prado', 'keyboard'],
+	'slider' => ['jquery', 'prado', 'slider'],
+	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
+	'accordion' => ['jquery', 'prado', 'accordion'],
+	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
+	'jqueryui' => ['jquery', 'jqueryui'],
+	'texthighlight' => ['jquery', 'prado', 'highlightjs', 'clipboard'],
 ];
 
 return [$folders, $packages, $dependencies];

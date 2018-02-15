@@ -215,21 +215,21 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
+		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem)
 		{
-			$link=new THyperLink;
-			if(($url = $this->getImageUrl())!=='')
+			$link = new THyperLink;
+			if(($url = $this->getImageUrl()) !== '')
 			{
 				$link->setImageUrl($url);
-				if(($width=$this->getImageWidth())!=='')
+				if(($width = $this->getImageWidth()) !== '')
 					$link->setImageWidth($width);
-				if(($height=$this->getImageHeight())!=='')
+				if(($height = $this->getImageHeight()) !== '')
 					$link->setImageHeight($height);
 			}
 			$link->setText($this->getText());
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
-			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
+			if($this->getDataTextField() !== '' || $this->getDataNavigateUrlField() !== '')
 				$link->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			$cell->getControls()->add($link);
 			$cell->registerObject('HyperLink', $link);
@@ -245,18 +245,18 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function dataBindColumn($sender, $param)
 	{
-		$item=$sender->getNamingContainer();
-		$data=$item->getData();
-		if(($field=$this->getDataTextField())!=='')
+		$item = $sender->getNamingContainer();
+		$data = $item->getData();
+		if(($field = $this->getDataTextField()) !== '')
 		{
-			$value=$this->getDataFieldValue($data, $field);
-			$text=$this->formatDataValue($this->getDataTextFormatString(), $value);
+			$value = $this->getDataFieldValue($data, $field);
+			$text = $this->formatDataValue($this->getDataTextFormatString(), $value);
 			$sender->setText($text);
 		}
-		if(($field=$this->getDataNavigateUrlField())!=='')
+		if(($field = $this->getDataNavigateUrlField()) !== '')
 		{
-			$value=$this->getDataFieldValue($data, $field);
-			$url=$this->formatDataValue($this->getDataNavigateUrlFormatString(), $value);
+			$value = $this->getDataFieldValue($data, $field);
+			$url = $this->formatDataValue($this->getDataNavigateUrlFormatString(), $value);
 			$sender->setNavigateUrl($url);
 		}
 	}

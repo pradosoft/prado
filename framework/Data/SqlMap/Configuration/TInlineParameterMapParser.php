@@ -43,12 +43,12 @@ class TInlineParameterMapParser
 		$mappings = [];
 		preg_match_all(self::PARAMETER_TOKEN_REGEXP, $sqlText, $matches);
 
-		for($i = 0, $k=count($matches[1]); $i<$k; $i++)
+		for($i = 0, $k = count($matches[1]); $i < $k; $i++)
 		{
 			$mappings[] = $this->parseMapping($matches[1][$i], $scope);
 			$sqlText = str_replace($matches[0][$i], '?', $sqlText);
 		}
-		return ['sql'=>$sqlText, 'parameters'=>$mappings];
+		return ['sql' => $sqlText, 'parameters' => $mappings];
 	}
 
 	/**
@@ -65,7 +65,7 @@ class TInlineParameterMapParser
 		foreach($properties as $property)
 		{
 			$prop = explode('=', $property);
-			$name = trim($prop[0]); $value=trim($prop[1]);
+			$name = trim($prop[0]); $value = trim($prop[1]);
 			if($mapping->canSetProperty($name))
 				$mapping->{'set' . $name}($value);
 			else

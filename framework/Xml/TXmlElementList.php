@@ -36,7 +36,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 */
 	public function __construct(TXmlElement $owner)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**
@@ -60,7 +60,7 @@ class TXmlElementList extends \Prado\Collections\TList
 		if($item instanceof TXmlElement)
 		{
 			parent::insertAt($index, $item);
-			if($item->getParent()!==null)
+			if($item->getParent() !== null)
 				$item->getParent()->getElements()->remove($item);
 			$item->setParent($this->_o);
 		}
@@ -77,7 +77,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
+		$item = parent::removeAt($index);
 		if($item instanceof TXmlElement)
 			$item->setParent(null);
 		return $item;

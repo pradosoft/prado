@@ -28,7 +28,7 @@ class THttpCookie extends \Prado\TComponent
 	/**
 	 * @var string domain of the cookie
 	 */
-	private $_domain='';
+	private $_domain = '';
 	/**
 	 * @var string name of the cookie
 	 */
@@ -36,23 +36,23 @@ class THttpCookie extends \Prado\TComponent
 	/**
 	 * @var string value of the cookie
 	 */
-	private $_value='';
+	private $_value = '';
 	/**
 	 * @var integer expire of the cookie
 	 */
-	private $_expire=0;
+	private $_expire = 0;
 	/**
 	 * @var string path of the cookie
 	 */
-	private $_path='/';
+	private $_path = '/';
 	/**
 	 * @var boolean whether cookie should be sent via secure connection
 	 */
-	private $_secure=false;
+	private $_secure = false;
 	/**
 	 * @var boolean if true the cookie value will be unavailable to JavaScript
 	 */
-	private $_httpOnly=false;
+	private $_httpOnly = false;
 
 	/**
 	 * Constructor.
@@ -61,8 +61,8 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function __construct($name, $value)
 	{
-		$this->_name=$name;
-		$this->_value=$value;
+		$this->_name = $name;
+		$this->_value = $value;
 	}
 
 	/**
@@ -78,7 +78,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setDomain($value)
 	{
-		$this->_domain=$value;
+		$this->_domain = $value;
 	}
 
 	/**
@@ -94,7 +94,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setExpire($value)
 	{
-		$this->_expire=TPropertyValue::ensureInteger($value);
+		$this->_expire = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -126,7 +126,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setName($value)
 	{
-		$this->_name=$value;
+		$this->_name = $value;
 	}
 
 	/**
@@ -142,7 +142,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setValue($value)
 	{
-		$this->_value=$value;
+		$this->_value = $value;
 	}
 
 	/**
@@ -158,7 +158,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setPath($value)
 	{
-		$this->_path=$value;
+		$this->_path = $value;
 	}
 
 	/**
@@ -174,6 +174,6 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setSecure($value)
 	{
-		$this->_secure=TPropertyValue::ensureBoolean($value);
+		$this->_secure = TPropertyValue::ensureBoolean($value);
 	}
 }

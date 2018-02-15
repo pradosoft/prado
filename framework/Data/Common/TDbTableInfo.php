@@ -24,7 +24,7 @@ use Prado\Prado;
  */
 class TDbTableInfo extends \Prado\TComponent
 {
-	private $_info=[];
+	private $_info = [];
 
 	private $_primaryKeys;
 	private $_foreignKeys;
@@ -43,12 +43,12 @@ class TDbTableInfo extends \Prado\TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=[], $primary=[], $foreign=[])
+	public function __construct($tableInfo = [], $primary = [], $foreign = [])
 	{
-		$this->_info=$tableInfo;
-		$this->_primaryKeys=$primary;
-		$this->_foreignKeys=$foreign;
-		$this->_columns=new TMap;
+		$this->_info = $tableInfo;
+		$this->_primaryKeys = $primary;
+		$this->_foreignKeys = $foreign;
+		$this->_columns = new TMap;
 	}
 
 	/**
@@ -65,7 +65,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @param mixed default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name, $default=null)
+	protected function getInfo($name, $default = null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -76,7 +76,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	protected function setInfo($name, $value)
 	{
-		$this->_info[$name]=$value;
+		$this->_info[$name] = $value;
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getColumn($name)
 	{
-		if(($column = $this->_columns->itemAt($name))!==null)
+		if(($column = $this->_columns->itemAt($name)) !== null)
 			return $column;
 		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
@@ -128,9 +128,9 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
-		if($this->_names===null)
+		if($this->_names === null)
 		{
-			$this->_names=[];
+			$this->_names = [];
 			foreach($this->getColumns() as $column)
 				$this->_names[] = $column->getColumnName();
 		}
@@ -158,9 +158,9 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getLowerCaseColumnNames()
 	{
-		if($this->_lowercase===null)
+		if($this->_lowercase === null)
 		{
-			$this->_lowercase=[];
+			$this->_lowercase = [];
 			foreach($this->getColumns()->getKeys() as $key)
 				$this->_lowercase[strtolower($key)] = $key;
 		}
