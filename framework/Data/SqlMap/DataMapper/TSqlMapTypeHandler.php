@@ -67,7 +67,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * @param object The interface for setting the value.
 	 * @param object The value to be set.
 	 */
-	public abstract function getParameter($object);
+	abstract public function getParameter($object);
 
 
 	/**
@@ -76,7 +76,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * @param object The interface for getting the value.
 	 * @return mixed The processed value.
 	 */
-	public abstract function getResult($string);
+	abstract public function getResult($string);
 
 
 	/**
@@ -90,5 +90,5 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * @param array result row.
 	 * @return mixed
 	 */
-	public abstract function createNewInstance($row=null);
+	abstract public function createNewInstance($row=null);
 }

@@ -31,7 +31,7 @@ class TWsatBaseGenerator
 	 */
 	protected $_opFile;
 
-	function __construct()
+	public function __construct()
 	{
 		if (!class_exists("TActiveRecordManager", false))
 			throw new Exception("You need to enable the ActiveRecord module in your application configuration file.");

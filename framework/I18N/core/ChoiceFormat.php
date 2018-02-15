@@ -101,7 +101,7 @@ class ChoiceFormat
 	/**
 	 * Constructor.
 	 */
-	function __construct()
+	public function __construct()
 	{
 		$this->inf = -log(0);
 	}
@@ -113,7 +113,7 @@ class ChoiceFormat
 	 * @param string the set, in set notation.
 	 * @return boolean true if number is in the set, false otherwise.
 	 */
-	function isValid($number, $set)
+	public function isValid($number, $set)
 	{
 		$n = preg_match_all($this->validate, $set, $matches, PREG_SET_ORDER);
 
@@ -186,7 +186,7 @@ class ChoiceFormat
 	 * @param string the string containing the choices
 	 * @return array array($sets, $strings)
 	 */
-	function parse($string)
+	public function parse($string)
 	{
 		$n = preg_match_all($this->parse, $string, $matches, PREG_OFFSET_CAPTURE);
 		$sets = [];

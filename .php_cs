@@ -27,6 +27,7 @@ $config = PhpCsFixer\Config::create()
 		'no_trailing_whitespace' => true,
 		'no_trailing_whitespace_in_comment' => true,
 		'psr4' => true,
+		'visibility_required' => true,
 	])
 	->setFinder(
 		PhpCsFixer\Finder::create()

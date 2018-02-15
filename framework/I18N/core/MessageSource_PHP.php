@@ -53,7 +53,7 @@ class MessageSource_PHP extends MessageSource
 	 * @param string the directory where the messages are stored.
 	 * @see MessageSource::factory();
 	 */
-	function __construct($source)
+	public function __construct($source)
 	{
 		$this->source = (string)$source;
 	}

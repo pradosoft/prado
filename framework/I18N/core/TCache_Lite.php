@@ -231,7 +231,7 @@ class TCache_Lite
 	 * @param array $options options
 	 * @access public
 	 */
-	function __construct($options = [null])
+	public function __construct($options = [null])
 	{
 		$availableOptions = [	'automaticSerialization',
 									'fileNameProtection',
@@ -264,7 +264,7 @@ class TCache_Lite
 	 * @return string data of the cache (or false if no cache available)
 	 * @access public
 	 */
-	function get($id, $group = 'default', $doNotTestCacheValidity = false)
+	public function get($id, $group = 'default', $doNotTestCacheValidity = false)
 	{
 		$this->_id = $id;
 		$this->_group = $group;
@@ -315,7 +315,7 @@ class TCache_Lite
 	 * @return boolean true if no problem
 	 * @access public
 	 */
-	function save($data, $id = null, $group = 'default')
+	public function save($data, $id = null, $group = 'default')
 	{
 		if ($this->_caching) {
 			if ($this->_automaticSerialization) {
@@ -352,7 +352,7 @@ class TCache_Lite
 	 * @return boolean true if no problem
 	 * @access public
 	 */
-	function remove($id, $group = 'default')
+	public function remove($id, $group = 'default')
 	{
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
@@ -372,7 +372,7 @@ class TCache_Lite
 	 * @return boolean true if no problem
 	 * @access public
 	 */
-	function clean($group = false)
+	public function clean($group = false)
 	{
 		if ($this->_fileNameProtection) {
 			$motif = ($group) ? 'cache_' . md5($group) . '_' : 'cache_';
@@ -417,7 +417,7 @@ class TCache_Lite
 		 * @param int $newLifeTime new life time (in seconds)
 		 * @access public
 		 */
-	function setLifeTime($newLifeTime)
+	public function setLifeTime($newLifeTime)
 	{
 		$this->_lifeTime = $newLifeTime;
 		$this->_refreshTime = time() - $newLifeTime;
@@ -427,7 +427,7 @@ class TCache_Lite
 	 *
 	 * @access public
 	 */
-	function saveMemoryCachingState($id, $group = 'default')
+	public function saveMemoryCachingState($id, $group = 'default')
 	{
 		if ($this->_caching) {
 			$array = [
@@ -443,7 +443,7 @@ class TCache_Lite
 	 *
 	 * @access public
 	 */
-	function getMemoryCachingState($id, $group = 'default',
+	public function getMemoryCachingState($id, $group = 'default',
 									$doNotTestCacheValidity = false)
 	{
 		if ($this->_caching) {
@@ -463,7 +463,7 @@ class TCache_Lite
 	 *
 	 * @return int last modification time
 	 */
-	function lastModified() {
+	public function lastModified() {
 		return filemtime($this->cache->_file);
 	}
 
@@ -478,7 +478,7 @@ class TCache_Lite
 	 * @param int $code error code
 	 * @access public
 	 */
-	function raiseError($msg, $code)
+	public function raiseError($msg, $code)
 	{
 	   throw new Exception($msg);
 	}
@@ -489,7 +489,7 @@ class TCache_Lite
 	 *
 	 * @access private
 	 */
-	function _memoryCacheAdd($id, $data)
+	public function _memoryCacheAdd($id, $data)
 	{
 		$this->_memoryCachingArray[$this->_file] = $data;
 		if ($this->_memoryCachingCounter >= $this->_memoryCachingLimit) {
@@ -507,7 +507,7 @@ class TCache_Lite
 	 * @param string $group name of the group
 	 * @access private
 	 */
-	function _setFileName($id, $group)
+	public function _setFileName($id, $group)
 	{
 		if ($this->_fileNameProtection) {
 			$this->_file = ($this->_cacheDir . 'cache_' . md5($group) . '_'
@@ -517,7 +517,7 @@ class TCache_Lite
 		}
 	}
 
-	function getCacheFile()
+	public function getCacheFile()
 	{
 		return $this->_file;
 	}
@@ -528,7 +528,7 @@ class TCache_Lite
 	 * @return string content of the cache file
 	 * @access private
 	 */
-	function _read()
+	public function _read()
 	{
 		$fp = @fopen($this->_file, "rb");
 		if ($this->_fileLocking) @flock($fp, LOCK_SH);
@@ -563,7 +563,7 @@ class TCache_Lite
 	 * @return boolean true if ok
 	 * @access private
 	 */
-	function _write($data)
+	public function _write($data)
 	{
 		$fp = @fopen($this->_file, "wb");
 		if ($fp) {
@@ -589,7 +589,7 @@ class TCache_Lite
 	 * @return boolean true if the test is ok
 	 * @access private
 	 */
-	function _writeAndControl($data)
+	public function _writeAndControl($data)
 	{
 		$this->_write($data);
 		$dataRead = $this->_read($data);
@@ -604,7 +604,7 @@ class TCache_Lite
 	 * @return string control key
 	 * @access private
 	 */
-	function _hash($data, $controlType)
+	public function _hash($data, $controlType)
 	{
 		switch ($controlType) {
 		case 'md5':

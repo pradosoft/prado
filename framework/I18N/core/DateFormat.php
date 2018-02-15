@@ -92,7 +92,7 @@ class DateFormat
 	 * a DateTimeFormatInfo instance, or a locale.
 	 * @return DateFormat instance
 	 */
-	function __construct($formatInfo=null)
+	public function __construct($formatInfo=null)
 	{
 		if($formatInfo === null)
 			$this->formatInfo = DateTimeFormatInfo::getInvariantInfo();

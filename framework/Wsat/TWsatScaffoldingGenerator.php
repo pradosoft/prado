@@ -29,7 +29,7 @@ class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 	 */
 	private $_bootstrap;
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}

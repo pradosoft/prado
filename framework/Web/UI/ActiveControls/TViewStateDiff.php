@@ -49,5 +49,5 @@ abstract class TViewStateDiff
 	/**
 	 * @return mixed view state changes, nullObject if no difference.
 	 */
-	public abstract function getDifference();
+	abstract public function getDifference();
 }

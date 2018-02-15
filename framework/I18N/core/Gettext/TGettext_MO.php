@@ -76,7 +76,7 @@ class TGettext_MO extends TGettext
 	 * @return  object      File_Gettext_MO
 	 * @param   string      $file   path to GNU MO file
 	 */
-	function __construct($file = '')
+	public function __construct($file = '')
 	{
 		$this->file = $file;
 	}
@@ -88,7 +88,7 @@ class TGettext_MO extends TGettext
 	 * @return  mixed
 	 * @param   int     $bytes
 	 */
-	function _read($bytes = 1)
+	public function _read($bytes = 1)
 	{
 		if (0 < $bytes = abs($bytes)) {
 			return fread($this->_handle, $bytes);
@@ -103,7 +103,7 @@ class TGettext_MO extends TGettext
 	 * @return  int
 	 * @param   bool    $bigendian
 	 */
-	function _readInt($bigendian = false)
+	public function _readInt($bigendian = false)
 	{
 		//unpack returns a reference????
 		$unpacked = unpack($bigendian ? 'N' : 'V', $this->_read(4));
@@ -117,7 +117,7 @@ class TGettext_MO extends TGettext
 	 * @return  int
 	 * @param   int     $int
 	 */
-	function _writeInt($int)
+	public function _writeInt($int)
 	{
 		return $this->_write(pack($this->writeBigEndian ? 'N' : 'V', (int) $int));
 	}
@@ -129,7 +129,7 @@ class TGettext_MO extends TGettext
 	 * @return  int
 	 * @param   string  $data
 	 */
-	function _write($data)
+	public function _write($data)
 	{
 		return fwrite($this->_handle, $data);
 	}
@@ -141,7 +141,7 @@ class TGettext_MO extends TGettext
 	 * @return  int
 	 * @param   string  $string
 	 */
-	function _writeStr($string)
+	public function _writeStr($string)
 	{
 		return $this->_write($string . "\0");
 	}
@@ -154,7 +154,7 @@ class TGettext_MO extends TGettext
 	 * @param   array   $params     associative array with offset and length
 	 *                              of the string
 	 */
-	function _readStr($params)
+	public function _readStr($params)
 	{
 		fseek($this->_handle, $params['offset']);
 		return $this->_read($params['length']);
@@ -167,7 +167,7 @@ class TGettext_MO extends TGettext
 	 * @return   mixed   Returns true on success or PEAR_Error on failure.
 	 * @param    string  $file
 	 */
-	function load($file = null)
+	public function load($file = null)
 	{
 		if (!isset($file)) {
 			$file = $this->file;
@@ -263,7 +263,7 @@ class TGettext_MO extends TGettext
 	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 * @param   string  $file
 	 */
-	function save($file = null)
+	public function save($file = null)
 	{
 		if (!isset($file)) {
 			$file = $this->file;

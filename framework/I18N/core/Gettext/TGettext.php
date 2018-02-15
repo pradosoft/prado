@@ -98,7 +98,7 @@ class TGettext
 	 * @param   string  $format MO or PO
 	 * @param   string  $file   path to GNU gettext file
 	 */
-	static function factory($format, $file = '')
+	public static function factory($format, $file = '')
 	{
 		$format = strToUpper($format);
 		$filename = dirname(__FILE__) . '/' . $format . '.php';
@@ -123,7 +123,7 @@ class TGettext
 	 * @param   string  $pofile path to GNU PO file
 	 * @param   string  $mofile path to GNU MO file
 	 */
-	static function poFile2moFile($pofile, $mofile)
+	public static function poFile2moFile($pofile, $mofile)
 	{
 		if (!is_file($pofile)) {
 			throw new Exception("File $pofile doesn't exist.");
@@ -154,7 +154,7 @@ class TGettext
 	 * @param   string  $string
 	 * @param   bool    $reverse
 	 */
-	static function prepare($string, $reverse = false)
+	public static function prepare($string, $reverse = false)
 	{
 		if ($reverse) {
 			$smap = ['"', "\n", "\t", "\r"];
@@ -176,7 +176,7 @@ class TGettext
 	 * @return  array
 	 * @param   string  $meta
 	 */
-	static function meta2array($meta)
+	public static function meta2array($meta)
 	{
 		$array = [];
 		foreach (explode("\n", $meta) as $info) {
@@ -212,7 +212,7 @@ class TGettext
 	 * @access  protected
 	 * @return  array
 	 */
-	function toArray()
+	public function toArray()
 	{
 		return ['meta' => $this->meta, 'strings' => $this->strings];
 	}
@@ -242,7 +242,7 @@ class TGettext
 	 * @return  bool
 	 * @param   array       $array
 	 */
-	function fromArray($array)
+	public function fromArray($array)
 	{
 		if (!array_key_exists('strings', $array)) {
 			if (count($array) != 2) {
@@ -263,7 +263,7 @@ class TGettext
 	 * @access  protected
 	 * @return  object  File_Gettext_MO
 	 */
-	function toMO()
+	public function toMO()
 	{
 		include_once dirname(__FILE__) . '/MO.php';
 		$MO = new TGettext_MO;
@@ -277,7 +277,7 @@ class TGettext
 	 * @access  protected
 	 * @return  object      File_Gettext_PO
 	 */
-	function toPO()
+	public function toPO()
 	{
 		include_once dirname(__FILE__) . '/PO.php';
 		$PO = new TGettext_PO;

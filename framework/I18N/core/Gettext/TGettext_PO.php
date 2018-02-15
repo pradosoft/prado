@@ -58,7 +58,7 @@ class TGettext_PO extends TGettext
 	 * @return  object      File_Gettext_PO
 	 * @param   string      path to GNU PO file
 	 */
-	function __construct($file = '')
+	public function __construct($file = '')
 	{
 		$this->file = $file;
 	}
@@ -70,7 +70,7 @@ class TGettext_PO extends TGettext
 	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 * @param   string  $file
 	 */
-	function load($file = null)
+	public function load($file = null)
 	{
 		if (!isset($file)) {
 			$file = $this->file;
@@ -119,7 +119,7 @@ class TGettext_PO extends TGettext
 	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 * @param   string  $file
 	 */
-	function save($file = null)
+	public function save($file = null)
 	{
 		if (!isset($file)) {
 			$file = $this->file;

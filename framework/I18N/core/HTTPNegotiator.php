@@ -49,7 +49,7 @@ class HTTPNegotiator
 	 * Get a list of languages acceptable by the client browser
 	 * @return array languages ordered in the user browser preferences.
 	 */
-	function getLanguages()
+	public function getLanguages()
 	{
 		if($this->languages !== null) {
 			return $this->languages;
@@ -106,7 +106,7 @@ class HTTPNegotiator
 	 * Get a list of charsets acceptable by the client browser.
 	 * @return array list of charsets in preferable order.
 	 */
-	function getCharsets()
+	public function getCharsets()
 	{
 		if($this->charsets !== null) {
 			return $this->charsets;

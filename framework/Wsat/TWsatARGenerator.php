@@ -40,7 +40,7 @@ class TWsatARGenerator extends TWsatBaseGenerator
 		 */
 		private $uqChars = ['[', ']', '"', '`', "'"];
 
-		function __construct()
+		public function __construct()
 		{
 				parent::__construct();
 		}

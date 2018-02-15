@@ -88,7 +88,7 @@ class NumberFormat
 	 * @param mixed either null, a CultureInfo, a NumberFormatInfo, or string
 	 * @return NumberFormat
 	 */
-	function __construct($formatInfo=null)
+	public function __construct($formatInfo=null)
 	{
 		if($formatInfo === null)
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
@@ -113,7 +113,7 @@ class NumberFormat
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
 	 * @return string formatted number string
 	 */
-	function format($number, $pattern='d', $currency='USD', $charset='UTF-8')
+	public function format($number, $pattern='d', $currency='USD', $charset='UTF-8')
 	{
 		$oldLocale=setLocale(LC_NUMERIC, '0');
 		setlocale(LC_NUMERIC, 'C');

@@ -361,7 +361,7 @@ class NumberFormatInfo
 	 * Indicates the number of decimal places.
 	 * @return int number of decimal places.
 	 */
-	function getDecimalDigits()
+	public function getDecimalDigits()
 	{
 		return $this->pattern['decimalPoints'];
 	}
@@ -370,17 +370,17 @@ class NumberFormatInfo
 	 * Set the number of decimal places.
 	 * @param int number of decimal places.
 	 */
-	function setDecimalDigits($value)
+	public function setDecimalDigits($value)
 	{
 		return $this->pattern['decimalPoints'] = $value;
 	}
 
-	function getDigitSize()
+	public function getDigitSize()
 	{
 		return $this->pattern['digitSize'];
 	}
 
-	function setDigitSize($value)
+	public function setDigitSize($value)
 	{
 		$this->pattern['digitSize'] = $value;
 	}
@@ -389,7 +389,7 @@ class NumberFormatInfo
 	 * Gets the string to use as the decimal separator.
 	 * @return string decimal separator.
 	 */
-	function getDecimalSeparator()
+	public function getDecimalSeparator()
 	{
 		return $this->data['NumberElements'][0];
 	}
@@ -398,7 +398,7 @@ class NumberFormatInfo
 	 * Set the string to use as the decimal separator.
 	 * @param string the decimal point
 	 */
-	function setDecimalSeparator($value)
+	public function setDecimalSeparator($value)
 	{
 		return $this->data['NumberElements'][0] = $value;
 	}
@@ -409,7 +409,7 @@ class NumberFormatInfo
 	 * @param parameter
 	 * @return string currency group separator.
 	 */
-	function getGroupSeparator()
+	public function getGroupSeparator()
 	{
 		return $this->data['NumberElements'][1];
 	}
@@ -418,7 +418,7 @@ class NumberFormatInfo
 	 * Set the string to use as the group separator.
 	 * @param string the group separator.
 	 */
-	function setGroupSeparator($value)
+	public function setGroupSeparator($value)
 	{
 		return $this->data['NumberElements'][1] = $value;
 	}
@@ -430,7 +430,7 @@ class NumberFormatInfo
 	 * group2 will be false.
 	 * @return array grouping size(s).
 	 */
-	function getGroupSizes()
+	public function getGroupSizes()
 	{
 		$group1 = $this->pattern['groupSize1'];
 		$group2 = $this->pattern['groupSize2'];
@@ -445,7 +445,7 @@ class NumberFormatInfo
 	 * group2 should be false.
 	 * @param array grouping size(s).
 	 */
-	function setGroupSizes($groupSize)
+	public function setGroupSizes($groupSize)
 	{
 		$this->pattern['groupSize1'] = $groupSize[0];
 		$this->pattern['groupSize2'] = $groupSize[1];
@@ -457,7 +457,7 @@ class NumberFormatInfo
 	 * This function returns <b>array(prefix, postfix)</b>.
 	 * @return arary negative pattern.
 	 */
-	function getNegativePattern()
+	public function getNegativePattern()
 	{
 		$prefix = $this->pattern['negPref'];
 		$postfix = $this->pattern['negPost'];
@@ -470,7 +470,7 @@ class NumberFormatInfo
 	 * <b>array(prefix, postfix)</b>.
 	 * @param arary negative pattern.
 	 */
-	function setNegativePattern($pattern)
+	public function setNegativePattern($pattern)
 	{
 		$this->pattern['negPref'] = $pattern[0];
 		$this->pattern['negPost'] = $pattern[1];
@@ -482,7 +482,7 @@ class NumberFormatInfo
 	 * This function returns <b>array(prefix, postfix)</b>.
 	 * @return arary positive pattern.
 	 */
-	function getPositivePattern()
+	public function getPositivePattern()
 	{
 		$prefix = $this->pattern['posPref'];
 		$postfix = $this->pattern['posPost'];
@@ -495,7 +495,7 @@ class NumberFormatInfo
 	 * <b>array(prefix, postfix)</b>.
 	 * @param arary positive pattern.
 	 */
-	function setPositivePattern($pattern)
+	public function setPositivePattern($pattern)
 	{
 		$this->pattern['posPref'] = $pattern[0];
 		$this->pattern['posPost'] = $pattern[1];
@@ -505,7 +505,7 @@ class NumberFormatInfo
 	 * Gets the string to use as the currency symbol.
 	 * @return string currency symbol.
 	 */
-	function getCurrencySymbol($currency='USD')
+	public function getCurrencySymbol($currency='USD')
 	{
 		if(isset($this->pattern['symbol']))
 			return $this->pattern['symbol'];
@@ -518,7 +518,7 @@ class NumberFormatInfo
 	 * Set the string to use as the currency symbol.
 	 * @param string currency symbol.
 	 */
-	function setCurrencySymbol($symbol)
+	public function setCurrencySymbol($symbol)
 	{
 		$this->pattern['symbol'] = $symbol;
 	}
@@ -527,7 +527,7 @@ class NumberFormatInfo
 	 * Gets the string that represents negative infinity.
 	 * @return string negative infinity.
 	 */
-	function getNegativeInfinitySymbol()
+	public function getNegativeInfinitySymbol()
 	{
 		return $this->pattern['negInfty'];
 	}
@@ -536,7 +536,7 @@ class NumberFormatInfo
 	 * Set the string that represents negative infinity.
 	 * @param string negative infinity.
 	 */
-	function setNegativeInfinitySymbol($value)
+	public function setNegativeInfinitySymbol($value)
 	{
 		$this->pattern['negInfty'] = $value;
 	}
@@ -545,7 +545,7 @@ class NumberFormatInfo
 	 * Gets the string that represents positive infinity.
 	 * @return string positive infinity.
 	 */
-	function getPositiveInfinitySymbol()
+	public function getPositiveInfinitySymbol()
 	{
 		return $this->pattern['posInfty'];
 	}
@@ -554,7 +554,7 @@ class NumberFormatInfo
 	 * Set the string that represents positive infinity.
 	 * @param string positive infinity.
 	 */
-	function setPositiveInfinitySymbol($value)
+	public function setPositiveInfinitySymbol($value)
 	{
 		$this->pattern['posInfty'] = $value;
 	}
@@ -563,7 +563,7 @@ class NumberFormatInfo
 	 * Gets the string that denotes that the associated number is negative.
 	 * @return string negative sign.
 	 */
-	function getNegativeSign()
+	public function getNegativeSign()
 	{
 		return $this->data['NumberElements'][6];
 	}
@@ -572,7 +572,7 @@ class NumberFormatInfo
 	 * Set the string that denotes that the associated number is negative.
 	 * @param string negative sign.
 	 */
-	function setNegativeSign($value)
+	public function setNegativeSign($value)
 	{
 		$this->data['NumberElements'][6] = $value;
 	}
@@ -581,7 +581,7 @@ class NumberFormatInfo
 	 * Gets the string that denotes that the associated number is positive.
 	 * @return string positive sign.
 	 */
-	function getPositiveSign()
+	public function getPositiveSign()
 	{
 		return $this->data['NumberElements'][11];
 	}
@@ -590,7 +590,7 @@ class NumberFormatInfo
 	 * Set the string that denotes that the associated number is positive.
 	 * @param string positive sign.
 	 */
-	function setPositiveSign($value)
+	public function setPositiveSign($value)
 	{
 		$this->data['NumberElements'][11] = $value;
 	}
@@ -599,7 +599,7 @@ class NumberFormatInfo
 	 * Gets the string that represents the IEEE NaN (not a number) value.
 	 * @return string NaN symbol.
 	 */
-	function getNaNSymbol()
+	public function getNaNSymbol()
 	{
 		return $this->data['NumberElements'][10];
 	}
@@ -608,7 +608,7 @@ class NumberFormatInfo
 	 * Set the string that represents the IEEE NaN (not a number) value.
 	 * @param string NaN symbol.
 	 */
-	function setNaNSymbol($value)
+	public function setNaNSymbol($value)
 	{
 		$this->data['NumberElements'][10] = $value;
 	}
@@ -617,7 +617,7 @@ class NumberFormatInfo
 	 * Gets the string to use as the percent symbol.
 	 * @return string percent symbol.
 	 */
-	function getPercentSymbol()
+	public function getPercentSymbol()
 	{
 		return $this->data['NumberElements'][3];
 	}
@@ -626,7 +626,7 @@ class NumberFormatInfo
 	 * Set the string to use as the percent symbol.
 	 * @param string percent symbol.
 	 */
-	function setPercentSymbol($value)
+	public function setPercentSymbol($value)
 	{
 		$this->data['NumberElements'][3] = $value;
 	}
@@ -635,7 +635,7 @@ class NumberFormatInfo
 	 * Gets the string to use as the per mille symbol.
 	 * @return string percent symbol.
 	 */
-	function getPerMilleSymbol()
+	public function getPerMilleSymbol()
 	{
 		return $this->data['NumberElements'][8];
 	}
@@ -644,7 +644,7 @@ class NumberFormatInfo
 	 * Set the string to use as the per mille symbol.
 	 * @param string percent symbol.
 	 */
-	function setPerMilleSymbol($value)
+	public function setPerMilleSymbol($value)
 	{
 		$this->data['NumberElements'][8] = $value;
 	}

@@ -41,7 +41,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string Database datasource, in PEAR's DB DSN format.
 	 * @see MessageSource::factory();
 	 */
-	function __construct($source)
+	public function __construct($source)
 	{
 		$this->_connID= (string)$source;
 	}
@@ -211,7 +211,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string the catalogue to add to
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
-	function save($catalogue='messages')
+	public function save($catalogue='messages')
 	{
 		$messages = $this->untranslated;
 
@@ -253,7 +253,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
-	function delete($message, $catalogue='messages')
+	public function delete($message, $catalogue='messages')
 	{
 		$details = $this->getCatalogueDetails($catalogue);
 		if($details)
@@ -278,7 +278,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string the catalogue of the translation.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
-	function update($text, $target, $comments, $catalogue='messages')
+	public function update($text, $target, $comments, $catalogue='messages')
 	{
 		$details = $this->getCatalogueDetails($catalogue);
 		if($details)
@@ -303,7 +303,7 @@ class MessageSource_Database extends MessageSource
 	 * Returns a list of catalogue as key and all it variants as value.
 	 * @return array list of catalogues
 	 */
-	function catalogues()
+	public function catalogues()
 	{
 		$command=$this->getDBConnection()->createCommand('SELECT name FROM catalogue ORDER BY name');
 		$dataReader=$command->query();

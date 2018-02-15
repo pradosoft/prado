@@ -115,5 +115,5 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * @return string configuration file.
 	 */
-	protected abstract function getConfigFile();
+	abstract protected function getConfigFile();
 }

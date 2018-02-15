@@ -125,7 +125,7 @@ class CultureInfo
 	 * @return string the culture name.
 	 * @see getName()
 	 */
-	function __toString()
+	public function __toString()
 	{
 		return $this->getName();
 	}
@@ -136,7 +136,7 @@ class CultureInfo
 	 * as an attribute/property to retrieve the value.
 	 * @return mixed
 	 */
-	function __get($name)
+	public function __get($name)
 	{
 		$getProperty = 'get' . $name;
 		if(in_array($getProperty, $this->properties))
@@ -149,7 +149,7 @@ class CultureInfo
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to set the value.
 	 */
-	function __set($name, $value)
+	public function __set($name, $value)
 	{
 		$setProperty = 'set' . $name;
 		if(in_array($setProperty, $this->properties))
@@ -167,7 +167,7 @@ class CultureInfo
 	 * @param string a culture name, e.g. "en_AU".
 	 * @return return new CultureInfo.
 	 */
-	function __construct($culture='en')
+	public function __construct($culture='en')
 	{
 		$this->properties = get_class_methods($this);
 
@@ -365,7 +365,7 @@ class CultureInfo
 	 * "<languagecode2>_(country/regioncode2)".
 	 * @return string culture name.
 	 */
-	function getName()
+	public function getName()
 	{
 		return $this->culture;
 	}
@@ -375,7 +375,7 @@ class CultureInfo
 	 * format of displaying dates and times.
 	 * @return DateTimeFormatInfo date time format information for the culture.
 	 */
-	function getDateTimeFormat()
+	public function getDateTimeFormat()
 	{
 		if($this->dateTimeFormat === null)
 		{
@@ -391,7 +391,7 @@ class CultureInfo
 	 * Set the date time format information.
 	 * @param DateTimeFormatInfo the new date time format info.
 	 */
-	function setDateTimeFormat($dateTimeFormat)
+	public function setDateTimeFormat($dateTimeFormat)
 	{
 		$this->dateTimeFormat = $dateTimeFormat;
 	}
@@ -400,7 +400,7 @@ class CultureInfo
 	 * Gets the default calendar used by the culture, e.g. "gregorian".
 	 * @return string the default calendar.
 	 */
-	function getCalendar()
+	public function getCalendar()
 	{
 		$info = $this->findInfo('calendar/default');
 		return $info[0];
@@ -412,7 +412,7 @@ class CultureInfo
 	 * 'Country' is omitted if the culture is neutral.
 	 * @return array array with language and country as elements, localized.
 	 */
-	function getNativeName()
+	public function getNativeName()
 	{
 		$lang = substr($this->culture, 0, 2);
 		$reg = substr($this->culture, 3, 2);
@@ -430,7 +430,7 @@ class CultureInfo
 	 * 'Country' is omitted if the culture is neutral.
 	 * @return string language (country), it may locale code string if english name does not exist.
 	 */
-	function getEnglishName()
+	public function getEnglishName()
 	{
 		$lang = substr($this->culture, 0, 2);
 		$reg = substr($this->culture, 3, 2);
@@ -454,7 +454,7 @@ class CultureInfo
 	 * The invariant culture is assumed to be "en";
 	 * @return CultureInfo invariant culture info is "en".
 	 */
-	static function getInvariantCulture()
+	public static function getInvariantCulture()
 	{
 		static $invariant;
 		if($invariant === null)
@@ -468,7 +468,7 @@ class CultureInfo
 	 * only contains two characters.
 	 * @return boolean true if culture is neutral, false otherwise.
 	 */
-	function getIsNeutralCulture()
+	public function getIsNeutralCulture()
 	{
 		return strlen($this->culture) == 2;
 	}
@@ -478,7 +478,7 @@ class CultureInfo
 	 * format of displaying numbers, currency, and percentage.
 	 * @return NumberFormatInfo the number format info for current culture.
 	 */
-	function getNumberFormat()
+	public function getNumberFormat()
 	{
 		if($this->numberFormat === null)
 		{
@@ -498,7 +498,7 @@ class CultureInfo
 	 * Set the number format information.
 	 * @param NumberFormatInfo the new number format info.
 	 */
-	function setNumberFormat($numberFormat)
+	public function setNumberFormat($numberFormat)
 	{
 		$this->numberFormat = $numberFormat;
 	}
@@ -508,7 +508,7 @@ class CultureInfo
 	 * current CultureInfo
 	 * @return CultureInfo parent culture information.
 	 */
-	function getParent()
+	public function getParent()
 	{
 		if(strlen($this->culture) == 2)
 			return $this->getInvariantCulture();
@@ -526,7 +526,7 @@ class CultureInfo
 	 * or CultureInfo::SPECIFIC.
 	 * @return array list of culture information available.
 	 */
-	static function getCultures($type=CultureInfo::ALL)
+	public static function getCultures($type=CultureInfo::ALL)
 	{
 		$dataDir = CultureInfo::dataDir();
 		$dataExt = CultureInfo::fileExt();
@@ -590,7 +590,7 @@ class CultureInfo
 	 * Get a list of countries in the language of the localized version.
 	 * @return array a list of localized country names.
 	 */
-	function getCountries()
+	public function getCountries()
 	{
 		return $this->simplify($this->findInfo('Countries', true));
 	}
@@ -599,7 +599,7 @@ class CultureInfo
 	 * Get a list of currencies in the language of the localized version.
 	 * @return array a list of localized currencies.
 	 */
-	function getCurrencies()
+	public function getCurrencies()
 	{
 		return $this->findInfo('Currencies', true);
 	}
@@ -608,7 +608,7 @@ class CultureInfo
 	 * Get a list of languages in the language of the localized version.
 	 * @return array list of localized language names.
 	 */
-	function getLanguages()
+	public function getLanguages()
 	{
 		return $this->simplify($this->findInfo('Languages', true));
 	}
@@ -617,7 +617,7 @@ class CultureInfo
 	 * Get a list of scripts in the language of the localized version.
 	 * @return array list of localized script names.
 	 */
-	function getScripts()
+	public function getScripts()
 	{
 		return $this->simplify($this->findInfo('Scripts', true));
 	}
@@ -626,7 +626,7 @@ class CultureInfo
 	 * Get a list of timezones in the language of the localized version.
 	 * @return array list of localized timezones.
 	 */
-	function getTimeZones()
+	public function getTimeZones()
 	{
 		return $this->simplify($this->findInfo('zoneStrings', true));
 	}

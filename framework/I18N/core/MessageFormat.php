@@ -97,7 +97,7 @@ class MessageFormat
 	 * @param MessageSource the source of translation messages.
 	 * @param string charset for the message output.
 	 */
-	function __construct(IMessageSource $source, $charset='UTF-8')
+	public function __construct(IMessageSource $source, $charset='UTF-8')
 	{
 		$this->source = $source;
 		$this->setCharset($charset);
@@ -227,7 +227,7 @@ class MessageFormat
 	 * Get the message source.
 	 * @return MessageSource
 	 */
-	function getSource()
+	public function getSource()
 	{
 		return $this->source;
 	}
@@ -238,7 +238,7 @@ class MessageFormat
 	 * "[T]Hello[/T]" if the translation for "Hello" can not be determined.
 	 * @param array first element is the prefix, second element the suffix.
 	 */
-	function setUntranslatedPS($postscript)
+	public function setUntranslatedPS($postscript)
 	{
 		if(is_array($postscript) && count($postscript)>=2)
 		{
