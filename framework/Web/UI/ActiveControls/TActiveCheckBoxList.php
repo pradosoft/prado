@@ -102,7 +102,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -131,7 +131,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 			&& $this->getPage()->getClientSupportsJavaScript())
 		{
 		  $this->getActiveControl()->registerCallbackClientScript(
-		    $this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(), $this->getPostBackOptions());
 		}
 	}
 

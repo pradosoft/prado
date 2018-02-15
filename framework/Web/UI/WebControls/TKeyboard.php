@@ -179,15 +179,15 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if(($forControl=$this->getForControl())==='')
 			throw new TConfigurationException('keyboard_forcontrol_required');
-	    if(($target=$this->findControl($forControl))===null)
-	        throw new TConfigurationException('keyboard_forcontrol_invalid',$forControl);
+		if(($target=$this->findControl($forControl))===null)
+			throw new TConfigurationException('keyboard_forcontrol_invalid',$forControl);
 
-	    $options['ID'] = $this->getClientID();
-	    $options['ForControl'] = $target->getClientID();
-	    $options['AutoHide'] = $this->getAutoHide();
-	    $options['CssClass'] = $this->getKeyboardCssClass();
+		$options['ID'] = $this->getClientID();
+		$options['ForControl'] = $target->getClientID();
+		$options['AutoHide'] = $this->getAutoHide();
+		$options['CssClass'] = $this->getKeyboardCssClass();
 
-	    return $options;
+		return $options;
 	}
 }
 

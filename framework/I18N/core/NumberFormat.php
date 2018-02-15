@@ -116,7 +116,7 @@ class NumberFormat
 	function format($number, $pattern='d', $currency='USD', $charset='UTF-8')
 	{
 		$oldLocale=setLocale(LC_NUMERIC, '0');
-	    setlocale(LC_NUMERIC, 'C');
+		setlocale(LC_NUMERIC, 'C');
 
 		$this->setPattern($pattern);
 

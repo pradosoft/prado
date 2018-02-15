@@ -136,14 +136,14 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
 	 * @param bool wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -293,7 +293,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getSurroundingTag()
 	{
-    return 'span';
+	return 'span';
 	}
 
 	/**
@@ -301,7 +301,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getSurroundingTagID()
 	{
-    return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
+	return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
 	}
 
 	/**
@@ -331,11 +331,11 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 		else
 			$onclick='';
-    if($needspan=$this->getSpanNeeded())
-    {
-      $writer->addAttribute('id',$this->getSurroundingTagID());
-      $writer->renderBeginTag($this->getSurroundingTag());
-    }
+	if($needspan=$this->getSpanNeeded())
+	{
+	  $writer->addAttribute('id',$this->getSurroundingTagID());
+	  $writer->renderBeginTag($this->getSurroundingTag());
+	}
 		$clientID=$this->getClientID();
 		if(($text=$this->getText())!=='')
 		{
@@ -421,15 +421,15 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
 	}
 
-    /**
-     * Check if we need a span tag to surround this control. The span tag will be created if
-     * the Text property is set for this control.
-     *
-     * @return bool wether this control needs a surrounding span tag
-     */
-    protected function getSpanNeeded() {
-        return $this->getText()!=='';
-    }
+	/**
+	 * Check if we need a span tag to surround this control. The span tag will be created if
+	 * the Text property is set for this control.
+	 *
+	 * @return bool wether this control needs a surrounding span tag
+	 */
+	protected function getSpanNeeded() {
+		return $this->getText()!=='';
+	}
 
 	/**
 	 * Renders a label beside the checkbox.

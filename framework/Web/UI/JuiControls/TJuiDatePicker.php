@@ -94,10 +94,10 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	{
 		return ['altField', 'altFormat', 'appendText', 'autoSize', 'buttonImage', 'buttonImageOnly', 'buttonText', 'calculateWeek',
 								 'changeMonth', 'changeYear', 'closeText', 'constrainInput', 'currentText', 'dateFormat', 'dayNames', 'dayNamesMin',
-				         'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
+						 'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
 								 'minDate', 'monthNames', 'monthNamesShort', 'navigationAsDateFormat', 'nextText', 'numberOfMonths', 'prevText',
 								 'selectOtherMonths', 'shortYearCutoff', 'showAnim', 'showButtonPanel', 'showCurrentAtPos', 'showMonthAfterYear',
-				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
+						 'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
 								 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect'];
 	}
 
@@ -123,8 +123,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 		  $culture=$this->getCurrentCulture();
 		  if($culture!='en')
 		  {
-		    $url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui')."/ui/i18n/datepicker-{$culture}.js";
-		    $cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
+			$url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui')."/ui/i18n/datepicker-{$culture}.js";
+			$cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
 		  }
 		  $code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
 		  $cs->registerEndScript(sprintf('%08X', crc32($code)), $code);

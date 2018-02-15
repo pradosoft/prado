@@ -265,8 +265,8 @@ class TActivePageAdapter extends TControlAdapter
 		 }
 		 else
 		 {
-		 	$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
-		 	throw new TInvalidCallbackException('callback_invalid_target', $target);
+			$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
+			throw new TInvalidCallbackException('callback_invalid_target', $target);
 		 }
 	}
 

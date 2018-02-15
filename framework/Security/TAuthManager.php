@@ -292,7 +292,7 @@ class TAuthManager extends \Prado\TModule
 
 		// check for authentication expiration
 		$isAuthExpired = $this->_authExpire>0 && !$user->getIsGuest() &&
-        ($expiretime=$session->itemAt('AuthExpireTime')) && $expiretime<time();
+		($expiretime=$session->itemAt('AuthExpireTime')) && $expiretime<time();
 
 		// try authenticating through cookie if possible
 		if($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired))

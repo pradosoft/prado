@@ -121,8 +121,8 @@ class TSoapService extends \Prado\TService
 	{
 		if($this->_configFile!==null)
 		{
- 			if(is_file($this->_configFile))
- 			{
+			if(is_file($this->_configFile))
+			{
 				$dom=new TXmlDocument;
 				$dom->loadFromFile($this->_configFile);
 				$this->loadConfig($dom);

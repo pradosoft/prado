@@ -66,8 +66,8 @@ class TLogRouter extends \Prado\TModule
 	{
 		if($this->_configFile!==null)
 		{
- 			if(is_file($this->_configFile))
- 			{
+			if(is_file($this->_configFile))
+			{
 				if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 				{
 					$phpConfig = include $this->_configFile;

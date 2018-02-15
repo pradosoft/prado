@@ -315,10 +315,10 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		{
 			$value=TPropertyValue::ensureEnum($value,'Prado\\Web\\THttpSessionCookieMode');
 			if($value===THttpSessionCookieMode::None) 
-      {
+	  {
 				ini_set('session.use_cookies','0');
 			  ini_set('session.use_only_cookies','0');
-      }
+	  }
 			elseif($value===THttpSessionCookieMode::Allow)
 			{
 				ini_set('session.use_cookies','1');

@@ -58,7 +58,7 @@ class HTTPNegotiator
 		$this->languages = [];
 
 		if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-            return $this->languages;
+			return $this->languages;
 
 		//$basedir = CultureInfo::dataDir();
 		//$ext = CultureInfo::fileExt();
@@ -66,18 +66,18 @@ class HTTPNegotiator
 
 		foreach(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang)
 		{
-            // Cut off any q-value that might come after a semi-colon
-            if ($pos = strpos($lang, ';'))
-                $lang = trim(substr($lang, 0, $pos));
+			// Cut off any q-value that might come after a semi-colon
+			if ($pos = strpos($lang, ';'))
+				$lang = trim(substr($lang, 0, $pos));
 
 			if (strstr($lang, '-'))
 			{
 				$codes = explode('-',$lang);
 				if($codes[0] == 'i')
 				{
-                    // Language not listed in ISO 639 that are not variants
-                    // of any listed language, which can be registerd with the
-                    // i-prefix, such as i-cherokee
+					// Language not listed in ISO 639 that are not variants
+					// of any listed language, which can be registerd with the
+					// i-prefix, such as i-cherokee
 					if(count($codes)>1)
 						$lang = $codes[1];
 				}
@@ -91,13 +91,13 @@ class HTTPNegotiator
 							$lang .= '_'.strtoupper($codes[$i]);
 					}
 				}
-            }
+			}
 
 
 
 			if($info->validCulture($lang))
 				$this->languages[] = $lang;
-        }
+		}
 
 		return $this->languages;
 	}
@@ -108,20 +108,20 @@ class HTTPNegotiator
 	 */
 	function getCharsets()
 	{
-        if($this->charsets !== null) {
+		if($this->charsets !== null) {
 			return $this->charsets;
 		}
 
 		$this->charsets = [];
 
 		if (!isset($_SERVER['HTTP_ACCEPT_CHARSET']))
-            return $this->charsets;
+			return $this->charsets;
 
 		foreach (explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']) as $charset)
 		{
-            if (!empty($charset))
-                $this->charsets[] = preg_replace('/;.*/', '', $charset);
-        }
+			if (!empty($charset))
+				$this->charsets[] = preg_replace('/;.*/', '', $charset);
+		}
 
 		return $this->charsets;
 	}

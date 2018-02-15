@@ -151,39 +151,39 @@ class DateTimeFormatInfo
 	 * (invariant).
 	 * @return DateTimeFormatInfo default DateTimeFormatInfo.
 	 */
-    static function getInvariantInfo()
-    {
-        static $invariant;
+	static function getInvariantInfo()
+	{
+		static $invariant;
 		if($invariant === null)
-        {
-            $culture = CultureInfo::getInvariantCulture();
-            $invariant = $culture->getDateTimeFormat();
-        }
+		{
+			$culture = CultureInfo::getInvariantCulture();
+			$invariant = $culture->getDateTimeFormat();
+		}
 		return $invariant;
-    }
+	}
 
-    /**
-     * Returns the DateTimeFormatInfo associated with the specified culture.
-     * @param CultureInfo the culture that gets the DateTimeFormat property.
-     * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
-     * culture.
-     */
-    static function getInstance($culture=null)
-    {
+	/**
+	 * Returns the DateTimeFormatInfo associated with the specified culture.
+	 * @param CultureInfo the culture that gets the DateTimeFormat property.
+	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
+	 * culture.
+	 */
+	static function getInstance($culture=null)
+	{
 
-        if ($culture instanceof CultureInfo)
-            return $culture->getDateTimeFormat();
-       	elseif(is_string($culture))
-       	{
-       		$cultureInfo = CultureInfo::getInstance($culture);
-       		return $cultureInfo->getDateTimeFormat();
-       	}
-       	else
-       	{
+		if ($culture instanceof CultureInfo)
+			return $culture->getDateTimeFormat();
+		   elseif(is_string($culture))
+		   {
+			   $cultureInfo = CultureInfo::getInstance($culture);
+			   return $cultureInfo->getDateTimeFormat();
+		   }
+		   else
+		   {
 			$cultureInfo = CultureInfo::getInvariantCulture();
-            return $cultureInfo->getDateTimeFormat();
-       	}
-    }
+			return $cultureInfo->getDateTimeFormat();
+		   }
+	}
 
 	/**
 	 * A one-dimensional array of type String containing
@@ -198,17 +198,17 @@ class DateTimeFormatInfo
 		//return $this->data['dayNames/format/abbreviated'];
 	}
 
-    /**
-     * Set the abbreviated day names. The value should be
-     * an array of string starting with Sunday and ends in Saturady.
-     * For example,
-     * <code>array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");</code>
-     * @param array abbreviated day names.
-     */
-    function setAbbreviatedDayNames($value)
-    {
-    	$this->data['dayNames']['format']['abbreviated'] = $value;
-    }
+	/**
+	 * Set the abbreviated day names. The value should be
+	 * an array of string starting with Sunday and ends in Saturady.
+	 * For example,
+	 * <code>array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");</code>
+	 * @param array abbreviated day names.
+	 */
+	function setAbbreviatedDayNames($value)
+	{
+		$this->data['dayNames']['format']['abbreviated'] = $value;
+	}
 
 	/**
 	 * A one-dimensional array of type String containing
@@ -222,13 +222,13 @@ class DateTimeFormatInfo
 		return $this->data['dayNames']['format']['narrow'];
 	}
 
-    /**
-     * Set the narrow day names. The value should be
-     * an array of string starting with Sunday and ends in Saturady.
-     * For example,
-     * <code>array("S", "M", "T", "W", "T", "F", "S");</code>
-     * @param array narrow day names.
-     */
+	/**
+	 * Set the narrow day names. The value should be
+	 * an array of string starting with Sunday and ends in Saturady.
+	 * For example,
+	 * <code>array("S", "M", "T", "W", "T", "F", "S");</code>
+	 * @param array narrow day names.
+	 */
 	function setNarrowDayNames($value)
 	{
 		$this->data['dayNames']['format']['narrow'] = $value;
@@ -247,14 +247,14 @@ class DateTimeFormatInfo
 	}
 
 
-    /**
-     * Set the day names. The value should be
-     * an array of string starting with Sunday and ends in Saturady.
-     * For example,
-     * <code>array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-     * "Friday", "Saturday".);</code>
-     * @param array day names.
-     */
+	/**
+	 * Set the day names. The value should be
+	 * an array of string starting with Sunday and ends in Saturady.
+	 * For example,
+	 * <code>array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+	 * "Friday", "Saturday".);</code>
+	 * @param array day names.
+	 */
 	function setDayNames($value)
 	{
 		$this->data['dayNames']['format']['wide'] = $value;
@@ -272,17 +272,17 @@ class DateTimeFormatInfo
 		return $this->data['monthNames']['format']['narrow'];
 	}
 
-    /**
-     * Set the narrow month names. The value should be
-     * an array of string starting with J and ends in D.
-     * For example,
-     * <code>array("J","F","M","A","M","J","J","A","S","O","N","D");</code>
-     * @param array month names.
-     */
-    function setNarrowMonthNames($value)
-    {
-        $this->data['monthNames']['format']['narrow'] = $value;
-    }
+	/**
+	 * Set the narrow month names. The value should be
+	 * an array of string starting with J and ends in D.
+	 * For example,
+	 * <code>array("J","F","M","A","M","J","J","A","S","O","N","D");</code>
+	 * @param array month names.
+	 */
+	function setNarrowMonthNames($value)
+	{
+		$this->data['monthNames']['format']['narrow'] = $value;
+	}
 
 	/**
 	 * A one-dimensional array of type String containing the
@@ -300,18 +300,18 @@ class DateTimeFormatInfo
 			return $this->data['monthNames']['format']['wide'];
 	}
 
-    /**
-     * Set the abbreviated month names. The value should be
-     * an array of string starting with Jan and ends in Dec.
-     * For example,
-     * <code>array("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-     * "Jul", "Aug", "Sep","Oct","Nov","Dec");</code>
-     * @param array month names.
-     */
-    function setAbbreviatedMonthNames($value)
-    {
-        $this->data['monthNames']['format']['abbreviated'] = $value;
-    }
+	/**
+	 * Set the abbreviated month names. The value should be
+	 * an array of string starting with Jan and ends in Dec.
+	 * For example,
+	 * <code>array("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	 * "Jul", "Aug", "Sep","Oct","Nov","Dec");</code>
+	 * @param array month names.
+	 */
+	function setAbbreviatedMonthNames($value)
+	{
+		$this->data['monthNames']['format']['abbreviated'] = $value;
+	}
 
 	/**
 	 * A one-dimensional array of type String containing the
@@ -326,18 +326,18 @@ class DateTimeFormatInfo
 		return $this->data['monthNames']['format']['wide'];
 	}
 
-    /**
-     * Set the month names. The value should be
-     * an array of string starting with Janurary and ends in December.
-     * For example,
-     * <code>array("January", "February", "March", "April", "May", "June",
-     * "July", "August", "September","October","November","December");</code>
-     * @param array month names.
-     */
-    function setMonthNames($value)
-    {
-    	$this->data['monthNames']['format']['wide'] = $value;
-    }
+	/**
+	 * Set the month names. The value should be
+	 * an array of string starting with Janurary and ends in December.
+	 * For example,
+	 * <code>array("January", "February", "March", "April", "May", "June",
+	 * "July", "August", "September","October","November","December");</code>
+	 * @param array month names.
+	 */
+	function setMonthNames($value)
+	{
+		$this->data['monthNames']['format']['wide'] = $value;
+	}
 
 	/**
 	 * A string containing the name of the era.
@@ -361,16 +361,16 @@ class DateTimeFormatInfo
 		return $result[0];
 	}
 
-    /**
-     * Set the AM Designator. For example, 'AM'.
-     * @param string AM designator.
-     */
-    function setAMDesignator($value)
-    {
-        $markers = $this->getAMPMMarkers();
-        $markers[0] = $value;
-        $this->setAMPMMarkers($markers);
-    }
+	/**
+	 * Set the AM Designator. For example, 'AM'.
+	 * @param string AM designator.
+	 */
+	function setAMDesignator($value)
+	{
+		$markers = $this->getAMPMMarkers();
+		$markers[0] = $value;
+		$this->setAMPMMarkers($markers);
+	}
 
 	/**
 	 * The string designator for hours that are "post meridiem" (after noon).
@@ -383,36 +383,36 @@ class DateTimeFormatInfo
 		return $result[1];
 	}
 
-    /**
-     * Set the PM Designator. For example, 'PM'.
-     * @param string PM designator.
-     */
-    function setPMDesignator($value)
-    {
-        $markers = $this->getAMPMMarkers();
-        $markers[1] = $value;
-        $this->setAMPMMarkers($markers);
-    }
+	/**
+	 * Set the PM Designator. For example, 'PM'.
+	 * @param string PM designator.
+	 */
+	function setPMDesignator($value)
+	{
+		$markers = $this->getAMPMMarkers();
+		$markers[1] = $value;
+		$this->setAMPMMarkers($markers);
+	}
 
-    /**
-     * Get the AM and PM markers array.
-     * Default InvariantInfo for AM and PM is <code>array('AM','PM');</code>
-     * @return array AM and PM markers
-     */
-    function getAMPMMarkers()
+	/**
+	 * Get the AM and PM markers array.
+	 * Default InvariantInfo for AM and PM is <code>array('AM','PM');</code>
+	 * @return array AM and PM markers
+	 */
+	function getAMPMMarkers()
 	{
 		return $this->data['AmPmMarkers'];
 	}
 
-    /**
-     * Set the AM and PM markers array.
-     * For example <code>array('AM','PM');</code>
-     * @param array AM and PM markers
-     */
-    function setAMPMMarkers($value)
-    {
-        $this->data['AmPmMarkers'] = $value;
-    }
+	/**
+	 * Set the AM and PM markers array.
+	 * For example <code>array('AM','PM');</code>
+	 * @param array AM and PM markers
+	 */
+	function setAMPMMarkers($value)
+	{
+		$this->data['AmPmMarkers'] = $value;
+	}
 
 	/**
 	 * Returns the full time pattern "HH:mm:ss z" (default).
@@ -494,15 +494,15 @@ class DateTimeFormatInfo
 		return $this->data['DateTimePatterns'][7];
 	}
 
-    /**
-     * Returns the date time order pattern, "{1} {0}" (default).
-     * This is culture sensitive.
-     * @return string pattern "{1} {0}".
-     */
-    function getDateTimeOrderPattern()
-    {
-        return $this->data['DateTimePatterns'][8];
-    }
+	/**
+	 * Returns the date time order pattern, "{1} {0}" (default).
+	 * This is culture sensitive.
+	 * @return string pattern "{1} {0}".
+	 */
+	function getDateTimeOrderPattern()
+	{
+		return $this->data['DateTimePatterns'][8];
+	}
 
 	/**
 	 * Formats the date and time in a culture sensitive paterrn.

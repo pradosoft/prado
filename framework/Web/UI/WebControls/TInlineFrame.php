@@ -163,7 +163,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	public function setWidth($value)
 	{
 	  if(($value=TPropertyValue::ensureInteger($value))<0)
-	    $value=-1;
+		$value=-1;
 	  $this->setViewState('Width',$value,-1);
 	}
 	
@@ -181,7 +181,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	public function setHeight($value)
 	{
 	  if(($value=TPropertyValue::ensureInteger($value))<0)
-	    $value=-1;
+		$value=-1;
 	  $this->setViewState('Height',$value,-1);
 	}
 	

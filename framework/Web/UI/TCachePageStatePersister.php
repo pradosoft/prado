@@ -153,7 +153,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function getKeyPrefix()
 	{
-	    return $this->_prefix;
+		return $this->_prefix;
 	}
 
 	/**
@@ -161,7 +161,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function setKeyPrefix($value)
 	{
-	    $this->_prefix=$value;
+		$this->_prefix=$value;
 	}
 
 	/**

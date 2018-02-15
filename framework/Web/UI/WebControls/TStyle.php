@@ -72,7 +72,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function __construct($style=null)
 	{
-    parent::__construct();
+	parent::__construct();
 		if($style!==null)
 			$this->copyFrom($style);
 	}

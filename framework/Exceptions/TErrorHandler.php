@@ -462,8 +462,8 @@ class TErrorHandler extends \Prado\TModule
 			}
 			$classname = $function->getNamespaceName();
 			return [
-			    'url' => 'http://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
-			    'name' => $class,
+				'url' => 'http://pradosoft.github.io/docs/manual/class-' . str_replace('\\', '.', (string) $classname) . '.' . $class . '.html',
+				'name' => $class,
 			];
 		}
 		return null;

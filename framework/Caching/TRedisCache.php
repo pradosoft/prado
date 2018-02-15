@@ -113,8 +113,8 @@ class TRedisCache extends TCache
    */
   public function __destruct()
   {
-    if ($this->_cache instanceof \Redis)
-      $this->_cache->close();
+	if ($this->_cache instanceof \Redis)
+	  $this->_cache->close();
   }
 
   /**
@@ -126,21 +126,21 @@ class TRedisCache extends TCache
    */
   public function init($config)
   {
-    if (!extension_loaded('redis') || !class_exists('\Redis', false))
-      throw new TConfigurationException('rediscache_extension_required');
-    $this->_cache = new \Redis();
-    if ($this->_socket !== null)
-      $this->_cache->connect($this->_socket);
-    else
-      $this->_cache->connect($this->_host, $this->_port);
-    $this->_cache->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
-    $this->_cache->select($this->_index);
-    parent::init($config);
-    $this->_initialized = true;
+	if (!extension_loaded('redis') || !class_exists('\Redis', false))
+	  throw new TConfigurationException('rediscache_extension_required');
+	$this->_cache = new \Redis();
+	if ($this->_socket !== null)
+	  $this->_cache->connect($this->_socket);
+	else
+	  $this->_cache->connect($this->_host, $this->_port);
+	$this->_cache->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+	$this->_cache->select($this->_index);
+	parent::init($config);
+	$this->_initialized = true;
   }
 
   public function valid($key) {
-    return true;
+	return true;
   }
 
   /**
@@ -148,7 +148,7 @@ class TRedisCache extends TCache
    */
   public function getHost()
   {
-    return $this->_host;
+	return $this->_host;
   }
 
   /**
@@ -157,10 +157,10 @@ class TRedisCache extends TCache
    */
   public function setHost($value)
   {
-    if ($this->_initialized)
-      throw new TInvalidOperationException('rediscache_host_unchangeable');
-    else
-      $this->_host = $value;
+	if ($this->_initialized)
+	  throw new TInvalidOperationException('rediscache_host_unchangeable');
+	else
+	  $this->_host = $value;
   }
 
   /**
@@ -168,7 +168,7 @@ class TRedisCache extends TCache
    */
   public function getPort()
   {
-    return $this->_port;
+	return $this->_port;
   }
 
   /**
@@ -177,10 +177,10 @@ class TRedisCache extends TCache
    */
   public function setPort($value)
   {
-    if ($this->_initialized)
-      throw new TInvalidOperationException('rediscache_port_unchangeable');
-    else
-      $this->_port = TPropertyValue::ensureInteger($value);
+	if ($this->_initialized)
+	  throw new TInvalidOperationException('rediscache_port_unchangeable');
+	else
+	  $this->_port = TPropertyValue::ensureInteger($value);
   }
 
   /**
@@ -188,7 +188,7 @@ class TRedisCache extends TCache
    */
   public function getSocket()
   {
-    return $this->_socket;
+	return $this->_socket;
   }
 
   /**
@@ -197,10 +197,10 @@ class TRedisCache extends TCache
    */
   public function setSocket($value)
   {
-    if($this->_initialized)
-      throw new TInvalidOperationException('rediscache_socket_unchangeable');
-    else
-      $this->_socket = TPropertyValue::ensureString($value);
+	if($this->_initialized)
+	  throw new TInvalidOperationException('rediscache_socket_unchangeable');
+	else
+	  $this->_socket = TPropertyValue::ensureString($value);
   }
 
   /**
@@ -208,7 +208,7 @@ class TRedisCache extends TCache
    */
   public function getIndex()
   {
-    return $this->_index;
+	return $this->_index;
   }
 
   /**
@@ -217,10 +217,10 @@ class TRedisCache extends TCache
    */
   public function setIndex($value)
   {
-    if ($this->_initialized)
-      throw new TInvalidOperationException('rediscache_index_unchangeable');
-    else
-      $this->_index = TPropertyValue::ensureInteger($value);
+	if ($this->_initialized)
+	  throw new TInvalidOperationException('rediscache_index_unchangeable');
+	else
+	  $this->_index = TPropertyValue::ensureInteger($value);
   }
 
   /**
@@ -231,7 +231,7 @@ class TRedisCache extends TCache
    */
   protected function getValue($key)
   {
-    return $this->_cache->get($key);
+	return $this->_cache->get($key);
   }
 
   /**
@@ -245,8 +245,8 @@ class TRedisCache extends TCache
    */
   protected function setValue($key, $value, $expire)
   {
-    $options = $expire === 0 ? [] : ['ex' => $expire];
-    return $this->_cache->set($key, $value, $options);
+	$options = $expire === 0 ? [] : ['ex' => $expire];
+	return $this->_cache->set($key, $value, $options);
   }
 
   /**
@@ -260,8 +260,8 @@ class TRedisCache extends TCache
    */
   protected function addValue($key, $value, $expire)
   {
-    $options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
-    return $this->_cache->set($key, $value, $options);
+	$options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
+	return $this->_cache->set($key, $value, $options);
   }
 
   /**
@@ -272,8 +272,8 @@ class TRedisCache extends TCache
    */
   protected function deleteValue($key)
   {
-    $this->_cache->delete($key);
-    return true;
+	$this->_cache->delete($key);
+	return true;
   }
 
   /**
@@ -281,7 +281,7 @@ class TRedisCache extends TCache
    */
   public function flush()
   {
-    return $this->_cache->flushDB();
+	return $this->_cache->flushDB();
   }
 }
 

@@ -106,17 +106,17 @@ class TMemCache extends TCache
 	 */
 	private $_port=11211;
 
-    private $_timeout = 360;
+	private $_timeout = 360;
 
 	/**
 	 * @var integer Controls the minimum value length before attempting to compress automatically.
 	 */
-    private $_threshold=0;
+	private $_threshold=0;
 
 	/**
 	 * @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
 	 */
-    private $_minSavings=0.0;
+	private $_minSavings=0.0;
 
 	/**
 	 * @var boolean whether to use memcached or memcache as the underlying caching extension.
@@ -160,63 +160,63 @@ class TMemCache extends TCache
 		$this->_cache = $this->_useMemcached ? new Memcached : new Memcache;
 		$this->loadConfig($config);
 		if(count($this->_servers))
-        {
-            foreach($this->_servers as $server)
-            {
-                Prado::trace('Adding server '.$server['Host'].' from serverlist', '\Prado\Caching\TMemCache');
-                if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
-                    $server['Weight'],$server['Timeout'],$server['RetryInterval'])===false)
-                    throw new TConfigurationException('memcache_connection_failed',$server['Host'],$server['Port']);
-            }
-        }
-        else
-        {
-            Prado::trace('Adding server '.$this->_host, '\Prado\Caching\TMemCache');
-            if($this->_cache->addServer($this->_host,$this->_port)===false)
-                throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
-        }
+		{
+			foreach($this->_servers as $server)
+			{
+				Prado::trace('Adding server '.$server['Host'].' from serverlist', '\Prado\Caching\TMemCache');
+				if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
+					$server['Weight'],$server['Timeout'],$server['RetryInterval'])===false)
+					throw new TConfigurationException('memcache_connection_failed',$server['Host'],$server['Port']);
+			}
+		}
+		else
+		{
+			Prado::trace('Adding server '.$this->_host, '\Prado\Caching\TMemCache');
+			if($this->_cache->addServer($this->_host,$this->_port)===false)
+				throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
+		}
 		if($this->_threshold!==0)
-            $this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);
+			$this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);
 		$this->_initialized=true;
 		parent::init($config);
 	}
 
-    /**
-     * Loads configuration from an XML element
-     * @param TXmlElement configuration node
-     * @throws TConfigurationException if log route class or type is not specified
-     */
+	/**
+	 * Loads configuration from an XML element
+	 * @param TXmlElement configuration node
+	 * @throws TConfigurationException if log route class or type is not specified
+	 */
 	private function loadConfig($xml)
 	{
-	    if($xml instanceof TXmlElement)
+		if($xml instanceof TXmlElement)
 		{
-    		foreach($xml->getElementsByTagName('server') as $serverConfig)
-    		{
-    			$properties=$serverConfig->getAttributes();
-    			if(($host=$properties->remove('Host'))===null)
-    				throw new TConfigurationException('memcache_serverhost_required');
-    			if(($port=$properties->remove('Port'))===null)
-        			throw new TConfigurationException('memcache_serverport_required');
-        		if(!is_numeric($port))
-        		    throw new TConfigurationException('memcache_serverport_invalid');
-        		$server = ['Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true];
-        		$checks = [
-        		    'Weight'=>'memcache_serverweight_invalid',
-        		    'Timeout'=>'memcache_servertimeout_invalid',
-        		    'RetryInterval'=>'memcach_serverretryinterval_invalid'
-        		];
-        		foreach($checks as $property=>$exception)
-        		{
-        		    $value=$properties->remove($property);
-        		    if($value!==null && is_numeric($value))
-        		        $server[$property]=$value;
-        		    elseif($value!==null)
-        		        throw new TConfigurationException($exception);
-        		}
-        		$server['Persistent']= TPropertyValue::ensureBoolean($properties->remove('Persistent'));
-    			$this->_servers[]=$server;
-    		}
-	    }
+			foreach($xml->getElementsByTagName('server') as $serverConfig)
+			{
+				$properties=$serverConfig->getAttributes();
+				if(($host=$properties->remove('Host'))===null)
+					throw new TConfigurationException('memcache_serverhost_required');
+				if(($port=$properties->remove('Port'))===null)
+					throw new TConfigurationException('memcache_serverport_required');
+				if(!is_numeric($port))
+					throw new TConfigurationException('memcache_serverport_invalid');
+				$server = ['Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true];
+				$checks = [
+					'Weight'=>'memcache_serverweight_invalid',
+					'Timeout'=>'memcache_servertimeout_invalid',
+					'RetryInterval'=>'memcach_serverretryinterval_invalid'
+				];
+				foreach($checks as $property=>$exception)
+				{
+					$value=$properties->remove($property);
+					if($value!==null && is_numeric($value))
+						$server[$property]=$value;
+					elseif($value!==null)
+						throw new TConfigurationException($exception);
+				}
+				$server['Persistent']= TPropertyValue::ensureBoolean($properties->remove('Persistent'));
+				$this->_servers[]=$server;
+			}
+		}
 	}
 
 	/**

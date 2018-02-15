@@ -141,7 +141,7 @@ abstract class MessageSource implements IMessageSource
 			throw new Exception("File $filename not found");
 						
 		include_once $filename;
-        
+		
 		$obj =  new $class($source);
 		
 		return $obj;

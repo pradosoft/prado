@@ -122,7 +122,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->raisePostBackEvent($param);
 		$this->onCallback($param);

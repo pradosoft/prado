@@ -399,7 +399,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 		if($targetControl->getAllowPaging())
 		{
-	 		$this->_pageCount=$targetControl->getPageCount();
+			$this->_pageCount=$targetControl->getPageCount();
 			$this->getControls()->clear();
 			$this->setPageCount($targetControl->getPageCount());
 			$this->setCurrentPageIndex($targetControl->getCurrentPageIndex());

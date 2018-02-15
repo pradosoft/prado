@@ -193,34 +193,34 @@ class TRatingList extends TRadioButtonList
 	/**
 	 * @return TRatingListStyle current rating style
 	 */
- 	public function setCaption($value)
- 	{
+	public function setCaption($value)
+	{
 		$this->getCaptionControl()->setText($value);
- 	}
+	}
 
 	/**
 	 * @param string set the rating style, default is "default"
 	 */
 	public function setRatingStyle($value)
- 	{
+	{
 	   $this->setViewState('RatingStyle', $value, 'default');
- 	}
+	}
 
 	/**
 	 * @return TRatingListStyle current rating style
 	 */
 	public function getRatingStyle()
- 	{
+	{
 	   return $this->getViewState('RatingStyle', 'default');
- 	}
+	}
 
- 	/**
- 	 * @return string rating style css class name.
- 	 */
+	/**
+	 * @return string rating style css class name.
+	 */
 	protected function getRatingStyleCssClass()
- 	{
+	{
 		return 'TRatingList_'.$this->getRatingStyle();
- 	}
+	}
 
 	/**
 	 * Sets the interval such that those rating values within the interval
@@ -228,24 +228,24 @@ class TRatingList extends TRadioButtonList
 	 * @param array rating display half value interval, default is array(0.3, 0.7);
 	 */
 	public function setHalfRatingInterval($value)
- 	{
+	{
 		$this->setViewState('HalfRating',
 				TPropertyValue::ensureArray($value), [0.3, 0.7]);
- 	}
+	}
 
 	/**
 	 * @return array rating display half value interval, default is array(0.3, 0.7);
 	 */
 	public function getHalfRatingInterval()
- 	{
+	{
 		return $this->getViewState('HalfRating', [0.3, 0.7]);
- 	}
+	}
 
 	/**
 	 * @return array list of post back options.
 	 */
 	protected function getPostBackOptions()
- 	{
+	{
 		$options = parent::getPostBackOptions();
 		$options['AutoPostBack'] = $this->getAutoPostBack();
 		$options['ReadOnly'] = $this->getReadOnly();
@@ -255,15 +255,15 @@ class TRatingList extends TRadioButtonList
 		$options['Rating'] = $this->getRating();
 		$options['HalfRating'] = $this->getHalfRatingInterval();
 		return $options;
- 	}
+	}
 
- 	/**
- 	 * @return string find the client ID of the caption control.
- 	 */
+	/**
+	 * @return string find the client ID of the caption control.
+	 */
 	protected function getCaptionControlID()
- 	{
+	{
 		if(($id=$this->getCaptionID())!=='')
- 		{
+		{
 			if($control=$this->getParent()->findControl($id))
 			{
 				if($control->getVisible(true))
@@ -271,19 +271,19 @@ class TRatingList extends TRadioButtonList
 			}
 			else
 				return $id;
- 		}
+		}
 		return '';
- 	}
+	}
 
 	/**
 	 * Publish the the rating style css file and rating image files.
 	 */
 	public function onPreRender($param)
- 	{
+	{
 		parent::onPreRender($param);
 		$this->publishStyle($this->getRatingStyle());
 		$this->_ratingImages = $this->publishImages($this->getRatingStyle());
- 		$this->registerClientScript();
+		$this->registerClientScript();
 	}
 
 	/**
@@ -291,13 +291,13 @@ class TRatingList extends TRadioButtonList
 	 * @return string URL of the css style file
 	 */
 	protected function publishStyle($style)
- 	{
+	{
 		$cs = $this->getPage()->getClientScript();
 		$url = $this->getAssetUrl($style.'.css');
 		if(!$cs->isStyleSheetFileRegistered($url))
 			$cs->registerStyleSheetFile($url, $url);
 		return $url;
- 	}
+	}
 
 	/**
 	 * @param string rating style name
@@ -305,13 +305,13 @@ class TRatingList extends TRadioButtonList
 	 * @return array URL of publish the rating images
 	 */
 	protected function publishImages($style, $fileExt='.gif')
- 	{
+	{
 		$types = ['blank', 'selected', 'half', 'combined'];
 		$files = [];
 		foreach($types as $type)
 			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
 		return $files;
- 	}
+	}
 
 	/**
 	 * Registers the relevant JavaScript.
@@ -327,10 +327,10 @@ class TRatingList extends TRadioButtonList
 	 * @return string asset file url.
 	 */
 	protected function getAssetUrl($file='')
- 	{
+	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
 		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
- 	}
+	}
 
 	/**
 	 * Add rating style class name to the class attribute
@@ -339,12 +339,12 @@ class TRatingList extends TRadioButtonList
 	 * @param THtmlWriter renderer
 	 */
 	public function render($writer)
- 	{
+	{
 		$writer->addAttribute('id',$this->getClientID());
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(), $this->getPostBackOptions());
 		parent::render($writer);
- 	}
+	}
 
 	/**
 	 * Gets the name of the javascript class responsible for performing postback for this control.

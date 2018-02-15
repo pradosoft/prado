@@ -166,10 +166,10 @@ class TXmlDocument extends TXmlElement
 			$simpleDoc = null;
 			foreach($docNamespaces as $prefix => $uri)
 			{
- 				if($prefix === '')
-   					$attributes->add('xmlns', $uri);
-   				else
-   					$attributes->add('xmlns:'.$prefix, $uri);
+				if($prefix === '')
+					$attributes->add('xmlns', $uri);
+				else
+					$attributes->add('xmlns:'.$prefix, $uri);
 			}
 		}
 

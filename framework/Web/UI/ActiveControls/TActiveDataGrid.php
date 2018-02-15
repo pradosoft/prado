@@ -107,7 +107,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param string $value container tag
 	 */
 	public function setSurroundingTag($value) {
-    $this->_surroundingTag=TPropertyValue::ensureString($value);
+	$this->_surroundingTag=TPropertyValue::ensureString($value);
 	}
 
 	/**

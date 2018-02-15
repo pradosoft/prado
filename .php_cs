@@ -2,6 +2,8 @@
 
 $config = PhpCsFixer\Config::create()
 	->setRiskyAllowed(true)
+    ->setIndent("\t")
+    ->setLineEnding("\n")
 	->setRules([
 		'align_multiline_comment' => true,
 		'array_syntax' => ['syntax' => 'short'],
@@ -9,7 +11,7 @@ $config = PhpCsFixer\Config::create()
 		'blank_line_after_opening_tag' => true,
 		'elseif' => true,
 		'encoding' => true,
-
+		'indentation_type' => true,
 	])
 	->setFinder(
 		PhpCsFixer\Finder::create()

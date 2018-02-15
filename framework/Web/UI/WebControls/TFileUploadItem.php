@@ -48,11 +48,11 @@ class TFileUploadItem extends \Prado\TComponent
 
   public function __construct($fileName, $fileSize, $fileType, $errorCode, $localName)
   {
-    $this->_fileName = $fileName;
-    $this->_fileSize = $fileSize;
-    $this->_fileType = $fileType;
-    $this->_errorCode = $errorCode;
-    $this->_localName = $localName;
+	$this->_fileName = $fileName;
+	$this->_fileSize = $fileSize;
+	$this->_fileType = $fileType;
+	$this->_errorCode = $errorCode;
+	$this->_localName = $localName;
   }
 
   /**
@@ -60,7 +60,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getFileName()
   {
-    return $this->_fileName;
+	return $this->_fileName;
   }
 
   /**
@@ -68,7 +68,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getFileSize()
   {
-    return $this->_fileSize;
+	return $this->_fileSize;
   }
 
   /**
@@ -77,7 +77,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getFileType()
   {
-    return $this->_fileType;
+	return $this->_fileType;
   }
 
   /**
@@ -86,7 +86,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getLocalName()
   {
-    return $this->_localName;
+	return $this->_localName;
   }
 
   /**
@@ -94,7 +94,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function setLocalName($value)
   {
-    $this->_localName = $value;
+	$this->_localName = $value;
   }
 
   /**
@@ -104,7 +104,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getErrorCode()
   {
-    return $this->_errorCode;
+	return $this->_errorCode;
   }
 
   /**
@@ -114,7 +114,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function setErrorCode($value)
   {
-    $this->_errorCode = $value;
+	$this->_errorCode = $value;
   }
 
   /**
@@ -122,7 +122,7 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function getHasFile()
   {
-    return $this->_errorCode===UPLOAD_ERR_OK;
+	return $this->_errorCode===UPLOAD_ERR_OK;
   }
 
   /**
@@ -134,17 +134,17 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function saveAs($fileName,$deleteTempFile=true)
   {
-    if($this->_errorCode===UPLOAD_ERR_OK)
-    {
-      if($deleteTempFile)
-        return move_uploaded_file($this->_localName,$fileName);
-      elseif(is_uploaded_file($this->_localName))
-        return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
-      else
-        return false;
-    }
-    else
-      return false;
+	if($this->_errorCode===UPLOAD_ERR_OK)
+	{
+	  if($deleteTempFile)
+		return move_uploaded_file($this->_localName,$fileName);
+	  elseif(is_uploaded_file($this->_localName))
+		return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
+	  else
+		return false;
+	}
+	else
+	  return false;
   }
 
   /**
@@ -152,13 +152,13 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function toArray()
   {
-    return [
-      'fileName' => $this->_fileName,
-      'fileSize' => $this->_fileSize,
-      'fileType' => $this->_fileType,
-      'errorCode' => $this->_errorCode,
-      'localName' => $this->_localName
-    ];
+	return [
+	  'fileName' => $this->_fileName,
+	  'fileSize' => $this->_fileSize,
+	  'fileType' => $this->_fileType,
+	  'errorCode' => $this->_errorCode,
+	  'localName' => $this->_localName
+	];
   }
 
 }

@@ -590,23 +590,23 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * @param string the value of the item to be selected.
 	 */
 	public function setSelectedValue($value)
-    {
-	    if($this->_items)
-	    {
-		    if($value===null)
-		    	$this->clearSelection();
-		    elseif(($item=$this->_items->findItemByValue($value))!==null)
-	    	{
-		    	$this->clearSelection();
-		    	$item->setSelected(true);
-	    	}
-	    	else
+	{
+		if($this->_items)
+		{
+			if($value===null)
 				$this->clearSelection();
-    	}
-    	$this->_cachedSelectedValue=$value;
+			elseif(($item=$this->_items->findItemByValue($value))!==null)
+			{
+				$this->clearSelection();
+				$item->setSelected(true);
+			}
+			else
+				$this->clearSelection();
+		}
+		$this->_cachedSelectedValue=$value;
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedValue($value);
-    }
+	}
 
 
 	/**
@@ -654,36 +654,36 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$this->getAdapter()->setSelectedValues($values);
 	}
 
-    /**
-     * @return string selected value
-     */
-    public function getText()
-    {
-	    return $this->getSelectedValue();
-    }
+	/**
+	 * @return string selected value
+	 */
+	public function getText()
+	{
+		return $this->getSelectedValue();
+	}
 
-    /**
-     * @param string value to be selected
-     */
-    public function setText($value)
-    {
-	    $this->setSelectedValue($value);
-    }
+	/**
+	 * @param string value to be selected
+	 */
+	public function setText($value)
+	{
+		$this->setSelectedValue($value);
+	}
 
-    /**
-     * Clears all existing selections.
-     */
-    public function clearSelection()
-    {
-	    if($this->_items)
-	    {
-		    foreach($this->_items as $item)
-		    	$item->setSelected(false);
-	    }
+	/**
+	 * Clears all existing selections.
+	 */
+	public function clearSelection()
+	{
+		if($this->_items)
+		{
+			foreach($this->_items as $item)
+				$item->setSelected(false);
+		}
 
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->clearSelection();
-    }
+	}
 
 	/**
 	 * @return string the group of validators which the list control causes validation upon postback

@@ -44,12 +44,12 @@ use Prado\Web\UI\TControl;
  */
 class TJuiEventParameter extends TCallbackEventParameter
 {
- 	/**
- 	 * getControl
- 	 *
- 	 * Compatibility method to get a control from its clientside id
- 	 * @return TControl control, or null if not found
- 	 */
+	/**
+	 * getControl
+	 *
+	 * Compatibility method to get a control from its clientside id
+	 * @return TControl control, or null if not found
+	 */
 	public function getControl($id)
 	{
 		$control=null;

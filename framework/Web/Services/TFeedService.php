@@ -145,9 +145,9 @@ class TFeedService extends \Prado\TService
 			$feed->init($feedConfig);
 
 			$content=$feed->getFeedContent();
-		    //$this->getResponse()->setContentType('application/rss+xml');
-		    $this->getResponse()->setContentType($feed->getContentType());
-		    $this->getResponse()->write($content);
+			//$this->getResponse()->setContentType('application/rss+xml');
+			$this->getResponse()->setContentType($feed->getContentType());
+			$this->getResponse()->write($content);
 		}
 		else
 			throw new THttpException(404,'feedservice_feed_unknown',$id);

@@ -209,8 +209,8 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getHasAllFiles() {
 	  foreach($this->_files as $file)
-	    if(!$file->getHasFile())
-	      return false;
+		if(!$file->getHasFile())
+		  return false;
 	  return true;
 	}
 
@@ -242,11 +242,11 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		{
 		  if($this->getMultiple()||is_array($_FILES[$key]['name']))
 		  {
-        foreach($_FILES[$key]['name'] as $index => $name)
-          $this->_files[$index]=new TFileUploadItem($name,$_FILES[$key]['size'][$index],$_FILES[$key]['type'][$index],$_FILES[$key]['error'][$index],$_FILES[$key]['tmp_name'][$index]);
+		foreach($_FILES[$key]['name'] as $index => $name)
+		  $this->_files[$index]=new TFileUploadItem($name,$_FILES[$key]['size'][$index],$_FILES[$key]['type'][$index],$_FILES[$key]['error'][$index],$_FILES[$key]['tmp_name'][$index]);
 		  }
 		  else
-		    $this->_files[0]=new TFileUploadItem($_FILES[$key]['name'],$_FILES[$key]['size'],$_FILES[$key]['type'],$_FILES[$key]['error'],$_FILES[$key]['tmp_name']);
+			$this->_files[0]=new TFileUploadItem($_FILES[$key]['name'],$_FILES[$key]['size'],$_FILES[$key]['type'],$_FILES[$key]['error'],$_FILES[$key]['tmp_name']);
 			return $this->_dataChanged=true;
 		}
 		else

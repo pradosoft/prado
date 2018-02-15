@@ -892,7 +892,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 
 	protected function renderHiddenFieldsInt($writer, $initial)
- 	{
+	{
 		if ($initial) $this->_renderedHiddenFields = [];
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)

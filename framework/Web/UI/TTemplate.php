@@ -968,15 +968,15 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	  $component=new \ReflectionClass('\Prado\TComponent');
 	  $behaviors=$component->getStaticProperties();
 	  if(!isset($behaviors['_um']))
-	    return false;
+		return false;
 	  foreach($behaviors['_um'] as $name=>$list)
 	  {
-	    if(strtolower($class->getShortName())!==$name && !$class->isSubclassOf($name)) continue;
-	    foreach($list as $param)
-	    {
-	      if(method_exists($param->getBehavior(),$method))
-	        return true;
-	    }
+		if(strtolower($class->getShortName())!==$name && !$class->isSubclassOf($name)) continue;
+		foreach($list as $param)
+		{
+		  if(method_exists($param->getBehavior(),$method))
+			return true;
+		}
 	  }
 	  return false;
 	}

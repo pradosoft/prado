@@ -55,8 +55,8 @@ class TCacheHttpSession extends THttpSession
 	 * It reads the CacheModule property.
 	 * @param TXmlElement module configuration
 	 */
-    public function init($config)
-    {
+	public function init($config)
+	{
 		if($this->_cacheModuleID==='')
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
 		elseif(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
@@ -67,7 +67,7 @@ class TCacheHttpSession extends THttpSession
 			throw new TConfigurationException('cachesession_cachemodule_invalid',$this->_cacheModuleID);
 		$this->setUseCustomStorage(true);
 		parent::init($config);
-    }
+	}
 
 	/**
 	 * @return string the ID of the cache module.
@@ -100,7 +100,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _read($id)
 	{
-	    return (string)$this->_cache->get($this->calculateKey($id));
+		return (string)$this->_cache->get($this->calculateKey($id));
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function _destroy($id)
 	{
-	    return $this->_cache->delete($this->calculateKey($id));
+		return $this->_cache->delete($this->calculateKey($id));
 	}
 
 	/**
@@ -130,7 +130,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function getKeyPrefix()
 	{
-	    return $this->_prefix;
+		return $this->_prefix;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function setKeyPrefix($value)
 	{
-	    $this->_prefix=$value;
+		$this->_prefix=$value;
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	protected function calculateKey($id)
 	{
-	    return $this->_prefix.':'.$id;
+		return $this->_prefix.':'.$id;
 	}
 }
 

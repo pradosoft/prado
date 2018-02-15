@@ -86,10 +86,10 @@ class TForm extends TControl
 			$cs->renderScriptFilesBegin($writer);
 			$cs->renderBeginScripts($writer);
 
- 			$page->beginFormRender($writer);
- 			$this->renderChildren($writer);
+			$page->beginFormRender($writer);
+			$this->renderChildren($writer);
 			$cs->renderHiddenFieldsEnd($writer);
- 			$page->endFormRender($writer);
+			$page->endFormRender($writer);
 
 			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);

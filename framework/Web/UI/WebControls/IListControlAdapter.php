@@ -44,8 +44,8 @@ interface IListControlAdapter
 	 */
 	public function setSelectedValues($values);
 
-    /**
-     * Clears all existing selections on the client side.
-     */
-    public function clearSelection();
+	/**
+	 * Clears all existing selections on the client side.
+	 */
+	public function clearSelection();
 }

@@ -76,8 +76,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function findControl($id, $real=false)
 	{
-  		if ($real===true)
-  			return parent::findControl($id);
+		if ($real===true)
+			return parent::findControl($id);
 		return $this;
 	}
 
@@ -396,8 +396,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	{
 	  if ($needSpan=$this->getSpanNeeded())
 	  {
-	    $writer->addAttribute('id', $this->getClientId());
-	    $writer->renderBeginTag('span');
+		$writer->addAttribute('id', $this->getClientId());
+		$writer->renderBeginTag('span');
 	  }
 		if($this->getItemCount()>0)
 		{
@@ -455,14 +455,14 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
 	 * @param bool wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

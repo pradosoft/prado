@@ -97,7 +97,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->_isCallback = true;
 		$result = $this->onServerValidate($param->getCallbackParameter());

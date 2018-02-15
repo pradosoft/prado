@@ -30,9 +30,9 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {
    */
   protected function addStatesToTrack()
   {
-    parent::addStatesToTrack();
-    $states = $this->getStatesToTrack();
-    $states['JuiOptions'] = ['TMapCollectionDiff', [$this, 'updateJuiOptions']];
+	parent::addStatesToTrack();
+	$states = $this->getStatesToTrack();
+	$states['JuiOptions'] = ['TMapCollectionDiff', [$this, 'updateJuiOptions']];
   }
 
 	/**
@@ -41,9 +41,9 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {
 	 */
   protected function updateJuiOptions($options)
   {
-    foreach ($options as $key => $value) $options[$key] = $key . ': ' . (is_string($value) ? "'{$value}'" : TPropertyValue::ensureString($value));
-    $code = "jQuery('#{$this->_control->getWidgetID()}').{$this->_control->getWidget()}('option', { " . implode(', ', $options) . " });";
-    $this->_control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);
+	foreach ($options as $key => $value) $options[$key] = $key . ': ' . (is_string($value) ? "'{$value}'" : TPropertyValue::ensureString($value));
+	$code = "jQuery('#{$this->_control->getWidgetID()}').{$this->_control->getWidget()}('option', { " . implode(', ', $options) . " });";
+	$this->_control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);
   }
 
 }

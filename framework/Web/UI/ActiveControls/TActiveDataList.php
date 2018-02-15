@@ -35,8 +35,8 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   public function __construct()
   {
-    parent::__construct();
-    $this->setAdapter(new TActiveControlAdapter($this));
+	parent::__construct();
+	$this->setAdapter(new TActiveControlAdapter($this));
   }
 
   /**
@@ -44,7 +44,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   public function getActiveControl()
   {
-    return $this->getAdapter()->getBaseActiveControl();
+	return $this->getAdapter()->getBaseActiveControl();
   }
 
   /**
@@ -56,11 +56,11 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   public function setDataSource($value)
   {
-    parent::setDataSource($value);
-    if($this->getActiveControl()->canUpdateClientSide()) {
-      $this->renderPager();
-      $this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
-    }
+	parent::setDataSource($value);
+	if($this->getActiveControl()->canUpdateClientSide()) {
+	  $this->renderPager();
+	  $this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+	}
   }
 
   /**
@@ -69,7 +69,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   protected function getContainerID()
   {
-    return $this->ClientID.'_Container';
+	return $this->ClientID.'_Container';
   }
 
   /**
@@ -80,13 +80,13 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   public function render($writer)
   {
-    if($this->getHasPreRendered()) {
-      $this->renderDataList($writer);
-      if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(),$writer);
-    }
-    else {
-      $this->getPage()->getAdapter()->registerControlToRender($this,$writer);
-    }
+	if($this->getHasPreRendered()) {
+	  $this->renderDataList($writer);
+	  if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(),$writer);
+	}
+	else {
+	  $this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+	}
   }
 
   /**
@@ -96,14 +96,14 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   private function renderPager()
   {
-    $pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
-    foreach($pager as $item)
-    {
-      if($item->ControlToPaginate==$this->ID) {
-        $writer=$this->getResponse()->createHtmlWriter();
-        $this->getPage()->getAdapter()->registerControlToRender($item,$writer);
-      }
-    }
+	$pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
+	foreach($pager as $item)
+	{
+	  if($item->ControlToPaginate==$this->ID) {
+		$writer=$this->getResponse()->createHtmlWriter();
+		$this->getPage()->getAdapter()->registerControlToRender($item,$writer);
+	  }
+	}
   }
 
   /**
@@ -113,8 +113,8 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   private function renderDataList($writer)
   {
-    $writer->write('<span id="'.$this->getContainerID().'">');
-    parent::render($writer);
-    $writer->write('</span>');
+	$writer->write('<span id="'.$this->getContainerID().'">');
+	parent::render($writer);
+	$writer->write('</span>');
   }
 }

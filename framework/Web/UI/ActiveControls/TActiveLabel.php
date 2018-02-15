@@ -91,8 +91,8 @@ class TActiveLabel extends TLabel implements IActiveControl
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer) {
-	    $writer->addAttribute('id',$this->getClientID());
-	    parent::addAttributesToRender($writer);
+		$writer->addAttribute('id',$this->getClientID());
+		parent::addAttributesToRender($writer);
 	}
 }
 

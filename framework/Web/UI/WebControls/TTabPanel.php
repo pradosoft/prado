@@ -107,24 +107,24 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
 	}
 
-    /**
-     * Returns the ID of the active tab view.
-     * Note, this property may not return the correct ID.
-     * To ensure the correctness, call {@link getActiveView()} first.
-     * @return string The ID of the active tab view. Defaults to '', meaning not set.
-     */
-    public function getActiveViewID()
-    {
+	/**
+	 * Returns the ID of the active tab view.
+	 * Note, this property may not return the correct ID.
+	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * @return string The ID of the active tab view. Defaults to '', meaning not set.
+	 */
+	public function getActiveViewID()
+	{
 		return $this->getViewState('ActiveViewID','');
-    }
+	}
 
-    /**
-     * @param string The ID of the active tab view.
-     */
-    public function setActiveViewID($value)
-    {
+	/**
+	 * @param string The ID of the active tab view.
+	 */
+	public function setActiveViewID($value)
+	{
 		$this->setViewState('ActiveViewID',$value,'');
-    }
+	}
 
 	/**
 	 * Returns the currently active view.
@@ -179,63 +179,63 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			throw new TInvalidOperationException('tabpanel_view_inexistent');
 	}
 
-    /**
-     * @return bool status of automatic tab switch on hover
-     */
-    public function getAutoSwitch()
-    {
-        return TPropertyValue::ensureBoolean($this->getViewState('AutoSwitch'));
-    }
+	/**
+	 * @return bool status of automatic tab switch on hover
+	 */
+	public function getAutoSwitch()
+	{
+		return TPropertyValue::ensureBoolean($this->getViewState('AutoSwitch'));
+	}
 
-    /**
-     * @param bool whether to enable automatic tab switch on hover
-     */
-    public function setAutoSwitch($value)
-    {
-        $this->setViewState('AutoSwitch',TPropertyValue::ensureBoolean($value));
-    }
+	/**
+	 * @param bool whether to enable automatic tab switch on hover
+	 */
+	public function setAutoSwitch($value)
+	{
+		$this->setViewState('AutoSwitch',TPropertyValue::ensureBoolean($value));
+	}
 
 
-    /**
-     * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
-     */
-    public function getCssUrl()
-    {
-        return $this->getViewState('CssUrl','default');
-    }
+	/**
+	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 */
+	public function getCssUrl()
+	{
+		return $this->getViewState('CssUrl','default');
+	}
 
-    /**
-     * @param string URL for the CSS file including all relevant CSS class definitions.
-     */
-    public function setCssUrl($value)
-    {
-        $this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
-    }
+	/**
+	 * @param string URL for the CSS file including all relevant CSS class definitions.
+	 */
+	public function setCssUrl($value)
+	{
+		$this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
+	}
 
-    /**
-     * @return string CSS class for the whole tab control div. Defaults to 'tab-panel'.
-     */
-    public function getCssClass()
-    {
-    	$cssClass=parent::getCssClass();
-    	return $cssClass===''?'tab-panel':$cssClass;
-    }
+	/**
+	 * @return string CSS class for the whole tab control div. Defaults to 'tab-panel'.
+	 */
+	public function getCssClass()
+	{
+		$cssClass=parent::getCssClass();
+		return $cssClass===''?'tab-panel':$cssClass;
+	}
 
-    /**
-     * @return string CSS class for the currently displayed view div. Defaults to 'tab-view'.
-     */
-    public function getViewCssClass()
-    {
-        return $this->getViewStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for the currently displayed view div. Defaults to 'tab-view'.
+	 */
+	public function getViewCssClass()
+	{
+		return $this->getViewStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for the currently displayed view div.
-     */
-    public function setViewCssClass($value)
-    {
-        $this->getViewStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string CSS class for the currently displayed view div.
+	 */
+	public function setViewCssClass($value)
+	{
+		$this->getViewStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for all the view div
@@ -251,21 +251,21 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		return $style;
 	}
 
-    /**
-     * @return string CSS class for non-active tabs. Defaults to 'tab-normal'.
-     */
-    public function getTabCssClass()
-    {
-        return $this->getTabStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for non-active tabs. Defaults to 'tab-normal'.
+	 */
+	public function getTabCssClass()
+	{
+		return $this->getTabStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for non-active tabs.
-     */
-    public function setTabCssClass($value)
-    {
-        $this->getTabStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string CSS class for non-active tabs.
+	 */
+	public function setTabCssClass($value)
+	{
+		$this->getTabStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for all the inactive tab div
@@ -281,21 +281,21 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		return $style;
 	}
 
-    /**
-     * @return string CSS class for the active tab. Defaults to 'tab-active'.
-     */
-    public function getActiveTabCssClass()
-    {
-        return $this->getActiveTabStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for the active tab. Defaults to 'tab-active'.
+	 */
+	public function getActiveTabCssClass()
+	{
+		return $this->getActiveTabStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for the active tab.
-     */
-    public function setActiveTabCssClass($value)
-    {
-        $this->getActiveTabStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string CSS class for the active tab.
+	 */
+	public function setActiveTabCssClass($value)
+	{
+		$this->getActiveTabStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for the active tab div

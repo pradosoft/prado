@@ -64,7 +64,7 @@ class TDataFieldAccessor
 
 				$tmp = $data;
 				foreach (explode(".", $field) as $f)
-				    $tmp = $tmp[$f];
+					$tmp = $tmp[$f];
 				return $tmp;
 			}
 			elseif(is_object($data))

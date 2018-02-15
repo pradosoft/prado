@@ -37,8 +37,8 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    */
   public function __construct()
   {
-    parent::__construct();
-    $this->setAdapter(new TActiveControlAdapter($this));
+	parent::__construct();
+	$this->setAdapter(new TActiveControlAdapter($this));
   }
 
   /**
@@ -46,7 +46,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    */
   public function getActiveControl()
   {
-    return $this->getAdapter()->getBaseActiveControl();
+	return $this->getAdapter()->getBaseActiveControl();
   }
 
   /**
@@ -54,7 +54,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    */
   public function getClientSide()
   {
-    return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	return $this->getAdapter()->getBaseActiveControl()->getClientSide();
   }
 
   /**
@@ -63,18 +63,18 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    * @param string text content for the textbox
    */
   public function setText($value) {
-    parent::setText($value);
-    if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
-    {
-      if($this->getEnableVisualEdit())
-      {
-        $value=str_ireplace(["\r\n", "\n"], "", $value);
-        $command="tinymce.get('{$this->getClientID()}').setContent('{$value}')";
-        $this->getPage()->getCallbackClient()->evaluateScript($command);
-      }
-      else
-        $this->getPage()->getCallbackClient()->setValue($this,$value);
-    }
+	parent::setText($value);
+	if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
+	{
+	  if($this->getEnableVisualEdit())
+	  {
+		$value=str_ireplace(["\r\n", "\n"], "", $value);
+		$command="tinymce.get('{$this->getClientID()}').setContent('{$value}')";
+		$this->getPage()->getCallbackClient()->evaluateScript($command);
+	  }
+	  else
+		$this->getPage()->getCallbackClient()->setValue($this,$value);
+	}
   }
 
   /**
@@ -85,7 +85,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    */
   public function raiseCallbackEvent($param)
   {
-    $this->onCallback($param);
+	$this->onCallback($param);
   }
 
   /**
@@ -97,7 +97,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
    */
   public function onCallback($param)
   {
-    $this->raiseEvent('OnCallback', $this, $param);
+	$this->raiseEvent('OnCallback', $this, $param);
   }
 
 }

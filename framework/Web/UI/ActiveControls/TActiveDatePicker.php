@@ -122,7 +122,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param){
+	public function raiseCallbackEvent($param){
 		$this->onCallback($param);
 	}
 

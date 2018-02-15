@@ -123,11 +123,11 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		}
 	}
 
-    /**
-     * Clears all existing selections on the client side.
-     */
-    public function clearSelection()
-    {
+	/**
+	 * Clears all existing selections on the client side.
+	 */
+	public function clearSelection()
+	{
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
@@ -140,7 +140,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Clear');
 			}
 		}
-    }
+	}
 
 	/**
 	 * Update the client-side list options.

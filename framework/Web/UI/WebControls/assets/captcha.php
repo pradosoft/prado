@@ -102,21 +102,21 @@ function displayToken($token,$fontSize,$theme)
 	$font=dirname(__FILE__).DIRECTORY_SEPARATOR.'verase.ttf';
 
 	if(function_exists('imagefilter'))
-    	imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);
+		imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);
 
 	$hasShadow=($theme&THEME_SHADOWED_TEXT);
-    for($i=0;$i<$length;$i++)
+	for($i=0;$i<$length;$i++)
 	{
-        $color=imagecolorallocate($image,rand(150,220),rand(150,220),rand(150,220));
-        $size=rand($fontWidth-10,$fontWidth);
-        $angle=rand(-30,30);
-        $x=$padding+$i*$fontWidth;
-        $y=rand($fontHeight-15,$fontHeight-10);
-        imagettftext($image,$size,$angle,$x,$y,$color,$font,$token[$i]);
-        if($hasShadow)
-        	imagettftext($image,$size,$angle,$x+2,$y+2,$color,$font,$token[$i]);
-        imagecolordeallocate($image,$color);
-    }
+		$color=imagecolorallocate($image,rand(150,220),rand(150,220),rand(150,220));
+		$size=rand($fontWidth-10,$fontWidth);
+		$angle=rand(-30,30);
+		$x=$padding+$i*$fontWidth;
+		$y=rand($fontHeight-15,$fontHeight-10);
+		imagettftext($image,$size,$angle,$x,$y,$color,$font,$token[$i]);
+		if($hasShadow)
+			imagettftext($image,$size,$angle,$x+2,$y+2,$color,$font,$token[$i]);
+		imagecolordeallocate($image,$color);
+	}
 
 	header('Content-Type: image/png');
 	imagepng($image);
@@ -160,8 +160,8 @@ function addNoise($image,$width,$height)
 			{
 				$color=imagecolorallocate($image,rand(150,220),rand(150,220),rand(150,220));
 				imagesetpixel($image,$x,$y,$color);
-	            imagecolordeallocate($image,$color);
-	        }
+				imagecolordeallocate($image,$color);
+			}
 		}
 	}
 }

@@ -558,12 +558,12 @@ class DateFormat
 	protected function getDayInMonth($date, $pattern='FF')
 	{
 		switch ($pattern) {
-		    case 'F':
-		    	return $date->format('j');
-		    case 'FF':
-		    	return $date->format('d');
-		    default:
-		    	throw new Exception('The pattern for day in month is "F" or "FF".');
+			case 'F':
+				return $date->format('j');
+			case 'FF':
+				return $date->format('d');
+			default:
+				throw new Exception('The pattern for day in month is "F" or "FF".');
 		}
 	}
 

@@ -203,19 +203,19 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param){
- 		$cp = $param->getCallbackParameter();
+	public function raiseCallbackEvent($param){
+		$cp = $param->getCallbackParameter();
 		if ($key = $cp->targetID == $this->_target->getUniqueID()){
 
 			$params = $this->popParamsByToken($cp->callbackToken);
-      foreach($params->files as $index => $file)
-      {
-  			$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
-  			$_FILES[$key]['size'][$index] = intval($file['fileSize']);
-  			$_FILES[$key]['type'][$index] = $file['fileType'];
-  			$_FILES[$key]['error'][$index] = intval($file['errorCode']);
-  			$_FILES[$key]['tmp_name'][$index] = $file['localName'];
-      }
+	  foreach($params->files as $index => $file)
+	  {
+			$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
+			$_FILES[$key]['size'][$index] = intval($file['fileSize']);
+			$_FILES[$key]['type'][$index] = $file['fileType'];
+			$_FILES[$key]['error'][$index] = intval($file['errorCode']);
+			$_FILES[$key]['tmp_name'][$index] = $file['localName'];
+	  }
 			$this->loadPostData($key, null);
 
 			$this->raiseEvent('OnFileUpload', $this, $param);
@@ -284,11 +284,11 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		{
 		  $params = new TActiveFileUploadCallbackParams;
 		  foreach ($this->getFiles() as $file) {
-		    $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
-		    $file->setLocalName($localName);
-		    // tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
-		    $file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
-		    $params->files[] = $file->toArray();
+			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+			$file->setLocalName($localName);
+			// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
+			$file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
+			$params->files[] = $file->toArray();
 		  }
 
 			echo "<script language='Javascript'>
@@ -347,8 +347,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		if ($this->getPage()->getIsCallback())
 		{
 		  foreach($this->getFiles() as $file)
-		    if($file->getHasFile() && file_exists($file->getLocalName())){
-		      unlink($file->getLocalName());
+			if($file->getHasFile() && file_exists($file->getLocalName())){
+			  unlink($file->getLocalName());
 		  }
 		}
 		parent::onUnload($param);

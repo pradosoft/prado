@@ -96,9 +96,9 @@ class TEtcdCache extends TCache
 	 * @param string $value the etcd host
 	 */
 	public function setHost($value) {
-    $this->_host = TPropertyValue::ensureString($value);
+	$this->_host = TPropertyValue::ensureString($value);
 	}
-    
+	
   /**
    * Gets the port the etcd instance is running on, defaults to 2379.
    * @return integer the etcd port
@@ -112,9 +112,9 @@ class TEtcdCache extends TCache
 	 * @param integer $value the etcd port
 	 */
 	public function setPort($value) {
-    $this->_port = TPropertyValue::ensureInteger($value);
+	$this->_port = TPropertyValue::ensureInteger($value);
 	}
-     
+	 
   /**
    * Sets the directory to store values in, defaults to 'pradocache'.
    * @return string the directory to store values in
@@ -128,7 +128,7 @@ class TEtcdCache extends TCache
 	 * @param string $value the directory to store values in
 	 */
 	public function setDir($value) {
-    $this->_dir = TPropertyValue::ensureString($value);
+	$this->_dir = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class TEtcdCache extends TCache
 	protected function getValue($key)
 	{                                     
 		$result = $this->request('GET', $this->_dir . '/' . $key);
-    return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
+	return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
 	}
 
 	/**
@@ -154,10 +154,10 @@ class TEtcdCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-    $value = ['value' => serialize($value)];
-    if ($expire > 0) $value['ttl'] = $expire;
+	$value = ['value' => serialize($value)];
+	if ($expire > 0) $value['ttl'] = $expire;
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);    
-    return !property_exists($result, 'errorCode');
+	return !property_exists($result, 'errorCode');
 	}
 
 	/**
@@ -171,10 +171,10 @@ class TEtcdCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-    $value = ['value' => serialize($value), 'prevExist' => 'false'];
-    if ($expire > 0) $value['ttl'] = $expire;
+	$value = ['value' => serialize($value), 'prevExist' => 'false'];
+	if ($expire > 0) $value['ttl'] = $expire;
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
-    return !property_exists($result, 'errorCode');
+	return !property_exists($result, 'errorCode');
 	}
 
 	/**
@@ -186,7 +186,7 @@ class TEtcdCache extends TCache
 	protected function deleteValue($key)
 	{
 		$this->request('DELETE', $this->_dir . '/' . $key);
-    return true;
+	return true;
 	}
 
 	/**
@@ -195,7 +195,7 @@ class TEtcdCache extends TCache
 	 */
 	public function flush()
 	{
-     $this->request('DELETE', $this->_dir . '?recursive=true');
+	 $this->request('DELETE', $this->_dir . '?recursive=true');
 	}
   
   /**
@@ -209,16 +209,16 @@ class TEtcdCache extends TCache
    * @return \stdClass the response from the etcd instance
    */
   protected function request($method, $key, $value=[]) {
-    $curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);   
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
-    $response = curl_exec($curl);
-    curl_close($curl);
-    return json_decode($response);
+	$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
+	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+	curl_setopt($curl, CURLOPT_HEADER, false);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);   
+	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
+	$response = curl_exec($curl);
+	curl_close($curl);
+	return json_decode($response);
   }
 
 }

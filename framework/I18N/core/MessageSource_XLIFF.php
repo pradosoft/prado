@@ -290,7 +290,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		//find the body element
 		$xpath = new DomXPath($dom);
-    	$body = $xpath->query('//body')->item(0);
+		$body = $xpath->query('//body')->item(0);
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
 		if(($last=$lastNodes->item(0))!==null) {

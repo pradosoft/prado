@@ -118,7 +118,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}

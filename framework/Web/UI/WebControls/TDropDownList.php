@@ -140,13 +140,13 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
 	 * @param bool wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid=TPropertyValue::ensureBoolean($value);
 	}
 }
