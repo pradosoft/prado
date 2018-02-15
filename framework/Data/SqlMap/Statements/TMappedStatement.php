@@ -592,7 +592,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			$resultObject = $this->_statement->createInstanceOfResultClass($registry, $row);
 		}
 
-		if($resultObject instanceOf \ArrayAccess)
+		if($resultObject instanceof \ArrayAccess)
 			return $this->fillResultArrayList($row, $resultObject);
 		elseif(is_object($resultObject))
 			return $this->fillResultObjectProperty($row, $resultObject);

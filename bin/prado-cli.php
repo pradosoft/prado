@@ -675,7 +675,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			while ($dataReader->read() !== false) {
 				$tables[] = $table;
 			}
-			$con->Active = False;
+			$con->Active = false;
 			foreach ($tables as $key => $table) {
 				$output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
 				if ($config !== false && $output !== false) {

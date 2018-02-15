@@ -29,14 +29,14 @@ class TUpdateMappedStatement extends TMappedStatement
 	}
 
 	public function executeQueryForMap($connection, $parameter, $keyProperty,
-											$valueProperty=null, $skip = -1, $max = -1, $delegate = NULL)
+											$valueProperty=null, $skip = -1, $max = -1, $delegate = null)
 	{
 		throw new TSqlMapExecutionException(
 				'sqlmap_cannot_execute_query_for_map', get_class($this), $this->getID());
 	}
 
 	public function executeQueryForList($connection, $parameter, $result=null,
-										$skip=-1, $max=-1, $delegate = NULL)
+										$skip=-1, $max=-1, $delegate = null)
 	{
 		throw new TSqlMapExecutionException(
 				'sqlmap_cannot_execute_query_for_list', get_class($this), $this->getID());

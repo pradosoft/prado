@@ -801,7 +801,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);
 	}
 
-	protected function renderScriptFiles($writer, Array $scripts)
+	protected function renderScriptFiles($writer, array $scripts)
 	{
 		foreach($scripts as $script)
 		{

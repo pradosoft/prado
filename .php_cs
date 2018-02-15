@@ -14,6 +14,9 @@ $config = PhpCsFixer\Config::create()
 		'encoding' => true,
 		'indentation_type' => true,
 		'is_null' => true,
+		'line_ending' => true,
+		'lowercase_constants' => true,
+		'lowercase_keywords' => true,
 		'method_argument_space' => true,
 		'psr4' => true,
 	])
