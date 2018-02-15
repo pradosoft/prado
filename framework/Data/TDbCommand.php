@@ -46,7 +46,7 @@ class TDbCommand extends \Prado\TComponent
 {
 	private $_connection;
 	private $_text='';
-	private $_statement=null;
+	private $_statement;
 
 	/**
 	 * Constructor.

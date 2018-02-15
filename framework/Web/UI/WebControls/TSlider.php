@@ -62,7 +62,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * @var TSliderClientScript Clients side javascripts
 	 */
-	private $_clientScript=null;
+	private $_clientScript;
 
 	/**
 	 * @return TSliderDirection Direction of slider (Horizontal or Vertical). Defaults to Horizontal.

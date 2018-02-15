@@ -34,7 +34,7 @@ class TListItem extends \Prado\TComponent
 	/**
 	 * @var TMap list of custom attributes
 	 */
-	private $_attributes=null;
+	private $_attributes;
 	/**
 	 * @var string text of the item
 	 */

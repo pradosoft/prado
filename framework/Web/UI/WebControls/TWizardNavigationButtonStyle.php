@@ -28,9 +28,9 @@ use Prado\TPropertyValue;
  */
 class TWizardNavigationButtonStyle extends TStyle
 {
-	private $_imageUrl=null;
-	private $_buttonText=null;
-	private $_buttonType=null;
+	private $_imageUrl;
+	private $_buttonText;
+	private $_buttonType;
 
 	/**
 	 * Sets the style attributes to default values.

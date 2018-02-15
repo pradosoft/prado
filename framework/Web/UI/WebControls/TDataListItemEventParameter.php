@@ -30,7 +30,7 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 	 * The datalist item control responsible for the event.
 	 * @var TControl
 	 */
-	private $_item=null;
+	private $_item;
 
 	/**
 	 * Constructor.

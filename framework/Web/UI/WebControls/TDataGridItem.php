@@ -51,7 +51,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 * value of the data item
 	 * @var mixed
 	 */
-	private $_data=null;
+	private $_data;
 
 	/**
 	 * Constructor.

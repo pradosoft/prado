@@ -31,15 +31,15 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * @var TFont font object
 	 */
-	private $_font=null;
+	private $_font;
 	/**
 	 * @var string CSS class name
 	 */
-	private $_class=null;
+	private $_class;
 	/**
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
-	private $_customStyle=null;
+	private $_customStyle;
 	/**
 	 * @var string display style
 	 */

@@ -57,7 +57,7 @@ class TParameterModule extends \Prado\TModule
 {
 	const PARAM_FILE_EXT='.xml';
 	private $_initialized=false;
-	private $_paramFile=null;
+	private $_paramFile;
 
 	/**
 	 * Initializes the module by loading parameters.

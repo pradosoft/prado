@@ -23,7 +23,7 @@ use Prado\Collections\TMap;
  */
 class TReadOnlyDataSourceView extends TDataSourceView
 {
-	private $_dataSource=null;
+	private $_dataSource;
 
 	public function __construct(IDataSource $owner, $viewName, $dataSource)
 	{

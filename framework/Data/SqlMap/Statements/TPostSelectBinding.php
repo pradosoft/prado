@@ -20,10 +20,10 @@ namespace Prado\Data\SqlMap\Statements;
  */
 class TPostSelectBinding
 {
-	private $_statement=null;
-	private $_property=null;
-	private $_resultObject=null;
-	private $_keys=null;
+	private $_statement;
+	private $_property;
+	private $_resultObject;
+	private $_keys;
 	private $_method=TMappedStatement::QUERY_FOR_LIST;
 
 	public function getStatement(){ return $this->_statement; }

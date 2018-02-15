@@ -85,7 +85,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	/**
 	 * @var TListItemCollection item list
 	 */
-	private $_items=null;
+	private $_items;
 	/**
 	 * @var boolean whether items are restored from viewstate
 	 */
@@ -95,9 +95,9 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * to keep selections when Items are not available
 	 */
 	private $_cachedSelectedIndex=-1;
-	private $_cachedSelectedValue=null;
-	private $_cachedSelectedIndices=null;
-	private $_cachedSelectedValues=null;
+	private $_cachedSelectedValue;
+	private $_cachedSelectedIndices;
+	private $_cachedSelectedValues;
 
 	/**
 	 * @return string tag name of the list control

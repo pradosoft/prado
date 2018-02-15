@@ -31,7 +31,7 @@ class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 	private $_pageIndex;
 	private $_offset;
 	private $_limit;
-	private $_data=null;
+	private $_data;
 
 	/**
 	 * Constructor.

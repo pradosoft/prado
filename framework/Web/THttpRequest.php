@@ -81,7 +81,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var TUrlManager the URL manager module
 	 */
-	private $_urlManager=null;
+	private $_urlManager;
 	/**
 	 * @var string the ID of the URL manager module
 	 */
@@ -93,15 +93,15 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var string requested service ID
 	 */
-	private $_serviceID=null;
+	private $_serviceID;
 	/**
 	 * @var string requested service parameter
 	 */
-	private $_serviceParam=null;
+	private $_serviceParam;
 	/**
 	 * @var THttpCookieCollection cookies sent from user
 	 */
-	private $_cookies=null;
+	private $_cookies;
 	/**
 	 * @var string requested URI (URL w/o host info)
 	 */
@@ -113,7 +113,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var boolean whether the session ID should be kept in cookie only
 	 */
-	private $_cookieOnly=null;
+	private $_cookieOnly;
 	private $_urlFormat=THttpRequestUrlFormat::Get;
 	private $_services;
 	private $_requestResolved=false;
@@ -126,7 +126,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var string request URL
 	 */
-	private $_url=null;
+	private $_url;
 
 	/**
 	 * @var string module id

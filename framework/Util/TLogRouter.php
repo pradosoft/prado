@@ -54,7 +54,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * @var string external configuration file
 	 */
-	private $_configFile=null;
+	private $_configFile;
 
 	/**
 	 * Initializes this module.

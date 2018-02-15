@@ -62,7 +62,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	/**
 	 * @var array list of skins for the theme
 	 */
-	private $_skins=null;
+	private $_skins;
 	/**
 	 * @var string theme name
 	 */

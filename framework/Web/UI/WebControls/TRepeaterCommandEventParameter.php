@@ -32,11 +32,11 @@ class TRepeaterCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	/**
 	 * @var TControl the repeater item control responsible for the event.
 	 */
-	private $_item=null;
+	private $_item;
 	/**
 	 * @var TControl the control originally raises the <b>OnCommand</b> event.
 	 */
-	private $_source=null;
+	private $_source;
 
 	/**
 	 * Constructor.

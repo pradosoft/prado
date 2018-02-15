@@ -74,7 +74,7 @@ class TErrorHandler extends \Prado\TModule
 	/**
 	 * @var string error template directory
 	 */
-	private $_templatePath=null;
+	private $_templatePath;
 
 	/**
 	 * Initializes the module.

@@ -19,6 +19,9 @@ $config = PhpCsFixer\Config::create()
 		'lowercase_keywords' => true,
 		'method_argument_space' => true,
 		'no_alias_functions' => true,
+		'no_break_comment' => true,
+		'no_closing_tag' => true,
+		'no_null_property_initialization' => true,
 		'psr4' => true,
 	])
 	->setFinder(

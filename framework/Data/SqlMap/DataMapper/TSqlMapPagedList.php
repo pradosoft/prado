@@ -37,7 +37,7 @@ class TSqlMapPagedList extends TPagedList
 	private $_parameter;
 	private $_prevPageList;
 	private $_nextPageList;
-	private $_delegate=null;
+	private $_delegate;
 
 	/**
 	 * Create a new SqlMap paged list.

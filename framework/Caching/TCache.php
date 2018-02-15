@@ -50,7 +50,7 @@ use Prado\TPropertyValue;
  */
 abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 {
-	private $_prefix=null;
+	private $_prefix;
 	private $_primary=true;
 
 	/**

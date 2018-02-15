@@ -42,11 +42,11 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * @var ITemplate the parsed template structure specific for this control instance
 	 */
-	private $_localTemplate=null;
+	private $_localTemplate;
 	/**
 	 * @var TTemplateControl the master control if any
 	 */
-	private $_master=null;
+	private $_master;
 	/**
 	 * @var string master control class name
 	 */

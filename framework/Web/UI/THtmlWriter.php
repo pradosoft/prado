@@ -74,7 +74,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	/**
 	 * @var ITextWriter writer
 	 */
-	protected $_writer=null;
+	protected $_writer;
 
 	/**
 	 * Constructor.

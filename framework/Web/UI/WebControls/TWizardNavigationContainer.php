@@ -25,10 +25,10 @@ namespace Prado\Web\UI\WebControls;
  */
 class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
-	private $_previousButton=null;
-	private $_nextButton=null;
-	private $_cancelButton=null;
-	private $_completeButton=null;
+	private $_previousButton;
+	private $_nextButton;
+	private $_cancelButton;
+	private $_completeButton;
 
 	/**
 	 * @return mixed the previous button

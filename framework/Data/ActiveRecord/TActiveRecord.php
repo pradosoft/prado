@@ -200,7 +200,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @var TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
 	 */
-	protected $_invalidFinderResult = null; // use protected so that serialization is fine
+	protected $_invalidFinderResult; // use protected so that serialization is fine
 
 	/**
 	 * Prevent __call() method creating __sleep() when serializing.

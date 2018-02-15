@@ -84,7 +84,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var string external configuration file
 	 */
-	private $_configFile=null;
+	private $_configFile;
 	/**
 	 * @var boolean whether to enable custom contructUrl
 	 */

@@ -27,27 +27,27 @@ class TTableStyle extends TStyle
 	/**
 	 * @var TVerticalAlign the URL of the background image for the table
 	 */
-	private $_backImageUrl=null;
+	private $_backImageUrl;
 	/**
 	 * @var THorizontalAlign horizontal alignment of the contents within the table
 	 */
-	private $_horizontalAlign=null;
+	private $_horizontalAlign;
 	/**
 	 * @var integer cellpadding of the table
 	 */
-	private $_cellPadding=null;
+	private $_cellPadding;
 	/**
 	 * @var integer cellspacing of the table
 	 */
-	private $_cellSpacing=null;
+	private $_cellSpacing;
 	/**
 	 * @var TTableGridLines grid line setting of the table
 	 */
-	private $_gridLines=null;
+	private $_gridLines;
 	/**
 	 * @var boolean whether the table border should be collapsed
 	 */
-	private $_borderCollapse=null;
+	private $_borderCollapse;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized

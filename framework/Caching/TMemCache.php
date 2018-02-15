@@ -96,7 +96,7 @@ class TMemCache extends TCache
 	/**
 	 * @var Memcache the Memcache instance
 	 */
-	private $_cache=null;
+	private $_cache;
 	/**
 	 * @var string host name of the memcache server
 	 */

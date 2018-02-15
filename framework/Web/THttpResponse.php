@@ -91,7 +91,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * @var THttpCookieCollection list of cookies to return
 	 */
-	private $_cookies=null;
+	private $_cookies;
 	/**
 	 * @var integer response status code
 	 */
@@ -107,7 +107,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * @var string content type
 	 */
-	private $_contentType=null;
+	private $_contentType;
 	/**
 	 * @var string|boolean character set, e.g. UTF-8 or false if no character set should be send to client
 	 */

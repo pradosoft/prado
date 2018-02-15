@@ -39,7 +39,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	private $_data;
 
-	private $_redirectUrl=null;
+	private $_redirectUrl;
 
 	/**
 	 * Returns a new instance of THtmlWriter.

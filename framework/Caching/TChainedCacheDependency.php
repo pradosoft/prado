@@ -29,7 +29,7 @@ namespace Prado\Caching;
  */
 class TChainedCacheDependency extends TCacheDependency
 {
-	private $_dependencies=null;
+	private $_dependencies;
 
 	/**
 	 * @return TCacheDependencyList list of dependency objects

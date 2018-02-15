@@ -322,7 +322,7 @@ class TComponent
 	/**
 	 * @var TPriorityMap list of object behaviors
 	 */
-	private $_m=null;
+	private $_m;
 
 	/**
 	 * @var array static global class behaviors, these behaviors are added upon instantiation of a class

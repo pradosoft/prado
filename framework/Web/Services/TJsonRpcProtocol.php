@@ -26,7 +26,7 @@ use Prado\Exceptions\THttpException;
  */
 class TJsonRpcProtocol extends TRpcProtocol
 {
-	protected $_id=null;
+	protected $_id;
 	protected $_specificationVersion=1.0;
 
 	/**

@@ -30,7 +30,7 @@ abstract class TSqlMapCache implements ICache
 	protected $_keyList;
 	protected $_cache;
 	protected $_cacheSize = 100;
-	protected $_cacheModel = null;
+	protected $_cacheModel;
 
 	/**
 	 * Create a new cache with limited cache size.

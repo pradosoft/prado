@@ -32,7 +32,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TReCaptchaValidator extends TBaseValidator
 {
-	protected $_isvalid = null;
+	protected $_isvalid;
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.

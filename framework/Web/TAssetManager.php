@@ -59,11 +59,11 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * @var string base web accessible path for storing private files
 	 */
-	private $_basePath=null;
+	private $_basePath;
 	/**
 	 * @var string base URL for accessing the publishing directory.
 	 */
-	private $_baseUrl=null;
+	private $_baseUrl;
 	/**
 	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */

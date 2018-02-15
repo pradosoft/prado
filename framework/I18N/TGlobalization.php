@@ -46,13 +46,13 @@ class TGlobalization extends \Prado\TModule
 	 * The current charset.
 	 * @var string
 	 */
-	private $_charset=null;
+	private $_charset;
 
 	/**
 	 * The current culture.
 	 * @var string
 	 */
-	private $_culture=null;
+	private $_culture;
 
 	/**
 	 * Translation source parameters.

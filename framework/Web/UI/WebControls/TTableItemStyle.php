@@ -26,15 +26,15 @@ class TTableItemStyle extends TStyle
 	/**
 	 * @var THorizontalAlign horizontal alignment of the contents within the table item
 	 */
-	private $_horizontalAlign=null;
+	private $_horizontalAlign;
 	/**
 	 * @var TVerticalAlign vertical alignment of the contents within the table item
 	 */
-	private $_verticalAlign=null;
+	private $_verticalAlign;
 	/**
 	 * @var boolean whether the content wraps within the table item
 	 */
-	private $_wrap=null;
+	private $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized

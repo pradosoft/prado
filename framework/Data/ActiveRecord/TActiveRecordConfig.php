@@ -92,7 +92,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * @var TActiveRecordManager
 	 */
-	private $_manager = null;
+	private $_manager;
 
 	private $_enableCache=false;
 

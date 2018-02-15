@@ -101,31 +101,31 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * @var TMultiView multiview that contains the wizard steps
 	 */
-	private $_multiView=null;
+	private $_multiView;
 	/**
 	 * @var mixed navigation template for the start step.
 	 */
-	private $_startNavigationTemplate=null;
+	private $_startNavigationTemplate;
 	/**
 	 * @var mixed navigation template for internal steps.
 	 */
-	private $_stepNavigationTemplate=null;
+	private $_stepNavigationTemplate;
 	/**
 	 * @var mixed navigation template for the finish step.
 	 */
-	private $_finishNavigationTemplate=null;
+	private $_finishNavigationTemplate;
 	/**
 	 * @var mixed template for wizard header.
 	 */
-	private $_headerTemplate=null;
+	private $_headerTemplate;
 	/**
 	 * @var mixed template for the side bar.
 	 */
-	private $_sideBarTemplate=null;
+	private $_sideBarTemplate;
 	/**
 	 * @var TWizardStepCollection
 	 */
-	private $_wizardSteps=null;
+	private $_wizardSteps;
 	/**
 	 * @var TPanel container of the wizard header
 	 */

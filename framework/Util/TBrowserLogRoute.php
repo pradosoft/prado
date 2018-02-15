@@ -28,7 +28,7 @@ class TBrowserLogRoute extends TLogRoute
 	/**
 	 * @var string css class for indentifying the table structure in the dom tree
 	 */
-	private $_cssClass=null;
+	private $_cssClass;
 
 	public function processLogs($logs)
 	{

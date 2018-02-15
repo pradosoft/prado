@@ -97,39 +97,39 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_itemTemplate=null;
+	private $_itemTemplate;
 	/**
 	 * @var ITemplate template for each alternating item
 	 */
-	private $_alternatingItemTemplate=null;
+	private $_alternatingItemTemplate;
 	/**
 	 * @var ITemplate template for header
 	 */
-	private $_headerTemplate=null;
+	private $_headerTemplate;
 	/**
 	 * @var ITemplate template for footer
 	 */
-	private $_footerTemplate=null;
+	private $_footerTemplate;
 	/**
 	 * @var ITemplate template used for repeater when no data is bound
 	 */
-	private $_emptyTemplate=null;
+	private $_emptyTemplate;
 	/**
 	 * @var ITemplate template for separator
 	 */
-	private $_separatorTemplate=null;
+	private $_separatorTemplate;
 	/**
 	 * @var TRepeaterItemCollection list of repeater items
 	 */
-	private $_items=null;
+	private $_items;
 	/**
 	 * @var TControl header item
 	 */
-	private $_header=null;
+	private $_header;
 	/**
 	 * @var TControl footer item
 	 */
-	private $_footer=null;
+	private $_footer;
 
 
 	/**

@@ -31,7 +31,7 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * @var the tag of this element
 	 */
-	private $_tagName=null;
+	private $_tagName;
 
 	/**
 	 * @return string the tag name of this control. Defaults to 'span'.

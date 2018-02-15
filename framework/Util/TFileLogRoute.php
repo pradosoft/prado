@@ -45,7 +45,7 @@ class TFileLogRoute extends TLogRoute
 	/**
 	 * @var string directory storing log files
 	 */
-	private $_logPath=null;
+	private $_logPath;
 	/**
 	 * @var string log file name
 	 */

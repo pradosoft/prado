@@ -91,7 +91,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var THttpCookie cookie to be used to store session ID and other data
 	 */
-	private $_cookie=null;
+	private $_cookie;
 	/**
 	 * @var string module id
 	 */

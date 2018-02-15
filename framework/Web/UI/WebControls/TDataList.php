@@ -162,26 +162,26 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * @var TDataListItemCollection item list
 	 */
-	private $_items=null;
+	private $_items;
 	/**
 	 * @var Itemplate various item templates
 	 */
-	private $_itemTemplate=null;
-	private $_emptyTemplate=null;
-	private $_alternatingItemTemplate=null;
-	private $_selectedItemTemplate=null;
-	private $_editItemTemplate=null;
-	private $_headerTemplate=null;
-	private $_footerTemplate=null;
-	private $_separatorTemplate=null;
+	private $_itemTemplate;
+	private $_emptyTemplate;
+	private $_alternatingItemTemplate;
+	private $_selectedItemTemplate;
+	private $_editItemTemplate;
+	private $_headerTemplate;
+	private $_footerTemplate;
+	private $_separatorTemplate;
 	/**
 	 * @var TControl header item
 	 */
-	private $_header=null;
+	private $_header;
 	/**
 	 * @var TControl footer item
 	 */
-	private $_footer=null;
+	private $_footer;
 
 	/**
 	 * @return TDataListItemCollection item list

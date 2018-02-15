@@ -100,7 +100,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * @var string user/role information file
 	 */
-	private $_userFile=null;
+	private $_userFile;
 
 	/**
 	 * Initializes the module.

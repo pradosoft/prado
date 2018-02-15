@@ -32,7 +32,7 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	const DEFAULT_LABEL = 'System.Util.TLogRouter(TFirePhpLogRoute)';
 
-	private $_groupLabel = null;
+	private $_groupLabel;
 
 	public function processLogs($logs)
 	{

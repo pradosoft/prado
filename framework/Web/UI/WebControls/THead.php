@@ -48,7 +48,7 @@ class THead extends \Prado\Web\UI\TControl
 	/**
 	 * @var TList list of meta name tags to be loaded by {@link THead}
 	 */
-	private $_metaTags=null;
+	private $_metaTags;
 
 	/**
 	 * Registers the head control with the current page.

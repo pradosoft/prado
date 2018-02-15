@@ -25,12 +25,12 @@ class TCallChain extends TList implements IDynamicMethods
 	/**
 	 *	@var {@link ArrayIterator} for moving through the chained method calls
 	 */
-	private $_iterator=null;
+	private $_iterator;
 
 	/**
 	 *	@var string the method name of the call chain
 	 */
-	private $_method=null;
+	private $_method;
 
 	/**
 	 * This initializes the list and the name of the method to be called

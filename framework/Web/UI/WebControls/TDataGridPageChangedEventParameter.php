@@ -39,7 +39,7 @@ class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 	/**
 	 * @var TControl original event sender
 	 */
-	private $_source=null;
+	private $_source;
 
 	/**
 	 * Constructor.

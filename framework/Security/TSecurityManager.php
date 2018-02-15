@@ -53,8 +53,8 @@ class TSecurityManager extends \Prado\TModule
 	const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
 	const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';
 
-	private $_validationKey = null;
-	private $_encryptionKey = null;
+	private $_validationKey;
+	private $_encryptionKey;
 	private $_hashAlgorithm = 'sha256';
 	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_mbstring;

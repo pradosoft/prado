@@ -78,10 +78,10 @@ class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 	{
 		$pageContent = $this->getPageContent($tableName, $type);
 		return <<<EOD
-<com:TContent ID="$tContentId">   
-                     
+<com:TContent ID="$tContentId">
+
        $pageContent
-               
+
 </com:TContent>
 EOD;
 	}
@@ -112,7 +112,7 @@ EOD;
 					//  TWsatBaseGenerator::pr($tableInfo);
 				}
 				$code .= "\t<com:TButton Text=\"Accept\" />\n";
-
+				break;
 			case self::SHOW_TYPE:
 				break;
 		}
@@ -124,7 +124,7 @@ EOD;
 		$controlType = "TTextBox";
 		switch ($colMetadata->DbType)
 		{
-			
+
 		}
 		$controlId = $colMetadata->ColumnId;
 		return "\t<com:$controlType ID=\"$controlId\" />\n";

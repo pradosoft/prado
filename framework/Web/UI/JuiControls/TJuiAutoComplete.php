@@ -92,11 +92,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_repeater=null;
+	private $_repeater;
 	/**
 	 * @var TPanel result panel holding the suggestion items.
 	 */
-	private $_resultPanel=null;
+	private $_resultPanel;
 
 	/**
 	 * Creates a new callback control, sets the adapter to

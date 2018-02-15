@@ -89,7 +89,7 @@ class TRedisCache extends TCache
   /**
    * @var \Redis the Redis instance
    */
-  private $_cache = null;
+  private $_cache;
   /**
    * @var string host name of the redis cache server
    */
@@ -101,7 +101,7 @@ class TRedisCache extends TCache
   /**
    * @var string the unix socket of the redis cache server.
    */
-  private $_socket = null;
+  private $_socket;
   /**
    * @var integer the database index to use within the redis server.
    */

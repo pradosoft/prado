@@ -63,11 +63,11 @@ class TRadioButton extends TCheckBox
 	/**
 	 * @var string previous UniqueID (used to calculate UniqueGroup)
 	 */
-	private $_previousUniqueID=null;
+	private $_previousUniqueID;
 	/**
 	 * @var string the name used to fetch radiobutton post data
 	 */
-	private $_uniqueGroupName=null;
+	private $_uniqueGroupName;
 
 	/**
 	 * Constructor.

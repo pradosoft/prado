@@ -30,7 +30,7 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 	 * The repeater item control responsible for the event.
 	 * @var TControl
 	 */
-	private $_item=null;
+	private $_item;
 
 	/**
 	 * Constructor.

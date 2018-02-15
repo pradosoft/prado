@@ -24,7 +24,7 @@ namespace Prado\Data\SqlMap\Configuration;
  */
 class TSqlMapInsert extends TSqlMapStatement
 {
-	private $_selectKey=null;
+	private $_selectKey;
 
 	/**
 	 * @return TSqlMapSelectKey select key element.

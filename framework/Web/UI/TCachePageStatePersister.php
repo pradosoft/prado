@@ -69,7 +69,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 {
 	private $_prefix='statepersister';
 	private $_page;
-	private $_cache=null;
+	private $_cache;
 	private $_cacheModuleID='';
 	private $_timeout=1800;
 

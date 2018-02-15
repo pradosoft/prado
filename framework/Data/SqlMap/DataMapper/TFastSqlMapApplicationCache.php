@@ -26,8 +26,8 @@ use Prado\Prado;
 
 class TFastSqlMapApplicationCache implements ICache
 {
-	protected $_cacheModel=null;
-	protected $_cache=null;
+	protected $_cacheModel;
+	protected $_cache;
 
 	public function __construct($cacheModel=null)
 	{

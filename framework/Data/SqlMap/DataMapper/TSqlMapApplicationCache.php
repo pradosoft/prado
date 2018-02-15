@@ -26,7 +26,7 @@ use Prado\Prado;
  */
 class TSqlMapApplicationCache implements ICache
 {
-	protected $_cacheModel=null;
+	protected $_cacheModel;
 
 	/**
 	 * Create a new cache with limited cache size.

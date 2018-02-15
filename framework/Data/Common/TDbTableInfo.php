@@ -37,7 +37,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @var null|array
 	 * @since 3.1.7
 	 */
-	private $_names = null;
+	private $_names;
 
 	/**
 	 * Sets the database table meta data information.

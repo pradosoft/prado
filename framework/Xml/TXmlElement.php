@@ -35,7 +35,7 @@ class TXmlElement extends \Prado\TComponent
 	/**
 	 * @var TXmlElement parent of this element
 	 */
-	private $_parent=null;
+	private $_parent;
 	/**
 	 * @var string tag-name of this element
 	 */
@@ -47,11 +47,11 @@ class TXmlElement extends \Prado\TComponent
 	/**
 	 * @var TXmlElementList list of child elements of this element
 	 */
-	private $_elements=null;
+	private $_elements;
 	/**
 	 * @var TMap attributes of this element
 	 */
-	private $_attributes=null;
+	private $_attributes;
 
 	/**
 	 * Constructor.

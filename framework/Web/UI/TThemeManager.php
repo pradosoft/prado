@@ -66,11 +66,11 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * @var string the directory containing all themes
 	 */
-	private $_basePath=null;
+	private $_basePath;
 	/**
 	 * @var string the base URL for all themes
 	 */
-	private $_baseUrl=null;
+	private $_baseUrl;
 
 	/**
 	 * Initializes the module.

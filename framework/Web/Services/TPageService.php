@@ -109,7 +109,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var string root path of pages
 	 */
-	private $_basePath=null;
+	private $_basePath;
 	/**
 	 * @var string base path class in namespace format
 	 */
@@ -126,11 +126,11 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var string requested page (path)
 	 */
-	private $_pagePath=null;
+	private $_pagePath;
 	/**
 	 * @var TPage the requested page
 	 */
-	private $_page=null;
+	private $_page;
 	/**
 	 * @var array list of initial page property values
 	 */
@@ -142,11 +142,11 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var TThemeManager theme manager
 	 */
-	private $_themeManager=null;
+	private $_themeManager;
 	/**
 	 * @var TTemplateManager template manager
 	 */
-	private $_templateManager=null;
+	private $_templateManager;
 
 	/**
 	 * Initializes the service.

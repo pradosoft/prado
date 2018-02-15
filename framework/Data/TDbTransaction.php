@@ -44,7 +44,7 @@ use Prado\TPropertyValue;
  */
 class TDbTransaction extends \Prado\TComponent
 {
-	private $_connection=null;
+	private $_connection;
 	private $_active;
 
 	/**

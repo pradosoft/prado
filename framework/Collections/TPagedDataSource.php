@@ -37,7 +37,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * @var mixed original data source
 	 */
-	private $_dataSource=null;
+	private $_dataSource;
 	/**
 	 * @var integer number of items in each page
 	 */

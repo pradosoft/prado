@@ -100,13 +100,13 @@ class TDbConnection extends \Prado\TComponent
 	private $_charset='';
 	private $_attributes=[];
 	private $_active=false;
-	private $_pdo=null;
+	private $_pdo;
 	private $_transaction;
 
 	/**
 	 * @var TDbMetaData
 	 */
-	private $_dbMeta = null;
+	private $_dbMeta;
 
 	/**
 	 * @var string

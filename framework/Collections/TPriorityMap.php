@@ -77,7 +77,7 @@ class TPriorityMap extends TMap
 	/**
 	 * @var array cached flattened internal data storage
 	 */
-	private $_fd=null;
+	private $_fd;
 	/**
 	 * @var integer number of items contain within the map
 	 */

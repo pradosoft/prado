@@ -88,7 +88,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	/**
 	 * @var string template file path (if available)
 	 */
-	private $_tplFile=null;
+	private $_tplFile;
 	/**
 	 * @var integer the line number that parsing starts from (internal use)
 	 */
@@ -105,7 +105,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * @var string hash code of the template
 	 */
 	private $_hashCode='';
-	private $_tplControl=null;
+	private $_tplControl;
 	private $_includedFiles=[];
 	private $_includeAtLine=[];
 	private $_includeLines=[];

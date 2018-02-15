@@ -61,11 +61,11 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @var integer log level filter (bits)
 	 */
-	private $_levels=null;
+	private $_levels;
 	/**
 	 * @var array log category filter
 	 */
-	private $_categories=null;
+	private $_categories;
 
 	/**
 	 * Initializes the route.

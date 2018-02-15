@@ -43,10 +43,10 @@ class TTemplateColumn extends TDataGridColumn
 	 * Various item templates
 	 * @var string
 	 */
-	private $_itemTemplate=null;
-	private $_editItemTemplate=null;
-	private $_headerTemplate=null;
-	private $_footerTemplate=null;
+	private $_itemTemplate;
+	private $_editItemTemplate;
+	private $_headerTemplate;
+	private $_footerTemplate;
 
 	/**
 	 * @return string the class name for the item cell renderer. Defaults to empty, meaning not set.

@@ -165,37 +165,37 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
 	 */
-	private $_columns=null;
+	private $_columns;
 	/**
 	 * @var TDataGridColumnCollection automatically created column collection
 	 */
-	private $_autoColumns=null;
+	private $_autoColumns;
 	/**
 	 * @var TList all columns including both manually and automatically created columns
 	 */
-	private $_allColumns=null;
+	private $_allColumns;
 	/**
 	 * @var TDataGridItemCollection datagrid item collection
 	 */
-	private $_items=null;
+	private $_items;
 	/**
 	 * @var TDataGridItem header item
 	 */
-	private $_header=null;
+	private $_header;
 	/**
 	 * @var TDataGridItem footer item
 	 */
-	private $_footer=null;
+	private $_footer;
 	/**
 	 * @var TPagedDataSource paged data source object
 	 */
-	private $_pagedDataSource=null;
-	private $_topPager=null;
-	private $_bottomPager=null;
+	private $_pagedDataSource;
+	private $_topPager;
+	private $_bottomPager;
 	/**
 	 * @var ITemplate template used when empty data is bounded
 	 */
-	private $_emptyTemplate=null;
+	private $_emptyTemplate;
 	/**
 	 * @var boolean whether empty template is effective
 	 */

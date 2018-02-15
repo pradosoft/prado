@@ -69,7 +69,7 @@ use Prado\Web\UI\TControl;
 abstract class TDataGridColumn extends \Prado\TApplicationComponent
 {
 	private $_id='';
-	private $_owner=null;
+	private $_owner;
 	private $_viewState=[];
 
 	/**

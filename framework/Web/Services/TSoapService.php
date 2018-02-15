@@ -98,9 +98,9 @@ class TSoapService extends \Prado\TService
 {
 	const DEFAULT_SOAP_SERVER='Prado\Web\Services\TSoapServer';
 	private $_servers=[];
-	private $_configFile=null;
+	private $_configFile;
 	private $_wsdlRequest=false;
-	private $_serverID=null;
+	private $_serverID;
 
 	/**
 	 * Constructor.

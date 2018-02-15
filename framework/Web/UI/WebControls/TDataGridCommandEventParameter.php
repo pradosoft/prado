@@ -35,11 +35,11 @@ class TDataGridCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	/**
 	 * @var TDataGridItem the TDataGridItem control responsible for the event.
 	 */
-	private $_item=null;
+	private $_item;
 	/**
 	 * @var TControl the control originally raises the <b>Command</b> event.
 	 */
-	private $_source=null;
+	private $_source;
 
 	/**
 	 * Constructor.

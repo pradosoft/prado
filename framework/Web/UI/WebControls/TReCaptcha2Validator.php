@@ -31,7 +31,7 @@ use Prado\Web\Javascripts\TJavaScript;
 
 class TReCaptcha2Validator extends TBaseValidator
 {
-	protected $_isvalid = null;
+	protected $_isvalid;
 
 	protected function getClientClassName()
 	{

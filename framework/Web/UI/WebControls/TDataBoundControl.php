@@ -50,16 +50,16 @@ use Prado\Collections\TMap;
 abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 {
 	private $_initialized=false;
-	private $_dataSource=null;
+	private $_dataSource;
 	private $_requiresBindToNull=false;
 	private $_requiresDataBinding=false;
 	private $_prerendered=false;
-	private $_currentView=null;
-	private $_currentDataSource=null;
+	private $_currentView;
+	private $_currentDataSource;
 	private $_currentViewValid=false;
 	private $_currentDataSourceValid=false;
 	private $_currentViewIsFromDataSourceID=false;
-	private $_parameters=null;
+	private $_parameters;
 	private $_isDataBound=false;
 
 	/**

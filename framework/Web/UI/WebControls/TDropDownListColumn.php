@@ -61,7 +61,7 @@ class TDropDownListColumn extends TDataGridColumn
 {
 	private $_stateLoaded=false;
 	private $_dataBound=false;
-	private $_listControl=null;
+	private $_listControl;
 
 	public function __construct()
 	{

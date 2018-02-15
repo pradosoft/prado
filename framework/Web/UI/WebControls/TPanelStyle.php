@@ -26,23 +26,23 @@ class TPanelStyle extends TStyle
 	/**
 	 * @var string the URL of the background image for the panel component
 	 */
-	private $_backImageUrl=null;
+	private $_backImageUrl;
 	/**
 	 * @var string alignment of the content in the panel.
 	 */
-	private $_direction=null;
+	private $_direction;
 	/**
 	 * @var string horizontal alignment of the contents within the panel
 	 */
-	private $_horizontalAlign=null;
+	private $_horizontalAlign;
 	/**
 	 * @var string visibility and position of scroll bars
 	 */
-	private $_scrollBars=null;
+	private $_scrollBars;
 	/**
 	 * @var boolean whether the content wraps within the panel
 	 */
-	private $_wrap=null;
+	private $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized

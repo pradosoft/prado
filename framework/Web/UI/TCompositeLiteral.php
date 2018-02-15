@@ -26,7 +26,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	const TYPE_EXPRESSION=0;
 	const TYPE_STATEMENTS=1;
 	const TYPE_DATABINDING=2;
-	private $_container=null;
+	private $_container;
 	private $_items=[];
 	private $_expressions=[];
 	private $_statements=[];

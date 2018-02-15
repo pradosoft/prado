@@ -263,7 +263,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_repeater=null;
+	private $_repeater;
 
 	/**
 	 * @param array data source for Sortables.

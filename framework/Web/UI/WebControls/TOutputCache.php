@@ -81,9 +81,9 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	private $_dataCached=false;
 	private $_cacheAvailable=false;
 	private $_cacheChecked=false;
-	private $_cacheKey=null;
+	private $_cacheKey;
 	private $_duration=60;
-	private $_cache=null;
+	private $_cache;
 	private $_contents;
 	private $_state;
 	private $_actions=[];

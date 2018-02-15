@@ -31,15 +31,15 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	/**
 	 * @var ITemplate the template for displaying the navigation UI of a wizard step.
 	 */
-	private $_navigationTemplate=null;
+	private $_navigationTemplate;
 	/**
 	 * @var ITemplate the template for displaying the content within the wizard step.
 	 */
-	private $_contentTemplate=null;
+	private $_contentTemplate;
 	/**
 	 * @var TWizardNavigationContainer
 	 */
-	private $_navigationContainer=null;
+	private $_navigationContainer;
 
 	/**
 	 * Creates child controls.

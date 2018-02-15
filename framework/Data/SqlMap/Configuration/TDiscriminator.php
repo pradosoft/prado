@@ -31,7 +31,7 @@ class TDiscriminator extends \Prado\TComponent
 {
 	private $_column;
 	private $_type;
-	private $_typeHandler=null;
+	private $_typeHandler;
 	private $_columnIndex;
 	private $_nullValue;
 	private $_mapping;

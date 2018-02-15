@@ -25,15 +25,15 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TDataGridPagerStyle extends TPanelStyle
 {
-	private $_mode=null;
-	private $_nextText=null;
-	private $_prevText=null;
-	private $_firstText=null;
-	private $_lastText=null;
-	private $_buttonCount=null;
-	private $_position=null;
-	private $_visible=null;
-	private $_buttonType=null;
+	private $_mode;
+	private $_nextText;
+	private $_prevText;
+	private $_firstText;
+	private $_lastText;
+	private $_buttonCount;
+	private $_position;
+	private $_visible;
+	private $_buttonType;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized

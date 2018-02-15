@@ -211,7 +211,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_repeater=null;
+	private $_repeater;
 
 	/**
 	 * @param array data source for Selectables.
