@@ -305,7 +305,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	function catalogues()
 	{
-		$command=$this->getDBConnection()->createCommand( 'SELECT name FROM catalogue ORDER BY name');
+		$command=$this->getDBConnection()->createCommand('SELECT name FROM catalogue ORDER BY name');
 		$dataReader=$command->query();
 
 		$result = [];

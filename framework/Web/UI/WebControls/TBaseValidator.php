@@ -273,7 +273,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$control=$this->getValidationTarget();
 			if($control instanceof TWebControl)
 			{
-				$class = preg_replace ('/ ' . preg_quote($cssClass) . '/', '', $control->getCssClass());
+				$class = preg_replace('/ ' . preg_quote($cssClass) . '/', '', $control->getCssClass());
 				if(!$this->getIsValid())
 				{
 					$class .= ' ' . $cssClass;

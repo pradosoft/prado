@@ -421,13 +421,13 @@ class TTarFileExtractor
 			$v_header['filename'] = $p_path . '/' . $v_header['filename'];
 		}
 		if (file_exists($v_header['filename'])) {
-		  if (   (@is_dir($v_header['filename']))
+		  if ((@is_dir($v_header['filename']))
 			  && ($v_header['typeflag'] == '')) {
 			$this->_error('File ' . $v_header['filename']
 						  . ' already exists as a directory');
 			return false;
 		  }
-		  if (   ($this->_isArchive($v_header['filename']))
+		  if (($this->_isArchive($v_header['filename']))
 			  && ($v_header['typeflag'] == "5")) {
 			$this->_error('Directory ' . $v_header['filename']
 						  . ' already exists as a file');
@@ -559,7 +559,7 @@ class TTarFileExtractor
 	{
 	  if (substr(PHP_OS, 0, 3) == 'WIN') {
 		  // ----- Look for potential disk letter
-		  if (   ($p_remove_disk_letter)
+		  if (($p_remove_disk_letter)
 			  && (($v_position = strpos($p_path, ':')) != false)) {
 			  $p_path = substr($p_path, $v_position+1);
 		  }

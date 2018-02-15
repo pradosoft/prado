@@ -95,7 +95,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**

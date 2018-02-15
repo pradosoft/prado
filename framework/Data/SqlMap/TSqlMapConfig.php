@@ -177,7 +177,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	public function getClient()
 	{
-		if($this->_sqlmap===null )
+		if($this->_sqlmap===null)
 			$this->_sqlmap=$this->createSqlMapGateway();
 		return $this->_sqlmap;
 	}

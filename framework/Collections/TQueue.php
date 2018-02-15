@@ -154,7 +154,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**

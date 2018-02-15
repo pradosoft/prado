@@ -63,7 +63,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setClientSide($client)
 	{
-		if( $this->getOption('ClientSide')===null)
+		if($this->getOption('ClientSide')===null)
 			$this->setOption('ClientSide', $client);
 		else
 			throw new TConfigurationException(

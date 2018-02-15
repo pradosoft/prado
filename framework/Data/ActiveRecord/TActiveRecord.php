@@ -791,7 +791,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	protected function fetchResultsFor($property)
 	{
-		if( ($context=$this->createRelationContext($property)) !== null)
+		if(($context=$this->createRelationContext($property)) !== null)
 			return $context->getRelationHandler()->fetchResultsInto($this);
 		else
 			return false;

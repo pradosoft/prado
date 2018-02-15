@@ -141,7 +141,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		$offset=(int)$offset;
 		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
-		if (empty ($sORDERBY))
+		if (empty($sORDERBY))
 			$sORDERBY="ROWNUM";
 
 		$newSql = 	" SELECT $fields FROM " .

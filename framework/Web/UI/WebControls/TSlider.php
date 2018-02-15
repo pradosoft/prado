@@ -471,8 +471,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			// Remove all values outsize the range [min..max]
 			foreach ($values as $idx=>$value)
 			{
-				if ($value < $minValue) unset ($values[$idx]);
-				if ($value > $maxValue) unset ($values[$idx]);
+				if ($value < $minValue) unset($values[$idx]);
+				if ($value > $maxValue) unset($values[$idx]);
 			}
 		}
 		else

@@ -276,7 +276,7 @@ class TSimpleDateFormatter
 				$month=$this->getInteger($value,$i_val,
 									$this->length($token), 2);
 				$iMonth = (int)$month;
-				if($month === null || $iMonth < 1 || $iMonth > 12 )
+				if($month === null || $iMonth < 1 || $iMonth > 12)
 					return null;
 					//throw new TInvalidDataValueException('Invalid month', $value);
 				$i_val += strlen($month);

@@ -100,7 +100,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**

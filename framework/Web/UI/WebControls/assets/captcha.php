@@ -89,8 +89,7 @@ function displayToken($token, $fontSize, $theme)
 	$height=$fontHeight;
 	$image=imagecreatetruecolor($width, $height);
 
-	addBackground
-	(
+	addBackground(
 		$image, $width, $height,
 		$theme&THEME_OPAQUE_BACKGROUND,
 		$theme&THEME_NOISY_BACKGROUND,

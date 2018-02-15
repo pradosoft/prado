@@ -122,13 +122,13 @@ class TLogger extends \Prado\TComponent
 			return $this->_logs;
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByLevels']) ));
+			$logs = array_values(array_filter(array_filter($logs, [$this,'filterByLevels'])));
 		if(!empty($categories))
-			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByCategories']) ));
+			$logs = array_values(array_filter(array_filter($logs, [$this,'filterByCategories'])));
 		if(!empty($controls))
-			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByControl']) ));
+			$logs = array_values(array_filter(array_filter($logs, [$this,'filterByControl'])));
 		if(null !== $timestamp)
-			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByTimeStamp']) ));
+			$logs = array_values(array_filter(array_filter($logs, [$this,'filterByTimeStamp'])));
 		return $logs;
 	}
 
@@ -169,14 +169,14 @@ class TLogger extends \Prado\TComponent
 		}
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_filter( array_filter($logs, [$this,'filterByLevels']) );
+			$logs = array_filter(array_filter($logs, [$this,'filterByLevels']));
 		if(!empty($categories))
-			$logs = array_filter( array_filter($logs, [$this,'filterByCategories']) );
+			$logs = array_filter(array_filter($logs, [$this,'filterByCategories']));
 		if(!empty($controls))
-			$logs = array_filter( array_filter($logs, [$this,'filterByControl']) );
+			$logs = array_filter(array_filter($logs, [$this,'filterByControl']));
 		if(null !== $timestamp)
-			$logs = array_filter( array_filter($logs, [$this,'filterByTimeStamp']) );
-		$this->_logs = array_values( array_diff_key($this->_logs, $logs) );
+			$logs = array_filter(array_filter($logs, [$this,'filterByTimeStamp']));
+		$this->_logs = array_values(array_diff_key($this->_logs, $logs));
 	}
 
 	/**

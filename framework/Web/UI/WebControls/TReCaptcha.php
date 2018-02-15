@@ -308,8 +308,8 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	private function recaptcha_qsencode ($data) {
 		$req = "";
-		foreach ( $data as $key => $value )
-			$req .= $key . '=' . urlencode( stripslashes($value) ) . '&';
+		foreach ($data as $key => $value)
+			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
 
 		// Cut the last '&'
 		$req=substr($req, 0, strlen($req)-1);
@@ -337,12 +337,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$http_request .= $req;
 
 		$response = '';
-		if( false == ( $fs = @fsockopen($host, $port, $errno, $errstr, 10) ) )
-			die ('Could not open socket');
+		if(false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
+			die('Could not open socket');
 
 		fwrite($fs, $http_request);
 
-		while ( !feof($fs) )
+		while (!feof($fs))
 			$response .= fgets($fs, 1160); // One TCP-IP packet
 		fclose($fs);
 		$response = explode("\r\n\r\n", $response, 2);
@@ -374,9 +374,9 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			] + $extra_params
 		);
 
-		$answers = explode ("\n", $response [1]);
+		$answers = explode("\n", $response [1]);
 
-		if (trim ($answers [0]) == 'true')
+		if (trim($answers [0]) == 'true')
 			return true;
 		else
 			return false;

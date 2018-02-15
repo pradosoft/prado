@@ -121,7 +121,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		if(strlen($resource = (string)$node['resource']) > 0)
 		{
-			if( strpos($resource, '${') !== false)
+			if(strpos($resource, '${') !== false)
 				$resource = $this->replaceProperties($resource);
 
 			$mapping = new TSqlMapXmlMappingConfiguration($this);

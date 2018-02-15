@@ -448,7 +448,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			$value = $propertyNode->attributes()->value;
 			if($value===null || $value==='') continue;
 
-			if( !TPropertyAccess::has($cache, $name) ) continue;
+			if(!TPropertyAccess::has($cache, $name)) continue;
 
 			TPropertyAccess::set($cache, $name, $value);
 		}

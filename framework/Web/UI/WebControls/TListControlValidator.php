@@ -143,7 +143,7 @@ class TListControlValidator extends TBaseValidator
 		//if required, check the values
 		if(!empty($required))
 		{
-			if($count < count($required) )
+			if($count < count($required))
 				return false;
 			foreach($required as $require)
 				$exists = $exists && in_array($require, $values);

@@ -88,7 +88,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 */
 	protected function loadXmlDocument($filename, TSqlMapXmlConfiguration $config)
 	{
-		if( strpos($filename, '${') !== false)
+		if(strpos($filename, '${') !== false)
 			$filename = $config->replaceProperties($filename);
 		if(!is_file($filename))
 			throw new TSqlMapConfigurationException(

@@ -209,7 +209,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 			$writer->addAttribute('disabled', 'disabled');
 		if($isEnabled
 			&& $this->getEnableClientScript()
-			&& ( $this->getAutoPostBack() || $textMode===TTextBoxMode::SingleLine)
+			&& ($this->getAutoPostBack() || $textMode===TTextBoxMode::SingleLine)
 			&& $page->getClientSupportsJavaScript())
 		{
 			$this->renderClientControlScript($writer);

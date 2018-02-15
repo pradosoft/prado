@@ -825,7 +825,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				else
 				{
 					// a simple property
-					if (! ($class->hasMethod('set' . $name) || $class->hasMethod('setjs' . $name) || $this->isClassBehaviorMethod($class, 'set' . $name)) )
+					if (! ($class->hasMethod('set' . $name) || $class->hasMethod('setjs' . $name) || $this->isClassBehaviorMethod($class, 'set' . $name)))
 					{
 						if ($class->hasMethod('get' . $name) || $class->hasMethod('getjs' . $name))
 							throw new TConfigurationException('template_property_readonly', $type, $name);

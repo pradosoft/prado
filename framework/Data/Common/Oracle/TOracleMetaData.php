@@ -180,11 +180,11 @@ EOD;
 		$info['ColumnName'] 	= $columnId; //NOT quote the column names!
 		$info['ColumnId'] 		= $columnId;
 		$info['ColumnIndex'] 	= $col['index'];
-		if(! (bool)$col['attnotnull'] ) $info['AllowNull'] = true;
+		if(! (bool)$col['attnotnull']) $info['AllowNull'] = true;
 		if(in_array($columnId, $tableInfo->getPrimaryKeys())) $info['IsPrimaryKey'] = true;
 		if($this->isForeignKeyColumn($columnId, $tableInfo)) $info['IsForeignKey'] = true;
-		if( (int)$col['atttypmod'] > 0 ) $info['ColumnSize'] =  $col['atttypmod']; // - 4;
-		if( (bool)$col['atthasdef'] ) $info['DefaultValue'] = $col['adsrc'];
+		if((int)$col['atttypmod'] > 0) $info['ColumnSize'] =  $col['atttypmod']; // - 4;
+		if((bool)$col['atthasdef']) $info['DefaultValue'] = $col['adsrc'];
 		//
 		// For a while Oracle Tables has no  associated AutoIncrement Triggers
 		//
@@ -268,17 +268,17 @@ EOD;
 		$foreign = [];
 		foreach($command->query() as $row)
 		{
-			switch( strtolower( $row['contype'] ) )
+			switch(strtolower($row['contype']))
 			{
 				case 'p':
-					$primary = array_merge( $primary, [strtolower( $row['consrc'] )] );
+					$primary = array_merge($primary, [strtolower($row['consrc'])]);
 					/*
 					$arr = $this->getPrimaryKeys($row['consrc']);
 					$primary = array_merge( $primary, array(strtolower( $arr[0] )) );
 					*/
 					break;
 				case 'r':
-					$foreign = array_merge( $foreign, [strtolower( $row['consrc'] )] );
+					$foreign = array_merge($foreign, [strtolower($row['consrc'])]);
 					/*
 					// if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
 					$fkey = $this->getForeignKeys( $row['consrc'] );
@@ -332,7 +332,7 @@ EOD;
 	{
 		foreach($tableInfo->getForeignKeys() as $fk)
 		{
-			if( $fk==$columnId )
+			if($fk==$columnId)
 			//if(in_array($columnId, array_keys($fk['keys'])))
 				return true;
 		}
