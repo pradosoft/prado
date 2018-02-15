@@ -97,7 +97,7 @@ class TReCaptcha2Validator extends TBaseValidator
 				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->ClientID) . '); ',
 				'}',
 				'',
-				// update the validator to the result if we're in a callback 
+				// update the validator to the result if we're in a callback
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
 				$this->Page->IsCallback ? $fn . '(' . $value . ');' : '',
 				'',

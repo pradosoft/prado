@@ -34,10 +34,10 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  *  OnStop="slider1_changed"
  * />
  * </code>
- * 
+ *
  * To retrieve the current value of the slider during callback, get the value
  * property of the callback request parameter within the {@link TJuiEventParameter}.
- * 
+ *
  * <code>
  * public function slider1_changed($sender, $param) {
  *   $value = $param->getCallbackParameter()->value;

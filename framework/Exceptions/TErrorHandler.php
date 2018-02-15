@@ -158,7 +158,7 @@ class TErrorHandler extends \Prado\TModule
 		$aRpl = [];
 		if($exception !== null && $exception instanceof \Exception)
 		{
-			if($exception instanceof TPhpFatalErrorException && 
+			if($exception instanceof TPhpFatalErrorException &&
 				function_exists('xdebug_get_function_stack'))
 			{
 				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
@@ -357,7 +357,7 @@ class TErrorHandler extends \Prado\TModule
 	private function getExactTrace($exception)
 	{
 		$result=null;
-		if($exception instanceof TPhpFatalErrorException && 
+		if($exception instanceof TPhpFatalErrorException &&
 			function_exists('xdebug_get_function_stack'))
 		{
 			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
@@ -385,7 +385,7 @@ class TErrorHandler extends \Prado\TModule
 
 	private function getExactTraceAsString($exception)
 	{
-		if($exception instanceof TPhpFatalErrorException && 
+		if($exception instanceof TPhpFatalErrorException &&
 			function_exists('xdebug_get_function_stack'))
 		{
 			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);

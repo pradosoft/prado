@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/MessageCache.php');
 
 /**
  * Abstract MessageSource class.
- * 
+ *
  * The base class for all MessageSources. Message sources must be instantiated
  * using the factory method. The default valid sources are
  *
@@ -47,23 +47,23 @@ require_once(dirname(__FILE__) . '/MessageCache.php');
  *   $classfile = '../MessageSource_MySource.php'; //custom message source
  *   $source = MessageSource::factory('MySource', $resource, $classfile);
  * </code>
- * 
- * If you are writting your own message sources, pay attention to the 
+ *
+ * If you are writting your own message sources, pay attention to the
  * loadCatalogue method. It details how the resources are loaded and cached.
  * See also the existing message source types as examples.
- * 
+ *
  * The following example instantiates a Database message source, set the culture,
- * set the cache handler, and use the source in a message formatter. 
+ * set the cache handler, and use the source in a message formatter.
  * The messages are stored using an existing connection. The source parameter
  * for the factory method must contain a valid ConnectionID.
  * <code>
  *   // db1 must be already configured
  *   $source = MessageSource::factory('Database', 'db1');
- *   
+ *
  *   //set the culture and cache, store the cache in the /tmp directory.
  *   $source->setCulture('en_AU')l
  *   $source->setCache(new MessageCache('/tmp'));
- *   
+ *
  *   $formatter = new MessageFormat($source);
  * </code>
  *
@@ -71,28 +71,28 @@ require_once(dirname(__FILE__) . '/MessageCache.php');
  * @package Prado\I18N\core
  */
 abstract class MessageSource implements IMessageSource
-{	
+{
 	/**
 	 * The culture name for this message source.
-	 * @var string 
+	 * @var string
 	 */
 	protected $culture;
 	
 	/**
 	 * Array of translation messages.
-	 * @var array 
+	 * @var array
 	 */
 	protected $messages = [];
 
 	/**
 	 * The source of message translations.
-	 * @var string 
+	 * @var string
 	 */
 	protected $source;
 	
 	/**
 	 * The translation cache.
-	 * @var MessageCache 
+	 * @var MessageCache
 	 */
 	protected $cache;
 	
@@ -103,25 +103,25 @@ abstract class MessageSource implements IMessageSource
 	 * the factory method.
 	 */
 	private function __construct()
-	{	
+	{
 		//throw new Exception('Please use the factory method to instantiate.');
 	}
 	
 	/**
 	 * Factory method to instantiate a new MessageSource depending on the
 	 * source type. The allowed source types are 'XLIFF', 'PHP', 'gettext' and
-	 * 'Database'. The source parameter depends on the source type. 
-	 * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory 
-	 * where the messages are stored. 
+	 * 'Database'. The source parameter depends on the source type.
+	 * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory
+	 * where the messages are stored.
 	 * For 'Database', 'source' must be a valid connection id.
 	 *
 	 * Custom message source are possible by supplying the a filename parameter
 	 * in the factory method.
-	 * 
+	 *
 	 * @param string the message source type.
 	 * @param string the location of the resource or the ConnectionID.
 	 * @param string the filename of the custom message source.
-	 * @return MessageSource a new message source of the specified type. 
+	 * @return MessageSource a new message source of the specified type.
 	 * @throws InvalidMessageSourceTypeException
 	 */
 	static function &factory($type, $source='.', $filename='')
@@ -148,11 +148,11 @@ abstract class MessageSource implements IMessageSource
 	}
 	
 	/**
-	 * Load a particular message catalogue. Use read() to 
+	 * Load a particular message catalogue. Use read() to
 	 * to get the array of messages. The catalogue loading sequence
 	 * is as follows
 	 *
-	 *  # [1] call getCatalogeList($catalogue) to get a list of 
+	 *  # [1] call getCatalogeList($catalogue) to get a list of
 	 *    variants for for the specified $catalogue.
 	 *  # [2] for each of the variants, call getSource($variant)
 	 *    to get the resource, could be a file or catalogue ID.
@@ -161,9 +161,9 @@ abstract class MessageSource implements IMessageSource
 	 *  # [5] if a cache miss, call load($source) to load the message array
 	 *  # [6] store the messages to cache.
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
-	 * 
+	 *
 	 * @param string a catalogue to load
-	 * @return boolean true if loaded, false otherwise.	 
+	 * @return boolean true if loaded, false otherwise.
 	 * @see read()
 	 */
 	function load($catalogue='messages')
@@ -200,18 +200,18 @@ abstract class MessageSource implements IMessageSource
 					$this->messages[$variant] = $data;
 					if($this->cache)
 						$this->cache->save($data, $variant, $this->culture);
-				}	
+				}
 				unset($data);
 			}
 		}
 		
 		return true;
-	}	
+	}
 	
 	/**
 	 * Get the array of messages.
 	 * @param parameter
-	 * @return array translation messages. 
+	 * @return array translation messages.
 	 */
 	public function read()
 	{
@@ -240,7 +240,7 @@ abstract class MessageSource implements IMessageSource
 	 * Add a untranslated message to the source. Need to call save()
 	 * to save the messages to source.
 	 * @param string message to add
-	 */	
+	 */
 	public function append($message)
 	{
 		if(!in_array($message, $this->untranslated))
@@ -254,16 +254,16 @@ abstract class MessageSource implements IMessageSource
 	public function setCulture($culture)
 	{
 		$this->culture = $culture;
-	}	
+	}
 	
 	/**
 	 * Get the culture identifier for the source.
-	 * @return string culture identifier. 
+	 * @return string culture identifier.
 	 */
 	public function getCulture()
 	{
 		return $this->culture;
-	}	
+	}
 
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
@@ -279,7 +279,7 @@ abstract class MessageSource implements IMessageSource
 	 * Load the message for a particular catalogue+variant.
 	 * This methods needs to implemented by subclasses.
 	 * @param string catalogue+variant.
-	 * @return array of translation messages. 
+	 * @return array of translation messages.
 	 */
 	protected function &loadData($variant)
 	{
@@ -289,7 +289,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Get the source, this could be a filename or database ID.
 	 * @param string catalogue+variant
-	 * @return string the resource key 
+	 * @return string the resource key
 	 */
 	protected function getSource($variant)
 	{
@@ -299,7 +299,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Determine if the source is valid.
 	 * @param string catalogue+variant
-	 * @return boolean true if valid, false otherwise. 
+	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
 	{
@@ -310,10 +310,10 @@ abstract class MessageSource implements IMessageSource
 	 * Get all the variants of a particular catalogue.
 	 * This method must be implemented by subclasses.
 	 * @param string catalogue name
-	 * @return array list of all variants for this catalogue. 
-	 */	
+	 * @return array list of all variants for this catalogue.
+	 */
 	protected function getCatalogueList($catalogue)
 	{
 		return [];
-	}		
+	}
 }

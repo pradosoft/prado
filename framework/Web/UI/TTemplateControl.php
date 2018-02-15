@@ -287,7 +287,7 @@ class TTemplateControl extends TCompositeControl
 										}
 										break;
 								}
-						} 
+						}
 						catch (Exception $ex)
 						{
 								if ($throwExceptions)
@@ -318,7 +318,7 @@ class TTemplateControl extends TCompositeControl
 										$arObj->{$key} = $control->Checked;
 								elseif ($control instanceof TDatePicker)
 										$arObj->{$key} = $control->Date;
-						} 
+						}
 						catch (Exception $ex)
 						{
 								if ($throwExceptions)

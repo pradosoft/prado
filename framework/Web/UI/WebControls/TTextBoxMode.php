@@ -20,7 +20,7 @@ namespace Prado\Web\UI\WebControls;
  * - SingleLine: the textbox will be a regular single line input
  * - MultiLine: the textbox will be a textarea allowing multiple line input
  * - Password: the textbox will hide user input like a password input box
- * 
+ *
  * Html5 declares new types that will degrade as plain textboxes on unsupported browsers:
  * - Color: a color picker can show up in the input field.
  * - Date: a date picker can show up in the input field.

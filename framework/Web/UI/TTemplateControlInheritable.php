@@ -40,7 +40,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 *
 	 * @return void
 	 * @throws TConfigurationException if a template control directive is invalid
-	 */	
+	 */
 	public function createChildControls()
 	{
 		if(null === ($_template = $this->getTemplate())) {

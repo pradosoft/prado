@@ -29,7 +29,7 @@ use Prado\Exceptions\TConfigurationException;
  * specified by {@link setHost} and the port specified by {@link setPort} which
  * default to 'localhost:2379'. All values are stored within a directory set by
  * {@link setDir} which defaults to 'pradocache'.
- * 
+ *
  * TEtcdCache only supports etcd API v2 and uses cURL to fire the HTTP
  * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
  *
@@ -138,7 +138,7 @@ class TEtcdCache extends TCache
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
-	{                                     
+	{
 		$result = $this->request('GET', $this->_dir . '/' . $key);
 	return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
 	}
@@ -156,7 +156,7 @@ class TEtcdCache extends TCache
 	{
 	$value = ['value' => serialize($value)];
 	if ($expire > 0) $value['ttl'] = $expire;
-		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);    
+		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
 	return !property_exists($result, 'errorCode');
 	}
 
@@ -212,7 +212,7 @@ class TEtcdCache extends TCache
 	$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 	curl_setopt($curl, CURLOPT_HEADER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);   
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
 	curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));

@@ -156,7 +156,7 @@ class DateFormat
 						throw new
 						Exception('function ' . $function . ' not found.');
 				}
-			}			
+			}
 		}
 
 		return I18N_toEncoding(implode('', $tokens), $charset);

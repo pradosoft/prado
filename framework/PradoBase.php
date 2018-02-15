@@ -77,7 +77,7 @@ class PradoBase
 	/**
 	 * @var array list of namespaces currently in use
 	 */
-	public static $classMap=[];	
+	public static $classMap=[];
 	/**
 	 * @var TApplication the application instance
 	 */
@@ -191,7 +191,7 @@ class PradoBase
 	public static function phpFatalErrorHandler()
 	{
 		$error = error_get_last();
-		if($error && 
+		if($error &&
 			TPhpErrorException::isFatalError($error) &&
 			error_reporting() & $error['type'])
 		{
@@ -295,7 +295,7 @@ class PradoBase
 		}
 
 		/*
-		 * Old apps compatibility support: if the component name has been specified using the 
+		 * Old apps compatibility support: if the component name has been specified using the
 		 * old namespace syntax (eg. Application.Common.MyDataModule), assume that the calling
 		 * code expects the class not to be php5.3-namespaced (eg: MyDataModule instead of
 		 * \Application\Common\MyDataModule)
@@ -358,7 +358,7 @@ class PradoBase
 				if(!class_exists($namespace) && !interface_exists($namespace))
 					class_alias($phpNamespace, $namespace);
 				return;
-			}			
+			}
 		} elseif(($pos=strrpos($namespace, '\\'))===false) {
 			// trying to autoload an old class name
 			foreach(self::$_usings as $k => $v)

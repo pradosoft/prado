@@ -30,7 +30,7 @@ namespace Prado\I18N\core;
  * send a note to license@php.net so we can mail you a copy immediately.
  *
  * @param string DSN format, similar to PEAR's DB
- * @return array DSN information. 
+ * @return array DSN information.
  * @author     Stig Bakken <ssb@php.net>
  * @author     Tomas V.V.Cox <cox@idecnet.com>
  * @author     Daniel Convissor <danielc@php.net>
@@ -155,7 +155,7 @@ namespace Prado\I18N\core;
 	
    
 	/**
-	 * Convert strings to UTF-8 via iconv. NB, the result may not by UTF-8 
+	 * Convert strings to UTF-8 via iconv. NB, the result may not by UTF-8
 	 * if the conversion failed.
 	 * @param string string to convert to UTF-8
 	 * @return string UTF-8 encoded string, original string if iconv failed.
@@ -170,7 +170,7 @@ namespace Prado\I18N\core;
 		return $string;
 	}
 
-	/** 
+	/**
 	 * Convert UTF-8 strings to a different encoding. NB. The result
 	 * may not have been encoded if iconv fails.
 	 * @param string the UTF-8 string for conversion
@@ -184,5 +184,5 @@ namespace Prado\I18N\core;
 			return $s !== false ? $s : $string;
 		}
 		return $string;
-	} 
+	}
 	

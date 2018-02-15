@@ -106,7 +106,7 @@ class TReCaptchaValidator extends TBaseValidator
 				if ($control->getVisible(true))
 					if (null !== $this->_isvalid)
 					{
-						// if the response has been tested and we reach the pre-render phase 
+						// if the response has been tested and we reach the pre-render phase
 						// then we need to regenerate the token, because it won't test positive
 						// anymore, even if solves correctly
 
@@ -122,7 +122,7 @@ class TReCaptchaValidator extends TBaseValidator
 				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->ClientID) . '); ',
 				'}',
 				'',
-				// update the validator to the result if we're in a callback 
+				// update the validator to the result if we're in a callback
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
 				$this->Page->IsCallback ? $fn . '(' . $value . ');' : '',
 				'',

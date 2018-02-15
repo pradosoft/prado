@@ -120,7 +120,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					'message'=> $exception->getMessage(),
 					'data' => null,
 					]
-			]);			
+			]);
 		}
 	}
 
@@ -155,7 +155,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	{
 		$s = json_encode($data);
 		self::checkJsonError();
-		return $s;		
+		return $s;
 	}
 
 	private static function checkJsonError()

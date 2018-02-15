@@ -20,12 +20,12 @@ use Prado\Xml\TXmlElement;
  *
  * The TRpcService class is a generic class that can be extended and used to implement
  * rpc services using different servers and protocols.
- * 
+ *
  * A server is a {@link TModule} that must subclass {@link TRpcServer}: its role is
  * to be an intermediate, moving data between the service and the provider. The base
  * {@link TRpcServer} class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
- * 
+ *
  * A protocol is a {@link TModule} that must subclass {@link TRpcProtocol}: its role is
  * to implement the protocol that exposes the rpc api. Prado already implements two
  * protocols: {@link TXmlRpcProtocol} for Xml-Rpc request and {@link TJsonRpcProtocol} for
