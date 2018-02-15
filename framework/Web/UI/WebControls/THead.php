@@ -84,7 +84,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getTitle()
 	{
-		return $this->getViewState('Title','');
+		return $this->getViewState('Title', '');
 	}
 
 	/**
@@ -95,7 +95,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function setTitle($value)
 	{
-		$this->setViewState('Title',$value,'');
+		$this->setViewState('Title', $value, '');
 	}
 
 	/**
@@ -103,7 +103,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getBaseUrl()
 	{
-		return $this->getViewState('BaseUrl','');
+		return $this->getViewState('BaseUrl', '');
 	}
 
 	/**
@@ -111,7 +111,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function setBaseUrl($url)
 	{
-		$this->setViewState('BaseUrl',$url,'');
+		$this->setViewState('BaseUrl', $url, '');
 	}
 
 	/**
@@ -119,7 +119,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getShortcutIcon()
 	{
-		return $this->getViewState('ShortcutIcon','');
+		return $this->getViewState('ShortcutIcon', '');
 	}
 
 	/**
@@ -127,7 +127,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function setShortcutIcon($url)
 	{
-		$this->setViewState('ShortcutIcon',$url,'');
+		$this->setViewState('ShortcutIcon', $url, '');
 	}
 
 	/**
@@ -135,10 +135,10 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getMetaTags()
 	{
-		if(($metaTags=$this->getViewState('MetaTags',null))===null)
+		if(($metaTags=$this->getViewState('MetaTags', null))===null)
 		{
 			$metaTags=new TMetaTagCollection;
-			$this->setViewState('MetaTags',$metaTags,null);
+			$this->setViewState('MetaTags', $metaTags, null);
 		}
 		return $metaTags;
 	}

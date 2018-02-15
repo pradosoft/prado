@@ -59,7 +59,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function getRegularExpression()
 	{
-		return $this->getViewState('RegularExpression','');
+		return $this->getViewState('RegularExpression', '');
 	}
 
 	/**
@@ -67,7 +67,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function setRegularExpression($value)
 	{
-		$this->setViewState('RegularExpression',$value,'');
+		$this->setViewState('RegularExpression', $value, '');
 	}
 
 	/**
@@ -81,10 +81,10 @@ class TRegularExpressionValidator extends TBaseValidator
 	{
 		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
 			return true;
-		if(($expression=addcslashes($this->getRegularExpression(),"/"))!=='')
+		if(($expression=addcslashes($this->getRegularExpression(), "/"))!=='')
 		{
 			$mods = $this->getPatternModifiers();
-			return preg_match("/^$expression\$/{$mods}",$value);
+			return preg_match("/^$expression\$/{$mods}", $value);
 		}
 		else
 			return true;

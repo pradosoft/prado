@@ -85,7 +85,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -131,11 +131,11 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
-			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
+			$this->raiseBubbleEvent($this, new TDataListCommandEventParameter($this, $sender, $param));
 			return true;
 		}
 		else

@@ -47,7 +47,7 @@ class TComponentReflection extends \Prado\TComponent
 	 */
 	public function __construct($component)
 	{
-		if(is_string($component) && class_exists($component,false))
+		if(is_string($component) && class_exists($component, false))
 			$this->_className=$component;
 		elseif(is_object($component))
 			$this->_className=get_class($component);
@@ -60,14 +60,14 @@ class TComponentReflection extends \Prado\TComponent
 	{
 		$methodName=$method->getName();
 		return $method->getNumberOfRequiredParameters()===0
-				&& strncasecmp($methodName,'get',3)===0
+				&& strncasecmp($methodName, 'get', 3)===0
 				&& isset($methodName[3]);
 	}
 
 	private function isEventMethod($method)
 	{
 		$methodName=$method->getName();
-		return strncasecmp($methodName,'on',2)===0
+		return strncasecmp($methodName, 'on', 2)===0
 				&& isset($methodName[2]);
 	}
 
@@ -77,7 +77,7 @@ class TComponentReflection extends \Prado\TComponent
 		$properties=[];
 		$events=[];
 		$methods=[];
-		$isComponent=is_subclass_of($this->_className,'TComponent') || strcasecmp($this->_className,'TComponent')===0;
+		$isComponent=is_subclass_of($this->_className, 'TComponent') || strcasecmp($this->_className, 'TComponent')===0;
 		foreach($class->getMethods() as $method)
 		{
 			if($method->isPublic() || $method->isProtected())
@@ -86,14 +86,14 @@ class TComponentReflection extends \Prado\TComponent
 				if(!$method->isStatic() && $isComponent)
 				{
 					if($this->isPropertyMethod($method))
-						$properties[substr($methodName,3)]=$method;
+						$properties[substr($methodName, 3)]=$method;
 					elseif($this->isEventMethod($method))
 					{
 						$methodName[0]='O';
 						$events[$methodName]=$method;
 					}
 				}
-				if(strncmp($methodName,'__',2)!==0)
+				if(strncmp($methodName, '__', 2)!==0)
 					$methods[$methodName]=$method;
 			}
 		}
@@ -143,7 +143,7 @@ class TComponentReflection extends \Prado\TComponent
 	protected function determinePropertyType($method)
 	{
 		$comment=$method->getDocComment();
-		if(preg_match('/@return\\s+(.*?)\\s+/',$comment,$matches))
+		if(preg_match('/@return\\s+(.*?)\\s+/', $comment, $matches))
 			return $matches[1];
 		else
 			return '{unknown}';

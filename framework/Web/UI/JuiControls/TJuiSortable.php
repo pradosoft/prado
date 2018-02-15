@@ -126,7 +126,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$options=TJavaScript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
 		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
@@ -302,7 +302,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 		$repeater = new TRepeater;
 		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="' . $this->getWidgetID() . '">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));
+		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>', null));
 		$repeater->setEmptyTemplate(new TJuiSortableTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;

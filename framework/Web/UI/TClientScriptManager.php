@@ -159,7 +159,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		$this->registerPradoScriptInternal($name);
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerPradoScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerPradoScript', $params);
 	}
 
 	/**
@@ -182,7 +182,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if (isset(self::$_scripts[$name]))
 				$this->_registeredScripts[$name]=true;
 			else
-				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
+				throw new TInvalidOperationException('csmanager_pradoscript_invalid', $name);
 
 			if(($packages=array_keys($this->_registeredScripts))!==[])
 			{
@@ -221,7 +221,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 					}
 				}
 				foreach($packagesUrl as $url)
-					$this->registerScriptFile($url,$url);
+					$this->registerScriptFile($url, $url);
 			}
 		}
 	}
@@ -278,7 +278,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		}
 		else
 		{
-			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(),'',$base), $base];
+			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(), '', $base), $base];
 		}
 	}
 
@@ -291,7 +291,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		list($base, $subPath) = explode("/", $script, 2);
 
 		if(!array_key_exists($base, self::$_scriptsFolders))
-			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid', $base);
 
 		$namespace = self::$_scriptsFolders[$base];
 		if(($dir = Prado::getPathOfNameSpace($namespace)) !== null) {
@@ -310,7 +310,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		list($base, $subPath) = explode("/", $script, 2);
 
 		if(!array_key_exists($base, self::$_stylesFolders))
-			throw new TInvalidOperationException('csmanager_pradostyle_invalid',$base);
+			throw new TInvalidOperationException('csmanager_pradostyle_invalid', $base);
 
 		$namespace = self::$_stylesFolders[$base];
 		if(($dir = Prado::getPathOfNameSpace($namespace)) !== null) {
@@ -351,7 +351,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->registerPradoScriptInternal('ajax');
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerCallbackControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerCallbackControl', $params);
 	}
 
 	/**
@@ -360,7 +360,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string javascript class responsible for the control being registered for postback
 	 * @param array postback options
 	 */
-	public function registerPostBackControl($class,$options)
+	public function registerPostBackControl($class, $options)
 	{
 		if($class === null) {
 			return;
@@ -374,7 +374,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->registerPradoScriptInternal('prado');
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerPostBackControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerPostBackControl', $params);
 	}
 
 	/**
@@ -401,7 +401,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->registerPradoScriptInternal('prado');
 
 		$params=[$panelID,$buttonID];
-		$this->_page->registerCachingAction('Page.ClientScript','registerDefaultButton',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerDefaultButton', $params);
 	}
 
 	/**
@@ -431,7 +431,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_endScripts['prado:focus'] = 'jQuery(\'#' . $target . '\').focus();';
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerFocusControl', $params);
 	}
 
 	/**
@@ -443,7 +443,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		$this->registerPradoStyleInternal($name);
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerPradoStyle',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerPradoStyle', $params);
 	}
 
 	/**
@@ -457,7 +457,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if(self::$_styles === null)
 			{
 				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::CSS_PACKAGES_FILE;
-				list($folders, $packages,$deps)= include($packageFile);
+				list($folders, $packages, $deps)= include($packageFile);
 				self::$_stylesFolders = $folders;
 				self::$_styles = $deps;
 				self::$_stylesPackages = $packages;
@@ -466,7 +466,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if (isset(self::$_styles[$name]))
 				$this->_registeredStyles[$name]=true;
 			else
-				throw new TInvalidOperationException('csmanager_pradostyle_invalid',$name);
+				throw new TInvalidOperationException('csmanager_pradostyle_invalid', $name);
 
 			if(($packages=array_keys($this->_registeredStyles))!==[])
 			{
@@ -492,7 +492,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 					}
 				}
 				foreach($packagesUrl as $url)
-					$this->registerStyleSheetFile($url,$url);
+					$this->registerStyleSheetFile($url, $url);
 			}
 		}
 	}
@@ -519,7 +519,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string URL to the CSS file
 	 * @param string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
 	 */
-	public function registerStyleSheetFile($key,$url,$media='')
+	public function registerStyleSheetFile($key, $url, $media='')
 	{
 		if($media==='')
 			$this->_styleSheetFiles[$key]=$url;
@@ -527,7 +527,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			$this->_styleSheetFiles[$key]=[$url,$media];
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheetFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerStyleSheetFile', $params);
 	}
 
 	/**
@@ -535,12 +535,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string a unique key identifying the CSS block
 	 * @param string CSS block
 	 */
-	public function registerStyleSheet($key,$css,$media='')
+	public function registerStyleSheet($key, $css, $media='')
 	{
 		$this->_styleSheets[$key]=$css;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheet',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerStyleSheet', $params);
 	}
 
 	/**
@@ -556,7 +556,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		);
 
 		foreach(Prado::getApplication()->getAssetManager()->getPublished() as $path=>$url)
-			if (substr($url,strlen($url)-4)=='.css')
+			if (substr($url, strlen($url)-4)=='.css')
 				$stylesheets[] = $url;
 
 		$stylesheets = array_unique($stylesheets);
@@ -578,13 +578,13 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string a unique key identifying the file
 	 * @param string URL to the javascript file
 	 */
-	public function registerHeadScriptFile($key,$url)
+	public function registerHeadScriptFile($key, $url)
 	{
 		$this->checkIfNotInRender();
 		$this->_headScriptFiles[$key]=$url;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerHeadScriptFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerHeadScriptFile', $params);
 	}
 
 	/**
@@ -592,13 +592,13 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string a unique key identifying the script block
 	 * @param string javascript block
 	 */
-	public function registerHeadScript($key,$script)
+	public function registerHeadScript($key, $script)
 	{
 		$this->checkIfNotInRender();
 		$this->_headScripts[$key]=$script;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerHeadScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerHeadScript', $params);
 	}
 
 	/**
@@ -611,7 +611,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_scriptFiles[$key]=$url;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerScriptFile',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerScriptFile', $params);
 	}
 
 	/**
@@ -619,13 +619,13 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string a unique key identifying the script block
 	 * @param string javascript block
 	 */
-	public function registerBeginScript($key,$script)
+	public function registerBeginScript($key, $script)
 	{
 		$this->checkIfNotInRender();
 		$this->_beginScripts[$key]=$script;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerBeginScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerBeginScript', $params);
 	}
 
 	/**
@@ -633,12 +633,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string a unique key identifying the script block
 	 * @param string javascript block
 	 */
-	public function registerEndScript($key,$script)
+	public function registerEndScript($key, $script)
 	{
 		$this->_endScripts[$key]=$script;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerEndScript',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerEndScript', $params);
 	}
 
 	/**
@@ -647,12 +647,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param string|array hidden field value, if the value is an array, every element
 	 * in the array will be rendered as a hidden field value.
 	 */
-	public function registerHiddenField($name,$value)
+	public function registerHiddenField($name, $value)
 	{
 		$this->_hiddenFields[$name]=$value;
 
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','registerHiddenField',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'registerHiddenField', $params);
 	}
 
 	/**
@@ -765,7 +765,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function renderStyleSheets($writer)
 	{
 		if(count($this->_styleSheets))
-			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n" . implode("\n",$this->_styleSheets) . "\n/*]]>*/\n</style>\n");
+			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n" . implode("\n", $this->_styleSheets) . "\n/*]]>*/\n</style>\n");
 	}
 
 	/**
@@ -773,7 +773,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function renderHeadScriptFiles($writer)
 	{
-		$this->renderScriptFiles($writer,$this->_headScriptFiles);
+		$this->renderScriptFiles($writer, $this->_headScriptFiles);
 	}
 
 	/**
@@ -798,7 +798,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		$this->_renderedScriptFiles[$url] = $url;
 		$params=func_get_args();
-		$this->_page->registerCachingAction('Page.ClientScript','markScriptFileAsRendered',$params);
+		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);
 	}
 
 	protected function renderScriptFiles($writer, Array $scripts)
@@ -822,8 +822,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	{
 		if(!empty($this->_scriptFiles))
 		{
-			$addedScripts = array_diff($this->_scriptFiles,$this->getRenderedScriptFiles());
-			$this->renderScriptFiles($writer,$addedScripts);
+			$addedScripts = array_diff($this->_scriptFiles, $this->getRenderedScriptFiles());
+			$this->renderScriptFiles($writer, $addedScripts);
 		}
 	}
 
@@ -861,12 +861,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	public function renderHiddenFieldsBegin($writer)
 	{
-		$this->renderHiddenFieldsInt($writer,true);
+		$this->renderHiddenFieldsInt($writer, true);
 	}
 
 	public function renderHiddenFieldsEnd($writer)
 	{
-		$this->renderHiddenFieldsInt($writer,false);
+		$this->renderHiddenFieldsInt($writer, false);
 	}
 
 	/**
@@ -897,8 +897,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{
-			if (in_array($name,$this->_renderedHiddenFields)) continue;
-			$id=strtr($name,':','_');
+			if (in_array($name, $this->_renderedHiddenFields)) continue;
+			$id=strtr($name, ':', '_');
 			if(is_array($value))
 			{
 				foreach($value as $v)

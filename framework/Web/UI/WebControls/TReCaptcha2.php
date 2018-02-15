@@ -242,7 +242,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	 */
 	public function reset()
 	{
-		$this->Page->CallbackClient->callClientFunction('grecaptcha.reset',[[$this->WidgetId]]);
+		$this->Page->CallbackClient->callClientFunction('grecaptcha.reset', [[$this->WidgetId]]);
 	}
 	/**
 	 * Gets the response for the reCAPTCHA widget.
@@ -316,7 +316,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 	public function raiseCallbackEvent($param)
@@ -331,7 +331,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 			{
 				$this->WidgetId = $params->widgetId;
 				$this->Response = $params->response;
-				$this->Page->CallbackClient->jQuery($params->responseField, 'text',[$params->response]);
+				$this->Page->CallbackClient->jQuery($params->responseField, 'text', [$params->response]);
 
 				if ($params->onCallback)
 				{

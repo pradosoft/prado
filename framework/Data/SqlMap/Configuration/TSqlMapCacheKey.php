@@ -38,7 +38,7 @@ class TSqlMapCacheKey
 	 */
 	protected function generateKey($string)
 	{
-		return sprintf('%x',crc32($string));
+		return sprintf('%x', crc32($string));
 	}
 
 	/**

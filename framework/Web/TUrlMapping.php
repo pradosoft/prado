@@ -122,7 +122,7 @@ class TUrlMapping extends TUrlManager
 				$this->_urlPrefix=$request->getApplicationUrl();
 			}
 		}
-		$this->_urlPrefix=rtrim($this->_urlPrefix,'/');
+		$this->_urlPrefix=rtrim($this->_urlPrefix, '/');
 	}
 
 	/**
@@ -146,7 +146,7 @@ class TUrlMapping extends TUrlManager
 			}
 		}
 		else
-			throw new TConfigurationException('urlmapping_configfile_inexistent',$this->_configFile);
+			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
 	}
 
 	/**
@@ -207,8 +207,8 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null)
-			throw new TConfigurationException('urlmapping_configfile_invalid',$value);
+		if(($this->_configFile=Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt()))===null)
+			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
 	}
 
 	/**
@@ -249,7 +249,7 @@ class TUrlMapping extends TUrlManager
 				{
 					$class=isset($url['class'])?$url['class']:$defaultClass;
 					$properties = isset($url['properties'])?$url['properties']:[];
-					$this->buildUrlMapping($class,$properties,$url);
+					$this->buildUrlMapping($class, $properties, $url);
 				}
 			}
 		}
@@ -260,18 +260,18 @@ class TUrlMapping extends TUrlManager
 				$properties=$url->getAttributes();
 				if(($class=$properties->remove('class'))===null)
 					$class=$defaultClass;
-				$this->buildUrlMapping($class,$properties,$url);
+				$this->buildUrlMapping($class, $properties, $url);
 			}
 		}
 	}
 
 	private function buildUrlMapping($class, $properties, $url)
 	{
-		$pattern=Prado::createComponent($class,$this);
+		$pattern=Prado::createComponent($class, $this);
 		if(!($pattern instanceof TUrlMappingPattern))
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
 		foreach($properties as $name=>$value)
-			$pattern->setSubproperty($name,$value);
+			$pattern->setSubproperty($name, $value);
 
 		if($url instanceof TXmlElement) {
 			$text = $url -> getValue();
@@ -351,21 +351,21 @@ class TUrlMapping extends TUrlManager
 	 * @see parseUrl
 	 * @since 3.1.1
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
+	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
 		if($this->_customUrl)
 		{
 			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
 				$getItems=[];
 			$key=$serviceID . ':' . $serviceParam;
-			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
-				$serviceID . ':' . substr($serviceParam,0,$pos) . '.*' : $serviceID . ':*';
+			$wildCardKey = ($pos=strrpos($serviceParam, '.'))!==false ?
+				$serviceID . ':' . substr($serviceParam, 0, $pos) . '.*' : $serviceID . ':*';
 			if(isset($this->_constructRules[$key]))
 			{
 				foreach($this->_constructRules[$key] as $rule)
 				{
 					if($rule->supportCustomUrl($getItems))
-						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
 				}
 			}
 			elseif(isset($this->_constructRules[$wildCardKey]))
@@ -374,13 +374,13 @@ class TUrlMapping extends TUrlManager
 				{
 					if($rule->supportCustomUrl($getItems))
 					{
-						$getItems['*']= $pos ? substr($serviceParam,$pos+1) : $serviceParam;
-						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+						$getItems['*']= $pos ? substr($serviceParam, $pos+1) : $serviceParam;
+						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
 					}
 				}
 			}
 		}
-		return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+		return parent::constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
 	}
 
 	/**

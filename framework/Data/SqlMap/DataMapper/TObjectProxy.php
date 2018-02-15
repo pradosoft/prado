@@ -41,7 +41,7 @@ class TObjectProxy
 	 * @param array method arguments
 	 * @return mixed method return value.
 	 */
-	public function __call($method,$params)
+	public function __call($method, $params)
 	{
 		if($this->_handler->hasMethod($method))
 			return $this->_handler->intercept($method, $params);

@@ -50,7 +50,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	 */
 	public function getInitialValue()
 	{
-		return $this->getViewState('InitialValue',$this->getControlPromptValue());
+		return $this->getViewState('InitialValue', $this->getControlPromptValue());
 	}
 
 	/**
@@ -72,7 +72,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	 */
 	public function setInitialValue($value)
 	{
-		$this->setViewState('InitialValue',TPropertyValue::ensureString($value),'');
+		$this->setViewState('InitialValue', TPropertyValue::ensureString($value), '');
 	}
 
 	/**

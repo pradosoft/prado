@@ -33,7 +33,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 			case 'char': case 'varchar':
 				return $this->createMultiLineControl($container, $column, $record);
 			default:
-				return $this->createDefaultControl($container,$column, $record);
+				return $this->createDefaultControl($container, $column, $record);
 		}
 	}
 
@@ -48,7 +48,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 			case 'timestamp':
 				return $this->getDateTimeValue($container, $column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);
+				return $this->getDefaultControlValue($container, $column, $record);
 		}
 	}
 }

@@ -60,11 +60,11 @@ class TCacheHttpSession extends THttpSession
 		if($this->_cacheModuleID==='')
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
 		elseif(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
-			throw new TConfigurationException('cachesession_cachemodule_inexistent',$this->_cacheModuleID);
+			throw new TConfigurationException('cachesession_cachemodule_inexistent', $this->_cacheModuleID);
 		elseif($cache instanceof ICache)
 			$this->_cache=$cache;
 		else
-			throw new TConfigurationException('cachesession_cachemodule_invalid',$this->_cacheModuleID);
+			throw new TConfigurationException('cachesession_cachemodule_invalid', $this->_cacheModuleID);
 		$this->setUseCustomStorage(true);
 		parent::init($config);
 	}
@@ -109,9 +109,9 @@ class TCacheHttpSession extends THttpSession
 	 * @param string session data
 	 * @return boolean whether session write is successful
 	 */
-	public function _write($id,$data)
+	public function _write($id, $data)
 	{
-		return $this->_cache->set($this->calculateKey($id),$data,$this->getTimeout());
+		return $this->_cache->set($this->calculateKey($id), $data, $this->getTimeout());
 	}
 
 	/**

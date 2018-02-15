@@ -96,7 +96,7 @@ class TApplicationComponent extends \Prado\TComponent
 	 * @param string name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
 	 * @return string URL to the asset path.
 	 */
-	public function publishAsset($assetPath,$className=null)
+	public function publishAsset($assetPath, $className=null)
 	{
 		if($className===null)
 			$className=get_class($this);

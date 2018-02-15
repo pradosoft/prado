@@ -73,7 +73,7 @@ class TActiveHtmlArea extends THtmlArea implements ICallbackEventHandler, IActiv
 		$this->getPage()->getCallbackClient()->evaluateScript($command);
 	  }
 	  else
-		$this->getPage()->getCallbackClient()->setValue($this,$value);
+		$this->getPage()->getCallbackClient()->setValue($this, $value);
 	}
   }
 

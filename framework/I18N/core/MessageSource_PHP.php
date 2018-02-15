@@ -124,7 +124,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$source = $catalogue . $this->dataExt;
 		$catalogues = [$source];
 		$variant = null;
@@ -139,7 +139,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		$byDir = $this->getCatalogueByDir($catalogue);
-		return array_merge($byDir,array_reverse($catalogues));
+		return array_merge($byDir, array_reverse($catalogues));
 	}
 
 	/**
@@ -151,7 +151,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$catalogues = [];
 		$variant = null;
 
@@ -184,7 +184,7 @@ class MessageSource_PHP extends MessageSource
 	 * E.g. array('messages','en_AU')
 	 * @return array list of catalogues
 	 */
-	protected function getCatalogues($dir=null,$variant=null)
+	protected function getCatalogues($dir=null, $variant=null)
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
@@ -192,18 +192,18 @@ class MessageSource_PHP extends MessageSource
 
 		foreach($files as $file)
 		{
-			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file)) {
+			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
 				$catalogue = array_merge(
 					$catalogue,
 					$this->getCatalogues($dir . '/' . $file, $file)
 				);
 			}
 
-			$pos = strpos($file,$this->dataExt);
+			$pos = strpos($file, $this->dataExt);
 			if($pos >0 && substr($file, -1*strlen($this->dataExt)) == $this->dataExt)
 			{
-				$name = substr($file,0,$pos);
-				$dot = strrpos($name,$this->dataSeparator);
+				$name = substr($file, 0, $pos);
+				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
 
@@ -390,7 +390,7 @@ class MessageSource_PHP extends MessageSource
 
 		if(!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir,PRADO_CHMOD);
+			@chmod($dir, PRADO_CHMOD);
 		}
 
 		if(!is_dir($dir)) {

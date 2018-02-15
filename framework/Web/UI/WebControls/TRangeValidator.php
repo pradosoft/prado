@@ -66,7 +66,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function getMinValue()
 	{
-		return $this->getViewState('MinValue','');
+		return $this->getViewState('MinValue', '');
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setMinValue($value)
 	{
-		$this->setViewState('MinValue',TPropertyValue::ensureString($value),'');
+		$this->setViewState('MinValue', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -83,7 +83,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function getMaxValue()
 	{
-		return $this->getViewState('MaxValue','');
+		return $this->getViewState('MaxValue', '');
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setMaxValue($value)
 	{
-		$this->setViewState('MaxValue',TPropertyValue::ensureString($value),'');
+		$this->setViewState('MaxValue', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setStrictComparison($value)
 	{
-		$this->setViewState('StrictComparison', TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('StrictComparison', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType',TRangeValidationDataType::String);
+		return $this->getViewState('DataType', TRangeValidationDataType::String);
 	}
 
 	/**
@@ -126,7 +126,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TRangeValidationDataType'),TRangeValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRangeValidationDataType'), TRangeValidationDataType::String);
 	}
 
 	/**
@@ -199,16 +199,16 @@ class TRangeValidator extends TBaseValidator
 		$minValue=$this->getMinValue();
 		$maxValue=$this->getMaxValue();
 
-		$valid=preg_match('/^[-+]?[0-9]+$/',trim($value));
+		$valid=preg_match('/^[-+]?[0-9]+$/', trim($value));
 		$value=intval($value);
 		if($minValue!=='')
 			$valid=$valid && $this->isGreaterThan($value, intval($minValue));
 		if($maxValue!=='')
-			$valid=$valid && $this->isLessThan($value,intval($maxValue));
+			$valid=$valid && $this->isLessThan($value, intval($maxValue));
 		return $valid;
 	}
 
-	protected function isLessThan($left,$right)
+	protected function isLessThan($left, $right)
 	{
 		return $this->getStrictComparison() ? $left < $right : $left <= $right;
 	}
@@ -228,12 +228,12 @@ class TRangeValidator extends TBaseValidator
 		$minValue=$this->getMinValue();
 		$maxValue=$this->getMaxValue();
 
-		$valid=preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
+		$valid=preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
 		$value=floatval($value);
 		if($minValue!=='')
-			$valid=$valid && $this->isGreaterThan($value,floatval($minValue));
+			$valid=$valid && $this->isGreaterThan($value, floatval($minValue));
 		if($maxValue!=='')
-			$valid=$valid && $this->isLessThan($value,floatval($maxValue));
+			$valid=$valid && $this->isLessThan($value, floatval($maxValue));
 		return $valid;
 	}
 
@@ -256,18 +256,18 @@ class TRangeValidator extends TBaseValidator
 			$formatter= new TSimpleDateFormatter($dateFormat);
 			$value = $formatter->parse($value);
 			if($minValue!=='')
-				$valid=$valid && $this->isGreaterThan($value,$formatter->parse($minValue));
+				$valid=$valid && $this->isGreaterThan($value, $formatter->parse($minValue));
 			if($maxValue!=='')
-				$valid=$valid && $this->isLessThan($value,$formatter->parse($maxValue));
+				$valid=$valid && $this->isLessThan($value, $formatter->parse($maxValue));
 			return $valid;
 		}
 		else
 		{
 			$value=strtotime($value);
 			if($minValue!=='')
-				$valid=$valid && $this->isGreaterThan($value,strtotime($minValue));
+				$valid=$valid && $this->isGreaterThan($value, strtotime($minValue));
 			if($maxValue!=='')
-				$valid=$valid && $this->isLessThan($value,strtotime($maxValue));
+				$valid=$valid && $this->isLessThan($value, strtotime($maxValue));
 			return $valid;
 		}
 	}
@@ -285,9 +285,9 @@ class TRangeValidator extends TBaseValidator
 
 		$valid=true;
 		if($minValue!=='')
-			$valid=$valid && $this->isGreaterThan(strcmp($value,$minValue),0);
+			$valid=$valid && $this->isGreaterThan(strcmp($value, $minValue), 0);
 		if($maxValue!=='')
-			$valid=$valid && $this->isLessThan(strcmp($value,$maxValue),0);
+			$valid=$valid && $this->isLessThan(strcmp($value, $maxValue), 0);
 		return $valid;
 	}
 
@@ -312,9 +312,9 @@ class TRangeValidator extends TBaseValidator
 
 		$length = iconv_strlen($value, $charset);
 		if($minValue!=='')
-			$valid = $valid && $this->isGreaterThan($length,intval($minValue));
+			$valid = $valid && $this->isGreaterThan($length, intval($minValue));
 		if($maxValue!=='')
-			$valid = $valid && $this->isLessThan($length,intval($maxValue));
+			$valid = $valid && $this->isLessThan($length, intval($maxValue));
 		return $valid;
 	}
 

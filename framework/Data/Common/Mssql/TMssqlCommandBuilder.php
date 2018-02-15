@@ -86,9 +86,9 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 		$limit = $limit!==null ? intval($limit) : -1;
 		$offset = $offset!==null ? intval($offset) : -1;
 		if ($limit > 0 && $offset <= 0) //just limit
-			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $limit", $sql);
+			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
 		elseif($limit > 0 && $offset > 0)
-			$sql = $this->rewriteLimitOffsetSql($sql, $limit,$offset);
+			$sql = $this->rewriteLimitOffsetSql($sql, $limit, $offset);
 		return $sql;
 	}
 
@@ -103,7 +103,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)
 	{
 		$fetch = $limit+$offset;
-		$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $fetch", $sql);
+		$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $fetch", $sql);
 		$ordering = $this->findOrdering($sql);
 
 		$orginalOrdering = $this->joinOrdering($ordering);

@@ -243,7 +243,7 @@ class NumberFormatInfo
 	 */
 	protected function parsePattern($pattern)
 	{
-		$pattern = explode(';',$pattern);
+		$pattern = explode(';', $pattern);
 
 		$negative = null;
 		if(count($pattern) > 1)
@@ -256,8 +256,8 @@ class NumberFormatInfo
 		$hash = '#';
 
 		//find the first group point, and decimal point
-		$groupPos1 = strrpos($pattern,$comma);
-		$decimalPos = strrpos($pattern,$dot);
+		$groupPos1 = strrpos($pattern, $comma);
+		$decimalPos = strrpos($pattern, $dot);
 
 		$groupPos2 = false;
 		$groupSize1 = false;
@@ -287,7 +287,7 @@ class NumberFormatInfo
 		if(is_int($groupPos1))
 		{
 			//get the second group
-			$groupPos2 = strrpos(substr($pattern,0,$groupPos1),$comma);
+			$groupPos2 = strrpos(substr($pattern, 0, $groupPos1), $comma);
 
 			//get the number of decimal digits
 			if(is_int($decimalPos))
@@ -328,11 +328,11 @@ class NumberFormatInfo
 		}
 
 		if(is_int($decimalPos))
-			$digitPattern = substr($pattern,0,$decimalPos);
+			$digitPattern = substr($pattern, 0, $decimalPos);
 		else
 			$digitPattern  = $pattern;
 
-		$digitPattern  = preg_replace('/[^0]/','',$digitPattern);
+		$digitPattern  = preg_replace('/[^0]/', '', $digitPattern);
 
 		$info['groupPos1'] = $groupPos1;
 		$info['groupSize1'] = $groupSize1;

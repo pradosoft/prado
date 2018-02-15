@@ -70,7 +70,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data=null, $readOnly=false)
 	{
 		if($data!==null)
 			$this->copyFrom($data);
@@ -147,12 +147,12 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed value
 	 * @throws TInvalidOperationException if the map is read-only
 	 */
-	public function add($key,$value)
+	public function add($key, $value)
 	{
 		if(!$this->_r)
 			$this->_d[$key]=$value;
 		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly', get_class($this));
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	{
 		if(!$this->_r)
 		{
-			if(isset($this->_d[$key]) || array_key_exists($key,$this->_d))
+			if(isset($this->_d[$key]) || array_key_exists($key, $this->_d))
 			{
 				$value=$this->_d[$key];
 				unset($this->_d[$key]);
@@ -175,7 +175,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 				return null;
 		}
 		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly', get_class($this));
 	}
 
 	/**
@@ -193,7 +193,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function contains($key)
 	{
-		return isset($this->_d[$key]) || array_key_exists($key,$this->_d);
+		return isset($this->_d[$key]) || array_key_exists($key, $this->_d);
 	}
 
 	/**
@@ -217,7 +217,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			if($this->getCount()>0)
 				$this->clear();
 			foreach($data as $key=>$value)
-				$this->add($key,$value);
+				$this->add($key, $value);
 		}
 		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
@@ -234,7 +234,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 		if(is_array($data) || $data instanceof Traversable)
 		{
 			foreach($data as $key=>$value)
-				$this->add($key,$value);
+				$this->add($key, $value);
 		}
 		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
@@ -268,9 +268,9 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
-		$this->add($offset,$item);
+		$this->add($offset, $item);
 	}
 
 	/**

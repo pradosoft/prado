@@ -39,7 +39,7 @@ class TView extends \Prado\Web\UI\TControl
 	 */
 	public function onActivate($param)
 	{
-		$this->raiseEvent('OnActivate',$this,$param);
+		$this->raiseEvent('OnActivate', $this, $param);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class TView extends \Prado\Web\UI\TControl
 	 */
 	public function onDeactivate($param)
 	{
-		$this->raiseEvent('OnDeactivate',$this,$param);
+		$this->raiseEvent('OnDeactivate', $this, $param);
 	}
 
 	/**

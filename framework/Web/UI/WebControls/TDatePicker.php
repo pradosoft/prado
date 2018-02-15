@@ -105,7 +105,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getDateFormat()
 	{
-		return $this->getViewState('DateFormat','dd-MM-yyyy');
+		return $this->getViewState('DateFormat', 'dd-MM-yyyy');
 	}
 
 	/**
@@ -114,7 +114,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setDateFormat($value)
 	{
-		$this->setViewState('DateFormat',$value,'dd-MM-yyyy');
+		$this->setViewState('DateFormat', $value, 'dd-MM-yyyy');
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getShowCalendar()
 	{
-		return $this->getViewState('ShowCalendar',true);
+		return $this->getViewState('ShowCalendar', true);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setShowCalendar($value)
 	{
-		$this->setViewState('ShowCalendar',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowCalendar', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -464,7 +464,7 @@ class TDatePicker extends TTextBox
 	 * @param array the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if($this->getInputMode() == TDatePickerInputMode::TextBox)
 			return parent::loadPostData($key, $values);
@@ -514,7 +514,7 @@ class TDatePicker extends TTextBox
 
 		$s = new \DateTime;
 		$s->setDate($year, $month, $day);
-		$s->setTime(0, 0 , 0);
+		$s->setTime(0, 0, 0);
 		$date = $s->getTimeStamp();
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
@@ -672,7 +672,7 @@ class TDatePicker extends TTextBox
 	 * @param array list of selection options
 	 * @param mixed selected key.
 	 */
-	private function renderDropDownListOptions($writer,$options,$selected=null)
+	private function renderDropDownListOptions($writer, $options, $selected=null)
 	{
 		foreach($options as $k => $v)
 		{
@@ -800,7 +800,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('type', 'button');
 		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerButton');
-		$writer->addAttribute('value',$this->getButtonText());
+		$writer->addAttribute('value', $this->getButtonText());
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
 		$writer->renderBeginTag("input");
@@ -857,7 +857,7 @@ class TDatePicker extends TTextBox
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 	}
 
 	/**

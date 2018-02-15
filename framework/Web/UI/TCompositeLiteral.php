@@ -104,6 +104,6 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function render($writer)
 	{
-		$writer->write(implode('',$this->_items));
+		$writer->write(implode('', $this->_items));
 	}
 }

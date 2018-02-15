@@ -107,7 +107,7 @@ class TUri extends \Prado\TComponent
 		}
 		else
 		{
-			throw new TInvalidDataValueException('uri_format_invalid',$uri);
+			throw new TInvalidDataValueException('uri_format_invalid', $uri);
 		}
 	}
 

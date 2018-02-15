@@ -45,11 +45,11 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
-			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
+			$this->raiseBubbleEvent($this, new TDataGridCommandEventParameter($this, $sender, $param));
 			return true;
 		}
 		else

@@ -96,7 +96,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		{
 			$this->_levels=null;
 			$levels=strtolower($levels);
-			foreach(explode(',',$levels) as $level)
+			foreach(explode(',', $levels) as $level)
 			{
 				$level=trim($level);
 				if(isset(self::$_levelValues[$level]))
@@ -124,7 +124,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		else
 		{
 			$this->_categories=null;
-			foreach(explode(',',$categories) as $category)
+			foreach(explode(',', $categories) as $category)
 			{
 				if(($category=trim($category))!=='')
 					$this->_categories[]=$category;
@@ -158,9 +158,9 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 * @param integer timestamp
 	 * @return string formatted message
 	 */
-	protected function formatLogMessage($message,$level,$category,$time)
+	protected function formatLogMessage($message, $level, $category, $time)
 	{
-		return @date('M d H:i:s',$time) . ' [' . $this->getLevelName($level) . '] [' . $category . '] ' . $message . "\n";
+		return @date('M d H:i:s', $time) . ' [' . $this->getLevelName($level) . '] [' . $category . '] ' . $message . "\n";
 	}
 
 	/**
@@ -169,7 +169,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function collectLogs(TLogger $logger)
 	{
-		$logs=$logger->getLogs($this->getLevels(),$this->getCategories());
+		$logs=$logger->getLogs($this->getLevels(), $this->getCategories());
 		if(!empty($logs))
 			$this->processLogs($logs);
 	}

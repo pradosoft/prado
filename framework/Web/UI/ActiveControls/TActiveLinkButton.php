@@ -122,7 +122,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 
 		if($this->getEnabled(true))
 		{

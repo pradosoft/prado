@@ -48,7 +48,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	public function addParsedObject($object)
 	{
 		if(is_string($object))
-			$object=html_entity_decode($object,ENT_QUOTES,'UTF-8');
+			$object=html_entity_decode($object, ENT_QUOTES, 'UTF-8');
 		parent::addParsedObject($object);
 	}
 
@@ -57,7 +57,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -65,7 +65,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value);
+		$this->setViewState('Text', $value);
 	}
 
 	/**

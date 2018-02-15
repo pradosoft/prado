@@ -53,7 +53,7 @@ class TDataFieldAccessor
 	 * @return mixed value at the specified field
 	 * @throws TInvalidDataValueException if field or data is invalid
 	 */
-	public static function getDataFieldValue($data,$field)
+	public static function getDataFieldValue($data, $field)
 	{
 		try
 		{
@@ -69,7 +69,7 @@ class TDataFieldAccessor
 			}
 			elseif(is_object($data))
 			{
-				if(strpos($field,'.')===false)  // simple field
+				if(strpos($field, '.')===false)  // simple field
 				{
 					if(method_exists($data, 'get' . $field))
 						return call_user_func([$data,'get' . $field]);
@@ -79,7 +79,7 @@ class TDataFieldAccessor
 				else // field in the format of xxx.yyy.zzz
 				{
 					$object=$data;
-					foreach(explode('.',$field) as $f)
+					foreach(explode('.', $field) as $f)
 						$object = TDataFieldAccessor::getDataFieldValue($object, $f);
 					return $object;
 				}
@@ -87,8 +87,8 @@ class TDataFieldAccessor
 		}
 		catch(Exception $e)
 		{
-			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field,$e->getMessage());
+			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid', $field, $e->getMessage());
 		}
-		throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
+		throw new TInvalidDataValueException('datafieldaccessor_data_invalid', $field);
 	}
 }

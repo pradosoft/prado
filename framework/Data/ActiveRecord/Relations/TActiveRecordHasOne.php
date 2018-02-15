@@ -99,8 +99,8 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 		$fields = array_keys($fkeys);
 
 		$indexValues = $this->getIndexValues($properties, $results);
-		$fkObjects = $this->findForeignObjects($fields,$indexValues);
-		$this->populateResult($results,$properties,$fkObjects,$fields);
+		$fkObjects = $this->findForeignObjects($fields, $indexValues);
+		$this->populateResult($results, $properties, $fkObjects, $fields);
 	}
 
 	/**

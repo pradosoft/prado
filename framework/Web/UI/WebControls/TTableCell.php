@@ -155,7 +155,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -202,9 +202,9 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		parent::addAttributesToRender($writer);
 		if(($colspan=$this->getColumnSpan())>0)
-			$writer->addAttribute('colspan',"$colspan");
+			$writer->addAttribute('colspan', "$colspan");
 		if(($rowspan=$this->getRowSpan())>0)
-			$writer->addAttribute('rowspan',"$rowspan");
+			$writer->addAttribute('rowspan', "$rowspan");
 	}
 
 	/**

@@ -84,17 +84,17 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	{
 		$this->getPage()->ensureRenderInForm($this);
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('type','file');
+		$writer->addAttribute('type', 'file');
 		$name=$this->getUniqueID();
 		if($this->getMultiple())
 		{
 		  $name.='[]';
-		  $writer->addAttribute('multiple','multiple');
+		  $writer->addAttribute('multiple', 'multiple');
 		}
-		$writer->addAttribute('name',$name);
+		$writer->addAttribute('name', $name);
 		$isEnabled=$this->getEnabled(true);
 		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 	}
 
 	/**
@@ -112,7 +112,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 			else
 				$form->setEnctype('multipart/form-data');
 		}
-		$this->getPage()->getClientScript()->registerHiddenField('MAX_FILE_SIZE',$this->getMaxFileSize());
+		$this->getPage()->getClientScript()->registerHiddenField('MAX_FILE_SIZE', $this->getMaxFileSize());
 		if($this->getEnabled(true))
 			$this->getPage()->registerRequiresPostData($this);
 	}
@@ -123,7 +123,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getMaxFileSize()
 	{
-		return $this->getViewState('MaxFileSize',self::MAX_FILE_SIZE);
+		return $this->getViewState('MaxFileSize', self::MAX_FILE_SIZE);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setMaxFileSize($size)
 	{
-		$this->setViewState('MaxFileSize',TPropertyValue::ensureInteger($size),self::MAX_FILE_SIZE);
+		$this->setViewState('MaxFileSize', TPropertyValue::ensureInteger($size), self::MAX_FILE_SIZE);
 	}
 
 	/**
@@ -224,9 +224,9 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param integer the index of the uploaded file, defaults to 0.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName,$deleteTempFile=true,$index=0)
+	public function saveAs($fileName, $deleteTempFile=true, $index=0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->saveAs($fileName,$deleteTempFile):false;
+	  return isset($this->_files[$index])?$this->_files[$index]->saveAs($fileName, $deleteTempFile):false;
 	}
 
 	/**
@@ -236,17 +236,17 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if(isset($_FILES[$key]))
 		{
 		  if($this->getMultiple()||is_array($_FILES[$key]['name']))
 		  {
 		foreach($_FILES[$key]['name'] as $index => $name)
-		  $this->_files[$index]=new TFileUploadItem($name,$_FILES[$key]['size'][$index],$_FILES[$key]['type'][$index],$_FILES[$key]['error'][$index],$_FILES[$key]['tmp_name'][$index]);
+		  $this->_files[$index]=new TFileUploadItem($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
 		  }
 		  else
-			$this->_files[0]=new TFileUploadItem($_FILES[$key]['name'],$_FILES[$key]['size'],$_FILES[$key]['type'],$_FILES[$key]['error'],$_FILES[$key]['tmp_name']);
+			$this->_files[0]=new TFileUploadItem($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
 			return $this->_dataChanged=true;
 		}
 		else
@@ -272,7 +272,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function onFileUpload($param)
 	{
-		$this->raiseEvent('OnFileUpload',$this,$param);
+		$this->raiseEvent('OnFileUpload', $this, $param);
 	}
 
 	/**
@@ -292,7 +292,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getValidationPropertyValue()
 	{
-		return implode(',',array_map(function($file){return $file->getFileName();},$this->_files));
+		return implode(',', array_map(function($file){return $file->getFileName();}, $this->_files));
 	}
 
 	/**

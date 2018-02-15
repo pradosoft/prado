@@ -74,7 +74,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -82,7 +82,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**

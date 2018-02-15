@@ -47,12 +47,12 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TWizardStep)
 		{
-			parent::insertAt($index,$item);
-			$this->_wizard->getMultiView()->getViews()->insertAt($index,$item);
+			parent::insertAt($index, $item);
+			$this->_wizard->getMultiView()->getViews()->insertAt($index, $item);
 			$this->_wizard->addedWizardStep($item);
 		}
 		else

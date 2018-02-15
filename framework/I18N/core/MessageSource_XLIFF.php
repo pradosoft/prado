@@ -127,7 +127,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$source = $catalogue . $this->dataExt;
 		$catalogues = [$source];
 		$variant = null;
@@ -142,7 +142,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		$byDir = $this->getCatalogueByDir($catalogue);
-		$catalogues = array_merge($byDir,array_reverse($catalogues));
+		$catalogues = array_merge($byDir, array_reverse($catalogues));
 		$files = [];
 
 		foreach($catalogues as $file)
@@ -163,7 +163,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$catalogues = [];
 		$variant = null;
 
@@ -196,7 +196,7 @@ class MessageSource_XLIFF extends MessageSource
 	 * E.g. array('messages','en_AU')
 	 * @return array list of catalogues
 	 */
-	protected function getCatalogues($dir=null,$variant=null)
+	protected function getCatalogues($dir=null, $variant=null)
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
@@ -204,18 +204,18 @@ class MessageSource_XLIFF extends MessageSource
 
 		foreach($files as $file)
 		{
-			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file)) {
+			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
 				$catalogue = array_merge(
 					$catalogue,
 					$this->getCatalogues($dir . '/' . $file, $file)
 				);
 			}
 
-			$pos = strpos($file,$this->dataExt);
+			$pos = strpos($file, $this->dataExt);
 			if($pos >0 && substr($file, -1*strlen($this->dataExt)) == $this->dataExt)
 			{
-				$name = substr($file,0,$pos);
-				$dot = strrpos($name,$this->dataSeparator);
+				$name = substr($file, 0, $pos);
+				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
 
@@ -303,7 +303,7 @@ class MessageSource_XLIFF extends MessageSource
 		foreach($messages as $message)
 		{
 			$unit = $dom->createElement('trans-unit');
-			$unit->setAttribute('id',++$count);
+			$unit->setAttribute('id', ++$count);
 
 			$source = $dom->createElement('source');
 			$source->appendChild($dom->createCDATASection($message));
@@ -401,12 +401,12 @@ class MessageSource_XLIFF extends MessageSource
 
 			//append a target
 			if($found && !$targetted) {
-				$unit->appendChild($dom->createElement('target',$target));
+				$unit->appendChild($dom->createElement('target', $target));
 			}
 
 			//append a note
 			if($found && !$commented && !empty($comments)) {
-				$unit->appendChild($dom->createElement('note',$comments));
+				$unit->appendChild($dom->createElement('note', $comments));
 			}
 
 			//finished searching
@@ -499,7 +499,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		if(!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir,PRADO_CHMOD);
+			@chmod($dir, PRADO_CHMOD);
 		}
 
 		if(!is_dir($dir)) {

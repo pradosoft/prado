@@ -48,7 +48,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getAlign()
 	{
-		return $this->getViewState('Align',TInlineFrameAlign::NotSet);
+		return $this->getViewState('Align', TInlineFrameAlign::NotSet);
 	}
 
 	/**
@@ -56,7 +56,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setAlign($value)
 	{
-		$this->setViewState('Align',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TInlineFrameAlign'),TInlineFrameAlign::NotSet);
+		$this->setViewState('Align', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameAlign'), TInlineFrameAlign::NotSet);
 	}
 
 	/**
@@ -64,7 +64,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getDescriptionUrl()
 	{
-		return $this->getViewState('DescriptionUrl','');
+		return $this->getViewState('DescriptionUrl', '');
 	}
 
 	/**
@@ -72,7 +72,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setDescriptionUrl($value)
 	{
-		$this->setViewState('DescriptionUrl',$value,'');
+		$this->setViewState('DescriptionUrl', $value, '');
 	}
 
 	/**
@@ -80,7 +80,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getShowBorder()
 	{
-		return $this->getViewState('ShowBorder',true);
+		return $this->getViewState('ShowBorder', true);
 	}
 
 	/**
@@ -88,7 +88,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setShowBorder($value)
 	{
-		$this->setViewState('ShowBorder',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowBorder', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getFrameUrl()
 	{
-		return $this->getViewState('FrameUrl','');
+		return $this->getViewState('FrameUrl', '');
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setFrameUrl($value)
 	{
-		$this->setViewState('FrameUrl',$value,'');
+		$this->setViewState('FrameUrl', $value, '');
 	}
 
 	/**
@@ -138,7 +138,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getScrollBars()
 	{
-		return $this->getViewState('ScrollBars',TInlineFrameScrollBars::Auto);
+		return $this->getViewState('ScrollBars', TInlineFrameScrollBars::Auto);
 	}
 
 	/**
@@ -146,7 +146,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setScrollBars($value)
 	{
-		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TInlineFrameScrollBars'),TInlineFrameScrollBars::Auto);
+		$this->setViewState('ScrollBars', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameScrollBars'), TInlineFrameScrollBars::Auto);
 	}
 
 	/**
@@ -154,7 +154,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getWidth()
 	{
-	  return $this->getViewState('Width',-1);
+	  return $this->getViewState('Width', -1);
 	}
 	
 	/**
@@ -164,7 +164,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 	  if(($value=TPropertyValue::ensureInteger($value))<0)
 		$value=-1;
-	  $this->setViewState('Width',$value,-1);
+	  $this->setViewState('Width', $value, -1);
 	}
 	
 	/**
@@ -172,7 +172,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getHeight()
 	{
-	  return $this->getViewState('Height',-1);
+	  return $this->getViewState('Height', -1);
 	}
 	
 	/**
@@ -182,7 +182,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 	  if(($value=TPropertyValue::ensureInteger($value))<0)
 		$value=-1;
-	  $this->setViewState('Height',$value,-1);
+	  $this->setViewState('Height', $value, -1);
 	}
 	
 	/**
@@ -191,7 +191,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getMarginWidth()
 	{
-		return $this->getViewState('MarginWidth',-1);
+		return $this->getViewState('MarginWidth', -1);
 	}
 
 	/**
@@ -202,7 +202,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
 			$value=-1;
-		$this->setViewState('MarginWidth',$value,-1);
+		$this->setViewState('MarginWidth', $value, -1);
 	}
 
 	/**
@@ -211,7 +211,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getMarginHeight()
 	{
-		return $this->getViewState('MarginHeight',-1);
+		return $this->getViewState('MarginHeight', -1);
 	}
 
 	/**
@@ -222,7 +222,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
 			$value=-1;
-		$this->setViewState('MarginHeight',$value,-1);
+		$this->setViewState('MarginHeight', $value, -1);
 	}
 
 	/**
@@ -233,37 +233,37 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	protected function addAttributesToRender($writer)
 	{
 		if($this->getID()!=='')
-			$writer->addAttribute('name',$this->getUniqueID());
+			$writer->addAttribute('name', $this->getUniqueID());
 
 		if(($src=$this->getFrameUrl())!=='')
-			$writer->addAttribute('src',$src);
+			$writer->addAttribute('src', $src);
 
 		if(($align=strtolower($this->getAlign()))!=='notset')
-			$writer->addAttribute('align',$align);
+			$writer->addAttribute('align', $align);
 
 		$scrollBars=$this->getScrollBars();
 		if($scrollBars===TInlineFrameScrollBars::None)
-			$writer->addAttribute('scrolling','no');
+			$writer->addAttribute('scrolling', 'no');
 		elseif($scrollBars===TInlineFrameScrollBars::Both)
-			$writer->addAttribute('scrolling','yes');
+			$writer->addAttribute('scrolling', 'yes');
 
 		if (!$this->getShowBorder())
-			$writer->addAttribute('frameborder','0');
+			$writer->addAttribute('frameborder', '0');
 
 		if(($longdesc=$this->getDescriptionUrl())!=='')
-			$writer->addAttribute('longdesc',$longdesc);
+			$writer->addAttribute('longdesc', $longdesc);
 		
 		if (($width=$this->getWidth())!==-1)
-		  $writer->addAttribute('width',$width);
+		  $writer->addAttribute('width', $width);
 		
 		if (($height=$this->getHeight())!==-1)
-		  $writer->addAttribute('height',$height);
+		  $writer->addAttribute('height', $height);
 
 		if(($marginheight=$this->getMarginHeight())!==-1)
-			$writer->addAttribute('marginheight',$marginheight);
+			$writer->addAttribute('marginheight', $marginheight);
 
 		if(($marginwidth=$this->getMarginWidth())!==-1)
-			$writer->addAttribute('marginwidth',$marginwidth);
+			$writer->addAttribute('marginwidth', $marginwidth);
 
 		parent::addAttributesToRender($writer);
 	}

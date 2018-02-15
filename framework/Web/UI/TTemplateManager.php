@@ -75,15 +75,15 @@ class TTemplateManager extends \Prado\TModule
 	{
 		if(($fileName=$this->getLocalizedTemplate($fileName))!==null)
 		{
-			Prado::trace("Loading template $fileName",'\Prado\Web\UI\TTemplateManager');
+			Prado::trace("Loading template $fileName", '\Prado\Web\UI\TTemplateManager');
 			if(($cache=$this->getApplication()->getCache())===null)
-				return new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
+				return new TTemplate(file_get_contents($fileName), dirname($fileName), $fileName);
 			else
 			{
 				$array=$cache->get(self::TEMPLATE_CACHE_PREFIX . $fileName);
 				if(is_array($array))
 				{
-					list($template,$timestamps)=$array;
+					list($template, $timestamps)=$array;
 					if($this->getApplication()->getMode()===TApplicationMode::Performance)
 						return $template;
 					$cacheValid=true;
@@ -98,13 +98,13 @@ class TTemplateManager extends \Prado\TModule
 					if($cacheValid)
 						return $template;
 				}
-				$template=new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
+				$template=new TTemplate(file_get_contents($fileName), dirname($fileName), $fileName);
 				$includedFiles=$template->getIncludedFiles();
 				$timestamps=[];
 				$timestamps[$fileName]=filemtime($fileName);
 				foreach($includedFiles as $includedFile)
 					$timestamps[$includedFile]=filemtime($includedFile);
-				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName,[$template,$timestamps]);
+				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName, [$template,$timestamps]);
 				return $template;
 			}
 		}

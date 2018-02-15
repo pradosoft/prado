@@ -50,7 +50,7 @@ class TBrowserLogRoute extends TLogRoute
 				$timing['total'] = $logs[$i][3] - $first;
 			}
 			$timing['even'] = !($even = !$even);
-			$response->write($this->renderMessage($logs[$i],$timing));
+			$response->write($this->renderMessage($logs[$i], $timing));
 		}
 		$response->write($this->renderFooter());
 	}
@@ -110,7 +110,7 @@ EOD;
 		$string = '';
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
+		$msg = preg_replace('/\(line[^\)]+\)$/', '', $log[0]); //remove line number info
 		$msg = THttpUtility::htmlEncode($msg);
 		if($this->getCssClass())
 		{

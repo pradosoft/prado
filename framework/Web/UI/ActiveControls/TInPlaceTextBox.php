@@ -81,9 +81,9 @@ class TInPlaceTextBox extends TActiveTextBox
 	public function setDisplayTextBox($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		$this->setViewState('DisplayTextBox', $value,false);
+		$this->setViewState('DisplayTextBox', $value, false);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->callClientFunction('setDisplayTextBox',$value);
+			$this->callClientFunction('setDisplayTextBox', $value);
 	}
 
 	/**
@@ -99,11 +99,11 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * @param string static method name
 	 * @param mixed method parmaeter
 	 */
-	protected function callClientFunction($func,$value)
+	protected function callClientFunction($func, $value)
 	{
 		$client = $this->getPage()->getCallbackClient();
 		$code = $this->getClientClassName() . '.' . $func;
-		$client->callClientFunction($code,[$this,$value]);
+		$client->callClientFunction($code, [$this,$value]);
 	}
 
 	/**
@@ -254,7 +254,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function onLoadingText($param)
 	{
-		$this->raiseEvent('OnLoadingText',$this,$param);
+		$this->raiseEvent('OnLoadingText', $this, $param);
 	}
 
 	/**
@@ -273,7 +273,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	{
 		//calls the TWebControl to avoid rendering other attribute normally render for a textbox.
 		TWebControl::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getLabelClientID());
+		$writer->addAttribute('id', $this->getLabelClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

@@ -207,7 +207,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getItemRenderer()
 	{
-		return $this->getViewState('ItemRenderer','');
+		return $this->getViewState('ItemRenderer', '');
 	}
 
 	/**
@@ -222,7 +222,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setItemRenderer($value)
 	{
-		$this->setViewState('ItemRenderer',$value,'');
+		$this->setViewState('ItemRenderer', $value, '');
 	}
 
 	/**
@@ -231,7 +231,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getAlternatingItemRenderer()
 	{
-		return $this->getViewState('AlternatingItemRenderer','');
+		return $this->getViewState('AlternatingItemRenderer', '');
 	}
 
 	/**
@@ -246,7 +246,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setAlternatingItemRenderer($value)
 	{
-		$this->setViewState('AlternatingItemRenderer',$value,'');
+		$this->setViewState('AlternatingItemRenderer', $value, '');
 	}
 
 	/**
@@ -255,7 +255,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getEditItemRenderer()
 	{
-		return $this->getViewState('EditItemRenderer','');
+		return $this->getViewState('EditItemRenderer', '');
 	}
 
 	/**
@@ -270,7 +270,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setEditItemRenderer($value)
 	{
-		$this->setViewState('EditItemRenderer',$value,'');
+		$this->setViewState('EditItemRenderer', $value, '');
 	}
 
 	/**
@@ -279,7 +279,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getSelectedItemRenderer()
 	{
-		return $this->getViewState('SelectedItemRenderer','');
+		return $this->getViewState('SelectedItemRenderer', '');
 	}
 
 	/**
@@ -294,7 +294,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setSelectedItemRenderer($value)
 	{
-		$this->setViewState('SelectedItemRenderer',$value,'');
+		$this->setViewState('SelectedItemRenderer', $value, '');
 	}
 
 	/**
@@ -303,7 +303,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getSeparatorRenderer()
 	{
-		return $this->getViewState('SeparatorRenderer','');
+		return $this->getViewState('SeparatorRenderer', '');
 	}
 
 	/**
@@ -318,7 +318,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setSeparatorRenderer($value)
 	{
-		$this->setViewState('SeparatorRenderer',$value,'');
+		$this->setViewState('SeparatorRenderer', $value, '');
 	}
 
 	/**
@@ -327,7 +327,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getHeaderRenderer()
 	{
-		return $this->getViewState('HeaderRenderer','');
+		return $this->getViewState('HeaderRenderer', '');
 	}
 
 	/**
@@ -342,7 +342,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setHeaderRenderer($value)
 	{
-		$this->setViewState('HeaderRenderer',$value,'');
+		$this->setViewState('HeaderRenderer', $value, '');
 	}
 
 	/**
@@ -351,7 +351,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getFooterRenderer()
 	{
-		return $this->getViewState('FooterRenderer','');
+		return $this->getViewState('FooterRenderer', '');
 	}
 
 	/**
@@ -366,7 +366,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setFooterRenderer($value)
 	{
-		$this->setViewState('FooterRenderer',$value,'');
+		$this->setViewState('FooterRenderer', $value, '');
 	}
 
 	/**
@@ -375,7 +375,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getEmptyRenderer()
 	{
-		return $this->getViewState('EmptyRenderer','');
+		return $this->getViewState('EmptyRenderer', '');
 	}
 
 	/**
@@ -391,7 +391,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setEmptyRenderer($value)
 	{
-		$this->setViewState('EmptyRenderer',$value,'');
+		$this->setViewState('EmptyRenderer', $value, '');
 	}
 
 	/**
@@ -411,7 +411,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_itemTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','ItemTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'ItemTemplate');
 	}
 
 	/**
@@ -419,10 +419,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getItemStyle()
 	{
-		if(($style=$this->getViewState('ItemStyle',null))===null)
+		if(($style=$this->getViewState('ItemStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('ItemStyle',$style,null);
+			$this->setViewState('ItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -444,7 +444,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_alternatingItemTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','AlternatingItemType');
+			throw new TInvalidDataTypeException('datalist_template_required', 'AlternatingItemType');
 	}
 
 	/**
@@ -452,10 +452,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getAlternatingItemStyle()
 	{
-		if(($style=$this->getViewState('AlternatingItemStyle',null))===null)
+		if(($style=$this->getViewState('AlternatingItemStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('AlternatingItemStyle',$style,null);
+			$this->setViewState('AlternatingItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -477,7 +477,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_selectedItemTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','SelectedItemTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'SelectedItemTemplate');
 	}
 
 	/**
@@ -485,10 +485,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getSelectedItemStyle()
 	{
-		if(($style=$this->getViewState('SelectedItemStyle',null))===null)
+		if(($style=$this->getViewState('SelectedItemStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('SelectedItemStyle',$style,null);
+			$this->setViewState('SelectedItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -510,7 +510,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_editItemTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','EditItemTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'EditItemTemplate');
 	}
 
 	/**
@@ -518,10 +518,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getEditItemStyle()
 	{
-		if(($style=$this->getViewState('EditItemStyle',null))===null)
+		if(($style=$this->getViewState('EditItemStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('EditItemStyle',$style,null);
+			$this->setViewState('EditItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -543,7 +543,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_headerTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','HeaderTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'HeaderTemplate');
 	}
 
 	/**
@@ -551,10 +551,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getHeaderStyle()
 	{
-		if(($style=$this->getViewState('HeaderStyle',null))===null)
+		if(($style=$this->getViewState('HeaderStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('HeaderStyle',$style,null);
+			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
 	}
@@ -584,7 +584,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_footerTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','FooterTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'FooterTemplate');
 	}
 
 	/**
@@ -592,10 +592,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getFooterStyle()
 	{
-		if(($style=$this->getViewState('FooterStyle',null))===null)
+		if(($style=$this->getViewState('FooterStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('FooterStyle',$style,null);
+			$this->setViewState('FooterStyle', $style, null);
 		}
 		return $style;
 	}
@@ -625,7 +625,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_emptyTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','EmptyTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'EmptyTemplate');
 	}
 
 	/**
@@ -645,7 +645,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if($value instanceof ITemplate || $value===null)
 			$this->_separatorTemplate=$value;
 		else
-			throw new TInvalidDataTypeException('datalist_template_required','SeparatorTemplate');
+			throw new TInvalidDataTypeException('datalist_template_required', 'SeparatorTemplate');
 	}
 
 	/**
@@ -653,10 +653,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getSeparatorStyle()
 	{
-		if(($style=$this->getViewState('SeparatorStyle',null))===null)
+		if(($style=$this->getViewState('SeparatorStyle', null))===null)
 		{
 			$style=new TTableItemStyle;
-			$this->setViewState('SeparatorStyle',$style,null);
+			$this->setViewState('SeparatorStyle', $style, null);
 		}
 		return $style;
 	}
@@ -667,7 +667,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getSelectedItemIndex()
 	{
-		return $this->getViewState('SelectedItemIndex',-1);
+		return $this->getViewState('SelectedItemIndex', -1);
 	}
 
 	/**
@@ -683,7 +683,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			$value=-1;
 		if(($current=$this->getSelectedItemIndex())!==$value)
 		{
-			$this->setViewState('SelectedItemIndex',$value,-1);
+			$this->setViewState('SelectedItemIndex', $value, -1);
 			$items=$this->getItems();
 			$itemCount=$items->getCount();
 			if($current>=0 && $current<$itemCount)
@@ -736,7 +736,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getEditItemIndex()
 	{
-		return $this->getViewState('EditItemIndex',-1);
+		return $this->getViewState('EditItemIndex', -1);
 	}
 
 	/**
@@ -751,7 +751,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			$value=-1;
 		if(($current=$this->getEditItemIndex())!==$value)
 		{
-			$this->setViewState('EditItemIndex',$value,-1);
+			$this->setViewState('EditItemIndex', $value, -1);
 			$items=$this->getItems();
 			$itemCount=$items->getCount();
 			if($current>=0 && $current<$itemCount)
@@ -779,7 +779,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getShowHeader()
 	{
-		return $this->getViewState('ShowHeader',true);
+		return $this->getViewState('ShowHeader', true);
 	}
 
 	/**
@@ -787,7 +787,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setShowHeader($value)
 	{
-		$this->setViewState('ShowHeader',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowHeader', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -795,7 +795,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getShowFooter()
 	{
-		return $this->getViewState('ShowFooter',true);
+		return $this->getViewState('ShowFooter', true);
 	}
 
 	/**
@@ -803,7 +803,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function setShowFooter($value)
 	{
-		$this->setViewState('ShowFooter',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowFooter', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -811,10 +811,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	protected function getRepeatInfo()
 	{
-		if(($repeatInfo=$this->getViewState('RepeatInfo',null))===null)
+		if(($repeatInfo=$this->getViewState('RepeatInfo', null))===null)
 		{
 			$repeatInfo=new TRepeatInfo;
-			$this->setViewState('RepeatInfo',$repeatInfo,null);
+			$this->setViewState('RepeatInfo', $repeatInfo, null);
 		}
 		return $repeatInfo;
 	}
@@ -912,35 +912,35 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if($param instanceof TDataListCommandEventParameter)
 		{
 			$this->onItemCommand($param);
 			$command=$param->getCommandName();
-			if(strcasecmp($command,self::CMD_SELECT)===0)
+			if(strcasecmp($command, self::CMD_SELECT)===0)
 			{
 				if(($item=$param->getItem()) instanceof IItemDataRenderer)
 					$this->setSelectedItemIndex($item->getItemIndex());
 				$this->onSelectedIndexChanged($param);
 				return true;
 			}
-			elseif(strcasecmp($command,self::CMD_EDIT)===0)
+			elseif(strcasecmp($command, self::CMD_EDIT)===0)
 			{
 				$this->onEditCommand($param);
 				return true;
 			}
-			elseif(strcasecmp($command,self::CMD_DELETE)===0)
+			elseif(strcasecmp($command, self::CMD_DELETE)===0)
 			{
 				$this->onDeleteCommand($param);
 				return true;
 			}
-			elseif(strcasecmp($command,self::CMD_UPDATE)===0)
+			elseif(strcasecmp($command, self::CMD_UPDATE)===0)
 			{
 				$this->onUpdateCommand($param);
 				return true;
 			}
-			elseif(strcasecmp($command,self::CMD_CANCEL)===0)
+			elseif(strcasecmp($command, self::CMD_CANCEL)===0)
 			{
 				$this->onCancelCommand($param);
 				return true;
@@ -962,7 +962,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onItemCreated($param)
 	{
-		$this->raiseEvent('OnItemCreated',$this,$param);
+		$this->raiseEvent('OnItemCreated', $this, $param);
 	}
 
 	/**
@@ -976,7 +976,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onItemDataBound($param)
 	{
-		$this->raiseEvent('OnItemDataBound',$this,$param);
+		$this->raiseEvent('OnItemDataBound', $this, $param);
 	}
 
 	/**
@@ -987,7 +987,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onItemCommand($param)
 	{
-		$this->raiseEvent('OnItemCommand',$this,$param);
+		$this->raiseEvent('OnItemCommand', $this, $param);
 	}
 
 	/**
@@ -998,7 +998,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onEditCommand($param)
 	{
-		$this->raiseEvent('OnEditCommand',$this,$param);
+		$this->raiseEvent('OnEditCommand', $this, $param);
 	}
 
 	/**
@@ -1009,7 +1009,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onDeleteCommand($param)
 	{
-		$this->raiseEvent('OnDeleteCommand',$this,$param);
+		$this->raiseEvent('OnDeleteCommand', $this, $param);
 	}
 
 	/**
@@ -1020,7 +1020,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onUpdateCommand($param)
 	{
-		$this->raiseEvent('OnUpdateCommand',$this,$param);
+		$this->raiseEvent('OnUpdateCommand', $this, $param);
 	}
 
 	/**
@@ -1031,7 +1031,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function onCancelCommand($param)
 	{
-		$this->raiseEvent('OnCancelCommand',$this,$param);
+		$this->raiseEvent('OnCancelCommand', $this, $param);
 	}
 
 	/**
@@ -1071,9 +1071,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param integer index of the item being rendered
 	 * @return TStyle item style
 	 */
-	public function generateItemStyle($itemType,$index)
+	public function generateItemStyle($itemType, $index)
 	{
-		if(($item=$this->getItem($itemType,$index))!==null && ($item instanceof IStyleable) && $item->getHasStyle())
+		if(($item=$this->getItem($itemType, $index))!==null && ($item instanceof IStyleable) && $item->getHasStyle())
 		{
 			$style=$item->getStyle();
 			$item->clearStyle();
@@ -1091,9 +1091,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param integer zero-based index of the item in the item list
 	 */
-	public function renderItem($writer,$repeatInfo,$itemType,$index)
+	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{
-		$item=$this->getItem($itemType,$index);
+		$item=$this->getItem($itemType, $index);
 		if($repeatInfo->getRepeatLayout()===TRepeatLayout::Raw && get_class($item)==='TDataListItem')
 			$item->setTagName('div');
 		$item->renderControl($writer);
@@ -1104,7 +1104,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param integer item index
 	 * @return TControl data list item with the specified item type and index
 	 */
-	private function getItem($itemType,$index)
+	private function getItem($itemType, $index)
 	{
 		switch($itemType)
 		{
@@ -1133,9 +1133,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param TListItemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
-	private function createItemInternal($itemIndex,$itemType)
+	private function createItemInternal($itemIndex, $itemType)
 	{
-		if(($item=$this->createItem($itemIndex,$itemType))!==null)
+		if(($item=$this->createItem($itemIndex, $itemType))!==null)
 		{
 			$param=new TDataListItemEventParameter($item);
 			$this->onItemCreated($param);
@@ -1154,9 +1154,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param mixed data to be associated with the item
 	 * @return TControl the created item, null if item is not created
 	 */
-	private function createItemWithDataInternal($itemIndex,$itemType,$dataItem)
+	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
-		if(($item=$this->createItem($itemIndex,$itemType))!==null)
+		if(($item=$this->createItem($itemIndex, $itemType))!==null)
 		{
 			$param=new TDataListItemEventParameter($item);
 			if($item instanceof \Prado\IDataRenderer)
@@ -1206,7 +1206,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param TListItemType item type
 	 * @return TControl created datalist item
 	 */
-	protected function createItem($itemIndex,$itemType)
+	protected function createItem($itemIndex, $itemType)
 	{
 		$template=null;
 		$classPath=null;
@@ -1217,13 +1217,13 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$template=$this->_itemTemplate;
 				break;
 			case TListItemType::AlternatingItem :
-				list($classPath,$template)=$this->getAlternatingItemDisplay();
+				list($classPath, $template)=$this->getAlternatingItemDisplay();
 				break;
 			case TListItemType::SelectedItem:
-				list($classPath,$template)=$this->getSelectedItemDisplay($itemIndex);
+				list($classPath, $template)=$this->getSelectedItemDisplay($itemIndex);
 				break;
 			case TListItemType::EditItem:
-				list($classPath,$template)=$this->getEditItemDisplay($itemIndex);
+				list($classPath, $template)=$this->getEditItemDisplay($itemIndex);
 				break;
 			case TListItemType::Header :
 				$classPath=$this->getHeaderRenderer();
@@ -1238,7 +1238,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$template=$this->_separatorTemplate;
 				break;
 			default:
-				throw new TInvalidDataValueException('datalist_itemtype_unknown',$itemType);
+				throw new TInvalidDataValueException('datalist_itemtype_unknown', $itemType);
 		}
 		if($classPath!=='')
 		{
@@ -1286,9 +1286,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	protected function applyItemStyles()
 	{
-		$itemStyle=$this->getViewState('ItemStyle',null);
+		$itemStyle=$this->getViewState('ItemStyle', null);
 
-		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
+		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle', null);
 		if($itemStyle!==null)
 		{
 			if($alternatingItemStyle===null)
@@ -1297,9 +1297,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$alternatingItemStyle->mergeWith($itemStyle);
 		}
 
-		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+		$selectedItemStyle=$this->getViewState('SelectedItemStyle', null);
 
-		$editItemStyle=$this->getViewState('EditItemStyle',null);
+		$editItemStyle=$this->getViewState('EditItemStyle', null);
 		if($selectedItemStyle!==null)
 		{
 			if($editItemStyle===null)
@@ -1311,14 +1311,14 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		// apply header style if any
 		if($this->_header!==null && $this->_header instanceof IStyleable)
 		{
-			if($headerStyle=$this->getViewState('HeaderStyle',null))
+			if($headerStyle=$this->getViewState('HeaderStyle', null))
 				$this->_header->getStyle()->mergeWith($headerStyle);
 		}
 
 		// apply footer style if any
 		if($this->_footer!==null && $this->_footer instanceof IStyleable)
 		{
-			if($footerStyle=$this->getViewState('FooterStyle',null))
+			if($footerStyle=$this->getViewState('FooterStyle', null))
 				$this->_footer->getStyle()->mergeWith($footerStyle);
 		}
 
@@ -1341,7 +1341,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		}
 
 		// apply separator style if any
-		if(($separatorStyle=$this->getViewState('SeparatorStyle',null))!==null && $this->getHasSeparators())
+		if(($separatorStyle=$this->getViewState('SeparatorStyle', null))!==null && $this->getHasSeparators())
 		{
 			$controls=$this->getControls();
 			$count=$controls->getCount();
@@ -1361,7 +1361,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	{
 		parent::saveState();
 		if($this->_items)
-			$this->setViewState('ItemCount',$this->_items->getCount(),0);
+			$this->setViewState('ItemCount', $this->_items->getCount(), 0);
 		else
 			$this->clearViewState('ItemCount');
 	}
@@ -1395,26 +1395,26 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	protected function restoreItemsFromViewState()
 	{
 		$this->reset();
-		if(($itemCount=$this->getViewState('ItemCount',0))>0)
+		if(($itemCount=$this->getViewState('ItemCount', 0))>0)
 		{
 			$items=$this->getItems();
 			$selectedIndex=$this->getSelectedItemIndex();
 			$editIndex=$this->getEditItemIndex();
 			$hasSeparator=$this->_separatorTemplate!==null || $this->getSeparatorRenderer()!=='';
-			$this->_header=$this->createItemInternal(-1,TListItemType::Header);
+			$this->_header=$this->createItemInternal(-1, TListItemType::Header);
 			for($i=0;$i<$itemCount;++$i)
 			{
 				if($hasSeparator && $i>0)
-					$this->createItemInternal($i-1,TListItemType::Separator);
+					$this->createItemInternal($i-1, TListItemType::Separator);
 				if($i===$editIndex)
 					$itemType=TListItemType::EditItem;
 				elseif($i===$selectedIndex)
 					$itemType=TListItemType::SelectedItem;
 				else
 					$itemType=$i%2?TListItemType::AlternatingItem : TListItemType::Item;
-				$items->add($this->createItemInternal($i,$itemType));
+				$items->add($this->createItemInternal($i, $itemType));
 			}
-			$this->_footer=$this->createItemInternal(-1,TListItemType::Footer);
+			$this->_footer=$this->createItemInternal(-1, TListItemType::Footer);
 		}
 		else
 			$this->createEmptyContent();
@@ -1441,30 +1441,30 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		foreach($data as $key=>$dataItem)
 		{
 			if($keyField!=='')
-				$keys->add($this->getDataFieldValue($dataItem,$keyField));
+				$keys->add($this->getDataFieldValue($dataItem, $keyField));
 			else
 				$keys->add($key);
 			if($itemIndex===0)
-				$this->_header=$this->createItemWithDataInternal(-1,TListItemType::Header,null);
+				$this->_header=$this->createItemWithDataInternal(-1, TListItemType::Header, null);
 			if($hasSeparator && $itemIndex>0)
-				$this->createItemWithDataInternal($itemIndex-1,TListItemType::Separator,null);
+				$this->createItemWithDataInternal($itemIndex-1, TListItemType::Separator, null);
 			if($itemIndex===$editIndex)
 				$itemType=TListItemType::EditItem;
 			elseif($itemIndex===$selectedIndex)
 				$itemType=TListItemType::SelectedItem;
 			else
 				$itemType=$itemIndex%2?TListItemType::AlternatingItem : TListItemType::Item;
-			$items->add($this->createItemWithDataInternal($itemIndex,$itemType,$dataItem));
+			$items->add($this->createItemWithDataInternal($itemIndex, $itemType, $dataItem));
 			$itemIndex++;
 		}
 		if($itemIndex>0)
-			$this->_footer=$this->createItemWithDataInternal(-1,TListItemType::Footer,null);
+			$this->_footer=$this->createItemWithDataInternal(-1, TListItemType::Footer, null);
 		else
 		{
 			$this->createEmptyContent();
 			$this->dataBindChildren();
 		}
-		$this->setViewState('ItemCount',$itemIndex,0);
+		$this->setViewState('ItemCount', $itemIndex, 0);
 	}
 
 	/**
@@ -1480,7 +1480,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			{
 				$this->applyItemStyles();
 				$repeatInfo=$this->getRepeatInfo();
-				$repeatInfo->renderRepeater($writer,$this);
+				$repeatInfo->renderRepeater($writer, $this);
 			}
 			elseif($this->_emptyTemplate!==null || $this->getEmptyRenderer()!=='')
 				parent::render($writer);

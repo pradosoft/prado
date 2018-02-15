@@ -66,7 +66,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		return $control;
 	}
 
-	protected function getDefaultControlValue($container,$column, $record)
+	protected function getDefaultControlValue($container, $column, $record)
 	{
 		$control = $container->findControl(self::DEFAULT_ID);
 		if($control instanceof TCheckBox)
@@ -119,7 +119,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$val->setErrorMessage('Please entery a decimal number.');
 		if(($max= $column->getMaxiumNumericConstraint())!==null)
 		{
-			$val = $this->createRangeValidator($container,$column,$record);
+			$val = $this->createRangeValidator($container, $column, $record);
 			$val->setDataType(TValidationDataType::Float);
 			$val->setMaxValue($max);
 			$val->setStrictComparison(true);
@@ -169,9 +169,9 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
 		$hours=[];
-		for($i=0;$i<24;$i++) $hours[] = str_pad($i,2,'0',STR_PAD_LEFT);
+		for($i=0;$i<24;$i++) $hours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		$mins=[];
-		for($i=0;$i<60;$i++) $mins[] = str_pad($i,2,'0',STR_PAD_LEFT);
+		for($i=0;$i<60;$i++) $mins[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		$hour = intval(@date('H'));
 		$min = intval(@date('i'));
 		$sec = intval(@date('s'));
@@ -222,7 +222,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$control->setInputMode(TDatePickerInputMode::DropDownList);
 		$control->setDateFormat('yyyy-MM-dd');
 		if(!empty($value))
-			$control->setDate(substr($value,0,10));
+			$control->setDate(substr($value, 0, 10));
 		$control->setCssClass('date-dropdown');
 		$this->setNotNullProperty($container, $control, $column, $record);
 		return $control;
@@ -274,7 +274,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$values = $column->getDbTypeValues();
 		$control->setDataSource($values);
 		$control->dataBind();
-		$control->setSelectedIndices($this->getMatchingIndices($values,$selectedValues));
+		$control->setSelectedIndices($this->getMatchingIndices($values, $selectedValues));
 		$control->setID(self::DEFAULT_ID);
 		$control->setCssClass('set-checkboxes');
 		$this->setNotNullProperty($container, $control, $column, $record);
@@ -300,7 +300,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$values = $column->getDbTypeValues();
 		$control->setDataSource($values);
 		$control->dataBind();
-		$index = $this->getMatchingIndices($values,$selectedValues);
+		$index = $this->getMatchingIndices($values, $selectedValues);
 		if(count($index) > 0)
 			$control->setSelectedIndex($index[0]);
 		$control->setID(self::DEFAULT_ID);

@@ -66,7 +66,7 @@ class TDataSourceConfig extends \Prado\TModule
 			{
 				$db=$this->getDbConnection();
 				foreach($xml['database'] as $name=>$value)
-					$db->setSubProperty($name,$value);
+					$db->setSubProperty($name, $value);
 			}
 		}
 		else
@@ -75,7 +75,7 @@ class TDataSourceConfig extends \Prado\TModule
 			{
 				$db=$this->getDbConnection();
 				foreach($prop->getAttributes() as $name=>$value)
-					$db->setSubproperty($name,$value);
+					$db->setSubproperty($name, $value);
 			}
 		}
 	}
@@ -164,6 +164,6 @@ class TDataSourceConfig extends \Prado\TModule
 		elseif($conn instanceof TDataSourceConfig)
 			return $conn->getDbConnection();
 		else
-			throw new TConfigurationException('datasource_dbconnection_invalid',$id);
+			throw new TConfigurationException('datasource_dbconnection_invalid', $id);
 	}
 }

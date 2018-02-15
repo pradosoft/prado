@@ -317,7 +317,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
-	public function applyCriterias($sql, $parameters=[],$ordering=[], $limit=-1, $offset=-1)
+	public function applyCriterias($sql, $parameters=[], $ordering=[], $limit=-1, $offset=-1)
 	{
 		if(count($ordering) > 0)
 			$sql = $this->applyOrdering($sql, $ordering);
@@ -334,7 +334,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array binding parameters.
 	 * @return TDbCommand count command.
 	 */
-	public function createCountCommand($where='1=1', $parameters=[],$ordering=[], $limit=-1, $offset=-1)
+	public function createCountCommand($where='1=1', $parameters=[], $ordering=[], $limit=-1, $offset=-1)
 	{
 		return $this->createFindCommand($where, $parameters, $ordering, $limit, $offset, 'COUNT(*)');
 	}
@@ -347,7 +347,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array delete parameters.
 	 * @return TDbCommand delete command.
 	 */
-	public function createDeleteCommand($where,$parameters=[])
+	public function createDeleteCommand($where, $parameters=[])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		if (!empty($where))
@@ -410,7 +410,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 			$fields[] = $this->getTableInfo()->getColumn($name)->getColumnName();
 			$bindings[] = ':' . $name;
 		}
-		return [implode(', ',$fields), implode(', ', $bindings)];
+		return [implode(', ', $fields), implode(', ', $bindings)];
 	}
 
 	/**

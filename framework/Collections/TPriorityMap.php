@@ -100,7 +100,7 @@ class TPriorityMap extends TMap
 	 * @param integer the precision of the numeric priorities
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false,$defaultPriority=10,$precision=8)
+	public function __construct($data=null, $readOnly=false, $defaultPriority=10, $precision=8)
 	{
 		if($data!==null)
 			$this->copyFrom($data);
@@ -223,7 +223,7 @@ class TPriorityMap extends TMap
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if(!isset($this->_d[$priority])||!is_array($this->_d[$priority]))
 			return false;
@@ -257,7 +257,7 @@ class TPriorityMap extends TMap
 	 * and numeric is a specific priority.  default: false, any priority.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
-	public function itemAt($key,$priority=false)
+	public function itemAt($key, $priority=false)
 	{
 		if($priority===false){
 			$map=$this->flattenPriorities();
@@ -265,7 +265,7 @@ class TPriorityMap extends TMap
 		} else {
 			if($priority===null)
 				$priority=$this->getDefaultPriority();
-			$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+			$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 			return (isset($this->_d[$priority])&&isset($this->_d[$priority][$key]))?$this->_d[$priority][$key]:null;
 		}
 	}
@@ -277,16 +277,16 @@ class TPriorityMap extends TMap
 	 * @param numeric|null the priority.  default: null, filled in with the default priority numeric.
 	 * @return numeric old priority of the item
 	 */
-	public function setPriorityAt($key,$priority=null)
+	public function setPriorityAt($key, $priority=null)
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		$oldpriority=$this->priorityAt($key);
 		if($oldpriority!==false&&$oldpriority!=$priority) {
-			$value=$this->remove($key,$oldpriority);
-			$this->add($key,$value,$priority);
+			$value=$this->remove($key, $oldpriority);
+			$this->add($key, $value, $priority);
 		}
 		return $oldpriority;
 	}
@@ -300,7 +300,7 @@ class TPriorityMap extends TMap
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return isset($this->_d[$priority])?$this->_d[$priority]:null;
 	}
@@ -314,7 +314,7 @@ class TPriorityMap extends TMap
 	{
 		$this->sortPriorities();
 		foreach($this->_d as $priority=>$items)
-			if(($index=array_search($item,$items,true))!==false)
+			if(($index=array_search($item, $items, true))!==false)
 				return $priority;
 		return false;
 	}
@@ -328,7 +328,7 @@ class TPriorityMap extends TMap
 	{
 		$this->sortPriorities();
 		foreach($this->_d as $priority=>$items)
-			if(array_key_exists($key,$items))
+			if(array_key_exists($key, $items))
 				return $priority;
 		return false;
 	}
@@ -346,16 +346,16 @@ class TPriorityMap extends TMap
 	 * @return numeric priority at which the pair was added
 	 * @throws TInvalidOperationException if the map is read-only
 	 */
-	public function add($key,$value,$priority=null)
+	public function add($key, $value, $priority=null)
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if(!$this->_r)
 		{
 			foreach($this->_d as $innerpriority=>$items)
-				if(array_key_exists($key,$items))
+				if(array_key_exists($key, $items))
 				{
 					unset($this->_d[$innerpriority][$key]);
 					$this->_c--;
@@ -372,7 +372,7 @@ class TPriorityMap extends TMap
 			$this->_fd=null;
 		}
 		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly', get_class($this));
 		return $priority;
 	}
 
@@ -388,7 +388,7 @@ class TPriorityMap extends TMap
 	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the map is read-only
 	 */
-	public function remove($key,$priority=false)
+	public function remove($key, $priority=false)
 	{
 		if(!$this->_r)
 		{
@@ -399,7 +399,7 @@ class TPriorityMap extends TMap
 			{
 				$this->sortPriorities();
 				foreach($this->_d as $priority=>$items)
-					if(array_key_exists($key,$items))
+					if(array_key_exists($key, $items))
 					{
 						$value=$this->_d[$priority][$key];
 						unset($this->_d[$priority][$key]);
@@ -416,8 +416,8 @@ class TPriorityMap extends TMap
 			}
 			else
 			{
-				$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
-				if(isset($this->_d[$priority])&&(isset($this->_d[$priority][$key])||array_key_exists($key,$this->_d[$priority])))
+				$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+				if(isset($this->_d[$priority])&&(isset($this->_d[$priority][$key])||array_key_exists($key, $this->_d[$priority])))
 				{
 					$value=$this->_d[$priority][$key];
 					unset($this->_d[$priority][$key]);
@@ -434,7 +434,7 @@ class TPriorityMap extends TMap
 			}
 		}
 		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
+			throw new TInvalidOperationException('map_readonly', get_class($this));
 	}
 
 	/**
@@ -454,7 +454,7 @@ class TPriorityMap extends TMap
 	public function contains($key)
 	{
 		$map=$this->flattenPriorities();
-		return isset($map[$key])||array_key_exists($key,$map);
+		return isset($map[$key])||array_key_exists($key, $map);
 	}
 
 	/**
@@ -475,7 +475,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority,$inclusive=false)
+	public function toArrayBelowPriority($priority, $inclusive=false)
 	{
 		$this->sortPriorities();
 		$items=[];
@@ -483,7 +483,7 @@ class TPriorityMap extends TMap
 		{
 			if((!$inclusive&&$itemspriority>=$priority)||$itemspriority>$priority)
 				break;
-			$items=array_merge($items,$itemsatpriority);
+			$items=array_merge($items, $itemsatpriority);
 		}
 		return $items;
 	}
@@ -495,7 +495,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority,$inclusive=true)
+	public function toArrayAbovePriority($priority, $inclusive=true)
 	{
 		$this->sortPriorities();
 		$items=[];
@@ -503,7 +503,7 @@ class TPriorityMap extends TMap
 		{
 			if((!$inclusive&&$itemspriority<=$priority)||$itemspriority<$priority)
 				continue;
-			$items=array_merge($items,$itemsatpriority);
+			$items=array_merge($items, $itemsatpriority);
 		}
 		return $items;
 	}
@@ -523,7 +523,7 @@ class TPriorityMap extends TMap
 				$this->clear();
 			foreach($data->getPriorities() as $priority) {
 				foreach($data->itemsAtPriority($priority) as $key => $value) {
-					$this->add($key,$value,$priority);
+					$this->add($key, $value, $priority);
 				}
 			}
 		}
@@ -532,7 +532,7 @@ class TPriorityMap extends TMap
 			if($this->getCount()>0)
 				$this->clear();
 			foreach($data as $key=>$value)
-				$this->add($key,$value);
+				$this->add($key, $value);
 		}
 		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
@@ -552,13 +552,13 @@ class TPriorityMap extends TMap
 			foreach($data->getPriorities() as $priority)
 			{
 				foreach($data->itemsAtPriority($priority) as $key => $value)
-					$this->add($key,$value,$priority);
+					$this->add($key, $value, $priority);
 			}
 		}
 		elseif(is_array($data)||$data instanceof \Traversable)
 		{
 			foreach($data as $key=>$value)
-				$this->add($key,$value);
+				$this->add($key, $value);
 		}
 		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
@@ -592,9 +592,9 @@ class TPriorityMap extends TMap
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
-		$this->add($offset,$item);
+		$this->add($offset, $item);
 	}
 
 	/**

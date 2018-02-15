@@ -100,7 +100,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getAccessKey()
 	{
-		return $this->getViewState('AccessKey','');
+		return $this->getViewState('AccessKey', '');
 	}
 
 	/**
@@ -113,8 +113,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	public function setAccessKey($value)
 	{
 		if(strlen($value)>1)
-			throw new TInvalidDataValueException('webcontrol_accesskey_invalid',get_class($this),$value);
-		$this->setViewState('AccessKey',$value,'');
+			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', get_class($this), $value);
+		$this->setViewState('AccessKey', $value, '');
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBackColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getBackColor();
 		else
 			return '';
@@ -141,7 +141,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getBorderColor();
 		else
 			return '';
@@ -160,7 +160,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getBorderStyle();
 		else
 			return '';
@@ -179,7 +179,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderWidth()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getBorderWidth();
 		else
 			return '';
@@ -206,7 +206,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getForeColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getForeColor();
 		else
 			return '';
@@ -225,7 +225,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getHeight()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getHeight();
 		else
 			return '';
@@ -260,7 +260,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getCssClass()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getCssClass();
 		else
 			return '';
@@ -279,7 +279,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getHasStyle()
 	{
-		return $this->getViewState('Style',null)!==null;
+		return $this->getViewState('Style', null)!==null;
 	}
 
 	/**
@@ -297,12 +297,12 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style;
 		else
 		{
 			$style=$this->createStyle();
-			$this->setViewState('Style',$style,null);
+			$this->setViewState('Style', $style, null);
 			return $style;
 		}
 	}
@@ -318,7 +318,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if(is_string($value))
 			$this->getStyle()->setCustomStyle($value);
 		else
-			throw new TInvalidDataValueException('webcontrol_style_invalid',get_class($this));
+			throw new TInvalidDataValueException('webcontrol_style_invalid', get_class($this));
 	}
 
 	/**
@@ -334,7 +334,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getTabIndex()
 	{
-		return $this->getViewState('TabIndex',0);
+		return $this->getViewState('TabIndex', 0);
 	}
 
 	/**
@@ -344,7 +344,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setTabIndex($value)
 	{
-		$this->setViewState('TabIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -363,7 +363,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getToolTip()
 	{
-		return $this->getViewState('ToolTip','');
+		return $this->getViewState('ToolTip', '');
 	}
 
 	/**
@@ -373,7 +373,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function setToolTip($value)
 	{
-		$this->setViewState('ToolTip',$value,'');
+		$this->setViewState('ToolTip', $value, '');
 	}
 
 	/**
@@ -381,7 +381,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getWidth()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style->getWidth();
 		else
 			return '';
@@ -419,21 +419,21 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	protected function addAttributesToRender($writer)
 	{
 		if($this->getID()!=='' || $this->getEnsureId())
-			$writer->addAttribute('id',$this->getClientID());
+			$writer->addAttribute('id', $this->getClientID());
 		if(($accessKey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accessKey);
+			$writer->addAttribute('accesskey', $accessKey);
 		if(!$this->getEnabled())
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 		if(($tabIndex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',"$tabIndex");
+			$writer->addAttribute('tabindex', "$tabIndex");
 		if(($toolTip=$this->getToolTip())!=='')
-			$writer->addAttribute('title',$toolTip);
-		if($style=$this->getViewState('Style',null))
+			$writer->addAttribute('title', $toolTip);
+		if($style=$this->getViewState('Style', null))
 			$style->addAttributesToRender($writer);
 		if($this->getHasAttributes())
 		{
 			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+				$writer->addAttribute($name, $value);
 		}
 	}
 

@@ -207,7 +207,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),["\0*\0_connection"]);
+		return array_diff(parent::__sleep(), ["\0*\0_connection"]);
 	}
 
 	/**
@@ -262,12 +262,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed property value.
 	 * @since 3.1.2
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
 		if($this->hasRecordRelation($name) && !$this->canSetProperty($name))
 			$this->$name=$value;
 		else
-			parent::__set($name,$value);
+			parent::__set($name, $value);
 	}
 
 	/**
@@ -310,7 +310,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if(!is_array($data))
 			throw new TActiveRecordException('ar_data_invalid', get_class($this));
 		foreach($data as $name=>$value)
-			$this->setColumnValue($name,$value);
+			$this->setColumnValue($name, $value);
 	}
 
 
@@ -495,7 +495,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		return $this->getRecordGateway()->deleteRecordsByPk($this,(array)$keys);
+		return $this->getRecordGateway()->deleteRecordsByPk($this, (array)$keys);
 	}
 
 	/**
@@ -515,8 +515,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function deleteAll($criteria=null, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getRecordCriteria($criteria, $parameters, $args);
 		return $this->getRecordGateway()->deleteRecordsByCriteria($this, $criteria);
 	}
 
@@ -579,12 +579,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return TActiveRecord matching record object. Null if no result is found.
 	 */
-	public function find($criteria,$parameters=[])
+	public function find($criteria, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getRecordCriteria($criteria, $parameters, $args);
 		$criteria->setLimit(1);
-		$data = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria);
+		$data = $this->getRecordGateway()->findRecordsByCriteria($this, $criteria);
 		return $this->populateObject($data);
 	}
 
@@ -595,12 +595,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return array matching record objects. Empty array if no result is found.
 	 */
-	public function findAll($criteria=null,$parameters=[])
+	public function findAll($criteria=null, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		if($criteria!==null)
-			$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
-		$result = $this->getRecordGateway()->findRecordsByCriteria($this,$criteria,true);
+			$criteria = $this->getRecordCriteria($criteria, $parameters, $args);
+		$result = $this->getRecordGateway()->findRecordsByCriteria($this, $criteria, true);
 		return $this->populateObjects($result);
 	}
 
@@ -622,7 +622,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 			return null;
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		$data = $this->getRecordGateway()->findRecordByPK($this,$keys);
+		$data = $this->getRecordGateway()->findRecordByPK($this, $keys);
 		return $this->populateObject($data);
 	}
 
@@ -647,7 +647,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		if(func_num_args() > 1)
 			$keys = func_get_args();
-		$result = $this->getRecordGateway()->findRecordsByPks($this,(array)$keys);
+		$result = $this->getRecordGateway()->findRecordsByPks($this, (array)$keys);
 		return $this->populateObjects($result);
 	}
 
@@ -659,12 +659,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array $parameters
 	 * @return TActiveRecord, null if no result is returned.
 	 */
-	public function findBySql($sql,$parameters=[])
+	public function findBySql($sql, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getRecordCriteria($sql, $parameters, $args);
 		$criteria->setLimit(1);
-		$data = $this->getRecordGateway()->findRecordBySql($this,$criteria);
+		$data = $this->getRecordGateway()->findRecordBySql($this, $criteria);
 		return $this->populateObject($data);
 	}
 
@@ -676,11 +676,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array $parameters
 	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
-	public function findAllBySql($sql,$parameters=[])
+	public function findAllBySql($sql, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
-		$result = $this->getRecordGateway()->findRecordsBySql($this,$criteria);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getRecordCriteria($sql, $parameters, $args);
+		$result = $this->getRecordGateway()->findRecordsBySql($this, $criteria);
 		return $this->populateObjects($result);
 	}
 
@@ -696,9 +696,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array matching field values.
 	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
-	public function findAllByIndex($criteria,$fields,$values)
+	public function findAllByIndex($criteria, $fields, $values)
 	{
-		$result = $this->getRecordGateway()->findRecordsByIndex($this,$criteria,$fields,$values);
+		$result = $this->getRecordGateway()->findRecordsByIndex($this, $criteria, $fields, $values);
 		return $this->populateObjects($result);
 	}
 
@@ -708,12 +708,12 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records.
 	 */
-	public function count($criteria=null,$parameters=[])
+	public function count($criteria=null, $parameters=[])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
 		if($criteria!==null)
-			$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
-		return $this->getRecordGateway()->countRecords($this,$criteria);
+			$criteria = $this->getRecordCriteria($criteria, $parameters, $args);
+		return $this->getRecordGateway()->countRecords($this, $criteria);
 	}
 
 	/**
@@ -723,11 +723,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array method call arguments.
 	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
-	protected function getRelationHandler($name,$args=[])
+	protected function getRelationHandler($name, $args=[])
 	{
 		if(($context=$this->createRelationContext($name)) !== null)
 		{
-			$criteria = $this->getRecordCriteria(count($args)>0 ? $args[0] : null, array_slice($args,1));
+			$criteria = $this->getRecordCriteria(count($args)>0 ? $args[0] : null, array_slice($args, 1));
 			return $context->getRelationHandler($criteria);
 		}
 		else
@@ -748,7 +748,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if(($definition=$this->getRecordRelation($name))!==null)
 		{
 			list($property, $relation) = $definition;
-			return new TActiveRecordRelationContext($this,$property,$relation);
+			return new TActiveRecordRelationContext($this, $property, $relation);
 		}
 		else
 			return null;
@@ -826,26 +826,26 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
 	 * if method name starts with "findAllBy"
 	 */
-	public function __call($method,$args)
+	public function __call($method, $args)
 	{
 		$delete =false;
-		if(strncasecmp($method,'with',4)===0)
+		if(strncasecmp($method, 'with', 4)===0)
 		{
-			$property= $method[4]==='_' ? substr($method,5) : substr($method,4);
+			$property= $method[4]==='_' ? substr($method, 5) : substr($method, 4);
 			return $this->getRelationHandler($property, $args);
 		}
-		elseif($findOne=strncasecmp($method,'findby',6)===0)
-			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		elseif(strncasecmp($method,'findallby',9)===0)
-			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
-		elseif($delete=strncasecmp($method,'deleteby',8)===0)
-			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
-		elseif($delete=strncasecmp($method,'deleteallby',11)===0)
-			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
+		elseif($findOne=strncasecmp($method, 'findby', 6)===0)
+			$condition = $method[6]==='_' ? substr($method, 7) : substr($method, 6);
+		elseif(strncasecmp($method, 'findallby', 9)===0)
+			$condition = $method[9]==='_' ? substr($method, 10) : substr($method, 9);
+		elseif($delete=strncasecmp($method, 'deleteby', 8)===0)
+			$condition = $method[8]==='_' ? substr($method, 9) : substr($method, 8);
+		elseif($delete=strncasecmp($method, 'deleteallby', 11)===0)
+			$condition = $method[11]==='_' ? substr($method, 12) : substr($method, 11);
 		else
 		{
 			if($this->getInvalidFinderResult() == TActiveRecordInvalidFinderResult::Exception)
-				throw new TActiveRecordException('ar_invalid_finder_method',$method);
+				throw new TActiveRecordException('ar_invalid_finder_method', $method);
 			else
 				return null;
 		}
@@ -899,7 +899,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if(is_string($criteria))
 		{
 			$useArgs = !is_array($parameters) && is_array($args);
-			return new TActiveRecordCriteria($criteria,$useArgs ? $args : $parameters);
+			return new TActiveRecordCriteria($criteria, $useArgs ? $args : $parameters);
 		}
 		elseif($criteria instanceof TSqlCriteria)
 			return $criteria;
@@ -993,7 +993,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed the corresponding column value
 	 * @since 3.1.1
 	 */
-	public function setColumnValue($columnName,$value)
+	public function setColumnValue($columnName, $value)
 	{
 		$className=get_class($this);
 		if(isset(self::$_columnMapping[$className][$columnName]))

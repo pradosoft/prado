@@ -133,7 +133,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeyField()
 	{
-		return $this->getViewState('DataKeyField','');
+		return $this->getViewState('DataKeyField', '');
 	}
 
 	/**
@@ -141,7 +141,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function setDataKeyField($value)
 	{
-		$this->setViewState('DataKeyField',$value,'');
+		$this->setViewState('DataKeyField', $value, '');
 	}
 
 	/**
@@ -149,10 +149,10 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeys()
 	{
-		if(($dataKeys=$this->getViewState('DataKeys',null))===null)
+		if(($dataKeys=$this->getViewState('DataKeys', null))===null)
 		{
 			$dataKeys=new TList;
-			$this->setViewState('DataKeys',$dataKeys,null);
+			$this->setViewState('DataKeys', $dataKeys, null);
 		}
 		return $dataKeys;
 	}
@@ -168,9 +168,9 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
 	 */
-	protected function getDataFieldValue($data,$field)
+	protected function getDataFieldValue($data, $field)
 	{
-		return TDataFieldAccessor::getDataFieldValue($data,$field);
+		return TDataFieldAccessor::getDataFieldValue($data, $field);
 	}
 
 	/**
@@ -181,7 +181,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function onSelectedIndexChanged($param)
 	{
-		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
+		$this->raiseEvent('OnSelectedIndexChanged', $this, $param);
 	}
 }
 

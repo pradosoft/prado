@@ -36,7 +36,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 			case 'datetime': case 'timestamp':
 				return $this->createDateTimeControl($container, $column, $record);
 			default:
-				return $this->createDefaultControl($container,$column, $record);
+				return $this->createDefaultControl($container, $column, $record);
 		}
 	}
 
@@ -53,9 +53,9 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 			case 'time':
 				return $this->getTimeValue($container, $column, $record);
 			case 'datetime': case 'timestamp':
-				return $this->getDateTimeValue($container,$column, $record);
+				return $this->getDateTimeValue($container, $column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);
+				return $this->getDefaultControlValue($container, $column, $record);
 		}
 	}
 

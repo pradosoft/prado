@@ -33,7 +33,7 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	 * @param string name of the broadcast event
 	 * @param mixed parameter of the broadcast event
 	 */
-	public function __construct($name='',$parameter=null)
+	public function __construct($name='', $parameter=null)
 	{
 		$this->_name=$name;
 		$this->_param=$parameter;

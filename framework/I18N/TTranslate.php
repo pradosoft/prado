@@ -72,7 +72,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -90,7 +90,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function setKey($value)
 	{
-		$this->setViewState('Key',$value,'');
+		$this->setViewState('Key', $value, '');
 	}
 
 	/**
@@ -99,7 +99,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getKey()
 	{
-		return $this->getViewState('Key','');
+		return $this->getViewState('Key', '');
 	}
 
 	/**
@@ -108,7 +108,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getCatalogue()
 	{
-		return $this->getViewState('Catalogue','');
+		return $this->getViewState('Catalogue', '');
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function setCatalogue($value)
 	{
-		$this->setViewState('Catalogue',$value,'');
+		$this->setViewState('Catalogue', $value, '');
 	}
 
 	/**
@@ -126,7 +126,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function setTrim($value)
 	{
-		$this->setViewState('Trim',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('Trim', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -135,7 +135,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getTrim()
 	{
-		return $this->getViewState('Trim',true);
+		return $this->getViewState('Trim', true);
 	}
 
 	/**
@@ -146,13 +146,13 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameters()
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if($parameters=$this->getViewState('Parameters', null))
 			return $parameters;
 		else
 		{
 			$parameters=new TAttributeCollection;
 			$parameters->setCaseSensitive(true);
-			$this->setViewState('Parameters',$parameters,null);
+			$this->setViewState('Parameters', $parameters, null);
 			return $parameters;
 		}
 	}
@@ -162,7 +162,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function hasParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if($parameters=$this->getViewState('Parameters', null))
 			return $parameters->contains($name);
 		else
 			return false;
@@ -173,7 +173,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if($parameters=$this->getViewState('Parameters', null))
 			return $parameters->itemAt($name);
 		else
 			return null;
@@ -183,9 +183,9 @@ class TTranslate extends TI18NControl
 	 * @param string parameter name
 	 * @param string value of the parameter
 	 */
-	public function setParameter($name,$value)
+	public function setParameter($name, $value)
 	{
-		$this->getParameters()->add($name,$value);
+		$this->getParameters()->add($name, $value);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function removeParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if($parameters=$this->getViewState('Parameters', null))
 			return $parameters->remove($name);
 		else
 			return null;

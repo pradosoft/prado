@@ -33,10 +33,10 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TMetaTag)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('metatagcollection_metatag_invalid');
 	}

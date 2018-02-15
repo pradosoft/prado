@@ -231,7 +231,7 @@ class TDbCache extends TCache
 				$this -> getApplication() -> setGlobalState($key, time());
 			}
 			else
-				throw new TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
+				throw new TConfigurationException('db_cachetable_inexistent', $this->_cacheTable);
 		}
 		$this->_cacheInitialized = true;
 	}
@@ -298,7 +298,7 @@ class TDbCache extends TCache
 			if($config instanceof TDataSourceConfig)
 				return $config->getDbConnection();
 			else
-				throw new TConfigurationException('dbcache_connectionid_invalid',$this->_connID);
+				throw new TConfigurationException('dbcache_connectionid_invalid', $this->_connID);
 		}
 		else
 		{
@@ -485,10 +485,10 @@ class TDbCache extends TCache
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key,$value,$expire)
+	protected function setValue($key, $value, $expire)
 	{
 		$this->deleteValue($key);
-		return $this->addValue($key,$value,$expire);
+		return $this->addValue($key, $value, $expire);
 	}
 
 	/**
@@ -500,7 +500,7 @@ class TDbCache extends TCache
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key,$value,$expire)
+	protected function addValue($key, $value, $expire)
 	{
 		if(!$this->_cacheInitialized) $this->initializeCache();
 		$expire=($expire<=0)?0:time()+$expire;
@@ -508,8 +508,8 @@ class TDbCache extends TCache
 		try
 		{
 			$command=$this->getDbConnection()->createCommand($sql);
-			$command->bindValue(':key',$key,\PDO::PARAM_STR);
-			$command->bindValue(':value',serialize($value),\PDO::PARAM_LOB);
+			$command->bindValue(':key', $key, \PDO::PARAM_STR);
+			$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
 			$command->execute();
 			return true;
 		}
@@ -540,7 +540,7 @@ class TDbCache extends TCache
 		try
 		{
 			$command=$this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-			$command->bindValue(':key',$key,\PDO::PARAM_STR);
+			$command->bindValue(':key', $key, \PDO::PARAM_STR);
 			$command->execute();
 			return true;
 		}

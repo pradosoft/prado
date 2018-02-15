@@ -184,18 +184,18 @@ class TResultMap extends \Prado\TComponent
 	 * @param array row data.
 	 * @return TResultMap result sub-map.
 	 */
-	public function resolveSubMap($registry,$row)
+	public function resolveSubMap($registry, $row)
 	{
 		$subMap = $this;
 		if(($disc = $this->getDiscriminator())!==null)
 		{
-			$value = $disc->getMapping()->getPropertyValue($registry,$row);
+			$value = $disc->getMapping()->getPropertyValue($registry, $row);
 			$subMap = $disc->getSubMap((string)$value);
 
 			if($subMap===null)
 				$subMap = $this;
 			elseif($subMap !== $this)
-				$subMap = $subMap->resolveSubMap($registry,$row);
+				$subMap = $subMap->resolveSubMap($registry, $row);
 		}
 		return $subMap;
 	}

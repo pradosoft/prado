@@ -46,11 +46,11 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	protected function addAttributesToRender($writer)
 	{
 		$rows=$this->getRows();
-		$writer->addAttribute('size',"$rows");
+		$writer->addAttribute('size', "$rows");
 		if($this->getSelectionMode()===TListSelectionMode::Multiple)
-			$writer->addAttribute('name',$this->getUniqueID() . '[]');
+			$writer->addAttribute('name', $this->getUniqueID() . '[]');
 		else
-			$writer->addAttribute('name',$this->getUniqueID());
+			$writer->addAttribute('name', $this->getUniqueID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -83,7 +83,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 * @param array the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if(!$this->getEnabled(true))
 			return false;
@@ -95,7 +95,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			if($this->getSelectionMode()===TListSelectionMode::Single)
 			{
 				$selection=is_array($selections)?$selections[0]:$selections;
-				$index=$items->findIndexByValue($selection,false);
+				$index=$items->findIndexByValue($selection, false);
 				if($this->getSelectedIndex()!==$index)
 				{
 					$this->setSelectedIndex($index);
@@ -108,13 +108,13 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 				$selections=[$selections];
 			$list=[];
 			foreach($selections as $selection)
-				$list[]=$items->findIndexByValue($selection,false);
+				$list[]=$items->findIndexByValue($selection, false);
 			$list2=$this->getSelectedIndices();
 			$n=count($list);
 			$flag=false;
 			if($n===count($list2))
 			{
-				sort($list,SORT_NUMERIC);
+				sort($list, SORT_NUMERIC);
 				for($i=0;$i<$n;++$i)
 				{
 					if($list[$i]!==$list2[$i])
@@ -206,7 +206,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 */
 	public function setSelectionMode($value)
 	{
-		$this->setViewState('SelectionMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListSelectionMode'),TListSelectionMode::Single);
+		$this->setViewState('SelectionMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListSelectionMode'), TListSelectionMode::Single);
 	}
 
 	/**

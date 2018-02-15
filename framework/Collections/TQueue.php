@@ -104,7 +104,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function contains($item)
 	{
-		return array_search($item,$this->_d,true)!==false;
+		return array_search($item, $this->_d, true)!==false;
 	}
 
 	/**

@@ -36,7 +36,7 @@ class TPagedListIterator implements \Iterator
 	 * @param integer start index
 	 * @param integer number of items to be iterated through
 	 */
-	public function __construct(TList $list,$startIndex,$count)
+	public function __construct(TList $list, $startIndex, $count)
 	{
 		$this->_list=$list;
 		$this->_index=0;

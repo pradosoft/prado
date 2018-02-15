@@ -182,7 +182,7 @@ abstract class MessageSource implements IMessageSource
 			
 			if($this->cache)
 			{
-				$data = $this->cache->get($variant, 
+				$data = $this->cache->get($variant,
 					$this->culture, $this->getLastModified($source));
 				
 				if(is_array($data))

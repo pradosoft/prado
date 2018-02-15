@@ -81,7 +81,7 @@ namespace Prado\I18N\core;
 
 		// Get (if found): username and password
 		// $dsn => username:password@protocol+hostspec/database
-		if (($at = strrpos($dsn,'@')) !== false) {
+		if (($at = strrpos($dsn, '@')) !== false) {
 			$str = substr($dsn, 0, $at);
 			$dsn = substr($dsn, $at + 1);
 			if (($pos = strpos($str, ':')) !== false) {
@@ -164,7 +164,7 @@ namespace Prado\I18N\core;
 	{
 		if($from != 'UTF-8')
 		{
-			$s = iconv($from,'UTF-8',$string); //to UTF-8
+			$s = iconv($from, 'UTF-8', $string); //to UTF-8
 			return $s !== false ? $s : $string; //it could return false
 		}
 		return $string;

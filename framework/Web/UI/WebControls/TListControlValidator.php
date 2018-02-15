@@ -76,7 +76,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function getMinSelection()
 	{
-		return $this->getViewState('MinSelection',-1);
+		return $this->getViewState('MinSelection', -1);
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TListControlValidator extends TBaseValidator
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
 			$value=-1;
-		$this->setViewState('MinSelection',$value,-1);
+		$this->setViewState('MinSelection', $value, -1);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function getMaxSelection()
 	{
-		return $this->getViewState('MaxSelection',-1);
+		return $this->getViewState('MaxSelection', -1);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TListControlValidator extends TBaseValidator
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
 			$value=-1;
-		$this->setViewState('MaxSelection',$value,-1);
+		$this->setViewState('MaxSelection', $value, -1);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function getRequiredSelections()
 	{
-		return $this->getViewState('RequiredSelections','');
+		return $this->getViewState('RequiredSelections', '');
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function setRequiredSelections($value)
 	{
-		$this->setViewState('RequiredSelections',$value,'');
+		$this->setViewState('RequiredSelections', $value, '');
 	}
 
 	/**
@@ -204,7 +204,7 @@ class TListControlValidator extends TBaseValidator
 		{
 			throw new TConfigurationException(
 				'listcontrolvalidator_invalid_control',
-				$this->getID(),$this->getControlToValidate(), get_class($control));
+				$this->getID(), $this->getControlToValidate(), get_class($control));
 		}
 
 		$min = $this->getMinSelection();

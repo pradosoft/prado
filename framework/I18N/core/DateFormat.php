@@ -134,8 +134,8 @@ class DateFormat
 			if($pattern{0} == "'"
 				&& $pattern{strlen($pattern)-1} == "'")
 			{
-				$sub = preg_replace('/(^\')|(\'$)/','',$pattern);
-				$tokens[$i] =  str_replace('``````','\'',$sub);
+				$sub = preg_replace('/(^\')|(\'$)/', '', $pattern);
+				$tokens[$i] =  str_replace('``````', '\'', $sub);
 			}
 			elseif($pattern == '``````')
 			{
@@ -159,7 +159,7 @@ class DateFormat
 			}			
 		}
 
-		return I18N_toEncoding(implode('',$tokens), $charset);
+		return I18N_toEncoding(implode('', $tokens), $charset);
 	}
 
 	/**
@@ -290,7 +290,7 @@ class DateFormat
 			}
 			else
 			{
-				$tokens[] = str_replace("","'",$token);
+				$tokens[] = str_replace("", "'", $token);
 				$token = $pattern{$i};
 			}
 

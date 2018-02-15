@@ -68,7 +68,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 			if($this->getApplication()->getCache()===null)
 				$this->getApplication()->setCache($this);
 			else
-				throw new TConfigurationException('cache_primary_duplicated',get_class($this));
+				throw new TConfigurationException('cache_primary_duplicated', get_class($this));
 		}
 	}
 
@@ -146,14 +146,14 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set($id,$value,$expire=0,$dependency=null)
+	public function set($id, $value, $expire=0, $dependency=null)
 	{
 		if(empty($value) && $expire === 0)
 			$this->delete($id);
 		else
 		{
 			$data=[$value,$dependency];
-			return $this->setValue($this->generateUniqueKey($id),$data,$expire);
+			return $this->setValue($this->generateUniqueKey($id), $data, $expire);
 		}
 	}
 
@@ -166,12 +166,12 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add($id,$value,$expire=0,$dependency=null)
+	public function add($id, $value, $expire=0, $dependency=null)
 	{
 		if(empty($value) && $expire === 0)
 			return false;
 		$data=[$value,$dependency];
-		return $this->addValue($this->generateUniqueKey($id),$data,$expire);
+		return $this->addValue($this->generateUniqueKey($id), $data, $expire);
 	}
 
 	/**
@@ -218,7 +218,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function setValue($key,$value,$expire);
+	abstract protected function setValue($key, $value, $expire);
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
@@ -232,7 +232,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	abstract protected function addValue($key,$value,$expire);
+	abstract protected function addValue($key, $value, $expire);
 
 	/**
 	 * Deletes a value with the specified key from cache

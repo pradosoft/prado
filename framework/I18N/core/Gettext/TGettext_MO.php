@@ -348,7 +348,7 @@ class TGettext_MO extends TGettext
 		// done
 		@flock($this->_handle, LOCK_UN);
 		@fclose($this->_handle);
-		chmod($file,PRADO_CHMOD);
+		chmod($file, PRADO_CHMOD);
 		return true;
 	}
 }

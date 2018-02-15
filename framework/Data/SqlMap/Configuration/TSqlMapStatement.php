@@ -261,7 +261,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	public function createInstanceOfListClass($registry)
 	{
 		if(strlen($type = $this->getListClass()) > 0)
-			return $this->createInstanceOf($registry,$type);
+			return $this->createInstanceOf($registry, $type);
 		return [];
 	}
 
@@ -272,7 +272,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * @param array result data.
 	 * @return mixed result object.
 	 */
-	protected function createInstanceOf($registry,$type,$row=null)
+	protected function createInstanceOf($registry, $type, $row=null)
 	{
 		$handler = $registry->getTypeHandler($type);
 		if($handler!==null)
@@ -287,10 +287,10 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * @param array result data.
 	 * @return mixed result object.
 	 */
-	public function createInstanceOfResultClass($registry,$row)
+	public function createInstanceOfResultClass($registry, $row)
 	{
 		if(strlen($type= $this->getResultClass()) > 0)
-			return $this->createInstanceOf($registry,$type,$row);
+			return $this->createInstanceOf($registry, $type, $row);
 	}
 
 	public function __sleep()
@@ -310,7 +310,7 @@ class TSqlMapStatement extends \Prado\TComponent
 		if (!$this->_extendStatement) $exprops[] = "\0$cn\0_extendStatement";
 		if (!$this->_cache) $exprops[] = "\0$cn\0_cache";
 
-		return array_diff(parent::__sleep(),$exprops);
+		return array_diff(parent::__sleep(), $exprops);
 	}
 
 }

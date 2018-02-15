@@ -60,7 +60,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 * @param string command name for the button's OnCommand event
 	 * @throws TInvalidDataValueException if the button type is not recognized
 	 */
-	protected function createNavigationButton($buttonStyle,$causesValidation,$commandName)
+	protected function createNavigationButton($buttonStyle, $causesValidation, $commandName)
 	{
 		switch($buttonStyle->getButtonType())
 		{
@@ -75,7 +75,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 				$button->setImageUrl($buttonStyle->getImageUrl());
 				break;
 			default:
-				throw new TInvalidDataValueException('wizard_buttontype_unknown',$buttonStyle->getButtonType());
+				throw new TInvalidDataValueException('wizard_buttontype_unknown', $buttonStyle->getButtonType());
 		}
 		$button->setText($buttonStyle->getButtonText());
 		$button->setCausesValidation($causesValidation);

@@ -93,7 +93,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	public function queryForList($statementName, $parameter=null, $result=null, $skip=-1, $max=-1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return $statement->executeQueryForList($this->getDbConnection(),$parameter, $result, $skip, $max);
+		return $statement->executeQueryForList($this->getDbConnection(), $parameter, $result, $skip, $max);
 	}
 
 	/**
@@ -148,10 +148,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param integer The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
-	public function queryForPagedListWithRowDelegate($statementName,$delegate, $parameter=null, $pageSize=10, $page=0)
+	public function queryForPagedListWithRowDelegate($statementName, $delegate, $parameter=null, $pageSize=10, $page=0)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate,$page);
+		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate, $page);
 	}
 
 

@@ -63,7 +63,7 @@ class TPropertyValue
 	public static function ensureBoolean($value)
 	{
 		if (is_string($value))
-			return strcasecmp($value,'true')==0 || $value!=0;
+			return strcasecmp($value, 'true')==0 || $value!=0;
 		else
 			return (boolean)$value;
 	}
@@ -158,7 +158,7 @@ class TPropertyValue
 	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 */
-	public static function ensureEnum($value,$enums)
+	public static function ensureEnum($value, $enums)
 	{
 		static $types=[];
 		if(func_num_args()===2 && is_string($enums))
@@ -169,18 +169,18 @@ class TPropertyValue
 				return $value;
 			else
 				throw new TInvalidDataValueException(
-					'propertyvalue_enumvalue_invalid',$value,
-						implode(' | ',$types[$enums]->getConstants()));
+					'propertyvalue_enumvalue_invalid', $value,
+						implode(' | ', $types[$enums]->getConstants()));
 		}
 		elseif(!is_array($enums))
 		{
 			$enums=func_get_args();
 			array_shift($enums);
 		}
-		if(in_array($value,$enums,true))
+		if(in_array($value, $enums, true))
 			return $value;
 		else
-			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid',$value,implode(' | ',$enums));
+			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $value, implode(' | ', $enums));
 	}
 
 	/**

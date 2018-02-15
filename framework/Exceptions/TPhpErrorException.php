@@ -30,7 +30,7 @@ class TPhpErrorException extends TSystemException
 	 * @param string error file
 	 * @param integer error line number
 	 */
-	public function __construct($errno,$errstr,$errfile,$errline)
+	public function __construct($errno, $errstr, $errfile, $errline)
 	{
 		static $errorTypes=[
 			E_ERROR           => "Error",

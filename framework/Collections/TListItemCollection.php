@@ -41,7 +41,7 @@ class TListItemCollection extends TList
 		if($index<0)
 			$this->add($item);
 		else
-			$this->insertAt($index,$item);
+			$this->insertAt($index, $item);
 		return $item;
 	}
 
@@ -63,13 +63,13 @@ class TListItemCollection extends TList
 	 * @param TListItem the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if(is_string($item))
 			$item = $this->createNewListItem($item);
 		if(!($item instanceof TListItem))
-			throw new TInvalidDataTypeException('listitemcollection_item_invalid',get_class($this));
-		parent::insertAt($index,$item);
+			throw new TInvalidDataTypeException('listitemcollection_item_invalid', get_class($this));
+		parent::insertAt($index, $item);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByValue($value,$includeDisabled=true)
+	public function findIndexByValue($value, $includeDisabled=true)
 	{
 		$value=TPropertyValue::ensureString($value);
 		$index=0;
@@ -97,7 +97,7 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByText($text,$includeDisabled=true)
+	public function findIndexByText($text, $includeDisabled=true)
 	{
 		$text=TPropertyValue::ensureString($text);
 		$index=0;
@@ -116,9 +116,9 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByValue($value,$includeDisabled=true)
+	public function findItemByValue($value, $includeDisabled=true)
 	{
-		if(($index=$this->findIndexByValue($value,$includeDisabled))>=0)
+		if(($index=$this->findIndexByValue($value, $includeDisabled))>=0)
 			return $this->itemAt($index);
 		else
 			return null;
@@ -130,9 +130,9 @@ class TListItemCollection extends TList
 	 * @param boolean whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByText($text,$includeDisabled=true)
+	public function findItemByText($text, $includeDisabled=true)
 	{
-		if(($index=$this->findIndexByText($text,$includeDisabled))>=0)
+		if(($index=$this->findIndexByText($text, $includeDisabled))>=0)
 			return $this->itemAt($index);
 		else
 			return null;

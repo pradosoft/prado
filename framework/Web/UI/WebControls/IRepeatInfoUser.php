@@ -42,7 +42,7 @@ interface IRepeatInfoUser
 	 * @param integer zero-based index of the current rendering item.
 	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
 	 */
-	public function generateItemStyle($itemType,$index);
+	public function generateItemStyle($itemType, $index);
 	/**
 	 * Renders an item.
 	 * @param THtmlWriter writer for the rendering purpose
@@ -50,5 +50,5 @@ interface IRepeatInfoUser
 	 * @param string item type
 	 * @param integer zero-based index of the item being rendered
 	 */
-	public function renderItem($writer,$repeatInfo,$itemType,$index);
+	public function renderItem($writer, $repeatInfo, $itemType, $index);
 }

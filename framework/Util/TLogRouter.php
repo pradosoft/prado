@@ -81,10 +81,10 @@ class TLogRouter extends \Prado\TModule
 				}
 			}
 			else
-				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
+				throw new TConfigurationException('logrouter_configfile_invalid', $this->_configFile);
 		}
 		$this->loadConfig($config);
-		$this->getApplication()->attachEventHandler('OnEndRequest',[$this,'collectLogs']);
+		$this->getApplication()->attachEventHandler('OnEndRequest', [$this,'collectLogs']);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TLogRouter extends \Prado\TModule
 					if(!($route instanceof TLogRoute))
 						throw new TConfigurationException('logrouter_routetype_invalid');
 					foreach($properties as $name=>$value)
-						$route->setSubproperty($name,$value);
+						$route->setSubproperty($name, $value);
 					$this->_routes[]=$route;
 					$route->init($route);
 				}
@@ -124,7 +124,7 @@ class TLogRouter extends \Prado\TModule
 				if(!($route instanceof TLogRoute))
 					throw new TConfigurationException('logrouter_routetype_invalid');
 				foreach($properties as $name=>$value)
-					$route->setSubproperty($name,$value);
+					$route->setSubproperty($name, $value);
 				$this->_routes[]=$route;
 				$route->init($routeConfig);
 			}
@@ -160,8 +160,8 @@ class TLogRouter extends \Prado\TModule
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null)
-			throw new TConfigurationException('logrouter_configfile_invalid',$value);
+		if(($this->_configFile=Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt()))===null)
+			throw new TConfigurationException('logrouter_configfile_invalid', $value);
 	}
 
 	/**

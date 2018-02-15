@@ -43,7 +43,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=[],$primary=[],$foreign=[])
+	public function __construct($tableInfo=[], $primary=[], $foreign=[])
 	{
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
@@ -57,7 +57,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TDbCommandBuilder($connection,$this);
+		return new TDbCommandBuilder($connection, $this);
 	}
 
 	/**
@@ -65,7 +65,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @param mixed default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name,$default=null)
+	protected function getInfo($name, $default=null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -74,7 +74,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @param string information array key name
 	 * @param mixed new information array value.
 	 */
-	protected function setInfo($name,$value)
+	protected function setInfo($name, $value)
 	{
 		$this->_info[$name]=$value;
 	}
@@ -100,7 +100,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getIsView()
 	{
-		return $this->getInfo('IsView',false);
+		return $this->getInfo('IsView', false);
 	}
 
 	/**

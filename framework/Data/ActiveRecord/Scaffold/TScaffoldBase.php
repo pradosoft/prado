@@ -141,7 +141,7 @@ abstract class TScaffoldBase extends TTemplateControl
 				else
 				{
 					throw new TConfigurationException('scaffold_invalid_record_class',
-						$this->getRecordClass(),$this->getID());
+						$this->getRecordClass(), $this->getID());
 				}
 			}
 		}
@@ -205,7 +205,7 @@ abstract class TScaffoldBase extends TTemplateControl
 		if($this->getEnableDefaultStyle())
 		{
 			$url = $this->publishAsset($this->getDefaultStyle() . '.css');
-			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
 }

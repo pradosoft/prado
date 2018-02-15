@@ -84,7 +84,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->_captionAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign');
+		$this->_captionAlign=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign');
 	}
 
 	/**
@@ -118,7 +118,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatDirection($value)
 	{
-		$this->_repeatDirection=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TRepeatDirection');
+		$this->_repeatDirection=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRepeatDirection');
 	}
 
 	/**
@@ -134,7 +134,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatLayout($value)
 	{
-		$this->_repeatLayout=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TRepeatLayout');
+		$this->_repeatLayout=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRepeatLayout');
 	}
 
 	/**
@@ -155,7 +155,7 @@ class TRepeatInfo extends \Prado\TComponent
 		}
 		elseif($this->_repeatLayout===TRepeatLayout::Raw)
 		{
-			$this->renderRawContents($writer,$user);
+			$this->renderRawContents($writer, $user);
 			return;
 		}
 		else
@@ -168,9 +168,9 @@ class TRepeatInfo extends \Prado\TComponent
 		$writer->writeLine();
 
 		if($this->_repeatDirection===TRepeatDirection::Vertical)
-			$this->renderVerticalContents($writer,$user);
+			$this->renderVerticalContents($writer, $user);
 		else
-			$this->renderHorizontalContents($writer,$user);
+			$this->renderHorizontalContents($writer, $user);
 
 		$control->renderEndTag($writer);
 	}
@@ -180,22 +180,22 @@ class TRepeatInfo extends \Prado\TComponent
 	 * @param THtmlWriter writer for the rendering purpose
 	 * @param IRepeatInfoUser repeat information user
 	 */
-	protected function renderRawContents($writer,$user)
+	protected function renderRawContents($writer, $user)
 	{
 		if($user->getHasHeader())
-			$user->renderItem($writer,$this,'Header',-1);
+			$user->renderItem($writer, $this, 'Header', -1);
 
 		// render items
 		$hasSeparators=$user->getHasSeparators();
 		$itemCount=$user->getItemCount();
 		for($i=0;$i<$itemCount;++$i)
 		{
-			$user->renderItem($writer,$this,'Item',$i);
+			$user->renderItem($writer, $this, 'Item', $i);
 			if($hasSeparators && $i!=$itemCount-1)
-				$user->renderItem($writer,$this,'Separator',$i);
+				$user->renderItem($writer, $this, 'Separator', $i);
 		}
 		if($user->getHasFooter())
-			$user->renderItem($writer,$this,'Footer',-1);
+			$user->renderItem($writer, $this, 'Footer', -1);
 	}
 
 	/**
@@ -203,7 +203,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 * @param THtmlWriter writer for the rendering purpose
 	 * @param IRepeatInfoUser repeat information user
 	 */
-	protected function renderHorizontalContents($writer,$user)
+	protected function renderHorizontalContents($writer, $user)
 	{
 		$tableLayout=($this->_repeatLayout===TRepeatLayout::Table);
 		$hasSeparators=$user->getHasSeparators();
@@ -213,7 +213,7 @@ class TRepeatInfo extends \Prado\TComponent
 		$needBreak=$columns<$itemCount;
 
 		if($user->getHasHeader())
-			$this->renderHeader($writer,$user,$tableLayout,$totalColumns,$needBreak);
+			$this->renderHeader($writer, $user, $tableLayout, $totalColumns, $needBreak);
 
 		// render items
 		if($tableLayout)
@@ -224,18 +224,18 @@ class TRepeatInfo extends \Prado\TComponent
 			{
 				if($column==0)
 					$writer->renderBeginTag('tr');
-				if(($style=$user->generateItemStyle('Item',$i))!==null)
+				if(($style=$user->generateItemStyle('Item', $i))!==null)
 					$style->addAttributesToRender($writer);
 				$writer->renderBeginTag('td');
-				$user->renderItem($writer,$this,'Item',$i);
+				$user->renderItem($writer, $this, 'Item', $i);
 				$writer->renderEndTag();
 				$writer->writeLine();
 				if($hasSeparators && $i!=$itemCount-1)
 				{
-					if(($style=$user->generateItemStyle('Separator',$i))!==null)
+					if(($style=$user->generateItemStyle('Separator', $i))!==null)
 						$style->addAttributesToRender($writer);
 					$writer->renderBeginTag('td');
-					$user->renderItem($writer,$this,'Separator',$i);
+					$user->renderItem($writer, $this, 'Separator', $i);
 					$writer->renderEndTag();
 					$writer->writeLine();
 				}
@@ -262,9 +262,9 @@ class TRepeatInfo extends \Prado\TComponent
 			$column=0;
 			for($i=0;$i<$itemCount;++$i)
 			{
-				$user->renderItem($writer,$this,'Item',$i);
+				$user->renderItem($writer, $this, 'Item', $i);
 				if($hasSeparators && $i!=$itemCount-1)
-					$user->renderItem($writer,$this,'Separator',$i);
+					$user->renderItem($writer, $this, 'Separator', $i);
 				$column++;
 				if($column==$columns || $i==$itemCount-1)
 				{
@@ -277,7 +277,7 @@ class TRepeatInfo extends \Prado\TComponent
 		}
 
 		if($user->getHasFooter())
-			$this->renderFooter($writer,$user,$tableLayout,$totalColumns,$needBreak);
+			$this->renderFooter($writer, $user, $tableLayout, $totalColumns, $needBreak);
 	}
 
 	/**
@@ -285,7 +285,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 * @param THtmlWriter writer for the rendering purpose
 	 * @param IRepeatInfoUser repeat information user
 	 */
-	protected function renderVerticalContents($writer,$user)
+	protected function renderVerticalContents($writer, $user)
 	{
 		$tableLayout=($this->_repeatLayout===TRepeatLayout::Table);
 		$hasSeparators=$user->getHasSeparators();
@@ -308,7 +308,7 @@ class TRepeatInfo extends \Prado\TComponent
 		$totalColumns=$hasSeparators?$columns+$columns:$columns;
 
 		if($user->getHasHeader())
-			$this->renderHeader($writer,$user,$tableLayout,$totalColumns,false);
+			$this->renderHeader($writer, $user, $tableLayout, $totalColumns, false);
 
 		if($tableLayout)
 		{
@@ -331,10 +331,10 @@ class TRepeatInfo extends \Prado\TComponent
 					if($index>=$itemCount)
 						continue;
 					$renderedItems++;
-					if(($style=$user->generateItemStyle('Item',$index))!==null)
+					if(($style=$user->generateItemStyle('Item', $index))!==null)
 						$style->addAttributesToRender($writer);
 					$writer->renderBeginTag('td');
-					$user->renderItem($writer,$this,'Item',$index);
+					$user->renderItem($writer, $this, 'Item', $index);
 					$writer->renderEndTag();
 					$writer->writeLine();
 					if(!$hasSeparators)
@@ -346,10 +346,10 @@ class TRepeatInfo extends \Prado\TComponent
 							$writer->renderEndTag();
 							$writer->renderBeginTag('tr');
 						}
-						if(($style=$user->generateItemStyle('Separator',$index))!==null)
+						if(($style=$user->generateItemStyle('Separator', $index))!==null)
 							$style->addAttributesToRender($writer);
 						$writer->renderBeginTag('td');
-						$user->renderItem($writer,$this,'Separator',$index);
+						$user->renderItem($writer, $this, 'Separator', $index);
 						$writer->renderEndTag();
 						$writer->writeLine();
 					}
@@ -388,7 +388,7 @@ class TRepeatInfo extends \Prado\TComponent
 					if($index>=$itemCount)
 						continue;
 					$renderedItems++;
-					$user->renderItem($writer,$this,'Item',$index);
+					$user->renderItem($writer, $this, 'Item', $index);
 					$writer->writeLine();
 					if(!$hasSeparators)
 						continue;
@@ -396,7 +396,7 @@ class TRepeatInfo extends \Prado\TComponent
 					{
 						if($columns==1)
 							$writer->writeBreak();
-						$user->renderItem($writer,$this,'Separator',$index);
+						$user->renderItem($writer, $this, 'Separator', $index);
 					}
 					$writer->writeLine();
 				}
@@ -406,7 +406,7 @@ class TRepeatInfo extends \Prado\TComponent
 		}
 
 		if($user->getHasFooter())
-			$this->renderFooter($writer,$user,$tableLayout,$totalColumns,false);
+			$this->renderFooter($writer, $user, $tableLayout, $totalColumns, false);
 
 	}
 
@@ -418,26 +418,26 @@ class TRepeatInfo extends \Prado\TComponent
 	 * @param integer number of columns to be rendered
 	 * @param boolean if a line break is needed at the end
 	 */
-	protected function renderHeader($writer,$user,$tableLayout,$columns,$needBreak)
+	protected function renderHeader($writer, $user, $tableLayout, $columns, $needBreak)
 	{
 		if($tableLayout)
 		{
 			$writer->renderBeginTag('thead');
 			$writer->renderBeginTag('tr');
 			if($columns>1)
-				$writer->addAttribute('colspan',"$columns");
-			$writer->addAttribute('scope','col');
-			if(($style=$user->generateItemStyle('Header',-1))!==null)
+				$writer->addAttribute('colspan', "$columns");
+			$writer->addAttribute('scope', 'col');
+			if(($style=$user->generateItemStyle('Header', -1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('th');
-			$user->renderItem($writer,$this,'Header',-1);
+			$user->renderItem($writer, $this, 'Header', -1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
 		else
 		{
-			$user->renderItem($writer,$this,'Header',-1);
+			$user->renderItem($writer, $this, 'Header', -1);
 			if($needBreak)
 				$writer->writeBreak();
 		}
@@ -451,24 +451,24 @@ class TRepeatInfo extends \Prado\TComponent
 	 * @param boolean whether to render using table layout
 	 * @param integer number of columns to be rendered
 	 */
-	protected function renderFooter($writer,$user,$tableLayout,$columns)
+	protected function renderFooter($writer, $user, $tableLayout, $columns)
 	{
 		if($tableLayout)
 		{
 			$writer->renderBeginTag('tfoot');
 			$writer->renderBeginTag('tr');
 			if($columns>1)
-				$writer->addAttribute('colspan',"$columns");
-			if(($style=$user->generateItemStyle('Footer',-1))!==null)
+				$writer->addAttribute('colspan', "$columns");
+			if(($style=$user->generateItemStyle('Footer', -1))!==null)
 				$style->addAttributesToRender($writer);
 			$writer->renderBeginTag('td');
-			$user->renderItem($writer,$this,'Footer',-1);
+			$user->renderItem($writer, $this, 'Footer', -1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		}
 		else
-			$user->renderItem($writer,$this,'Footer',-1);
+			$user->renderItem($writer, $this, 'Footer', -1);
 		$writer->writeLine();
 	}
 }

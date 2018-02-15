@@ -77,7 +77,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setDirection($value)
 	{
-		$this->setViewState('Direction', TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TSliderDirection'),TSliderDirection::Horizontal);
+		$this->setViewState('Direction', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TSliderDirection'), TSliderDirection::Horizontal);
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getCssUrl()
 	{
-		return $this->getViewState('CssUrl','');
+		return $this->getViewState('CssUrl', '');
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setCssUrl($value)
 	{
-		$this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -101,7 +101,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getMaxValue()
 	{
-		return $this->getViewState('MaxValue',100.0);
+		return $this->getViewState('MaxValue', 100.0);
 	}
 
 	/**
@@ -109,7 +109,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setMaxValue($value)
 	{
-		$this->setViewState('MaxValue', TPropertyValue::ensureFloat($value),100.0);
+		$this->setViewState('MaxValue', TPropertyValue::ensureFloat($value), 100.0);
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getMinValue()
 	{
-		return $this->getViewState('MinValue',0.0);
+		return $this->getViewState('MinValue', 0.0);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setMinValue($value)
 	{
-		$this->setViewState('MinValue', TPropertyValue::ensureFloat($value),0.0);
+		$this->setViewState('MinValue', TPropertyValue::ensureFloat($value), 0.0);
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value',0.0);
+		return $this->getViewState('Value', 0.0);
 	}
 
 	/**
@@ -176,7 +176,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value', TPropertyValue::ensureFloat($value),0.0);
+		$this->setViewState('Value', TPropertyValue::ensureFloat($value), 0.0);
 	}
 
 	/**
@@ -228,7 +228,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',false);
+		return $this->getViewState('AutoPostBack', false);
 	}
 
 	/**
@@ -239,7 +239,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -284,7 +284,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function onValueChanged($param)
 	{
-		$this->raiseEvent('OnValueChanged',$this,$param);
+		$this->raiseEvent('OnValueChanged', $this, $param);
 	}
 
 	/**
@@ -294,7 +294,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * @param array the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		$value=(float)$values[$this->getClientID() . '_1'];
 		if($this->getValue()!==$value)
@@ -347,7 +347,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		if ($this->getCssClass()==='')
 		{
 			$class=($this->getDirection()==TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
@@ -425,7 +425,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			$url=$manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
 			$url.='/TSlider.css';
 		}
-		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}
 
 	/**
@@ -437,9 +437,9 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$cs = $page->getClientScript();
 		$cs->registerPradoScript("slider");
 		$id=$this->getClientID();
-		$cs->registerHiddenField($id . '_1',$this->getValue());
+		$cs->registerHiddenField($id . '_1', $this->getValue());
 		$page->registerRequiresPostData($this);
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getSliderOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getSliderOptions());
 	}
 
 	/**
@@ -492,7 +492,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		}
 		$options['values'] = $values;
 		if($this->_clientScript!==null)
-			$options = array_merge($options,$this->_clientScript->getOptions()->toArray());
+			$options = array_merge($options, $this->_clientScript->getOptions()->toArray());
 		return $options;
 	}
 }

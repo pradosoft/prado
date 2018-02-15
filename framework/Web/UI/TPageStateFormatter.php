@@ -35,7 +35,7 @@ class TPageStateFormatter
 	 * @param mixed state data
 	 * @return string serialized data
 	 */
-	public static function serialize($page,$data)
+	public static function serialize($page, $data)
 	{
 		$sm=$page->getApplication()->getSecurityManager();
 		if($page->getEnableStateValidation())
@@ -54,7 +54,7 @@ class TPageStateFormatter
 	 * @param string serialized data
 	 * @return mixed unserialized state data, null if data is corrupted
 	 */
-	public static function unserialize($page,$data)
+	public static function unserialize($page, $data)
 	{
 		$str=base64_decode($data);
 		if($str==='')

@@ -41,12 +41,12 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('src',$this->getImageUrl());
-		$writer->addAttribute('alt',$this->getAlternateText());
+		$writer->addAttribute('src', $this->getImageUrl());
+		$writer->addAttribute('alt', $this->getAlternateText());
 		if(($desc=$this->getDescriptionUrl())!=='')
-			$writer->addAttribute('longdesc',$desc);
+			$writer->addAttribute('longdesc', $desc);
 		if(($align=$this->getImageAlign())!=='')
-			$writer->addAttribute('align',$align);
+			$writer->addAttribute('align', $align);
 		parent::addAttributesToRender($writer);
 	}
 
@@ -64,7 +64,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getAlternateText()
 	{
-		return $this->getViewState('AlternateText','');
+		return $this->getViewState('AlternateText', '');
 	}
 
 	/**
@@ -73,7 +73,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setAlternateText($value)
 	{
-		$this->setViewState('AlternateText',$value,'');
+		$this->setViewState('AlternateText', $value, '');
 	}
 
 	/**
@@ -81,7 +81,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getImageAlign()
 	{
-		return $this->getViewState('ImageAlign','');
+		return $this->getViewState('ImageAlign', '');
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign',$value,'');
+		$this->setViewState('ImageAlign', $value, '');
 	}
 
 	/**
@@ -101,7 +101,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
@@ -109,7 +109,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -143,7 +143,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getDescriptionUrl()
 	{
-		return $this->getViewState('DescriptionUrl','');
+		return $this->getViewState('DescriptionUrl', '');
 	}
 
 	/**
@@ -151,7 +151,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setDescriptionUrl($value)
 	{
-		$this->setViewState('DescriptionUrl',$value,'');
+		$this->setViewState('DescriptionUrl', $value, '');
 	}
 }
 

@@ -73,7 +73,7 @@ class TSqliteMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($tableName)
 	{
-		$tableName = str_replace("'",'',$tableName);
+		$tableName = str_replace("'", '', $tableName);
 		$this->getDbConnection()->setActive(true);
 		$table = $this->getDbConnection()->quoteString($tableName);
 		$sql = "PRAGMA table_info({$table})";
@@ -96,7 +96,7 @@ class TSqliteMetaData extends TDbMetaData
 		if(count($columns)===0)
 			throw new TDbException('dbmetadata_invalid_table_view', $tableName);
 		$class = $this->getTableInfoClass();
-		$tableInfo = new $class($info,$primary,$foreign);
+		$tableInfo = new $class($info, $primary, $foreign);
 		$tableInfo->getColumns()->copyFrom($columns);
 		return $tableInfo;
 	}
@@ -153,7 +153,7 @@ class TSqliteMetaData extends TDbMetaData
 			}
 			else
 				$info['ColumnSize']=intval($match[1]);
-			$info['DbType'] = substr($type,0,$pos);
+			$info['DbType'] = substr($type, 0, $pos);
 		}
 
 		return new TSqliteTableColumn($info);

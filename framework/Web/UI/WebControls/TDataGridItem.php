@@ -58,7 +58,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 * @param integer zero-based index of the item in the item collection of datagrid
 	 * @param TListItemType item type
 	 */
-	public function __construct($itemIndex,$dataSourceIndex,$itemType)
+	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
 		$this->_itemIndex=$itemIndex;
 		$this->_dataSourceIndex=$dataSourceIndex;
@@ -82,7 +82,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -126,11 +126,11 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
-			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
+			$this->raiseBubbleEvent($this, new TDataGridCommandEventParameter($this, $sender, $param));
 			return true;
 		}
 		else

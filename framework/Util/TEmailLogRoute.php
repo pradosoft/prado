@@ -82,11 +82,11 @@ class TEmailLogRoute extends TLogRoute
 	{
 		$message='';
 		foreach($logs as $log)
-			$message.=$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]);
-		$message=wordwrap($message,70);
+			$message.=$this->formatLogMessage($log[0], $log[1], $log[2], $log[3]);
+		$message=wordwrap($message, 70);
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach($this->_emails as $email)
-			mail($email,$this->getSubject(),$message,"From:{$this->_from}\r\n{$returnPath}");
+			mail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}");
 
 	}
 
@@ -109,10 +109,10 @@ class TEmailLogRoute extends TLogRoute
 		else
 		{
 			$this->_emails=[];
-			foreach(explode(',',$emails) as $email)
+			foreach(explode(',', $emails) as $email)
 			{
 				$email=trim($email);
-				if(preg_match(self::EMAIL_PATTERN,$email))
+				if(preg_match(self::EMAIL_PATTERN, $email))
 					$this->_emails[]=$email;
 			}
 		}

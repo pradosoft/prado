@@ -52,7 +52,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('name',$this->getUniqueID());
+		$writer->addAttribute('name', $this->getUniqueID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -73,7 +73,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 * @param array the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if(!$this->getEnabled(true))
 			return false;
@@ -81,7 +81,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 		$selection=isset($values[$key])?$values[$key]:null;
 		if($selection!==null)
 		{
-			$index=$this->getItems()->findIndexByValue($selection,false);
+			$index=$this->getItems()->findIndexByValue($selection, false);
 			if($this->getSelectedIndex()!==$index)
 			{
 				$this->setSelectedIndex($index);

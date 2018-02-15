@@ -34,7 +34,7 @@ class TPgsqlScaffoldInput extends TScaffoldInputCommon
 			case 'timestamp without time zone':
 				return $this->createDateTimeControl($container, $column, $record);
 			default:
-				return $this->createDefaultControl($container,$column, $record);
+				return $this->createDefaultControl($container, $column, $record);
 		}
 	}
 
@@ -49,9 +49,9 @@ class TPgsqlScaffoldInput extends TScaffoldInputCommon
 			case 'time without time zone':
 				return $this->getTimeValue($container, $column, $record);
 			case 'timestamp without time zone':
-				return $this->getDateTimeValue($container,$column, $record);
+				return $this->getDateTimeValue($container, $column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);
+				return $this->getDefaultControlValue($container, $column, $record);
 		}
 	}
 }

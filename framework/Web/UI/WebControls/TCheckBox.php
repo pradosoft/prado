@@ -63,7 +63,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		$checked=$this->getChecked();
 		if($newChecked=isset($values[$key]))
@@ -92,7 +92,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function onCheckedChanged($param)
 	{
-		$this->raiseEvent('OnCheckedChanged',$this,$param);
+		$this->raiseEvent('OnCheckedChanged', $this, $param);
 	}
 
 	/**
@@ -151,7 +151,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
@@ -176,7 +176,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Value', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -184,7 +184,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getTextAlign()
 	{
-		return $this->getViewState('TextAlign',TTextAlign::Right);
+		return $this->getViewState('TextAlign', TTextAlign::Right);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setTextAlign($value)
 	{
-		$this->setViewState('TextAlign',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTextAlign'),TTextAlign::Right);
+		$this->setViewState('TextAlign', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTextAlign'), TTextAlign::Right);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getChecked()
 	{
-		return $this->getViewState('Checked',false);
+		return $this->getViewState('Checked', false);
 	}
 
 	/**
@@ -209,7 +209,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setChecked($value)
 	{
-		$this->setViewState('Checked',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Checked', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -243,7 +243,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',false);
+		return $this->getViewState('AutoPostBack', false);
 	}
 
 	/**
@@ -252,7 +252,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -260,7 +260,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
@@ -269,7 +269,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -285,7 +285,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -316,7 +316,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		if($this->getHasStyle())
 			$this->getStyle()->addAttributesToRender($writer);
 		if(($tooltip=$this->getToolTip())!=='')
-			$writer->addAttribute('title',$tooltip);
+			$writer->addAttribute('title', $tooltip);
 		if($this->getHasAttributes())
 		{
 			$attributes=$this->getAttributes();
@@ -327,13 +327,13 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			if($attributes->getCount())
 				$writer->addAttributes($attributes);
 			if($value!==null)
-				$attributes->add('value',$value);
+				$attributes->add('value', $value);
 		}
 		else
 			$onclick='';
 	if($needspan=$this->getSpanNeeded())
 	{
-	  $writer->addAttribute('id',$this->getSurroundingTagID());
+	  $writer->addAttribute('id', $this->getSurroundingTagID());
 	  $writer->renderBeginTag($this->getSurroundingTag());
 	}
 		$clientID=$this->getClientID();
@@ -341,17 +341,17 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		{
 			if($this->getTextAlign()===TTextAlign::Left)
 			{
-				$this->renderLabel($writer,$clientID,$text);
-				$this->renderInputTag($writer,$clientID,$onclick);
+				$this->renderLabel($writer, $clientID, $text);
+				$this->renderInputTag($writer, $clientID, $onclick);
 			}
 			else
 			{
-				$this->renderInputTag($writer,$clientID,$onclick);
-				$this->renderLabel($writer,$clientID,$text);
+				$this->renderInputTag($writer, $clientID, $onclick);
+				$this->renderLabel($writer, $clientID, $text);
 			}
 		}
 		else
-			$this->renderInputTag($writer,$clientID,$onclick);
+			$this->renderInputTag($writer, $clientID, $onclick);
 		if($needspan)
 			$writer->renderEndTag();
 	}
@@ -361,12 +361,12 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getLabelAttributes()
 	{
-		if($attributes=$this->getViewState('LabelAttributes',null))
+		if($attributes=$this->getViewState('LabelAttributes', null))
 			return $attributes;
 		else
 		{
 			$attributes=new TAttributeCollection;
-			$this->setViewState('LabelAttributes',$attributes,null);
+			$this->setViewState('LabelAttributes', $attributes, null);
 			return $attributes;
 		}
 	}
@@ -376,12 +376,12 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getInputAttributes()
 	{
-		if($attributes=$this->getViewState('InputAttributes',null))
+		if($attributes=$this->getViewState('InputAttributes', null))
 			return $attributes;
 		else
 		{
 			$attributes=new TAttributeCollection;
-			$this->setViewState('InputAttributes',$attributes,null);
+			$this->setViewState('InputAttributes', $attributes, null);
 			return $attributes;
 		}
 	}
@@ -395,7 +395,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			return $value;
 		else
 		{
-			$attributes=$this->getViewState('InputAttributes',null);
+			$attributes=$this->getViewState('InputAttributes', null);
 			if($attributes && $attributes->contains('value'))
 				return $attributes->itemAt('value');
 			elseif($this->hasAttribute('value'))
@@ -410,7 +410,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -418,7 +418,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -437,10 +437,10 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * @param string checkbox id
 	 * @param string label text
 	 */
-	protected function renderLabel($writer,$clientID,$text)
+	protected function renderLabel($writer, $clientID, $text)
 	{
-		$writer->addAttribute('for',$clientID);
-		if($attributes=$this->getViewState('LabelAttributes',null))
+		$writer->addAttribute('for', $clientID);
+		if($attributes=$this->getViewState('LabelAttributes', null))
 			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('label');
 		$writer->write($text);
@@ -453,21 +453,21 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
 		if($clientID!=='')
-			$writer->addAttribute('id',$clientID);
-		$writer->addAttribute('type','checkbox');
+			$writer->addAttribute('id', $clientID);
+		$writer->addAttribute('type', 'checkbox');
 		if(($value=$this->getValueAttribute())!=='')
-			$writer->addAttribute('value',$value);
+			$writer->addAttribute('value', $value);
 		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
+			$writer->addAttribute('onclick', $onclick);
 		if(($uniqueID=$this->getUniqueID())!=='')
-			$writer->addAttribute('name',$uniqueID);
+			$writer->addAttribute('name', $uniqueID);
 		if($this->getChecked())
-			$writer->addAttribute('checked','checked');
+			$writer->addAttribute('checked', 'checked');
 		if(!$this->getEnabled(true))
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 
 		$page=$this->getPage();
 		if($this->getEnabled(true)
@@ -479,10 +479,10 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 
 		if(($accesskey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accesskey);
+			$writer->addAttribute('accesskey', $accesskey);
 		if(($tabindex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',"$tabindex");
-		if($attributes=$this->getViewState('InputAttributes',null))
+			$writer->addAttribute('tabindex', "$tabindex");
+		if($attributes=$this->getViewState('InputAttributes', null))
 			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
@@ -494,7 +494,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**

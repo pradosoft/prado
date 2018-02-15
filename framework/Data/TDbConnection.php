@@ -127,7 +127,7 @@ class TDbConnection extends \Prado\TComponent
 	 * @param string Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
-	public function __construct($dsn='',$username='',$password='', $charset='')
+	public function __construct($dsn='', $username='', $password='', $charset='')
 	{
 		$this->_dsn=$dsn;
 		$this->_username=$username;
@@ -141,7 +141,7 @@ class TDbConnection extends \Prado\TComponent
 	public function __sleep()
 	{
 //		$this->close(); - DO NOT CLOSE the current connection as serializing doesn't neccessarily mean we don't this connection anymore in the current session
-		return array_diff(parent::__sleep(),["\0Prado\Data\TDbConnection\0_pdo","\0Prado\Data\TDbConnection\0_active"]);
+		return array_diff(parent::__sleep(), ["\0Prado\Data\TDbConnection\0_pdo","\0Prado\Data\TDbConnection\0_active"]);
 	}
 
 	/**
@@ -189,7 +189,7 @@ class TDbConnection extends \Prado\TComponent
 			try
 			{
 				$this->_pdo=new PDO($this->getConnectionString(),$this->getUsername(),
-									$this->getPassword(),$this->_attributes);
+									$this->getPassword(), $this->_attributes);
 				// This attribute is only useful for PDO::MySql driver.
 				// Ignore the warning if a driver doesn't understand this.
 				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
@@ -199,7 +199,7 @@ class TDbConnection extends \Prado\TComponent
 			}
 			catch(PDOException $e)
 			{
-				throw new TDbException('dbconnection_open_failed',$e->getMessage());
+				throw new TDbException('dbconnection_open_failed', $e->getMessage());
 			}
 		}
 	}
@@ -321,7 +321,7 @@ class TDbConnection extends \Prado\TComponent
 	public function createCommand($sql)
 	{
 		if($this->getActive())
-			return new TDbCommand($this,$sql);
+			return new TDbCommand($this, $sql);
 		else
 			throw new TDbException('dbconnection_connection_inactive');
 	}
@@ -465,7 +465,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setColumnCase($value)
 	{
-		switch(TPropertyValue::ensureEnum($value,'Prado\\Data\\TDbColumnCaseMode'))
+		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode'))
 		{
 			case TDbColumnCaseMode::Preserved:
 				$value=PDO::CASE_NATURAL;
@@ -477,7 +477,7 @@ class TDbConnection extends \Prado\TComponent
 				$value=PDO::CASE_UPPER;
 				break;
 		}
-		$this->setAttribute(PDO::ATTR_CASE,$value);
+		$this->setAttribute(PDO::ATTR_CASE, $value);
 	}
 
 	/**
@@ -501,7 +501,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setNullConversion($value)
 	{
-		switch(TPropertyValue::ensureEnum($value,'Prado\\Data\\TDbNullConversionMode'))
+		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode'))
 		{
 			case TDbNullConversionMode::Preserved:
 				$value=PDO::NULL_NATURAL;
@@ -513,7 +513,7 @@ class TDbConnection extends \Prado\TComponent
 				$value=PDO::NULL_TO_STRING;
 				break;
 		}
-		$this->setAttribute(PDO::ATTR_ORACLE_NULLS,$value);
+		$this->setAttribute(PDO::ATTR_ORACLE_NULLS, $value);
 	}
 
 	/**
@@ -531,7 +531,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setAutoCommit($value)
 	{
-		$this->setAttribute(PDO::ATTR_AUTOCOMMIT,TPropertyValue::ensureBoolean($value));
+		$this->setAttribute(PDO::ATTR_AUTOCOMMIT, TPropertyValue::ensureBoolean($value));
 	}
 
 	/**
@@ -549,7 +549,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setPersistent($value)
 	{
-		return $this->setAttribute(PDO::ATTR_PERSISTENT,TPropertyValue::ensureBoolean($value));
+		return $this->setAttribute(PDO::ATTR_PERSISTENT, TPropertyValue::ensureBoolean($value));
 	}
 
 	/**
@@ -629,10 +629,10 @@ class TDbConnection extends \Prado\TComponent
 	 * @param mixed the attribute value
 	 * @see http://www.php.net/manual/en/function.PDO-setAttribute.php
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
 		if($this->_pdo instanceof PDO)
-			$this->_pdo->setAttribute($name,$value);
+			$this->_pdo->setAttribute($name, $value);
 		else
 			$this->_attributes[$name]=$value;
 	}

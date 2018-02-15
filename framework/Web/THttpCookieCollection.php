@@ -52,11 +52,11 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof THttpCookie)
 		{
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 			if($this->_o instanceof THttpResponse)
 				$this->_o->addCookie($item);
 		}

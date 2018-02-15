@@ -150,7 +150,7 @@ class NumberFormat
 			$symbol = $currency;
 		}
 
-		$result = str_replace('¤',$symbol, $result);
+		$result = str_replace('¤', $symbol, $result);
 
 		setlocale(LC_NUMERIC, $oldLocale);
 
@@ -169,7 +169,7 @@ class NumberFormat
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		//if not decimal digits, assume 0 decimal points.
 		if(is_int($decimalDigits) && $decimalDigits > 0)
-			$string = (string)round(floatval($string),$decimalDigits);
+			$string = (string)round(floatval($string), $decimalDigits);
 		$dp = strpos($string, '.');
 		if(is_int($dp))
 			$string = substr($string, 0, $dp);
@@ -177,7 +177,7 @@ class NumberFormat
 
 		$digitSize = $this->formatInfo->getDigitSize();
 
-		$string = str_pad($string, $digitSize, '0',STR_PAD_LEFT);
+		$string = str_pad($string, $digitSize, '0', STR_PAD_LEFT);
 
 		$len = strlen($string);
 
@@ -256,13 +256,13 @@ class NumberFormat
 				$float = round((float)$string, $decimalDigits);
 				if(strpos((string)$float, '.') === false)
 				{
-					$decimal = str_pad($decimal,$decimalDigits,'0');
+					$decimal = str_pad($decimal, $decimalDigits, '0');
 				}
 				else
 				{
-					$decimal = substr($float, strpos($float,'.')+1);
+					$decimal = substr($float, strpos($float, '.')+1);
 					if(strlen($decimal)<$decimalDigits)
-						$decimal = str_pad($decimal,$decimalDigits,'0');
+						$decimal = str_pad($decimal, $decimalDigits, '0');
 				}
 			}
 			else
@@ -271,7 +271,7 @@ class NumberFormat
 			return $decimalSeparator . $decimal;
 		}
 		elseif ($decimalDigits > 0)
-			return $decimalSeparator . str_pad($decimal,$decimalDigits,'0');
+			return $decimalSeparator . str_pad($decimal, $decimalDigits, '0');
 
 		return $decimal;
 	}

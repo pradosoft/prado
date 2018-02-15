@@ -73,28 +73,28 @@ class TPanelStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(($url=trim($this->getBackImageUrl()))!=='')
-			$this->setStyleField('background-image','url(' . $url . ')');
+			$this->setStyleField('background-image', 'url(' . $url . ')');
 
 		switch($this->getScrollBars())
 		{
-			case TScrollBars::Horizontal: $this->setStyleField('overflow-x','scroll'); break;
-			case TScrollBars::Vertical: $this->setStyleField('overflow-y','scroll'); break;
-			case TScrollBars::Both: $this->setStyleField('overflow','scroll'); break;
-			case TScrollBars::Auto: $this->setStyleField('overflow','auto'); break;
+			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll'); break;
+			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll'); break;
+			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll'); break;
+			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto'); break;
 		}
 
 		if(($align=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
-			$this->setStyleField('text-align',strtolower($align));
+			$this->setStyleField('text-align', strtolower($align));
 
 		if(!$this->getWrap())
-			$this->setStyleField('white-space','nowrap');
+			$this->setStyleField('white-space', 'nowrap');
 
 		if(($direction=$this->getDirection())!==TContentDirection::NotSet)
 		{
 			if($direction===TContentDirection::LeftToRight)
-				$this->setStyleField('direction','ltr');
+				$this->setStyleField('direction', 'ltr');
 			else
-				$this->setStyleField('direction','rtl');
+				$this->setStyleField('direction', 'rtl');
 		}
 
 		parent::addAttributesToRender($writer);
@@ -130,7 +130,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setDirection($value)
 	{
-		$this->_direction=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TContentDirection');
+		$this->_direction=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TContentDirection');
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
 	}
 
 	/**
@@ -180,7 +180,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setScrollBars($value)
 	{
-		$this->_scrollBars=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TScrollBars');
+		$this->_scrollBars=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TScrollBars');
 	}
 
 	/**

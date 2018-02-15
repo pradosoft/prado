@@ -101,7 +101,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getActiveViewIndex()
 	{
-		return $this->getViewState('ActiveViewIndex',0);
+		return $this->getViewState('ActiveViewIndex', 0);
 	}
 
 	/**
@@ -110,7 +110,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setActiveViewIndex($value)
 	{
-		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('ActiveViewIndex', TPropertyValue::ensureInteger($value), 0);
 		$this->setActiveViewID('');
 	}
 
@@ -122,7 +122,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getActiveViewID()
 	{
-		return $this->getViewState('ActiveViewID','');
+		return $this->getViewState('ActiveViewID', '');
 	}
 
 	/**
@@ -130,7 +130,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setActiveViewID($value)
 	{
-		$this->setViewState('ActiveViewID',$value,'');
+		$this->setViewState('ActiveViewID', $value, '');
 	}
 
 	/**
@@ -149,14 +149,14 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			if(($index=$views->findIndexByID($id))>=0)
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('accordion_activeviewid_invalid',$id);
+				throw new TInvalidDataValueException('accordion_activeviewid_invalid', $id);
 		}
 		elseif(($index=$this->getActiveViewIndex())>=0)
 		{
 			if($index<$views->getCount())
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('accordion_activeviewindex_invalid',$index);
+				throw new TInvalidDataValueException('accordion_activeviewindex_invalid', $index);
 		}
 		else
 		{
@@ -191,7 +191,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getCssUrl()
 	{
-		return $this->getViewState('CssUrl','default');
+		return $this->getViewState('CssUrl', 'default');
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setCssUrl($value)
 	{
-		$this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -232,7 +232,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getAnimationDuration()
 	{
-		return $this->getViewState('AnimationDuration','1');
+		return $this->getViewState('AnimationDuration', '1');
 	}
 
 	/**
@@ -240,7 +240,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setAnimationDuration($value)
 	{
-		$this->setViewState('AnimationDuration',$value);
+		$this->setViewState('AnimationDuration', $value);
 	}
 
 	/**
@@ -248,11 +248,11 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getViewStyle()
 	{
-		if(($style=$this->getViewState('ViewStyle',null))===null)
+		if(($style=$this->getViewState('ViewStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('accordion-view');
-			$this->setViewState('ViewStyle',$style,null);
+			$this->setViewState('ViewStyle', $style, null);
 		}
 		return $style;
 	}
@@ -278,11 +278,11 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getHeaderStyle()
 	{
-		if(($style=$this->getViewState('HeaderStyle',null))===null)
+		if(($style=$this->getViewState('HeaderStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('accordion-header');
-			$this->setViewState('HeaderStyle',$style,null);
+			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
 	}
@@ -308,11 +308,11 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getActiveHeaderStyle()
 	{
-		if(($style=$this->getViewState('ActiveHeaderStyle',null))===null)
+		if(($style=$this->getViewState('ActiveHeaderStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('accordion-header-active');
-			$this->setViewState('ActiveHeaderStyle',$style,null);
+			$this->setViewState('ActiveHeaderStyle', $style, null);
 		}
 		return $style;
 	}
@@ -362,7 +362,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if(($index=$values[$this->getClientID() . '_1'])!==null)
 		{
@@ -406,7 +406,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->setCssClass($this->getCssClass());
 		parent::addAttributesToRender($writer);
 	}

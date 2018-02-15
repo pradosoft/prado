@@ -90,7 +90,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		parent::setDataSource($value);
 		if($this->getActiveControl()->canUpdateClientSide()) {
 			$this->renderPager();
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 		}
 	}
 
@@ -132,7 +132,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($pager,$buttonType,$enabled,$text,$commandName,$commandParameter) {
+	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter) {
 		if($buttonType===TDataGridPagerButtonType::LinkButton) {
 			if($enabled)
 				$button=new TActiveLinkButton;
@@ -175,10 +175,10 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	public function render($writer) {
 		if($this->getHasPreRendered()) {
 			$this->renderDataGrid($writer);
-			if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(),$writer);
+			if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
 		}
 		else {
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
 
@@ -192,7 +192,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		foreach($pager as $item) {
 			if($item->ControlToPaginate==$this->ID) {
 				$writer=$this->getResponse()->createHtmlWriter();
-				$this->getPage()->getAdapter()->registerControlToRender($item,$writer);
+				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}
 		}
 	}
@@ -204,7 +204,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param THtmlWriter writer for the rendering purpose
 	 */
 	private function renderDataGrid($writer) {
-	  $writer->addAttribute('id',$this->getSurroundingTagID());
+	  $writer->addAttribute('id', $this->getSurroundingTagID());
 	  $writer->renderBeginTag($this->getSurroundingTag());
 		parent::render($writer);
 		$writer->renderEndTag();

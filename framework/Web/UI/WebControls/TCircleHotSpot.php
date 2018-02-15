@@ -46,7 +46,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getRadius()
 	{
-		return $this->getViewState('Radius',0);
+		return $this->getViewState('Radius', 0);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function setRadius($value)
 	{
-		$this->setViewState('Radius',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Radius', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getX()
 	{
-		return $this->getViewState('X',0);
+		return $this->getViewState('X', 0);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function setX($value)
 	{
-		$this->setViewState('X',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('X', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getY()
 	{
-		return $this->getViewState('Y',0);
+		return $this->getViewState('Y', 0);
 	}
 
 	/**
@@ -86,6 +86,6 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function setY($value)
 	{
-		$this->setViewState('Y',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Y', TPropertyValue::ensureInteger($value), 0);
 	}
 }

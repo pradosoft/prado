@@ -116,7 +116,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 				{
 					$this->_cache=$this->getApplication()->getModule($this->_cacheModuleID);
 					if(!($this->_cache instanceof ICache))
-						throw new TConfigurationException('outputcache_cachemoduleid_invalid',$this->_cacheModuleID);
+						throw new TConfigurationException('outputcache_cachemoduleid_invalid', $this->_cacheModuleID);
 				}
 				else
 					$this->_cache=$this->getApplication()->getCache();
@@ -134,7 +134,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 					else
 						$this->_dataCached=false;
 					if($this->_dataCached)
-						list($this->_contents,$this->_state,$this->_actions,$this->_cacheTime)=$data;
+						list($this->_contents, $this->_state, $this->_actions, $this->_cacheTime)=$data;
 				}
 			}
 		}
@@ -192,11 +192,11 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		foreach($this->_actions as $action)
 		{
 			if($action[0]==='Page.ClientScript')
-				call_user_func_array([$cs,$action[1]],$action[2]);
+				call_user_func_array([$cs,$action[1]], $action[2]);
 			elseif($action[0]==='Page')
-				call_user_func_array([$page,$action[1]],$action[2]);
+				call_user_func_array([$page,$action[1]], $action[2]);
 			else
-				call_user_func_array([$this->getSubProperty($action[0]),$action[1]],$action[2]);
+				call_user_func_array([$this->getSubProperty($action[0]),$action[1]], $action[2]);
 		}
 	}
 
@@ -228,10 +228,10 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * @param array the collection of the state
 	 * @param boolean whether the viewstate should be loaded
 	 */
-	protected function loadStateRecursive(&$state,$needViewState=true)
+	protected function loadStateRecursive(&$state, $needViewState=true)
 	{
 		$st=unserialize($state);
-		parent::loadStateRecursive($st,$needViewState);
+		parent::loadStateRecursive($st, $needViewState);
 	}
 
 	/**
@@ -264,7 +264,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * @param string method name of the context object
 	 * @param array list of parameters to be passed to the action method
 	 */
-	public function registerAction($context,$funcName,$funcParams)
+	public function registerAction($context, $funcName, $funcParams)
 	{
 		$this->_actions[]=[$context,$funcName,$funcParams];
 	}
@@ -295,7 +295,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		{
 			$params=[];
 			$request=$this->getRequest();
-			foreach(explode(',',$this->_varyByParam) as $name)
+			foreach(explode(',', $this->_varyByParam) as $name)
 			{
 				$name=trim($name);
 				$params[$name]=$request->itemAt($name);
@@ -388,7 +388,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	public function setDuration($value)
 	{
 		if(($value=TPropertyValue::ensureInteger($value))<0)
-			throw new TInvalidDataValueException('outputcache_duration_invalid',get_class($this));
+			throw new TInvalidDataValueException('outputcache_duration_invalid', get_class($this));
 		$this->_duration=$value;
 	}
 
@@ -457,7 +457,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	public function onCheckDependency($param)
 	{
-		$this->raiseEvent('OnCheckDependency',$this,$param);
+		$this->raiseEvent('OnCheckDependency', $this, $param);
 	}
 
 	/**
@@ -470,7 +470,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	public function onCalculateKey($param)
 	{
-		$this->raiseEvent('OnCalculateKey',$this,$param);
+		$this->raiseEvent('OnCalculateKey', $this, $param);
 	}
 
 	/**
@@ -496,7 +496,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 			$content=$textwriter->flush();
 			$data=[$content,$this->_state,$this->_actions,time()];
-			$this->_cache->set($this->getCacheKey(),$data,$this->getDuration(),$this->getCacheDependency());
+			$this->_cache->set($this->getCacheKey(), $data, $this->getDuration(), $this->getCacheDependency());
 		}
 		else
 			parent::render($writer);

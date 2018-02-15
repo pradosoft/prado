@@ -230,7 +230,7 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	public function setLazyLoad($value)
 	{
-		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value,false);
+		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value, false);
 	}
 
 	/**
@@ -239,17 +239,17 @@ class TResultProperty extends \Prado\TComponent
 	 * @param array result row
 	 * @return mixed property value.
 	 */
-	public function getPropertyValue($registry,$row)
+	public function getPropertyValue($registry, $row)
 	{
 		$value = null;
 		$index = $this->getColumnIndex();
 		$name = $this->getColumn();
 		if($index > 0 && isset($row[$index]))
-			$value = $this->getTypedValue($registry,$row[$index]);
+			$value = $this->getTypedValue($registry, $row[$index]);
 		elseif(isset($row[$name]))
-			$value = $this->getTypedValue($registry,$row[$name]);
+			$value = $this->getTypedValue($registry, $row[$name]);
 		if(($value===null) && ($this->getNullValue()!==null))
-			$value = $this->getTypedValue($registry,$this->getNullValue());
+			$value = $this->getTypedValue($registry, $this->getNullValue());
 		return $value;
 	}
 
@@ -258,7 +258,7 @@ class TResultProperty extends \Prado\TComponent
 	 * @param mixed raw property value
 	 * @return mixed property value casted to specific type.
 	 */
-	protected function getTypedValue($registry,$value)
+	protected function getTypedValue($registry, $value)
 	{
 		if(($handler = $this->createTypeHandler($registry))!==null)
 			return $handler->getResult($value);
@@ -309,7 +309,7 @@ class TResultProperty extends \Prado\TComponent
 	public function instanceOfListType($target)
 	{
 		if($this->getType()===null)
-			return  TPropertyAccess::get($target,$this->getProperty()) instanceof TList;
+			return  TPropertyAccess::get($target, $this->getProperty()) instanceof TList;
 		return $this->getPropertyValueType() == self::LIST_TYPE;
 	}
 
@@ -323,7 +323,7 @@ class TResultProperty extends \Prado\TComponent
 	{
 		if($this->getType()===null)
 		{
-			$prop = TPropertyAccess::get($target,$this->getProperty());
+			$prop = TPropertyAccess::get($target, $this->getProperty());
 			if(is_object($prop))
 				return $prop instanceof \ArrayAccess;
 			return is_array($prop);
@@ -344,7 +344,7 @@ class TResultProperty extends \Prado\TComponent
 		if ($this->_typeHandler===null) $exprops[] = "\0$cn\0_typeHandler";
 		if ($this->_isLazyLoad===false) $exprops[] = "\0$cn\0_isLazyLoad";
 		if ($this->_select===null) $exprops[] = "\0$cn\0_select";
-		return array_diff(parent::__sleep(),$exprops);
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }
 

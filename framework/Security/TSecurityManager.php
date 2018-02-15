@@ -75,7 +75,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function generateRandomKey()
 	{
-		return sprintf('%08x%08x%08x%08x',mt_rand(),mt_rand(),mt_rand(),mt_rand());
+		return sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
 	}
 
 	/**
@@ -255,7 +255,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	private function strlen($string)
 	{
-		return $this->_mbstring ? mb_strlen($string,'8bit') : strlen($string);
+		return $this->_mbstring ? mb_strlen($string, '8bit') : strlen($string);
 	}
 
 	/**
@@ -266,8 +266,8 @@ class TSecurityManager extends \Prado\TModule
 	 * @param int $length the desired portion length
 	 * @return string the extracted part of string, or FALSE on failure or an empty string.
 	 */
-	private function substr($string,$start,$length)
+	private function substr($string, $start, $length)
 	{
-		return $this->_mbstring ? mb_substr($string,$start,$length,'8bit') : substr($string,$start,$length);
+		return $this->_mbstring ? mb_substr($string, $start, $length, '8bit') : substr($string, $start, $length);
 	}
 }

@@ -78,7 +78,7 @@ class TXmlDocument extends TXmlElement
 	 * @param string version of this XML document
 	 * @param string encoding of this XML document
 	 */
-	public function __construct($version='1.0',$encoding='')
+	public function __construct($version='1.0', $encoding='')
 	{
 		parent::__construct('');
 		$this->setVersion($version);
@@ -128,7 +128,7 @@ class TXmlDocument extends TXmlElement
 		if(($str=@file_get_contents($file))!==false)
 			return $this->loadFromString($str);
 		else
-			throw new TIOException('xmldocument_file_read_failed',$file);
+			throw new TIOException('xmldocument_file_read_failed', $file);
 	}
 
 	/**
@@ -174,7 +174,7 @@ class TXmlDocument extends TXmlElement
 		}
 
 		foreach($element->attributes as $name=>$attr)
-			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name,$attr->value);
+			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 		foreach($element->childNodes as $child)
 		{
 			if($child instanceof \DOMElement)
@@ -191,13 +191,13 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToFile($file)
 	{
-		if(($fw=fopen($file,'w'))!==false)
+		if(($fw=fopen($file, 'w'))!==false)
 		{
-			fwrite($fw,$this->saveToString());
+			fwrite($fw, $this->saveToString());
 			fclose($fw);
 		}
 		else
-			throw new TIOException('xmldocument_file_write_failed',$file);
+			throw new TIOException('xmldocument_file_write_failed', $file);
 	}
 
 	/**
@@ -241,7 +241,7 @@ class TXmlDocument extends TXmlElement
 		$element=new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
 		foreach($node->attributes as $name=>$attr)
-			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name,$attr->value);
+			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
 
 		foreach($node->childNodes as $child)
 		{

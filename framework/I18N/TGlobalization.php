@@ -123,7 +123,7 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function setDefaultCulture($culture)
 	{
-		$this->_defaultCulture = str_replace('-','_',$culture);
+		$this->_defaultCulture = str_replace('-', '_', $culture);
 	}
 
 	/**
@@ -155,7 +155,7 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function setCulture($culture)
 	{
-		$this->_culture = str_replace('-','_',$culture);
+		$this->_culture = str_replace('-', '_', $culture);
 	}
 
 	/**
@@ -287,14 +287,14 @@ class TGlobalization extends \Prado\TModule
 	 * @param string culture string, null to use current culture
 	 * @return array list of possible localized resource files.
 	 */
-	public function getLocalizedResource($file,$culture=null)
+	public function getLocalizedResource($file, $culture=null)
 	{
 		$files = [];
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
 		foreach($variants as $variant)
 			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $variant . DIRECTORY_SEPARATOR . $path['basename'];
-		$filename = substr($path['basename'],0,strrpos($path['basename'],'.'));
+		$filename = substr($path['basename'], 0, strrpos($path['basename'], '.'));
 		foreach($variants as $variant)
 			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $filename . '.' . $variant . '.' . $path['extension'];
 		$files[] = $file;

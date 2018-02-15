@@ -54,7 +54,7 @@ class TSqlCriteria extends \Prado\TComponent
 	public function __construct($condition=null, $parameters=[])
 	{
 		if(!is_array($parameters) && func_num_args() > 1)
-			$parameters = array_slice(func_get_args(),1);
+			$parameters = array_slice(func_get_args(), 1);
 		$this->_parameters=new TAttributeCollection;
 		$this->_parameters->setCaseSensitive(true);
 		$this->_parameters->copyFrom((array)$parameters);
@@ -219,11 +219,11 @@ class TSqlCriteria extends \Prado\TComponent
 			$this->_ordersBy->copyFrom($value);
 		else
 		{
-			$value=trim(preg_replace('/\s+/',' ',(string)$value));
+			$value=trim(preg_replace('/\s+/', ' ', (string)$value));
 			$orderBys=[];
-			foreach(explode(',',$value) as $orderBy)
+			foreach(explode(',', $value) as $orderBy)
 			{
-				$vs=explode(' ',trim($orderBy));
+				$vs=explode(' ', trim($orderBy));
 				$orderBys[$vs[0]]=isset($vs[1])?$vs[1]:'asc';
 			}
 			$this->_ordersBy->copyFrom($orderBys);
@@ -274,12 +274,12 @@ class TSqlCriteria extends \Prado\TComponent
 		foreach($this->getParameters() as $k=>$v)
 			$params[] = "{$k} => ${v}";
 		if(count($params) > 0)
-			$str .= ', "' . implode(', ',$params) . '"';
+			$str .= ', "' . implode(', ', $params) . '"';
 		$orders = [];
 		foreach($this->getOrdersBy() as $k=>$v)
 			$orders[] = "{$k} => ${v}";
 		if(count($orders) > 0)
-			$str .= ', "' . implode(', ',$orders) . '"';
+			$str .= ', "' . implode(', ', $orders) . '"';
 		if($this->_limit !==null)
 			$str .= ', ' . $this->_limit;
 		if($this->_offset !== null)

@@ -262,9 +262,9 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	public function getIterator()
 	{
 		if($this->_dataSource instanceof TList)
-			return new TPagedListIterator($this->_dataSource,$this->getFirstIndexInPage(),$this->getCount());
+			return new TPagedListIterator($this->_dataSource, $this->getFirstIndexInPage(), $this->getCount());
 		elseif($this->_dataSource instanceof TMap)
-			return new TPagedMapIterator($this->_dataSource,$this->getFirstIndexInPage(),$this->getCount());
+			return new TPagedMapIterator($this->_dataSource, $this->getFirstIndexInPage(), $this->getCount());
 		else
 			return null;
 	}

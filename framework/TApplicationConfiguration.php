@@ -69,13 +69,13 @@ class TApplicationConfiguration extends \Prado\TComponent
 		if(Prado::getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 		{
 			$fcontent = include $fname;
-			$this->loadFromPhp($fcontent,dirname($fname));
+			$this->loadFromPhp($fcontent, dirname($fname));
 		}
 		else
 		{
 			$dom=new TXmlDocument;
 			$dom->loadFromFile($fname);
-			$this->loadFromXml($dom,dirname($fname));
+			$this->loadFromXml($dom, dirname($fname));
 		}
 	}
 
@@ -105,19 +105,19 @@ class TApplicationConfiguration extends \Prado\TComponent
 		}
 
 		if(isset($config['paths']) && is_array($config['paths']))
-			$this->loadPathsPhp($config['paths'],$configPath);
+			$this->loadPathsPhp($config['paths'], $configPath);
 
 		if(isset($config['modules']) && is_array($config['modules']))
-			$this->loadModulesPhp($config['modules'],$configPath);
+			$this->loadModulesPhp($config['modules'], $configPath);
 
 		if(isset($config['services']) && is_array($config['services']))
-			$this->loadServicesPhp($config['services'],$configPath);
+			$this->loadServicesPhp($config['services'], $configPath);
 
 		if(isset($config['parameters']) && is_array($config['parameters']))
 			$this->loadParametersPhp($config['parameters'], $configPath);
 
 		if(isset($config['includes']) && is_array($config['includes']))
-			$this->loadExternalXml($config['includes'],$configPath);
+			$this->loadExternalXml($config['includes'], $configPath);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the XML element
 	 * @param string the context path (for specifying relative paths)
 	 */
-	public function loadFromXml($dom,$configPath)
+	public function loadFromXml($dom, $configPath)
 	{
 		// application properties
 		foreach($dom->getAttributes() as $name=>$value)
@@ -139,19 +139,19 @@ class TApplicationConfiguration extends \Prado\TComponent
 			switch($element->getTagName())
 			{
 				case 'paths':
-					$this->loadPathsXml($element,$configPath);
+					$this->loadPathsXml($element, $configPath);
 					break;
 				case 'modules':
-					$this->loadModulesXml($element,$configPath);
+					$this->loadModulesXml($element, $configPath);
 					break;
 				case 'services':
-					$this->loadServicesXml($element,$configPath);
+					$this->loadServicesXml($element, $configPath);
 					break;
 				case 'parameters':
-					$this->loadParametersXml($element,$configPath);
+					$this->loadParametersXml($element, $configPath);
 					break;
 				case 'include':
-					$this->loadExternalXml($element,$configPath);
+					$this->loadExternalXml($element, $configPath);
 					break;
 				default:
 					//throw new TConfigurationException('appconfig_tag_invalid',$element->getTagName());
@@ -171,15 +171,15 @@ class TApplicationConfiguration extends \Prado\TComponent
 		{
 			foreach($pathsNode['aliases'] as $id=>$path)
 			{
-				$path=str_replace('\\','/',$path);
-				if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
+				$path=str_replace('\\', '/', $path);
+				if(preg_match('/^\\/|.:\\/|.:\\\\/', $path))	// if absolute path
 					$p=realpath($path);
 				else
 					$p=realpath($configPath . DIRECTORY_SEPARATOR . $path);
 				if($p===false || !is_dir($p))
-					throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+					throw new TConfigurationException('appconfig_aliaspath_invalid', $id, $path);
 				if(isset($this->_aliases[$id]))
-					throw new TConfigurationException('appconfig_alias_redefined',$id);
+					throw new TConfigurationException('appconfig_alias_redefined', $id);
 				$this->_aliases[$id]=$p;
 			}
 		}
@@ -198,7 +198,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the paths XML node
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadPathsXml($pathsNode,$configPath)
+	protected function loadPathsXml($pathsNode, $configPath)
 	{
 		foreach($pathsNode->getElements() as $element)
 		{
@@ -208,15 +208,15 @@ class TApplicationConfiguration extends \Prado\TComponent
 				{
 					if(($id=$element->getAttribute('id'))!==null && ($path=$element->getAttribute('path'))!==null)
 					{
-						$path=str_replace('\\','/',$path);
-						if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
+						$path=str_replace('\\', '/', $path);
+						if(preg_match('/^\\/|.:\\/|.:\\\\/', $path))	// if absolute path
 							$p=realpath($path);
 						else
 							$p=realpath($configPath . DIRECTORY_SEPARATOR . $path);
 						if($p===false || !is_dir($p))
-							throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
+							throw new TConfigurationException('appconfig_aliaspath_invalid', $id, $path);
 						if(isset($this->_aliases[$id]))
-							throw new TConfigurationException('appconfig_alias_redefined',$id);
+							throw new TConfigurationException('appconfig_alias_redefined', $id);
 						$this->_aliases[$id]=$p;
 					}
 					else
@@ -234,7 +234,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 					break;
 				}
 				default:
-					throw new TConfigurationException('appconfig_paths_invalid',$element->getTagName());
+					throw new TConfigurationException('appconfig_paths_invalid', $element->getTagName());
 			}
 		}
 	}
@@ -249,7 +249,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 		foreach($modulesNode as $id=>$module)
 		{
 			if(!isset($module['class']))
-				throw new TConfigurationException('appconfig_moduletype_required',$id);
+				throw new TConfigurationException('appconfig_moduletype_required', $id);
 			$type = $module['class'];
 			unset($module['class']);
 			$properties = [];
@@ -269,7 +269,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the modules XML node
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadModulesXml($modulesNode,$configPath)
+	protected function loadModulesXml($modulesNode, $configPath)
 	{
 		foreach($modulesNode->getElements() as $element)
 		{
@@ -279,7 +279,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$id=$properties->itemAt('id');
 				$type=$properties->remove('class');
 				if($type===null)
-					throw new TConfigurationException('appconfig_moduletype_required',$id);
+					throw new TConfigurationException('appconfig_moduletype_required', $id);
 				$element->setParent(null);
 				if($id===null)
 					$this->_modules[]=[$type,$properties->toArray(),$element];
@@ -288,7 +288,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$this->_empty=false;
 			}
 			else
-				throw new TConfigurationException('appconfig_modules_invalid',$element->getTagName());
+				throw new TConfigurationException('appconfig_modules_invalid', $element->getTagName());
 		}
 	}
 
@@ -297,7 +297,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param array the services PHP array
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadServicesPhp($servicesNode,$configPath)
+	protected function loadServicesPhp($servicesNode, $configPath)
 	{
 		foreach($servicesNode as $id => $service)
 		{
@@ -317,7 +317,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the services XML node
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadServicesXml($servicesNode,$configPath)
+	protected function loadServicesXml($servicesNode, $configPath)
 	{
 		foreach($servicesNode->getElements() as $element)
 		{
@@ -327,13 +327,13 @@ class TApplicationConfiguration extends \Prado\TComponent
 				if(($id=$properties->itemAt('id'))===null)
 					throw new TConfigurationException('appconfig_serviceid_required');
 				if(($type=$properties->remove('class'))===null)
-					throw new TConfigurationException('appconfig_servicetype_required',$id);
+					throw new TConfigurationException('appconfig_servicetype_required', $id);
 				$element->setParent(null);
 				$this->_services[$id]=[$type,$properties->toArray(),$element];
 				$this->_empty=false;
 			}
 			else
-				throw new TConfigurationException('appconfig_services_invalid',$element->getTagName());
+				throw new TConfigurationException('appconfig_services_invalid', $element->getTagName());
 		}
 	}
 
@@ -342,7 +342,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param array the parameters PHP array
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadParametersPhp($parametersNode,$configPath)
+	protected function loadParametersPhp($parametersNode, $configPath)
 	{
 		foreach($parametersNode as $id => $parameter)
 		{
@@ -369,7 +369,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the parameters XML node
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadParametersXml($parametersNode,$configPath)
+	protected function loadParametersXml($parametersNode, $configPath)
 	{
 		foreach($parametersNode->getElements() as $element)
 		{
@@ -390,7 +390,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$this->_empty=false;
 			}
 			else
-				throw new TConfigurationException('appconfig_parameters_invalid',$element->getTagName());
+				throw new TConfigurationException('appconfig_parameters_invalid', $element->getTagName());
 		}
 	}
 
@@ -399,7 +399,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param array the application PHP array
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadExternalPhp($includeNode,$configPath)
+	protected function loadExternalPhp($includeNode, $configPath)
 	{
 		foreach($includeNode as $include)
 		{
@@ -420,7 +420,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @param TXmlElement the application DOM element
 	 * @param string the context path (for specifying relative paths)
 	 */
-	protected function loadExternalXml($includeNode,$configPath)
+	protected function loadExternalXml($includeNode, $configPath)
 	{
 		if(($when=$includeNode->getAttribute('when'))===null)
 			$when=true;

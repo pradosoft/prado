@@ -86,7 +86,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setPattern($value)
 	{
-		$this->setViewState('Pattern',$value,'');
+		$this->setViewState('Pattern', $value, '');
 	}
 
 	/**
@@ -95,12 +95,12 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getPattern()
 	{
-		$string = $this->getViewState('Pattern','');
+		$string = $this->getViewState('Pattern', '');
 
 		$pattern = null;
 
 		//try the subpattern of "date time" presets
-		$subpatterns = explode(' ',$string,2);
+		$subpatterns = explode(' ', $string, 2);
 		$datetime = [];
 		if(count($subpatterns)==2)
 		{
@@ -148,7 +148,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getValue()
 	{
-		$value = $this->getViewState('Value','');
+		$value = $this->getViewState('Value', '');
 		if(empty($value))
 		{
 			$defaultText = $this->getDefaultText();
@@ -164,7 +164,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**
@@ -173,7 +173,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getDefaultText()
 	{
-		return $this->getViewState('DefaultText','');
+		return $this->getViewState('DefaultText', '');
 	}
 
 	/**
@@ -182,7 +182,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setDefaultText($value)
 	{
-		$this->setViewState('DefaultText',$value,'');
+		$this->setViewState('DefaultText', $value, '');
 	}
 
 	/**

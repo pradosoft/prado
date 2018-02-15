@@ -93,7 +93,7 @@ class TReCaptchaValidator extends TBaseValidator
 
 		// communicate validation status to the client side
 		$value = $this->_isvalid===false ? '0' : '1';
-		$cs->registerHiddenField($this->getClientID() . '_1',$value);
+		$cs->registerHiddenField($this->getClientID() . '_1', $value);
 		
 		// update validator display
 		if ($control = $this->getValidationTarget())
@@ -114,7 +114,7 @@ class TReCaptchaValidator extends TBaseValidator
 					}
 			}
 
-			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ',[
+			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ', [
 				// this function will be used to update the validator
 				'function ' . $fn . '(valid)',
 				'{',

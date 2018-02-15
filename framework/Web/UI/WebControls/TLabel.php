@@ -53,7 +53,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	protected function addAttributesToRender($writer)
 	{
 		if($this->_forControl!=='')
-			$writer->addAttribute('for',$this->_forControl);
+			$writer->addAttribute('for', $this->_forControl);
 		parent::addAttributesToRender($writer);
 	}
 
@@ -76,7 +76,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 				}
 			}
 			else
-				throw new TInvalidDataValueException('label_associatedcontrol_invalid',$aid);
+				throw new TInvalidDataValueException('label_associatedcontrol_invalid', $aid);
 		}
 		else
 			parent::render($writer);
@@ -99,7 +99,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -141,7 +141,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getForControl()
 	{
-		return $this->getViewState('ForControl','');
+		return $this->getViewState('ForControl', '');
 	}
 
 	/**
@@ -151,7 +151,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function setForControl($value)
 	{
-		$this->setViewState('ForControl',$value,'');
+		$this->setViewState('ForControl', $value, '');
 	}
 }
 

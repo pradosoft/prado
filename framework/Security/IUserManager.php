@@ -53,6 +53,6 @@ interface IUserManager
 	 * @param string password
 	 * @return boolean true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username,$password);
+	public function validateUser($username, $password);
 }
 

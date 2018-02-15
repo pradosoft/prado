@@ -22,8 +22,8 @@ class TActiveRadioButtonItem extends TActiveRadioButton
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		TRadioButton::renderInputTag($writer,$clientID,$onclick);
+		TRadioButton::renderInputTag($writer, $clientID, $onclick);
 	}
 }

@@ -306,7 +306,7 @@ class TStyle extends \Prado\TComponent
 	 * @param string style field name
 	 * @param string style field value
 	 */
-	public function setStyleField($name,$value)
+	public function setStyleField($name, $value)
 	{
 		$this->_fields[$name]=$value;
 	}
@@ -365,7 +365,7 @@ class TStyle extends \Prado\TComponent
 	{
 		if($style instanceof TStyle)
 		{
-			$this->_fields=array_merge($this->_fields,$style->_fields);
+			$this->_fields=array_merge($this->_fields, $style->_fields);
 			if($style->_class!==null)
 				$this->_class=$style->_class;
 			if($style->_customStyle!==null)
@@ -385,7 +385,7 @@ class TStyle extends \Prado\TComponent
 	{
 		if($style instanceof TStyle)
 		{
-			$this->_fields=array_merge($style->_fields,$this->_fields);
+			$this->_fields=array_merge($style->_fields, $this->_fields);
 			if($this->_class===null)
 				$this->_class=$style->_class;
 			if($this->_customStyle===null)
@@ -403,18 +403,18 @@ class TStyle extends \Prado\TComponent
 	{
 		if($this->_customStyle!==null)
 		{
-			foreach(explode(';',$this->_customStyle) as $style)
+			foreach(explode(';', $this->_customStyle) as $style)
 			{
-				$arr=explode(':',$style,2);
+				$arr=explode(':', $style, 2);
 				if(isset($arr[1]) && trim($arr[0])!=='')
-					$writer->addStyleAttribute(trim($arr[0]),trim($arr[1]));
+					$writer->addStyleAttribute(trim($arr[0]), trim($arr[1]));
 			}
 		}
 		$writer->addStyleAttributes($this->_fields);
 		if($this->_font!==null)
 			$this->_font->addAttributesToRender($writer);
 		if($this->_class!==null)
-			$writer->addAttribute('class',$this->_class);
+			$writer->addAttribute('class', $this->_class);
 	}
 
 	/**

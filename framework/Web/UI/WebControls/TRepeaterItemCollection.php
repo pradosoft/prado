@@ -31,10 +31,10 @@ class TRepeaterItemCollection extends \Prado\Collections\TList
 	 * @param TControl new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a control.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof \Prado\Web\UI\TControl)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('repeateritemcollection_item_invalid');
 	}

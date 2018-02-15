@@ -67,7 +67,7 @@ class TLogger extends \Prado\TComponent
 	 * @param string category of the message
 	 * @param string|TControl control of the message
 	 */
-	public function log($message,$level,$category='Uncategorized', $ctl=null)
+	public function log($message, $level, $category='Uncategorized', $ctl=null)
 	{
 		if($ctl) {
 			if($ctl instanceof TControl)
@@ -112,7 +112,7 @@ class TLogger extends \Prado\TComponent
 	 *   [4] => memory in bytes
 	 *   [5] => control client id
 	 */
-	public function getLogs($levels=null,$categories=null,$controls=null,$timestamp=null)
+	public function getLogs($levels=null, $categories=null, $controls=null, $timestamp=null)
 	{
 		$this->_levels=$levels;
 		$this->_categories=$categories;
@@ -122,13 +122,13 @@ class TLogger extends \Prado\TComponent
 			return $this->_logs;
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByLevels']) ));
+			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByLevels']) ));
 		if(!empty($categories))
-			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByCategories']) ));
+			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByCategories']) ));
 		if(!empty($controls))
-			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByControl']) ));
+			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByControl']) ));
 		if(!is_null($timestamp))
-			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByTimeStamp']) ));
+			$logs = array_values(array_filter( array_filter($logs, [$this,'filterByTimeStamp']) ));
 		return $logs;
 	}
 
@@ -156,7 +156,7 @@ class TLogger extends \Prado\TComponent
 	 * @param array category filter
 	 * @param array control filter
 	 */
-	public function deleteLogs($levels=null,$categories=null,$controls=null,$timestamp=null)
+	public function deleteLogs($levels=null, $categories=null, $controls=null, $timestamp=null)
 	{
 		$this->_levels=$levels;
 		$this->_categories=$categories;
@@ -169,13 +169,13 @@ class TLogger extends \Prado\TComponent
 		}
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_filter( array_filter($logs,[$this,'filterByLevels']) );
+			$logs = array_filter( array_filter($logs, [$this,'filterByLevels']) );
 		if(!empty($categories))
-			$logs = array_filter( array_filter($logs,[$this,'filterByCategories']) );
+			$logs = array_filter( array_filter($logs, [$this,'filterByCategories']) );
 		if(!empty($controls))
-			$logs = array_filter( array_filter($logs,[$this,'filterByControl']) );
+			$logs = array_filter( array_filter($logs, [$this,'filterByControl']) );
 		if(!is_null($timestamp))
-			$logs = array_filter( array_filter($logs,[$this,'filterByTimeStamp']) );
+			$logs = array_filter( array_filter($logs, [$this,'filterByTimeStamp']) );
 		$this->_logs = array_values( array_diff_key($this->_logs, $logs) );
 	}
 
@@ -188,7 +188,7 @@ class TLogger extends \Prado\TComponent
 		foreach($this->_categories as $category)
 		{
 			// element 2 is the category
-			if($value[2]===$category || strpos($value[2],$category . '.')===0)
+			if($value[2]===$category || strpos($value[2], $category . '.')===0)
 				return $value;
 		}
 		return false;
@@ -216,7 +216,7 @@ class TLogger extends \Prado\TComponent
 		// element 5 are the control client ids
 		foreach($this->_controls as $control)
 		{
-			if($value[5]===$control || strpos($value[5],$control)===0)
+			if($value[5]===$control || strpos($value[5], $control)===0)
 				return $value;
 		}
 		return false;

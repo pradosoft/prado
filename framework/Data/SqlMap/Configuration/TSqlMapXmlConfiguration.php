@@ -62,7 +62,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	public function configure($filename=null)
 	{
 		$this->_configFile=$filename;
-		$document = $this->loadXmlDocument($filename,$this);
+		$document = $this->loadXmlDocument($filename, $this);
 
 		foreach($document->xpath('//property') as $property)
 			$this->loadGlobalProperty($property);

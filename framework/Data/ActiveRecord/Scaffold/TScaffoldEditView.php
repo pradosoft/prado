@@ -145,7 +145,7 @@ class TScaffoldEditView extends TScaffoldBase
 		if($this->_editRenderer instanceof IScaffoldEditRenderer)
 		{
 			$index = $this->getControls()->remove($this->getInputRepeater());
-			$this->getControls()->insertAt($index,$this->_editRenderer);
+			$this->getControls()->insertAt($index, $this->_editRenderer);
 			$this->_editRenderer->setData($record);
 		}
 		else

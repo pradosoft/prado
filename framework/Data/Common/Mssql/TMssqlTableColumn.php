@@ -44,7 +44,7 @@ class TMssqlTableColumn extends TDbTableColumn
 	 */
 	public function getAutoIncrement()
 	{
-		return $this->getInfo('AutoIncrement',false);
+		return $this->getInfo('AutoIncrement', false);
 	}
 
 	/**

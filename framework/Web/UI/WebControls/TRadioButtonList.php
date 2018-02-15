@@ -52,7 +52,7 @@ class TRadioButtonList extends TCheckBoxList
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		$value=isset($values[$key])?$values[$key]:'';
 		$oldSelection=$this->getSelectedIndex();

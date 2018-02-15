@@ -88,7 +88,7 @@ class TPriorityList extends TList
 	 * @param integer the precision of the numeric priorities
 	 * @throws TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false,$defaultPriority=10,$precision=8)
+	public function __construct($data=null, $readOnly=false, $defaultPriority=10, $precision=8)
 	{
 		parent::__construct();
 		if($data!==null)
@@ -126,7 +126,7 @@ class TPriorityList extends TList
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if(!isset($this->_d[$priority]) || !is_array($this->_d[$priority]))
 			return false;
@@ -147,7 +147,7 @@ class TPriorityList extends TList
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp=(string)round(TPropertyValue::ensureFloat($value),$this->_p);
+		$this->_dp=(string)round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
 
 	/**
@@ -193,7 +193,7 @@ class TPriorityList extends TList
 	 */
 	protected function sortPriorities() {
 		if(!$this->_o) {
-			ksort($this->_d,SORT_NUMERIC);
+			ksort($this->_d, SORT_NUMERIC);
 			$this->_o=true;
 		}
 	}
@@ -209,7 +209,7 @@ class TPriorityList extends TList
 		$this->sortPriorities();
 		$this->_fd=[];
 		foreach($this->_d as $priority => $itemsatpriority)
-			$this->_fd=array_merge($this->_fd,$itemsatpriority);
+			$this->_fd=array_merge($this->_fd, $itemsatpriority);
 		return $this->_fd;
 	}
 
@@ -227,7 +227,7 @@ class TPriorityList extends TList
 			$arr=$this->flattenPriorities();
 			return $arr[$index];
 		} else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid', $index);
 	}
 
 	/**
@@ -239,7 +239,7 @@ class TPriorityList extends TList
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return isset($this->_d[$priority])?$this->_d[$priority]:null;
 	}
@@ -250,7 +250,7 @@ class TPriorityList extends TList
 	 * @param numeric the priority which to index.  no parameter or null will result in the default priority
 	 * @return mixed the element at the offset, false if no element is found at the offset
 	 */
-	public function itemAtIndexInPriority($index,$priority=null)
+	public function itemAtIndexInPriority($index, $priority=null)
 	{
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
@@ -269,12 +269,12 @@ class TPriorityList extends TList
 	 * @return int the index within the flattened array
 	 * @throws TInvalidOperationException if the map is read-only
 	 */
-	public function add($item,$priority=null)
+	public function add($item, $priority=null)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
-		return $this->insertAtIndexInPriority($item,false,$priority,true);
+		return $this->insertAtIndexInPriority($item, false, $priority, true);
 	}
 
 	/**
@@ -285,15 +285,15 @@ class TPriorityList extends TList
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
-		if(($priority=$this->priorityAt($index,true))!==false)
-			$this->insertAtIndexInPriority($item,$priority[1],$priority[0]);
+		if(($priority=$this->priorityAt($index, true))!==false)
+			$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
 		else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid', $index);
 	}
 
 	/**
@@ -306,10 +306,10 @@ class TPriorityList extends TList
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function insertAtIndexInPriority($item,$index=false,$priority=null,$preserveCache=false)
+	public function insertAtIndexInPriority($item, $index=false, $priority=null, $preserveCache=false)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
@@ -330,7 +330,7 @@ class TPriorityList extends TList
 				$this->_d[$priority][]=$item;
 			} elseif(isset($this->_d[$priority])) {
 				$c=$index+$cc;
-				array_splice($this->_d[$priority],$index,0,[$item]);
+				array_splice($this->_d[$priority], $index, 0, [$item]);
 			} else {
 				$c = $cc;
 				$this->_o = false;
@@ -338,7 +338,7 @@ class TPriorityList extends TList
 			}
 
 			if($this->_fd&&is_array($this->_fd)) // if there is a flattened array cache
-				array_splice($this->_fd,$c,0,[$item]);
+				array_splice($this->_fd, $c, 0, [$item]);
 		} else {
 			$c=null;
 			if($index===false&&isset($this->_d[$priority])) {
@@ -346,14 +346,14 @@ class TPriorityList extends TList
 				$this->_d[$priority][]=$item;
 			} elseif(isset($this->_d[$priority])) {
 				$cc=$index;
-				array_splice($this->_d[$priority],$index,0,[$item]);
+				array_splice($this->_d[$priority], $index, 0, [$item]);
 			} else {
 				$cc=0;
 				$this->_o=false;
 				$this->_d[$priority]=[$item];
 			}
 			if($this->_fd&&is_array($this->_fd)&&count($this->_d)==1)
-				array_splice($this->_fd,$cc,0,[$item]);
+				array_splice($this->_fd, $cc, 0, [$item]);
 			else
 				$this->_fd=null;
 		}
@@ -374,22 +374,22 @@ class TPriorityList extends TList
 	 * @return integer index within the flattened list at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 */
-	public function remove($item,$priority=false)
+	public function remove($item, $priority=false)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
-		if(($p=$this->priorityOf($item,true))!==false)
+		if(($p=$this->priorityOf($item, true))!==false)
 		{
 			if($priority!==false) {
 				if($priority===null)
 					$priority=$this->getDefaultPriority();
-				$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+				$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 				if($p[0]!=$priority)
 					throw new TInvalidDataValueException('list_item_inexistent');
 			}
-			$this->removeAtIndexInPriority($p[1],$p[0]);
+			$this->removeAtIndexInPriority($p[1], $p[0]);
 			return $p[2];
 		}
 		else
@@ -406,11 +406,11 @@ class TPriorityList extends TList
 	public function removeAt($index)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
 		if(($priority=$this->priorityAt($index, true))!==false)
-			return $this->removeAtIndexInPriority($priority[1],$priority[0]);
-		throw new TInvalidDataValueException('list_index_invalid',$index);
+			return $this->removeAtIndexInPriority($priority[1], $priority[0]);
+		throw new TInvalidDataValueException('list_index_invalid', $index);
 	}
 
 	/**
@@ -424,17 +424,17 @@ class TPriorityList extends TList
 	public function removeAtIndexInPriority($index, $priority=null)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
 		if($priority===null)
 			$priority=$this->getDefaultPriority();
-		$priority=(string)round(TPropertyValue::ensureFloat($priority),$this->_p);
+		$priority=(string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if(!isset($this->_d[$priority])||$index<0||$index>=count($this->_d[$priority]))
 			throw new TInvalidDataValueException('list_item_inexistent');
 
 		// $value is an array of elements removed, only one
-		$value=array_splice($this->_d[$priority],$index,1);
+		$value=array_splice($this->_d[$priority], $index, 1);
 		$value=$value[0];
 
 		if(!count($this->_d[$priority]))
@@ -451,11 +451,11 @@ class TPriorityList extends TList
 	public function clear()
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
 		foreach($this->_d as $priority=>$items) {
 			for($index=count($items)-1;$index>=0;$index--)
-				$this->removeAtIndexInPriority($index,$priority);
+				$this->removeAtIndexInPriority($index, $priority);
 			unset($this->_d[$priority]);
 		}
 	}
@@ -475,7 +475,7 @@ class TPriorityList extends TList
 	 */
 	public function indexOf($item)
 	{
-		if(($index=array_search($item,$this->flattenPriorities(),true))===false)
+		if(($index=array_search($item, $this->flattenPriorities(), true))===false)
 			return -1;
 		else
 			return $index;
@@ -490,13 +490,13 @@ class TPriorityList extends TList
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */
-	public function priorityOf($item,$withindex = false)
+	public function priorityOf($item, $withindex = false)
 	{
 		$this->sortPriorities();
 
 		$absindex = 0;
 		foreach($this->_d as $priority=>$items) {
-			if(($index=array_search($item,$items,true))!==false) {
+			if(($index=array_search($item, $items, true))!==false) {
 				$absindex+=$index;
 				return $withindex?[$priority,$index,$absindex,
 						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex]:$priority;
@@ -516,10 +516,10 @@ class TPriorityList extends TList
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */
-	public function priorityAt($index,$withindex = false)
+	public function priorityAt($index, $withindex = false)
 	{
 		if($index<0||$index>=$this->getCount())
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid', $index);
 
 		$absindex=$index;
 		$this->sortPriorities();
@@ -544,12 +544,12 @@ class TPriorityList extends TList
 	public function insertBefore($indexitem, $item)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
-		if(($priority=$this->priorityOf($indexitem,true))===false)
+		if(($priority=$this->priorityOf($indexitem, true))===false)
 			throw new TInvalidDataValueException('list_item_inexistent');
 
-		$this->insertAtIndexInPriority($item,$priority[1],$priority[0]);
+		$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
 
 		return $priority[2];
 	}
@@ -565,12 +565,12 @@ class TPriorityList extends TList
 	public function insertAfter($indexitem, $item)
 	{
 		if($this->getReadOnly())
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 
-		if(($priority=$this->priorityOf($indexitem,true))===false)
+		if(($priority=$this->priorityOf($indexitem, true))===false)
 			throw new TInvalidDataValueException('list_item_inexistent');
 
-		$this->insertAtIndexInPriority($item,$priority[1]+1,$priority[0]);
+		$this->insertAtIndexInPriority($item, $priority[1]+1, $priority[0]);
 
 		return $priority[2]+1;
 	}
@@ -599,7 +599,7 @@ class TPriorityList extends TList
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority,$inclusive=false)
+	public function toArrayBelowPriority($priority, $inclusive=false)
 	{
 		$this->sortPriorities();
 		$items=[];
@@ -607,7 +607,7 @@ class TPriorityList extends TList
 		{
 			if((!$inclusive&&$itemspriority>=$priority)||$itemspriority>$priority)
 				break;
-			$items=array_merge($items,$itemsatpriority);
+			$items=array_merge($items, $itemsatpriority);
 		}
 		return $items;
 	}
@@ -619,7 +619,7 @@ class TPriorityList extends TList
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority,$inclusive=true)
+	public function toArrayAbovePriority($priority, $inclusive=true)
 	{
 		$this->sortPriorities();
 		$items=[];
@@ -627,7 +627,7 @@ class TPriorityList extends TList
 		{
 			if((!$inclusive&&$itemspriority<=$priority)||$itemspriority<$priority)
 				continue;
-			$items=array_merge($items,$itemsatpriority);
+			$items=array_merge($items, $itemsatpriority);
 		}
 		return $items;
 	}
@@ -648,7 +648,7 @@ class TPriorityList extends TList
 			foreach($data->getPriorities() as $priority)
 			{
 				foreach($data->itemsAtPriority($priority) as $index=>$item)
-					$this->insertAtIndexInPriority($item,$index,$priority);
+					$this->insertAtIndexInPriority($item, $index, $priority);
 			}
 		} elseif(is_array($data)||$data instanceof \Traversable) {
 			if($this->getCount()>0)
@@ -674,7 +674,7 @@ class TPriorityList extends TList
 			foreach($data->getPriorities() as $priority)
 			{
 				foreach($data->itemsAtPriority($priority) as $index=>$item)
-					$this->insertAtIndexInPriority($item,false,$priority);
+					$this->insertAtIndexInPriority($item, false, $priority);
 			}
 		}
 		elseif(is_array($data)||$data instanceof \Traversable)
@@ -721,18 +721,18 @@ class TPriorityList extends TList
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
 		if($offset===null)
 			return $this->add($item);
 		if($offset===$this->getCount()) {
-			$priority=$this->priorityAt($offset-1,true);
+			$priority=$this->priorityAt($offset-1, true);
 			$priority[1]++;
 		} else {
-			$priority=$this->priorityAt($offset,true);
-			$this->removeAtIndexInPriority($priority[1],$priority[0]);
+			$priority=$this->priorityAt($offset, true);
+			$this->removeAtIndexInPriority($priority[1], $priority[0]);
 		}
-		$this->insertAtIndexInPriority($item,$priority[1],$priority[0]);
+		$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
 	}
 
 	/**

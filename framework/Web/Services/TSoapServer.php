@@ -62,8 +62,8 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function setID($id)
 	{
-		if(strrpos($this->_id,'.wsdl')===strlen($this->_id)-5)
-			throw new TInvalidDataValueException('soapserver_id_invalid',$id);
+		if(strrpos($this->_id, '.wsdl')===strlen($this->_id)-5)
+			throw new TInvalidDataValueException('soapserver_id_invalid', $id);
 		$this->_id=$id;
 	}
 
@@ -75,7 +75,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if(($provider=$this->getProvider())!==null)
 		{
 			Prado::using($provider);
-			$providerClass=($pos=strrpos($provider,'.'))!==false?substr($provider,$pos+1):$provider;
+			$providerClass=($pos=strrpos($provider, '.'))!==false?substr($provider, $pos+1):$provider;
 			$this->guessMethodCallRequested($providerClass);
 			$server=$this->createServer();
 			$server->setClass($providerClass, $this);
@@ -148,8 +148,8 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if($this->_server===null)
 		{
 			if($this->getApplication()->getMode()===TApplicationMode::Debug)
-				ini_set("soap.wsdl_cache_enabled",0);
-			$this->_server = new \SoapServer($this->getWsdlUri(),$this->getOptions());
+				ini_set("soap.wsdl_cache_enabled", 0);
+			$this->_server = new \SoapServer($this->getWsdlUri(), $this->getOptions());
 		}
 		return $this->_server;
 	}
@@ -190,7 +190,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if($this->_wsdlUri==='')
 		{
 			$provider=$this->getProvider();
-			$providerClass=($pos=strrpos($provider,'.'))!==false?substr($provider,$pos+1):$provider;
+			$providerClass=($pos=strrpos($provider, '.'))!==false?substr($provider, $pos+1):$provider;
 			Prado::using($provider);
 			if($this->getApplication()->getMode()===TApplicationMode::Performance && ($cache=$this->getApplication()->getCache())!==null)
 			{
@@ -198,7 +198,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 				if(is_string($wsdl))
 					return $wsdl;
 				$wsdl=WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
-				$cache->set(self::WSDL_CACHE_PREFIX . $providerClass,$wsdl);
+				$cache->set(self::WSDL_CACHE_PREFIX . $providerClass, $wsdl);
 				return $wsdl;
 			}
 			else
@@ -216,7 +216,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function getWsdlUri()
 	{
 		if($this->_wsdlUri==='')
-			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID() . '.wsdl',false);
+			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID() . '.wsdl', false);
 		else
 			return $this->_wsdlUri;
 	}
@@ -235,7 +235,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function getUri()
 	{
 		if($this->_uri==='')
-			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID(),false);
+			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID(), false);
 		else
 			return $this->_uri;
 	}
@@ -281,7 +281,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if($value==='1.1' || $value==='1.2' || $value==='')
 			$this->_version=$value;
 		else
-			throw new TInvalidDataValueException('soapserver_version_invalid',$value);
+			throw new TInvalidDataValueException('soapserver_version_invalid', $value);
 	}
 
 	/**

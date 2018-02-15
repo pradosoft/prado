@@ -90,7 +90,7 @@ class TScaffoldView extends TScaffoldBase
 	 * Handle the "edit" and "new" commands by displaying the edit view.
 	 * Default command shows the list view.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		switch(strtolower($param->getCommandName()))
 		{

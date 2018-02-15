@@ -33,7 +33,7 @@ class TStyleDiff extends TViewStateDiff
 		if(!($obj instanceof TStyle))
 			return [];
 		$style = $obj->getStyleFields();
-		$style = array_merge($style,$this->getStyleFromString($obj->getCustomStyle()));
+		$style = array_merge($style, $this->getStyleFromString($obj->getCustomStyle()));
 		if($obj->hasFont())
 			$style = array_merge($style, $this->getStyleFromString($obj->getFont()->toString()));
 		return $style;
@@ -48,9 +48,9 @@ class TStyleDiff extends TViewStateDiff
 		$style = [];
 		if(!is_string($string)) return $style;
 
-		foreach(explode(';',$string) as $sub)
+		foreach(explode(';', $string) as $sub)
 		{
-			$arr=explode(':',$sub);
+			$arr=explode(':', $sub);
 			if(isset($arr[1]) && trim($arr[0])!=='')
 				$style[trim($arr[0])] = trim($arr[1]);
 		}

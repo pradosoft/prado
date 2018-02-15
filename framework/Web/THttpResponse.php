@@ -203,7 +203,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheControl($value)
 	{
-		session_cache_limiter(TPropertyValue::ensureEnum($value,['none','nocache','private','private_no_expire','public']));
+		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none','nocache','private','private_no_expire','public']));
 	}
 
 	/**
@@ -338,7 +338,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param integer size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
-	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null,$forceDownload=true,$clientFileName=null,$fileSize=null)
+	public function writeFile($fileName, $content=null, $mimeType=null, $headers=null, $forceDownload=true, $clientFileName=null, $fileSize=null)
 	{
 		static $defaultMimeTypes=[
 			'css'=>'text/css',
@@ -358,9 +358,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$mimeType='text/plain';
 			if(function_exists('mime_content_type'))
 				$mimeType=mime_content_type($fileName);
-			elseif(($ext=strrchr($fileName,'.'))!==false)
+			elseif(($ext=strrchr($fileName, '.'))!==false)
 			{
-				$ext=substr($ext,1);
+				$ext=substr($ext, 1);
 				if(isset($defaultMimeTypes[$ext]))
 					$mimeType=$defaultMimeTypes[$ext];
 			}
@@ -444,11 +444,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 						: 302
 					]);
 			}
-			header('Location: ' . str_replace('&amp;','&',$url), true, $this->_status);
+			header('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
 			if($isIIS)
 				header('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
-			header('Location: ' . str_replace('&amp;','&',$url));
+			header('Location: ' . str_replace('&amp;', '&', $url));
 		}
 
 		if(!$this->getApplication()->getRequestCompleted())
@@ -494,7 +494,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function flushContent($continueBuffering = true)
 	{
-		Prado::trace("Flushing output",'Prado\Web\THttpResponse');
+		Prado::trace("Flushing output", 'Prado\Web\THttpResponse');
 		$this->ensureHeadersSent();
 		if($this->_bufferOutput)
 		{
@@ -576,7 +576,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getContents()
 	{
-		Prado::trace("Retrieving output",'Prado\Web\THttpResponse');
+		Prado::trace("Retrieving output", 'Prado\Web\THttpResponse');
 		return $this->_bufferOutput?ob_get_contents():'';
 	}
 
@@ -587,7 +587,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		if($this->_bufferOutput)
 			ob_clean();
-		Prado::trace("Clearing output",'Prado\Web\THttpResponse');
+		Prado::trace("Clearing output", 'Prado\Web\THttpResponse');
 	}
 
 	/**
@@ -621,7 +621,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function appendHeader($value, $replace=true)
 	{
-		Prado::trace("Sending header '$value'",'Prado\Web\THttpResponse');
+		Prado::trace("Sending header '$value'", 'Prado\Web\THttpResponse');
 		header($value, $replace);
 	}
 
@@ -634,9 +634,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param string The extra headers. It's used when the message parameter is set to 1. This message type uses the same internal function as mail() does.
 	 * @see http://us2.php.net/manual/en/function.error-log.php
 	 */
-	public function appendLog($message,$messageType=0,$destination='',$extraHeaders='')
+	public function appendLog($message, $messageType=0, $destination='', $extraHeaders='')
 	{
-		error_log($message,$messageType,$destination,$extraHeaders);
+		error_log($message, $messageType, $destination, $extraHeaders);
 	}
 
 	/**

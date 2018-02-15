@@ -47,7 +47,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -56,7 +56,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -64,7 +64,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
@@ -72,7 +72,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -80,7 +80,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -96,7 +96,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageHeight()
 	{
-		return $this->getViewState('ImageHeight','');
+		return $this->getViewState('ImageHeight', '');
 	}
 
 	/**
@@ -104,7 +104,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setImageHeight($value)
 	{
-		$this->setViewState('ImageHeight',$value,'');
+		$this->setViewState('ImageHeight', $value, '');
 	}
 
 	/**
@@ -112,7 +112,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
@@ -120,7 +120,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -128,7 +128,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageWidth()
 	{
-		return $this->getViewState('ImageWidth','');
+		return $this->getViewState('ImageWidth', '');
 	}
 
 	/**
@@ -136,7 +136,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setImageWidth($value)
 	{
-		$this->setViewState('ImageWidth',$value,'');
+		$this->setViewState('ImageWidth', $value, '');
 	}
 
 	/**
@@ -144,7 +144,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
@@ -153,7 +153,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',$value,'');
+		$this->setViewState('NavigateUrl', $value, '');
 	}
 
 	/**
@@ -161,7 +161,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataNavigateUrlField()
 	{
-		return $this->getViewState('DataNavigateUrlField','');
+		return $this->getViewState('DataNavigateUrlField', '');
 	}
 
 	/**
@@ -169,7 +169,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setDataNavigateUrlField($value)
 	{
-		$this->setViewState('DataNavigateUrlField',$value,'');
+		$this->setViewState('DataNavigateUrlField', $value, '');
 	}
 
 	/**
@@ -177,7 +177,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataNavigateUrlFormatString()
 	{
-		return $this->getViewState('DataNavigateUrlFormatString','');
+		return $this->getViewState('DataNavigateUrlFormatString', '');
 	}
 
 	/**
@@ -185,7 +185,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setDataNavigateUrlFormatString($value)
 	{
-		$this->setViewState('DataNavigateUrlFormatString',$value,'');
+		$this->setViewState('DataNavigateUrlFormatString', $value, '');
 	}
 
 	/**
@@ -193,7 +193,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
@@ -202,7 +202,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',$value,'');
+		$this->setViewState('Target', $value, '');
 	}
 
 	/**
@@ -213,7 +213,7 @@ class THyperLinkColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
@@ -230,12 +230,12 @@ class THyperLinkColumn extends TDataGridColumn
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
 			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
-				$link->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$link->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			$cell->getControls()->add($link);
-			$cell->registerObject('HyperLink',$link);
+			$cell->registerObject('HyperLink', $link);
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 
 	/**
@@ -243,20 +243,20 @@ class THyperLinkColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getData();
 		if(($field=$this->getDataTextField())!=='')
 		{
-			$value=$this->getDataFieldValue($data,$field);
-			$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
+			$value=$this->getDataFieldValue($data, $field);
+			$text=$this->formatDataValue($this->getDataTextFormatString(), $value);
 			$sender->setText($text);
 		}
 		if(($field=$this->getDataNavigateUrlField())!=='')
 		{
-			$value=$this->getDataFieldValue($data,$field);
-			$url=$this->formatDataValue($this->getDataNavigateUrlFormatString(),$value);
+			$value=$this->getDataFieldValue($data, $field);
+			$url=$this->formatDataValue($this->getDataNavigateUrlFormatString(), $value);
 			$sender->setNavigateUrl($url);
 		}
 	}

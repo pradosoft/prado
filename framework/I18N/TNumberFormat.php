@@ -80,7 +80,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getPattern()
 	{
-		return $this->getViewState('Pattern','');
+		return $this->getViewState('Pattern', '');
 	}
 
 	/**
@@ -89,7 +89,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setPattern($pattern)
 	{
-		$this->setViewState('Pattern',$pattern,'');
+		$this->setViewState('Pattern', $pattern, '');
 	}
 
 	/**
@@ -98,7 +98,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getDefaultText()
 	{
-		return $this->getViewState('DefaultText','');
+		return $this->getViewState('DefaultText', '');
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setDefaultText($value)
 	{
-		$this->setViewState('DefaultText',$value,'');
+		$this->setViewState('DefaultText', $value, '');
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getType()
 	{
-		return $this->getViewState('Type','d');
+		return $this->getViewState('Type', 'd');
 	}
 
 	/**
@@ -176,15 +176,15 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 		switch($type)
 		{
 			case 'decimal':
-				$this->setViewState('Type','d',''); break;
+				$this->setViewState('Type', 'd', ''); break;
 			case 'currency':
-				$this->setViewState('Type','c',''); break;
+				$this->setViewState('Type', 'c', ''); break;
 			case 'percentage':
-				$this->setViewState('Type','p',''); break;
+				$this->setViewState('Type', 'p', ''); break;
 			case 'scientific':
-				$this->setViewState('Type','e',''); break;
+				$this->setViewState('Type', 'e', ''); break;
 			default:
-				throw new TInvalidDataValueException('numberformat_type_invalid',$type);
+				throw new TInvalidDataValueException('numberformat_type_invalid', $type);
 		}
 
 	}
@@ -194,7 +194,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getCurrency()
 	{
-		return $this->getViewState('Currency','USD');
+		return $this->getViewState('Currency', 'USD');
 	}
 
 	/**
@@ -204,7 +204,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setCurrency($currency)
 	{
-		$this->setViewState('Currency', $currency,'');
+		$this->setViewState('Currency', $currency, '');
 	}
 
 	/**

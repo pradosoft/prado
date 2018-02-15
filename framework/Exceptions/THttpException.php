@@ -36,7 +36,7 @@ class THttpException extends TSystemException
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
 	 */
-	public function __construct($statusCode,$errorMessage)
+	public function __construct($statusCode, $errorMessage)
 	{
 		$this->_statusCode=$statusCode;
 		$this->setErrorCode($errorMessage);
@@ -48,7 +48,7 @@ class THttpException extends TSystemException
 		$tokens=[];
 		for($i=0;$i<$n;++$i)
 			$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
-		parent::__construct(strtr($errorMessage,$tokens));
+		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
 	/**

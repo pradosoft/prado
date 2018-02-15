@@ -61,7 +61,7 @@ class TJuiControlOptions
 	public function setControl($control)
 	{
 		if(!$control instanceof IJuiOptions)
-			throw new THttpException(500,'juioptions_control_invalid',$control->ID);
+			throw new THttpException(500, 'juioptions_control_invalid', $control->ID);
 		$this->_control=$control;
 	}
 
@@ -72,7 +72,7 @@ class TJuiControlOptions
 	 * @param mixed option value.
 	 * @throws THttpException
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
 		if($this->_options===null)
 			$this->_options=[];
@@ -92,7 +92,7 @@ class TJuiControlOptions
 				} elseif(is_numeric($value)) {
 					// trick to get float or integer automatically when needed
 					$this->_options[$option] = $value + 0;
-				} elseif(substr($low,0,8)=='function') {
+				} elseif(substr($low, 0, 8)=='function') {
 					$this->_options[$option] = new TJavaScriptLiteral($value);
 				} else {
 					$this->_options[$option] = $value;
@@ -101,7 +101,7 @@ class TJuiControlOptions
 			}
 		}
 
-		throw new TConfigurationException('juioptions_option_invalid',$this->_control->ID, $name);
+		throw new TConfigurationException('juioptions_option_invalid', $this->_control->ID, $name);
 	}
 
 	/**

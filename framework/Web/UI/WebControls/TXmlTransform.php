@@ -135,7 +135,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
    * @return TAttributeCollection the list of custom parameters
    */
   public function getParameters() {
-	if($params = $this->getViewState('Parameters',null)) {
+	if($params = $this->getViewState('Parameters', null)) {
 	  return $params;
 	} else {
 	  $params = new TAttributeCollection();

@@ -118,13 +118,13 @@ class TJsonService extends \Prado\TService
 					if($service instanceof TJsonResponse)
 					{
 						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:[];
-						$this->createJsonResponse($service,$properties,$serviceConfig);
+						$this->createJsonResponse($service, $properties, $serviceConfig);
 					}
 					else
-						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
+						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 				}
 				else
-					throw new TConfigurationException('jsonservice_class_required',$id);
+					throw new TConfigurationException('jsonservice_class_required', $id);
 			}
 			else
 			{
@@ -133,27 +133,27 @@ class TJsonService extends \Prado\TService
 				{
 					$service=Prado::createComponent($class);
 					if($service instanceof TJsonResponse)
-						$this->createJsonResponse($service,$properties,$serviceConfig);
+						$this->createJsonResponse($service, $properties, $serviceConfig);
 					else
-						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
+						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 				}
 				else
-					throw new TConfigurationException('jsonservice_class_required',$id);
+					throw new TConfigurationException('jsonservice_class_required', $id);
 			}
 		}
 		else
-			throw new THttpException(404,'jsonservice_provider_unknown',$id);
+			throw new THttpException(404, 'jsonservice_provider_unknown', $id);
 	}
 
 	/**
 	 * Renders content provided by TJsonResponse::getJsonContent() as
 	 * javascript in JSON format.
 	 */
-	protected function createJsonResponse($service,$properties,$config)
+	protected function createJsonResponse($service, $properties, $config)
 	{
 		// init service properties
 		foreach($properties as $name=>$value)
-			$service->setSubproperty($name,$value);
+			$service->setSubproperty($name, $value);
 		$service->init($config);
 
 		//send content if not null

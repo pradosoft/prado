@@ -31,10 +31,10 @@ class THotSpotCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THotSpot.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof THotSpot)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('hotspotcollection_hotspot_required');
 	}

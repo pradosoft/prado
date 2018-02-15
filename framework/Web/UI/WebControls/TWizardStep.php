@@ -53,7 +53,7 @@ class TWizardStep extends TView
 	 */
 	public function getTitle()
 	{
-		return $this->getViewState('Title','');
+		return $this->getViewState('Title', '');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class TWizardStep extends TView
 	 */
 	public function setTitle($value)
 	{
-		$this->setViewState('Title',$value,'');
+		$this->setViewState('Title', $value, '');
 		if($this->_wizard)
 			$this->_wizard->wizardStepsChanged();
 	}
@@ -71,7 +71,7 @@ class TWizardStep extends TView
 	 */
 	public function getAllowReturn()
 	{
-		return $this->getViewState('AllowReturn',true);
+		return $this->getViewState('AllowReturn', true);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TWizardStep extends TView
 	 */
 	public function setAllowReturn($value)
 	{
-		$this->setViewState('AllowReturn',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AllowReturn', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -87,7 +87,7 @@ class TWizardStep extends TView
 	 */
 	public function getStepType()
 	{
-		return $this->getViewState('StepType',TWizardStepType::Auto);
+		return $this->getViewState('StepType', TWizardStepType::Auto);
 	}
 
 	/**
@@ -95,10 +95,10 @@ class TWizardStep extends TView
 	 */
 	public function setStepType($type)
 	{
-		$type=TPropertyValue::ensureEnum($type,'Prado\\Web\\UI\\WebControls\\TWizardStepType');
+		$type=TPropertyValue::ensureEnum($type, 'Prado\\Web\\UI\\WebControls\\TWizardStepType');
 		if($type!==$this->getStepType())
 		{
-			$this->setViewState('StepType',$type,TWizardStepType::Auto);
+			$this->setViewState('StepType', $type, TWizardStepType::Auto);
 			if($this->_wizard)
 				$this->_wizard->wizardStepsChanged();
 		}

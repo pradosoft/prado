@@ -46,7 +46,7 @@ class TI18NControl extends TControl
 		$app = $this->getApplication()->getGlobalization(false);
 
 		//instance charset
-		$charset = $this->getViewState('Charset','');
+		$charset = $this->getViewState('Charset', '');
 
 		//fall back to globalization charset
 		if(empty($charset))
@@ -65,7 +65,7 @@ class TI18NControl extends TControl
 	 */
 	public function setCharset($value)
 	{
-		$this->setViewState('Charset',$value,'');
+		$this->setViewState('Charset', $value, '');
 	}
 
 
@@ -76,7 +76,7 @@ class TI18NControl extends TControl
 	 */
 	public function getCulture()
 	{
-		return $this->getViewState('Culture','');
+		return $this->getViewState('Culture', '');
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TI18NControl extends TControl
 	 */
 	public function setCulture($culture)
 	{
-		$this->setViewState('Culture',$culture,'');
+		$this->setViewState('Culture', $culture, '');
 	}
 }
 

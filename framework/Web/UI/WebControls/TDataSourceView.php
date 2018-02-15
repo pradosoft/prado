@@ -25,7 +25,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	private $_owner;
 	private $_name;
 
-	public function __construct(IDataSource $owner,$viewName)
+	public function __construct(IDataSource $owner, $viewName)
 	{
 		$this->_owner=$owner;
 		$this->_name=$viewName;
@@ -54,7 +54,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	 * @param array|TMap new values
 	 * @return integer affected rows
 	 */
-	public function update($keys,$values)
+	public function update($keys, $values)
 	{
 		throw new TNotSupportedException('datasourceview_update_unsupported');
 	}
@@ -111,6 +111,6 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	public function onDataSourceViewChanged($param)
 	{
-		$this->raiseEvent('OnDataSourceViewChanged',$this,$param);
+		$this->raiseEvent('OnDataSourceViewChanged', $this, $param);
 	}
 }

@@ -117,9 +117,9 @@ class TSqlMapApplicationCache implements ICache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 */
-	public function set($key, $value,$expire=0,$dependency=null)
+	public function set($key, $value, $expire=0, $dependency=null)
 	{
-		$this->getCache()->set($key, $value, $expire,$dependency);
+		$this->getCache()->set($key, $value, $expire, $dependency);
 		$keyList=$this->getKeyList();
 		if (!$keyList->contains($key))
 		{
@@ -139,7 +139,7 @@ class TSqlMapApplicationCache implements ICache
 	/**
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id,$value,$expire=0,$dependency=null)
+	public function add($id, $value, $expire=0, $dependency=null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

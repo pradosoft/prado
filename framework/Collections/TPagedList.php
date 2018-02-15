@@ -82,9 +82,9 @@ class TPagedList extends TList
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only. Always true for paged list.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data=null, $readOnly=false)
 	{
-		parent::__construct($data,true);
+		parent::__construct($data, true);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TPagedList extends TList
 	 */
 	public function onPageIndexChanged($param)
 	{
-		$this->raiseEvent('OnPageIndexChanged',$this,$param);
+		$this->raiseEvent('OnPageIndexChanged', $this, $param);
 	}
 
 	/**
@@ -159,7 +159,7 @@ class TPagedList extends TList
 	 */
 	public function onFetchData($param)
 	{
-		$this->raiseEvent('OnFetchData',$this,$param);
+		$this->raiseEvent('OnFetchData', $this, $param);
 	}
 
 	/**
@@ -175,7 +175,7 @@ class TPagedList extends TList
 		{
 			if($pageIndex>=0 && ($this->_virtualCount<0 || $pageIndex<$this->getPageCount()))
 			{
-				$param=new TPagedListFetchDataEventParameter($pageIndex,$this->_pageSize*$pageIndex,$this->_pageSize);
+				$param=new TPagedListFetchDataEventParameter($pageIndex, $this->_pageSize*$pageIndex, $this->_pageSize);
 				$this->onFetchData($param);
 				if(($data=$param->getData())!==null)
 				{

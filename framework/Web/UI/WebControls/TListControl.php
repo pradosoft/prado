@@ -112,7 +112,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -120,7 +120,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -132,7 +132,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
 		if($this->getIsMultiSelect())
-			$writer->addAttribute('multiple','multiple');
+			$writer->addAttribute('multiple', 'multiple');
 		if($this->getEnabled(true))
 		{
 			if($this->getAutoPostBack()
@@ -143,7 +143,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			}
 		}
 		elseif($this->getEnabled())
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 		parent::addAttributesToRender($writer);
 	}
 
@@ -152,8 +152,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
-		$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$writer->addAttribute('id', $this->getClientID());
+		$this->getPage()->getClientScript()->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -223,18 +223,18 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$item=$items->createListItem();
 			if(is_array($object) || is_object($object))
 			{
-				$text=TDataFieldAccessor::getDataFieldValue($object,$textField);
-				$value=TDataFieldAccessor::getDataFieldValue($object,$valueField);
+				$text=TDataFieldAccessor::getDataFieldValue($object, $textField);
+				$value=TDataFieldAccessor::getDataFieldValue($object, $valueField);
 				$item->setValue($value);
 				if($groupField!=='')
-					$item->setAttribute('Group',TDataFieldAccessor::getDataFieldValue($object,$groupField));
+					$item->setAttribute('Group', TDataFieldAccessor::getDataFieldValue($object, $groupField));
 			}
 			else
 			{
 				$text=$object;
 				$item->setValue("$key");
 			}
-			$item->setText($this->formatDataValue($textFormat,$text));
+			$item->setText($this->formatDataValue($textFormat, $text));
 		}
 		// SelectedValue or SelectedIndex may be set before databinding
 		// so we make them be effective now
@@ -286,7 +286,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		parent::saveState();
 		if($this->_items)
-			$this->setViewState('Items',$this->_items->saveState(),null);
+			$this->setViewState('Items', $this->_items->saveState(), null);
 		else
 			$this->clearViewState('Items');
 	}
@@ -302,7 +302,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		if(!$this->getIsDataBound())
 		{
 			$this->_items=$this->createListItemCollection();
-			$this->_items->loadState($this->getViewState('Items',null));
+			$this->_items->loadState($this->getViewState('Items', null));
 		}
 		$this->clearViewState('Items');
 	}
@@ -320,7 +320,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getAppendDataBoundItems()
 	{
-		return $this->getViewState('AppendDataBoundItems',false);
+		return $this->getViewState('AppendDataBoundItems', false);
 	}
 
 	/**
@@ -328,7 +328,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setAppendDataBoundItems($value)
 	{
-		$this->setViewState('AppendDataBoundItems',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AppendDataBoundItems', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -338,7 +338,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',false);
+		return $this->getViewState('AutoPostBack', false);
 	}
 
 	/**
@@ -349,7 +349,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -357,7 +357,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
@@ -365,7 +365,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -373,7 +373,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
@@ -381,7 +381,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -389,7 +389,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
@@ -401,7 +401,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -409,7 +409,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getDataValueField()
 	{
-		return $this->getViewState('DataValueField','');
+		return $this->getViewState('DataValueField', '');
 	}
 
 	/**
@@ -417,7 +417,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setDataValueField($value)
 	{
-		$this->setViewState('DataValueField',$value,'');
+		$this->setViewState('DataValueField', $value, '');
 	}
 
 	/**
@@ -425,7 +425,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getDataGroupField()
 	{
-		return $this->getViewState('DataGroupField','');
+		return $this->getViewState('DataGroupField', '');
 	}
 
 	/**
@@ -433,7 +433,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setDataGroupField($value)
 	{
-		$this->setViewState('DataGroupField',$value,'');
+		$this->setViewState('DataGroupField', $value, '');
 	}
 
 	/**
@@ -531,7 +531,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$this->_cachedSelectedIndices=$indices;
 		}
 		else
-			throw new TNotSupportedException('listcontrol_multiselect_unsupported',get_class($this));
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
 
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedIndices($indices);
@@ -648,7 +648,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$this->_cachedSelectedValues=$values;
 		}
 		else
-			throw new TNotSupportedException('listcontrol_multiselect_unsupported',get_class($this));
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
 
 		if($this->getAdapter() instanceof IListControlAdapter)
 			$this->getAdapter()->setSelectedValues($values);
@@ -690,7 +690,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -698,7 +698,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -707,7 +707,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getPromptText()
 	{
-		return $this->getViewState('PromptText','');
+		return $this->getViewState('PromptText', '');
 	}
 
 	/**
@@ -716,7 +716,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setPromptText($value)
 	{
-		$this->setViewState('PromptText',$value,'');
+		$this->setViewState('PromptText', $value, '');
 	}
 
 	/**
@@ -726,7 +726,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getPromptValue()
 	{
-		return $this->getViewState('PromptValue','');
+		return $this->getViewState('PromptValue', '');
 	}
 
 	/**
@@ -736,7 +736,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setPromptValue($value)
 	{
-		$this->setViewState('PromptValue',(string)$value,'');
+		$this->setViewState('PromptValue', (string)$value, '');
 	}
 
 	/**
@@ -747,7 +747,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function onSelectedIndexChanged($param)
 	{
-		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
+		$this->raiseEvent('OnSelectedIndexChanged', $this, $param);
 		$this->onTextChanged($param);
 	}
 
@@ -759,7 +759,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function onTextChanged($param)
 	{
-		$this->raiseEvent('OnTextChanged',$this,$param);
+		$this->raiseEvent('OnTextChanged', $this, $param);
 	}
 
 	/**
@@ -775,7 +775,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$value=$text;
 		if($value!=='')
 		{
-			$writer->addAttribute('value',$value);
+			$writer->addAttribute('value', $value);
 			$writer->renderBeginTag('option');
 			$writer->write(THttpUtility::htmlEncode($text));
 			$writer->renderEndTag();
@@ -813,14 +813,14 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 							}
 							if($group!==null)
 							{
-								$writer->addAttribute('label',$group);
+								$writer->addAttribute('label', $group);
 								$writer->renderBeginTag('optgroup');
 								$writer->writeLine();
 								$previousGroup=$group;
 							}
 						}
 						foreach($item->getAttributes() as $name=>$value)
-							$writer->addAttribute($name,$value);
+							$writer->addAttribute($name, $value);
 					}
 					elseif($previousGroup!==null)
 					{
@@ -829,8 +829,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 						$previousGroup=null;
 					}
 					if($item->getSelected())
-						$writer->addAttribute('selected','selected');
-					$writer->addAttribute('value',$item->getValue());
+						$writer->addAttribute('selected', 'selected');
+					$writer->addAttribute('value', $item->getValue());
 					$writer->renderBeginTag('option');
 					$writer->write(THttpUtility::htmlEncode($item->getText()));
 					$writer->renderEndTag();
@@ -857,13 +857,13 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * @param mixed the data to be formatted
 	 * @return string the formatted result
 	 */
-	protected function formatDataValue($formatString,$value)
+	protected function formatDataValue($formatString, $value)
 	{
 		if($formatString==='')
 			return TPropertyValue::ensureString($value);
 		elseif($formatString[0]==='#')
 		{
-			$expression=strtr(substr($formatString,1),['{0}'=>'$value']);
+			$expression=strtr(substr($formatString, 1), ['{0}'=>'$value']);
 			try
 			{
 				if(eval("\$result=$expression;")===false)
@@ -872,10 +872,10 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			}
 			catch(Exception $e)
 			{
-				throw new TInvalidDataValueException('listcontrol_expression_invalid',get_class($this),$expression,$e->getMessage());
+				throw new TInvalidDataValueException('listcontrol_expression_invalid', get_class($this), $expression, $e->getMessage());
 			}
 		}
 		else
-			return sprintf($formatString,$value);
+			return sprintf($formatString, $value);
 	}
 }

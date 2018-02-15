@@ -130,7 +130,7 @@ class MessageFormat
 	 */
 	protected function loadCatalogue($catalogue)
 	{
-		if(in_array($catalogue,$this->catagloues))
+		if(in_array($catalogue, $this->catagloues))
 			return;
 			
 		if($this->source->load($catalogue))
@@ -153,14 +153,14 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	public function format($string,$args=[], $catalogue=null, $charset=null) 
+	public function format($string, $args=[], $catalogue=null, $charset=null) 
 	{
 		if(empty($charset)) $charset = $this->getCharset();
 		
 		//force args as UTF-8
 		foreach($args as $k => $v)
 			$args[$k] = I18N_toUTF8($v, $charset);
-		$s = $this->formatString(I18N_toUTF8($string, $charset),$args,$catalogue);
+		$s = $this->formatString(I18N_toUTF8($string, $charset), $args, $catalogue);
 		return I18N_toEncoding($s, $charset);
 	}
 

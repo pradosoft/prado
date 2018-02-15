@@ -35,7 +35,7 @@ use Prado\Web\UI\WebControls\TTemplateColumn;
  * @since 3.1.9
  */
 class TActiveTemplateColumn extends TTemplateColumn {
-	protected function initializeHeaderCell($cell,$columnIndex) {
+	protected function initializeHeaderCell($cell, $columnIndex) {
 		$text=$this->getHeaderText();
 
 		if(($classPath=$this->getHeaderRenderer())!=='') {

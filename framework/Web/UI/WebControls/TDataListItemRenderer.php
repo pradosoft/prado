@@ -44,7 +44,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getHasStyle()
 	{
-		return $this->getViewState('Style',null)!==null;
+		return $this->getViewState('Style', null)!==null;
 	}
 
 	/**
@@ -52,12 +52,12 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			return $style;
 		else
 		{
 			$style=$this->createStyle();
-			$this->setViewState('Style',$style,null);
+			$this->setViewState('Style', $style, null);
 			return $style;
 		}
 	}
@@ -77,11 +77,11 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * @param TEventParameter event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
 		{
-			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
+			$this->raiseBubbleEvent($this, new TDataListCommandEventParameter($this, $sender, $param));
 			return true;
 		}
 		else
@@ -108,7 +108,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($style=$this->getViewState('Style',null))
+		if($style=$this->getViewState('Style', null))
 			$style->addAttributesToRender($writer);
 	}
 

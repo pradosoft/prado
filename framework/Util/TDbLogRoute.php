@@ -94,7 +94,7 @@ class TDbLogRoute extends TLogRoute
 			if($this->_autoCreate)
 				$this->createDbTable();
 			else
-				throw new TConfigurationException('db_logtable_inexistent',$this->_logTable);
+				throw new TConfigurationException('db_logtable_inexistent', $this->_logTable);
 		}
 
 		parent::init($config);
@@ -110,10 +110,10 @@ class TDbLogRoute extends TLogRoute
 		$command=$this->getDbConnection()->createCommand($sql);
 		foreach($logs as $log)
 		{
-			$command->bindValue(':message',$log[0]);
-			$command->bindValue(':level',$log[1]);
-			$command->bindValue(':category',$log[2]);
-			$command->bindValue(':logtime',$log[3]);
+			$command->bindValue(':message', $log[0]);
+			$command->bindValue(':level', $log[1]);
+			$command->bindValue(':category', $log[2]);
+			$command->bindValue(':logtime', $log[3]);
 			$command->execute();
 		}
 	}
@@ -153,7 +153,7 @@ class TDbLogRoute extends TLogRoute
 			if($config instanceof TDataSourceConfig)
 				return $config->getDbConnection();
 			else
-				throw new TConfigurationException('dblogroute_connectionid_invalid',$this->_connID);
+				throw new TConfigurationException('dblogroute_connectionid_invalid', $this->_connID);
 		}
 		else
 		{

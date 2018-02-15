@@ -120,7 +120,7 @@ class TScaffoldSearch extends TScaffoldBase
 	 */
 	public function getSearchableFields()
 	{
-		return $this->getViewState('SearchableFields','');
+		return $this->getViewState('SearchableFields', '');
 	}
 
 	/**

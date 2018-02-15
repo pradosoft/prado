@@ -40,11 +40,11 @@ class TTableHeaderCell extends TTableCell
 	{
 		parent::addAttributesToRender($writer);
 		if(($scope=$this->getScope())!==TTableHeaderScope::NotSet)
-			$writer->addAttribute('scope',$scope===TTableHeaderScope::Row?'row':'col');
+			$writer->addAttribute('scope', $scope===TTableHeaderScope::Row?'row':'col');
 		if(($text=$this->getAbbreviatedText())!=='')
-			$writer->addAttribute('abbr',$text);
+			$writer->addAttribute('abbr', $text);
 		if(($text=$this->getCategoryText())!=='')
-			$writer->addAttribute('axis',$text);
+			$writer->addAttribute('axis', $text);
 	}
 
 	/**
@@ -52,7 +52,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getScope()
 	{
-		return $this->getViewState('Scope',TTableHeaderScope::NotSet);
+		return $this->getViewState('Scope', TTableHeaderScope::NotSet);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function setScope($value)
 	{
-		$this->setViewState('Scope',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableHeaderScope'),TTableHeaderScope::NotSet);
+		$this->setViewState('Scope', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableHeaderScope'), TTableHeaderScope::NotSet);
 	}
 
 	/**
@@ -68,7 +68,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getAbbreviatedText()
 	{
-		return $this->getViewState('AbbreviatedText','');
+		return $this->getViewState('AbbreviatedText', '');
 	}
 
 	/**
@@ -76,7 +76,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function setAbbreviatedText($value)
 	{
-		$this->setViewState('AbbreviatedText',$value,'');
+		$this->setViewState('AbbreviatedText', $value, '');
 	}
 
 	/**
@@ -84,7 +84,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getCategoryText()
 	{
-		return $this->getViewState('CategoryText','');
+		return $this->getViewState('CategoryText', '');
 	}
 
 	/**
@@ -92,6 +92,6 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function setCategoryText($value)
 	{
-		$this->setViewState('CategoryText',$value,'');
+		$this->setViewState('CategoryText', $value, '');
 	}
 }

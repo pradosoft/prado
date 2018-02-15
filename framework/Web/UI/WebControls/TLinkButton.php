@@ -71,7 +71,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		$page=$this->getPage();
 		$page->ensureRenderInForm($this);
 
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 
 		// We call parent implementation here because some attributes
 		// may be overwritten in the following
@@ -104,7 +104,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 			$this->renderClientControlScript($writer);
 		}
 		elseif($this->getEnabled()) // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 	}
 
 	/**
@@ -114,7 +114,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setIsDefaultButton($value)
 	{
-		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -189,7 +189,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -197,7 +197,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -231,7 +231,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCommandName()
 	{
-		return $this->getViewState('CommandName','');
+		return $this->getViewState('CommandName', '');
 	}
 
 	/**
@@ -239,7 +239,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setCommandName($value)
 	{
-		$this->setViewState('CommandName',$value,'');
+		$this->setViewState('CommandName', $value, '');
 	}
 
 	/**
@@ -247,7 +247,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCommandParameter()
 	{
-		return $this->getViewState('CommandParameter','');
+		return $this->getViewState('CommandParameter', '');
 	}
 
 	/**
@@ -255,7 +255,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setCommandParameter($value)
 	{
-		$this->setViewState('CommandParameter',$value,'');
+		$this->setViewState('CommandParameter', $value, '');
 	}
 
 	/**
@@ -263,7 +263,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
@@ -272,7 +272,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -280,7 +280,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -288,7 +288,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -305,7 +305,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		if($this->getCausesValidation())
 			$this->getPage()->validate($this->getValidationGroup());
 		$this->onClick(null);
-		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}
 
 	/**
@@ -317,7 +317,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function onClick($param)
 	{
-		$this->raiseEvent('OnClick',$this,$param);
+		$this->raiseEvent('OnClick', $this, $param);
 	}
 
 	/**
@@ -329,8 +329,8 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function onCommand($param)
 	{
-		$this->raiseEvent('OnCommand',$this,$param);
-		$this->raiseBubbleEvent($this,$param);
+		$this->raiseEvent('OnCommand', $this, $param);
+		$this->raiseBubbleEvent($this, $param);
 	}
 }
 

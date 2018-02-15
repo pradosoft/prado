@@ -211,7 +211,7 @@ class TActiveRecordRelationContext
 				$obj = $this->getSourceRecord();
 				if(!$this->isEmptyFkObject($obj->getColumnValue($property)))
 				{
-					$context = new TActiveRecordRelationContext($this->getSourceRecord(),$property,$relation);
+					$context = new TActiveRecordRelationContext($this->getSourceRecord(), $property, $relation);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
 				}
 			}

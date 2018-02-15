@@ -121,10 +121,10 @@ class TFeedService extends \Prado\TService
 					if($service instanceof IFeedContentProvider)
 						$properties=isset($feedConfig['properties'])?$feedConfig['properties']:[];
 					else
-						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
+						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 				}
 				else
-					throw new TConfigurationException('jsonservice_class_required',$id);
+					throw new TConfigurationException('jsonservice_class_required', $id);
 			}
 			else
 			{
@@ -133,15 +133,15 @@ class TFeedService extends \Prado\TService
 				{
 					$feed=Prado::createComponent($class);
 					if(!($feed instanceof IFeedContentProvider))
-						throw new TConfigurationException('feedservice_feedtype_invalid',$id);
+						throw new TConfigurationException('feedservice_feedtype_invalid', $id);
 				}
 				else
-					throw new TConfigurationException('feedservice_class_required',$id);
+					throw new TConfigurationException('feedservice_class_required', $id);
 			}
 
 			// init feed properties
 			foreach($properties as $name=>$value)
-				$feed->setSubproperty($name,$value);
+				$feed->setSubproperty($name, $value);
 			$feed->init($feedConfig);
 
 			$content=$feed->getFeedContent();
@@ -150,6 +150,6 @@ class TFeedService extends \Prado\TService
 			$this->getResponse()->write($content);
 		}
 		else
-			throw new THttpException(404,'feedservice_feed_unknown',$id);
+			throw new THttpException(404, 'feedservice_feed_unknown', $id);
 	}
 }

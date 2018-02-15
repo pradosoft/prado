@@ -38,7 +38,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
-	protected function getViewState($key,$defaultValue=null)
+	protected function getViewState($key, $defaultValue=null)
 	{
 		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
 	}
@@ -53,7 +53,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param mixed the viewstate value to be set
 	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
-	protected function setViewState($key,$value,$defaultValue=null)
+	protected function setViewState($key, $value, $defaultValue=null)
 	{
 		if($value===$defaultValue)
 			unset($this->_viewState[$key]);
@@ -75,7 +75,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAccessKey()
 	{
-		return $this->getViewState('AccessKey','');
+		return $this->getViewState('AccessKey', '');
 	}
 
 	/**
@@ -83,7 +83,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setAccessKey($value)
 	{
-		$this->setViewState('AccessKey',TPropertyValue::ensureString($value),'');
+		$this->setViewState('AccessKey', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -91,7 +91,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAlternateText()
 	{
-		return $this->getViewState('AlternateText','');
+		return $this->getViewState('AlternateText', '');
 	}
 
 	/**
@@ -99,7 +99,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setAlternateText($value)
 	{
-		$this->setViewState('AlternateText',TPropertyValue::ensureString($value),'');
+		$this->setViewState('AlternateText', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -107,7 +107,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHotSpotMode()
 	{
-		return $this->getViewState('HotSpotMode',THotSpotMode::NotSet);
+		return $this->getViewState('HotSpotMode', THotSpotMode::NotSet);
 	}
 
 	/**
@@ -115,7 +115,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setHotSpotMode($value)
 	{
-		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THotSpotMode'),THotSpotMode::NotSet);
+		$this->setViewState('HotSpotMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THotSpotMode'), THotSpotMode::NotSet);
 	}
 
 	/**
@@ -123,7 +123,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
@@ -131,7 +131,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('NavigateUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -139,7 +139,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getPostBackValue()
 	{
-		return $this->getViewState('PostBackValue','');
+		return $this->getViewState('PostBackValue', '');
 	}
 
 	/**
@@ -147,7 +147,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setPostBackValue($value)
 	{
-		$this->setViewState('PostBackValue',TPropertyValue::ensureString($value),'');
+		$this->setViewState('PostBackValue', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -155,7 +155,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getTabIndex()
 	{
-		return $this->getViewState('TabIndex',0);
+		return $this->getViewState('TabIndex', 0);
 	}
 
 	/**
@@ -163,7 +163,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setTabIndex($value)
 	{
-		$this->setViewState('TabIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -171,7 +171,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
@@ -179,7 +179,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -187,7 +187,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -195,7 +195,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -204,7 +204,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
@@ -213,7 +213,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Target', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -221,7 +221,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHasAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if($attributes=$this->getViewState('Attributes', null))
 			return $attributes->getCount()>0;
 		else
 			return false;
@@ -235,12 +235,12 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if($attributes=$this->getViewState('Attributes', null))
 			return $attributes;
 		else
 		{
 			$attributes=new TAttributeCollection;
-			$this->setViewState('Attributes',$attributes,null);
+			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
 		}
 	}
@@ -250,7 +250,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function hasAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if($attributes=$this->getViewState('Attributes', null))
 			return $attributes->contains($name);
 		else
 			return false;
@@ -261,7 +261,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if($attributes=$this->getViewState('Attributes', null))
 			return $attributes->itemAt($name);
 		else
 			return null;
@@ -272,9 +272,9 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param string attribute name
 	 * @param string value of the attribute
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
-		$this->getAttributes()->add($name,$value);
+		$this->getAttributes()->add($name, $value);
 	}
 
 	/**
@@ -284,7 +284,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function removeAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if($attributes=$this->getViewState('Attributes', null))
 			return $attributes->remove($name);
 		else
 			return null;
@@ -296,29 +296,29 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('shape',$this->getShape());
-		$writer->addAttribute('coords',$this->getCoordinates());
+		$writer->addAttribute('shape', $this->getShape());
+		$writer->addAttribute('coords', $this->getCoordinates());
 		if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
 			$mode=THotSpotMode::Navigate;
 		if($mode===THotSpotMode::Navigate)
 		{
-			$writer->addAttribute('href',$this->getNavigateUrl());
+			$writer->addAttribute('href', $this->getNavigateUrl());
 			if(($target=$this->getTarget())!=='')
-				$writer->addAttribute('target',$target);
+				$writer->addAttribute('target', $target);
 		}
 		elseif($mode===THotSpotMode::Inactive)
-			$writer->addAttribute('nohref','true');
+			$writer->addAttribute('nohref', 'true');
 		$text=$this->getAlternateText();
-		$writer->addAttribute('title',$text);
-		$writer->addAttribute('alt',$text);
+		$writer->addAttribute('title', $text);
+		$writer->addAttribute('alt', $text);
 		if(($accessKey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accessKey);
+			$writer->addAttribute('accesskey', $accessKey);
 		if(($tabIndex=$this->getTabIndex())!==0)
-			$writer->addAttribute('tabindex',"$tabIndex");
+			$writer->addAttribute('tabindex', "$tabIndex");
 		if($this->getHasAttributes())
 		{
 			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+				$writer->addAttribute($name, $value);
 		}
 		$writer->renderBeginTag('area');
 		$writer->renderEndTag();

@@ -83,7 +83,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 //			case 'ibm':
 //				return new TIbmDb2MetaData($conn);
 			default:
-				throw new TDbException('ar_invalid_database_driver',$driver);
+				throw new TDbException('ar_invalid_database_driver', $driver);
 		}
 	}
 

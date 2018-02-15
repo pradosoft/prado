@@ -68,9 +68,9 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	public function bindColumn($column, &$value, $dataType=null)
 	{
 		if($dataType===null)
-			$this->_statement->bindColumn($column,$value);
+			$this->_statement->bindColumn($column, $value);
 		else
-			$this->_statement->bindColumn($column,$value,$dataType);
+			$this->_statement->bindColumn($column, $value, $dataType);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	public function setFetchMode($mode)
 	{
 		$params=func_get_args();
-		call_user_func_array([$this->_statement,'setFetchMode'],$params);
+		call_user_func_array([$this->_statement,'setFetchMode'], $params);
 	}
 
 	/**
@@ -107,9 +107,9 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * @param array list of column names whose values are to be passed as parameters in the constructor of the class being created
 	 * @return mixed|false the populated object, false if no more row of data available
 	 */
-	public function readObject($className,$fields)
+	public function readObject($className, $fields)
 	{
-		return $this->_statement->fetchObject($className,$fields);
+		return $this->_statement->fetchObject($className, $fields);
 	}
 
 	/**

@@ -121,7 +121,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

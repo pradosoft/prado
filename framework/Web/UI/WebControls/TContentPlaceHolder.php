@@ -43,7 +43,7 @@ class TContentPlaceHolder extends \Prado\Web\UI\TControl
 	{
 		if(($id=$this->getID())==='')
 			throw new TConfigurationException('contentplaceholder_id_required');
-		$this->getTemplateControl()->registerContentPlaceHolder($id,$this);
+		$this->getTemplateControl()->registerContentPlaceHolder($id, $this);
 		$parent->getControls()->add($this);
 	}
 }

@@ -41,7 +41,7 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 * @param integer X coordinate of the clicking point
 	 * @param integer Y coordinate of the clicking point
 	 */
-	public function __construct($x,$y)
+	public function __construct($x, $y)
 	{
 		$this->_x=$x;
 		$this->_y=$y;

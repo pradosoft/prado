@@ -76,12 +76,12 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 			if($cache->get(self::CACHE_NAME)===$content)
 				$saveFile=false;
 			else
-				$cache->set(self::CACHE_NAME,$content);
+				$cache->set(self::CACHE_NAME, $content);
 		}
 		if($saveFile)
 		{
 			$fileName=$this->getStateFilePath();
-			file_put_contents($fileName,$content,LOCK_EX);
+			file_put_contents($fileName, $content, LOCK_EX);
 		}
 	}
 

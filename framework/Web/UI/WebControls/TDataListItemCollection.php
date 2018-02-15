@@ -32,10 +32,10 @@ class TDataListItemCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TControl descendant.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TControl)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('datalistitemcollection_datalistitem_required');
 	}

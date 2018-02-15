@@ -42,7 +42,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function getDataField()
 	{
-		return $this->getViewState('DataField','');
+		return $this->getViewState('DataField', '');
 	}
 
 	/**
@@ -50,7 +50,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function setDataField($value)
 	{
-		$this->setViewState('DataField',$value,'');
+		$this->setViewState('DataField', $value, '');
 	}
 
 	/**
@@ -58,7 +58,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
@@ -66,7 +66,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
@@ -88,12 +88,12 @@ class TCheckBoxColumn extends TDataGridColumn
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
-			$cell->registerObject('CheckBox',$checkBox);
+			$cell->registerObject('CheckBox', $checkBox);
 			if($this->getDataField()!=='')
-				$checkBox->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$checkBox->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 
 	/**
@@ -101,12 +101,12 @@ class TCheckBoxColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getData();
 		if(($field=$this->getDataField())!=='')
-			$value=TPropertyValue::ensureBoolean($this->getDataFieldValue($data,$field));
+			$value=TPropertyValue::ensureBoolean($this->getDataFieldValue($data, $field));
 		else
 			$value=TPropertyValue::ensureBoolean($data);
 		if($sender instanceof TCheckBox)

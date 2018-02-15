@@ -54,7 +54,7 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	 */
 	public function save($state)
 	{
-		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page,$state));
+		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $state));
 	}
 
 	/**
@@ -64,10 +64,10 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	 */
 	public function load()
 	{
-		if(($data=TPageStateFormatter::unserialize($this->_page,$this->_page->getRequestClientState()))!==null)
+		if(($data=TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState()))!==null)
 			return $data;
 		else
-			throw new THttpException(400,'pagestatepersister_pagestate_corrupted');
+			throw new THttpException(400, 'pagestatepersister_pagestate_corrupted');
 	}
 }
 

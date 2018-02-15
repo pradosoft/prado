@@ -67,7 +67,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getName()
 	{
-		return $this->getState('Name','');
+		return $this->getState('Name', '');
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setName($value)
 	{
-		$this->setState('Name',$value,'');
+		$this->setState('Name', $value, '');
 	}
 
 	/**
@@ -83,7 +83,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getIsGuest()
 	{
-		return $this->getState('IsGuest',true);
+		return $this->getState('IsGuest', true);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TUser extends \Prado\TComponent implements IUser
 			$this->setName($this->_manager->getGuestName());
 			$this->setRoles([]);
 		}
-		$this->setState('IsGuest',$isGuest);
+		$this->setState('IsGuest', $isGuest);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return $this->getState('Roles',[]);
+		return $this->getState('Roles', []);
 	}
 
 	/**
@@ -113,16 +113,16 @@ class TUser extends \Prado\TComponent implements IUser
 	public function setRoles($value)
 	{
 		if(is_array($value))
-			$this->setState('Roles',$value,[]);
+			$this->setState('Roles', $value, []);
 		else
 		{
 			$roles=[];
-			foreach(explode(',',$value) as $role)
+			foreach(explode(',', $value) as $role)
 			{
 				if(($role=trim($role))!=='')
 					$roles[]=$role;
 			}
-			$this->setState('Roles',$roles,[]);
+			$this->setState('Roles', $roles, []);
 		}
 	}
 
@@ -133,7 +133,7 @@ class TUser extends \Prado\TComponent implements IUser
 	public function isInRole($role)
 	{
 		foreach($this->getRoles() as $r)
-			if(strcasecmp($role,$r)===0)
+			if(strcasecmp($role, $r)===0)
 				return true;
 		return false;
 	}
@@ -172,7 +172,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
-	protected function getState($key,$defaultValue=null)
+	protected function getState($key, $defaultValue=null)
 	{
 		return isset($this->_state[$key])?$this->_state[$key]:$defaultValue;
 	}
@@ -191,7 +191,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @param mixed default value. If $value===$defaultValue, the variable will be removed from persistent storage.
 	 * @see getState
 	 */
-	protected function setState($key,$value,$defaultValue=null)
+	protected function setState($key, $value, $defaultValue=null)
 	{
 		if($value===$defaultValue)
 			unset($this->_state[$key]);

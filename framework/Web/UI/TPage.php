@@ -193,7 +193,7 @@ class TPage extends TTemplateControl
 	 */
 	public function run($writer)
 	{
-		Prado::trace("Running page life cycles",'Prado\Web\UI\TPage');
+		Prado::trace("Running page life cycles", 'Prado\Web\UI\TPage');
 		$this->_writer = $writer;
 
 		$this->determinePostBackMode();
@@ -213,80 +213,80 @@ class TPage extends TTemplateControl
 
 	protected function processNormalRequest($writer)
 	{
-		Prado::trace("Page onPreInit()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreInit()", 'Prado\Web\UI\TPage');
 		$this->onPreInit(null);
 
-		Prado::trace("Page initRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page initRecursive()", 'Prado\Web\UI\TPage');
 		$this->initRecursive();
 
-		Prado::trace("Page onInitComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onInitComplete()", 'Prado\Web\UI\TPage');
 		$this->onInitComplete(null);
 
-		Prado::trace("Page onPreLoad()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreLoad()", 'Prado\Web\UI\TPage');
 		$this->onPreLoad(null);
-		Prado::trace("Page loadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page loadRecursive()", 'Prado\Web\UI\TPage');
 		$this->loadRecursive();
-		Prado::trace("Page onLoadComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onLoadComplete()", 'Prado\Web\UI\TPage');
 		$this->onLoadComplete(null);
 
-		Prado::trace("Page preRenderRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page preRenderRecursive()", 'Prado\Web\UI\TPage');
 		$this->preRenderRecursive();
-		Prado::trace("Page onPreRenderComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreRenderComplete()", 'Prado\Web\UI\TPage');
 		$this->onPreRenderComplete(null);
 
-		Prado::trace("Page savePageState()",'Prado\Web\UI\TPage');
+		Prado::trace("Page savePageState()", 'Prado\Web\UI\TPage');
 		$this->savePageState();
-		Prado::trace("Page onSaveStateComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onSaveStateComplete()", 'Prado\Web\UI\TPage');
 		$this->onSaveStateComplete(null);
 
-		Prado::trace("Page renderControl()",'Prado\Web\UI\TPage');
+		Prado::trace("Page renderControl()", 'Prado\Web\UI\TPage');
 		$this->renderControl($writer);
-		Prado::trace("Page unloadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page unloadRecursive()", 'Prado\Web\UI\TPage');
 		$this->unloadRecursive();
 	}
 
 	protected function processPostBackRequest($writer)
 	{
-		Prado::trace("Page onPreInit()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreInit()", 'Prado\Web\UI\TPage');
 		$this->onPreInit(null);
 
-		Prado::trace("Page initRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page initRecursive()", 'Prado\Web\UI\TPage');
 		$this->initRecursive();
 
-		Prado::trace("Page onInitComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onInitComplete()", 'Prado\Web\UI\TPage');
 		$this->onInitComplete(null);
 
 		$this->_restPostData=new TMap;
-		Prado::trace("Page loadPageState()",'Prado\Web\UI\TPage');
+		Prado::trace("Page loadPageState()", 'Prado\Web\UI\TPage');
 		$this->loadPageState();
-		Prado::trace("Page processPostData()",'Prado\Web\UI\TPage');
-		$this->processPostData($this->_postData,true);
-		Prado::trace("Page onPreLoad()",'Prado\Web\UI\TPage');
+		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
+		$this->processPostData($this->_postData, true);
+		Prado::trace("Page onPreLoad()", 'Prado\Web\UI\TPage');
 		$this->onPreLoad(null);
-		Prado::trace("Page loadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page loadRecursive()", 'Prado\Web\UI\TPage');
 		$this->loadRecursive();
-		Prado::trace("Page processPostData()",'Prado\Web\UI\TPage');
-		$this->processPostData($this->_restPostData,false);
-		Prado::trace("Page raiseChangedEvents()",'Prado\Web\UI\TPage');
+		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
+		$this->processPostData($this->_restPostData, false);
+		Prado::trace("Page raiseChangedEvents()", 'Prado\Web\UI\TPage');
 		$this->raiseChangedEvents();
-		Prado::trace("Page raisePostBackEvent()",'Prado\Web\UI\TPage');
+		Prado::trace("Page raisePostBackEvent()", 'Prado\Web\UI\TPage');
 		$this->raisePostBackEvent();
-		Prado::trace("Page onLoadComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onLoadComplete()", 'Prado\Web\UI\TPage');
 		$this->onLoadComplete(null);
 
-		Prado::trace("Page preRenderRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page preRenderRecursive()", 'Prado\Web\UI\TPage');
 		$this->preRenderRecursive();
-		Prado::trace("Page onPreRenderComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreRenderComplete()", 'Prado\Web\UI\TPage');
 		$this->onPreRenderComplete(null);
 
-		Prado::trace("Page savePageState()",'Prado\Web\UI\TPage');
+		Prado::trace("Page savePageState()", 'Prado\Web\UI\TPage');
 		$this->savePageState();
-		Prado::trace("Page onSaveStateComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onSaveStateComplete()", 'Prado\Web\UI\TPage');
 		$this->onSaveStateComplete(null);
 
-		Prado::trace("Page renderControl()",'Prado\Web\UI\TPage');
+		Prado::trace("Page renderControl()", 'Prado\Web\UI\TPage');
 		$this->renderControl($writer);
-		Prado::trace("Page unloadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page unloadRecursive()", 'Prado\Web\UI\TPage');
 		$this->unloadRecursive();
 	}
 
@@ -298,7 +298,7 @@ class TPage extends TTemplateControl
 				$data[$k]=self::decodeUTF8($v, $enc);
 			return $data;
 		} elseif(is_string($data)) {
-			return iconv('UTF-8',$enc . '//IGNORE',$data);
+			return iconv('UTF-8', $enc . '//IGNORE', $data);
 		} else {
 			return $data;
 		}
@@ -322,29 +322,29 @@ class TPage extends TTemplateControl
 				foreach ($this->_postData as $k=>$v)
 					$this->_postData[$k]=self::decodeUTF8($v, $enc);
 
-		Prado::trace("Page onPreInit()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreInit()", 'Prado\Web\UI\TPage');
 		$this->onPreInit(null);
 
-		Prado::trace("Page initRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page initRecursive()", 'Prado\Web\UI\TPage');
 		$this->initRecursive();
 
-		Prado::trace("Page onInitComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onInitComplete()", 'Prado\Web\UI\TPage');
 		$this->onInitComplete(null);
 
 		$this->_restPostData=new TMap;
-		Prado::trace("Page loadPageState()",'Prado\Web\UI\TPage');
+		Prado::trace("Page loadPageState()", 'Prado\Web\UI\TPage');
 		$this->loadPageState();
-		Prado::trace("Page processPostData()",'Prado\Web\UI\TPage');
-		$this->processPostData($this->_postData,true);
-		Prado::trace("Page onPreLoad()",'Prado\Web\UI\TPage');
+		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
+		$this->processPostData($this->_postData, true);
+		Prado::trace("Page onPreLoad()", 'Prado\Web\UI\TPage');
 		$this->onPreLoad(null);
-		Prado::trace("Page loadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page loadRecursive()", 'Prado\Web\UI\TPage');
 		$this->loadRecursive();
 
-		Prado::trace("Page processPostData()",'Prado\Web\UI\TPage');
-		$this->processPostData($this->_restPostData,false);
+		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
+		$this->processPostData($this->_restPostData, false);
 
-		Prado::trace("Page raiseChangedEvents()",'Prado\Web\UI\TPage');
+		Prado::trace("Page raiseChangedEvents()", 'Prado\Web\UI\TPage');
 		$this->raiseChangedEvents();
 
 
@@ -354,17 +354,17 @@ class TPage extends TTemplateControl
 		Prado::trace("Page raisePostBackEvent()",'Prado\Web\UI\TPage');
 		$this->raisePostBackEvent();
 */
-		Prado::trace("Page onLoadComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onLoadComplete()", 'Prado\Web\UI\TPage');
 		$this->onLoadComplete(null);
 
-		Prado::trace("Page preRenderRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page preRenderRecursive()", 'Prado\Web\UI\TPage');
 		$this->preRenderRecursive();
-		Prado::trace("Page onPreRenderComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onPreRenderComplete()", 'Prado\Web\UI\TPage');
 		$this->onPreRenderComplete(null);
 
-		Prado::trace("Page savePageState()",'Prado\Web\UI\TPage');
+		Prado::trace("Page savePageState()", 'Prado\Web\UI\TPage');
 		$this->savePageState();
-		Prado::trace("Page onSaveStateComplete()",'Prado\Web\UI\TPage');
+		Prado::trace("Page onSaveStateComplete()", 'Prado\Web\UI\TPage');
 		$this->onSaveStateComplete(null);
 
 /*
@@ -373,7 +373,7 @@ class TPage extends TTemplateControl
 */
 		$this->getAdapter()->renderCallbackResponse($writer);
 
-		Prado::trace("Page unloadRecursive()",'Prado\Web\UI\TPage');
+		Prado::trace("Page unloadRecursive()", 'Prado\Web\UI\TPage');
 		$this->unloadRecursive();
 	}
 
@@ -486,7 +486,7 @@ class TPage extends TTemplateControl
 	 */
 	public function validate($validationGroup=null)
 	{
-		Prado::trace("Page validate()",'Prado\Web\UI\TPage');
+		Prado::trace("Page validate()", 'Prado\Web\UI\TPage');
 		$this->_validated=true;
 		if($this->_validators && $this->_validators->getCount())
 		{
@@ -597,8 +597,8 @@ class TPage extends TTemplateControl
 		if(!$this->_clientScript) {
 			$className = $classPath = $this->getService()->getClientScriptManagerClass();
 
-			if($className!=='\Prado\Web\UI\TClientScriptManager' && !is_subclass_of($className,'\Prado\Web\UI\TClientScriptManager'))
-				throw new THttpException(404,'page_csmanagerclass_invalid',$className);
+			if($className!=='\Prado\Web\UI\TClientScriptManager' && !is_subclass_of($className, '\Prado\Web\UI\TClientScriptManager'))
+				throw new THttpException(404, 'page_csmanagerclass_invalid', $className);
 
 			$this->_clientScript=new $className($this);
 		}
@@ -616,7 +616,7 @@ class TPage extends TTemplateControl
 	 */
 	public function onPreInit($param)
 	{
-		$this->raiseEvent('OnPreInit',$this,$param);
+		$this->raiseEvent('OnPreInit', $this, $param);
 	}
 
 	/**
@@ -629,7 +629,7 @@ class TPage extends TTemplateControl
 	 */
 	public function onInitComplete($param)
 	{
-		$this->raiseEvent('OnInitComplete',$this,$param);
+		$this->raiseEvent('OnInitComplete', $this, $param);
 	}
 
 	/**
@@ -642,7 +642,7 @@ class TPage extends TTemplateControl
 	 */
 	public function onPreLoad($param)
 	{
-		$this->raiseEvent('OnPreLoad',$this,$param);
+		$this->raiseEvent('OnPreLoad', $this, $param);
 	}
 
 	/**
@@ -655,7 +655,7 @@ class TPage extends TTemplateControl
 	 */
 	public function onLoadComplete($param)
 	{
-		$this->raiseEvent('OnLoadComplete',$this,$param);
+		$this->raiseEvent('OnLoadComplete', $this, $param);
 	}
 
 	/**
@@ -668,23 +668,23 @@ class TPage extends TTemplateControl
 	 */
 	public function onPreRenderComplete($param)
 	{
-		$this->raiseEvent('OnPreRenderComplete',$this,$param);
+		$this->raiseEvent('OnPreRenderComplete', $this, $param);
 		$cs=$this->getClientScript();
 		$theme=$this->getTheme();
 		if($theme instanceof ITheme)
 		{
 			foreach($theme->getStyleSheetFiles() as $url)
-				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
+				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
 			foreach($theme->getJavaScriptFiles() as $url)
-				$cs->registerHeadScriptFile($url,$url);
+				$cs->registerHeadScriptFile($url, $url);
 		}
 		$styleSheet=$this->getStyleSheetTheme();
 		if($styleSheet instanceof ITheme)
 		{
 			foreach($styleSheet->getStyleSheetFiles() as $url)
-				$cs->registerStyleSheetFile($url,$url,$this->getCssMediaType($url));
+				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
 			foreach($styleSheet->getJavaScriptFiles() as $url)
-				$cs->registerHeadScriptFile($url,$url);
+				$cs->registerHeadScriptFile($url, $url);
 		}
 
 		if($cs->getRequiresHead() && $this->getHead()===null)
@@ -701,7 +701,7 @@ class TPage extends TTemplateControl
 	 */
 	private function getCssMediaType($url)
 	{
-		$segs=explode('.',basename($url));
+		$segs=explode('.', basename($url));
 		if(isset($segs[2]))
 			return $segs[count($segs)-2];
 		else
@@ -717,7 +717,7 @@ class TPage extends TTemplateControl
 	 */
 	public function onSaveStateComplete($param)
 	{
-		$this->raiseEvent('OnSaveStateComplete',$this,$param);
+		$this->raiseEvent('OnSaveStateComplete', $this, $param);
 	}
 
 	/**
@@ -755,7 +755,7 @@ class TPage extends TTemplateControl
 	public function saveState()
 	{
 		parent::saveState();
-		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,[]);
+		$this->setViewState('ControlsRequiringPostBack', $this->_controlsRegisteredForPostData, []);
 	}
 
 	/**
@@ -766,7 +766,7 @@ class TPage extends TTemplateControl
 	public function loadState()
 	{
 		parent::loadState();
-		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',[]);
+		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack', []);
 	}
 
 	/**
@@ -774,9 +774,9 @@ class TPage extends TTemplateControl
 	 */
 	protected function loadPageState()
 	{
-		Prado::trace("Loading state",'Prado\Web\UI\TPage');
+		Prado::trace("Loading state", 'Prado\Web\UI\TPage');
 		$state=$this->getStatePersister()->load();
-		$this->loadStateRecursive($state,$this->getEnableViewState());
+		$this->loadStateRecursive($state, $this->getEnableViewState());
 	}
 
 	/**
@@ -784,7 +784,7 @@ class TPage extends TTemplateControl
 	 */
 	protected function savePageState()
 	{
-		Prado::trace("Saving state",'Prado\Web\UI\TPage');
+		Prado::trace("Saving state", 'Prado\Web\UI\TPage');
 		$state=&$this->saveStateRecursive($this->getEnableViewState());
 		$this->getStatePersister()->save($state);
 	}
@@ -811,7 +811,7 @@ class TPage extends TTemplateControl
 		$this->_controlsRegisteredForPostData[$id]=true;
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
-			$item->registerAction('Page','registerRequiresPostData',[$id]);
+			$item->registerAction('Page', 'registerRequiresPostData', [$id]);
 	}
 
 	/**
@@ -863,7 +863,7 @@ class TPage extends TTemplateControl
 	 * @param TMap post data to be processed
 	 * @param boolean whether this method is invoked before {@link onLoad OnLoad}.
 	 */
-	protected function processPostData($postData,$beforeLoad)
+	protected function processPostData($postData, $beforeLoad)
 	{
 		$this->_isLoadingPostData=true;
 		if($beforeLoad)
@@ -876,18 +876,18 @@ class TPage extends TTemplateControl
 			{
 				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
 				{
-					if($control->loadPostData($key,$postData))
+					if($control->loadPostData($key, $postData))
 						$this->_controlsPostDataChanged[]=$control;
 				}
 				elseif($control instanceof IPostBackEventHandler &&
 					empty($this->_postData[self::FIELD_POSTBACK_TARGET]))
 				{
-					$this->_postData->add(self::FIELD_POSTBACK_TARGET,$key);  // not calling setPostBackEventTarget() because the control may be removed later
+					$this->_postData->add(self::FIELD_POSTBACK_TARGET, $key);  // not calling setPostBackEventTarget() because the control may be removed later
 				}
 				unset($this->_controlsRequiringPostData[$key]);
 			}
 			elseif($beforeLoad)
-				$this->_restPostData->add($key,$value);
+				$this->_restPostData->add($key, $value);
 		}
 
 		foreach($this->_controlsRequiringPostData as $key=>$value)
@@ -896,11 +896,11 @@ class TPage extends TTemplateControl
 			{
 				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
 				{
-					if($control->loadPostData($key,$this->_postData))
+					if($control->loadPostData($key, $this->_postData))
 						$this->_controlsPostDataChanged[]=$control;
 				}
 				else
-					throw new TInvalidDataValueException('page_postbackcontrol_invalid',$key);
+					throw new TInvalidDataValueException('page_postbackcontrol_invalid', $key);
 				unset($this->_controlsRequiringPostData[$key]);
 			}
 		}
@@ -951,7 +951,7 @@ class TPage extends TTemplateControl
 	public function ensureRenderInForm($control)
 	{
 		if(!$this->getIsCallback() && !$this->_inFormRender)
-			throw new TConfigurationException('page_control_outofform',get_class($control), $control ? $control->getUniqueID() : null);
+			throw new TConfigurationException('page_control_outofform', get_class($control), $control ? $control->getUniqueID() : null);
 	}
 
 	/**
@@ -962,7 +962,7 @@ class TPage extends TTemplateControl
 		if($this->_formRendered)
 			throw new TConfigurationException('page_form_duplicated');
 		$this->_formRendered=true;
-		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE,$this->getClientState());
+		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE, $this->getClientState());
 		$this->_inFormRender=true;
 	}
 
@@ -1192,12 +1192,12 @@ class TPage extends TTemplateControl
 	 * @param string method name of the context object
 	 * @param array list of parameters to be passed to the action method
 	 */
-	public function registerCachingAction($context,$funcName,$funcParams)
+	public function registerCachingAction($context, $funcName, $funcParams)
 	{
 		if($this->_cachingStack)
 		{
 			foreach($this->_cachingStack as $cache)
-				$cache->registerAction($context,$funcName,$funcParams);
+				$cache->registerAction($context, $funcName, $funcParams);
 		}
 	}
 

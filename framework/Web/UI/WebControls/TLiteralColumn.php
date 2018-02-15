@@ -38,7 +38,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getDataField()
 	{
-		return $this->getViewState('DataField','');
+		return $this->getViewState('DataField', '');
 	}
 
 	/**
@@ -46,7 +46,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function setDataField($value)
 	{
-		$this->setViewState('DataField',$value,'');
+		$this->setViewState('DataField', $value, '');
 	}
 
 	/**
@@ -54,7 +54,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getDataFormatString()
 	{
-		return $this->getViewState('DataFormatString','');
+		return $this->getViewState('DataFormatString', '');
 	}
 
 	/**
@@ -62,7 +62,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function setDataFormatString($value)
 	{
-		$this->setViewState('DataFormatString',$value,'');
+		$this->setViewState('DataFormatString', $value, '');
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -78,7 +78,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getEncode()
 	{
-		return $this->getViewState('Encode',false);
+		return $this->getViewState('Encode', false);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function setEncode($value)
 	{
-		$this->setViewState('Encode',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -104,13 +104,13 @@ class TLiteralColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
 		{
 			if($this->getDataField()!=='')
 			{
-				$cell->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$cell->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			} else {
 				$text=$this->getText();
 				if($this->getEncode())
@@ -119,7 +119,7 @@ class TLiteralColumn extends TDataGridColumn
 			}
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 
 	/**
@@ -127,15 +127,15 @@ class TLiteralColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getData();
 		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
+			$value=$this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
 		else
-			$value=$this->formatDataValue($formatString,$data);
+			$value=$this->formatDataValue($formatString, $data);
 		if($sender instanceof TTableCell)
 		{
 			if($this->getEncode())

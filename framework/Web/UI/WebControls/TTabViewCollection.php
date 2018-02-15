@@ -32,10 +32,10 @@ class TTabViewCollection extends \Prado\Web\UI\TControlCollection
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TTabView} object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TTabView)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('tabviewcollection_tabview_required');
 	}

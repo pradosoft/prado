@@ -65,10 +65,10 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 		{
 			if($value!=='')
 			{
-				if(($pos=strpos($value,'@'))!==false)
+				if(($pos=strpos($value, '@'))!==false)
 				{
-					$domain=substr($value,$pos+1);
-					return $domain===''?false:checkdnsrr($domain,'MX');
+					$domain=substr($value, $pos+1);
+					return $domain===''?false:checkdnsrr($domain, 'MX');
 				}
 				else
 					return false;
@@ -82,7 +82,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function getCheckMXRecord()
 	{
-		return $this->getViewState('CheckMXRecord',false);
+		return $this->getViewState('CheckMXRecord', false);
 	}
 
 	/**
@@ -91,7 +91,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 */
 	public function setCheckMXRecord($value)
 	{
-		$this->setViewState('CheckMXRecord',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('CheckMXRecord', TPropertyValue::ensureBoolean($value), false);
 	}
 }
 

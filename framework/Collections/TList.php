@@ -65,7 +65,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data=null, $readOnly=false)
 	{
 		if($data!==null)
 			$this->copyFrom($data);
@@ -128,7 +128,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 		if($index>=0 && $index<$this->_c)
 			return $this->_d[$index];
 		else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+			throw new TInvalidDataValueException('list_index_invalid', $index);
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function add($item)
 	{
-		$this->insertAt($this->_c,$item);
+		$this->insertAt($this->_c, $item);
 		return $this->_c-1;
 	}
 
@@ -152,7 +152,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if(!$this->_r)
 		{
@@ -160,14 +160,14 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				$this->_d[$this->_c++]=$item;
 			elseif($index>=0 && $index<$this->_c)
 			{
-				array_splice($this->_d,$index,0,[$item]);
+				array_splice($this->_d, $index, 0, [$item]);
 				$this->_c++;
 			}
 			else
-				throw new TInvalidDataValueException('list_index_invalid',$index);
+				throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
 		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 	}
 
 	/**
@@ -192,7 +192,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_item_inexistent');
 		}
 		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 	}
 
 	/**
@@ -214,15 +214,15 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				else
 				{
 					$item=$this->_d[$index];
-					array_splice($this->_d,$index,1);
+					array_splice($this->_d, $index, 1);
 					return $item;
 				}
 			}
 			else
-				throw new TInvalidDataValueException('list_index_invalid',$index);
+				throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
 		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 	}
 
 	/**
@@ -250,7 +250,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function indexOf($item)
 	{
-		if(($index=array_search($item,$this->_d,true))===false)
+		if(($index=array_search($item, $this->_d, true))===false)
 			return -1;
 		else
 			return $index;
@@ -277,7 +277,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			return $index;
 		}
 		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 	}
 
 	/**
@@ -301,7 +301,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			return $index + 1;
 		}
 		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 	}
 
 	/**
@@ -377,14 +377,14 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param integer the offset to set item
 	 * @param mixed the item value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
 		if($offset===null || $offset===$this->_c)
-			$this->insertAt($this->_c,$item);
+			$this->insertAt($this->_c, $item);
 		else
 		{
 			$this->removeAt($offset);
-			$this->insertAt($offset,$item);
+			$this->insertAt($offset, $item);
 		}
 	}
 

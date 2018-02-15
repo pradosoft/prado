@@ -115,7 +115,7 @@ class ChoiceFormat
 	 */
 	function isValid($number, $set)
 	{
-		$n = preg_match_all($this->validate,$set,$matches,PREG_SET_ORDER);
+		$n = preg_match_all($this->validate, $set, $matches, PREG_SET_ORDER);
 
 		if($n < 3) throw new Exception("Invalid set \"{$set}\"");
 
@@ -188,7 +188,7 @@ class ChoiceFormat
 	 */
 	function parse($string)
 	{
-		$n = preg_match_all($this->parse,$string,$matches, PREG_OFFSET_CAPTURE);
+		$n = preg_match_all($this->parse, $string, $matches, PREG_OFFSET_CAPTURE);
 		$sets = [];
 		foreach($matches[1] as $match)
 			$sets[] = $match[0];

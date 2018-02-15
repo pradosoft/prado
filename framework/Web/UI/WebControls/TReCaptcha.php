@@ -217,7 +217,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 	}
 
 	public function regenerateToken()
@@ -225,7 +225,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		// if we're in a callback, then schedule re-rendering of the control 
 		// if not, don't do anything, because a new challenge will be rendered anyway
 		if ($this->Page->IsCallback)
-			$this->Page->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload','click');
+			$this->Page->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
 	}
 
 	public function renderContents($writer)
@@ -312,7 +312,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			$req .= $key . '=' . urlencode( stripslashes($value) ) . '&';
 
 		// Cut the last '&'
-		$req=substr($req,0,strlen($req)-1);
+		$req=substr($req, 0, strlen($req)-1);
 		return $req;
 	}
 

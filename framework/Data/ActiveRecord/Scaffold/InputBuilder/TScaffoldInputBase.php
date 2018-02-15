@@ -48,7 +48,7 @@ class TScaffoldInputBase
 				return new TIbmScaffoldInput($conn);
 			default:
 				throw new TConfigurationException(
-					'scaffold_invalid_database_driver',$driver);
+					'scaffold_invalid_database_driver', $driver);
 		}
 	}
 

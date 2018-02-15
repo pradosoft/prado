@@ -48,7 +48,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 *			the object and method name as string
 	 *  @param array The array of arguments to the function call chain
 	 */
-	public function addCall($method,$args)
+	public function addCall($method, $args)
 	{
 		$this->add([$method,$args]);
 	}
@@ -108,11 +108,11 @@ class TCallChain extends TList implements IDynamicMethods
 				$handler=$this->_iterator->current();
 				$this->_iterator->next();
 				if(is_array($handler[0])&&$handler[0][0] instanceof IClassBehavior)
-					array_splice($handler[1],1,count($args),$args);
+					array_splice($handler[1], 1, count($args), $args);
 				else
-					array_splice($handler[1],0,count($args),$args);
+					array_splice($handler[1], 0, count($args), $args);
 				$handler[1][]=$this;
-				$result=call_user_func_array($handler[0],$handler[1]);
+				$result=call_user_func_array($handler[0], $handler[1]);
 			} while($this->_iterator->valid());
 		else
 			$result = $args[0];
@@ -141,10 +141,10 @@ class TCallChain extends TList implements IDynamicMethods
 	 * @param string method name of the unspecified object method
 	 * @param array arguments to the unspecified object method
 	 */
-	public function __dycall($method,$args)
+	public function __dycall($method, $args)
 	{
 		if($this->_method==$method)
-			return call_user_func_array([$this,'call'],$args);
+			return call_user_func_array([$this,'call'], $args);
 		return null;
 	}
 }

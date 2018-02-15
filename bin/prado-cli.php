@@ -180,7 +180,7 @@ abstract class PradoCommandLineAction
 			$options[] = '[' . $v . ']';
 		$optional = (strlen($parameters) ? ' ' : '') . join($options, ' ');
 		$description='';
-		foreach(explode("\n", wordwrap($this->description,65)) as $line)
+		foreach(explode("\n", wordwrap($this->description, 65)) as $line)
 			$description .= '    ' . $line . "\n";
 		return <<<EOD
   {$this->action} {$parameters}{$optional}
@@ -199,7 +199,7 @@ EOD;
 			{
 				$app = new PradoShellApplication($app_dir);
 				$app->run();
-				$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
+				$dir = substr(str_replace(realpath('./'), '', $app_dir), 1);
 				PradoCommandLineInterpreter::printGreeting();
 				echo '** Loaded PRADO appplication in directory "' . $dir . "\".\n";
 			}
@@ -209,9 +209,9 @@ EOD;
 		else
 		{
 			PradoCommandLineInterpreter::printGreeting();
-			echo '+' . str_repeat('-',77) . "+\n";
+			echo '+' . str_repeat('-', 77) . "+\n";
 			echo '** Unable to load PRADO application in directory "' . $directory . "\".\n";
-			echo '+' . str_repeat('-',77) . "+\n";
+			echo '+' . str_repeat('-', 77) . "+\n";
 		}
 		return false;
 	}
@@ -264,10 +264,10 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 		$defaultPageFile = $pagesPath . DIRECTORY_SEPARATOR . 'Home.page';
 
 		$this->createDirectory($basePath, 0755);
-		$this->createDirectory($assetPath,0777);
-		$this->createDirectory($protectedPath,0755);
-		$this->createDirectory($runtimePath,0777);
-		$this->createDirectory($pagesPath,0755);
+		$this->createDirectory($assetPath, 0777);
+		$this->createDirectory($protectedPath, 0755);
+		$this->createDirectory($runtimePath, 0777);
+		$this->createDirectory($pagesPath, 0755);
 
 		$this->createFile($indexFile, $this->renderIndexFile());
 		$this->createFile($configFile, $this->renderConfigFile($appName));
@@ -400,9 +400,9 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 		$unit_tests = $tests . '/unit';
 		$functional_tests = $tests . '/functional';
 
-		$this->createDirectory($tests,0755);
-		$this->createDirectory($unit_tests,0755);
-		$this->createDirectory($functional_tests,0755);
+		$this->createDirectory($tests, 0755);
+		$this->createDirectory($unit_tests, 0755);
+		$this->createDirectory($functional_tests, 0755);
 
 		$unit_test_index = $tests . '/unit.php';
 		$functional_test_index = $tests . '/functional.php';
@@ -559,7 +559,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			{
 				$properties = [];
 				foreach($tableInfo->getColumns() as $field=>$column)
-					$properties[] = $this->generateProperty($field,$column);
+					$properties[] = $this->generateProperty($field, $column);
 			}
 
 			$classname = basename($output, '.php');
@@ -571,7 +571,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		}
 	}
 
-	protected function generateProperty($field,$column)
+	protected function generateProperty($field, $column)
 	{
 		$prop = '';
 		$name = '$' . $field;

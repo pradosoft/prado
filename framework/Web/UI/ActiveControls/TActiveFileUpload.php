@@ -118,7 +118,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		  $params = new TActiveFileUploadCallbackParams;
 		  // save the files so that they will persist past the end of this return.
 		  foreach ($this->getFiles() as $file) {
-			  $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+			  $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
 			  $file->saveAs($localName);
 			  $file->setLocalName($localName);
 			  $params->files[] = $file->toArray();
@@ -155,7 +155,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * default "Application.runtime.*"
 	 */
 	public function setTempPath($value){
-		$this->setViewState('TempPath',$value,'Application.runtime.*');
+		$this->setViewState('TempPath', $value, 'Application.runtime.*');
 	}
 
 	/**
@@ -171,7 +171,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
 	public function setAutoPostBack($value){
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -237,7 +237,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		if ($cache = Prado::getApplication()->getCache())
 			{
 				// this is the most secure method, file info can't be forged from client side, no matter what
-				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000*1000,9999*1000));
+				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000*1000, 9999*1000));
 				$cache->set($token, serialize($params), 5*60); // expire in 5 minutes - the callback should arrive back in seconds, actually
 			}
 		elseif ($mgr = Prado::getApplication()->getSecurityManager())
@@ -284,7 +284,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		{
 		  $params = new TActiveFileUploadCallbackParams;
 		  foreach ($this->getFiles() as $file) {
-			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()),''));
+			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
 			$file->setLocalName($localName);
 			// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
 			$file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
@@ -375,9 +375,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 */
 	public function addAttributesToRender($writer){
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 
-		$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(),$this->getClientOptions());
+		$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(), $this->getClientOptions());
 	}
 
 	/**
@@ -419,12 +419,12 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * If true, you will not be able to save the uploaded file again.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName,$deleteTempFile=true,$index=0){
+	public function saveAs($fileName, $deleteTempFile=true, $index=0){
 		if (($this->getErrorCode($index)===UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))){
 			if ($deleteTempFile)
-				return rename($this->getLocalName($index),$fileName);
+				return rename($this->getLocalName($index), $fileName);
 			else
-				return copy($this->getLocalName($index),$fileName);
+				return copy($this->getLocalName($index), $fileName);
 		} else
 			return false;
 	}

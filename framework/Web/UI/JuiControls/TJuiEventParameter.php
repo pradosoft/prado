@@ -58,7 +58,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 		{
 			// Find the control
 			// Warning, this will not work if you have a '_' in your control Id !
-			$controlId=str_replace(TControl::CLIENT_ID_SEPARATOR,TControl::ID_SEPARATOR,$id);
+			$controlId=str_replace(TControl::CLIENT_ID_SEPARATOR, TControl::ID_SEPARATOR, $id);
 			$control=$service->getRequestedPage()->findControl($controlId);
 		}
 		return $control;
@@ -72,7 +72,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 */
 	public function __get($name)
 	{
-		$pos=strpos($name, 'Control',1);
+		$pos=strpos($name, 'Control', 1);
 		$name=strtolower(substr($name, 0, $pos));
 
 		$cp=$this->getCallbackParameter();

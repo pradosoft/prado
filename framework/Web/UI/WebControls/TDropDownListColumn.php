@@ -78,7 +78,7 @@ class TDropDownListColumn extends TDataGridColumn
 		parent::loadState($state);
 		$this->_stateLoaded=true;
 		if(!$this->_dataBound)
-			$this->_listControl->getItems()->loadState($this->getViewState('Items',null));
+			$this->_listControl->getItems()->loadState($this->getViewState('Items', null));
 	}
 
 	/**
@@ -87,7 +87,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function saveState()
 	{
-		$this->setViewState('Items',$this->_listControl->getItems()->saveState(),null);
+		$this->setViewState('Items', $this->_listControl->getItems()->saveState(), null);
 		return parent::saveState();
 	}
 
@@ -112,7 +112,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
@@ -123,7 +123,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -131,7 +131,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataValueField()
 	{
-		return $this->getViewState('DataValueField','');
+		return $this->getViewState('DataValueField', '');
 	}
 
 	/**
@@ -158,7 +158,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setDataValueField($value)
 	{
-		$this->setViewState('DataValueField',$value,'');
+		$this->setViewState('DataValueField', $value, '');
 	}
 
 	/**
@@ -166,7 +166,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
@@ -174,7 +174,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -198,7 +198,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListValueField()
 	{
-		return $this->getViewState('ListValueField','');
+		return $this->getViewState('ListValueField', '');
 	}
 
 	/**
@@ -206,7 +206,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setListValueField($value)
 	{
-		$this->setViewState('ListValueField',$value,'');
+		$this->setViewState('ListValueField', $value, '');
 	}
 
 	/**
@@ -214,7 +214,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListTextField()
 	{
-		return $this->getViewState('ListTextField','');
+		return $this->getViewState('ListTextField', '');
 	}
 
 	/**
@@ -222,7 +222,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setListTextField($value)
 	{
-		$this->setViewState('ListTextField',$value,'');
+		$this->setViewState('ListTextField', $value, '');
 	}
 
 	/**
@@ -230,7 +230,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListTextFormatString()
 	{
-		return $this->getViewState('ListTextFormatString','');
+		return $this->getViewState('ListTextFormatString', '');
 	}
 
 	/**
@@ -238,7 +238,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function setListTextFormatString($value)
 	{
-		$this->setViewState('ListTextFormatString',$value,'');
+		$this->setViewState('ListTextFormatString', $value, '');
 	}
 
 	/**
@@ -252,7 +252,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if(!$this->_dataBound && $this->_listControl->getDataSource()!==null)
 		{
@@ -269,21 +269,21 @@ class TDropDownListColumn extends TDataGridColumn
 				{
 					$listControl=clone $this->_listControl;
 					$cell->getControls()->add($listControl);
-					$cell->registerObject('DropDownList',$listControl);
+					$cell->registerObject('DropDownList', $listControl);
 					$control=$listControl;
 				}
 				else
 					$control=$cell;
-				$control->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
 				if($this->getDataTextField()!=='' || $this->getDataValueField()!=='')
-					$cell->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+					$cell->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			default:
-				parent::initializeCell($cell,$columnIndex,$itemType);
+				parent::initializeCell($cell, $columnIndex, $itemType);
 				break;
 		}
 	}
@@ -293,21 +293,21 @@ class TDropDownListColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getData();
 		if(($valueField=$this->getDataValueField())!=='')
-			$value=$this->getDataFieldValue($data,$valueField);
+			$value=$this->getDataFieldValue($data, $valueField);
 		else
 			$value='';
 		if(($textField=$this->getDataTextField())!=='')
 		{
-			$text=$this->getDataFieldValue($data,$textField);
+			$text=$this->getDataFieldValue($data, $textField);
 			if($valueField==='')
 				$value=$text;
 			$formatString=$this->getDataTextFormatString();
-			$text=$this->formatDataValue($formatString,$text);
+			$text=$this->formatDataValue($formatString, $text);
 		}
 		else
 			$text=$value;

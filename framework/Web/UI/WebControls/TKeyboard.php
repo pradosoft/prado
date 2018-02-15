@@ -48,7 +48,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getForControl()
 	{
-		return $this->getViewState('ForControl','');
+		return $this->getViewState('ForControl', '');
 	}
 
 	/**
@@ -137,7 +137,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::addAttributesToRender($writer);
 		if($this->getPage()->getClientSupportsJavaScript())
-			$writer->addAttribute('id',$this->getClientID());
+			$writer->addAttribute('id', $this->getClientID());
 	}
 
 	/**
@@ -149,7 +149,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if(($url=$this->getCssUrl())==='')
 			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
-		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}
 
 	/**
@@ -180,7 +180,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 		if(($forControl=$this->getForControl())==='')
 			throw new TConfigurationException('keyboard_forcontrol_required');
 		if(($target=$this->findControl($forControl))===null)
-			throw new TConfigurationException('keyboard_forcontrol_invalid',$forControl);
+			throw new TConfigurationException('keyboard_forcontrol_invalid', $forControl);
 
 		$options['ID'] = $this->getClientID();
 		$options['ForControl'] = $target->getClientID();

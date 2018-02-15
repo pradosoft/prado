@@ -59,7 +59,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
 	parent::setDataSource($value);
 	if($this->getActiveControl()->canUpdateClientSide()) {
 	  $this->renderPager();
-	  $this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+	  $this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 	}
   }
 
@@ -82,10 +82,10 @@ class TActiveDataList extends TDataList implements IActiveControl {
   {
 	if($this->getHasPreRendered()) {
 	  $this->renderDataList($writer);
-	  if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(),$writer);
+	  if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer);
 	}
 	else {
-	  $this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+	  $this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 	}
   }
 
@@ -101,7 +101,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
 	{
 	  if($item->ControlToPaginate==$this->ID) {
 		$writer=$this->getResponse()->createHtmlWriter();
-		$this->getPage()->getAdapter()->registerControlToRender($item,$writer);
+		$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 	  }
 	}
   }

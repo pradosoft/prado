@@ -141,9 +141,9 @@ class TXmlElement extends \Prado\TComponent
 	 * @param string attribute name
 	 * @param string attribute value
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
-		$this->getAttributes()->add($name,TPropertyValue::ensureString($value));
+		$this->getAttributes()->add($name, TPropertyValue::ensureString($value));
 	}
 
 	/**
@@ -209,7 +209,7 @@ class TXmlElement extends \Prado\TComponent
 				$attr.=" $name=\"$value\"";
 			}
 		}
-		$prefix=str_repeat(' ',$indent*4);
+		$prefix=str_repeat(' ', $indent*4);
 		if($this->getHasElement())
 		{
 			$str=$prefix . "<{$this->_tagName}$attr>\n";
@@ -247,7 +247,7 @@ class TXmlElement extends \Prado\TComponent
 
 	private function xmlEncode($str)
 	{
-		return strtr($str,[
+		return strtr($str, [
 			'>'=>'&gt;',
 			'<'=>'&lt;',
 			'&'=>'&amp;',

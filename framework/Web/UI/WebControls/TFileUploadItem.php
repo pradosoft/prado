@@ -132,14 +132,14 @@ class TFileUploadItem extends \Prado\TComponent
    * If true, you will not be able to save the uploaded file again.
    * @return boolean true if the file saving is successful
    */
-  public function saveAs($fileName,$deleteTempFile=true)
+  public function saveAs($fileName, $deleteTempFile=true)
   {
 	if($this->_errorCode===UPLOAD_ERR_OK)
 	{
 	  if($deleteTempFile)
-		return move_uploaded_file($this->_localName,$fileName);
+		return move_uploaded_file($this->_localName, $fileName);
 	  elseif(is_uploaded_file($this->_localName))
-		return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
+		return file_put_contents($fileName, file_get_contents($this->_localName))!==false;
 	  else
 		return false;
 	}

@@ -109,7 +109,7 @@ class TRadioButton extends TCheckBox
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		$uniqueGroupName=$this->getUniqueGroupName();
 		$value=isset($values[$uniqueGroupName])?$values[$uniqueGroupName]:null;
@@ -133,7 +133,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getGroupName()
 	{
-		return $this->getViewState('GroupName','');
+		return $this->getViewState('GroupName', '');
 	}
 
 	/**
@@ -144,7 +144,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function setGroupName($value)
 	{
-		$this->setViewState('GroupName',$value,'');
+		$this->setViewState('GroupName', $value, '');
 		$this->_uniqueGroupName=null;
 	}
 
@@ -153,7 +153,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getUniqueGroupName()
 	{
-		if(($groupName=$this->getViewState('UniqueGroupName',''))!=='')
+		if(($groupName=$this->getViewState('UniqueGroupName', ''))!=='')
 			return $groupName;
 		elseif(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
 		{
@@ -161,12 +161,12 @@ class TRadioButton extends TCheckBox
 			$this->_previousUniqueID=$uniqueID;
 			if($uniqueID!=='')
 			{
-				if(($pos=strrpos($uniqueID,\Prado\Web\UI\TControl::ID_SEPARATOR))!==false)
+				if(($pos=strrpos($uniqueID, \Prado\Web\UI\TControl::ID_SEPARATOR))!==false)
 				{
 					if($groupName!=='')
-						$groupName=substr($uniqueID,0,$pos+1) . $groupName;
+						$groupName=substr($uniqueID, 0, $pos+1) . $groupName;
 					elseif($this->getNamingContainer() instanceof TRadioButtonList)
-						$groupName=substr($uniqueID,0,$pos);
+						$groupName=substr($uniqueID, 0, $pos);
 				}
 				if($groupName==='')
 					$groupName=$uniqueID;
@@ -194,7 +194,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function setUniqueGroupName($value)
 	{
-		$this->setViewState('UniqueGroupName',$value,'');
+		$this->setViewState('UniqueGroupName', $value, '');
 	}
 
 	/**
@@ -231,7 +231,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -239,7 +239,7 @@ class TRadioButton extends TCheckBox
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -248,19 +248,19 @@ class TRadioButton extends TCheckBox
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
 		if($clientID!=='')
-			$writer->addAttribute('id',$clientID);
-		$writer->addAttribute('type','radio');
-		$writer->addAttribute('name',$this->getUniqueGroupName());
-		$writer->addAttribute('value',$this->getValueAttribute());
+			$writer->addAttribute('id', $clientID);
+		$writer->addAttribute('type', 'radio');
+		$writer->addAttribute('name', $this->getUniqueGroupName());
+		$writer->addAttribute('value', $this->getValueAttribute());
 		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
+			$writer->addAttribute('onclick', $onclick);
 		if($this->getChecked())
-			$writer->addAttribute('checked','checked');
+			$writer->addAttribute('checked', 'checked');
 		if(!$this->getEnabled(true))
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 
 		$page=$this->getPage();
 		if($this->getEnabled(true)
@@ -272,10 +272,10 @@ class TRadioButton extends TCheckBox
 		}
 
 		if(($accesskey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accesskey);
+			$writer->addAttribute('accesskey', $accesskey);
 		if(($tabindex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',"$tabindex");
-		if($attributes=$this->getViewState('InputAttributes',null))
+			$writer->addAttribute('tabindex', "$tabindex");
+		if($attributes=$this->getViewState('InputAttributes', null))
 			$writer->addAttributes($attributes);
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
@@ -287,7 +287,7 @@ class TRadioButton extends TCheckBox
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**

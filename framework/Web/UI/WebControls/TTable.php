@@ -113,7 +113,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 					$border=(int)$border;
 			}
 		}
-		$writer->addAttribute('border',"$border");
+		$writer->addAttribute('border', "$border");
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaption()
 	{
-		return $this->getViewState('Caption','');
+		return $this->getViewState('Caption', '');
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setCaption($value)
 	{
-		$this->setViewState('Caption',$value,'');
+		$this->setViewState('Caption', $value, '');
 	}
 
 	/**
@@ -155,7 +155,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign',TTableCaptionAlign::NotSet);
+		return $this->getViewState('CaptionAlign', TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -163,7 +163,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign'),TTableCaptionAlign::NotSet);
+		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign'), TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -272,7 +272,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 		if(($caption=$this->getCaption())!=='')
 		{
 			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
-				$writer->addAttribute('align',strtolower($align));
+				$writer->addAttribute('align', strtolower($align));
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();

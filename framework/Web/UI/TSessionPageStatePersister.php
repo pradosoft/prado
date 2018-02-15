@@ -101,7 +101,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 		$data=serialize($state);
 		$timestamp=(string)microtime(true);
 		$key=self::STATE_SESSION_KEY . $timestamp;
-		$session->add($key,$data);
+		$session->add($key, $data);
 		if(($queue=$session->itemAt(self::QUEUE_SESSION_KEY))===null)
 			$queue=[];
 		$queue[]=$key;
@@ -110,8 +110,8 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 			$expiredKey=array_shift($queue);
 			$session->remove($expiredKey);
 		}
-		$session->add(self::QUEUE_SESSION_KEY,$queue);
-		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page,$timestamp));
+		$session->add(self::QUEUE_SESSION_KEY, $queue);
+		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $timestamp));
 	}
 
 	/**
@@ -121,7 +121,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function load()
 	{
-		if(($timestamp=TPageStateFormatter::unserialize($this->_page,$this->_page->getRequestClientState()))!==null)
+		if(($timestamp=TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState()))!==null)
 		{
 			$session=$this->_page->getSession();
 			$session->open();
@@ -129,7 +129,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 			if(($data=$session->itemAt($key))!==null)
 				return unserialize($data);
 		}
-		throw new THttpException(400,'sessionpagestatepersister_pagestate_corrupted');
+		throw new THttpException(400, 'sessionpagestatepersister_pagestate_corrupted');
 	}
 }
 

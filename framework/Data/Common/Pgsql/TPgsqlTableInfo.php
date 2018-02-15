@@ -52,7 +52,7 @@ class TPgsqlTableInfo extends TDbTableInfo
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TPgsqlCommandBuilder($connection,$this);
+		return new TPgsqlCommandBuilder($connection, $this);
 	}
 }
 

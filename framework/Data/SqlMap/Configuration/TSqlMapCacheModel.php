@@ -84,7 +84,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 		if (isset(self::$_cacheTypes[$value]))
 			$this->_implementation = $value;
 		else
-			$this->_implementation = TPropertyValue::ensureEnum($value,'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes');
+			$this->_implementation = TPropertyValue::ensureEnum($value, 'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes');
 	}
 
 	/**
@@ -123,7 +123,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 		$implementation = $this->_implementation;
 		if (isset(self::$_cacheTypes[$implementation])) return self::$_cacheTypes[$implementation];
 
-		switch(TPropertyValue::ensureEnum($implementation,'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes'))
+		switch(TPropertyValue::ensureEnum($implementation, 'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes'))
 		{
 			case TSqlMapCacheTypes::FIFO: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapFifoCache';
 			case TSqlMapCacheTypes::LRU : return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapLruCache';
@@ -137,7 +137,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function registerTriggerStatement($mappedStatement)
 	{
-		$mappedStatement->attachEventHandler('OnExecuteQuery',[$this, 'flush']);
+		$mappedStatement->attachEventHandler('OnExecuteQuery', [$this, 'flush']);
 	}
 
 	/**

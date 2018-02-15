@@ -82,7 +82,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 * @param string theme URL
 	 * @throws TConfigurationException if theme path does not exist or any parsing error of the skin files
 	 */
-	public function __construct($themePath,$themeUrl)
+	public function __construct($themePath, $themeUrl)
 	{
 		$this->_themeUrl=$themeUrl;
 		$this->_themePath=realpath($themePath);
@@ -94,21 +94,21 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$array=$cache->get(self::THEME_CACHE_PREFIX . $themePath);
 			if(is_array($array))
 			{
-				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
+				list($skins, $cssFiles, $jsFiles, $timestamp)=$array;
 				if($this->getApplication()->getMode()!==TApplicationMode::Performance)
 				{
 					if(($dir=opendir($themePath))===false)
-						throw new TIOException('theme_path_inexistent',$themePath);
+						throw new TIOException('theme_path_inexistent', $themePath);
 					$cacheValid=true;
 					while(($file=readdir($dir))!==false)
 					{
 						if($file==='.' || $file==='..')
 							continue;
-						elseif(basename($file,'.css')!==$file)
+						elseif(basename($file, '.css')!==$file)
 							$this->_cssFiles[]=$themeUrl . '/' . $file;
-						elseif(basename($file,'.js')!==$file)
+						elseif(basename($file, '.js')!==$file)
 							$this->_jsFiles[]=$themeUrl . '/' . $file;
-						elseif(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath . DIRECTORY_SEPARATOR . $file)>$timestamp)
+						elseif(basename($file, self::SKIN_FILE_EXT)!==$file && filemtime($themePath . DIRECTORY_SEPARATOR . $file)>$timestamp)
 						{
 							$cacheValid=false;
 							break;
@@ -133,29 +133,29 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			$this->_jsFiles=[];
 			$this->_skins=[];
 			if(($dir=opendir($themePath))===false)
-				throw new TIOException('theme_path_inexistent',$themePath);
+				throw new TIOException('theme_path_inexistent', $themePath);
 			while(($file=readdir($dir))!==false)
 			{
 				if($file==='.' || $file==='..')
 					continue;
-				elseif(basename($file,'.css')!==$file)
+				elseif(basename($file, '.css')!==$file)
 					$this->_cssFiles[]=$themeUrl . '/' . $file;
-				elseif(basename($file,'.js')!==$file)
+				elseif(basename($file, '.js')!==$file)
 					$this->_jsFiles[]=$themeUrl . '/' . $file;
-				elseif(basename($file,self::SKIN_FILE_EXT)!==$file)
+				elseif(basename($file, self::SKIN_FILE_EXT)!==$file)
 				{
-					$template=new TTemplate(file_get_contents($themePath . '/' . $file),$themePath,$themePath . '/' . $file);
+					$template=new TTemplate(file_get_contents($themePath . '/' . $file), $themePath, $themePath . '/' . $file);
 					foreach($template->getItems() as $skin)
 					{
 						if(!isset($skin[2]))  // a text string, ignored
 							continue;
 						elseif($skin[0]!==-1)
-							throw new TConfigurationException('theme_control_nested',$skin[1],dirname($themePath));
+							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
 						$type=$skin[1];
 						$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
 						unset($skin[2]['skinid']);
 						if(isset($this->_skins[$type][$id]))
-							throw new TConfigurationException('theme_skinid_duplicated',$type,$id,dirname($themePath));
+							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));
 						/*
 						foreach($skin[2] as $name=>$value)
 						{
@@ -171,7 +171,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
 			if($cache!==null)
-				$cache->set(self::THEME_CACHE_PREFIX . $themePath,[$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
+				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
 		}
 	}
 
@@ -204,7 +204,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setBaseUrl($value)
 	{
-		$this->_themeUrl=rtrim($value,'/');
+		$this->_themeUrl=rtrim($value, '/');
 	}
 
 	/**
@@ -257,7 +257,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		{
 			foreach($this->_skins[$type][$id] as $name=>$value)
 			{
-				Prado::trace("Applying skin $name to $type",'Prado\Web\UI\TThemeManager');
+				Prado::trace("Applying skin $name to $type", 'Prado\Web\UI\TThemeManager');
 				if(is_array($value))
 				{
 					switch($value[0])
@@ -266,28 +266,28 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 							$value=$this->evaluateExpression($value[1]);
 							break;
 						case TTemplate::CONFIG_ASSET:
-							$value=$this->_themeUrl . '/' . ltrim($value[1],'/');
+							$value=$this->_themeUrl . '/' . ltrim($value[1], '/');
 							break;
 						case TTemplate::CONFIG_DATABIND:
-							$control->bindProperty($name,$value[1]);
+							$control->bindProperty($name, $value[1]);
 							break;
 						case TTemplate::CONFIG_PARAMETER:
-							$control->setSubProperty($name,$this->getApplication()->getParameters()->itemAt($value[1]));
+							$control->setSubProperty($name, $this->getApplication()->getParameters()->itemAt($value[1]));
 							break;
 						case TTemplate::CONFIG_TEMPLATE:
-							$control->setSubProperty($name,$value[1]);
+							$control->setSubProperty($name, $value[1]);
 							break;
 						case TTemplate::CONFIG_LOCALIZATION:
-							$control->setSubProperty($name,Prado::localize($value[1]));
+							$control->setSubProperty($name, Prado::localize($value[1]));
 							break;
 						default:
-							throw new TConfigurationException('theme_tag_unexpected',$name,$value[0]);
+							throw new TConfigurationException('theme_tag_unexpected', $name, $value[0]);
 							break;
 					}
 				}
 				if(!is_array($value))
 				{
-					if(strpos($name,'.')===false)	// is simple property or custom attribute
+					if(strpos($name, '.')===false)	// is simple property or custom attribute
 					{
 						if($control->hasProperty($name))
 						{
@@ -297,13 +297,13 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 								$control->$setter($value);
 							}
 							else
-								throw new TConfigurationException('theme_property_readonly',$type,$name);
+								throw new TConfigurationException('theme_property_readonly', $type, $name);
 						}
 						else
-							throw new TConfigurationException('theme_property_undefined',$type,$name);
+							throw new TConfigurationException('theme_property_undefined', $type, $name);
 					}
 					else	// complex property
-						$control->setSubProperty($name,$value);
+						$control->setSubProperty($name, $value);
 				}
 			}
 			return true;

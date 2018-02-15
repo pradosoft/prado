@@ -51,7 +51,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getShowColorPicker()
 	{
-		return $this->getViewState('ShowColorPicker',true);
+		return $this->getViewState('ShowColorPicker', true);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function setShowColorPicker($value)
 	{
-		$this->setViewState('ShowColorPicker',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowColorPicker', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -162,7 +162,7 @@ class TColorPicker extends TTextBox
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
-		$options = array_merge($options,$this->getClientSide()->getOptions()->toArray());
+		$options = array_merge($options, $this->getClientSide()->getOptions()->toArray());
 		return $options;
 	}
 

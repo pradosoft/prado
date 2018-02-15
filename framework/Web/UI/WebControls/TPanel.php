@@ -71,7 +71,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::addAttributesToRender($writer);
 		if(($butt=$this->getDefaultButton())!=='')
-			$writer->addAttribute('id',$this->getClientID());
+			$writer->addAttribute('id', $this->getClientID());
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getGroupingText()
 	{
-		return $this->getViewState('GroupingText','');
+		return $this->getViewState('GroupingText', '');
 	}
 
 	/**
@@ -176,7 +176,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setGroupingText($value)
 	{
-		$this->setViewState('GroupingText',$value,'');
+		$this->setViewState('GroupingText', $value, '');
 	}
 
 	/**
@@ -230,7 +230,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 		if(($butt=$this->getDefaultButton())!=='')
 		{
 			if(($button=$this->findControl($butt))===null)
-				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
+				throw new TInvalidDataValueException('panel_defaultbutton_invalid', $butt);
 			else
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 		}

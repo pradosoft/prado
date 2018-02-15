@@ -123,7 +123,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$options=TJavaScript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
 		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";

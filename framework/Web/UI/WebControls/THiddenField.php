@@ -58,18 +58,18 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	{
 		$uniqueID=$this->getUniqueID();
 		$this->getPage()->ensureRenderInForm($this);
-		$writer->addAttribute('type','hidden');
+		$writer->addAttribute('type', 'hidden');
 		if($uniqueID!=='')
-			$writer->addAttribute('name',$uniqueID);
+			$writer->addAttribute('name', $uniqueID);
 		if($this->getID()!=='')
-			$writer->addAttribute('id',$this->getClientID());
+			$writer->addAttribute('id', $this->getClientID());
 		if(($value=$this->getValue())!=='')
-			$writer->addAttribute('value',$value);
+			$writer->addAttribute('value', $value);
 
 		if($this->getHasAttributes())
 		{
 			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+				$writer->addAttribute($name, $value);
 		}
 
 		$writer->renderBeginTag('input');
@@ -83,7 +83,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * @param array the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		$value=$values[$key];
 		if($value===$this->getValue())
@@ -151,7 +151,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function onValueChanged($param)
 	{
-		$this->raiseEvent('OnValueChanged',$this,$param);
+		$this->raiseEvent('OnValueChanged', $this, $param);
 	}
 
 	/**
@@ -159,7 +159,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
@@ -168,7 +168,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**

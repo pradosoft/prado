@@ -30,7 +30,7 @@ class TMssqlScaffoldInput extends TScaffoldInputCommon
 			case 'datetime': case 'smalldatetime':
 				return $this->createDateTimeControl($container, $column, $record);
 			default:
-				$control = $this->createDefaultControl($container,$column, $record);
+				$control = $this->createDefaultControl($container, $column, $record);
 				if($column->getIsExcluded())
 					$control->setEnabled(false);
 				return $control;
@@ -44,9 +44,9 @@ class TMssqlScaffoldInput extends TScaffoldInputCommon
 			case 'boolean':
 				return $container->findControl(self::DEFAULT_ID)->getChecked();
 			case 'datetime': case 'smalldatetime':
-				return $this->getDateTimeValue($container,$column, $record);
+				return $this->getDateTimeValue($container, $column, $record);
 			default:
-				$value = $this->getDefaultControlValue($container,$column, $record);
+				$value = $this->getDefaultControlValue($container, $column, $record);
 				if(trim($value)==='' && $column->getAllowNull())
 					return null;
 				else

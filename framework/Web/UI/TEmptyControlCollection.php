@@ -29,7 +29,7 @@ class TEmptyControlCollection extends TControlCollection
 	 */
 	public function __construct(TControl $owner)
 	{
-		parent::__construct($owner,true);
+		parent::__construct($owner, true);
 	}
 
 	/**
@@ -38,9 +38,9 @@ class TEmptyControlCollection extends TControlCollection
 	 * @param integer the speicified position.
 	 * @param mixed new item
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if(!is_string($item))  // string is possible if property tag is used. we simply ignore it in this case
-			parent::insertAt($index,$item);  // this will generate an exception in parent implementation
+			parent::insertAt($index, $item);  // this will generate an exception in parent implementation
 	}
 }

@@ -154,17 +154,17 @@ class TMetaTag extends \Prado\TComponent
 	public function render($writer)
 	{
 		if($this->_id!=='')
-			$writer->addAttribute('id',$this->_id);
+			$writer->addAttribute('id', $this->_id);
 		if($this->_name!=='')
-			$writer->addAttribute('name',$this->_name);
+			$writer->addAttribute('name', $this->_name);
 		if($this->_httpEquiv!=='')
-			$writer->addAttribute('http-equiv',$this->_httpEquiv);
+			$writer->addAttribute('http-equiv', $this->_httpEquiv);
 		if($this->_scheme!=='')
-			$writer->addAttribute('scheme',$this->_scheme);
+			$writer->addAttribute('scheme', $this->_scheme);
 		if($this->_charset!=='')
-			$writer->addAttribute('charset',$this->_charset);
+			$writer->addAttribute('charset', $this->_charset);
 		if ($this->_charset === '')
-			$writer->addAttribute('content',$this->_content);
+			$writer->addAttribute('content', $this->_content);
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();
 	}

@@ -165,18 +165,18 @@ class TMemCache extends TCache
 			{
 				Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', '\Prado\Caching\TMemCache');
 				if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
-					$server['Weight'],$server['Timeout'],$server['RetryInterval'])===false)
-					throw new TConfigurationException('memcache_connection_failed',$server['Host'],$server['Port']);
+					$server['Weight'], $server['Timeout'], $server['RetryInterval'])===false)
+					throw new TConfigurationException('memcache_connection_failed', $server['Host'], $server['Port']);
 			}
 		}
 		else
 		{
 			Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
-			if($this->_cache->addServer($this->_host,$this->_port)===false)
-				throw new TConfigurationException('memcache_connection_failed',$this->_host,$this->_port);
+			if($this->_cache->addServer($this->_host, $this->_port)===false)
+				throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
 		}
 		if($this->_threshold!==0)
-			$this->_cache->setCompressThreshold($this->_threshold,$this->_minSavings);
+			$this->_cache->setCompressThreshold($this->_threshold, $this->_minSavings);
 		$this->_initialized=true;
 		parent::init($config);
 	}
@@ -339,12 +339,12 @@ class TMemCache extends TCache
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key,$value,$expire)
+	protected function setValue($key, $value, $expire)
 	{
 		if($this->_useMemcached) {
-			return $this->_cache->set($key,$value,$expire);
+			return $this->_cache->set($key, $value, $expire);
 		} else {
-			return $this->_cache->set($key,$value,0,$expire);
+			return $this->_cache->set($key, $value, 0, $expire);
 		}
 	}
 
@@ -357,12 +357,12 @@ class TMemCache extends TCache
 	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key,$value,$expire)
+	protected function addValue($key, $value, $expire)
 	{
 		if($this->_useMemcached) {
-			$this->_cache->add($key,$value,$expire);
+			$this->_cache->add($key, $value, $expire);
 		} else {
-			return $this->_cache->add($key,$value,0,$expire);
+			return $this->_cache->add($key, $value, 0, $expire);
 		}
 	}
 

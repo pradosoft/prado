@@ -138,9 +138,9 @@ class TSqlMapConfig extends TDataSourceConfig
 			$this->_configFile=$value;
 		else
 		{
-			$file = Prado::getPathOfNamespace($value,self::CONFIG_FILE_EXT);
+			$file = Prado::getPathOfNamespace($value, self::CONFIG_FILE_EXT);
 			if($file === null || !is_file($file))
-				throw new TConfigurationException('sqlmap_configfile_invalid',$value);
+				throw new TConfigurationException('sqlmap_configfile_invalid', $value);
 			else
 				$this->_configFile = $file;
 		}

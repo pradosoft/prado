@@ -73,7 +73,7 @@ class TMssqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($catalogName,$schemaName,$tableName) = $this->getCatalogSchemaTableName($table);
+		list($catalogName, $schemaName, $tableName) = $this->getCatalogSchemaTableName($table);
 		$this->getDbConnection()->setActive(true);
 		$sql = <<<EOD
 				SELECT t.*,
@@ -101,7 +101,7 @@ EOD;
 		{
 			if($tableInfo===null)
 				$tableInfo = $this->createNewTableInfo($col);
-			$this->processColumn($tableInfo,$col);
+			$this->processColumn($tableInfo, $col);
 		}
 		if($tableInfo===null)
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
@@ -171,7 +171,7 @@ EOD;
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($col);
 		$class = $this->getTableInfoClass();
-		return new $class($info,$primary,$foreign);
+		return new $class($info, $primary, $foreign);
 	}
 
 	/**

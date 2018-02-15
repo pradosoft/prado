@@ -46,13 +46,13 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
-			$this->getStyle()->setStyleField('display','none');
+			$this->getStyle()->setStyleField('display', 'none');
 
 		$this->getStyle()->mergeWith($this->getParent()->getViewStyle());
 
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 	}
 
 	/**
@@ -60,7 +60,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaption()
 	{
-		return $this->getViewState('Caption','');
+		return $this->getViewState('Caption', '');
 	}
 
 	/**
@@ -68,7 +68,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setCaption($value)
 	{
-		$this->setViewState('Caption',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Caption', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -76,7 +76,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('NavigateUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -94,7 +94,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -143,7 +143,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
 		{
-			$writer->addAttribute('id',$this->getClientID() . '_0');
+			$writer->addAttribute('id', $this->getClientID() . '_0');
 
 			$style=$this->getActive()?$this->getParent()->getActiveHeaderStyle():$this->getParent()->getHeaderStyle();
 

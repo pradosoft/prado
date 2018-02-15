@@ -84,7 +84,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 		if($this->_cachedActiveViewIndex>-1)
 			return $this->_cachedActiveViewIndex;
 		else
-			return $this->getControlState('ActiveViewIndex',-1);
+			return $this->getControlState('ActiveViewIndex', -1);
 	}
 
 	/**
@@ -101,13 +101,13 @@ class TMultiView extends \Prado\Web\UI\TControl
 			$this->_cachedActiveViewIndex=$index;
 		elseif($index<$count)
 		{
-			$this->setControlState('ActiveViewIndex',$index,-1);
+			$this->setControlState('ActiveViewIndex', $index, -1);
 			$this->_cachedActiveViewIndex=-1;
 			if($index>=0)
-				$this->activateView($views->itemAt($index),true);
+				$this->activateView($views->itemAt($index), true);
 		}
 		else
-			throw new TInvalidDataValueException('multiview_activeviewindex_invalid',$index);
+			throw new TInvalidDataValueException('multiview_activeviewindex_invalid', $index);
 	}
 
 	/**
@@ -119,12 +119,12 @@ class TMultiView extends \Prado\Web\UI\TControl
 		$index=$this->getActiveViewIndex();
 		$views=$this->getViews();
 		if($index>=$views->getCount())
-			throw new TInvalidDataValueException('multiview_activeviewindex_invalid',$index);
+			throw new TInvalidDataValueException('multiview_activeviewindex_invalid', $index);
 		if($index<0)
 			return null;
 		$view=$views->itemAt($index);
 		if(!$view->getActive())
-			$this->activateView($view,false);
+			$this->activateView($view, false);
 		return $view;
 	}
 
@@ -146,7 +146,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * @param TView the view to be activated
 	 * @param boolean whether to trigger OnActiveViewChanged event.
 	 */
-	protected function activateView($view,$triggerViewChangedEvent=true)
+	protected function activateView($view, $triggerViewChangedEvent=true)
 	{
 		if($view->getActive())
 			return;
@@ -208,7 +208,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function onActiveViewChanged($param)
 	{
-		$this->raiseEvent('OnActiveViewChanged',$this,$param);
+		$this->raiseEvent('OnActiveViewChanged', $this, $param);
 	}
 
 	/**
@@ -218,7 +218,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * @param mixed event parameter
 	 * @return boolean whether this event is handled
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
 		if(!$this->_ignoreBubbleEvents && ($param instanceof \Prado\Web\UI\TCommandEventParameter))
 		{

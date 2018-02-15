@@ -66,7 +66,7 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function getClientValidationFunction()
 	{
-		return $this->getViewState('ClientValidationFunction','');
+		return $this->getViewState('ClientValidationFunction', '');
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function setClientValidationFunction($value)
 	{
-		$this->setViewState('ClientValidationFunction',$value,'');
+		$this->setViewState('ClientValidationFunction', $value, '');
 	}
 
 	/**
@@ -102,8 +102,8 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function onServerValidate($value)
 	{
-		$param=new TServerValidateEventParameter($value,true);
-		$this->raiseEvent('OnServerValidate',$this,$param);
+		$param=new TServerValidateEventParameter($value, true);
+		$this->raiseEvent('OnServerValidate', $this, $param);
 		return $param->getIsValid();
 	}
 
@@ -115,7 +115,7 @@ class TCustomValidator extends TBaseValidator
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
 		elseif(($id=$this->getControlToValidate())!=='')
-			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
+			throw new TInvalidDataTypeException('basevalidator_validatable_required', get_class($this));
 		else
 			return null;
 	}

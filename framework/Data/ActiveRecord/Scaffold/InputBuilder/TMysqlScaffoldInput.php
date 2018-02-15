@@ -17,7 +17,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(['unsigned', 'zerofill'],['','',],strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
 		switch($dbtype)
 		{
 			case 'date':
@@ -46,7 +46,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(['unsigned', 'zerofill'],['','',],strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
 		switch($dbtype)
 		{
 			case 'date':
@@ -56,15 +56,15 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 			case 'time':
 				return $this->getTimeValue($container, $column, $record);
 			case 'datetime': case 'timestamp':
-				return $this->getDateTimeValue($container,$column, $record);
+				return $this->getDateTimeValue($container, $column, $record);
 			case 'tinyint':
-				return $this->getIntBooleanValue($container,$column, $record);
+				return $this->getIntBooleanValue($container, $column, $record);
 			case 'set':
 				return $this->getSetValue($container, $column, $record);
 			case 'enum':
 				return $this->getEnumValue($container, $column, $record);
 			default:
-				return $this->getDefaultControlValue($container,$column, $record);
+				return $this->getDefaultControlValue($container, $column, $record);
 		}
 	}
 
@@ -76,12 +76,12 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 			parent::createIntegerControl($container, $column, $record);
 	}
 
-	protected function getIntBooleanValue($container,$column, $record)
+	protected function getIntBooleanValue($container, $column, $record)
 	{
 		if($column->getColumnSize()==1)
 			return (int)$container->findControl(self::DEFAULT_ID)->getChecked();
 		else
-			return $this->getDefaultControlValue($container,$column, $record);
+			return $this->getDefaultControlValue($container, $column, $record);
 	}
 }
 

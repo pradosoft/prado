@@ -33,7 +33,7 @@ use Prado\Web\UI\WebControls\THyperLinkColumn;
 class TActiveHyperLinkColumn extends THyperLinkColumn
 {
 
-	protected function initializeHeaderCell($cell,$columnIndex)
+	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text=$this->getHeaderText();
 

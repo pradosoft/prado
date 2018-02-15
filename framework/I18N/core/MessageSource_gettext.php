@@ -71,7 +71,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	protected function &loadData($filename)
 	{
-		$mo = TGettext::factory('MO',$filename);
+		$mo = TGettext::factory('MO', $filename);
 		$mo->load();
 		$result = $mo->toArray();
 
@@ -128,7 +128,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$source = $catalogue . $this->dataExt;
 
 		$catalogues = [$source];
@@ -145,7 +145,7 @@ class MessageSource_gettext extends MessageSource
 			}
 		}
 		$byDir = $this->getCatalogueByDir($catalogue);
-		$catalogues = array_merge($byDir,array_reverse($catalogues));
+		$catalogues = array_merge($byDir, array_reverse($catalogues));
 		return $catalogues;
 	}
 
@@ -159,7 +159,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_',$this->culture);
+		$variants = explode('_', $this->culture);
 		$catalogues = [];
 
 		$variant = null;
@@ -236,14 +236,14 @@ class MessageSource_gettext extends MessageSource
 			$strings[$message] = '';
 
 		//load the PO
-		$po = TGettext::factory('PO',$POFile);
+		$po = TGettext::factory('PO', $POFile);
 		$po->load();
 		$result = $po->toArray();
 
 		$existing = count($result['strings']);
 
 		//add to strings to the existing message list
-		$result['strings'] = array_merge($result['strings'],$strings);
+		$result['strings'] = array_merge($result['strings'], $strings);
 
 		$new = count($result['strings']);
 
@@ -285,7 +285,7 @@ class MessageSource_gettext extends MessageSource
 		if(is_writable($POFile) == false)
 			throw new TIOException("Unable to modify file {$POFile}, file must be writable.");
 
-		$po = TGettext::factory('PO',$POFile);
+		$po = TGettext::factory('PO', $POFile);
 		$po->load();
 		$result = $po->toArray();
 
@@ -334,7 +334,7 @@ class MessageSource_gettext extends MessageSource
 			throw new TIOException("Unable to update file {$POFile}, file must be writable.");
 
 
-		$po = TGettext::factory('PO',$POFile);
+		$po = TGettext::factory('PO', $POFile);
 		$po->load();
 		$result = $po->toArray();
 
@@ -378,7 +378,7 @@ class MessageSource_gettext extends MessageSource
 	 * E.g. array('messages','en_AU')
 	 * @return array list of catalogues
 	 */
-	protected function getCatalogues($dir=null,$variant=null)
+	protected function getCatalogues($dir=null, $variant=null)
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
@@ -388,26 +388,26 @@ class MessageSource_gettext extends MessageSource
 		foreach($files as $file)
 		{
 			if(is_dir($dir . '/' . $file)
-				&& preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file))
+				&& preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file))
 			{
 
 				$catalogue = array_merge($catalogue,
 								$this->getCatalogues($dir . '/' . $file, $file));
 			}
 
-			$pos = strpos($file,$this->dataExt);
+			$pos = strpos($file, $this->dataExt);
 
 			if($pos >0
-				&& substr($file,-1*strlen($this->dataExt)) == $this->dataExt)
+				&& substr($file, -1*strlen($this->dataExt)) == $this->dataExt)
 			{
-				$name = substr($file,0,$pos);
-				$dot = strrpos($name,$this->dataSeparator);
+				$name = substr($file, 0, $pos);
+				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
 				if(is_int($dot))
 				{
-					$culture = substr($name, $dot+1,strlen($name));
-					$cat = substr($name,0,$dot);
+					$culture = substr($name, $dot+1, strlen($name));
+					$cat = substr($name, 0, $dot);
 				}
 				$details[0] = $cat;
 				$details[1] = $culture;
@@ -435,12 +435,12 @@ class MessageSource_gettext extends MessageSource
 		if(!is_dir($dir))
 		{
 			@mkdir($dir);
-			@chmod($dir,PRADO_CHMOD);
+			@chmod($dir, PRADO_CHMOD);
 		}
 		if(!is_dir($dir))
 			throw new TException("Unable to create directory $dir");
 
-		$po = TGettext::factory('PO',$po_file);
+		$po = TGettext::factory('PO', $po_file);
 		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
 		$result['strings'] = [];
 

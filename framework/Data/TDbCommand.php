@@ -53,7 +53,7 @@ class TDbCommand extends \Prado\TComponent
 	 * @param TDbConnection the database connection
 	 * @param string the SQL statement to be executed
 	 */
-	public function __construct(TDbConnection $connection,$text)
+	public function __construct(TDbConnection $connection, $text)
 	{
 		$this->_connection=$connection;
 		$this->setText($text);
@@ -64,7 +64,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),["\0TDbCommand\0_statement"]);
+		return array_diff(parent::__sleep(), ["\0TDbCommand\0_statement"]);
 	}
 
 	/**
@@ -120,7 +120,7 @@ class TDbCommand extends \Prado\TComponent
 			}
 			catch(Exception $e)
 			{
-				throw new TDbException('dbcommand_prepare_failed',$e->getMessage(),$this->getText());
+				throw new TDbException('dbcommand_prepare_failed', $e->getMessage(), $this->getText());
 			}
 		}
 	}
@@ -150,11 +150,11 @@ class TDbCommand extends \Prado\TComponent
 	{
 		$this->prepare();
 		if($dataType===null)
-			$this->_statement->bindParam($name,$value);
+			$this->_statement->bindParam($name, $value);
 		elseif($length===null)
-			$this->_statement->bindParam($name,$value,$dataType);
+			$this->_statement->bindParam($name, $value, $dataType);
 		else
-			$this->_statement->bindParam($name,$value,$dataType,$length);
+			$this->_statement->bindParam($name, $value, $dataType, $length);
 	}
 
 	/**
@@ -171,9 +171,9 @@ class TDbCommand extends \Prado\TComponent
 	{
 		$this->prepare();
 		if($dataType===null)
-			$this->_statement->bindValue($name,$value);
+			$this->_statement->bindValue($name, $value);
 		else
-			$this->_statement->bindValue($name,$value,$dataType);
+			$this->_statement->bindValue($name, $value, $dataType);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TDbCommand extends \Prado\TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_execute_failed',$e->getMessage(),$this->getDebugStatementText());
+			throw new TDbException('dbcommand_execute_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -233,7 +233,7 @@ class TDbCommand extends \Prado\TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -260,7 +260,7 @@ class TDbCommand extends \Prado\TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -289,7 +289,7 @@ class TDbCommand extends \Prado\TComponent
 		}
 		catch(Exception $e)
 		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 

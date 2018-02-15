@@ -31,7 +31,7 @@ use Prado\Web\UI\WebControls\TListItemType;
  * @since 3.1.9
  */
 class TActiveButtonColumn extends TButtonColumn {
-	public function initializeCell($cell,$columnIndex,$itemType) {
+	public function initializeCell($cell, $columnIndex, $itemType) {
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem) {
 			$buttonType=$this->getButtonType();
 			if($buttonType===TButtonColumnType::LinkButton)
@@ -49,11 +49,11 @@ class TActiveButtonColumn extends TButtonColumn {
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
 			if($this->getDataTextField()!=='' || ($buttonType===TButtonColumnType::ImageButton && $this->getDataImageUrlField()!==''))
-				$button->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$button->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			$cell->getControls()->add($button);
-			$cell->registerObject('Button',$button);
+			$cell->registerObject('Button', $button);
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 }

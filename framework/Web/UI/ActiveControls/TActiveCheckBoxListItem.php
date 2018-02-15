@@ -22,8 +22,8 @@ class TActiveCheckBoxListItem extends TActiveCheckBox
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		TCheckBox::renderInputTag($writer,$clientID,$onclick);
+		TCheckBox::renderInputTag($writer, $clientID, $onclick);
 	}
 }

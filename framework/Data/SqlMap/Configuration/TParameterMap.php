@@ -145,12 +145,12 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	public function getPropertyValue($registry, $property, $parameterValue)
 	{
-		$value = $this->getObjectValue($parameterValue,$property);
+		$value = $this->getObjectValue($parameterValue, $property);
 
 		if(($handler=$this->createTypeHandler($property, $registry))!==null)
 			$value = $handler->getParameter($value);
 
-		$value = $this->nullifyDefaultValue($property,$value);
+		$value = $this->nullifyDefaultValue($property, $value);
 
 		if(($type = $property->getType())!==null)
 			$value = $registry->convertToType($type, $value);
@@ -181,7 +181,7 @@ class TParameterMap extends \Prado\TComponent
 	 * @return mixed property value.
 	 * @throws TSqlMapException if property access is invalid.
 	 */
-	protected function getObjectValue($object,$property)
+	protected function getObjectValue($object, $property)
 	{
 		try
 		{
@@ -205,7 +205,7 @@ class TParameterMap extends \Prado\TComponent
 	 * @param mixed current property value
 	 * @return mixed null if NullValue matches currrent value.
 	 */
-	protected function nullifyDefaultValue($property,$value)
+	protected function nullifyDefaultValue($property, $value)
 	{
 		if(($nullValue = $property->getNullValue())!==null)
 		{

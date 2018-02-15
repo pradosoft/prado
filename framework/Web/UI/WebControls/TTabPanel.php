@@ -95,7 +95,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveViewIndex()
 	{
-		return $this->getViewState('ActiveViewIndex',0);
+		return $this->getViewState('ActiveViewIndex', 0);
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setActiveViewIndex($value)
 	{
-		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('ActiveViewIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveViewID()
 	{
-		return $this->getViewState('ActiveViewID','');
+		return $this->getViewState('ActiveViewID', '');
 	}
 
 	/**
@@ -123,7 +123,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setActiveViewID($value)
 	{
-		$this->setViewState('ActiveViewID',$value,'');
+		$this->setViewState('ActiveViewID', $value, '');
 	}
 
 	/**
@@ -142,14 +142,14 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			if(($index=$views->findIndexByID($id))>=0)
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid',$id);
+				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid', $id);
 		}
 		elseif(($index=$this->getActiveViewIndex())>=0)
 		{
 			if($index<$views->getCount())
 				$activeView=$views->itemAt($index);
 			else
-				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid',$index);
+				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid', $index);
 		}
 		else
 		{
@@ -192,7 +192,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setAutoSwitch($value)
 	{
-		$this->setViewState('AutoSwitch',TPropertyValue::ensureBoolean($value));
+		$this->setViewState('AutoSwitch', TPropertyValue::ensureBoolean($value));
 	}
 
 
@@ -201,7 +201,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getCssUrl()
 	{
-		return $this->getViewState('CssUrl','default');
+		return $this->getViewState('CssUrl', 'default');
 	}
 
 	/**
@@ -209,7 +209,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setCssUrl($value)
 	{
-		$this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -242,11 +242,11 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getViewStyle()
 	{
-		if(($style=$this->getViewState('ViewStyle',null))===null)
+		if(($style=$this->getViewState('ViewStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('tab-view');
-			$this->setViewState('ViewStyle',$style,null);
+			$this->setViewState('ViewStyle', $style, null);
 		}
 		return $style;
 	}
@@ -272,11 +272,11 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getTabStyle()
 	{
-		if(($style=$this->getViewState('TabStyle',null))===null)
+		if(($style=$this->getViewState('TabStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('tab-normal');
-			$this->setViewState('TabStyle',$style,null);
+			$this->setViewState('TabStyle', $style, null);
 		}
 		return $style;
 	}
@@ -302,11 +302,11 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveTabStyle()
 	{
-		if(($style=$this->getViewState('ActiveTabStyle',null))===null)
+		if(($style=$this->getViewState('ActiveTabStyle', null))===null)
 		{
 			$style=new TStyle;
 			$style->setCssClass('tab-active');
-			$this->setViewState('ActiveTabStyle',$style,null);
+			$this->setViewState('ActiveTabStyle', $style, null);
 		}
 		return $style;
 	}
@@ -340,7 +340,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
 		if(($index=$values[$this->getClientID() . '_1'])!==null)
 		{
@@ -384,7 +384,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->setCssClass($this->getCssClass());
 		parent::addAttributesToRender($writer);
 	}

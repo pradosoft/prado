@@ -122,7 +122,7 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(), $this->getPostBackOptions());
 	}

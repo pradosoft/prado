@@ -144,7 +144,7 @@ class TParameterProperty extends \Prado\TComponent
 		if ($this->_dbType===null) $exprops[] = "\0$cn\0_dbType";
 		if ($this->_property===null) $exprops[] = "\0$cn\0_property";
 		if ($this->_nullValue===null) $exprops[] = "\0$cn\0_nullValue";
-		return array_diff(parent::__sleep(),$exprops);
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }
 

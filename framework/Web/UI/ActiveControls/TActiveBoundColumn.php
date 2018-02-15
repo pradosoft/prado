@@ -34,7 +34,7 @@ use Prado\Web\UI\WebControls\TDataGrid;
  * @since 3.1.9
  */
 class TActiveBoundColumn extends TBoundColumn {
-	protected function initializeHeaderCell($cell,$columnIndex) {
+	protected function initializeHeaderCell($cell, $columnIndex) {
 		$text=$this->getHeaderText();
 
 		if(($classPath=$this->getHeaderRenderer())!=='') {

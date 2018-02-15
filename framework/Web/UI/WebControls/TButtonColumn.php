@@ -53,7 +53,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -62,7 +62,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
@@ -78,7 +78,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
@@ -94,7 +94,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -102,7 +102,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
@@ -110,7 +110,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -118,7 +118,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getDataImageUrlField()
 	{
-		return $this->getViewState('DataImageUrlField','');
+		return $this->getViewState('DataImageUrlField', '');
 	}
 
 	/**
@@ -126,7 +126,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setDataImageUrlField($value)
 	{
-		$this->setViewState('DataImageUrlField',$value,'');
+		$this->setViewState('DataImageUrlField', $value, '');
 	}
 
 	/**
@@ -134,7 +134,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getDataImageUrlFormatString()
 	{
-		return $this->getViewState('DataImageUrlFormatString','');
+		return $this->getViewState('DataImageUrlFormatString', '');
 	}
 
 	/**
@@ -142,7 +142,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setDataImageUrlFormatString($value)
 	{
-		$this->setViewState('DataImageUrlFormatString',$value,'');
+		$this->setViewState('DataImageUrlFormatString', $value, '');
 	}
 
 	/**
@@ -150,7 +150,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType',TButtonColumnType::LinkButton);
+		return $this->getViewState('ButtonType', TButtonColumnType::LinkButton);
 	}
 
 	/**
@@ -158,7 +158,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TButtonColumnType'),TButtonColumnType::LinkButton);
+		$this->setViewState('ButtonType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TButtonColumnType'), TButtonColumnType::LinkButton);
 	}
 
 	/**
@@ -166,7 +166,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getCommandName()
 	{
-		return $this->getViewState('CommandName','');
+		return $this->getViewState('CommandName', '');
 	}
 
 	/**
@@ -175,7 +175,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setCommandName($value)
 	{
-		$this->setViewState('CommandName',$value,'');
+		$this->setViewState('CommandName', $value, '');
 	}
 
 	/**
@@ -183,7 +183,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
@@ -191,7 +191,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -207,7 +207,7 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -218,7 +218,7 @@ class TButtonColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
@@ -238,12 +238,12 @@ class TButtonColumn extends TDataGridColumn
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
 			if($this->getDataTextField()!=='' || ($buttonType===TButtonColumnType::ImageButton && $this->getDataImageUrlField()!==''))
-				$button->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$button->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 			$cell->getControls()->add($button);
-			$cell->registerObject('Button',$button);
+			$cell->registerObject('Button', $button);
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 
 	/**
@@ -251,20 +251,20 @@ class TButtonColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		if($sender instanceof \Prado\Web\UI\IButtonControl)
 		{
 			if(($field=$this->getDataTextField())!=='')
 			{
-				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(),$field);
-				$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
+				$text=$this->formatDataValue($this->getDataTextFormatString(), $value);
 				$sender->setText($text);
 			}
 			if(($sender instanceof TImageButton) && ($field=$this->getDataImageUrlField())!=='')
 			{
-				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(),$field);
-				$url=$this->formatDataValue($this->getDataImageUrlFormatString(),$value);
+				$value=$this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
+				$url=$this->formatDataValue($this->getDataImageUrlFormatString(), $value);
 				$sender->setImageUrl($url);
 			}
 		}

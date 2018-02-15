@@ -72,7 +72,7 @@ class HTTPNegotiator
 
 			if (strstr($lang, '-'))
 			{
-				$codes = explode('-',$lang);
+				$codes = explode('-', $lang);
 				if($codes[0] == 'i')
 				{
 					// Language not listed in ISO 639 that are not variants

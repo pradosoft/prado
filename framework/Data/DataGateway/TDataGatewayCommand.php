@@ -77,7 +77,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$command = $this->getBuilder()->createDeleteCommand($where, $parameters);
-		$this->onCreateCommand($command,$criteria);
+		$this->onCreateCommand($command, $criteria);
 		$command->prepare();
 		return $command->execute();
 	}
@@ -91,8 +91,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
-		$command = $this->getBuilder()->createUpdateCommand($data,$where, $parameters);
-		$this->onCreateCommand($command,$criteria);
+		$command = $this->getBuilder()->createUpdateCommand($data, $where, $parameters);
+		$this->onCreateCommand($command, $criteria);
 		$command->prepare();
 		return $this->onExecuteCommand($command, $command->execute());
 	}
@@ -141,7 +141,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
 		$select = $criteria->getSelect();
-		$command = $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset,$select);
+		$command = $this->getBuilder()->createFindCommand($where, $parameters, $ordering, $limit, $offset, $select);
 		$this->onCreateCommand($command, $criteria);
 		return $command;
 	}
@@ -155,7 +155,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 			return null;
 		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$parameters));
+		$this->onCreateCommand($command, new TSqlCriteria($where, $parameters));
 		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 	/**
@@ -166,19 +166,19 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createFindCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
-		return $this->onExecuteCommand($command,$command->query());
+		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
+		return $this->onExecuteCommand($command, $command->query());
 	}
-	public function findAllByIndex($criteria,$fields,$values)
+	public function findAllByIndex($criteria, $fields, $values)
 	{
-		$index = $this->getIndexKeyCondition($this->getTableInfo(),$fields,$values);
+		$index = $this->getIndexKeyCondition($this->getTableInfo(), $fields, $values);
 		if(strlen($where = $criteria->getCondition())>0)
 			$criteria->setCondition("({$index}) AND ({$where})");
 		else
 			$criteria->setCondition($index);
 		$command = $this->getFindCommand($criteria);
 		$this->onCreateCommand($command, $criteria);
-		return $this->onExecuteCommand($command,$command->query());
+		return $this->onExecuteCommand($command, $command->query());
 	}
 
 	/**
@@ -191,12 +191,12 @@ class TDataGatewayCommand extends \Prado\TComponent
 			return 0;
 		$where = $this->getCompositeKeyCondition((array)$keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
+		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		$command->prepare();
-		return $this->onExecuteCommand($command,$command->execute());
+		return $this->onExecuteCommand($command, $command->execute());
 	}
 
-	public function getIndexKeyCondition($table,$fields,$values)
+	public function getIndexKeyCondition($table, $fields, $values)
 	{
 		if (!count($values))
 			return 'FALSE';
@@ -204,7 +204,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$tableName = $table->getTableFullName();
 		foreach($fields as $field)
 			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
-		return '(' . implode(', ',$columns) . ') IN ' . $this->quoteTuple($values);
+		return '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
 	}
 
 	/**
@@ -233,7 +233,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 			throw new TDbException('dbtablegateway_pk_value_count_mismatch',
 				$this->getTableInfo()->getTableFullName());
 		}
-		return $this->getIndexKeyCondition($this->getTableInfo(),$primary, $values);
+		return $this->getIndexKeyCondition($this->getTableInfo(), $primary, $values);
 	}
 
 	/**
@@ -331,7 +331,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$ordering = $criteria->getOrdersBy();
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
-		$command = $this->getBuilder()->createCountCommand($where,$parameters,$ordering,$limit,$offset);
+		$command = $this->getBuilder()->createCountCommand($where, $parameters, $ordering, $limit, $offset);
 		$this->onCreateCommand($command, $criteria);
 		return $this->onExecuteCommand($command, (int)$command->queryScalar());
 	}
@@ -346,7 +346,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function insert($data)
 	{
 		$command=$this->getBuilder()->createInsertCommand($data);
-		$this->onCreateCommand($command, new TSqlCriteria(null,$data));
+		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
 		$command->prepare();
 		if($this->onExecuteCommand($command, $command->execute()) > 0)
 		{
@@ -379,9 +379,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if(count($fields)>count($args))
 		{
 			throw new TDbException('dbtablegateway_mismatch_args_exception',
-				$method,count($fields),count($args));
+				$method, count($fields), count($args));
 		}
-		return new TSqlCriteria(implode(' ',$fields), $args);
+		return new TSqlCriteria(implode(' ', $fields), $args);
 	}
 
 	/**
@@ -397,7 +397,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$columns = $table->getLowerCaseColumnNames();
 		$regexp = '/(' . implode('|', array_keys($columns)) . ')(and|_and_|or|_or_)?/i';
 		$matches = [];
-		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
+		if(!preg_match_all($regexp, strtolower($condition), $matches, PREG_SET_ORDER))
 		{
 			throw new TDbException('dbtablegateway_mismatch_column_name',
 				$method, implode(', ', $columns), $table->getTableFullName());
@@ -426,7 +426,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function onCreateCommand($command, $criteria)
 	{
-		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command,$criteria));
+		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command, $criteria));
 	}
 
 	/**

@@ -49,7 +49,7 @@ class TCallbackErrorHandler extends TErrorHandler
 				$trace = TJavaScript::jsonEncode($trace);
 			} catch (Exception $e) {
 				// strip everythin not 7bit ascii
-				$trace = preg_replace('/[^(\x20-\x7F)]*/','', serialize($trace));
+				$trace = preg_replace('/[^(\x20-\x7F)]*/', '', serialize($trace));
 			}
 
 			// avoid exception loop if headers have already been sent
@@ -92,7 +92,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		$data['type']=get_class($exception);
 		$data['message']=$exception->getMessage();
 		$data['version']=$_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
-		$data['time']=@strftime('%Y-%m-%d %H:%M',time());
+		$data['time']=@strftime('%Y-%m-%d %H:%M', time());
 		return $data;
 	}
 }

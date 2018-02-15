@@ -71,10 +71,10 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 		if($this->getHasPreRendered()) {
 			$this->renderMultiView($writer);
 			if($this->getActiveControl()->canUpdateClientSide())
-				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(),$writer);
+				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer);
 		}
 		else
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	{
 		parent::setActiveViewIndex($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 	}
 
 	/**
@@ -109,6 +109,6 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	{
 		parent::setActiveView($value);
 		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 	}
 }

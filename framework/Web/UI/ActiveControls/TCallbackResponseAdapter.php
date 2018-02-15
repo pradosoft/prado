@@ -47,11 +47,11 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 * @param string writer class name.
 	 * @param THttpResponse http response handler.
 	 */
-	public function createNewHtmlWriter($type,$response)
+	public function createNewHtmlWriter($type, $response)
 	{
 		$writer = new TCallbackResponseWriter();
 		$this->_writers[] = $writer;
-		return parent::createNewHtmlWriter($type,$writer);
+		return parent::createNewHtmlWriter($type, $writer);
 	}
 
 	/**
@@ -88,7 +88,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	{
 		if($url[0]==='/')
 			$url=$this->getRequest()->getBaseUrl() . $url;
-		$this->_redirectUrl=str_replace('&amp;','&',$url);
+		$this->_redirectUrl=str_replace('&amp;', '&', $url);
 	}
 
 	/**

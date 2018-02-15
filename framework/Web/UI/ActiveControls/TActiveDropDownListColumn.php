@@ -32,7 +32,7 @@ use Prado\Web\UI\WebControls\TDropDownListColumn;
  */
 class TActiveDropDownListColumn extends TDropDownListColumn
 {
-	protected function initializeHeaderCell($cell,$columnIndex)
+	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text=$this->getHeaderText();
 

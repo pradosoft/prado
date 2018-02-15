@@ -71,7 +71,7 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	 */
 	public function createNewHtmlWriter($type, $writer)
 	{
-		return $this->_response->createNewHtmlWriter($type,$writer);
+		return $this->_response->createNewHtmlWriter($type, $writer);
 	}
 }
 

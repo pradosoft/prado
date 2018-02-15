@@ -97,14 +97,14 @@ class TAuthManager extends \Prado\TModule
 		if(is_string($this->_userManager))
 		{
 			if(($users=$application->getModule($this->_userManager))===null)
-				throw new TConfigurationException('authmanager_usermanager_inexistent',$this->_userManager);
+				throw new TConfigurationException('authmanager_usermanager_inexistent', $this->_userManager);
 			if(!($users instanceof IUserManager))
-				throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
+				throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
 			$this->_userManager=$users;
 		}
-		$application->attachEventHandler('OnAuthentication',[$this,'doAuthentication']);
-		$application->attachEventHandler('OnEndRequest',[$this,'leave']);
-		$application->attachEventHandler('OnAuthorization',[$this,'doAuthorization']);
+		$application->attachEventHandler('OnAuthentication', [$this,'doAuthentication']);
+		$application->attachEventHandler('OnEndRequest', [$this,'leave']);
+		$application->attachEventHandler('OnAuthorization', [$this,'doAuthorization']);
 		$this->_initialized=true;
 	}
 
@@ -125,7 +125,7 @@ class TAuthManager extends \Prado\TModule
 		if($this->_initialized)
 			throw new TInvalidOperationException('authmanager_usermanager_unchangeable');
 		if(!is_string($provider) && !($provider instanceof IUserManager))
-			throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
+			throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
 		$this->_userManager=$provider;
 	}
 
@@ -155,7 +155,7 @@ class TAuthManager extends \Prado\TModule
 	 * @param mixed sender of the Authentication event
 	 * @param mixed event parameter
 	 */
-	public function doAuthentication($sender,$param)
+	public function doAuthentication($sender, $param)
 	{
 		$this->onAuthenticate($param);
 
@@ -171,7 +171,7 @@ class TAuthManager extends \Prado\TModule
 	 * @param mixed sender of the Authorization event
 	 * @param mixed event parameter
 	 */
-	public function doAuthorization($sender,$param)
+	public function doAuthorization($sender, $param)
 	{
 		if(!$this->_skipAuthorization)
 		{
@@ -186,7 +186,7 @@ class TAuthManager extends \Prado\TModule
 	 * @param mixed sender of the event
 	 * @param mixed event parameter
 	 */
-	public function leave($sender,$param)
+	public function leave($sender, $param)
 	{
 		$application=$this->getApplication();
 		if($application->getResponse()->getStatusCode()===401)
@@ -232,7 +232,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function setReturnUrl($value)
 	{
-		$this->getSession()->add($this->getReturnUrlVarName(),$value);
+		$this->getSession()->add($this->getReturnUrlVarName(), $value);
 	}
 
 	/**
@@ -320,7 +320,7 @@ class TAuthManager extends \Prado\TModule
 
 		// event handler gets a chance to do further auth work
 		if($this->hasEventHandler('OnAuthenticate'))
-			$this->raiseEvent('OnAuthenticate',$this,$application);
+			$this->raiseEvent('OnAuthenticate', $this, $application);
 	}
 
 	/**
@@ -332,7 +332,7 @@ class TAuthManager extends \Prado\TModule
 	{
 		$this->logout();
 		if($this->hasEventHandler('OnAuthExpire'))
-			$this->raiseEvent('OnAuthExpire',$this,$param);
+			$this->raiseEvent('OnAuthExpire', $this, $param);
 	}
 
 	/**
@@ -346,8 +346,8 @@ class TAuthManager extends \Prado\TModule
 	{
 		$application=$this->getApplication();
 		if($this->hasEventHandler('OnAuthorize'))
-			$this->raiseEvent('OnAuthorize',$this,$application);
-		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(),$application->getRequest()->getRequestType(),$application->getRequest()->getUserHostAddress()))
+			$this->raiseEvent('OnAuthorize', $this, $application);
+		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(), $application->getRequest()->getRequestType(), $application->getRequest()->getUserHostAddress()))
 		{
 			$application->getResponse()->setStatusCode(401);
 			$application->completeRequest();
@@ -386,7 +386,7 @@ class TAuthManager extends \Prado\TModule
 			if(($session=$this->getSession())===null)
 				throw new TConfigurationException('authmanager_session_required');
 			else
-				$session->add($this->getUserKey(),$user->saveToString());
+				$session->add($this->getUserKey(), $user->saveToString());
 		}
 	}
 
@@ -414,9 +414,9 @@ class TAuthManager extends \Prado\TModule
 	 * @param integer number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
 	 * @return boolean if login is successful
 	 */
-	public function login($username,$password,$expire=0)
+	public function login($username, $password, $expire=0)
 	{
-		if($this->_userManager->validateUser($username,$password))
+		if($this->_userManager->validateUser($username, $password))
 		{
 			if(($user=$this->_userManager->getUser($username))===null)
 				return false;
@@ -425,7 +425,7 @@ class TAuthManager extends \Prado\TModule
 
 			if($expire>0)
 			{
-				$cookie=new THttpCookie($this->getUserKey(),'');
+				$cookie=new THttpCookie($this->getUserKey(), '');
 				$cookie->setExpire(time()+$expire);
 				$this->_userManager->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
@@ -449,7 +449,7 @@ class TAuthManager extends \Prado\TModule
 		$session->destroy();
 		if($this->getAllowAutoLogin())
 		{
-			$cookie=new THttpCookie($this->getUserKey(),'');
+			$cookie=new THttpCookie($this->getUserKey(), '');
 			$this->getResponse()->getCookies()->add($cookie);
 		}
 	}

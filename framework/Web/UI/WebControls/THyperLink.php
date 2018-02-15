@@ -51,12 +51,12 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$isEnabled=$this->getEnabled(true);
 		if($this->getEnabled() && !$isEnabled)
-			$writer->addAttribute('disabled','disabled');
+			$writer->addAttribute('disabled', 'disabled');
 		parent::addAttributesToRender($writer);
 		if(($url=$this->getNavigateUrl())!=='' && $isEnabled)
-			$writer->addAttribute('href',$url);
+			$writer->addAttribute('href', $url);
 		if(($target=$this->getTarget())!=='')
-			$writer->addAttribute('target',$target);
+			$writer->addAttribute('target', $target);
 	}
 
 	/**
@@ -109,7 +109,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -118,7 +118,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -126,7 +126,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageAlign()
 	{
-		return $this->getViewState('ImageAlign','');
+		return $this->getViewState('ImageAlign', '');
 	}
 
 	/**
@@ -138,7 +138,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign',$value,'');
+		$this->setViewState('ImageAlign', $value, '');
 	}
 
 	/**
@@ -146,7 +146,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageHeight()
 	{
-		return $this->getViewState('ImageHeight','');
+		return $this->getViewState('ImageHeight', '');
 	}
 
 	/**
@@ -155,7 +155,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setImageHeight($value)
 	{
-		$this->setViewSTate('ImageHeight',$value,'');
+		$this->setViewSTate('ImageHeight', $value, '');
 	}
 
 	/**
@@ -163,7 +163,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
@@ -172,7 +172,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -180,7 +180,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageWidth()
 	{
-		return $this->getViewState('ImageWidth','');
+		return $this->getViewState('ImageWidth', '');
 	}
 
 	/**
@@ -189,7 +189,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setImageWidth($value)
 	{
-		$this->setViewState('ImageWidth',$value,'');
+		$this->setViewState('ImageWidth', $value, '');
 	}
 
 	/**
@@ -197,7 +197,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
@@ -206,7 +206,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',$value,'');
+		$this->setViewState('NavigateUrl', $value, '');
 	}
 
 	/**
@@ -240,7 +240,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
@@ -249,7 +249,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',$value,'');
+		$this->setViewState('Target', $value, '');
 	}
 }
 

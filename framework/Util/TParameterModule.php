@@ -76,7 +76,7 @@ class TParameterModule extends \Prado\TModule
 				{
 					$configFile=new TXmlDocument;
 					$configFile->loadFromFile($this->_paramFile);
-					$cache->set($cacheKey,$configFile,0,new TFileCacheDependency($this->_paramFile));
+					$cache->set($cacheKey, $configFile, 0, new TFileCacheDependency($this->_paramFile));
 				}
 			}
 			else
@@ -145,11 +145,11 @@ class TParameterModule extends \Prado\TModule
 			{
 				$component=Prado::createComponent($parameter[0]);
 				foreach($parameter[1] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				$appParams->add($id,$component);
+					$component->setSubProperty($name, $value);
+				$appParams->add($id, $component);
 			}
 			else
-				$appParams->add($id,$parameter);
+				$appParams->add($id, $parameter);
 		}
 	}
 
@@ -171,8 +171,8 @@ class TParameterModule extends \Prado\TModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('parametermodule_parameterfile_unchangeable');
-		elseif(($this->_paramFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null || !is_file($this->_paramFile))
-			throw new TConfigurationException('parametermodule_parameterfile_invalid',$value);
+		elseif(($this->_paramFile=Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt()))===null || !is_file($this->_paramFile))
+			throw new TConfigurationException('parametermodule_parameterfile_invalid', $value);
 	}
 }
 

@@ -26,7 +26,7 @@ use Prado\Prado;
  */
 class TPreparedCommand
 {
-	public function create(TSqlMapManager $manager, $connection, $statement, $parameterObject,$skip=null,$max=null)
+	public function create(TSqlMapManager $manager, $connection, $statement, $parameterObject, $skip=null, $max=null)
 	{
 		$sqlText = $statement->getSQLText();
 
@@ -40,7 +40,7 @@ class TPreparedCommand
 		if($max!==null || $skip!==null)
 		{
 			$builder = TDbMetaData::getInstance($connection)->createCommandBuilder();
-			$sql = $builder->applyLimitOffset($sql,$max,$skip);
+			$sql = $builder->applyLimitOffset($sql, $max, $skip);
 		}
 		$command = $connection->createCommand($sql);
 		$this->applyParameterMap($manager, $command, $prepared, $statement, $parameterObject);
@@ -48,7 +48,7 @@ class TPreparedCommand
 		return $command;
 	}
 
-	protected function applyParameterMap($manager,$command,$prepared, $statement, $parameterObject)
+	protected function applyParameterMap($manager, $command, $prepared, $statement, $parameterObject)
 	{
 		$properties = $prepared->getParameterNames(false);
 		//$parameters = $prepared->getParameterValues();
@@ -57,14 +57,14 @@ class TPreparedCommand
 		for($i = 0, $k=$properties->getCount(); $i<$k; $i++)
 		{
 			$property = $statement->parameterMap()->getProperty($i);
-			$value = $statement->parameterMap()->getPropertyValue($registry,$property, $parameterObject);
+			$value = $statement->parameterMap()->getPropertyValue($registry, $property, $parameterObject);
 			$dbType = $property->getDbType();
 			if($dbType=='') //relies on PHP lax comparison
-				$command->bindValue($i+1,$value, TDbCommandBuilder::getPdoType($value));
+				$command->bindValue($i+1, $value, TDbCommandBuilder::getPdoType($value));
 			elseif(strpos($dbType, 'PDO::')===0)
-				$command->bindValue($i+1,$value, constant($property->getDbType())); //assumes PDO types, e.g. PDO::PARAM_INT
+				$command->bindValue($i+1, $value, constant($property->getDbType())); //assumes PDO types, e.g. PDO::PARAM_INT
 			else
-				$command->bindValue($i+1,$value);
+				$command->bindValue($i+1, $value);
 		}
 	}
 }

@@ -59,7 +59,7 @@ class TListItem extends \Prado\TComponent
 	 * @param boolean whether the item is enabled
 	 * @param boolean whether the item is selected
 	 */
-	public function __construct($text='',$value='',$enabled=true,$selected=false)
+	public function __construct($text='', $value='', $enabled=true, $selected=false)
 	{
 		$this->setText($text);
 		$this->setValue($value);
@@ -191,9 +191,9 @@ class TListItem extends \Prado\TComponent
 	 * @param string attribute name
 	 * @param string value of the attribute
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
-		$this->getAttributes()->add($name,$value);
+		$this->getAttributes()->add($name, $value);
 	}
 
 	/**

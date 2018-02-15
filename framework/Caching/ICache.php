@@ -39,7 +39,7 @@ interface ICache
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function set($id,$value,$expire=0,$dependency=null);
+	public function set($id, $value, $expire=0, $dependency=null);
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * Nothing will be done if the cache already contains the key.
@@ -49,7 +49,7 @@ interface ICache
 	 * @param ICacheDependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	public function add($id,$value,$expire=0,$dependency=null);
+	public function add($id, $value, $expire=0, $dependency=null);
 	/**
 	 * Deletes a value with the specified key from cache
 	 * @param string the key of the value to be deleted

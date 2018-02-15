@@ -148,25 +148,25 @@ class TTableStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(($url=trim($this->getBackImageUrl()))!=='')
-			$writer->addStyleAttribute('background-image','url(' . $url . ')');
+			$writer->addStyleAttribute('background-image', 'url(' . $url . ')');
 
 		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
-			$writer->addStyleAttribute('text-align',strtolower($horizontalAlign));
+			$writer->addStyleAttribute('text-align', strtolower($horizontalAlign));
 
 		if(($cellPadding=$this->getCellPadding())>=0)
-			$writer->addAttribute('cellpadding',"$cellPadding");
+			$writer->addAttribute('cellpadding', "$cellPadding");
 
 		if(($cellSpacing=$this->getCellSpacing())>=0)
-			$writer->addAttribute('cellspacing',"$cellSpacing");
+			$writer->addAttribute('cellspacing', "$cellSpacing");
 
 		if($this->getBorderCollapse())
-			$writer->addStyleAttribute('border-collapse','collapse');
+			$writer->addStyleAttribute('border-collapse', 'collapse');
 
 		switch($this->getGridLines())
 		{
-			case TTableGridLines::Horizontal : $writer->addAttribute('rules','rows'); break;
-			case TTableGridLines::Vertical : $writer->addAttribute('rules','cols'); break;
-			case TTableGridLines::Both : $writer->addAttribute('rules','all'); break;
+			case TTableGridLines::Horizontal : $writer->addAttribute('rules', 'rows'); break;
+			case TTableGridLines::Vertical : $writer->addAttribute('rules', 'cols'); break;
+			case TTableGridLines::Both : $writer->addAttribute('rules', 'all'); break;
 		}
 
 		parent::addAttributesToRender($writer);
@@ -203,7 +203,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'THorizontalAlign');
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value, 'THorizontalAlign');
 	}
 
 	/**
@@ -256,7 +256,7 @@ class TTableStyle extends TStyle
 	 */
 	public function setGridLines($value)
 	{
-		$this->_gridLines=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableGridLines');
+		$this->_gridLines=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableGridLines');
 	}
 
 

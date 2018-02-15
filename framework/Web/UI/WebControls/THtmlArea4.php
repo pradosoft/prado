@@ -212,7 +212,7 @@ class THtmlArea4 extends TTextBox
 	 */
 	public function getEnableVisualEdit()
 	{
-		return $this->getViewState('EnableVisualEdit',true);
+		return $this->getViewState('EnableVisualEdit', true);
 	}
 
 	/**
@@ -221,7 +221,7 @@ class THtmlArea4 extends TTextBox
 	 */
 	public function setEnableVisualEdit($value)
 	{
-		$this->setViewState('EnableVisualEdit',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableVisualEdit', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -288,7 +288,7 @@ class THtmlArea4 extends TTextBox
 	{
 		if($this->getEnableVisualEdit() && $this->getEnabled(true))
 		{
-			$writer->addAttribute('id',$this->getClientID());
+			$writer->addAttribute('id', $this->getClientID());
 			$this->registerEditorClientScript($writer);
 		}
 
@@ -331,9 +331,9 @@ class THtmlArea4 extends TTextBox
 			'EditorOptions' => $this->getEditorOptions()
 		];
 
-		$options = TJavaScript::encode($options,true,true);
+		$options = TJavaScript::encode($options, true, true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea4' . $this->ClientID,$script);
+		$scripts->registerEndScript('prado:THtmlArea4' . $this->ClientID, $script);
 	}
 
 	protected function copyCustomPlugins()
@@ -389,11 +389,11 @@ class THtmlArea4 extends TTextBox
 		$substrings = preg_split('/,\s*\n|\n/', trim($string));
 		foreach($substrings as $bits)
 		{
-			$option = explode(":",$bits,2);
+			$option = explode(":", $bits, 2);
 
 			if(count($option) == 2)
 			{
-				$value=trim(trim($option[1]),"'\"");
+				$value=trim(trim($option[1]), "'\"");
 				if (($s=strtolower($value))==='false')
 					$value=false;
 				elseif ($s==='true')

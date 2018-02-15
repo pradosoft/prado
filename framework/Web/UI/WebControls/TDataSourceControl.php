@@ -34,7 +34,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function onDataSourceChanged($param)
 	{
-		$this->raiseEvent('OnDataSourceChanged',$this,$param);
+		$this->raiseEvent('OnDataSourceChanged', $this, $param);
 	}
 
 	public function focus()

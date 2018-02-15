@@ -62,7 +62,7 @@ class TMarkdown extends TTextHighlighter
 	 */
 	protected function highlightCode($matches)
 	{
-		$text = html_entity_decode($matches[2],ENT_QUOTES,'UTF-8');
+		$text = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
 		$this->setLanguage($matches[1]);
 		return parent::processText($text);
 	}

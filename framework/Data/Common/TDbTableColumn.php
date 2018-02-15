@@ -40,7 +40,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 * @param mixed default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name,$default=null)
+	protected function getInfo($name, $default=null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -49,7 +49,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 * @param string information array key name
 	 * @param mixed new information array value.
 	 */
-	protected function setInfo($name,$value)
+	protected function setInfo($name, $value)
 	{
 		$this->_info[$name]=$value;
 	}
@@ -122,7 +122,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getAllowNull()
 	{
-		return $this->getInfo('AllowNull',false);
+		return $this->getInfo('AllowNull', false);
 	}
 
 	/**
@@ -154,7 +154,7 @@ class TDbTableColumn extends \Prado\TComponent
 		if(($precision=$this->getNumericPrecision())!==null)
 		{
 			$scale=$this->getNumericScale();
-			return $scale===null ? pow(10,$precision) : pow(10,$precision-$scale);
+			return $scale===null ? pow(10, $precision) : pow(10, $precision-$scale);
 		}
 	}
 
@@ -163,7 +163,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getIsPrimaryKey()
 	{
-		return $this->getInfo('IsPrimaryKey',false);
+		return $this->getInfo('IsPrimaryKey', false);
 	}
 
 	/**
@@ -171,7 +171,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getIsForeignKey()
 	{
-		return $this->getInfo('IsForeignKey',false);
+		return $this->getInfo('IsForeignKey', false);
 	}
 
 	/**

@@ -57,7 +57,7 @@ class TException extends \Exception
 		$tokens=[];
 		for($i=0;$i<$n;++$i)
 			$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
-		parent::__construct(strtr($errorMessage,$tokens));
+		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
 	/**
@@ -76,7 +76,7 @@ class TException extends \Exception
 			{
 				foreach($entries as $entry)
 				{
-					list($code,$message)=array_merge(explode('=',$entry,2), [ '' ] );
+					list($code, $message)=array_merge(explode('=', $entry, 2), [ '' ] );
 					self::$_messageCache[$msgFile][trim($code)]=trim($message);
 				}
 			}

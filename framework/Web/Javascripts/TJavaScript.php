@@ -57,7 +57,7 @@ class TJavaScript
 	public static function renderScriptBlocks($scripts)
 	{
 		if(count($scripts))
-			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n" . implode("\n",$scripts) . "\n/*]]>*/\n</script>\n";
+			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n" . implode("\n", $scripts) . "\n/*]]>*/\n</script>\n";
 		else
 			return '';
 	}
@@ -70,7 +70,7 @@ class TJavaScript
 	public static function renderScriptBlocksCallback($scripts)
 	{
 		if(count($scripts))
-			return implode("\n",$scripts) . "\n";
+			return implode("\n", $scripts) . "\n";
 		else
 			return '';
 	}
@@ -94,7 +94,7 @@ class TJavaScript
 	 */
 	public static function quoteString($js)
 	{
-		return self::jsonEncode($js,JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
+		return self::jsonEncode($js, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TJavaScript
 	 * @param boolean wether to encode empty strings too. Default to false for BC.
 	 * @return string the encoded string
 	 */
-	public static function encode($value,$toMap=true,$encodeEmptyStrings=false)
+	public static function encode($value, $toMap=true, $encodeEmptyStrings=false)
 	{
 		if(is_string($value))
 			return self::quoteString($value);
@@ -148,7 +148,7 @@ class TJavaScript
 		elseif(is_array($value))
 		{
 			$results='';
-			if(($n=count($value))>0 && array_keys($value)!==range(0,$n-1))
+			if(($n=count($value))>0 && array_keys($value)!==range(0, $n-1))
 			{
 				foreach($value as $k=>$v)
 				{
@@ -156,7 +156,7 @@ class TJavaScript
 					{
 						if($results!=='')
 							$results.=',';
-						$results.="'$k':" . self::encode($v,$toMap,$encodeEmptyStrings);
+						$results.="'$k':" . self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '{' . $results . '}';
@@ -169,7 +169,7 @@ class TJavaScript
 					{
 						if($results!=='')
 							$results.=',';
-						$results.=self::encode($v,$toMap, $encodeEmptyStrings);
+						$results.=self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '[' . $results . ']';
@@ -200,7 +200,7 @@ class TJavaScript
 			if ($value instanceof TJavaScriptLiteral)
 				return $value->toJavaScriptLiteral();
 			else
-				return self::encode(get_object_vars($value),$toMap);
+				return self::encode(get_object_vars($value), $toMap);
 		elseif($value===null)
 			return 'null';
 		else
@@ -219,7 +219,7 @@ class TJavaScript
 			self::convertToUtf8($value, $enc);
 		}
 
-		$s = @json_encode($value,$options);
+		$s = @json_encode($value, $options);
 		self::checkJsonError();
 		return $s;
 	}

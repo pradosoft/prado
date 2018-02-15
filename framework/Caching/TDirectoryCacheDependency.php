@@ -64,7 +64,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	public function setDirectory($directory)
 	{
 		if(($path=realpath($directory))===false || !is_dir($path))
-			throw new TInvalidDataValueException('directorycachedependency_directory_invalid',$directory);
+			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
 		$this->_directory=$path;
 		$this->_timestamps=$this->generateTimestamps($path);
 	}
@@ -152,10 +152,10 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * @param int level of the recursion
 	 * @return array list of file modification time indexed by the file path
 	 */
-	protected function generateTimestamps($directory,$level=0)
+	protected function generateTimestamps($directory, $level=0)
 	{
 		if(($dir=opendir($directory))===false)
-			throw new TIOException('directorycachedependency_directory_invalid',$directory);
+			throw new TIOException('directorycachedependency_directory_invalid', $directory);
 		$timestamps=[];
 		while(($file=readdir($dir))!==false)
 		{
@@ -165,7 +165,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 			elseif(is_dir($path))
 			{
 				if(($this->_recursiveLevel<0 || $level<$this->_recursiveLevel) && $this->validateDirectory($path))
-					$timestamps=array_merge($this->generateTimestamps($path,$level+1));
+					$timestamps=array_merge($this->generateTimestamps($path, $level+1));
 			}
 			elseif($this->validateFile($path))
 				$timestamps[$path]=filemtime($path);

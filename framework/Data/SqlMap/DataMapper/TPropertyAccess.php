@@ -52,7 +52,7 @@ class TPropertyAccess
 	 * @return mixed property value.
 	 * @throws TInvalidDataValueException if property path is invalid.
 	 */
-	public static function get($object,$path)
+	public static function get($object, $path)
 	{
 		if(!is_array($object) && !is_object($object))
 			return $object;
@@ -64,7 +64,7 @@ class TPropertyAccess
 				if(array_key_exists($prop, $object))
 					$object = $object[$prop];
 				else
-					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
+					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
 			}
 			elseif(is_object($object))
 			{
@@ -76,10 +76,10 @@ class TPropertyAccess
 				elseif(method_exists($object, '__get') && is_callable([$object, '__get']))
 					$object = $object->{$prop};
 				else
-					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
+					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
 			}
 			else
-				throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
+				throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
 		}
 		return $object;
 	}
@@ -133,7 +133,7 @@ class TPropertyAccess
 		$properties = explode('.', $path);
 		$prop = array_pop($properties);
 		if(count($properties) > 0)
-			$object = self::get($originalObject, implode('.',$properties));
+			$object = self::get($originalObject, implode('.', $properties));
 		else
 			$object = &$originalObject;
 
@@ -150,7 +150,7 @@ class TPropertyAccess
 				$object->{$prop} = $value;
 		}
 		else
-			throw new TInvalidPropertyException('sqlmap_invalid_property_type',$path);
+			throw new TInvalidPropertyException('sqlmap_invalid_property_type', $path);
 	}
 
 }

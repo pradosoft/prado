@@ -227,7 +227,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 		// Attributes should be applied on Surrounding tag, except for 'disabled' attribute
 		if ($control instanceof ISurroundable && strtolower($name)!=='disabled')
 			$control=$control->getSurroundingTagID();
-		$this->callClientFunction('Prado.Element.setAttribute',[$control, $name, $value]);
+		$this->callClientFunction('Prado.Element.setAttribute', [$control, $name, $value]);
 	}
 
 	/**

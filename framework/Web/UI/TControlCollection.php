@@ -36,10 +36,10 @@ class TControlCollection extends \Prado\Collections\TList
 	 * @param TControl the control that owns this collection.
 	 * @param boolean whether the list is read-only
 	 */
-	public function __construct(TControl $owner,$readOnly=false)
+	public function __construct(TControl $owner, $readOnly=false)
 	{
 		$this->_o=$owner;
-		parent::__construct(null,$readOnly);
+		parent::__construct(null, $readOnly);
 	}
 
 	/**
@@ -58,15 +58,15 @@ class TControlCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TControl)
 		{
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 			$this->_o->addedControl($item);
 		}
 		elseif(is_string($item) || ($item instanceof IRenderable))
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('controlcollection_control_required');
 	}

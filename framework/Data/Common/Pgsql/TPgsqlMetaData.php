@@ -90,7 +90,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function getSchemaTableName($table)
 	{
-		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
+		if(count($parts= explode('.', str_replace('"', '', $table))) > 1)
 			return [$parts[0], $parts[1]];
 		else
 			return [$this->getDefaultSchema(),$parts[0]];
@@ -103,7 +103,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		list($schemaName, $tableName) = $this->getSchemaTableName($table);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -159,15 +159,15 @@ EOD;
 	 * @param string table name.
 	 * @return TPgsqlTableInfo
 	 */
-	protected function createNewTableInfo($schemaName,$tableName)
+	protected function createNewTableInfo($schemaName, $tableName)
 	{
 		$info['SchemaName'] = $this->assertIdentifier($schemaName);
 		$info['TableName'] = $this->assertIdentifier($tableName);
-		if($this->getIsView($schemaName,$tableName))
+		if($this->getIsView($schemaName, $tableName))
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
-		return new $class($info,$primary,$foreign);
+		return new $class($info, $primary, $foreign);
 	}
 
 	/**
@@ -190,7 +190,7 @@ EOD;
 	 * @param string table name.
 	 * @return boolean true if the table is a view.
 	 */
-	protected function getIsView($schemaName,$tableName)
+	protected function getIsView($schemaName, $tableName)
 	{
 		$sql =
 <<<EOD
@@ -200,7 +200,7 @@ EOD;
 EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':schema',$schemaName);
+		$command->bindValue(':schema', $schemaName);
 		$command->bindValue(':table', $tableName);
 		return intval($command->queryScalar()) === 1;
 	}
@@ -227,7 +227,7 @@ EOD;
 			$info['ColumnSize'] =  $col['atttypmod'] - 4;
 		if($col['atthasdef'])
 			$info['DefaultValue'] = $col['adsrc'];
-		if($col['attisserial'] || substr($col['adsrc'],0,8) === 'nextval(')
+		if($col['attisserial'] || substr($col['adsrc'], 0, 8) === 'nextval(')
 		{
 			if(($sequence = $this->getSequenceName($tableInfo, $col['adsrc']))!==null)
 			{
@@ -238,7 +238,7 @@ EOD;
 		$matches = [];
 		if(preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches))
 		{
-			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/','',$col['type']);
+			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
 			if($this->isPrecisionType($info['DbType']))
 			{
 				$info['NumericPrecision'] = intval($matches[1]);
@@ -257,10 +257,10 @@ EOD;
 	/**
 	 * @return string serial name if found, null otherwise.
 	 */
-	protected function getSequenceName($tableInfo,$src)
+	protected function getSequenceName($tableInfo, $src)
 	{
 		$matches = [];
-		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
+		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i', $src, $matches))
 		{
 			if(is_int(strpos($matches[1], '.')))
 				return $matches[1];
@@ -402,7 +402,7 @@ EOD;
 			$fkeys = [];
 			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
 				$fkeys[$keys[$i]] = $fkey;
-			return ['table' => str_replace('"','',$matches[2]), 'keys' => $fkeys];
+			return ['table' => str_replace('"', '', $matches[2]), 'keys' => $fkeys];
 		}
 	}
 
@@ -436,7 +436,7 @@ SELECT table_name, table_schema FROM information_schema.tables
 WHERE table_schema=:schema AND table_type='BASE TABLE'
 EOD;
 		$command=$this->getDbConnection()->createCommand($sql);
-		$command->bindParam(':schema',$schema);
+		$command->bindParam(':schema', $schema);
 		$rows=$command->queryAll();
 		$names=[];
 		foreach($rows as $row)

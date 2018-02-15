@@ -204,7 +204,7 @@ class TSimpleDateFormatter
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
-	public function parse($value,$defaultToCurrentTime=true)
+	public function parse($value, $defaultToCurrentTime=true)
 	{
 		if(is_int($value) || is_float($value))
 			return $value;
@@ -243,7 +243,7 @@ class TSimpleDateFormatter
 
 		while ($i_format < $pattern_length)
 		{
-			$c = $this->charAt($pattern,$i_format);
+			$c = $this->charAt($pattern, $i_format);
 			$token='';
 			while ($this->charEqual($pattern, $i_format, $c)
 						&& ($i_format < $pattern_length))
@@ -256,7 +256,7 @@ class TSimpleDateFormatter
 				if ($token=='yyyy') { $x=4;$y=4; }
 				if ($token=='yy')   { $x=2;$y=2; }
 				if ($token=='y')    { $x=2;$y=4; }
-				$year = $this->getInteger($value,$i_val,$x,$y);
+				$year = $this->getInteger($value, $i_val, $x, $y);
 				if($year === null)
 					return null;
 					//throw new TInvalidDataValueException('Invalid year', $value);
@@ -274,7 +274,7 @@ class TSimpleDateFormatter
 			elseif($token=='MM' || $token=='M')
 			{
 				$month=$this->getInteger($value,$i_val,
-									$this->length($token),2);
+									$this->length($token), 2);
 				$iMonth = (int)$month;
 				if($month === null || $iMonth < 1 || $iMonth > 12 )
 					return null;
@@ -317,7 +317,7 @@ class TSimpleDateFormatter
 
 			$s = new \DateTime;
 			$s->setDate($year, $month, $day);
-			$s->setTime(0, 0 , 0);
+			$s->setTime(0, 0, 0);
 			return $s->getTimeStamp();
 		}
 	}
@@ -363,12 +363,12 @@ class TSimpleDateFormatter
 	 * @param int maximum integer length
 	 * @return string integer portion of the string, null otherwise
 	 */
-	private function getInteger($str,$i,$minlength,$maxlength)
+	private function getInteger($str, $i, $minlength, $maxlength)
 	{
 		//match for digits backwards
 		for ($x = $maxlength; $x >= $minlength; $x--)
 		{
-			$token= $this->substring($str, $i,$x);
+			$token= $this->substring($str, $i, $x);
 			if ($this->length($token) < $minlength)
 				return null;
 			if (preg_match('/^\d+$/', $token))

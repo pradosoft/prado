@@ -316,9 +316,9 @@ class TFont extends \Prado\TComponent
 		if($this->_flags===0)
 			return;
 		if($this->_flags & self::IS_SET_BOLD)
-			$writer->addStyleAttribute('font-weight',(($this->_flags & self::IS_BOLD)?'bold':'normal'));
+			$writer->addStyleAttribute('font-weight', (($this->_flags & self::IS_BOLD)?'bold':'normal'));
 		if($this->_flags & self::IS_SET_ITALIC)
-			$writer->addStyleAttribute('font-style',(($this->_flags & self::IS_ITALIC)?'italic':'normal'));
+			$writer->addStyleAttribute('font-style', (($this->_flags & self::IS_ITALIC)?'italic':'normal'));
 		$textDec='';
 		if($this->_flags & self::IS_UNDERLINE)
 			$textDec.='underline';
@@ -328,10 +328,10 @@ class TFont extends \Prado\TComponent
 			$textDec.=' line-through';
 		$textDec=ltrim($textDec);
 		if($textDec!=='')
-			$writer->addStyleAttribute('text-decoration',$textDec);
+			$writer->addStyleAttribute('text-decoration', $textDec);
 		if($this->_size!=='')
-			$writer->addStyleAttribute('font-size',$this->_size);
+			$writer->addStyleAttribute('font-size', $this->_size);
 		if($this->_name!=='')
-			$writer->addStyleAttribute('font-family',$this->_name);
+			$writer->addStyleAttribute('font-family', $this->_name);
 	}
 }

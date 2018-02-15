@@ -77,6 +77,6 @@ interface IMappedStatement
 	 * @param object The result object.
 	 * @return object result.
 	 */
-	public function executeQueryForObject($connection,$parameter, $result=null);
+	public function executeQueryForObject($connection, $parameter, $result=null);
 }
 

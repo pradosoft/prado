@@ -33,7 +33,7 @@ class TSqliteTableInfo extends TDbTableInfo
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TSqliteCommandBuilder($connection,$this);
+		return new TSqliteCommandBuilder($connection, $this);
 	}
 
 	/**

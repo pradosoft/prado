@@ -52,7 +52,7 @@ class TMysqlTableInfo extends TDbTableInfo
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TMysqlCommandBuilder($connection,$this);
+		return new TMysqlCommandBuilder($connection, $this);
 	}
 }
 

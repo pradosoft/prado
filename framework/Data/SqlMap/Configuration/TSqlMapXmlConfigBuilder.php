@@ -34,7 +34,7 @@ abstract class TSqlMapXmlConfigBuilder
 		if(isset($node['class']))
 		{
 			$obj = Prado::createComponent((string)$node['class']);
-			$this->setObjectPropFromNode($obj,$node,['class']);
+			$this->setObjectPropFromNode($obj, $node, ['class']);
 			return $obj;
 		}
 		throw new TSqlMapConfigurationException(
@@ -48,11 +48,11 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param SimpleXmlNode property node
 	 * @param array exception property name
 	 */
-	protected function setObjectPropFromNode($obj,$node,$except=[])
+	protected function setObjectPropFromNode($obj, $node, $except=[])
 	{
 		foreach($node->attributes() as $name=>$value)
 		{
-			if(!in_array($name,$except))
+			if(!in_array($name, $except))
 			{
 				if($obj->canSetProperty($name))
 					$obj->{$name} = (string)$value;
@@ -69,7 +69,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param string relative filename
 	 * @return string absolute filename.
 	 */
-	protected function getAbsoluteFilePath($basefile,$resource)
+	protected function getAbsoluteFilePath($basefile, $resource)
 	{
 		$basedir = dirname($basefile);
 		$file = realpath($basedir . DIRECTORY_SEPARATOR . $resource);
@@ -86,7 +86,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param string filename.
 	 * @return SimpleXmlElement xml document.
 	 */
-	protected function loadXmlDocument($filename,TSqlMapXmlConfiguration $config)
+	protected function loadXmlDocument($filename, TSqlMapXmlConfiguration $config)
 	{
 		if( strpos($filename, '${') !== false)
 			$filename = $config->replaceProperties($filename);

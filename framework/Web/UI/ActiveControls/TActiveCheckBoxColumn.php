@@ -43,7 +43,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
 		{
@@ -52,15 +52,15 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 				$checkBox->setEnabled(false);
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
-			$cell->registerObject('CheckBox',$checkBox);
+			$cell->registerObject('CheckBox', $checkBox);
 			if($this->getDataField()!=='')
-				$checkBox->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$checkBox->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 		}
 		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
+			parent::initializeCell($cell, $columnIndex, $itemType);
 	}
 
-	protected function initializeHeaderCell($cell,$columnIndex)
+	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text=$this->getHeaderText();
 

@@ -52,7 +52,7 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	public function getCaptchaControl()
 	{
-		return $this->getViewState('CaptchaControl','');
+		return $this->getViewState('CaptchaControl', '');
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	public function setCaptchaControl($value)
 	{
-		$this->setViewState('CaptchaControl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('CaptchaControl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -89,9 +89,9 @@ class TCaptchaValidator extends TBaseValidator
 		if(($id=$this->getCaptchaControl())==='')
 			throw new TConfigurationException('captchavalidator_captchacontrol_required');
 		elseif(($control=$this->findControl($id))===null)
-			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent',$id);
+			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent', $id);
 		elseif(!($control instanceof TCaptcha))
-			throw new TConfigurationException('captchavalidator_captchacontrol_invalid',$id);
+			throw new TConfigurationException('captchavalidator_captchacontrol_invalid', $id);
 		else
 			return $control;
 	}

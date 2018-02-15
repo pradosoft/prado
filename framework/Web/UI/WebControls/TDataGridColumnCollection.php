@@ -60,12 +60,12 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TDataGridColumn)
 		{
 			$item->setOwner($this->_o);
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		}
 		else
 			throw new TInvalidDataTypeException('datagridcolumncollection_datagridcolumn_required');

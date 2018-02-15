@@ -74,11 +74,11 @@ abstract class TActiveRecordRelation
 	 * @param array method arguments
 	 * @return mixed TActiveRecord or array of TActiveRecord results depending on the method called.
 	 */
-	public function __call($method,$args)
+	public function __call($method, $args)
 	{
 		static $stack=[];
 
-		$results = call_user_func_array([$this->getSourceRecord(),$method],$args);
+		$results = call_user_func_array([$this->getSourceRecord(),$method], $args);
 		$validArray = is_array($results) && count($results) > 0;
 		if($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord)
 		{
@@ -216,7 +216,7 @@ abstract class TActiveRecordRelation
 	 * @param array foreign objects
 	 * @param array foreign object field names.
 	 */
-	protected function populateResult(&$results,$properties,&$fkObjects,$fields)
+	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
 	{
 		$collections=[];
 		foreach($fkObjects as $fkObject)

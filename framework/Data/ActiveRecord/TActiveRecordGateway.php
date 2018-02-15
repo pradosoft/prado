@@ -77,7 +77,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			$value = $class->getConstant(self::TABLE_CONST);
 			if(empty($value))
 				throw new TActiveRecordException('ar_invalid_tablename_property',
-					get_class($record),self::TABLE_CONST);
+					get_class($record), self::TABLE_CONST);
 			return $value;
 		}
 		elseif ($class->hasMethod(self::TABLE_METHOD))
@@ -85,7 +85,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			$value = $record->{self::TABLE_METHOD}();
 			if(empty($value))
 				throw new TActiveRecordException('ar_invalid_tablename_method',
-					get_class($record),self::TABLE_METHOD);
+					get_class($record), self::TABLE_METHOD);
 			return $value;
 		}
 		else
@@ -201,7 +201,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param array primary name value pairs
 	 * @return array record data
 	 */
-	public function findRecordByPK(TActiveRecord $record,$keys)
+	public function findRecordByPK(TActiveRecord $record, $keys)
 	{
 		$command = $this->getCommand($record);
 		return $command->findByPk($keys);
@@ -257,7 +257,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	public function findRecordsByIndex(TActiveRecord $record, $criteria, $fields, $values)
 	{
-		return $this->getCommand($record)->findAllByIndex($criteria,$fields,$values);
+		return $this->getCommand($record)->findAllByIndex($criteria, $fields, $values);
 	}
 
 	/**
@@ -297,7 +297,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 		foreach($tableInfo->getColumns() as $name => $column)
 		{
 			if($column->hasSequence())
-				$record->setColumnValue($name,$command->getLastInsertID($column->getSequenceName()));
+				$record->setColumnValue($name, $command->getLastInsertID($column->getSequenceName()));
 		}
 	}
 
@@ -364,7 +364,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 		return [$values,$primary];
 	}
 
-	protected function updateAssociatedRecords(TActiveRecord $record,$updateBelongsTo=false)
+	protected function updateAssociatedRecords(TActiveRecord $record, $updateBelongsTo=false)
 	{
 		$context = new TActiveRecordRelationContext($record);
 		return $context->updateAssociatedRecords($updateBelongsTo);
@@ -420,11 +420,11 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record
 	 * @param TActiveRecordCriteria data for the command.
 	 */
-	protected function raiseCommandEvent($event,$command,$record,$criteria)
+	protected function raiseCommandEvent($event, $command, $record, $criteria)
 	{
 		if(!($criteria instanceof TSqlCriteria))
-			$criteria = new TActiveRecordCriteria(null,$criteria);
-		$param = new TActiveRecordEventParameter($command,$record,$criteria);
+			$criteria = new TActiveRecordCriteria(null, $criteria);
+		$param = new TActiveRecordEventParameter($command, $record, $criteria);
 		$manager = $record->getRecordManager();
 		$manager->{$event}($param);
 		$record->{$event}($param);

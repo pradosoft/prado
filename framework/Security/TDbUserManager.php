@@ -63,9 +63,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	{
 		if($this->_userClass==='')
 			throw new TConfigurationException('dbusermanager_userclass_required');
-		$this->_userFactory=Prado::createComponent($this->_userClass,$this);
+		$this->_userFactory=Prado::createComponent($this->_userClass, $this);
 		if(!($this->_userFactory instanceof TDbUser))
-			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid',$this->_userClass);
+			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
 	}
 
 	/**
@@ -106,9 +106,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * @param string password
 	 * @return boolean true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username,$password)
+	public function validateUser($username, $password)
 	{
-		return $this->_userFactory->validateUser($username,$password);
+		return $this->_userFactory->validateUser($username, $password);
 	}
 
 	/**
@@ -120,7 +120,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	{
 		if($username===null)
 		{
-			$user=Prado::createComponent($this->_userClass,$this);
+			$user=Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
 			return $user;
 		}
@@ -174,7 +174,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 			if($conn instanceof TDataSourceConfig)
 				return $conn->getDbConnection();
 			else
-				throw new TConfigurationException('dbusermanager_connectionid_invalid',$connectionID);
+				throw new TConfigurationException('dbusermanager_connectionid_invalid', $connectionID);
 		}
 		else
 			throw new TConfigurationException('dbusermanager_connectionid_required');

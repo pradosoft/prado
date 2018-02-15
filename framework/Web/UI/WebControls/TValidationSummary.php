@@ -59,7 +59,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getDisplay()
 	{
-		return $this->getViewState('Display',TValidationSummaryDisplayStyle::Fixed);
+		return $this->getViewState('Display', TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayStyle'),TValidationSummaryDisplayStyle::Fixed);
+		$this->setViewState('Display', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayStyle'), TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
@@ -75,7 +75,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHeaderText()
 	{
-		return $this->getViewState('HeaderText','');
+		return $this->getViewState('HeaderText', '');
 	}
 
 	/**
@@ -84,7 +84,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setHeaderText($value)
 	{
-		$this->setViewState('HeaderText',$value,'');
+		$this->setViewState('HeaderText', $value, '');
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getDisplayMode()
 	{
-		return $this->getViewState('DisplayMode',TValidationSummaryDisplayMode::BulletList);
+		return $this->getViewState('DisplayMode', TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayMode'),TValidationSummaryDisplayMode::BulletList);
+		$this->setViewState('DisplayMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayMode'), TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
@@ -108,7 +108,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -124,7 +124,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowMessageBox()
 	{
-		return $this->getViewState('ShowMessageBox',false);
+		return $this->getViewState('ShowMessageBox', false);
 	}
 
 	/**
@@ -132,7 +132,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setShowMessageBox($value)
 	{
-		$this->setViewState('ShowMessageBox',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowMessageBox', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowSummary()
 	{
-		return $this->getViewState('ShowSummary',true);
+		return $this->getViewState('ShowSummary', true);
 	}
 
 	/**
@@ -148,7 +148,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setShowSummary($value)
 	{
-		$this->setViewState('ShowSummary',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowSummary', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -156,7 +156,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getScrollToSummary()
 	{
-		return $this->getViewState('ScrollToSummary',true);
+		return $this->getViewState('ScrollToSummary', true);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setScrollToSummary($value)
 	{
-		$this->setViewState('ScrollToSummary',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ScrollToSummary', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -172,7 +172,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowAnchor()
 	{
-		return $this->getViewState('ShowAnchor',false);
+		return $this->getViewState('ShowAnchor', false);
 	}
 
 	/**
@@ -180,7 +180,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setShowAnchor($value)
 	{
-		$this->setViewState('ShowAnchor',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowAnchor', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -206,7 +206,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -214,7 +214,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	protected function addAttributesToRender($writer)
@@ -224,11 +224,11 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		if(!$visible)
 		{
 			if($display===TValidationSummaryDisplayStyle::None || $display===TValidationSummaryDisplayStyle::Dynamic)
-				$writer->addStyleAttribute('display','none');
+				$writer->addStyleAttribute('display', 'none');
 			else
-				$writer->addStyleAttribute('visibility','hidden');
+				$writer->addStyleAttribute('visibility', 'hidden');
 		}
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -282,7 +282,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		$options['Display'] = $this->getDisplay();
 
 		if($this->_clientSide!==null)
-			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
+			$options = array_merge($options, $this->_clientSide->getOptions()->toArray());
 
 		return $options;
 	}

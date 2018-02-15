@@ -72,7 +72,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 		$code = isset(self::$_keyCodes[$key]) ? self::$_keyCodes[$key] : 74;
 		$js = "var logConsole; jQuery(function() { logConsole = new LogConsole($code)}); ";
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerBeginScript($this->getClientID(),$js);
+		$cs->registerBeginScript($this->getClientID(), $js);
 		$cs->registerPradoScript('logger');
 	}
 

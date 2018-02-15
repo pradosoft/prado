@@ -46,7 +46,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getBottom()
 	{
-		return $this->getViewState('Bottom',0);
+		return $this->getViewState('Bottom', 0);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function setBottom($value)
 	{
-		$this->setViewState('Bottom',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Bottom', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getLeft()
 	{
-		return $this->getViewState('Left',0);
+		return $this->getViewState('Left', 0);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function setLeft($value)
 	{
-		$this->setViewState('Left',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Left', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getRight()
 	{
-		return $this->getViewState('Right',0);
+		return $this->getViewState('Right', 0);
 	}
 
 	/**
@@ -86,7 +86,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function setRight($value)
 	{
-		$this->setViewState('Right',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Right', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getTop()
 	{
-		return $this->getViewState('Top',0);
+		return $this->getViewState('Top', 0);
 	}
 
 	/**
@@ -102,6 +102,6 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function setTop($value)
 	{
-		$this->setViewState('Top',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Top', TPropertyValue::ensureInteger($value), 0);
 	}
 }

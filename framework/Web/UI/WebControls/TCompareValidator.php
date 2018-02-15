@@ -61,7 +61,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType',TValidationDataType::String);
+		return $this->getViewState('DataType', TValidationDataType::String);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationDataType'),TValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationDataType'), TValidationDataType::String);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getControlToCompare()
 	{
-		return $this->getViewState('ControlToCompare','');
+		return $this->getViewState('ControlToCompare', '');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setControlToCompare($value)
 	{
-		$this->setViewState('ControlToCompare',$value,'');
+		$this->setViewState('ControlToCompare', $value, '');
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getValueToCompare()
 	{
-		return $this->getViewState('ValueToCompare','');
+		return $this->getViewState('ValueToCompare', '');
 	}
 
 	/**
@@ -105,7 +105,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setValueToCompare($value)
 	{
-		$this->setViewState('ValueToCompare',$value,'');
+		$this->setViewState('ValueToCompare', $value, '');
 	}
 
 	/**
@@ -113,7 +113,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getOperator()
 	{
-		return $this->getViewState('Operator',TValidationCompareOperator::Equal);
+		return $this->getViewState('Operator', TValidationCompareOperator::Equal);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function setOperator($value)
 	{
-		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationCompareOperator'),TValidationCompareOperator::Equal);
+		$this->setViewState('Operator', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationCompareOperator'), TValidationCompareOperator::Equal);
 	}
 
 	/**

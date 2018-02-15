@@ -110,10 +110,10 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	{
 		if(($id=$this->getCallbackOptions())!=='')
 		{
-			if(($pos=strrpos($id,'.'))!==false)
+			if(($pos=strrpos($id, '.'))!==false)
 			{
-				$control=$this->getControl()->getSubProperty(substr($id,0,$pos));
-				$newid=substr($id,$pos+1);
+				$control=$this->getControl()->getSubProperty(substr($id, 0, $pos));
+				$newid=substr($id, $pos+1);
 				if ($control!==null)
 					$control=$control->$newid;
 			}
@@ -139,7 +139,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getOption('CausesValidation',true);
+		return $this->getOption('CausesValidation', true);
 	}
 
 	/**
@@ -148,7 +148,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setOption('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setOption('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -157,7 +157,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getOption('ValidationGroup','');
+		return $this->getOption('ValidationGroup', '');
 	}
 
 	/**
@@ -166,7 +166,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setOption('ValidationGroup',$value,'');
+		$this->setOption('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -207,7 +207,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	protected function getClientSideOptions()
 	{
 		$default = $this->getDefaultClientSideOptions();
-		$options = array_merge($default,$this->getClientSide()->getOptions()->toArray());
+		$options = array_merge($default, $this->getClientSide()->getOptions()->toArray());
 		$validate = $this->getCausesValidation();
 		$options['CausesValidation']= $validate ? '' : false;
 		$options['ValidationGroup']=$this->getValidationGroup();
@@ -227,11 +227,11 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * @param string client side javascript class name.
 	 * @param array additional callback options.
 	 */
-	public function registerCallbackClientScript($class,$options=null)
+	public function registerCallbackClientScript($class, $options=null)
 	{
 		$cs = $this->getPage()->getClientScript();
 		if(is_array($options))
-			$options = array_merge($this->getClientSideOptions(),$options);
+			$options = array_merge($this->getClientSideOptions(), $options);
 		else
 			$options = $this->getClientSideOptions();
 
@@ -263,7 +263,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	public function getJavascript()
 	{
 		$client = $this->getPage()->getClientScript();
-		return $client->getCallbackReference($this->getControl(),$this->getClientSideOptions());
+		return $client->getCallbackReference($this->getControl(), $this->getClientSideOptions());
 	}
 
 	/**

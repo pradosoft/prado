@@ -52,7 +52,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function getItemRenderer()
 	{
-		return $this->getViewState('ItemRenderer','');
+		return $this->getViewState('ItemRenderer', '');
 	}
 
 	/**
@@ -71,7 +71,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function setItemRenderer($value)
 	{
-		$this->setViewState('ItemRenderer',$value,'');
+		$this->setViewState('ItemRenderer', $value, '');
 	}
 
 	/**
@@ -80,7 +80,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function getEditItemRenderer()
 	{
-		return $this->getViewState('EditItemRenderer','');
+		return $this->getViewState('EditItemRenderer', '');
 	}
 
 	/**
@@ -99,7 +99,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function setEditItemRenderer($value)
 	{
-		$this->setViewState('EditItemRenderer',$value,'');
+		$this->setViewState('EditItemRenderer', $value, '');
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function getDataField()
 	{
-		return $this->getViewState('DataField','');
+		return $this->getViewState('DataField', '');
 	}
 
 	/**
@@ -115,7 +115,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function setDataField($value)
 	{
-		$this->setViewState('DataField',$value,'');
+		$this->setViewState('DataField', $value, '');
 	}
 
 	/**
@@ -123,7 +123,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function getDataFormatString()
 	{
-		return $this->getViewState('DataFormatString','');
+		return $this->getViewState('DataFormatString', '');
 	}
 
 	/**
@@ -131,7 +131,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function setDataFormatString($value)
 	{
-		$this->setViewState('DataFormatString',$value,'');
+		$this->setViewState('DataFormatString', $value, '');
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TBoundColumn extends TDataGridColumn
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -161,7 +161,7 @@ class TBoundColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		$item=$cell->getParent();
 		switch($itemType)
@@ -181,7 +181,7 @@ class TBoundColumn extends TDataGridColumn
 				}
 				else
 					$control=$cell;
-				$control->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			case TListItemType::EditItem:
 				if(!$this->getReadOnly())
@@ -195,13 +195,13 @@ class TBoundColumn extends TDataGridColumn
 							$control->setItemType($item->getItemType());
 						}
 						$cell->getControls()->add($control);
-						$cell->registerObject('EditControl',$control);
+						$cell->registerObject('EditControl', $control);
 					}
 					else
 					{
 						$control= new TTextBox;
 						$cell->getControls()->add($control);
-						$cell->registerObject('TextBox',$control);
+						$cell->registerObject('TextBox', $control);
 					}
 				}
 				else
@@ -219,10 +219,10 @@ class TBoundColumn extends TDataGridColumn
 					else
 						$control=$cell;
 				}
-				$control->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			default:
-				parent::initializeCell($cell,$columnIndex,$itemType);
+				parent::initializeCell($cell, $columnIndex, $itemType);
 				break;
 		}
 	}
@@ -232,15 +232,15 @@ class TBoundColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
 		$item=$sender->getNamingContainer();
 		$data=$item->getData();
 		$formatString=$this->getDataFormatString();
 		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
+			$value=$this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
 		else
-			$value=$this->formatDataValue($formatString,$data);
+			$value=$this->formatDataValue($formatString, $data);
 		$sender->setData($value);
 	}
 }

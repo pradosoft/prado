@@ -83,7 +83,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 */
 	public function getMediaType()
 	{
-		return $this->getViewState('MediaType','');
+		return $this->getViewState('MediaType', '');
 	}
 
 	/**
@@ -91,7 +91,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 */
 	public function setMediaType($value)
 	{
-		$this->setViewState('MediaType',$value,'');
+		$this->setViewState('MediaType', $value, '');
 	}
 
 	/**
@@ -111,7 +111,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 		}
 
 		if(($url=$this->getStyleSheetUrl())!=='')
-			$cs->registerStyleSheetFile($url,$url,$this->getMediaType());
+			$cs->registerStyleSheetFile($url, $url, $this->getMediaType());
 	}
 
 	/**

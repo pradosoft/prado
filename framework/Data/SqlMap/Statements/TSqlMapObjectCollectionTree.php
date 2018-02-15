@@ -202,6 +202,6 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 		if (!count($this->_tree)) $exprops[] = "\0$cn\0_tree";
 		if (!count($this->_entries)) $exprops[] = "\0$cn\0_entries";
 		if (!count($this->_list)) $exprops[] = "\0$cn\0_list";
-		return array_diff(parent::__sleep(),$exprops);
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }

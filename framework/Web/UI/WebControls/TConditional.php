@@ -82,15 +82,15 @@ class TConditional extends \Prado\Web\UI\TControl
 		}
 		catch(\Exception $e)
 		{
-			throw new TInvalidDataValueException('conditional_condition_invalid',$this->_condition,$e->getMessage());
+			throw new TInvalidDataValueException('conditional_condition_invalid', $this->_condition, $e->getMessage());
 		}
 		if($result)
 		{
 			if($this->_trueTemplate)
-				$this->_trueTemplate->instantiateIn($this->getTemplateControl(),$this);
+				$this->_trueTemplate->instantiateIn($this->getTemplateControl(), $this);
 		}
 		elseif($this->_falseTemplate)
-			$this->_falseTemplate->instantiateIn($this->getTemplateControl(),$this);
+			$this->_falseTemplate->instantiateIn($this->getTemplateControl(), $this);
 		$this->_creatingChildren=false;
 	}
 

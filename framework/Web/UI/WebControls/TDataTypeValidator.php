@@ -50,7 +50,7 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType','String');
+		return $this->getViewState('DataType', 'String');
 	}
 
 	/**
@@ -59,7 +59,7 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationDataType'),TValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationDataType'), TValidationDataType::String);
 	}
 
 	/**
@@ -93,9 +93,9 @@ class TDataTypeValidator extends TBaseValidator
 		switch($this->getDataType())
 		{
 			case TValidationDataType::Integer:
-				return preg_match('/^[-+]?[0-9]+$/',trim($value));
+				return preg_match('/^[-+]?[0-9]+$/', trim($value));
 			case TValidationDataType::Float:
-				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
+				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
 				if(strlen($dateFormat))

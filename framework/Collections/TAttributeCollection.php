@@ -77,9 +77,9 @@ class TAttributeCollection extends TMap
 	 * @param mixed the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
-		$this->add($name,$value);
+		$this->add($name, $value);
 	}
 
 	/**
@@ -116,9 +116,9 @@ class TAttributeCollection extends TMap
 	 * @param mixed key
 	 * @param mixed value
 	 */
-	public function add($key,$value)
+	public function add($key, $value)
 	{
-		parent::add($this->_caseSensitive?$key:strtolower($key),$value);
+		parent::add($this->_caseSensitive?$key:strtolower($key), $value);
 	}
 
 	/**

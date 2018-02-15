@@ -114,13 +114,13 @@ class TTableItemStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(!$this->getWrap())
-			$writer->addStyleAttribute('white-space','nowrap');
+			$writer->addStyleAttribute('white-space', 'nowrap');
 
 		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
-			$writer->addAttribute('align',strtolower($horizontalAlign));
+			$writer->addAttribute('align', strtolower($horizontalAlign));
 
 		if(($verticalAlign=$this->getVerticalAlign())!==TVerticalAlign::NotSet)
-			$writer->addAttribute('valign',strtolower($verticalAlign));
+			$writer->addAttribute('valign', strtolower($verticalAlign));
 
 		parent::addAttributesToRender($writer);
 	}
@@ -139,7 +139,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
 	}
 
 	/**
@@ -156,7 +156,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function setVerticalAlign($value)
 	{
-		$this->_verticalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TVerticalAlign');
+		$this->_verticalAlign=TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TVerticalAlign');
 	}
 
 	/**

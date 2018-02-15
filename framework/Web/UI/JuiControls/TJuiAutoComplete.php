@@ -212,7 +212,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getMinChars()
 	{
-		return $this->getViewState('minChars','');
+		return $this->getViewState('minChars', '');
 	}
 
 	/**
@@ -334,7 +334,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	protected function createRepeater()
 	{
 		$repeater = new TRepeater;
-		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>',null));
+		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>', null));
 		$this->getControls()->add($repeater);
 		return $repeater;
 	}
@@ -400,7 +400,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 		if($this->getAutoPostBack())
 		{
-			$options = array_merge($options,parent::getPostBackOptions());
+			$options = array_merge($options, parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
 		if(strlen($textCssClass = $this->getTextCssClass()))

@@ -30,7 +30,7 @@ interface IPostBackDataHandler
 	 * @param array the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values);
+	public function loadPostData($key, $values);
 	/**
 	 * Raises postdata changed event.
 	 * The implementation of this function should raise appropriate event(s) (e.g. OnTextChanged)

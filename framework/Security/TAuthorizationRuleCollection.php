@@ -30,14 +30,14 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 * @param string the request IP address
 	 * @return boolean whether the user is allowed
 	 */
-	public function isUserAllowed($user,$verb,$ip)
+	public function isUserAllowed($user, $verb, $ip)
 	{
 		if($user instanceof IUser)
 		{
 			$verb=strtolower(trim($verb));
 			foreach($this as $rule)
 			{
-				if(($decision=$rule->isUserAllowed($user,$verb,$ip))!==0)
+				if(($decision=$rule->isUserAllowed($user, $verb, $ip))!==0)
 					return ($decision>0);
 			}
 			return true;
@@ -54,10 +54,10 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TAuthorizationRule object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TAuthorizationRule)
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 		else
 			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
 	}

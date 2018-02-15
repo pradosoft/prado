@@ -82,7 +82,7 @@ class TChoiceFormat extends TTranslate
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
@@ -91,7 +91,7 @@ class TChoiceFormat extends TTranslate
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**

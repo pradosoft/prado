@@ -60,7 +60,7 @@ class TLazyLoadList
 		$registry=$mappedStatement->getManager()->getTypeHandlers();
 		$list = $statement->createInstanceOfListClass($registry);
 		if(!is_object($list))
-			throw new TSqlMapExecutionException('sqlmap_invalid_lazyload_list',$statement->getID());
+			throw new TSqlMapExecutionException('sqlmap_invalid_lazyload_list', $statement->getID());
 		return new TObjectProxy($handler, $list);
 	}
 
@@ -81,7 +81,7 @@ class TLazyLoadList
 	{
 		if($this->_loaded == false)
 		{
-			$this->_innerList = $this->_statement->executeQueryForList($this->_connection,$this->_param);
+			$this->_innerList = $this->_statement->executeQueryForList($this->_connection, $this->_param);
 			$this->_loaded = true;
 			//replace the target property with real list
 			TPropertyAccess::set($this->_target, $this->_propertyName, $this->_innerList);

@@ -48,12 +48,12 @@ class TForm extends TControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
-		$writer->addAttribute('method',$this->getMethod());
+		$writer->addAttribute('id', $this->getClientID());
+		$writer->addAttribute('method', $this->getMethod());
 		$uri=$this->getRequest()->getRequestURI();
-		$writer->addAttribute('action',str_replace('&','&amp;',str_replace('&amp;','&',$uri)));
+		$writer->addAttribute('action', str_replace('&', '&amp;', str_replace('&amp;', '&', $uri)));
 		if(($enctype=$this->getEnctype())!=='')
-			$writer->addAttribute('enctype',$enctype);
+			$writer->addAttribute('enctype', $enctype);
 
 		$attributes=$this->getAttributes();
 		$attributes->remove('action');
@@ -64,7 +64,7 @@ class TForm extends TControl
 			if(($button=$this->findControl($butt))!==null)
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
 			else
-				throw new TInvalidDataValueException('form_defaultbutton_invalid',$butt);
+				throw new TInvalidDataValueException('form_defaultbutton_invalid', $butt);
 		}
 	}
 
@@ -113,7 +113,7 @@ class TForm extends TControl
 	 */
 	public function getDefaultButton()
 	{
-		return $this->getViewState('DefaultButton','');
+		return $this->getViewState('DefaultButton', '');
 	}
 
 	/**
@@ -124,7 +124,7 @@ class TForm extends TControl
 	 */
 	public function setDefaultButton($value)
 	{
-		$this->setViewState('DefaultButton',$value,'');
+		$this->setViewState('DefaultButton', $value, '');
 	}
 
 	/**
@@ -132,7 +132,7 @@ class TForm extends TControl
 	 */
 	public function getMethod()
 	{
-		return $this->getViewState('Method','post');
+		return $this->getViewState('Method', 'post');
 	}
 
 	/**
@@ -140,7 +140,7 @@ class TForm extends TControl
 	 */
 	public function setMethod($value)
 	{
-		$this->setViewState('Method',TPropertyValue::ensureEnum($value,'post','get'),'post');
+		$this->setViewState('Method', TPropertyValue::ensureEnum($value, 'post', 'get'), 'post');
 	}
 
 	/**
@@ -148,7 +148,7 @@ class TForm extends TControl
 	 */
 	public function getEnctype()
 	{
-		return $this->getViewState('Enctype','');
+		return $this->getViewState('Enctype', '');
 	}
 
 	/**
@@ -160,7 +160,7 @@ class TForm extends TControl
 	 */
 	public function setEnctype($value)
 	{
-		$this->setViewState('Enctype',$value,'');
+		$this->setViewState('Enctype', $value, '');
 	}
 
 	/**

@@ -37,7 +37,7 @@ class TSqlMapException extends TException
 			else
 				$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($errorMessage,$tokens));
+		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
 	/**
@@ -49,7 +49,7 @@ class TSqlMapException extends TException
 		$attributes=[];
 		foreach($node->attributes() as $k=>$v)
 			$attributes[]=$k . '="' . (string)$v . '"';
-		return '<' . $node->getName() . ' ' . implode(' ',$attributes) . '>';
+		return '<' . $node->getName() . ' ' . implode(' ', $attributes) . '>';
 	}
 
 	/**

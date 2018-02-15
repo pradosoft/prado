@@ -62,7 +62,7 @@ class TOracleMetaData extends TDbMetaData
 	 */
 	protected function getSchemaTableName($table)
 	{
-		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
+		if(count($parts= explode('.', str_replace('"', '', $table))) > 1)
 			return [$parts[0], $parts[1]];
 		else
 			return [$this->getDefaultSchema(),$parts[0]];
@@ -75,7 +75,7 @@ class TOracleMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		list($schemaName, $tableName) = $this->getSchemaTableName($table);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -120,15 +120,15 @@ EOD;
 	 * @param string table name.
 	 * @return TOracleTableInfo
 	 */
-	protected function createNewTableInfo($schemaName,$tableName)
+	protected function createNewTableInfo($schemaName, $tableName)
 	{
 		$info['SchemaName'] = $this->assertIdentifier($schemaName);
 		$info['TableName']	= $this->assertIdentifier($tableName);
 		$info['IsView'] 	= false;
-		if($this->getIsView($schemaName,$tableName)) $info['IsView'] = true;
+		if($this->getIsView($schemaName, $tableName)) $info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
-		return new $class($info,$primary,$foreign);
+		return new $class($info, $primary, $foreign);
 	}
 
 	/**
@@ -151,7 +151,7 @@ EOD;
 	 * @param string table name.
 	 * @return boolean true if the table is a view.
 	 */
-	protected function getIsView($schemaName,$tableName)
+	protected function getIsView($schemaName, $tableName)
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$sql =
@@ -201,7 +201,7 @@ EOD;
 		$matches = [];
 		if(preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches))
 		{
-			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/','',$col['type']);
+			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
 			if($this->isPrecisionType($info['DbType']))
 			{
 				$info['NumericPrecision'] = intval($matches[1]);
@@ -219,10 +219,10 @@ EOD;
 	/**
 	 * @return string serial name if found, null otherwise.
 	 */
-	protected function getSequenceName($tableInfo,$src)
+	protected function getSequenceName($tableInfo, $src)
 	{
 		$matches = [];
-		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
+		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i', $src, $matches))
 		{
 			if(is_int(strpos($matches[1], '.')))
 				return $matches[1];
@@ -299,7 +299,7 @@ EOD;
 	{
 		$matches = [];
 		if(preg_match('/PRIMARY\s+KEY\s+\(([^\)]+)\)/i', $src, $matches))
-			return preg_split('/,\s+/',$matches[1]);
+			return preg_split('/,\s+/', $matches[1]);
 		return [];
 	}
 
@@ -319,7 +319,7 @@ EOD;
 			$fkeys = [];
 			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
 				$fkeys[$keys[$i]] = $fkey;
-			return ['table' => str_replace('"','',$matches[2]), 'keys' => $fkeys];
+			return ['table' => str_replace('"', '', $matches[2]), 'keys' => $fkeys];
 		}
 	}
 
@@ -361,7 +361,7 @@ SELECT object_name as table_name, owner as table_schema FROM all_objects
 WHERE object_type = 'TABLE' AND owner=:schema
 EOD;
 			$command=$this->getDbConnection()->createCommand($sql);
-			$command->bindParam(':schema',$schema);
+			$command->bindParam(':schema', $schema);
 		}
 
 		$rows=$command->queryAll();

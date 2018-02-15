@@ -44,7 +44,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',true);
+		return $this->getViewState('AutoPostBack', true);
 	}
 
 	/**
@@ -55,7 +55,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**

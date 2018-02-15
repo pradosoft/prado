@@ -118,7 +118,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	protected function loadTemplate()
 	{
-		Prado::trace("Loading template " . get_class($this),'\Prado\Web\UI\TTemplateControl');
+		Prado::trace("Loading template " . get_class($this), '\Prado\Web\UI\TTemplateControl');
 		$template=$this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
 		return $template;
 	}
@@ -135,9 +135,9 @@ class TTemplateControl extends TCompositeControl
 			foreach($tpl->getDirective() as $name=>$value)
 			{
 				if(is_string($value))
-					$this->setSubProperty($name,$value);
+					$this->setSubProperty($name, $value);
 				else
-					throw new TConfigurationException('templatecontrol_directive_invalid',get_class($this),$name);
+					throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
 			}
 			$tpl->instantiateIn($this);
 		}
@@ -148,10 +148,10 @@ class TTemplateControl extends TCompositeControl
 	 * @param string ID of the content
 	 * @param TContent
 	 */
-	public function registerContent($id,TContent $object)
+	public function registerContent($id, TContent $object)
 	{
 		if(isset($this->_contents[$id]))
-			throw new TConfigurationException('templatecontrol_contentid_duplicated',$id);
+			throw new TConfigurationException('templatecontrol_contentid_duplicated', $id);
 		else
 			$this->_contents[$id]=$object;
 	}
@@ -162,10 +162,10 @@ class TTemplateControl extends TCompositeControl
 	 * @param string placeholder ID
 	 * @param TContentPlaceHolder placeholder control
 	 */
-	public function registerContentPlaceHolder($id,TContentPlaceHolder $object)
+	public function registerContentPlaceHolder($id, TContentPlaceHolder $object)
 	{
 		if(isset($this->_placeholders[$id]))
-			throw new TConfigurationException('templatecontrol_placeholderid_duplicated',$id);
+			throw new TConfigurationException('templatecontrol_placeholderid_duplicated', $id);
 		else
 			$this->_placeholders[$id]=$object;
 	}
@@ -200,17 +200,17 @@ class TTemplateControl extends TCompositeControl
 	 * @param string ID of the content control
 	 * @param TContent the content to be injected
 	 */
-	public function injectContent($id,$content)
+	public function injectContent($id, $content)
 	{
 		if(isset($this->_placeholders[$id]))
 		{
 			$placeholder=$this->_placeholders[$id];
 			$controls=$placeholder->getParent()->getControls();
 			$loc=$controls->remove($placeholder);
-			$controls->insertAt($loc,$content);
+			$controls->insertAt($loc, $content);
 		}
 		else
-			throw new TConfigurationException('templatecontrol_placeholder_inexistent',$id);
+			throw new TConfigurationException('templatecontrol_placeholder_inexistent', $id);
 	}
 
 	/**
@@ -234,10 +234,10 @@ class TTemplateControl extends TCompositeControl
 			$this->getControls()->add($master);
 			$master->ensureChildControls();
 			foreach($this->_contents as $id=>$content)
-				$master->injectContent($id,$content);
+				$master->injectContent($id, $content);
 		}
 		elseif(!empty($this->_contents))
-			throw new TConfigurationException('templatecontrol_mastercontrol_required',get_class($this));
+			throw new TConfigurationException('templatecontrol_mastercontrol_required', get_class($this));
 		parent::initRecursive($namingContainer);
 	}
 		

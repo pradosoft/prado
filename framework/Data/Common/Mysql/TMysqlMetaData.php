@@ -80,7 +80,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		list($schemaName, $tableName) = $this->getSchemaTableName($table);
 		$find = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$colCase = $this->getDbConnection()->getColumnCase();
 		if($colCase != TDbColumnCaseMode::Preserved)
@@ -93,7 +93,7 @@ class TMysqlMetaData extends TDbMetaData
 		foreach($command->query() as $col)
 		{
 			$col['index'] = $index++;
-			$this->processColumn($tableInfo,$col);
+			$this->processColumn($tableInfo, $col);
 		}
 		if($index===0)
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
@@ -226,14 +226,14 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function createNewTableInfo($table)
 	{
-		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		list($schemaName, $tableName) = $this->getSchemaTableName($table);
 		$info['SchemaName'] = $schemaName;
 		$info['TableName'] = $tableName;
-		if($this->getIsView($schemaName,$tableName))
+		if($this->getIsView($schemaName, $tableName))
 			$info['IsView'] = true;
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
-		return new $class($info,$primary,$foreign);
+		return new $class($info, $primary, $foreign);
 	}
 
 	/**
@@ -246,7 +246,7 @@ class TMysqlMetaData extends TDbMetaData
 	 * @return boolean true if is view, false otherwise.
 	 * @throws TDbException if table or view does not exist.
 	 */
-	protected function getIsView($schemaName,$tableName)
+	protected function getIsView($schemaName, $tableName)
 	{
 		if($this->getServerVersion()<5.01)
 			return false;
@@ -264,7 +264,7 @@ class TMysqlMetaData extends TDbMetaData
 		catch(TDbException $e)
 		{
 			$table = $schemaName===null?$tableName:$schemaName . '.' . $tableName;
-			throw new TDbException('dbcommon_invalid_table_name',$table,$e->getMessage());
+			throw new TDbException('dbcommon_invalid_table_name', $table, $e->getMessage());
 		}
 	}
 
@@ -288,9 +288,9 @@ class TMysqlMetaData extends TDbMetaData
 				// MySQL version was increased to >=5.1.21 instead of 5.x
 				// due to a MySQL bug (http://bugs.mysql.com/bug.php?id=19588)
 		if($this->getServerVersion() >= 5.121)
-			$foreign = $this->getForeignConstraints($schemaName,$tableName);
+			$foreign = $this->getForeignConstraints($schemaName, $tableName);
 		else
-			$foreign = $this->findForeignConstraints($schemaName,$tableName);
+			$foreign = $this->findForeignConstraints($schemaName, $tableName);
 		return [$primary,$foreign];
 	}
 
@@ -338,7 +338,7 @@ EOD;
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
 	{
-		if(version_compare(PHP_VERSION,'5.1.3','<'))
+		if(version_compare(PHP_VERSION, '5.1.3', '<'))
 			throw new TDbException('dbmetadata_requires_php_version', 'Mysql 4.1.x', '5.1.3');
 
 		//See http://netevil.org/node.php?nid=795&SC=1
@@ -363,12 +363,12 @@ EOD;
 		$sql = $this->getShowCreateTable($schemaName, $tableName);
 		$matches =[];
 		$regexp = '/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+`?([^`]+)`?\s\(([^\)]+)\)/mi';
-		preg_match_all($regexp,$sql,$matches,PREG_SET_ORDER);
+		preg_match_all($regexp, $sql, $matches, PREG_SET_ORDER);
 		$foreign = [];
 		foreach($matches as $match)
 		{
-			$fields = array_map('trim',explode(',',str_replace('`','',$match[1])));
-			$fk_fields = array_map('trim',explode(',',str_replace('`','',$match[3])));
+			$fields = array_map('trim', explode(',', str_replace('`', '', $match[1])));
+			$fk_fields = array_map('trim', explode(',', str_replace('`', '', $match[3])));
 			$keys=[];
 			foreach($fields as $k=>$v)
 				$keys[$v] = $fk_fields[$k];

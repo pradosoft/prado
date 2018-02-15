@@ -94,7 +94,7 @@ class TThemeManager extends \Prado\TModule
 	public function getTheme($name)
 	{
 		$themePath=$this->getBasePath() . DIRECTORY_SEPARATOR . $name;
-		$themeUrl=rtrim($this->getBaseUrl(),'/') . '/' . $name;
+		$themeUrl=rtrim($this->getBaseUrl(), '/') . '/' . $name;
 		return Prado::createComponent($this->getThemeClass(), $themePath, $themeUrl);
 	}
 
@@ -139,7 +139,7 @@ class TThemeManager extends \Prado\TModule
 		{
 			$this->_basePath=dirname($this->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
 			if(($basePath=realpath($this->_basePath))===false || !is_dir($basePath))
-				throw new TConfigurationException('thememanager_basepath_invalid2',$this->_basePath);
+				throw new TConfigurationException('thememanager_basepath_invalid2', $this->_basePath);
 			$this->_basePath=$basePath;
 		}
 		return $this->_basePath;
@@ -157,7 +157,7 @@ class TThemeManager extends \Prado\TModule
 		{
 			$this->_basePath=Prado::getPathOfNamespace($value);
 			if($this->_basePath===null || !is_dir($this->_basePath))
-				throw new TInvalidDataValueException('thememanager_basepath_invalid',$value);
+				throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
 		}
 	}
 
@@ -171,10 +171,10 @@ class TThemeManager extends \Prado\TModule
 		{
 			$appPath=dirname($this->getRequest()->getApplicationFilePath());
 			$basePath=$this->getBasePath();
-			if(strpos($basePath,$appPath)===false)
+			if(strpos($basePath, $appPath)===false)
 				throw new TConfigurationException('thememanager_baseurl_required');
-			$appUrl=rtrim(dirname($this->getRequest()->getApplicationUrl()),'/\\');
-			$this->_baseUrl=$appUrl . strtr(substr($basePath,strlen($appPath)),'\\','/');
+			$appUrl=rtrim(dirname($this->getRequest()->getApplicationUrl()), '/\\');
+			$this->_baseUrl=$appUrl . strtr(substr($basePath, strlen($appPath)), '\\', '/');
 		}
 		return $this->_baseUrl;
 	}
@@ -184,6 +184,6 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function setBaseUrl($value)
 	{
-		$this->_baseUrl=rtrim($value,'/');
+		$this->_baseUrl=rtrim($value, '/');
 	}
 }

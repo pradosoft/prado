@@ -87,7 +87,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 
 		parent::setReadOnly($value);
 		$value = $this->getReadOnly();
-		$this->callClientFunction('setReadOnly',$value);
+		$this->callClientFunction('setReadOnly', $value);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 
 		parent::setRating($value);
 		$value = $this->getRating();
-		$this->callClientFunction('setRating',$value);
+		$this->callClientFunction('setRating', $value);
 	}
 
 	/**
@@ -108,13 +108,13 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * @param string static method name
 	 * @param mixed method parmaeter
 	 */
-	protected function callClientFunction($func,$value)
+	protected function callClientFunction($func, $value)
 	{
 		if($this->getActiveControl()->canUpdateClientSide())
 		{
 			$client = $this->getPage()->getCallbackClient();
 			$code = 'Prado.Registry[\'' . $this->ClientID . '\'].' . $func . '(' . $value . ')';
-			$client->evaluateScript($code,[$value]);
+			$client->evaluateScript($code, [$value]);
 		}
 	}
 
@@ -128,7 +128,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 
 		parent::setCaption($value);
 		// if it's an active control, this should not be needed.
-		$this->callClientFunction('setCaption',$value);
+		$this->callClientFunction('setCaption', $value);
 	}
 
 	/**

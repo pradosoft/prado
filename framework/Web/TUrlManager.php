@@ -64,7 +64,7 @@ class TUrlManager extends \Prado\TModule
 	 * @return string URL
 	 * @see parseUrl
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
+	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
 		$url=$serviceID . '=' . urlencode($serviceParam);
 		$amp=$encodeAmpersand?'&amp;':'&';
@@ -103,9 +103,9 @@ class TUrlManager extends \Prado\TModule
 		switch($request->getUrlFormat())
 		{
 			case THttpRequestUrlFormat::Path:
-				return $request->getApplicationUrl() . '/' . strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
+				return $request->getApplicationUrl() . '/' . strtr($url, [$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
+				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url, [$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			default:
 				return $request->getApplicationUrl() . '?' . $url;
 		}
@@ -127,24 +127,24 @@ class TUrlManager extends \Prado\TModule
 	public function parseUrl()
 	{
 		$request=$this->getRequest();
-		$pathInfo=trim($request->getPathInfo(),'/');
+		$pathInfo=trim($request->getPathInfo(), '/');
 		if(($request->getUrlFormat()===THttpRequestUrlFormat::Path ||
 			$request->getUrlFormat()===THttpRequestUrlFormat::HiddenPath) &&
 			$pathInfo!=='')
 		{
 			$separator=$request->getUrlParamSeparator();
-			$paths=explode('/',$pathInfo);
+			$paths=explode('/', $pathInfo);
 			$getVariables=[];
 			foreach($paths as $path)
 			{
 				if(($path=trim($path))!=='')
 				{
-					if(($pos=strpos($path,$separator))!==false)
+					if(($pos=strpos($path, $separator))!==false)
 					{
-						$name=substr($path,0,$pos);
-						$value=substr($path,$pos+1);
-						if(($pos=strpos($name,'[]'))!==false)
-							$getVariables[substr($name,0,$pos)][]=$value;
+						$name=substr($path, 0, $pos);
+						$value=substr($path, $pos+1);
+						if(($pos=strpos($name, '[]'))!==false)
+							$getVariables[substr($name, 0, $pos)][]=$value;
 						else
 							$getVariables[$name]=$value;
 					}

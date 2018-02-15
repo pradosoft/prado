@@ -109,7 +109,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 * @param string name of the attribute
 	 * @param string value of the attribute
 	 */
-	public function addAttribute($name,$value)
+	public function addAttribute($name, $value)
 	{
 		$this->_attributes[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}
@@ -138,7 +138,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 * @param string stylesheet attribute name
 	 * @param string stylesheet attribute value
 	 */
-	public function addStyleAttribute($name,$value)
+	public function addStyleAttribute($name, $value)
 	{
 		$this->_styles[THttpUtility::htmlStrip($name)]=THttpUtility::htmlEncode($value);
 	}

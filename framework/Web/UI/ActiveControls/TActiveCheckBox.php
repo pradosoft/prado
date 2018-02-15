@@ -137,9 +137,9 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		parent::renderInputTag($writer,$clientID,$onclick);
+		parent::renderInputTag($writer, $clientID, $onclick);
 		if ($this->getAutoPostBack())
 			$this->getActiveControl()->registerCallbackClientScript(
 				$this->getClientClassName(), $this->getPostBackOptions());
@@ -170,7 +170,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 * @param string checkbox id
 	 * @param string label text
 	 */
-	protected function renderLabel($writer,$clientID,$text)
+	protected function renderLabel($writer, $clientID, $text)
 	{
 		$writer->addAttribute('id', $this->getDefaultLabelID());
 		parent::renderLabel($writer, $clientID, $text);
@@ -181,7 +181,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 */
 	protected function getDefaultLabelID()
 	{
-		if($attributes=$this->getViewState('LabelAttributes',null))
+		if($attributes=$this->getViewState('LabelAttributes', null))
 			return TCheckBox::getLabelAttributes()->itemAt('id');
 		else
 			return $this->getClientID() . '_label';

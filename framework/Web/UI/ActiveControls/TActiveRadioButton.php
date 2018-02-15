@@ -132,9 +132,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
 	 *
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		parent::renderInputTag($writer,$clientID,$onclick);
+		parent::renderInputTag($writer, $clientID, $onclick);
 		if ($this->getAutoPostBack())
 			$this->getActiveControl()->registerCallbackClientScript(
 				$this->getClientClassName(), $this->getPostBackOptions());
@@ -165,7 +165,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * @param string radio button id
 	 * @param string label text
 	 */
-	protected function renderLabel($writer,$clientID,$text)
+	protected function renderLabel($writer, $clientID, $text)
 	{
 		$writer->addAttribute('id', $this->getDefaultLabelID());
 		parent::renderLabel($writer, $clientID, $text);
@@ -176,7 +176,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 */
 	protected function getDefaultLabelID()
 	{
-		if($attributes=$this->getViewState('LabelAttributes',null))
+		if($attributes=$this->getViewState('LabelAttributes', null))
 			return $this->getLabelAttributes()->itemAt('id');
 		else
 			return $this->getClientID() . '_label';

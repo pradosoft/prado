@@ -55,11 +55,11 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
 		if($item instanceof TXmlElement)
 		{
-			parent::insertAt($index,$item);
+			parent::insertAt($index, $item);
 			if($item->getParent()!==null)
 				$item->getParent()->getElements()->remove($item);
 			$item->setParent($this->_o);

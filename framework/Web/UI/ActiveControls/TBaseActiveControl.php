@@ -60,11 +60,11 @@ class TBaseActiveControl extends \Prado\TComponent
 	 * @param mixed default value.
 	 * @return mixed options value.
 	 */
-	protected function setOption($name,$value,$default=null)
+	protected function setOption($name, $value, $default=null)
 	{
 		$value = ($value===null) ? $default : $value;
 		if($value!==null)
-			$this->_options->add($name,$value);
+			$this->_options->add($name, $value);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	 * @param mixed default value.
 	 * @return mixed options value.
 	 */
-	protected function getOption($name,$default=null)
+	protected function getOption($name, $default=null)
 	{
 		$item = $this->_options->itemAt($name);
 		return ($item===null) ? $default : $item;

@@ -27,8 +27,8 @@ class TWizardStartNavigationTemplate extends TWizardNavigationTemplate
 	 */
 	public function instantiateIn($parent)
 	{
-		$nextButton=$this->createNavigationButton($this->getWizard()->getStartNextButtonStyle(),true,TWizard::CMD_NEXT);
-		$cancelButton=$this->createNavigationButton($this->getWizard()->getCancelButtonStyle(),false,TWizard::CMD_CANCEL);
+		$nextButton=$this->createNavigationButton($this->getWizard()->getStartNextButtonStyle(), true, TWizard::CMD_NEXT);
+		$cancelButton=$this->createNavigationButton($this->getWizard()->getCancelButtonStyle(), false, TWizard::CMD_CANCEL);
 
 		$controls=$parent->getControls();
 		$controls->add($nextButton);

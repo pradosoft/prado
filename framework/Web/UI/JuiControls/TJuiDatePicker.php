@@ -188,7 +188,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getDateFormat()
 	{
-		return $this->getViewState('DateFormat','dd-MM-yyyy');
+		return $this->getViewState('DateFormat', 'dd-MM-yyyy');
 	}
 
 	/**
@@ -197,7 +197,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function setDateFormat($value)
 	{
-		$this->setViewState('DateFormat',$value,'dd-MM-yyyy');
+		$this->setViewState('DateFormat', $value, 'dd-MM-yyyy');
 	}
 
 	/**

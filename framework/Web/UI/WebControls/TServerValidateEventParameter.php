@@ -41,7 +41,7 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	 * @param string property value to be validated
 	 * @param boolean whether the value is valid
 	 */
-	public function __construct($value,$isValid)
+	public function __construct($value, $isValid)
 	{
 		$this->_value=$value;
 		$this->setIsValid($isValid);

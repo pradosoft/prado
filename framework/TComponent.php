@@ -390,7 +390,7 @@ class TComponent
 	 * that start with 'fx' are filtered in.
 	 */
 	private function filter_prado_fx($name) {
-		return strncasecmp($name,'fx',2)===0;
+		return strncasecmp($name, 'fx', 2)===0;
 	}
 
 
@@ -404,9 +404,9 @@ class TComponent
 	{
 		$class=get_class($this);
 		$classes=[$class];
-		while($class=get_parent_class($class)){array_unshift($classes,$class);}
+		while($class=get_parent_class($class)){array_unshift($classes, $class);}
 		if($lowercase)
-			return array_map('strtolower',$classes);
+			return array_map('strtolower', $classes);
 		return $classes;
 	}
 
@@ -429,14 +429,14 @@ class TComponent
 		if($this->_listeningenabled)
 			return;
 
-		$fx=array_filter(get_class_methods($this),[$this,'filter_prado_fx']);
+		$fx=array_filter(get_class_methods($this), [$this,'filter_prado_fx']);
 
 		foreach($fx as $func)
-			$this->attachEventHandler($func,[$this,$func]);
+			$this->attachEventHandler($func, [$this,$func]);
 
-		if(is_a($this,'Prado\\Util\\IDynamicMethods')) {
-			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER,[$this,'__dycall']);
-			array_push($fx,TComponent::GLOBAL_RAISE_EVENT_LISTENER);
+		if(is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this,'__dycall']);
+			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
 		$this->_listeningenabled=true;
@@ -463,14 +463,14 @@ class TComponent
 		if(!$this->_listeningenabled)
 			return;
 
-		$fx=array_filter(get_class_methods($this),[$this,'filter_prado_fx']);
+		$fx=array_filter(get_class_methods($this), [$this,'filter_prado_fx']);
 
 		foreach($fx as $func)
-			$this->detachEventHandler($func,[$this,$func]);
+			$this->detachEventHandler($func, [$this,$func]);
 
-		if(is_a($this,'Prado\\Util\\IDynamicMethods')) {
-			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER,[$this,'__dycall']);
-			array_push($fx,TComponent::GLOBAL_RAISE_EVENT_LISTENER);
+		if(is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this,'__dycall']);
+			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
 		$this->_listeningenabled=false;
@@ -515,66 +515,66 @@ class TComponent
 	 */
 	public function __call($method, $args)
 	{
-		$getset=substr($method,0,3);
+		$getset=substr($method, 0, 3);
 		if(($getset=='get')||($getset=='set'))
 		{
-			$propname=substr($method,3);
+			$propname=substr($method, 3);
 			$jsmethod=$getset . 'js' . $propname;
-			if(method_exists($this,$jsmethod))
+			if(method_exists($this, $jsmethod))
 			{
 				if(count($args)>0)
 					if($args[0]&&!($args[0] instanceof TJavaScriptString))
 						$args[0]=new TJavaScriptString($args[0]);
-				return call_user_func_array([$this,$jsmethod],$args);
+				return call_user_func_array([$this,$jsmethod], $args);
 			}
 
-			if (($getset=='set')&&method_exists($this,'getjs' . $propname))
-				throw new TInvalidOperationException('component_property_readonly',get_class($this),$method);
+			if (($getset=='set')&&method_exists($this, 'getjs' . $propname))
+				throw new TInvalidOperationException('component_property_readonly', get_class($this), $method);
 		}
 
 		if($this->_m!==null&&$this->_behaviorsenabled)
 		{
-			if(strncasecmp($method,'dy',2)===0)
+			if(strncasecmp($method, 'dy', 2)===0)
 			{
 				$callchain=new TCallChain($method);
 				foreach($this->_m->toArray() as $behavior)
 				{
-					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&(method_exists($behavior,$method)||($behavior instanceof IDynamicMethods)))
+					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&(method_exists($behavior, $method)||($behavior instanceof IDynamicMethods)))
 					{
 						$behavior_args=$args;
 						if($behavior instanceof IClassBehavior)
-							array_unshift($behavior_args,$this);
-						$callchain->addCall([$behavior,$method],$behavior_args);
+							array_unshift($behavior_args, $this);
+						$callchain->addCall([$behavior,$method], $behavior_args);
 					}
 
 				}
 				if($callchain->getCount()>0)
-					return call_user_func_array([$callchain,'call'],$args);
+					return call_user_func_array([$callchain,'call'], $args);
 			}
 			else
 			{
 				foreach($this->_m->toArray() as $behavior)
 				{
-					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&method_exists($behavior,$method))
+					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&method_exists($behavior, $method))
 					{
 						if($behavior instanceof IClassBehavior)
-							array_unshift($args,$this);
-						return call_user_func_array([$behavior,$method],$args);
+							array_unshift($args, $this);
+						return call_user_func_array([$behavior,$method], $args);
 					}
 				}
 			}
 		}
 
-		if(strncasecmp($method,'dy',2)===0||strncasecmp($method,'fx',2)===0)
+		if(strncasecmp($method, 'dy', 2)===0||strncasecmp($method, 'fx', 2)===0)
 		{
 			if($this instanceof IDynamicMethods)
-				return $this->__dycall($method,$args);
+				return $this->__dycall($method, $args);
 			return isset($args[0])?$args[0]:null;
 		}
 
 		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
 		if (!method_exists($this, $method)) {
-			throw new TApplicationException('component_method_undefined',get_class($this),$method);
+			throw new TApplicationException('component_method_undefined', get_class($this), $method);
 		}
 	}
 
@@ -604,17 +604,17 @@ class TComponent
 	 */
 	public function __get($name)
 	{
-		if(method_exists($this,$getter='get' . $name))
+		if(method_exists($this, $getter='get' . $name))
 		{
 			// getting a property
 			return $this->$getter();
 		}
-		elseif(method_exists($this,$jsgetter='getjs' . $name))
+		elseif(method_exists($this, $jsgetter='getjs' . $name))
 		{
 			// getting a javascript property
 			return (string)$this->$jsgetter();
 		}
-		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name, 'on', 2)===0 && method_exists($this, $name))
 		{
 			// getting an event (handler list)
 			$name=strtolower($name);
@@ -622,7 +622,7 @@ class TComponent
 				$this->_e[$name]=new TPriorityList;
 			return $this->_e[$name];
 		}
-		elseif(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name, 'fx', 2)===0)
 		{
 			// getting a global event (handler list)
 			$name=strtolower($name);
@@ -640,12 +640,12 @@ class TComponent
 				foreach($this->_m->toArray() as $behavior)
 				{
 					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&
-						(property_exists($behavior,$name)||$behavior->canGetProperty($name)||$behavior->hasEvent($name)))
+						(property_exists($behavior, $name)||$behavior->canGetProperty($name)||$behavior->hasEvent($name)))
 						return $behavior->$name;
 				}
 			}
 		}
-		throw new TInvalidOperationException('component_property_undefined',get_class($this),$name);
+		throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
 	}
 
 	/**
@@ -663,23 +663,23 @@ class TComponent
 	 * @param mixed the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
-		if(method_exists($this,$setter='set' . $name))
+		if(method_exists($this, $setter='set' . $name))
 		{
-			if(strncasecmp($name,'js',2)===0&&$value&&!($value instanceof TJavaScriptLiteral))
+			if(strncasecmp($name, 'js', 2)===0&&$value&&!($value instanceof TJavaScriptLiteral))
 				$value = new TJavaScriptLiteral($value);
 			return $this->$setter($value);
 		}
-		elseif(method_exists($this,$jssetter='setjs' . $name))
+		elseif(method_exists($this, $jssetter='setjs' . $name))
 		{
 			if($value&&!($value instanceof TJavaScriptString))
 				$value=new TJavaScriptString($value);
 			return $this->$jssetter($value);
 		}
-		elseif((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0)
+		elseif((strncasecmp($name, 'on', 2)===0&&method_exists($this, $name))||strncasecmp($name, 'fx', 2)===0)
 		{
-			return $this->attachEventHandler($name,$value);
+			return $this->attachEventHandler($name, $value);
 		}
 		elseif($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
 		{
@@ -687,7 +687,7 @@ class TComponent
 			foreach($this->_m->toArray() as $behavior)
 			{
 				if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&
-					(property_exists($behavior,$name)||$behavior->canSetProperty($name)||$behavior->hasEvent($name))) {
+					(property_exists($behavior, $name)||$behavior->canSetProperty($name)||$behavior->hasEvent($name))) {
 					$behavior->$name=$value;
 					$sets++;
 				}
@@ -696,13 +696,13 @@ class TComponent
 
 		}
 
-		if(method_exists($this,'get' . $name)||method_exists($this,'getjs' . $name))
+		if(method_exists($this, 'get' . $name)||method_exists($this, 'getjs' . $name))
 		{
-			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
+			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
 		}
 		else
 		{
-			throw new TInvalidOperationException('component_property_undefined',get_class($this),$name);
+			throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
 		}
 	}
 
@@ -720,16 +720,16 @@ class TComponent
 	 */
 	public function __isset($name)
 	{
-		if(method_exists($this,$getter='get' . $name))
+		if(method_exists($this, $getter='get' . $name))
 			return $this->$getter()!==null;
-		elseif(method_exists($this,$jsgetter='getjs' . $name))
+		elseif(method_exists($this, $jsgetter='getjs' . $name))
 			return $this->$jsgetter()!==null;
-		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
+		elseif(strncasecmp($name, 'on', 2)===0&&method_exists($this, $name))
 		{
 			$name=strtolower($name);
 			return isset($this->_e[$name])&&$this->_e[$name]->getCount();
 		}
-		elseif(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name, 'fx', 2)===0)
 		{
 			$name=strtolower($name);
 			return isset(self::$_ue[$name])&&self::$_ue[$name]->getCount();
@@ -761,13 +761,13 @@ class TComponent
 	 */
 	public function __unset($name)
 	{
-		if(method_exists($this,$setter='set' . $name))
+		if(method_exists($this, $setter='set' . $name))
 			$this->$setter(null);
-		elseif(method_exists($this,$jssetter='setjs' . $name))
+		elseif(method_exists($this, $jssetter='setjs' . $name))
 			$this->$jssetter(null);
-		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
+		elseif(strncasecmp($name, 'on', 2)===0&&method_exists($this, $name))
 			$this->_e[strtolower($name)]->clear();
-		elseif(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name, 'fx', 2)===0)
 			$this->getEventHandlers($name)->remove([$this, $name]);
 		elseif($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
 		{
@@ -782,11 +782,11 @@ class TComponent
 						$unset++;
 					}
 				}
-				if(!$unset&&method_exists($this,'get' . $name))
-					throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
+				if(!$unset&&method_exists($this, 'get' . $name))
+					throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
 			}
-		} elseif(method_exists($this,'get' . $name))
-			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
+		} elseif(method_exists($this, 'get' . $name))
+			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
 	}
 
 	/**
@@ -812,7 +812,7 @@ class TComponent
 	 */
 	public function canGetProperty($name)
 	{
-		if(method_exists($this,'get' . $name)||method_exists($this,'getjs' . $name))
+		if(method_exists($this, 'get' . $name)||method_exists($this, 'getjs' . $name))
 			return true;
 		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
@@ -836,7 +836,7 @@ class TComponent
 	 */
 	public function canSetProperty($name)
 	{
-		if(method_exists($this,'set' . $name)||method_exists($this,'setjs' . $name))
+		if(method_exists($this, 'set' . $name)||method_exists($this, 'setjs' . $name))
 			return true;
 		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
@@ -862,7 +862,7 @@ class TComponent
 	public function getSubProperty($path)
 	{
 		$object=$this;
-		foreach(explode('.',$path) as $property)
+		foreach(explode('.', $path) as $property)
 			$object=$object->$property;
 		return $object;
 	}
@@ -877,15 +877,15 @@ class TComponent
 	 * @param string property path
 	 * @param mixed the property path value
 	 */
-	public function setSubProperty($path,$value)
+	public function setSubProperty($path, $value)
 	{
 		$object=$this;
-		if(($pos=strrpos($path,'.'))===false)
+		if(($pos=strrpos($path, '.'))===false)
 			$property=$path;
 		else
 		{
-			$object=$this->getSubProperty(substr($path,0,$pos));
-			$property=substr($path,$pos+1);
+			$object=$this->getSubProperty(substr($path, 0, $pos));
+			$property=substr($path, $pos+1);
 		}
 		$object->$property=$value;
 	}
@@ -904,7 +904,7 @@ class TComponent
 	 */
 	public function hasEvent($name)
 	{
-		if((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0||strncasecmp($name,'dy',2)===0)
+		if((strncasecmp($name, 'on', 2)===0&&method_exists($this, $name))||strncasecmp($name, 'fx', 2)===0||strncasecmp($name, 'dy', 2)===0)
 			return true;
 
 		elseif($this->_m!==null&&$this->_behaviorsenabled)
@@ -928,7 +928,7 @@ class TComponent
 	public function hasEventHandler($name)
 	{
 		$name=strtolower($name);
-		if(strncasecmp($name,'fx',2)===0)
+		if(strncasecmp($name, 'fx', 2)===0)
 			return isset(self::$_ue[$name])&&self::$_ue[$name]->getCount()>0;
 		else
 		{
@@ -953,14 +953,14 @@ class TComponent
 	 */
 	public function getEventHandlers($name)
 	{
-		if(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
+		if(strncasecmp($name, 'on', 2)===0&&method_exists($this, $name))
 		{
 			$name=strtolower($name);
 			if(!isset($this->_e[$name]))
 				$this->_e[$name]=new TPriorityList;
 			return $this->_e[$name];
 		}
-		elseif(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name, 'fx', 2)===0)
 		{
 			$name=strtolower($name);
 			if(!isset(self::$_ue[$name]))
@@ -975,7 +975,7 @@ class TComponent
 					return $behavior->getEventHandlers($name);
 			}
 		}
-		throw new TInvalidOperationException('component_event_undefined',get_class($this),$name);
+		throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
 	}
 
 	/**
@@ -1023,9 +1023,9 @@ class TComponent
 	 * default priority of 10.0 within {@link TPriorityList}
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
-	public function attachEventHandler($name,$handler,$priority=null)
+	public function attachEventHandler($name, $handler, $priority=null)
 	{
-		$this->getEventHandlers($name)->add($handler,$priority);
+		$this->getEventHandlers($name)->add($handler, $priority);
 	}
 
 	/**
@@ -1038,13 +1038,13 @@ class TComponent
 	 * to an item of any priority within {@link TPriorityList}; null means the default priority
 	 * @return boolean if the removal is successful
 	 */
-	public function detachEventHandler($name,$handler,$priority=false)
+	public function detachEventHandler($name, $handler, $priority=false)
 	{
 		if($this->hasEventHandler($name))
 		{
 			try
 			{
-				$this->getEventHandlers($name)->remove($handler,$priority);
+				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
 			}
 			catch(\Exception $e)
@@ -1126,7 +1126,7 @@ class TComponent
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
 	 */
-	public function raiseEvent($name,$sender,$param,$responsetype=null,$postfunction=null)
+	public function raiseEvent($name, $sender, $param, $responsetype=null, $postfunction=null)
 	{
 		$p=$param;
 		if(is_callable($responsetype))
@@ -1141,72 +1141,72 @@ class TComponent
 		$name=strtolower($name);
 		$responses=[];
 
-		$name=$this->dyPreRaiseEvent($name,$sender,$param,$responsetype,$postfunction);
+		$name=$this->dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction);
 
 		if($this->hasEventHandler($name)||$this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER))
 		{
 			$handlers=$this->getEventHandlers($name);
 			$handlerArray=$handlers->toArray();
-			if(strncasecmp($name,'fx',2)===0&&$this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER))
+			if(strncasecmp($name, 'fx', 2)===0&&$this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER))
 			{
 				$globalhandlers=$this->getEventHandlers(TComponent::GLOBAL_RAISE_EVENT_LISTENER);
-				$handlerArray=array_merge($globalhandlers->toArrayBelowPriority(0),$handlerArray,$globalhandlers->toArrayAbovePriority(0));
+				$handlerArray=array_merge($globalhandlers->toArrayBelowPriority(0), $handlerArray, $globalhandlers->toArrayAbovePriority(0));
 			}
 			$response=null;
 			foreach($handlerArray as $handler)
 			{
-				if($this->dyIntraRaiseEventTestHandler($handler,$sender,$param,$name)===false)
+				if($this->dyIntraRaiseEventTestHandler($handler, $sender, $param, $name)===false)
 					continue;
 
 				if(is_string($handler))
 				{
-					if(($pos=strrpos($handler,'.'))!==false)
+					if(($pos=strrpos($handler, '.'))!==false)
 					{
-						$object=$this->getSubProperty(substr($handler,0,$pos));
-						$method=substr($handler,$pos+1);
-						if(method_exists($object,$method)||strncasecmp($method,'dy',2)===0||strncasecmp($method,'fx',2)===0)
+						$object=$this->getSubProperty(substr($handler, 0, $pos));
+						$method=substr($handler, $pos+1);
+						if(method_exists($object, $method)||strncasecmp($method, 'dy', 2)===0||strncasecmp($method, 'fx', 2)===0)
 						{
 							if($method=='__dycall')
-								$response=$object->__dycall($name,[$sender,$param,$name]);
+								$response=$object->__dycall($name, [$sender,$param,$name]);
 							else
-								$response=$object->$method($sender,$param,$name);
+								$response=$object->$method($sender, $param, $name);
 						}
 						else
-							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,$handler);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler);
 					}
 					else
-						$response=call_user_func($handler,$sender,$param,$name);
+						$response=call_user_func($handler, $sender, $param, $name);
 				}
-				elseif(is_callable($handler,true))
+				elseif(is_callable($handler, true))
 				{
-					list($object,$method)=$handler;
+					list($object, $method)=$handler;
 					if(is_string($object))
-						$response=call_user_func($handler,$sender,$param,$name);
+						$response=call_user_func($handler, $sender, $param, $name);
 					else
 					{
-						if(($pos=strrpos($method,'.'))!==false)
+						if(($pos=strrpos($method, '.'))!==false)
 						{
-							$object=$this->getSubProperty(substr($method,0,$pos));
-							$method=substr($method,$pos+1);
+							$object=$this->getSubProperty(substr($method, 0, $pos));
+							$method=substr($method, $pos+1);
 						}
-						if(method_exists($object,$method)||strncasecmp($method,'dy',2)===0||strncasecmp($method,'fx',2)===0)
+						if(method_exists($object, $method)||strncasecmp($method, 'dy', 2)===0||strncasecmp($method, 'fx', 2)===0)
 						{
 							if($method=='__dycall')
-								$response=$object->__dycall($name,[$sender,$param,$name]);
+								$response=$object->__dycall($name, [$sender,$param,$name]);
 							else
-								$response=$object->$method($sender,$param,$name);
+								$response=$object->$method($sender, $param, $name);
 						}
 						else
-							throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,$handler[1]);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler[1]);
 					}
 				}
 				else
-					throw new TInvalidDataValueException('component_eventhandler_invalid',get_class($this),$name,gettype($handler));
+					throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, gettype($handler));
 
-				$this->dyIntraRaiseEventPostHandler($name,$sender,$param,$handler,$response);
+				$this->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response);
 
 				if($postfunction)
-					$response=call_user_func_array($postfunction,[$sender,$param,$this,$response]);
+					$response=call_user_func_array($postfunction, [$sender,$param,$this,$response]);
 
 				if($responsetype&TEventResults::EVENT_RESULT_ALL)
 					$responses[]=['sender'=>$sender,'param'=>$param,'response'=>$response];
@@ -1218,13 +1218,13 @@ class TComponent
 
 			}
 		}
-		elseif(strncasecmp($name,'on',2)===0&&!$this->hasEvent($name))
-			throw new TInvalidOperationException('component_event_undefined',get_class($this),$name);
+		elseif(strncasecmp($name, 'on', 2)===0&&!$this->hasEvent($name))
+			throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
 
 		if($responsetype&TEventResults::EVENT_RESULT_FILTER)
 			$responses=array_filter($responses);
 
-		$responses=$this->dyPostRaiseEvent($responses,$name,$sender,$param,$responsetype,$postfunction);
+		$responses=$this->dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction);
 
 		return $responses;
 	}
@@ -1257,7 +1257,7 @@ class TComponent
 		}
 		catch(\Exception $e)
 		{
-			throw new TInvalidOperationException('component_expression_invalid',get_class($this),$expression,$e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid', get_class($this), $expression, $e->getMessage());
 		}
 	}
 
@@ -1292,7 +1292,7 @@ class TComponent
 		}
 		catch(\Exception $e)
 		{
-			throw new TInvalidOperationException('component_statements_invalid',get_class($this),$statements,$e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid', get_class($this), $statements, $e->getMessage());
 		}
 	}
 
@@ -1352,9 +1352,9 @@ class TComponent
 	 * @param $param TClassBehaviorEventParameter
 	 * @since 3.2.3
 	 */
-	public function fxAttachClassBehavior($sender,$param) {
-		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
-			return $this->attachBehavior($param->getName(),$param->getBehavior(),$param->getPriority());
+	public function fxAttachClassBehavior($sender, $param) {
+		if(in_array($param->getClass(), $this->getClassHierarchy(true)))
+			return $this->attachBehavior($param->getName(), $param->getBehavior(), $param->getPriority());
 	}
 
 
@@ -1366,9 +1366,9 @@ class TComponent
 	 * @param $param TClassBehaviorEventParameter
 	 * @since 3.2.3
 	 */
-	public function fxDetachClassBehavior($sender,$param) {
-		if(in_array($param->getClass(),$this->getClassHierarchy(true)))
-			return $this->detachBehavior($param->getName(),$param->getPriority());
+	public function fxDetachClassBehavior($sender, $param) {
+		if(in_array($param->getClass(), $this->getClassHierarchy(true)))
+			return $this->detachBehavior($param->getName(), $param->getPriority());
 	}
 
 
@@ -1390,7 +1390,7 @@ class TComponent
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
 	 */
-	public static function attachClassBehavior($name,$behavior,$class=null,$priority=null) {
+	public static function attachClassBehavior($name, $behavior, $class=null, $priority=null) {
 		if(!$class&&function_exists('get_called_class'))
 			$class=get_called_class();
 		if(!$class)
@@ -1404,11 +1404,11 @@ class TComponent
 		if(empty(self::$_um[$class]))
 			self::$_um[$class]=[];
 		if(isset(self::$_um[$class][$name]))
-			throw new TInvalidOperationException('component_class_behavior_defined',$class,$name);
-		$param=new TClassBehaviorEventParameter($class,$name,$behavior,$priority);
+			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
+		$param=new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
 		self::$_um[$class]=[$name=>$param]+self::$_um[$class];
 		$behaviorObject=is_string($behavior)?new $behavior:$behavior;
-		return $behaviorObject->raiseEvent('fxAttachClassBehavior',null,$param);
+		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 	}
 
 
@@ -1424,7 +1424,7 @@ class TComponent
 	 * not supplied as a parameter.
 	 * @since 3.2.3
 	 */
-	public static function detachClassBehavior($name,$class=null,$priority=false) {
+	public static function detachClassBehavior($name, $class=null, $priority=false) {
 		if(!$class&&function_exists('get_called_class'))
 			$class=get_called_class();
 		if(!$class)
@@ -1439,7 +1439,7 @@ class TComponent
 		$behavior=$param->getBehavior();
 		unset(self::$_um[$class][$name]);
 		$behaviorObject=is_string($behavior)?new $behavior:$behavior;
-		return $behaviorObject->raiseEvent('fxDetachClassBehavior',null,$param);
+		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 	}
 
 	/**
@@ -1483,7 +1483,7 @@ class TComponent
 					continue;
 
 				$check = null;
-				if(($behavior->isa('\Prado\Util\IInstanceCheck'))&&$check=$behavior->isinstanceof($class,$this))
+				if(($behavior->isa('\Prado\Util\IInstanceCheck'))&&$check=$behavior->isinstanceof($class, $this))
 					return true;
 				if($check===null&&($behavior->isa($class)))
 					return true;
@@ -1503,9 +1503,9 @@ class TComponent
 	{
 		foreach($behaviors as $name=>$behavior)
 			if($behavior instanceof TClassBehaviorEventParameter)
-				$this->attachBehavior($behavior->getName(),$behavior->getBehavior(),$behavior->getPriority());
+				$this->attachBehavior($behavior->getName(), $behavior->getBehavior(), $behavior->getPriority());
 			else
-				$this->attachBehavior($name,$behavior);
+				$this->attachBehavior($name, $behavior);
 	}
 
 	/**
@@ -1522,7 +1522,7 @@ class TComponent
 		{
 			foreach($behaviors as $name=>$behavior)
 				if($behavior instanceof TClassBehaviorEventParameter)
-					$this->detachBehavior($behavior->getName(),$behavior->getPriority());
+					$this->detachBehavior($behavior->getName(), $behavior->getPriority());
 				else
 					$this->detachBehavior(is_string($behavior)?$behavior:$name);
 		}
@@ -1562,19 +1562,19 @@ class TComponent
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */
-	public function attachBehavior($name,$behavior,$priority=null)
+	public function attachBehavior($name, $behavior, $priority=null)
 	{
 		if(is_string($behavior))
 			$behavior=Prado::createComponent($behavior);
 		if(!($behavior instanceof IBaseBehavior))
-			throw new TInvalidDataTypeException('component_not_a_behavior',get_class($behavior));
+			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
 		if($behavior instanceof IBehavior)
 			$behavior->setEnabled(true);
 		if($this->_m===null)
 			$this->_m=new TPriorityMap;
 		$behavior->attach($this);
-		$this->dyAttachBehavior($name,$behavior);
-		$this->_m->add($name,$behavior,$priority);
+		$this->dyAttachBehavior($name, $behavior);
+		$this->_m->add($name, $behavior, $priority);
 		return $behavior;
 	}
 
@@ -1595,14 +1595,14 @@ class TComponent
 	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */
-	public function detachBehavior($name,$priority=false)
+	public function detachBehavior($name, $priority=false)
 	{
 		if($this->_m!=null&&isset($this->_m[$name]))
 		{
 			$this->_m[$name]->detach($this);
 			$behavior=$this->_m->itemAt($name);
-			$this->_m->remove($name,$priority);
-			$this->dyDetachBehavior($name,$behavior);
+			$this->_m->remove($name, $priority);
+			$this->dyDetachBehavior($name, $behavior);
 			return $behavior;
 		}
 	}
@@ -1681,7 +1681,7 @@ class TComponent
 		if($this->_m!=null&&isset($this->_m[$name])){
 			if($this->_m[$name] instanceof IBehavior) {
 				$this->_m[$name]->setEnabled(true);
-				$this->dyEnableBehavior($name,$this->_m[$name]);
+				$this->dyEnableBehavior($name, $this->_m[$name]);
 				return true;
 			}
 			return false;
@@ -1709,7 +1709,7 @@ class TComponent
 		if($this->_m!=null&&isset($this->_m[$name])){
 			if($this->_m[$name] instanceof IBehavior) {
 				$this->_m[$name]->setEnabled(false);
-				$this->dyDisableBehavior($name,$this->_m[$name]);
+				$this->dyDisableBehavior($name, $this->_m[$name]);
 				return true;
 			}
 			return false;

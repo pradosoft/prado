@@ -250,7 +250,7 @@ class CultureInfo
 	 */
 	protected function loadCultureData($culture)
 	{
-		$file_parts = explode('_',$culture);
+		$file_parts = explode('_', $culture);
 		$current_part = $file_parts[0];
 
 		$files = [$current_part];
@@ -327,7 +327,7 @@ class CultureInfo
 			if($info)
 			{
 				if($merge)
-					$result = array_merge($info,$result);
+					$result = array_merge($info, $result);
 				else
 					return $info;
 			}
@@ -346,7 +346,7 @@ class CultureInfo
 	 */
 	private function searchArray($info, $path='/')
 	{
-		$index = explode('/',$path);
+		$index = explode('/', $path);
 
 		$array = $info;
 
@@ -414,8 +414,8 @@ class CultureInfo
 	 */
 	function getNativeName()
 	{
-		$lang = substr($this->culture,0,2);
-		$reg = substr($this->culture,3,2);
+		$lang = substr($this->culture, 0, 2);
+		$reg = substr($this->culture, 3, 2);
 		$language = $this->findInfo("Languages/{$lang}");
 		$region = $this->findInfo("Countries/{$reg}");
 		if($region)
@@ -432,8 +432,8 @@ class CultureInfo
 	 */
 	function getEnglishName()
 	{
-		$lang = substr($this->culture,0,2);
-		$reg = substr($this->culture,3,2);
+		$lang = substr($this->culture, 0, 2);
+		$reg = substr($this->culture, 3, 2);
 		$culture = $this->getInvariantCulture();
 
 		$language = $culture->findInfo("Languages/{$lang}");
@@ -513,7 +513,7 @@ class CultureInfo
 		if(strlen($this->culture) == 2)
 			return $this->getInvariantCulture();
 
-		$lang = substr($this->culture,0,2);
+		$lang = substr($this->culture, 0, 2);
 			return new CultureInfo($lang);
 	}
 
@@ -538,10 +538,10 @@ class CultureInfo
 		while (false !== ($entry = $dir->read()))
 		{
 			if(is_file($dataDir . $entry)
-				&& substr($entry,-4) == $dataExt
+				&& substr($entry, -4) == $dataExt
 				&& $entry != 'root' . $dataExt)
 			{
-				$culture = substr($entry,0,-4);
+				$culture = substr($entry, 0, -4);
 				if(strlen($culture) == 2)
 					$neutral[] = $culture;
 				else
@@ -592,7 +592,7 @@ class CultureInfo
 	 */
 	function getCountries()
 	{
-		return $this->simplify($this->findInfo('Countries',true));
+		return $this->simplify($this->findInfo('Countries', true));
 	}
 
 	/**
@@ -601,7 +601,7 @@ class CultureInfo
 	 */
 	function getCurrencies()
 	{
-		return $this->findInfo('Currencies',true);
+		return $this->findInfo('Currencies', true);
 	}
 
 	/**
@@ -610,7 +610,7 @@ class CultureInfo
 	 */
 	function getLanguages()
 	{
-		return $this->simplify($this->findInfo('Languages',true));
+		return $this->simplify($this->findInfo('Languages', true));
 	}
 
 	/**
@@ -619,7 +619,7 @@ class CultureInfo
 	 */
 	function getScripts()
 	{
-		return $this->simplify($this->findInfo('Scripts',true));
+		return $this->simplify($this->findInfo('Scripts', true));
 	}
 
 	/**
@@ -628,7 +628,7 @@ class CultureInfo
 	 */
 	function getTimeZones()
 	{
-		return $this->simplify($this->findInfo('zoneStrings',true));
+		return $this->simplify($this->findInfo('zoneStrings', true));
 	}
 }
 

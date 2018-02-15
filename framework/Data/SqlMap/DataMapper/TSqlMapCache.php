@@ -49,7 +49,7 @@ abstract class TSqlMapCache implements ICache
 	 */
 	public function setCacheSize($value)
 	{
-		$this->_cacheSize=TPropertyValue::ensureInteger($value,100);
+		$this->_cacheSize=TPropertyValue::ensureInteger($value, 100);
 	}
 
 	/**
@@ -83,7 +83,7 @@ abstract class TSqlMapCache implements ICache
 	/**
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id,$value,$expire=0,$dependency=null)
+	public function add($id, $value, $expire=0, $dependency=null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

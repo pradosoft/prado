@@ -103,11 +103,11 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		);
 
 		$this->getControls()->add($list);
-		$list->setDataSource(range(1,$this->getPageCount()));
+		$list->setDataSource(range(1, $this->getPageCount()));
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged',[$this,'listIndexChanged']);
+		$list->attachEventHandler('OnSelectedIndexChanged', [$this,'listIndexChanged']);
 		$list->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 	}
 
@@ -123,7 +123,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
+	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
 		if($buttonType===TPagerButtonType::LinkButton)
 		{
@@ -140,7 +140,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		elseif($buttonType===TPagerButtonType::ImageButton)
 		{
 			$button = new TActiveImageButton;
-			$button->setImageUrl($this->getPageImageUrl($text,$commandName));
+			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
 			if($enabled)
 				$button->Visible = true;
 			else
@@ -179,7 +179,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param mixed $sender
 	 * @param TCallbackEventParameter $param
 	 */
-	public function handleCallback ($sender,$param)
+	public function handleCallback ($sender, $param)
 	{
 		// Update all the buttons pagers attached to the same control.
 		// Dropdown pagers doesn't need to be re-rendered.
@@ -205,11 +205,11 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			$this->setDisplay(($this->getPageCount()==1)?TDisplayStyle::None:TDisplayStyle::Dynamic);
 			TWebControl::render($writer);
 			if($this->getActiveControl()->canUpdateClientSide())
-				$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
+				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
 		}
 		else
 		{
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
 }

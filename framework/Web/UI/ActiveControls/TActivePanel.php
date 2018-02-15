@@ -64,7 +64,7 @@ class TActivePanel extends TPanel implements IActiveControl
 	 * @param THtmlWriter the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer) {
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -81,11 +81,11 @@ class TActivePanel extends TPanel implements IActiveControl
 		{
 			parent::render($writer);
 			if($this->getActiveControl()->canUpdateClientSide())
-				$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
+				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
 		}
 		else
 		{
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 			if ($this->getHasControls())
 			{
 				// If we update a TActivePanel on callback,

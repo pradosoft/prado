@@ -41,7 +41,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
@@ -50,7 +50,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -84,7 +84,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function getEncode()
 	{
-		return $this->getViewState('Encode',false);
+		return $this->getViewState('Encode', false);
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function setEncode($value)
 	{
-		$this->setViewState('Encode',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**

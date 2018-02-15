@@ -34,7 +34,7 @@ class THttpUtility
 	 */
 	public static function htmlEncode($s)
 	{
-		return strtr($s,self::$_encodeTable);
+		return strtr($s, self::$_encodeTable);
 	}
 
 	/**
@@ -45,7 +45,7 @@ class THttpUtility
 	 */
 	public static function htmlDecode($s)
 	{
-		return strtr($s,self::$_decodeTable);
+		return strtr($s, self::$_decodeTable);
 	}
 
 	/**
@@ -56,7 +56,7 @@ class THttpUtility
 	 */
 	public static function htmlStrip($s)
 	{
-		return strtr($s,self::$_stripTable);
+		return strtr($s, self::$_stripTable);
 	}
 }
 

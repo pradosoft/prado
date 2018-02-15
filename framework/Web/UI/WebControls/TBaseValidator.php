@@ -140,10 +140,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$display=$this->getDisplay();
 		$visible=$this->getEnabled(true) && !$this->getIsValid();
 		if($display===TValidatorDisplayStyle::None || (!$visible && $display===TValidatorDisplayStyle::Dynamic))
-			$writer->addStyleAttribute('display','none');
+			$writer->addStyleAttribute('display', 'none');
 		elseif(!$visible)
-			$writer->addStyleAttribute('visibility','hidden');
-		$writer->addAttribute('id',$this->getClientID());
+			$writer->addStyleAttribute('visibility', 'hidden');
+		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 		$this->renderClientControlScript($writer);
 	}
@@ -176,7 +176,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($control instanceof TDatePicker)
 			$options['DateFormat'] = $control->getDateFormat();
 
-		$options = array_merge($options,$this->getClientSide()->getOptions()->toArray());
+		$options = array_merge($options, $this->getClientSide()->getOptions()->toArray());
 
 		return $options;
 	}
@@ -273,7 +273,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$control=$this->getValidationTarget();
 			if($control instanceof TWebControl)
 			{
-				$class = preg_replace ('/ ' . preg_quote($cssClass) . '/', '',$control->getCssClass());
+				$class = preg_replace ('/ ' . preg_quote($cssClass) . '/', '', $control->getCssClass());
 				if(!$this->getIsValid())
 				{
 					$class .= ' ' . $cssClass;
@@ -312,7 +312,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setForControl($value)
 	{
-		throw new TNotSupportedException('basevalidator_forcontrol_unsupported',get_class($this));
+		throw new TNotSupportedException('basevalidator_forcontrol_unsupported', get_class($this));
 	}
 
 	/**
@@ -332,7 +332,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getDisplay()
 	{
-		return $this->getViewState('Display',TValidatorDisplayStyle::Fixed);
+		return $this->getViewState('Display', TValidatorDisplayStyle::Fixed);
 	}
 
 	/**
@@ -340,7 +340,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidatorDisplayStyle'),TValidatorDisplayStyle::Fixed);
+		$this->setViewState('Display', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidatorDisplayStyle'), TValidatorDisplayStyle::Fixed);
 	}
 
 	/**
@@ -348,7 +348,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
@@ -356,7 +356,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -364,7 +364,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getErrorMessage()
 	{
-		return $this->getViewState('ErrorMessage','');
+		return $this->getViewState('ErrorMessage', '');
 	}
 
 	/**
@@ -373,7 +373,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setErrorMessage($value)
 	{
-		$this->setViewState('ErrorMessage',$value,'');
+		$this->setViewState('ErrorMessage', $value, '');
 	}
 
 	/**
@@ -381,7 +381,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getControlToValidate()
 	{
-		return $this->getViewState('ControlToValidate','');
+		return $this->getViewState('ControlToValidate', '');
 	}
 
 	/**
@@ -392,7 +392,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setControlToValidate($value)
 	{
-		$this->setViewState('ControlToValidate',$value,'');
+		$this->setViewState('ControlToValidate', $value, '');
 	}
 
 	/**
@@ -400,7 +400,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getFocusOnError()
 	{
-		return $this->getViewState('FocusOnError',false);
+		return $this->getViewState('FocusOnError', false);
 	}
 
 	/**
@@ -408,7 +408,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setFocusOnError($value)
 	{
-		$this->setViewState('FocusOnError',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('FocusOnError', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -418,7 +418,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getFocusElementID()
 	{
-		if(($id=$this->getViewState('FocusElementID',''))==='')
+		if(($id=$this->getViewState('FocusElementID', ''))==='')
 		{
 			$target=$this->getValidationTarget();
 			/* Workaround: TCheckBoxList and TRadioButtonList nests the actual
@@ -448,7 +448,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
@@ -456,7 +456,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -486,7 +486,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
 		else
-			throw new TConfigurationException('basevalidator_controltovalidate_invalid',get_class($this));
+			throw new TConfigurationException('basevalidator_controltovalidate_invalid', get_class($this));
 	}
 
 	/**
@@ -500,7 +500,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if($control instanceof \Prado\Web\UI\IValidatable)
 			return $control->getValidationPropertyValue();
 		else
-			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
+			throw new TInvalidDataTypeException('basevalidator_validatable_required', get_class($this));
 	}
 
 	/**
@@ -549,7 +549,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function getControlCssClass()
 	{
-		return $this->getViewState('ControlCssClass','');
+		return $this->getViewState('ControlCssClass', '');
 	}
 
 	/**
@@ -557,7 +557,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setControlCssClass($value)
 	{
-		$this->setViewState('ControlCssClass',$value,'');
+		$this->setViewState('ControlCssClass', $value, '');
 	}
 
 	/**
@@ -572,7 +572,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function onValidationSuccess()
 	{
-		$this->raiseEvent('OnValidationSuccess',$this,null);
+		$this->raiseEvent('OnValidationSuccess', $this, null);
 	}
 
 	/**
@@ -580,7 +580,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function onValidationError()
 	{
-		$this->raiseEvent('OnValidationError',$this,null);
+		$this->raiseEvent('OnValidationError', $this, null);
 	}
 
 	/**
@@ -591,7 +591,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function onValidate()
 	{
-		$this->raiseEvent('OnValidate',$this,null);
+		$this->raiseEvent('OnValidate', $this, null);
 	}
 
 	/**

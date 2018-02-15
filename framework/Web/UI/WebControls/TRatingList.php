@@ -50,7 +50,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
@@ -58,7 +58,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -179,7 +179,7 @@ class TRatingList extends TRadioButtonList
 				return $control;
 		}
 		throw new TInvalidDataValueException(
-			'ratinglist_invalid_caption_id',$id,$this->getID());
+			'ratinglist_invalid_caption_id', $id, $this->getID());
 	}
 
 	/**
@@ -340,7 +340,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getPage()->getClientScript()->registerPostBackControl(
 			$this->getClientClassName(), $this->getPostBackOptions());
 		parent::render($writer);

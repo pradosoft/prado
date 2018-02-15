@@ -254,13 +254,13 @@ class TTarFileExtractor
 		$v_checksum = 0;
 		// ..... First part of the header
 		for ($i=0; $i<148; $i++)
-			$v_checksum+=ord(substr($v_binary_data,$i,1));
+			$v_checksum+=ord(substr($v_binary_data, $i, 1));
 		// ..... Ignore the checksum value and replace it by ' ' (space)
 		for ($i=148; $i<156; $i++)
 			$v_checksum += ord(' ');
 		// ..... Last part of the header
 		for ($i=156; $i<512; $i++)
-		   $v_checksum+=ord(substr($v_binary_data,$i,1));
+		   $v_checksum+=ord(substr($v_binary_data, $i, 1));
 
 		$v_data = unpack("a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/"
 						 . "a8checksum/a1typeflag/a100link/a6magic/a2version/"
@@ -550,7 +550,7 @@ class TTarFileExtractor
 			$this->_error("Unable to create directory '$p_dir'");
 			return false;
 		}
-		chmod($p_dir,PRADO_CHMOD);
+		chmod($p_dir, PRADO_CHMOD);
 
 		return true;
 	}
@@ -564,7 +564,7 @@ class TTarFileExtractor
 			  $p_path = substr($p_path, $v_position+1);
 		  }
 		  // ----- Change potential windows directory separator
-		  if ((strpos($p_path, '\\') > 0) || (substr($p_path, 0,1) == '\\')) {
+		  if ((strpos($p_path, '\\') > 0) || (substr($p_path, 0, 1) == '\\')) {
 			  $p_path = strtr($p_path, '\\', '/');
 		  }
 	  }

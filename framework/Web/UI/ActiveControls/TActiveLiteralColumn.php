@@ -39,7 +39,7 @@ use Prado\Web\UI\WebControls\TLiteralColumn;
  * @since 3.1.9
  */
 class TActiveLiteralColumn extends TLiteralColumn {
-	protected function initializeHeaderCell($cell,$columnIndex) {
+	protected function initializeHeaderCell($cell, $columnIndex) {
 		$text=$this->getHeaderText();
 
 		if(($classPath=$this->getHeaderRenderer())!=='') {
