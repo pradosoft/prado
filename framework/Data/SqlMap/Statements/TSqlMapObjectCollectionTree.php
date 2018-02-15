@@ -173,7 +173,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 		{
 			if($list instanceof TList)
 				$parentObject->{$property}[] = $this->_entries[$node]['object'];
-			else if(is_array($list))
+			elseif(is_array($list))
 				$list[] = $this->_entries[$node]['object'];
 			else
 				throw new TSqlMapExecutionException(

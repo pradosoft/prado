@@ -243,7 +243,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 		$scrollBars=$this->getScrollBars();
 		if($scrollBars===TInlineFrameScrollBars::None)
 			$writer->addAttribute('scrolling','no');
-		else if($scrollBars===TInlineFrameScrollBars::Both)
+		elseif($scrollBars===TInlineFrameScrollBars::Both)
 			$writer->addAttribute('scrolling','yes');
 
 		if (!$this->getShowBorder())

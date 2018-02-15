@@ -86,9 +86,9 @@ abstract class TActiveRecordRelation
 			while($obj = array_pop($stack))
 				$obj->collectForeignObjects($results);
 		}
-		else if($results instanceof TActiveRecordRelation)
+		elseif($results instanceof TActiveRecordRelation)
 			$stack[] = $this; //call it later
-		else if($results === null || !$validArray)
+		elseif($results === null || !$validArray)
 			$stack = array();
 		return $results;
 	}

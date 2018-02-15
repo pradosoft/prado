@@ -218,7 +218,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 
@@ -235,7 +235,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 

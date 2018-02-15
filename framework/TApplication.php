@@ -327,7 +327,7 @@ class TApplication extends \Prado\TComponent
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
 		if(is_dir($basePath) && is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
 			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
-		else if(is_file($basePath))
+		elseif(is_file($basePath))
 		{
 			$configFile=$basePath;
 			$basePath=dirname($configFile);

@@ -29,7 +29,7 @@ class TReadOnlyDataSourceView extends TDataSourceView
 		parent::__construct($owner,$viewName);
 		if($dataSource===null || is_array($dataSource))
 			$this->_dataSource=new TMap($dataSource);
-		else if($dataSource instanceof \Traversable)
+		elseif($dataSource instanceof \Traversable)
 			$this->_dataSource=$dataSource;
 		else
 			throw new TInvalidDataTypeException('readonlydatasourceview_datasource_invalid');

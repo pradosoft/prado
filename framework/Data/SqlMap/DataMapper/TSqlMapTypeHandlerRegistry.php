@@ -75,7 +75,7 @@ class TSqlMapTypeHandlerRegistry
 
 			if(class_exists('Prado', false))
 				return Prado::createComponent($type);
-			else if(class_exists($type, false)) //NO auto loading
+			elseif(class_exists($type, false)) //NO auto loading
 				return new $type;
 			else
 				throw new TSqlMapException('sqlmap_unable_to_find_class', $type);

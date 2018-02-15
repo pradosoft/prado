@@ -327,7 +327,7 @@ class TPriorityList extends TList
 				$c=count($this->_d[$priority]);
 				$c+=$cc;
 				$this->_d[$priority][]=$item;
-			} else if(isset($this->_d[$priority])) {
+			} elseif(isset($this->_d[$priority])) {
 				$c=$index+$cc;
 				array_splice($this->_d[$priority],$index,0,array($item));
 			} else {
@@ -343,7 +343,7 @@ class TPriorityList extends TList
 			if($index===false&&isset($this->_d[$priority])) {
 				$cc=count($this->_d[$priority]);
 				$this->_d[$priority][]=$item;
-			} else if(isset($this->_d[$priority])) {
+			} elseif(isset($this->_d[$priority])) {
 				$cc=$index;
 				array_splice($this->_d[$priority],$index,0,array($item));
 			} else {
@@ -649,12 +649,12 @@ class TPriorityList extends TList
 				foreach($data->itemsAtPriority($priority) as $index=>$item)
 					$this->insertAtIndexInPriority($item,$index,$priority);
 			}
-		} else if(is_array($data)||$data instanceof \Traversable) {
+		} elseif(is_array($data)||$data instanceof \Traversable) {
 			if($this->getCount()>0)
 				$this->clear();
 			foreach($data as $key=>$item)
 				$this->add($item);
-		} else if($data!==null)
+		} elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 
@@ -676,13 +676,13 @@ class TPriorityList extends TList
 					$this->insertAtIndexInPriority($item,false,$priority);
 			}
 		}
-		else if(is_array($data)||$data instanceof \Traversable)
+		elseif(is_array($data)||$data instanceof \Traversable)
 		{
 			foreach($data as $priority=>$item)
 				$this->add($item);
 
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 

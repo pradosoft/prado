@@ -180,17 +180,17 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 			{
 				if($act==='Disabled')
 					$writer->addAttribute('autocomplete','off');
-				else if($act==='Search')
+				elseif($act==='Search')
 					$writer->addAttribute('vcard_name','search');
-				else if($act==='HomeCountryRegion')
+				elseif($act==='HomeCountryRegion')
 					$writer->addAttribute('vcard_name','HomeCountry');
-				else if($act==='BusinessCountryRegion')
+				elseif($act==='BusinessCountryRegion')
 					$writer->addAttribute('vcard_name','BusinessCountry');
 				else
 				{
 					if(strpos($act,'Business')===0)
 						$act='Business'.'.'.substr($act,8);
-					else if(strpos($act,'Home')===0)
+					elseif(strpos($act,'Home')===0)
 						$act='Home'.'.'.substr($act,4);
 					$writer->addAttribute('vcard_name','vCard.'.$act);
 				}

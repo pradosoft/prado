@@ -889,7 +889,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 		if(!$this->_navigation)
 			return;
-		else if($activeStepIndex<0 || $activeStepIndex>=$wizardSteps->getCount())
+		elseif($activeStepIndex<0 || $activeStepIndex>=$wizardSteps->getCount())
 		{
 			$this->_navigation->setVisible(false);
 			return;
@@ -1025,9 +1025,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$stepCount=$steps->getCount();
 				if($stepCount===1 || ($index<$stepCount-1 && $steps->itemAt($index+1)->getStepType()===TWizardStepType::Complete))
 					return TWizardStepType::Finish;
-				else if($index===0)
+				elseif($index===0)
 					return TWizardStepType::Start;
-				else if($index===$stepCount-1)
+				elseif($index===$stepCount-1)
 					return TWizardStepType::Finish;
 				else
 					return TWizardStepType::Step;
@@ -1363,7 +1363,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$this->onNextButtonClick($navParam);
 				$handled=true;
 			}
-			else if(strcasecmp($command,self::CMD_PREVIOUS)===0)
+			elseif(strcasecmp($command,self::CMD_PREVIOUS)===0)
 			{
 				if($type!==TWizardStepType::Finish && $type!==TWizardStepType::Step)
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_PREVIOUS);
@@ -1373,7 +1373,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$this->onPreviousButtonClick($navParam);
 				$handled=true;
 			}
-			else if(strcasecmp($command,self::CMD_COMPLETE)===0)
+			elseif(strcasecmp($command,self::CMD_COMPLETE)===0)
 			{
 				if($type!==TWizardStepType::Finish)
 					throw new TInvalidDataValueException('wizard_command_invalid',self::CMD_COMPLETE);
@@ -1382,7 +1382,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$this->onCompleteButtonClick($navParam);
 				$handled=true;
 			}
-			else if(strcasecmp($command,self::CMD_MOVETO)===0)
+			elseif(strcasecmp($command,self::CMD_MOVETO)===0)
 			{
 				if($this->_cancelNavigation)  // may be set in onSideBarButtonClick
 					$navParam->setCancelNavigation(true);

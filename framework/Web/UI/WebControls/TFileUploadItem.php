@@ -138,7 +138,7 @@ class TFileUploadItem extends \Prado\TComponent
     {
       if($deleteTempFile)
         return move_uploaded_file($this->_localName,$fileName);
-      else if(is_uploaded_file($this->_localName))
+      elseif(is_uploaded_file($this->_localName))
         return file_put_contents($fileName,file_get_contents($this->_localName))!==false;
       else
         return false;

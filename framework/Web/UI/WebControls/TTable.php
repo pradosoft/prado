@@ -318,7 +318,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 								$writer->renderBeginTag('tfoot');
 							$currentSection=$section;
 						}
-						else if($currentSection===TTableRowSection::Body)
+						elseif($currentSection===TTableRowSection::Body)
 						{
 							$writer->renderEndTag();
 							if($section===TTableRowSection::Footer)

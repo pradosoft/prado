@@ -690,24 +690,24 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender,$pageIndex));
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_PAGE_NEXT)===0)
+			elseif(strcasecmp($command,self::CMD_PAGE_NEXT)===0)
 			{
 				$pageIndex=$this->getCurrentPageIndex()+1;
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender,$pageIndex));
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_PAGE_PREV)===0)
+			elseif(strcasecmp($command,self::CMD_PAGE_PREV)===0)
 			{
 				$pageIndex=$this->getCurrentPageIndex()-1;
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender,$pageIndex));
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_PAGE_FIRST)===0)
+			elseif(strcasecmp($command,self::CMD_PAGE_FIRST)===0)
 			{
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender,0));
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_PAGE_LAST)===0)
+			elseif(strcasecmp($command,self::CMD_PAGE_LAST)===0)
 			{
 				$this->onPageIndexChanged(new TPagerPageChangedEventParameter($sender,$this->getPageCount()-1));
 				return true;

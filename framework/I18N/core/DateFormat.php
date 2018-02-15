@@ -96,9 +96,9 @@ class DateFormat
 	{
 		if($formatInfo === null)
 			$this->formatInfo = DateTimeFormatInfo::getInvariantInfo();
-		else if($formatInfo instanceof CultureInfo)
+		elseif($formatInfo instanceof CultureInfo)
 			$this->formatInfo = $formatInfo->DateTimeFormat;
-		else if($formatInfo instanceof DateTimeFormatInfo)
+		elseif($formatInfo instanceof DateTimeFormatInfo)
 			$this->formatInfo = $formatInfo;
 		else
 			$this->formatInfo = DateTimeFormatInfo::getInstance($formatInfo);
@@ -115,7 +115,7 @@ class DateFormat
 	{
 		if (is_numeric($time)) //assumes unix epoch
 			$time = floatval($time);
-		else if(is_string($time))
+		elseif(is_string($time))
 			$time = @strtotime($time);
 
 		if($pattern === null)
@@ -137,7 +137,7 @@ class DateFormat
 				$sub = preg_replace('/(^\')|(\'$)/','',$pattern);
 				$tokens[$i] =  str_replace('``````','\'',$sub);
 			}
-			else if($pattern == '``````')
+			elseif($pattern == '``````')
 			{
 				$tokens[$i] = '\'';
 			}
@@ -296,9 +296,9 @@ class DateFormat
 
 			if($pattern{$i} == "'" && $text == false)
 				$text = true;
-			else if($text && $pattern{$i} == "'" && $char == "'")
+			elseif($text && $pattern{$i} == "'" && $char == "'")
 				$text = true;
-			else if($text && $char != "'" && $pattern{$i} == "'")
+			elseif($text && $char != "'" && $pattern{$i} == "'")
 				$text = false;
 
 			$char = $pattern{$i};

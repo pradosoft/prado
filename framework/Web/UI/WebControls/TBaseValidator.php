@@ -140,7 +140,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$visible=$this->getEnabled(true) && !$this->getIsValid();
 		if($display===TValidatorDisplayStyle::None || (!$visible && $display===TValidatorDisplayStyle::Dynamic))
 			$writer->addStyleAttribute('display','none');
-		else if(!$visible)
+		elseif(!$visible)
 			$writer->addStyleAttribute('visibility','hidden');
 		$writer->addAttribute('id',$this->getClientID());
 		parent::addAttributesToRender($writer);
@@ -601,7 +601,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	{
 		if(($text=$this->getText())!=='')
 			$writer->write($text);
-		else if(($text=$this->getErrorMessage())!=='')
+		elseif(($text=$this->getErrorMessage())!=='')
 			$writer->write($text);
 		else
 			parent::renderContents($writer);

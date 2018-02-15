@@ -83,7 +83,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 				++$this->_c;
 			}
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('stack_data_not_iterable');
 	}
 

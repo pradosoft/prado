@@ -305,7 +305,7 @@ abstract class THotSpot extends \Prado\TComponent
 			if(($target=$this->getTarget())!=='')
 				$writer->addAttribute('target',$target);
 		}
-		else if($mode===THotSpotMode::Inactive)
+		elseif($mode===THotSpotMode::Inactive)
 			$writer->addAttribute('nohref','true');
 		$text=$this->getAlternateText();
 		$writer->addAttribute('title',$text);

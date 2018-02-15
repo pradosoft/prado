@@ -62,7 +62,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	{
 		if($object instanceof TView)
 			$this->getControls()->add($object);
-		else if(!is_string($object))
+		elseif(!is_string($object))
 			throw new TConfigurationException('multiview_view_required');
 	}
 
@@ -98,7 +98,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 		$count=$views->getCount();
 		if($count===0 && $this->getControlStage()<TControl::CS_CHILD_INITIALIZED)
 			$this->_cachedActiveViewIndex=$index;
-		else if($index<$count)
+		elseif($index<$count)
 		{
 			$this->setControlState('ActiveViewIndex',$index,-1);
 			$this->_cachedActiveViewIndex=-1;
@@ -161,7 +161,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 					$this->onActiveViewChanged(null);
 				}
 			}
-			else if($v->getActive())
+			elseif($v->getActive())
 			{
 				$v->setActive(false);
 				if($triggerEvent)

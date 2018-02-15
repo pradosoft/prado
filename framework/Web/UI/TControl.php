@@ -279,7 +279,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		{
 			if($this->_parent)
 				$this->_page=$this->_parent->getPage();
-			else if($this->_tplControl)
+			elseif($this->_tplControl)
 				$this->_page=$this->_tplControl->getPage();
 		}
 		return $this->_page;
@@ -401,7 +401,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			{
 				if($this->getPage()===$namingContainer)
 					return ($this->_uid=$this->_id);
-				else if(($prefix=$namingContainer->getUniqueID())==='')
+				elseif(($prefix=$namingContainer->getUniqueID())==='')
 					return $this->_id;
 				else
 					return ($this->_uid=$prefix.self::ID_SEPARATOR.$this->_id);
@@ -492,7 +492,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	{
 		if($this->_stage>=self::CS_CHILD_INITIALIZED)
 			throw new TInvalidOperationException('control_enabletheming_unchangeable',get_class($this),$this->getUniqueID());
-		else if(TPropertyValue::ensureBoolean($value))
+		elseif(TPropertyValue::ensureBoolean($value))
 			$this->_flags &= ~self::IS_DISABLE_THEMING;
 		else
 			$this->_flags |= self::IS_DISABLE_THEMING;
@@ -773,7 +773,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	{
 		if(isset($this->_viewState[$key]))
 			return $this->_viewState[$key]!==null?$this->_viewState[$key]:$defaultValue;
-		else if(isset($this->_tempState[$key]))
+		elseif(isset($this->_tempState[$key]))
 		{
 			if(is_object($this->_tempState[$key]) && $this->_trackViewState)
 				$this->_viewState[$key]=$this->_tempState[$key];
@@ -1348,7 +1348,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 				{
 					if($control instanceof TControl)
 						$control->preRenderRecursive();
-					else if($control instanceof TCompositeLiteral)
+					elseif($control instanceof TCompositeLiteral)
 						$control->evaluateDynamicContent();
 				}
 			}
@@ -1589,9 +1589,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			{
 				if(is_string($control))
 					$writer->write($control);
-				else if($control instanceof TControl)
+				elseif($control instanceof TControl)
 					$control->renderControl($writer);
-				else if($control instanceof IRenderable)
+				elseif($control instanceof IRenderable)
 					$control->render($writer);
 			}
 		}
@@ -1711,7 +1711,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			$page->applyControlStyleSheet($this);
 			$this->_flags |= self::IS_STYLESHEET_APPLIED;
 		}
-		else if($this->_flags & self::IS_STYLESHEET_APPLIED)
+		elseif($this->_flags & self::IS_STYLESHEET_APPLIED)
 			throw new TInvalidOperationException('control_stylesheet_applied',get_class($this));
 	}
 

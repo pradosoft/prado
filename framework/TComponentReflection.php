@@ -48,7 +48,7 @@ class TComponentReflection extends \Prado\TComponent
 	{
 		if(is_string($component) && class_exists($component,false))
 			$this->_className=$component;
-		else if(is_object($component))
+		elseif(is_object($component))
 			$this->_className=get_class($component);
 		else
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
@@ -86,7 +86,7 @@ class TComponentReflection extends \Prado\TComponent
 				{
 					if($this->isPropertyMethod($method))
 						$properties[substr($methodName,3)]=$method;
-					else if($this->isEventMethod($method))
+					elseif($this->isEventMethod($method))
 					{
 						$methodName[0]='O';
 						$events[$methodName]=$method;

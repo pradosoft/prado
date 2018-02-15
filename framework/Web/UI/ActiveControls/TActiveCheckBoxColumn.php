@@ -78,7 +78,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 			}
 			$cell->getControls()->add($control);
 		}
-		else if($this->getAllowSorting())
+		elseif($this->getAllowSorting())
 		{
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
@@ -92,7 +92,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 			{
 				$button= new TActiveLinkButton;
 				$button->setText($text);
@@ -114,7 +114,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 					$image->setAlternateText($text);
 				$cell->getControls()->add($image);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 				$cell->setText($text);
 			else
 				$cell->setText('&nbsp;');

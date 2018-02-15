@@ -90,7 +90,7 @@ class TRequiredFieldValidator extends TBaseValidator
 		$control = $this->getValidationTarget();
 		if($control instanceof TListControl)
 			return $this->validateListControl($control);
-		else if($control instanceof TRadioButton && strlen($control->getGroupName()) > 0)
+		elseif($control instanceof TRadioButton && strlen($control->getGroupName()) > 0)
 			return $this->validateRadioButtonGroup($control);
 		else
 			return $this->validateStandardControl($control);

@@ -77,7 +77,7 @@ class TView extends \Prado\Web\UI\TControl
 	{
 		if(($parent=$this->getParent())===null)
 			return $this->getActive();
-		else if($this->getActive())
+		elseif($this->getActive())
 			return $parent->getVisible($checkParents);
 		else
 			return false;

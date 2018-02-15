@@ -118,7 +118,7 @@ class TParameterModule extends \Prado\TModule
 				}
 			}
 		}
-		else if($config instanceof TXmlElement)
+		elseif($config instanceof TXmlElement)
 		{
 			foreach($config->getElementsByTagName('parameter') as $node)
 			{
@@ -170,7 +170,7 @@ class TParameterModule extends \Prado\TModule
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('parametermodule_parameterfile_unchangeable');
-		else if(($this->_paramFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null || !is_file($this->_paramFile))
+		elseif(($this->_paramFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null || !is_file($this->_paramFile))
 			throw new TConfigurationException('parametermodule_parameterfile_invalid',$value);
 	}
 }

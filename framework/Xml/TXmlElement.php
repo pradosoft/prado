@@ -217,7 +217,7 @@ class TXmlElement extends \Prado\TComponent
 			$str.=$prefix."</{$this->_tagName}>";
 			return $str;
 		}
-		else if(($value=$this->getValue())!=='')
+		elseif(($value=$this->getValue())!=='')
 		{
 			$value=$this->xmlEncode($value);
 			return $prefix."<{$this->_tagName}$attr>$value</{$this->_tagName}>";

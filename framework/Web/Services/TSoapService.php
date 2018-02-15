@@ -250,7 +250,7 @@ class TSoapService extends \Prado\TService
 		$serverClass=null;
 		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP && isset($config['class']))
 			$serverClass=$config['class'];
-		else if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML)
+		elseif($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML)
 			$serverClass=$properties->remove('class');
 		if($serverClass===null)
 			$serverClass=self::DEFAULT_SOAP_SERVER;

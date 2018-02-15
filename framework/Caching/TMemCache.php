@@ -209,7 +209,7 @@ class TMemCache extends TCache
         		    $value=$properties->remove($property);
         		    if($value!==null && is_numeric($value))
         		        $server[$property]=$value;
-        		    else if($value!==null)
+        		    elseif($value!==null)
         		        throw new TConfigurationException($exception);
         		}
         		$server['Persistent']= TPropertyValue::ensureBoolean($properties->remove('Persistent'));

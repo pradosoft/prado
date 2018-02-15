@@ -696,41 +696,41 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$this->onSelectedIndexChanged($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_EDIT)===0)
+			elseif(strcasecmp($command,self::CMD_EDIT)===0)
 			{
 				$this->onEditCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_DELETE)===0)
+			elseif(strcasecmp($command,self::CMD_DELETE)===0)
 			{
 				$this->onDeleteCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_UPDATE)===0)
+			elseif(strcasecmp($command,self::CMD_UPDATE)===0)
 			{
 				$this->onUpdateCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_CANCEL)===0)
+			elseif(strcasecmp($command,self::CMD_CANCEL)===0)
 			{
 				$this->onCancelCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_SORT)===0)
+			elseif(strcasecmp($command,self::CMD_SORT)===0)
 			{
 				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender,$param));
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_PAGE)===0)
+			elseif(strcasecmp($command,self::CMD_PAGE)===0)
 			{
 				$p=$param->getCommandParameter();
 				if(strcasecmp($p,self::CMD_PAGE_NEXT)===0)
 					$pageIndex=$this->getCurrentPageIndex()+1;
-				else if(strcasecmp($p,self::CMD_PAGE_PREV)===0)
+				elseif(strcasecmp($p,self::CMD_PAGE_PREV)===0)
 					$pageIndex=$this->getCurrentPageIndex()-1;
-				else if(strcasecmp($p,self::CMD_PAGE_FIRST)===0)
+				elseif(strcasecmp($p,self::CMD_PAGE_FIRST)===0)
 					$pageIndex=0;
-				else if(strcasecmp($p,self::CMD_PAGE_LAST)===0)
+				elseif(strcasecmp($p,self::CMD_PAGE_LAST)===0)
 					$pageIndex=$this->getPageCount()-1;
 				else
 					$pageIndex=TPropertyValue::ensureInteger($p)-1;
@@ -968,9 +968,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				}
 				if($index===$editIndex)
 					$itemType=TListItemType::EditItem;
-				else if($index===$selectedIndex)
+				elseif($index===$selectedIndex)
 					$itemType=TListItemType::SelectedItem;
-				else if($index % 2)
+				elseif($index % 2)
 					$itemType=TListItemType::AlternatingItem;
 				else
 					$itemType=TListItemType::Item;
@@ -1042,9 +1042,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				}
 				if($index===$editIndex)
 					$itemType=TListItemType::EditItem;
-				else if($index===$selectedIndex)
+				elseif($index===$selectedIndex)
 					$itemType=TListItemType::SelectedItem;
-				else if($index % 2)
+				elseif($index % 2)
 					$itemType=TListItemType::AlternatingItem;
 				else
 					$itemType=TListItemType::Item;
@@ -1548,7 +1548,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 					{
 						if($itemType===TListItemType::Header)
 							$style=$column->getHeaderStyle(false);
-						else if($itemType===TListItemType::Footer)
+						elseif($itemType===TListItemType::Footer)
 							$style=$column->getFooterStyle(false);
 						else
 							$style=$column->getItemStyle(false);
@@ -1597,7 +1597,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$this->renderContents($writer);
 				$control->renderEndTag($writer);
 			}
-			else if($this->getViewState('ItemCount',0)>0)
+			elseif($this->getViewState('ItemCount',0)>0)
 			{
 				$this->applyItemStyles();
 				if($this->_topPager)

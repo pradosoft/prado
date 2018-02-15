@@ -230,7 +230,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if($this->_started)
 			throw new TInvalidOperationException('httpsession_sessionname_unchangeable');
-		else if(ctype_alnum($value))
+		elseif(ctype_alnum($value))
 			session_name($value);
 		else
 			throw new TInvalidDataValueException('httpsession_sessionname_invalid',$value);
@@ -296,7 +296,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if(ini_get('session.use_cookies')==='0')
 			return THttpSessionCookieMode::None;
-		else if(ini_get('session.use_only_cookies')==='0')
+		elseif(ini_get('session.use_only_cookies')==='0')
 			return THttpSessionCookieMode::Allow;
 		else
 			return THttpSessionCookieMode::Only;
@@ -318,7 +318,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 				ini_set('session.use_cookies','0');
 			  ini_set('session.use_only_cookies','0');
       }
-			else if($value===THttpSessionCookieMode::Allow)
+			elseif($value===THttpSessionCookieMode::Allow)
 			{
 				ini_set('session.use_cookies','1');
 				ini_set('session.use_only_cookies','0');

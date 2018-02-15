@@ -88,7 +88,7 @@ class TConditional extends \Prado\Web\UI\TControl
 			if($this->_trueTemplate)
 				$this->_trueTemplate->instantiateIn($this->getTemplateControl(),$this);
 		}
-		else if($this->_falseTemplate)
+		elseif($this->_falseTemplate)
 			$this->_falseTemplate->instantiateIn($this->getTemplateControl(),$this);
 		$this->_creatingChildren=false;
 	}

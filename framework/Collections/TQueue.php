@@ -84,7 +84,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 				++$this->_c;
 			}
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('queue_data_not_iterable');
 	}
 

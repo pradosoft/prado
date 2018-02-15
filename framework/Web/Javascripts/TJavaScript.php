@@ -142,9 +142,9 @@ class TJavaScript
 	{
 		if(is_string($value))
 			return self::quoteString($value);
-		else if(is_bool($value))
+		elseif(is_bool($value))
 			return $value?'true':'false';
-		else if(is_array($value))
+		elseif(is_array($value))
 		{
 			$results='';
 			if(($n=count($value))>0 && array_keys($value)!==range(0,$n-1))
@@ -174,9 +174,9 @@ class TJavaScript
 				return '['.$results.']';
 			}
 		}
-		else if(is_integer($value))
+		elseif(is_integer($value))
 			return "$value";
-		else if(is_float($value))
+		elseif(is_float($value))
 		{
 			switch($value)
 			{
@@ -195,12 +195,12 @@ class TJavaScript
 					break;
 			}
 		}
-		else if(is_object($value))
+		elseif(is_object($value))
 			if ($value instanceof TJavaScriptLiteral)
 				return $value->toJavaScriptLiteral();
 			else
 				return self::encode(get_object_vars($value),$toMap);
-		else if($value===null)
+		elseif($value===null)
 			return 'null';
 		else
 			return '';
@@ -231,7 +231,7 @@ class TJavaScript
 	private static function convertToUtf8(&$value, $sourceEncoding) {
 		if(is_string($value))
 			$value=iconv($sourceEncoding, 'UTF-8', $value);
-		else if (is_array($value))
+		elseif (is_array($value))
 		{
 			foreach($value as &$element)
 				self::convertToUtf8($element, $sourceEncoding);

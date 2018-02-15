@@ -58,9 +58,9 @@ class TCacheHttpSession extends THttpSession
     {
 		if($this->_cacheModuleID==='')
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
-		else if(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
+		elseif(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
 			throw new TConfigurationException('cachesession_cachemodule_inexistent',$this->_cacheModuleID);
-		else if($cache instanceof ICache)
+		elseif($cache instanceof ICache)
 			$this->_cache=$cache;
 		else
 			throw new TConfigurationException('cachesession_cachemodule_invalid',$this->_cacheModuleID);

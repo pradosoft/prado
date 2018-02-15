@@ -192,7 +192,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		{
 			if($action[0]==='Page.ClientScript')
 				call_user_func_array(array($cs,$action[1]),$action[2]);
-			else if($action[0]==='Page')
+			elseif($action[0]==='Page')
 				call_user_func_array(array($page,$action[1]),$action[2]);
 			else
 				call_user_func_array(array($this->getSubProperty($action[0]),$action[1]),$action[2]);
@@ -482,7 +482,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	{
 		if($this->_dataCached)
 			$writer->write($this->_contents);
-		else if($this->_cacheAvailable)
+		elseif($this->_cacheAvailable)
 		{
 			$textwriter = new TTextWriter();
 			$multiwriter = new TOutputCacheTextWriterMulti(array($writer->getWriter(),$textwriter));

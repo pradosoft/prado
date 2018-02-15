@@ -294,7 +294,7 @@ class TCaptcha extends TImage
 			$maxLength=$this->getMaxTokenLength();
 			if($minLength>$maxLength)
 				$tokenLength=rand($maxLength,$minLength);
-			else if($minLength<$maxLength)
+			elseif($minLength<$maxLength)
 				$tokenLength=rand($minLength,$maxLength);
 			else
 				$tokenLength=$minLength;

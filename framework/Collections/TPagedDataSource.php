@@ -75,9 +75,9 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 		{
 			if(is_array($value))
 				$value=new TMap($value);
-			else if($value instanceof \Traversable)
+			elseif($value instanceof \Traversable)
 				$value=new TList($value);
-			else if($value!==null)
+			elseif($value!==null)
 				throw new TInvalidDataTypeException('pageddatasource_datasource_invalid');
 		}
 		$this->_dataSource=$value;
@@ -249,7 +249,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	{
 		if($this->_dataSource===null)
 			return 0;
-		else if($this->_allowCustomPaging)
+		elseif($this->_allowCustomPaging)
 			return $this->_virtualCount;
 		else
 			return $this->_dataSource->getCount();
@@ -262,7 +262,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	{
 		if($this->_dataSource instanceof TList)
 			return new TPagedListIterator($this->_dataSource,$this->getFirstIndexInPage(),$this->getCount());
-		else if($this->_dataSource instanceof TMap)
+		elseif($this->_dataSource instanceof TMap)
 			return new TPagedMapIterator($this->_dataSource,$this->getFirstIndexInPage(),$this->getCount());
 		else
 			return null;

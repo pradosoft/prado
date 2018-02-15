@@ -489,7 +489,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			$output = $this->getOutputFile($app_dir, $args[2]);
 			if(is_file($output))
 				echo "** File $output already exists, skiping. \n";
-			else if($config !== false && $output !== false)
+			elseif($config !== false && $output !== false)
 				$this->generateActiveRecord($config, $args[1], $output);
 		}
 		return true;

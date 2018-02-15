@@ -152,7 +152,7 @@ class TRepeatInfo extends \Prado\TComponent
 				$control->setCaptionAlign($this->_captionAlign);
 			}
 		}
-		else if($this->_repeatLayout===TRepeatLayout::Raw)
+		elseif($this->_repeatLayout===TRepeatLayout::Raw)
 		{
 			$this->renderRawContents($writer,$user);
 			return;
@@ -352,7 +352,7 @@ class TRepeatInfo extends \Prado\TComponent
 						$writer->renderEndTag();
 						$writer->writeLine();
 					}
-					else if($columns>1)
+					elseif($columns>1)
 						$writer->write("<td></td>\n");
 				}
 				if($row==$rows-1)

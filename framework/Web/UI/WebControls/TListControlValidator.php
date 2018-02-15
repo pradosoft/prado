@@ -153,9 +153,9 @@ class TListControlValidator extends TBaseValidator
 
 		if($min !== -1 && $max !== -1)
 			return $exists && $count >= $min && $count <= $max;
-		else if($min === -1 && $max !== -1)
+		elseif($min === -1 && $max !== -1)
 			return $exists && $count <= $max;
-		else if($min !== -1 && $max === -1)
+		elseif($min !== -1 && $max === -1)
 			return $exists && $count >= $min;
 		else
 			return $exists;

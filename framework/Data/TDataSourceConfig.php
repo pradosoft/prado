@@ -161,7 +161,7 @@ class TDataSourceConfig extends \Prado\TModule
 		$conn = $this->getApplication()->getModule($id);
 		if($conn instanceof TDbConnection)
 			return $conn;
-		else if($conn instanceof TDataSourceConfig)
+		elseif($conn instanceof TDataSourceConfig)
 			return $conn->getDbConnection();
 		else
 			throw new TConfigurationException('datasource_dbconnection_invalid',$id);

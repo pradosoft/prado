@@ -35,7 +35,7 @@ class TActiveButtonColumn extends TButtonColumn {
 			$buttonType=$this->getButtonType();
 			if($buttonType===TButtonColumnType::LinkButton)
 				$button=new TActiveLinkButton;
-			else if($buttonType===TButtonColumnType::PushButton)
+			elseif($buttonType===TButtonColumnType::PushButton)
 					$button=new TActiveButton;
 				else // image button
 				{

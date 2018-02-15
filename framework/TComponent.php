@@ -608,12 +608,12 @@ class TComponent
 			// getting a property
 			return $this->$getter();
 		}
-		else if(method_exists($this,$jsgetter='getjs'.$name))
+		elseif(method_exists($this,$jsgetter='getjs'.$name))
 		{
 			// getting a javascript property
 			return (string)$this->$jsgetter();
 		}
-		else if(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0 && method_exists($this,$name))
 		{
 			// getting an event (handler list)
 			$name=strtolower($name);
@@ -621,7 +621,7 @@ class TComponent
 				$this->_e[$name]=new TPriorityList;
 			return $this->_e[$name];
 		}
-		else if(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name,'fx',2)===0)
 		{
 			// getting a global event (handler list)
 			$name=strtolower($name);
@@ -629,12 +629,12 @@ class TComponent
 				self::$_ue[$name]=new TPriorityList;
 			return self::$_ue[$name];
 		}
-		else if($this->_behaviorsenabled)
+		elseif($this->_behaviorsenabled)
 		{
 			// getting a behavior property/event (handler list)
 			if(isset($this->_m[$name]))
 				return $this->_m[$name];
-			else if($this->_m!==null)
+			elseif($this->_m!==null)
 			{
 				foreach($this->_m->toArray() as $behavior)
 				{
@@ -670,17 +670,17 @@ class TComponent
 				$value = new TJavaScriptLiteral($value);
 			return $this->$setter($value);
 		}
-		else if(method_exists($this,$jssetter='setjs'.$name))
+		elseif(method_exists($this,$jssetter='setjs'.$name))
 		{
 			if($value&&!($value instanceof TJavaScriptString))
 				$value=new TJavaScriptString($value);
 			return $this->$jssetter($value);
 		}
-		else if((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0)
+		elseif((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0)
 		{
 			return $this->attachEventHandler($name,$value);
 		}
-		else if($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
 		{
 			$sets=0;
 			foreach($this->_m->toArray() as $behavior)
@@ -721,19 +721,19 @@ class TComponent
 	{
 		if(method_exists($this,$getter='get'.$name))
 			return $this->$getter()!==null;
-		else if(method_exists($this,$jsgetter='getjs'.$name))
+		elseif(method_exists($this,$jsgetter='getjs'.$name))
 			return $this->$jsgetter()!==null;
-		else if(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
 		{
 			$name=strtolower($name);
 			return isset($this->_e[$name])&&$this->_e[$name]->getCount();
 		}
-		else if(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name,'fx',2)===0)
 		{
 			$name=strtolower($name);
 			return isset(self::$_ue[$name])&&self::$_ue[$name]->getCount();
 		}
-		else if($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
 		{
 			if(isset($this->_m[$name]))
 				return true;
@@ -762,13 +762,13 @@ class TComponent
 	{
 		if(method_exists($this,$setter='set'.$name))
 			$this->$setter(null);
-		else if(method_exists($this,$jssetter='setjs'.$name))
+		elseif(method_exists($this,$jssetter='setjs'.$name))
 			$this->$jssetter(null);
-		else if(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
+		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
 			$this->_e[strtolower($name)]->clear();
-		else if(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name,'fx',2)===0)
 			$this->getEventHandlers($name)->remove(array($this, $name));
-		else if($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_m->getCount()>0&&$this->_behaviorsenabled)
 		{
 			if(isset($this->_m[$name]))
 				$this->detachBehavior($name);
@@ -784,7 +784,7 @@ class TComponent
 				if(!$unset&&method_exists($this,'get'.$name))
 					throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 			}
-		} else if(method_exists($this,'get'.$name))
+		} elseif(method_exists($this,'get'.$name))
 			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 	}
 
@@ -813,7 +813,7 @@ class TComponent
 	{
 		if(method_exists($this,'get'.$name)||method_exists($this,'getjs'.$name))
 			return true;
-		else if($this->_m!==null&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			foreach($this->_m->toArray() as $behavior)
 			{
@@ -837,7 +837,7 @@ class TComponent
 	{
 		if(method_exists($this,'set'.$name)||method_exists($this,'setjs'.$name))
 			return true;
-		else if($this->_m!==null&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			foreach($this->_m->toArray() as $behavior)
 			{
@@ -906,7 +906,7 @@ class TComponent
 		if((strncasecmp($name,'on',2)===0&&method_exists($this,$name))||strncasecmp($name,'fx',2)===0||strncasecmp($name,'dy',2)===0)
 			return true;
 
-		else if($this->_m!==null&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			foreach($this->_m->toArray() as $behavior)
 			{
@@ -933,7 +933,7 @@ class TComponent
 		{
 			if(isset($this->_e[$name])&&$this->_e[$name]->getCount()>0)
 				return true;
-			else if($this->_m!==null&&$this->_behaviorsenabled) {
+			elseif($this->_m!==null&&$this->_behaviorsenabled) {
 				foreach($this->_m->toArray() as $behavior)
 				{
 					if((!($behavior instanceof IBehavior)||$behavior->getEnabled())&&$behavior->hasEventHandler($name))
@@ -959,14 +959,14 @@ class TComponent
 				$this->_e[$name]=new TPriorityList;
 			return $this->_e[$name];
 		}
-		else if(strncasecmp($name,'fx',2)===0)
+		elseif(strncasecmp($name,'fx',2)===0)
 		{
 			$name=strtolower($name);
 			if(!isset(self::$_ue[$name]))
 				self::$_ue[$name]=new TPriorityList;
 			return self::$_ue[$name];
 		}
-		else if($this->_m!==null&&$this->_behaviorsenabled)
+		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
 			foreach($this->_m->toArray() as $behavior)
 			{
@@ -1176,7 +1176,7 @@ class TComponent
 					else
 						$response=call_user_func($handler,$sender,$param,$name);
 				}
-				else if(is_callable($handler,true))
+				elseif(is_callable($handler,true))
 				{
 					list($object,$method)=$handler;
 					if(is_string($object))
@@ -1217,7 +1217,7 @@ class TComponent
 
 			}
 		}
-		else if(strncasecmp($name,'on',2)===0&&!$this->hasEvent($name))
+		elseif(strncasecmp($name,'on',2)===0&&!$this->hasEvent($name))
 			throw new TInvalidOperationException('component_event_undefined',get_class($this),$name);
 
 		if($responsetype&TEventResults::EVENT_RESULT_FILTER)

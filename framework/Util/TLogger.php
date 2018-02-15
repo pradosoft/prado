@@ -71,7 +71,7 @@ class TLogger extends \Prado\TComponent
 		if($ctl) {
 			if($ctl instanceof TControl)
 				$ctl = $ctl->ClientId;
-			else if(!is_string($ctl))
+			elseif(!is_string($ctl))
 				$ctl = null;
 		} else
 			$ctl = null;

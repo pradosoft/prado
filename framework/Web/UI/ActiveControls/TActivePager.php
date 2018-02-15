@@ -137,7 +137,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 				return $button;
 			}
 		}
-		else if($buttonType===TPagerButtonType::ImageButton)
+		elseif($buttonType===TPagerButtonType::ImageButton)
 		{
 			$button = new TActiveImageButton;
 			$button->setImageUrl($this->getPageImageUrl($text,$commandName));

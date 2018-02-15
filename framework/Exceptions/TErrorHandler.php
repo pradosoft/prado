@@ -138,7 +138,7 @@ class TErrorHandler extends \Prado\TModule
 				header('Content-Type: text/html; charset=UTF-8');
 			if($param instanceof THttpException)
 				$this->handleExternalError($param->getStatusCode(),$param);
-			else if($this->getApplication()->getMode()===TApplicationMode::Debug)
+			elseif($this->getApplication()->getMode()===TApplicationMode::Debug)
 				$this->displayException($param);
 			else
 				$this->handleExternalError(500,$param);
@@ -342,9 +342,9 @@ class TErrorHandler extends \Prado\TModule
 		$lang=Prado::getPreferredLanguage();
 		if(is_file("$base$statusCode-$lang.html"))
 			$errorFile="$base$statusCode-$lang.html";
-		else if(is_file("$base$statusCode.html"))
+		elseif(is_file("$base$statusCode.html"))
 			$errorFile="$base$statusCode.html";
-		else if(is_file("$base-$lang.html"))
+		elseif(is_file("$base-$lang.html"))
 			$errorFile="$base-$lang.html";
 		else
 			$errorFile="$base.html";

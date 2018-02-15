@@ -171,7 +171,7 @@ class TPropertyValue
 					'propertyvalue_enumvalue_invalid',$value,
 						implode(' | ',$types[$enums]->getConstants()));
 		}
-		else if(!is_array($enums))
+		elseif(!is_array($enums))
 		{
 			$enums=func_get_args();
 			array_shift($enums);

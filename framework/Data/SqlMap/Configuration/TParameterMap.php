@@ -102,7 +102,7 @@ class TParameterMap extends \Prado\TComponent
 	{
 		if(is_string($index))
 			return $this->_propertyMap->itemAt($index);
-		else if(is_int($index))
+		elseif(is_int($index))
 			return $this->_properties->itemAt($index);
 		else
 			throw new TSqlMapException('sqlmap_index_must_be_string_or_int', $index);

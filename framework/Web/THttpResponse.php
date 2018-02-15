@@ -357,7 +357,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$mimeType='text/plain';
 			if(function_exists('mime_content_type'))
 				$mimeType=mime_content_type($fileName);
-			else if(($ext=strrchr($fileName,'.'))!==false)
+			elseif(($ext=strrchr($fileName,'.'))!==false)
 			{
 				$ext=substr($ext,1);
 				if(isset($defaultMimeTypes[$ext]))

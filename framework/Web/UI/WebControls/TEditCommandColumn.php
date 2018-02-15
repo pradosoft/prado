@@ -211,7 +211,7 @@ class TEditCommandColumn extends TDataGridColumn
 			$cell->getControls()->add($button);
 			$cell->registerObject('EditButton',$button);
 		}
-		else if($itemType===TListItemType::EditItem)
+		elseif($itemType===TListItemType::EditItem)
 		{
 			$controls=$cell->getControls();
 			$button=$this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());
@@ -239,14 +239,14 @@ class TEditCommandColumn extends TDataGridColumn
 	{
 		if($this->getButtonType()===TButtonColumnType::LinkButton)
 			$button= new TLinkButton;
-		else if($this->getButtonType()===TButtonColumnType::PushButton)
+		elseif($this->getButtonType()===TButtonColumnType::PushButton)
 			$button= new TButton;
 		else	// image buttons
 		{
 			$button= new TImageButton;
 			if(strcasecmp($commandName,'Update')===0)
 				$url=$this->getUpdateImageUrl();
-			else if(strcasecmp($commandName,'Cancel')===0)
+			elseif(strcasecmp($commandName,'Cancel')===0)
 				$url=$this->getCancelImageUrl();
 			else
 				$url=$this->getEditImageUrl();

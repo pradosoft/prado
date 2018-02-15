@@ -215,7 +215,7 @@ class TDbCache extends TCache
 				$driver=$db->getDriverName();
 				if($driver==='mysql')
 					$blob='LONGBLOB';
-				else if($driver==='pgsql')
+				elseif($driver==='pgsql')
 					$blob='BYTEA';
 				else
 					$blob='BLOB';

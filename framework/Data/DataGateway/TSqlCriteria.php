@@ -148,7 +148,7 @@ class TSqlCriteria extends \Prado\TComponent
 			$value = str_replace($matches[0], '', $value);
 			if(strlen($matches[1]) > 0) {
 				$this->setOrdersBy($matches[1]);
-			} else if(strlen($matches[2]) > 0) {
+			} elseif(strlen($matches[2]) > 0) {
 				$this->setOrdersBy($matches[2]);
 			}
 		}

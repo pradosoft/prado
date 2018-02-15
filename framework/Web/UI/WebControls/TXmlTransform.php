@@ -148,7 +148,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
       $document = new DOMDocument();
       $document->loadXML($content);
       return $document;
-    } else if(($path = $this->getTransformPath()) !== '') {
+    } elseif(($path = $this->getTransformPath()) !== '') {
       $document = new DOMDocument();
       $document->load($path);
       return $document;
@@ -162,7 +162,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
       $document = new DOMDocument();
       $document->loadXML($content);
       return $document;
-    } else if(($path = $this->getDocumentPath()) !== '') {
+    } elseif(($path = $this->getDocumentPath()) !== '') {
       $document = new DOMDocument();
       $document->load($path);
       return $document;

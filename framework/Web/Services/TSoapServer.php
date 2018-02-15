@@ -161,7 +161,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		$options=array();
 		if($this->_version==='1.1')
 			$options['soap_version']=SOAP_1_1;
-		else if($this->_version==='1.2')
+		elseif($this->_version==='1.2')
 			$options['soap_version']=SOAP_1_2;
 		if(!empty($this->_actor))
 			$options['actor']=$this->_actor;

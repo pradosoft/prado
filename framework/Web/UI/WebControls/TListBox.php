@@ -132,7 +132,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			}
 			return $flag;
 		}
-		else if($this->getSelectedIndex()!==-1)
+		elseif($this->getSelectedIndex()!==-1)
 		{
 			$this->clearSelection();
 			return $this->_dataChanged=true;

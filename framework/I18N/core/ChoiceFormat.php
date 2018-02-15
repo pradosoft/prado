@@ -135,7 +135,7 @@ class ChoiceFormat
 			{
 				if($string == '-Inf')
 					$elements[] = -1*$this->inf;
-				else if ($string == '+Inf' || $string == 'Inf')
+				elseif ($string == '+Inf' || $string == 'Inf')
 					$elements[] = $this->inf;
 				else
 					$elements[] = floatval($string);
@@ -151,13 +151,13 @@ class ChoiceFormat
 		$left = false;
 		if($leftBracket == '[')
 			$left = $number >= $elements[0];
-		else if ($leftBracket == '(')
+		elseif ($leftBracket == '(')
 			$left = $number > $elements[0];
 
 		$right = false;
 		if($rightBracket==']')
 			$right = $number <= $elements[$total-1];
-		else if($rightBracket == ')')
+		elseif($rightBracket == ')')
 			$right = $number < $elements[$total-1];
 
 		if($left && $right) return true;

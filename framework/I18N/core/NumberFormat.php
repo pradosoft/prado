@@ -92,9 +92,9 @@ class NumberFormat
 	{
 		if($formatInfo === null)
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
-		else if($formatInfo instanceof CultureInfo)
+		elseif($formatInfo instanceof CultureInfo)
 			$this->formatInfo = $formatInfo->NumberFormat;
-		else if($formatInfo instanceof NumberFormatInfo)
+		elseif($formatInfo instanceof NumberFormatInfo)
 			$this->formatInfo = $formatInfo;
 		else
 			$this->formatInfo =
@@ -136,7 +136,7 @@ class NumberFormat
 		//get the suffix
 		if($number >= 0)
 			$suffix = $this->formatInfo->PositivePattern;
-		else if($number < 0)
+		elseif($number < 0)
 			$suffix = $this->formatInfo->NegativePattern;
 		else
 			$suffix = array("","");
@@ -204,7 +204,7 @@ class NumberFormat
 						$count++;
 					}
 				}
-				else if($multiGroup && $count >= 1)
+				elseif($multiGroup && $count >= 1)
 				{
 					if($i != 0 && ($i-$groupSize[0])%$groupSize[1] == 0)
 					{
@@ -251,7 +251,7 @@ class NumberFormat
 			{
 				$decimal = substr($string, $dp+1);
 			}
-			else if(is_int($decimalDigits))
+			elseif(is_int($decimalDigits))
 			{
 				$float = round((float)$string, $decimalDigits);
 				if(strpos((string)$float, '.') === false)
@@ -270,7 +270,7 @@ class NumberFormat
 
 			return $decimalSeparator.$decimal;
 		}
-		else if ($decimalDigits > 0)
+		elseif ($decimalDigits > 0)
 			return $decimalSeparator.str_pad($decimal,$decimalDigits,'0');
 
 		return $decimal;

@@ -103,11 +103,11 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 					{
 						if($file==='.' || $file==='..')
 							continue;
-						else if(basename($file,'.css')!==$file)
+						elseif(basename($file,'.css')!==$file)
 							$this->_cssFiles[]=$themeUrl.'/'.$file;
-						else if(basename($file,'.js')!==$file)
+						elseif(basename($file,'.js')!==$file)
 							$this->_jsFiles[]=$themeUrl.'/'.$file;
-						else if(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.DIRECTORY_SEPARATOR.$file)>$timestamp)
+						elseif(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.DIRECTORY_SEPARATOR.$file)>$timestamp)
 						{
 							$cacheValid=false;
 							break;
@@ -137,18 +137,18 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			{
 				if($file==='.' || $file==='..')
 					continue;
-				else if(basename($file,'.css')!==$file)
+				elseif(basename($file,'.css')!==$file)
 					$this->_cssFiles[]=$themeUrl.'/'.$file;
-				else if(basename($file,'.js')!==$file)
+				elseif(basename($file,'.js')!==$file)
 					$this->_jsFiles[]=$themeUrl.'/'.$file;
-				else if(basename($file,self::SKIN_FILE_EXT)!==$file)
+				elseif(basename($file,self::SKIN_FILE_EXT)!==$file)
 				{
 					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
 					foreach($template->getItems() as $skin)
 					{
 						if(!isset($skin[2]))  // a text string, ignored
 							continue;
-						else if($skin[0]!==-1)
+						elseif($skin[0]!==-1)
 							throw new TConfigurationException('theme_control_nested',$skin[1],dirname($themePath));
 						$type=$skin[1];
 						$id=isset($skin[2]['skinid'])?$skin[2]['skinid']:0;

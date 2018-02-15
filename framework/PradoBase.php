@@ -464,7 +464,7 @@ class PradoBase
 	{
 		if(isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN'))
 			throw new TInvalidOperationException('prado_alias_redefined',$alias);
-		else if(($rp=realpath($path))!==false && is_dir($rp))
+		elseif(($rp=realpath($path))!==false && is_dir($rp))
 		{
 			if(strpos($alias,'.')===false)
 				self::$_aliases[$alias]=$rp;
@@ -517,17 +517,17 @@ class PradoBase
 						else
 							echo "'" . $str . "'";
 					}
-					else if (is_int($item) || is_float($item))
+					elseif (is_int($item) || is_float($item))
 						echo $item;
-					else if (is_object($item))
+					elseif (is_object($item))
 						echo get_class($item);
-					else if (is_array($item))
+					elseif (is_array($item))
 						echo 'array(' . count($item) . ')';
-					else if (is_bool($item))
+					elseif (is_bool($item))
 						echo $item ? 'true' : 'false';
-					else if ($item === null)
+					elseif ($item === null)
 						echo 'NULL';
-					else if (is_resource($item))
+					elseif (is_resource($item))
 						echo get_resource_type($item);
 					$count++;
 					if (count($t['args']) > $count)

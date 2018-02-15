@@ -161,12 +161,12 @@ class TDirectoryCacheDependency extends TCacheDependency
 			$path=$directory.DIRECTORY_SEPARATOR.$file;
 			if($file==='.' || $file==='..')
 				continue;
-			else if(is_dir($path))
+			elseif(is_dir($path))
 			{
 				if(($this->_recursiveLevel<0 || $level<$this->_recursiveLevel) && $this->validateDirectory($path))
 					$timestamps=array_merge($this->generateTimestamps($path,$level+1));
 			}
-			else if($this->validateFile($path))
+			elseif($this->validateFile($path))
 				$timestamps[$path]=filemtime($path);
 		}
 		closedir($dir);

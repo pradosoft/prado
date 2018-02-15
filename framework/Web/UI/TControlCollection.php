@@ -64,7 +64,7 @@ class TControlCollection extends \Prado\Collections\TList
 			parent::insertAt($index,$item);
 			$this->_o->addedControl($item);
 		}
-		else if(is_string($item) || ($item instanceof IRenderable))
+		elseif(is_string($item) || ($item instanceof IRenderable))
 			parent::insertAt($index,$item);
 		else
 			throw new TInvalidDataTypeException('controlcollection_control_required');

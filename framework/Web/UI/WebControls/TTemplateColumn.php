@@ -215,25 +215,25 @@ class TTemplateColumn extends TDataGridColumn
 				if($control instanceof \Prado\IDataRenderer)
 					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
 			}
-			else if($template!==null)
+			elseif($template!==null)
 				$template->instantiateIn($cell);
-			else if($itemType!==TListItemType::EditItem)
+			elseif($itemType!==TListItemType::EditItem)
 				$cell->setText('&nbsp;');
 		}
-		else if($itemType===TListItemType::Header)
+		elseif($itemType===TListItemType::Header)
 		{
 			if(($classPath=$this->getHeaderRenderer())!=='')
 				$this->initializeHeaderCell($cell,$columnIndex);
-			else if($this->_headerTemplate!==null)
+			elseif($this->_headerTemplate!==null)
 				$this->_headerTemplate->instantiateIn($cell);
 			else
 				$this->initializeHeaderCell($cell,$columnIndex);
 		}
-		else if($itemType===TListItemType::Footer)
+		elseif($itemType===TListItemType::Footer)
 		{
 			if(($classPath=$this->getFooterRenderer())!=='')
 				$this->initializeFooterCell($cell,$columnIndex);
-			else if($this->_footerTemplate!==null)
+			elseif($this->_footerTemplate!==null)
 				$this->_footerTemplate->instantiateIn($cell);
 			else
 				$this->initializeFooterCell($cell,$columnIndex);

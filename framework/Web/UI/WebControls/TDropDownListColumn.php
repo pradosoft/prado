@@ -312,7 +312,7 @@ class TDropDownListColumn extends TDataGridColumn
 			$text=$value;
 		if($sender instanceof TTableCell)
 			$sender->setText($text);
-		else if($sender instanceof TDropDownList)
+		elseif($sender instanceof TDropDownList)
 			$sender->setSelectedValue($value);
 	}
 }

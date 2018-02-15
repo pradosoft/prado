@@ -260,7 +260,7 @@ class TPageConfiguration extends \Prado\TComponent
 				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
 				if(strcasecmp($id,$this->_pagePath)===0)
 					$matching=true;
-				else if($id[strlen($id)-1]==='*') // try wildcard matching
+				elseif($id[strlen($id)-1]==='*') // try wildcard matching
 					$matching=strncasecmp($this->_pagePath,$id,strlen($id)-1)===0;
 				if($matching)
 					$this->_properties=array_merge($this->_properties,$properties);
@@ -348,7 +348,7 @@ class TPageConfiguration extends \Prado\TComponent
 				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
 				if(strcasecmp($id,$this->_pagePath)===0)
 					$matching=true;
-				else if($id[strlen($id)-1]==='*') // try wildcard matching
+				elseif($id[strlen($id)-1]==='*') // try wildcard matching
 					$matching=strncasecmp($this->_pagePath,$id,strlen($id)-1)===0;
 				if($matching)
 					$this->_properties=array_merge($this->_properties,$properties->toArray());

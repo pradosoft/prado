@@ -49,7 +49,7 @@ class TActiveTemplateColumn extends TTemplateColumn {
 			}
 			$cell->getControls()->add($control);
 		}
-		else if($this->getAllowSorting()) {
+		elseif($this->getAllowSorting()) {
 				$sortExpression=$this->getSortExpression();
 				if(($url=$this->getHeaderImageUrl())!=='') {
 					$button= new TActiveImageButton;
@@ -61,7 +61,7 @@ class TActiveTemplateColumn extends TTemplateColumn {
 					$button->setCausesValidation(false);
 					$cell->getControls()->add($button);
 				}
-				else if($text!=='') {
+				elseif($text!=='') {
 						$button= new TActiveLinkButton;
 						$button->setText($text);
 						$button->setCommandName(TDataGrid::CMD_SORT);
@@ -80,7 +80,7 @@ class TActiveTemplateColumn extends TTemplateColumn {
 						$image->setAlternateText($text);
 					$cell->getControls()->add($image);
 				}
-				else if($text!=='')
+				elseif($text!=='')
 						$cell->setText($text);
 					else
 						$cell->setText('&nbsp;');

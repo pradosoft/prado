@@ -201,7 +201,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		{
 			if($object[0]===-1)
 				$parent=$parentControl;
-			else if(isset($controls[$object[0]]))
+			elseif(isset($controls[$object[0]]))
 				$parent=$controls[$object[0]];
 			else
 				continue;
@@ -244,7 +244,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if($component->getAllowChildControls())
 						$controls[$key]=$component;
 				}
-				else if($component instanceof TComponent)
+				elseif($component instanceof TComponent)
 				{
 					$controls[$key]=$component;
 					if(isset($properties['id']))
@@ -306,7 +306,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	{
 		if(strncasecmp($name,'on',2)===0)		// is an event
 			$this->configureEvent($control,$name,$value,$control);
-		else if(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
+		elseif(($pos=strrpos($name,'.'))===false)	// is a simple property or custom attribute
 			$this->configureProperty($control,$name,$value);
 		else	// is a subproperty
 			$this->configureSubProperty($control,$name,$value);
@@ -498,7 +498,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						$container=$c-1;
 					}
 				}
-				else if(strpos($str,'</com:')===0)	// closing component tag
+				elseif(strpos($str,'</com:')===0)	// closing component tag
 				{
 					if($expectPropEnd)
 						continue;
@@ -518,7 +518,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 					$container=$tpl[$container][0];
 				}
-				else if(strpos($str,'<%@')===0)	// directive
+				elseif(strpos($str,'<%@')===0)	// directive
 				{
 					if($expectPropEnd)
 						continue;
@@ -529,7 +529,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						throw new TConfigurationException('template_directive_nonunique');
 					$this->_directive=$this->parseAttributes($match[4][0],$match[4][1]);
 				}
-				else if(strpos($str,'<%')===0)	// expression
+				elseif(strpos($str,'<%')===0)	// expression
 				{
 					if($expectPropEnd)
 						continue;
@@ -539,23 +539,23 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$literal=trim($match[5][0]);
 					if($str[2]==='=')	// expression
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,$literal));
-					else if($str[2]==='%')  // statements
+					elseif($str[2]==='%')  // statements
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_STATEMENTS,$literal));
-					else if($str[2]==='#')
+					elseif($str[2]==='#')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_DATABINDING,$literal));
-					else if($str[2]==='$')
+					elseif($str[2]==='$')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->getApplication()->getParameters()->itemAt('$literal')"));
-					else if($str[2]==='~')
+					elseif($str[2]==='~')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"));
-					else if($str[2]==='/')
+					elseif($str[2]==='/')
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"));
-					else if($str[2]==='[')
+					elseif($str[2]==='[')
 					{
 						$literal=strtr(trim(substr($literal,0,strlen($literal)-1)),array("'"=>"\'","\\"=>"\\\\"));
 						$tpl[$c++]=array($container,array(TCompositeLiteral::TYPE_EXPRESSION,"Prado::localize('$literal')"));
 					}
 				}
-				else if(strpos($str,'<prop:')===0)	// opening property
+				elseif(strpos($str,'<prop:')===0)	// opening property
 				{
 					if(strrpos($str,'/>')===strlen($str)-2)  //subproperties
 					{
@@ -591,7 +591,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						}
 					}
 				}
-				else if(strpos($str,'</prop:')===0)	// closing property
+				elseif(strpos($str,'</prop:')===0)	// closing property
 				{
 					$prop=strtolower($match[3][0]);
 					if(empty($stack))
@@ -626,7 +626,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						$expectPropEnd=false;
 					}
 				}
-				else if(strpos($str,'<!--')===0)	// comments
+				elseif(strpos($str,'<!--')===0)	// comments
 				{
 					if($expectPropEnd)
 						throw new TConfigurationException('template_comments_forbidden');
@@ -776,7 +776,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			else
 				return array(self::CONFIG_EXPRESSION,ltrim($expr,'.'));
 		}
-		else if(preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>|<%\/.*?%>)\\s*/msS',$value,$matches) && $matches[0]===$value)
+		elseif(preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>|<%\/.*?%>)\\s*/msS',$value,$matches) && $matches[0]===$value)
 		{
 			$value=$matches[1];
 			if($value[2]==='~')
@@ -813,12 +813,12 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if(!$class->hasMethod('get'.$subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
-				else if(strncasecmp($name,'on',2)===0)
+				elseif(strncasecmp($name,'on',2)===0)
 				{
 					// an event
 					if(!$class->hasMethod($name))
 						throw new TConfigurationException('template_event_unknown',$type,$name);
-					else if(!is_string($att))
+					elseif(!is_string($att))
 						throw new TConfigurationException('template_eventhandler_invalid',$type,$name);
 				}
 				else
@@ -831,17 +831,17 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
 					}
-					else if(is_array($att) && $att[0]!==self::CONFIG_EXPRESSION)
+					elseif(is_array($att) && $att[0]!==self::CONFIG_EXPRESSION)
 					{
 						if(strcasecmp($name,'id')===0)
 							throw new TConfigurationException('template_controlid_invalid',$type);
-						else if(strcasecmp($name,'skinid')===0)
+						elseif(strcasecmp($name,'skinid')===0)
 							throw new TConfigurationException('template_controlskinid_invalid',$type);
 					}
 				}
 			}
 		}
-		else if(is_subclass_of($className,'\Prado\TComponent') || $className==='\Prado\TComponent')
+		elseif(is_subclass_of($className,'\Prado\TComponent') || $className==='\Prado\TComponent')
 		{
 			foreach($attributes as $name=>$att)
 			{
@@ -854,7 +854,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if(!$class->hasMethod('get'.$subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
-				else if(strncasecmp($name,'on',2)===0)
+				elseif(strncasecmp($name,'on',2)===0)
 					throw new TConfigurationException('template_event_forbidden',$type,$name);
 				else
 				{

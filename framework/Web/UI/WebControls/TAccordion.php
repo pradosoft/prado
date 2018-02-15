@@ -150,7 +150,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			else
 				throw new TInvalidDataValueException('accordion_activeviewid_invalid',$id);
 		}
-		else if(($index=$this->getActiveViewIndex())>=0)
+		elseif(($index=$this->getActiveViewIndex())>=0)
 		{
 			if($index<$views->getCount())
 				$activeView=$views->itemAt($index);

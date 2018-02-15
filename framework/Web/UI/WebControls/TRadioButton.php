@@ -122,7 +122,7 @@ class TRadioButton extends TCheckBox
 			else
 				return false;
 		}
-		else if($this->getChecked())
+		elseif($this->getChecked())
 			$this->setChecked(false);
 		return false;
 	}
@@ -154,7 +154,7 @@ class TRadioButton extends TCheckBox
 	{
 		if(($groupName=$this->getViewState('UniqueGroupName',''))!=='')
 			return $groupName;
-		else if(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
+		elseif(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
 		{
 			$groupName=$this->getGroupName();
 			$this->_previousUniqueID=$uniqueID;
@@ -164,7 +164,7 @@ class TRadioButton extends TCheckBox
 				{
 					if($groupName!=='')
 						$groupName=substr($uniqueID,0,$pos+1).$groupName;
-					else if($this->getNamingContainer() instanceof TRadioButtonList)
+					elseif($this->getNamingContainer() instanceof TRadioButtonList)
 						$groupName=substr($uniqueID,0,$pos);
 				}
 				if($groupName==='')

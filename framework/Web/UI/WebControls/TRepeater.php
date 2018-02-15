@@ -543,7 +543,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 				$item->setItemType($itemType);
 			}
 		}
-		else if($template!==null)
+		elseif($template!==null)
 		{
 			$item=new TRepeaterItem;
 			$item->setItemIndex($itemIndex);
@@ -563,7 +563,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	{
 		if(($classPath=$this->getEmptyRenderer())!=='')
 			$this->getControls()->add(Prado::createComponent($classPath));
-		else if($this->_emptyTemplate!==null)
+		elseif($this->_emptyTemplate!==null)
 			$this->_emptyTemplate->instantiateIn($this);
 	}
 

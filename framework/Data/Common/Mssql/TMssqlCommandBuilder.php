@@ -87,7 +87,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 		$offset = $offset!==null ? intval($offset) : -1;
 		if ($limit > 0 && $offset <= 0) //just limit
 			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $limit", $sql);
-		else if($limit > 0 && $offset > 0)
+		elseif($limit > 0 && $offset > 0)
 			$sql = $this->rewriteLimitOffsetSql($sql, $limit,$offset);
 		return $sql;
 	}

@@ -208,7 +208,7 @@ class TSimpleDateFormatter
 	{
 		if(is_int($value) || is_float($value))
 			return $value;
-		else if(!is_string($value))
+		elseif(!is_string($value))
 			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
 
 		if(empty($this->pattern)) return time();

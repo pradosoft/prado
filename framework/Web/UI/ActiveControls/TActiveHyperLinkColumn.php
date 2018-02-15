@@ -51,7 +51,7 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
 			}
 			$cell->getControls()->add($control);
 		}
-		else if($this->getAllowSorting())
+		elseif($this->getAllowSorting())
 		{
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
@@ -65,7 +65,7 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 			{
 				$button= new TActiveLinkButton;
 				$button->setText($text);
@@ -87,7 +87,7 @@ class TActiveHyperLinkColumn extends THyperLinkColumn
 					$image->setAlternateText($text);
 				$cell->getControls()->add($image);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 				$cell->setText($text);
 			else
 				$cell->setText('&nbsp;');

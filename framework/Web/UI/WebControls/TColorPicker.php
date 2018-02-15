@@ -157,7 +157,7 @@ class TColorPicker extends TTextBox
 		{
 			$mode = $this->getMode();
 			if($mode == TColorPickerMode::Full) $options['Mode'] = $mode;
-			else if($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
+			elseif($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}

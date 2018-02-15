@@ -244,13 +244,13 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), $token[0]);
 				$this->onSuggest($parameter);
 			}
-			else if($token[1] === '__TJuiAutoComplete_onSuggestionSelected__')
+			elseif($token[1] === '__TJuiAutoComplete_onSuggestionSelected__')
 			{
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
 				$this->onSuggestionSelected($parameter);
 			}
 		}
-		else if($this->getAutoPostBack())
+		elseif($this->getAutoPostBack())
 			parent::raiseCallbackEvent($param);
 	}
 

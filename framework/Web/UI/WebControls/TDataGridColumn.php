@@ -385,7 +385,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	{
 		if($itemType===TListItemType::Header)
 			$this->initializeHeaderCell($cell,$columnIndex);
-		else if($itemType===TListItemType::Footer)
+		elseif($itemType===TListItemType::Footer)
 			$this->initializeFooterCell($cell,$columnIndex);
 	}
 
@@ -433,7 +433,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 				$control->setData($text);
 			}
 		}
-		else if($this->getAllowSorting())
+		elseif($this->getAllowSorting())
 		{
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
@@ -447,7 +447,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 			{
 				$button= new TLinkButton;
 				$button->setText($text);
@@ -469,7 +469,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 					$image->setAlternateText($text);
 				$cell->getControls()->add($image);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 				$cell->setText($text);
 			else
 				$cell->setText('&nbsp;');
@@ -504,7 +504,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 				$control->setData($text);
 			}
 		}
-		else if($text!=='')
+		elseif($text!=='')
 			$cell->setText($text);
 		else
 			$cell->setText('&nbsp;');
@@ -526,7 +526,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	{
 		if($formatString==='')
 			return TPropertyValue::ensureString($value);
-		else if($formatString[0]==='#')
+		elseif($formatString[0]==='#')
 		{
 			$expression=strtr(substr($formatString,1),array('{0}'=>'$value'));
 			try

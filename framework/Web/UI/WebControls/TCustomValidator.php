@@ -113,7 +113,7 @@ class TCustomValidator extends TBaseValidator
 	{
 		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
 			return $control;
-		else if(($id=$this->getControlToValidate())!=='')
+		elseif(($id=$this->getControlToValidate())!=='')
 			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
 		else
 			return null;

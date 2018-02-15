@@ -150,7 +150,7 @@ class TSqlMapPagedList extends TPagedList
 				$param->setData(array());
 				$this->_nextPageList = null;
 			}
-			else if($total <= $pageSize*2)
+			elseif($total <= $pageSize*2)
 			{
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $total));

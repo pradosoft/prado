@@ -354,7 +354,7 @@ class CultureInfo
 			$value = $index[$i];
 			if($i < $k-1 && isset($array[$value]))
 				$array = $array[$value];
-			else if ($i == $k-1 && isset($array[$value]))
+			elseif ($i == $k-1 && isset($array[$value]))
 				return $array[$value];
 		}
 	}

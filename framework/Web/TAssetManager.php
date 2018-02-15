@@ -162,9 +162,9 @@ class TAssetManager extends \Prado\TModule
 	{
 		if(isset($this->_published[$path]))
 			return $this->_published[$path];
-		else if(empty($path) || ($fullpath=realpath($path))===false)
+		elseif(empty($path) || ($fullpath=realpath($path))===false)
 			throw new TInvalidDataValueException('assetmanager_filepath_invalid',$path);
-		else if(is_file($fullpath))
+		elseif(is_file($fullpath))
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$fileName=basename($fullpath);
@@ -289,7 +289,7 @@ class TAssetManager extends \Prado\TModule
 			{
 				if($file==='.' || $file==='..' || $file==='.svn' || $file==='.git')
 					continue;
-				else if(is_file($src.DIRECTORY_SEPARATOR.$file))
+				elseif(is_file($src.DIRECTORY_SEPARATOR.$file))
 				{
 					if(@filemtime($dst.DIRECTORY_SEPARATOR.$file)<@filemtime($src.DIRECTORY_SEPARATOR.$file))
 					{
@@ -321,7 +321,7 @@ class TAssetManager extends \Prado\TModule
 	{
 		if(isset($this->_published[$md5sum]))
 			return $this->_published[$md5sum];
-		else if(($fullpath=realpath($md5sum))===false || !is_file($fullpath))
+		elseif(($fullpath=realpath($md5sum))===false || !is_file($fullpath))
 			throw new TInvalidDataValueException('assetmanager_tarchecksum_invalid',$md5sum);
 		else
 		{

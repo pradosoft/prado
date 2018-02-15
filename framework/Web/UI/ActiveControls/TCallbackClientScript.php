@@ -435,7 +435,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			$boundary = $this->getRenderedContentBoundary($content);
 			$content = null;
 		}
-		else if($content instanceof THtmlWriter)
+		elseif($content instanceof THtmlWriter)
 		{
 			$boundary = $this->getResponseContentBoundary($content);
 			$content = null;

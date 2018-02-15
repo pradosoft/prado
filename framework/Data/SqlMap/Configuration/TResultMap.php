@@ -193,7 +193,7 @@ class TResultMap extends \Prado\TComponent
 
 			if($subMap===null)
 				$subMap = $this;
-			else if($subMap !== $this)
+			elseif($subMap !== $this)
 				$subMap = $subMap->resolveSubMap($registry,$row);
 		}
 		return $subMap;

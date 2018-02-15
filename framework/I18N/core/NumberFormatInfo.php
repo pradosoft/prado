@@ -187,7 +187,7 @@ class NumberFormatInfo
             $formatInfo->setPattern($type);
             return $formatInfo;
    		}
-       	else if(is_string($culture))
+       	elseif(is_string($culture))
        	{
        		$cultureInfo = new CultureInfo($culture);
        		$formatInfo = $cultureInfo->NumberFormat;

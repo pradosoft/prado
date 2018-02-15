@@ -354,7 +354,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		{
 			call_user_func($handler,$this,$param);
 		}
-		else if(is_callable($handler,true))
+		elseif(is_callable($handler,true))
 		{
 			// an array: 0 - object, 1 - method name/path
 			list($object,$method)=$handler;
@@ -533,7 +533,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 					$values = $values->toArray();
 				TPropertyAccess::set($resultObject, $property, $values);
 			}
-			else if($method == self::QUERY_FOR_OBJECT)
+			elseif($method == self::QUERY_FOR_OBJECT)
 			{
 				$value = $statement->executeQueryForObject($connection, $keys, null);
 				TPropertyAccess::set($resultObject, $property, $value);
@@ -566,7 +566,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$obj=null;
 		if($this->getManager()->getResultMaps()->contains($resultMapName))
 			$obj = $this->fillResultMap($resultMapName, $row, null, $resultObject);
-		else if(strlen($resultClass) > 0)
+		elseif(strlen($resultClass) > 0)
 			$obj = $this->fillResultClass($resultClass, $row, $resultObject);
 		else
 			$obj = $this->fillDefaultResultMap(null, $row, $resultObject);
@@ -593,7 +593,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 		if($resultObject instanceOf \ArrayAccess)
 			return $this->fillResultArrayList($row, $resultObject);
-		else if(is_object($resultObject))
+		elseif(is_object($resultObject))
 			return $this->fillResultObjectProperty($row, $resultObject);
 		else
 			return $this->fillDefaultResultMap(null, $row, $resultObject);
@@ -810,7 +810,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		{
 			$resultObject = $property->getPropertyValue($registry,$row);
 		}
-		else if(strlen($select) == 0 && ($nested===null))
+		elseif(strlen($select) == 0 && ($nested===null))
 		{
 			$value = $property->getPropertyValue($registry,$row);
 
@@ -820,7 +820,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			else
 				$resultObject = $value;
 		}
-		else if($nested!==null)
+		elseif($nested!==null)
 		{
 			if($property->instanceOfListType($resultObject) || $property->instanceOfArrayType($resultObject))
 			{
@@ -873,7 +873,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			else
 				$postSelect->setMethod(self::QUERY_FOR_LIST);
 		}
-		else if($property->instanceOfArrayType($resultObject))
+		elseif($property->instanceOfArrayType($resultObject))
 			$postSelect->setMethod(self::QUERY_FOR_ARRAY);
 		else
 			$postSelect->setMethod(self::QUERY_FOR_OBJECT);

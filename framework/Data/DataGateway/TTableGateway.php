@@ -95,7 +95,7 @@ class TTableGateway extends \Prado\TComponent
 		$this->_connection=$connection;
 		if(is_string($table))
 			$this->setTableName($table);
-		else if($table instanceof TDbTableInfo)
+		elseif($table instanceof TDbTableInfo)
 			$this->setTableInfo($table);
 		else
 			throw new TDbException('dbtablegateway_invalid_table_info');
@@ -419,7 +419,7 @@ class TTableGateway extends \Prado\TComponent
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TSqlCriteria($criteria,$useArgs ? $args : $parameters);
 		}
-		else if($criteria instanceof TSqlCriteria)
+		elseif($criteria instanceof TSqlCriteria)
 			return $criteria;
 		else
 			throw new TDbException('dbtablegateway_invalid_criteria');
@@ -459,11 +459,11 @@ class TTableGateway extends \Prado\TComponent
 		$delete =false;
 		if($findOne = substr(strtolower($method),0,6)==='findby')
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		else if(substr(strtolower($method),0,9)==='findallby')
+		elseif(substr(strtolower($method),0,9)==='findallby')
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
-		else if($delete = substr(strtolower($method),0,8)==='deleteby')
+		elseif($delete = substr(strtolower($method),0,8)==='deleteby')
 			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
-		else if($delete = substr(strtolower($method),0,11)==='deleteallby')
+		elseif($delete = substr(strtolower($method),0,11)==='deleteallby')
 			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
 			return null;

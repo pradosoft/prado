@@ -526,14 +526,14 @@ class TPriorityMap extends TMap
 				}
 			}
 		}
-		else if(is_array($data)||$data instanceof \Traversable)
+		elseif(is_array($data)||$data instanceof \Traversable)
 		{
 			if($this->getCount()>0)
 				$this->clear();
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 
@@ -554,12 +554,12 @@ class TPriorityMap extends TMap
 					$this->add($key,$value,$priority);
 			}
 		}
-		else if(is_array($data)||$data instanceof \Traversable)
+		elseif(is_array($data)||$data instanceof \Traversable)
 		{
 			foreach($data as $key=>$value)
 				$this->add($key,$value);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 	}
 

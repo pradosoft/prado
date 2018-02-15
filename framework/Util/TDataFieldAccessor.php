@@ -66,7 +66,7 @@ class TDataFieldAccessor
 				    $tmp = $tmp[$f];
 				return $tmp;
 			}
-			else if(is_object($data))
+			elseif(is_object($data))
 			{
 				if(strpos($field,'.')===false)  // simple field
 				{

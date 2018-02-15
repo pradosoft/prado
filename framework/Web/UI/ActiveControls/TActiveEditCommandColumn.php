@@ -37,7 +37,7 @@ class TActiveEditCommandColumn extends TEditCommandColumn {
 	protected function createButton($commandName,$text,$causesValidation,$validationGroup) {
 		if($this->getButtonType()===TButtonColumnType::LinkButton)
 			$button= new TActiveLinkButton;
-		else if($this->getButtonType()===TButtonColumnType::PushButton)
+		elseif($this->getButtonType()===TButtonColumnType::PushButton)
 				$button= new TActiveButton;
 			else  // image buttons
 			{
@@ -45,7 +45,7 @@ class TActiveEditCommandColumn extends TEditCommandColumn {
 				$button->setToolTip($text);
 				if(strcasecmp($commandName,'Update')===0)
 					$url=$this->getUpdateImageUrl();
-				else if(strcasecmp($commandName,'Cancel')===0)
+				elseif(strcasecmp($commandName,'Cancel')===0)
 						$url=$this->getCancelImageUrl();
 					else
 						$url=$this->getEditImageUrl();

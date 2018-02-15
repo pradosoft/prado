@@ -397,7 +397,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 			$attributes=$this->getViewState('InputAttributes',null);
 			if($attributes && $attributes->contains('value'))
 				return $attributes->itemAt('value');
-			else if($this->hasAttribute('value'))
+			elseif($this->hasAttribute('value'))
 				return $this->getAttribute('value');
 			else
 				return '';

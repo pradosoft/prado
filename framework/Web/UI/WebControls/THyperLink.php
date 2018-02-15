@@ -68,7 +68,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		{
 			if(($text=$this->getText())!=='')
 				$writer->write(THttpUtility::htmlEncode($text));
-			else if($this->getHasControls())
+			elseif($this->getHasControls())
 				parent::renderContents($writer);
 			else
 				$writer->write(THttpUtility::htmlEncode($this->getNavigateUrl()));

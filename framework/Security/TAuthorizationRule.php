@@ -99,9 +99,9 @@ class TAuthorizationRule extends \Prado\TComponent
 					$this->_everyone=true;
 					break;
 				}
-				else if($user==='?')
+				elseif($user==='?')
 					$this->_guest=true;
-				else if($user==='@')
+				elseif($user==='@')
 					$this->_authenticated=true;
 				else
 					$this->_users[]=$user;

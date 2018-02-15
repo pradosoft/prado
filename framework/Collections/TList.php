@@ -157,7 +157,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 		{
 			if($index===$this->_c)
 				$this->_d[$this->_c++]=$item;
-			else if($index>=0 && $index<$this->_c)
+			elseif($index>=0 && $index<$this->_c)
 			{
 				array_splice($this->_d,$index,0,array($item));
 				$this->_c++;
@@ -326,7 +326,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			foreach($data as $item)
 				$this->add($item);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('list_data_not_iterable');
 	}
 
@@ -343,7 +343,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			foreach($data as $item)
 				$this->add($item);
 		}
-		else if($data!==null)
+		elseif($data!==null)
 			throw new TInvalidDataTypeException('list_data_not_iterable');
 	}
 

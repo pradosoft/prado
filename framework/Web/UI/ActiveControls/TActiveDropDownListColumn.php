@@ -50,7 +50,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 			}
 			$cell->getControls()->add($control);
 		}
-		else if($this->getAllowSorting())
+		elseif($this->getAllowSorting())
 		{
 			$sortExpression=$this->getSortExpression();
 			if(($url=$this->getHeaderImageUrl())!=='')
@@ -64,7 +64,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 			{
 				$button= new TActiveLinkButton;
 				$button->setText($text);
@@ -86,7 +86,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 					$image->setAlternateText($text);
 				$cell->getControls()->add($image);
 			}
-			else if($text!=='')
+			elseif($text!=='')
 				$cell->setText($text);
 			else
 				$cell->setText('&nbsp;');

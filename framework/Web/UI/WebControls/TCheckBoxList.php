@@ -297,7 +297,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$item=$this->getItems()->itemAt($index);
 		if($item->getHasAttributes())
 			$repeatedControl->getAttributes()->copyFrom($item->getAttributes());
-		else if($repeatedControl->getHasAttributes())
+		elseif($repeatedControl->getHasAttributes())
 			$repeatedControl->getAttributes()->clear();
 		$repeatedControl->setID("c$index");
 		$repeatedControl->setText($item->getText());

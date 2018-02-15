@@ -106,7 +106,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 			if($this->getEnableClientScript() && $this->needPostBackScript())
 				$this->renderClientControlScript($writer);
 		}
-		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
+		elseif($this->getEnabled()) // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}

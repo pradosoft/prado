@@ -420,7 +420,7 @@ class TPageService extends \Prado\TService
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
-		else if(($path=Prado::getPathOfNamespace($value))===null || !is_dir($path))
+		elseif(($path=Prado::getPathOfNamespace($value))===null || !is_dir($path))
 			throw new TConfigurationException('pageservice_basepath_invalid',$value);
 		$this->_basePath=realpath($path);
 	}

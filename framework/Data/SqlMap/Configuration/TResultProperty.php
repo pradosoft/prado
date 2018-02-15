@@ -245,7 +245,7 @@ class TResultProperty extends \Prado\TComponent
 		$name = $this->getColumn();
 		if($index > 0 && isset($row[$index]))
 			$value = $this->getTypedValue($registry,$row[$index]);
-		else if(isset($row[$name]))
+		elseif(isset($row[$name]))
 			$value = $this->getTypedValue($registry,$row[$name]);
 		if(($value===null) && ($this->getNullValue()!==null))
 			$value = $this->getTypedValue($registry,$this->getNullValue());

@@ -53,7 +53,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 			}
 			$cell->getControls()->add($control);
 		}
-		else if($this->getAllowSorting()) {
+		elseif($this->getAllowSorting()) {
 				$sortExpression=$this->getSortExpression();
 				if(($url=$this->getHeaderImageUrl())!=='') {
 					$button= new TActiveImageButton;
@@ -67,7 +67,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 					$button->setCausesValidation(false);
 					$cell->getControls()->add($button);
 				}
-				else if($text!=='') {
+				elseif($text!=='') {
 						$button= new TActiveLinkButton;
 						$button->setText($text);
 						$button->setCommandName(TDataGrid::CMD_SORT);
@@ -88,7 +88,7 @@ class TActiveLiteralColumn extends TLiteralColumn {
 					}
 					$cell->getControls()->add($image);
 				}
-				else if($text!=='')
+				elseif($text!=='')
 						$cell->setText($text);
 					else
 						$cell->setText('&nbsp;');

@@ -87,9 +87,9 @@ class TCaptchaValidator extends TBaseValidator
 	{
 		if(($id=$this->getCaptchaControl())==='')
 			throw new TConfigurationException('captchavalidator_captchacontrol_required');
-		else if(($control=$this->findControl($id))===null)
+		elseif(($control=$this->findControl($id))===null)
 			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent',$id);
-		else if(!($control instanceof TCaptcha))
+		elseif(!($control instanceof TCaptcha))
 			throw new TConfigurationException('captchavalidator_captchacontrol_invalid',$id);
 		else
 			return $control;

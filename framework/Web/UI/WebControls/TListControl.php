@@ -141,7 +141,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 				$this->renderClientControlScript($writer);
 			}
 		}
-		else if($this->getEnabled())
+		elseif($this->getEnabled())
 			$writer->addAttribute('disabled','disabled');
 		parent::addAttributesToRender($writer);
 	}
@@ -242,17 +242,17 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			$this->setSelectedValue($this->_cachedSelectedValue);
 			$this->resetCachedSelections();
 		}
-		else if($this->_cachedSelectedIndex!==-1)
+		elseif($this->_cachedSelectedIndex!==-1)
 		{
 			$this->setSelectedIndex($this->_cachedSelectedIndex);
 			$this->resetCachedSelections();
 		}
-		else if($this->_cachedSelectedValues!==null)
+		elseif($this->_cachedSelectedValues!==null)
 		{
 			$this->setSelectedValues($this->_cachedSelectedValues);
 			$this->resetCachedSelections();
 		}
-		else if($this->_cachedSelectedIndices!==null)
+		elseif($this->_cachedSelectedIndices!==null)
 		{
 			$this->setSelectedIndices($this->_cachedSelectedIndices);
 			$this->resetCachedSelections();
@@ -594,7 +594,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	    {
 		    if($value===null)
 		    	$this->clearSelection();
-		    else if(($item=$this->_items->findItemByValue($value))!==null)
+		    elseif(($item=$this->_items->findItemByValue($value))!==null)
 	    	{
 		    	$this->clearSelection();
 		    	$item->setSelected(true);
@@ -821,7 +821,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 						foreach($item->getAttributes() as $name=>$value)
 							$writer->addAttribute($name,$value);
 					}
-					else if($previousGroup!==null)
+					elseif($previousGroup!==null)
 					{
 						$writer->renderEndTag();
 						$writer->writeLine();
@@ -860,7 +860,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		if($formatString==='')
 			return TPropertyValue::ensureString($value);
-		else if($formatString[0]==='#')
+		elseif($formatString[0]==='#')
 		{
 			$expression=strtr(substr($formatString,1),array('{0}'=>'$value'));
 			try

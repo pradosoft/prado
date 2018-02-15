@@ -924,22 +924,22 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$this->onSelectedIndexChanged($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_EDIT)===0)
+			elseif(strcasecmp($command,self::CMD_EDIT)===0)
 			{
 				$this->onEditCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_DELETE)===0)
+			elseif(strcasecmp($command,self::CMD_DELETE)===0)
 			{
 				$this->onDeleteCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_UPDATE)===0)
+			elseif(strcasecmp($command,self::CMD_UPDATE)===0)
 			{
 				$this->onUpdateCommand($param);
 				return true;
 			}
-			else if(strcasecmp($command,self::CMD_CANCEL)===0)
+			elseif(strcasecmp($command,self::CMD_CANCEL)===0)
 			{
 				$this->onCancelCommand($param);
 				return true;
@@ -1248,7 +1248,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$item->setItemType($itemType);
 			}
 		}
-		else if($template!==null)
+		elseif($template!==null)
 		{
 			$item=new TDataListItem;
 			$item->setItemIndex($itemIndex);
@@ -1268,7 +1268,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	{
 		if(($classPath=$this->getEmptyRenderer())!=='')
 			$this->getControls()->add(Prado::createComponent($classPath));
-		else if($this->_emptyTemplate!==null)
+		elseif($this->_emptyTemplate!==null)
 			$this->_emptyTemplate->instantiateIn($this);
 	}
 
@@ -1329,9 +1329,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		{
 			if($index===$editIndex)
 				$style=$editItemStyle;
-			else if($index===$selectedIndex)
+			elseif($index===$selectedIndex)
 				$style=$selectedItemStyle;
-			else if($index%2===0)
+			elseif($index%2===0)
 				$style=$itemStyle;
 			else
 				$style=$alternatingItemStyle;
@@ -1407,7 +1407,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 					$this->createItemInternal($i-1,TListItemType::Separator);
 				if($i===$editIndex)
 					$itemType=TListItemType::EditItem;
-				else if($i===$selectedIndex)
+				elseif($i===$selectedIndex)
 					$itemType=TListItemType::SelectedItem;
 				else
 					$itemType=$i%2?TListItemType::AlternatingItem : TListItemType::Item;
@@ -1449,7 +1449,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$this->createItemWithDataInternal($itemIndex-1,TListItemType::Separator,null);
 			if($itemIndex===$editIndex)
 				$itemType=TListItemType::EditItem;
-			else if($itemIndex===$selectedIndex)
+			elseif($itemIndex===$selectedIndex)
 				$itemType=TListItemType::SelectedItem;
 			else
 				$itemType=$itemIndex%2?TListItemType::AlternatingItem : TListItemType::Item;
@@ -1481,7 +1481,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$repeatInfo=$this->getRepeatInfo();
 				$repeatInfo->renderRepeater($writer,$this);
 			}
-			else if($this->_emptyTemplate!==null || $this->getEmptyRenderer()!=='')
+			elseif($this->_emptyTemplate!==null || $this->getEmptyRenderer()!=='')
 				parent::render($writer);
 		}
 	}

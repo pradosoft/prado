@@ -249,7 +249,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	{
 		if($this->_initialized)
 			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
-		else if(($this->_userFile=Prado::getPathOfNamespace($value,self::USER_FILE_EXT))===null || !is_file($this->_userFile))
+		elseif(($this->_userFile=Prado::getPathOfNamespace($value,self::USER_FILE_EXT))===null || !is_file($this->_userFile))
 			throw new TConfigurationException('usermanager_userfile_invalid',$value);
 	}
 
@@ -295,7 +295,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	{
 		if($this->_passwordMode===TUserManagerPasswordMode::MD5)
 			$password=md5($password);
-		else if($this->_passwordMode===TUserManagerPasswordMode::SHA1)
+		elseif($this->_passwordMode===TUserManagerPasswordMode::SHA1)
 			$password=sha1($password);
 		$username=strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username]===$password);

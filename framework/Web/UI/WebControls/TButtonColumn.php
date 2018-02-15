@@ -224,7 +224,7 @@ class TButtonColumn extends TDataGridColumn
 			$buttonType=$this->getButtonType();
 			if($buttonType===TButtonColumnType::LinkButton)
 				$button=new TLinkButton;
-			else if($buttonType===TButtonColumnType::PushButton)
+			elseif($buttonType===TButtonColumnType::PushButton)
 				$button=new TButton;
 			else // image button
 			{

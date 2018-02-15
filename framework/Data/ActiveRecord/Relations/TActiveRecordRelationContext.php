@@ -222,7 +222,7 @@ class TActiveRecordRelationContext
 	{
 		if(is_object($obj))
 			return $obj instanceof TList ? $obj->count() === 0 : false;
-		else if(is_array($obj))
+		elseif(is_array($obj))
 			return count($obj)===0;
 		else
 			return empty($obj);

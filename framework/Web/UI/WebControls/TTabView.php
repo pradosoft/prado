@@ -138,7 +138,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if(($text=$this->getText())!=='')
 			$writer->write($text);
-		else if($this->getHasControls())
+		elseif($this->getHasControls())
 			parent::renderContents($writer);
 	}
 

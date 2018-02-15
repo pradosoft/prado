@@ -871,21 +871,21 @@ class TPage extends TTemplateControl
 		{
 			if($this->isSystemPostField($key))
 				continue;
-			else if($control=$this->findControl($key))
+			elseif($control=$this->findControl($key))
 			{
 				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
 				{
 					if($control->loadPostData($key,$postData))
 						$this->_controlsPostDataChanged[]=$control;
 				}
-				else if($control instanceof IPostBackEventHandler &&
+				elseif($control instanceof IPostBackEventHandler &&
 					empty($this->_postData[self::FIELD_POSTBACK_TARGET]))
 				{
 					$this->_postData->add(self::FIELD_POSTBACK_TARGET,$key);  // not calling setPostBackEventTarget() because the control may be removed later
 				}
 				unset($this->_controlsRequiringPostData[$key]);
 			}
-			else if($beforeLoad)
+			elseif($beforeLoad)
 				$this->_restPostData->add($key,$value);
 		}
 
@@ -930,7 +930,7 @@ class TPage extends TTemplateControl
 	{
 		if(($postBackHandler=$this->getPostBackEventTarget())===null)
 			$this->validate();
-		else if($postBackHandler instanceof IPostBackEventHandler)
+		elseif($postBackHandler instanceof IPostBackEventHandler)
 			$postBackHandler->raisePostBackEvent($this->getPostBackEventParameter());
 	}
 
@@ -978,7 +978,7 @@ class TPage extends TTemplateControl
 				$focus=$this->_focus;
 			$this->getClientScript()->registerFocusControl($focus);
 		}
-		else if($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
+		elseif($this->_postData && ($lastFocus=$this->_postData->itemAt(self::FIELD_LASTFOCUS))!==null)
 			$this->getClientScript()->registerFocusControl($lastFocus);
 		$this->_inFormRender=false;
 	}

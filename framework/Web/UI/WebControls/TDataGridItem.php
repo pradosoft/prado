@@ -64,7 +64,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 		$this->setItemType($itemType);
 		if($itemType===TListItemType::Header)
 			$this->setTableSection(TTableRowSection::Header);
-		else if($itemType===TListItemType::Footer)
+		elseif($itemType===TListItemType::Footer)
 			$this->setTableSection(TTableRowSection::Footer);
 	}
 

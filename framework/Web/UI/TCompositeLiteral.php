@@ -47,9 +47,9 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 			{
 				if($item[0]===self::TYPE_EXPRESSION)
 					$this->_expressions[$id]=$item[1];
-				else if($item[0]===self::TYPE_STATEMENTS)
+				elseif($item[0]===self::TYPE_STATEMENTS)
 					$this->_statements[$id]=$item[1];
-				else if($item[0]===self::TYPE_DATABINDING)
+				elseif($item[0]===self::TYPE_DATABINDING)
 					$this->_bindings[$id]=$item[1];
 				$this->_items[$id]='';
 			}

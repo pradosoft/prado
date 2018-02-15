@@ -396,12 +396,12 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 			{
 				if(($dataSource=$this->getNamingContainer()->findControl($dsid))===null)
 					throw new TInvalidDataValueException('databoundcontrol_datasourceid_inexistent',$dsid);
-				else if(!($dataSource instanceof IDataSource))
+				elseif(!($dataSource instanceof IDataSource))
 					throw new TInvalidDataValueException('databoundcontrol_datasourceid_invalid',$dsid);
 				else
 					$this->_currentDataSource=$dataSource;
 			}
-			else if(($dataSource=$this->getDataSource())!==null)
+			elseif(($dataSource=$this->getDataSource())!==null)
 				$this->_currentDataSource=new TReadOnlyDataSource($dataSource,$this->getDataMember());
 			else
 				$this->_currentDataSource=null;
@@ -483,13 +483,13 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 			}
 			return $list;
 		}
-		else if(is_array($value))
+		elseif(is_array($value))
 			return new TMap($value);
-		else if($value instanceof TDbDataReader) {
+		elseif($value instanceof TDbDataReader) {
 			// read array from TDbDataReader since it's forward-only stream and can only be traversed once
 			return $value->readAll();
 		}
-		else if(($value instanceof \Traversable) || $value===null)
+		elseif(($value instanceof \Traversable) || $value===null)
 			return $value;
 		else
 			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid',get_class($this));

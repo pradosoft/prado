@@ -432,7 +432,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 				return true;
 			}
 		}
-		else if($this->_recordState===self::STATE_LOADED)
+		elseif($this->_recordState===self::STATE_LOADED)
 		{
 			$this->onUpdate($param);
 			if($param->getIsValid() && $gateway->update($this))
@@ -834,13 +834,13 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$property= $method[4]==='_' ? substr($method,5) : substr($method,4);
 			return $this->getRelationHandler($property, $args);
 		}
-		else if($findOne=strncasecmp($method,'findby',6)===0)
+		elseif($findOne=strncasecmp($method,'findby',6)===0)
 			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		else if(strncasecmp($method,'findallby',9)===0)
+		elseif(strncasecmp($method,'findallby',9)===0)
 			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
-		else if($delete=strncasecmp($method,'deleteby',8)===0)
+		elseif($delete=strncasecmp($method,'deleteby',8)===0)
 			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
-		else if($delete=strncasecmp($method,'deleteallby',11)===0)
+		elseif($delete=strncasecmp($method,'deleteallby',11)===0)
 			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
 		else
 		{
@@ -901,7 +901,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TActiveRecordCriteria($criteria,$useArgs ? $args : $parameters);
 		}
-		else if($criteria instanceof TSqlCriteria)
+		elseif($criteria instanceof TSqlCriteria)
 			return $criteria;
 		else
 			return new TActiveRecordCriteria();

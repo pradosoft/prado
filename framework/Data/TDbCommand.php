@@ -150,7 +150,7 @@ class TDbCommand extends \Prado\TComponent
 		$this->prepare();
 		if($dataType===null)
 			$this->_statement->bindParam($name,$value);
-		else if($length===null)
+		elseif($length===null)
 			$this->_statement->bindParam($name,$value,$dataType);
 		else
 			$this->_statement->bindParam($name,$value,$dataType,$length);

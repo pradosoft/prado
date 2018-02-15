@@ -214,7 +214,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		if(($text=$this->getText())!=='')
 			$writer->write($text);
-		else if($this->getHasControls())
+		elseif($this->getHasControls())
 			parent::renderContents($writer);
 		else
 			$writer->write('&nbsp;');
