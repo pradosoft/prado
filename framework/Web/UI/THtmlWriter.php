@@ -177,7 +177,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function writeLine($str='')
 	{
-		$this->_writer->write($str."\n");
+		$this->_writer->write($str . "\n");
 	}
 
 	/**
@@ -194,14 +194,14 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	public function renderBeginTag($tagName)
 	{
-		$str='<'.$tagName;
+		$str='<' . $tagName;
 		foreach($this->_attributes as $name=>$value)
-			$str.=' '.$name.'="'.$value.'"';
+			$str.=' ' . $name . '="' . $value . '"';
 		if(!empty($this->_styles))
 		{
 			$str.=' style="';
 			foreach($this->_styles as $name=>$value)
-				$str.=$name.':'.$value.';';
+				$str.=$name . ':' . $value . ';';
 			$str.='"';
 		}
 		if(isset(self::$_simpleTags[$tagName]))
@@ -225,7 +225,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	public function renderEndTag()
 	{
 		if(!empty($this->_openTags) && ($tagName=array_pop($this->_openTags))!=='')
-			$this->_writer->write('</'.$tagName.'>');
+			$this->_writer->write('</' . $tagName . '>');
 	}
 }
 

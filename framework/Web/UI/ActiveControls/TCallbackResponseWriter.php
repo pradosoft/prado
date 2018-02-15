@@ -70,6 +70,6 @@ class TCallbackResponseWriter extends TTextWriter
 		$content = parent::flush();
 		if(empty($content))
 			return "";
-		return '<!--'.$this->getBoundary().'-->'.$content.'<!--//'.$this->getBoundary().'-->';
+		return '<!--' . $this->getBoundary() . '-->' . $content . '<!--//' . $this->getBoundary() . '-->';
 	}
 }

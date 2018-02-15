@@ -69,7 +69,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   protected function getContainerID()
   {
-	return $this->ClientID.'_Container';
+	return $this->ClientID . '_Container';
   }
 
   /**
@@ -113,7 +113,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    */
   private function renderDataList($writer)
   {
-	$writer->write('<span id="'.$this->getContainerID().'">');
+	$writer->write('<span id="' . $this->getContainerID() . '">');
 	parent::render($writer);
 	$writer->write('</span>');
   }

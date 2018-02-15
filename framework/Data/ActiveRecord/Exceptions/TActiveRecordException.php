@@ -30,9 +30,9 @@ class TActiveRecordException extends TDbException
 	{
 		$lang=Prado::getPreferredLanguage();
 		$path = dirname(__FILE__);
-		$msgFile=$path.'/messages-'.$lang.'.txt';
+		$msgFile=$path . '/messages-' . $lang . '.txt';
 		if(!is_file($msgFile))
-			$msgFile=$path.'/messages.txt';
+			$msgFile=$path . '/messages.txt';
 		return $msgFile;
 	}
 }

@@ -301,7 +301,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getSurroundingTagID()
 	{
-	return $this->getSpanNeeded() ? $this->getClientID().'_parent' : $this->getClientID();
+	return $this->getSpanNeeded() ? $this->getClientID() . '_parent' : $this->getClientID();
 	}
 
 	/**

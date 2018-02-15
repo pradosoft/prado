@@ -95,9 +95,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	{
 		$limit = $limit!==null ? (int)$limit : -1;
 		$offset = $offset!==null ? (int)$offset : -1;
-		$limitStr = $limit >= 0 ? ' LIMIT '.$limit : '';
-		$offsetStr = $offset >= 0 ? ' OFFSET '.$offset : '';
-		return $sql.$limitStr.$offsetStr;
+		$limitStr = $limit >= 0 ? ' LIMIT ' . $limit : '';
+		$offsetStr = $offset >= 0 ? ' OFFSET ' . $offset : '';
+		return $sql . $limitStr . $offsetStr;
 	}
 
 	/**
@@ -118,10 +118,10 @@ class TDbCommandBuilder extends \Prado\TComponent
 				// key is a column
 				$key = $this->getTableInfo()->getColumn($name)->getColumnName();
 			}
-			$orders[] = $key.' '.$direction;
+			$orders[] = $key . ' ' . $direction;
 		}
 		if(count($orders) > 0)
-			$sql .= ' ORDER BY '.implode(', ', $orders);
+			$sql .= ' ORDER BY ' . implode(', ', $orders);
 		return $sql;
 	}
 
@@ -143,7 +143,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 			$column = $this->getTableInfo()->getColumn($field)->getColumnName();
 			$conditions[] = $this->getSearchCondition($column, $words);
 		}
-		return '('.implode(' OR ', $conditions).')';
+		return '(' . implode(' OR ', $conditions) . ')';
 	}
 
 	/**
@@ -155,8 +155,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	{
 		$conditions=[];
 		foreach($words as $word)
-			$conditions[] = $column.' LIKE '.$this->getDbConnection()->quoteString('%'.$word.'%');
-		return '('.implode(' AND ', $conditions).')';
+			$conditions[] = $column . ' LIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+		return '(' . implode(' AND ', $conditions) . ')';
 	}
 
 	/**
@@ -351,8 +351,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	{
 		$table = $this->getTableInfo()->getTableFullName();
 		if (!empty($where))
-			$where = ' WHERE '.$where;
-		$command = $this->createCommand("DELETE FROM {$table}".$where);
+			$where = ' WHERE ' . $where;
+		$command = $this->createCommand("DELETE FROM {$table}" . $where);
 		$this->bindArrayValues($command, $parameters);
 		return $command;
 	}
@@ -391,8 +391,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 			$fields = implode(', ', $this->getColumnBindings($data));
 
 		if (!empty($where))
-			$where = ' WHERE '.$where;
-		$command = $this->createCommand("UPDATE {$table} SET {$fields}".$where);
+			$where = ' WHERE ' . $where;
+		$command = $this->createCommand("UPDATE {$table} SET {$fields}" . $where);
 		$this->bindArrayValues($command, array_merge($data, $parameters));
 		return $command;
 	}
@@ -408,7 +408,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 		foreach(array_keys($values) as $name)
 		{
 			$fields[] = $this->getTableInfo()->getColumn($name)->getColumnName();
-			$bindings[] = ':'.$name;
+			$bindings[] = ':' . $name;
 		}
 		return [implode(', ',$fields), implode(', ', $bindings)];
 	}
@@ -425,7 +425,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 		foreach(array_keys($values) as $name)
 		{
 			$column = $this->getTableInfo()->getColumn($name)->getColumnName();
-			$bindings[] = $position ? $column.' = ?' : $column.' = :'.$name;
+			$bindings[] = $position ? $column . ' = ?' : $column . ' = :' . $name;
 		}
 		return $bindings;
 	}
@@ -451,9 +451,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 		{
 			$column = $this->getTableInfo()->getColumn($name);
 			if($value === null && $column->getAllowNull())
-				$command->bindValue(':'.$name, null, PDO::PARAM_NULL);
+				$command->bindValue(':' . $name, null, PDO::PARAM_NULL);
 			else
-				$command->bindValue(':'.$name, $value, $column->getPdoType());
+				$command->bindValue(':' . $name, $value, $column->getPdoType());
 		}
 	}
 
@@ -473,7 +473,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 		{
 			foreach($values as $name=>$value)
 			{
-				$prop = $name[0]===':' ? $name : ':'.$name;
+				$prop = $name[0]===':' ? $name : ':' . $name;
 				$command->bindValue($prop, $value, $this->getPdoType($value));
 			}
 		}

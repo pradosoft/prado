@@ -73,7 +73,7 @@ class TPanelStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(($url=trim($this->getBackImageUrl()))!=='')
-			$this->setStyleField('background-image','url('.$url.')');
+			$this->setStyleField('background-image','url(' . $url . ')');
 
 		switch($this->getScrollBars())
 		{

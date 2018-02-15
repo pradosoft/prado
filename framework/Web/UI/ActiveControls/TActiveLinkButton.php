@@ -146,7 +146,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 		{
 			if($this->getEnabled(true))
 			{
-				$nop = "javascript:;//".$this->getClientID();
+				$nop = "javascript:;//" . $this->getClientID();
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $nop);
 
 				$this->getActiveControl()->registerCallbackClientScript(

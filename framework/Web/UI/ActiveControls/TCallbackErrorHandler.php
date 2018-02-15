@@ -63,7 +63,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		}
 		else
 		{
-			error_log("Error happened while processing an existing error:\n".$exception->__toString());
+			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
 			header('HTTP/1.0 500 Internal Server Error', true, 500);
 		}
 		$this->getApplication()->getResponse()->flush();
@@ -91,7 +91,7 @@ class TCallbackErrorHandler extends TErrorHandler
 		}
 		$data['type']=get_class($exception);
 		$data['message']=$exception->getMessage();
-		$data['version']=$_SERVER['SERVER_SOFTWARE'].' '.Prado::getVersion();
+		$data['version']=$_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
 		$data['time']=@strftime('%Y-%m-%d %H:%M',time());
 		return $data;
 	}

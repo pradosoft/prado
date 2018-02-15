@@ -66,7 +66,7 @@ class TUrlManager extends \Prado\TModule
 	 */
 	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
 	{
-		$url=$serviceID.'='.urlencode($serviceParam);
+		$url=$serviceID . '=' . urlencode($serviceParam);
 		$amp=$encodeAmpersand?'&amp;':'&';
 		$request=$this->getRequest();
 		if(is_array($getItems) || $getItems instanceof \Traversable)
@@ -77,12 +77,12 @@ class TUrlManager extends \Prado\TModule
 				{
 					if(is_array($value))
 					{
-						$name=urlencode($name.'[]');
+						$name=urlencode($name . '[]');
 						foreach($value as $v)
-							$url.=$amp.$name.'='.urlencode($v);
+							$url.=$amp . $name . '=' . urlencode($v);
 					}
 					else
-						$url.=$amp.urlencode($name).'='.urlencode($value);
+						$url.=$amp . urlencode($name) . '=' . urlencode($value);
 				}
 			}
 			else
@@ -92,10 +92,10 @@ class TUrlManager extends \Prado\TModule
 					if(is_array($value))
 					{
 						foreach($value as $v)
-							$url.=$amp.$name.'[]='.$v;
+							$url.=$amp . $name . '[]=' . $v;
 					}
 					else
-						$url.=$amp.$name.'='.$value;
+						$url.=$amp . $name . '=' . $value;
 				}
 			}
 		}
@@ -103,11 +103,11 @@ class TUrlManager extends \Prado\TModule
 		switch($request->getUrlFormat())
 		{
 			case THttpRequestUrlFormat::Path:
-				return $request->getApplicationUrl().'/'.strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
+				return $request->getApplicationUrl() . '/' . strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/').'/'.strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
+				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			default:
-				return $request->getApplicationUrl().'?'.$url;
+				return $request->getApplicationUrl() . '?' . $url;
 		}
 	}
 

@@ -389,7 +389,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		header('Content-Length: '.$fileSize);
+		header('Content-Length: ' . $fileSize);
 		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		header('Content-Transfer-Encoding: binary');
 		if($content===null)
@@ -432,7 +432,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		// this is handled automatically by PHP on Apache and others
 		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
 		if($url[0]==='/')
-			$url=$this->getRequest()->getBaseUrl().$url;
+			$url=$this->getRequest()->getBaseUrl() . $url;
 		if ($this->_status >= 300 && $this->_status < 400)
 		{
 			// The status code has been modified to a valid redirection status, send it
@@ -444,11 +444,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 						: 302
 					]);
 			}
-			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
+			header('Location: ' . str_replace('&amp;','&',$url), true, $this->_status);
 		} else {
 			if($isIIS)
-				header('HTTP/1.1 302 '.self::$HTTP_STATUS_CODES[302]);
-			header('Location: '.str_replace('&amp;','&',$url));
+				header('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
+			header('Location: ' . str_replace('&amp;','&',$url));
 		}
 
 		if(!$this->getApplication()->getRequestCompleted())
@@ -533,7 +533,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if($this->getRequest()->getHttpProtocolVersion() === null)
 			$protocol='HTTP/1.1';
 
-		header($protocol.' '.$this->_status.' '.$this->_reason, true, TPropertyValue::ensureInteger($this->_status));
+		header($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
 
 		$this->_httpHeaderSent = true;
 	}
@@ -555,7 +555,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$contentType=$this->_contentType===null?self::DEFAULT_CONTENTTYPE:$this->_contentType;
 		$charset=$this->getCharset();
 		if($charset === false) {
-			$this->appendHeader('Content-Type: '.$contentType);
+			$this->appendHeader('Content-Type: ' . $contentType);
 			return;
 		}
 
@@ -563,7 +563,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$charset=$globalization->getCharset();
 
 		if($charset==='') $charset = self::DEFAULT_CHARSET;
-		$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
+		$this->appendHeader('Content-Type: ' . $contentType . ';charset=' . $charset);
 
 		$this->_contentTypeHeaderSent = true;
 	}

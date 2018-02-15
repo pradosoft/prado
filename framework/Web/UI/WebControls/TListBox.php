@@ -48,7 +48,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		$rows=$this->getRows();
 		$writer->addAttribute('size',"$rows");
 		if($this->getSelectionMode()===TListSelectionMode::Multiple)
-			$writer->addAttribute('name',$this->getUniqueID().'[]');
+			$writer->addAttribute('name',$this->getUniqueID() . '[]');
 		else
 			$writer->addAttribute('name',$this->getUniqueID());
 		parent::addAttributesToRender($writer);

@@ -36,7 +36,7 @@ class TFastSqlMapApplicationCache implements ICache
 
 	protected function getBaseKeyKeyName()
 	{
-		return 'SqlMapCacheBaseKey::'.$this->_cacheModel->getId();
+		return 'SqlMapCacheBaseKey::' . $this->_cacheModel->getId();
 	}
 
 	protected function getBaseKey()
@@ -54,7 +54,7 @@ class TFastSqlMapApplicationCache implements ICache
 
 	protected function getCacheKey($key)
 	{
-		return $this->getBaseKey().'###'.$key;
+		return $this->getBaseKey() . '###' . $key;
 	}
 
 	public function delete($key)

@@ -203,8 +203,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$columns = [];
 		$tableName = $table->getTableFullName();
 		foreach($fields as $field)
-			$columns[] = $tableName.'.'.$table->getColumn($field)->getColumnName();
-		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
+			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
+		return '(' . implode(', ',$columns) . ') IN ' . $this->quoteTuple($values);
 	}
 
 	/**
@@ -247,7 +247,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$data = [];
 		foreach($array as $k=>$v)
 			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
-		return '('.implode(', ', $data).')';
+		return '(' . implode(', ', $data) . ')';
 	}
 
 	/**
@@ -269,7 +269,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		foreach($primary as $key)
 		{
 			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
-			$criteria[] = $column.' = :'.$key;
+			$criteria[] = $column . ' = :' . $key;
 			$bindings[$key] = isset($values[$key])?$values[$key]:$values[$i++];
 		}
 		return [implode(' AND ', $criteria), $bindings];
@@ -395,7 +395,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		$table = $this->getTableInfo();
 		$columns = $table->getLowerCaseColumnNames();
-		$regexp = '/('.implode('|', array_keys($columns)).')(and|_and_|or|_or_)?/i';
+		$regexp = '/(' . implode('|', array_keys($columns)) . ')(and|_and_|or|_or_)?/i';
 		$matches = [];
 		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
 		{

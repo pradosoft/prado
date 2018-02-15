@@ -21,7 +21,7 @@ namespace Prado\I18N\core;
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__).'/util.php');
+require_once(dirname(__FILE__) . '/util.php');
 
 /**
  * MessageFormat class.
@@ -205,8 +205,8 @@ class MessageFormat
 					//found, but untranslated
 					if(empty($target))
 					{
-						return 	$this->postscript[0].
-								strtr($string, $args).
+						return 	$this->postscript[0] .
+								strtr($string, $args) .
 								$this->postscript[1];		
 					}
 					else
@@ -218,8 +218,8 @@ class MessageFormat
 		// well we did not find the translation string.
 		$this->source->append($string);
 		
-		return 	$this->postscript[0].
-				strtr($string, $args).
+		return 	$this->postscript[0] .
+				strtr($string, $args) .
 				$this->postscript[1];
 	}
 	

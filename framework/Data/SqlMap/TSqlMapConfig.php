@@ -43,7 +43,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	private function getCacheKey()
 	{
-		return $this->getID().$this->getConfigFile();
+		return $this->getID() . $this->getConfigFile();
 	}
 
 	/**

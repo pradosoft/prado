@@ -21,7 +21,7 @@ namespace Prado\I18N\core;
 /**
  * Include the CultureInfo class.
  */
-require_once(dirname(__FILE__).'/CultureInfo.php');
+require_once(dirname(__FILE__) . '/CultureInfo.php');
 
 /**
  * HTTPNegotiator class.
@@ -88,7 +88,7 @@ class HTTPNegotiator
 						if($i == 0)
 							$lang = strtolower($codes[0]);
 						else
-							$lang .= '_'.strtoupper($codes[$i]);
+							$lang .= '_' . strtoupper($codes[$i]);
 					}
 				}
 			}

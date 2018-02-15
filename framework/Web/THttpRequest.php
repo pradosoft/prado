@@ -180,7 +180,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if(isset($_SERVER['REQUEST_URI']))
 			$this->_requestUri=$_SERVER['REQUEST_URI'];
 		else  // TBD: in this case, SCRIPT_NAME need to be escaped
-			$this->_requestUri=$_SERVER['SCRIPT_NAME'].(empty($_SERVER['QUERY_STRING'])?'':'?'.$_SERVER['QUERY_STRING']);
+			$this->_requestUri=$_SERVER['SCRIPT_NAME'] . (empty($_SERVER['QUERY_STRING'])?'':'?' . $_SERVER['QUERY_STRING']);
 
 		if($this->_cgiFix&self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO']))
 			$this->_pathInfo=substr($_SERVER['ORIG_PATH_INFO'], strlen($_SERVER['SCRIPT_NAME']));
@@ -231,7 +231,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 				$url.=$_SERVER['SERVER_NAME'];
 				$port=$_SERVER['SERVER_PORT'];
 				if(($port!=80 && !$secure) || ($port!=443 && $secure))
-					$url.=':'.$port;
+					$url.=':' . $port;
 			}
 			else
 				$url.=$_SERVER['HTTP_HOST'];
@@ -498,8 +498,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		$url=$this->getUrl();
 		$scheme=($forceSecureConnection)?"https": (($forceSecureConnection === null)?$url->getScheme():'http');
 		$host=$url->getHost();
-		if (($port=$url->getPort())) $host.=':'.$port;
-		return $scheme.'://'.$host;
+		if (($port=$url->getPort())) $host.=':' . $port;
+		return $scheme . '://' . $host;
 	}
 
 	/**
@@ -764,7 +764,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function resolveRequest($serviceIDs)
 	{
-		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'Prado\Web\THttpRequest');
+		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'],'Prado\Web\THttpRequest');
 		$getParams=$this->parseUrl();
 		foreach($getParams as $name=>$value)
 			$_GET[$name]=$value;

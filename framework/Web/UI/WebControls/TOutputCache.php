@@ -313,7 +313,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function getBaseCacheKey()
 	{
-		return self::CACHE_ID_PREFIX.$this->_keyPrefix.$this->getPage()->getPagePath().$this->getUniqueID();
+		return self::CACHE_ID_PREFIX . $this->_keyPrefix . $this->getPage()->getPagePath() . $this->getUniqueID();
 	}
 
 	/**

@@ -103,13 +103,13 @@ class TComponentReflection extends \Prado\TComponent
 		{
 			$this->_properties[$name]=[
 				'type'=>$this->determinePropertyType($method),
-				'readonly'=>!$class->hasMethod('set'.$name),
+				'readonly'=>!$class->hasMethod('set' . $name),
 				'protected'=>$method->isProtected(),
 				'class'=>$method->getDeclaringClass()->getName(),
 				'comments'=>$method->getDocComment()
 			];
-			$reserved['get'.strtolower($name)]=1;
-			$reserved['set'.strtolower($name)]=1;
+			$reserved['get' . strtolower($name)]=1;
+			$reserved['set' . strtolower($name)]=1;
 		}
 		ksort($events);
 		foreach($events as $name=>$method)

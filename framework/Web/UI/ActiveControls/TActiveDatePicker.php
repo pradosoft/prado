@@ -108,9 +108,9 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 				$dt = new \DateTime;
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id=$this->getClientID();
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $dt->format('j'), 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'month', 'Value', $dt->format('n')-1, 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'year', 'Value', $dt->format('Y'), 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n')-1, 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'year', 'Value', $dt->format('Y'), 'select');
 
 			}
 		}
@@ -159,7 +159,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 
 		$options = TJavaScript::encode($this->getDatePickerOptions());
 		$code = "new Prado.WebUI.TActiveDatePicker($options);";
-		$cs->registerEndScript("prado:".$this->getClientID(), $code);
+		$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 	}
 
 	/**

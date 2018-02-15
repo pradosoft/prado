@@ -168,7 +168,7 @@ class TCallbackPageStateTracker
 	protected function updateVisible($visible)
 	{
 		if($visible === false)
-			$this->client()->replaceContent($this->_control,"<span id=\"".$this->_control->getClientID()."\" style=\"display:none\" ></span>");
+			$this->client()->replaceContent($this->_control,"<span id=\"" . $this->_control->getClientID() . "\" style=\"display:none\" ></span>");
 		else
 			$this->client()->replaceContent($this->_control,$this->_control);
 	}

@@ -87,7 +87,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getTableFullName()
 	{
-		return $this->_info['SchemaName'].'.'.$this->getTableName();
+		return $this->_info['SchemaName'] . '.' . $this->getTableName();
 	}
 
 	/**

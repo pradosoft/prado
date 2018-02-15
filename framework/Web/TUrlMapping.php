@@ -292,7 +292,7 @@ class TUrlMapping extends TUrlManager
 		$this->_patterns[]=$pattern;
 		$pattern->init($url);
 
-		$key=$pattern->getServiceID().':'.$pattern->getServiceParameter();
+		$key=$pattern->getServiceID() . ':' . $pattern->getServiceParameter();
 		$this->_constructRules[$key][]=$pattern;
 	}
 
@@ -357,9 +357,9 @@ class TUrlMapping extends TUrlManager
 		{
 			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
 				$getItems=[];
-			$key=$serviceID.':'.$serviceParam;
+			$key=$serviceID . ':' . $serviceParam;
 			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
-				$serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
+				$serviceID . ':' . substr($serviceParam,0,$pos) . '.*' : $serviceID . ':*';
 			if(isset($this->_constructRules[$key]))
 			{
 				foreach($this->_constructRules[$key] as $rule)

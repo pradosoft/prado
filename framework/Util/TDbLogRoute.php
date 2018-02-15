@@ -83,7 +83,7 @@ class TDbLogRoute extends TLogRoute
 		$db=$this->getDbConnection();
 		$db->setActive(true);
 
-		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0=1';
+		$sql='SELECT * FROM ' . $this->_logTable . ' WHERE 0=1';
 		try
 		{
 			$db->createCommand($sql)->query()->close();
@@ -106,7 +106,7 @@ class TDbLogRoute extends TLogRoute
 	 */
 	protected function processLogs($logs)
 	{
-		$sql='INSERT INTO '.$this->_logTable.'(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
+		$sql='INSERT INTO ' . $this->_logTable . '(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
 		$command=$this->getDbConnection()->createCommand($sql);
 		foreach($logs as $log)
 		{
@@ -130,7 +130,7 @@ class TDbLogRoute extends TLogRoute
 		if($driver==='mysql')
 			$autoidAttributes = 'AUTO_INCREMENT';
 
-		$sql='CREATE TABLE '.$this->_logTable.' (
+		$sql='CREATE TABLE ' . $this->_logTable . ' (
 			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
 			level INTEGER,
 			category VARCHAR(128),
@@ -159,8 +159,8 @@ class TDbLogRoute extends TLogRoute
 		{
 			$db=new TDbConnection;
 			// default to SQLite3 database
-			$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.log';
-			$db->setConnectionString('sqlite:'.$dbFile);
+			$dbFile=$this->getApplication()->getRuntimePath() . '/sqlite3.log';
+			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}
 	}

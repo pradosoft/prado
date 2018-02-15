@@ -180,7 +180,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	public function replaceProperties($string)
 	{
 		foreach($this->_properties as $find => $replace)
-			$string = str_replace('${'.$find.'}', $replace, $string);
+			$string = str_replace('${' . $find . '}', $replace, $string);
 		return $string;
 	}
 }

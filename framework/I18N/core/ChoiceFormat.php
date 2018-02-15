@@ -168,7 +168,7 @@ class ChoiceFormat
 
 	protected function isValidSetNotation($number, $set)
 	{
-		$str = '$result = '.str_replace('n', '$number', $set).';';
+		$str = '$result = ' . str_replace('n', '$number', $set) . ';';
 		try
 		{
 			eval($str);

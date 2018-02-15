@@ -358,7 +358,7 @@ class THtmlArea extends TTextBox
 
 		$options = TJavaScript::encode($options,true,true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea'.$this->ClientID,$script);
+		$scripts->registerEndScript('prado:THtmlArea' . $this->ClientID,$script);
 	}
 
 	/**
@@ -366,7 +366,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function getScriptUrl()
 	{
-		return $this->getScriptDeploymentPath().'/tiny_mce/tiny_mce.js';
+		return $this->getScriptDeploymentPath() . '/tiny_mce/tiny_mce.js';
 	}
 
 	/**
@@ -390,7 +390,7 @@ class THtmlArea extends TTextBox
 		{
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
-			$dest = $assets->getBasePath().'/'.basename($url).'/tiny_mce/plugins/'.basename($path);
+			$dest = $assets->getBasePath() . '/' . basename($url) . '/tiny_mce/plugins/' . basename($path);
 			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}

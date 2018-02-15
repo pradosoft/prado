@@ -245,7 +245,7 @@ class TPageService extends \Prado\TService
 		{
 			$configCached=true;
 			$currentTimestamp=[];
-			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath);
+			$arr=$cache->get(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath);
 			if(is_array($arr))
 			{
 				list($pageConfig,$timestamps)=$arr;
@@ -279,9 +279,9 @@ class TPageService extends \Prado\TService
 					: self::CONFIG_FILE_XML;
 				foreach($paths as $path)
 				{
-					$configFile=$configPath.DIRECTORY_SEPARATOR.$fileName;
+					$configFile=$configPath . DIRECTORY_SEPARATOR . $fileName;
 					$currentTimestamp[$configFile]=@filemtime($configFile);
-					$configPath.=DIRECTORY_SEPARATOR.$path;
+					$configPath.=DIRECTORY_SEPARATOR . $path;
 				}
 				$appConfigFile=$application->getConfigurationFile();
 				$currentTimestamp[0]=$appConfigFile===null?0:@filemtime($appConfigFile);
@@ -297,7 +297,7 @@ class TPageService extends \Prado\TService
 						$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
 				}
 				$pageConfig->loadFromFiles($this->getBasePath());
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,[$pageConfig,$currentTimestamp]);
+				$cache->set(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath,[$pageConfig,$currentTimestamp]);
 			}
 		}
 		return $pageConfig;
@@ -402,10 +402,10 @@ class TPageService extends \Prado\TService
 	{
 		if($this->_basePath===null)
 		{
-			$basePath=$this->getApplication()->getBasePath().DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
+			$basePath=$this->getApplication()->getBasePath() . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
 			if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
 			{
-				$basePath=$this->getApplication()->getBasePath().DIRECTORY_SEPARATOR.self::FALLBACK_BASEPATH;
+				$basePath=$this->getApplication()->getBasePath() . DIRECTORY_SEPARATOR . self::FALLBACK_BASEPATH;
 				if(($this->_basePath=realpath($basePath))===false || !is_dir($this->_basePath))
 					throw new TConfigurationException('pageservice_basepath_invalid',$basePath);
 			}
@@ -485,9 +485,9 @@ class TPageService extends \Prado\TService
 	 */
 	protected function createPage($pagePath)
 	{
-		$path=$this->getBasePath().DIRECTORY_SEPARATOR.strtr($pagePath,'.',DIRECTORY_SEPARATOR);
-		$hasTemplateFile=is_file($path.self::PAGE_FILE_EXT);
-		$hasClassFile=is_file($path.Prado::CLASS_FILE_EXT);
+		$path=$this->getBasePath() . DIRECTORY_SEPARATOR . strtr($pagePath,'.',DIRECTORY_SEPARATOR);
+		$hasTemplateFile=is_file($path . self::PAGE_FILE_EXT);
+		$hasClassFile=is_file($path . Prado::CLASS_FILE_EXT);
 
 		if(!$hasTemplateFile && !$hasClassFile)
 			throw new THttpException(404,'pageservice_page_unknown',$pagePath);
@@ -495,10 +495,10 @@ class TPageService extends \Prado\TService
 		if($hasClassFile)
 		{
 			$className=basename($path);
-			$namespacedClassName = static::PAGE_NAMESPACE_PREFIX .str_replace('.', '\\', $pagePath);
+			$namespacedClassName = static::PAGE_NAMESPACE_PREFIX . str_replace('.', '\\', $pagePath);
 
 			if(!class_exists($className,false) && !class_exists($namespacedClassName, false))
-				include_once($path.Prado::CLASS_FILE_EXT);
+				include_once($path . Prado::CLASS_FILE_EXT);
 
 			if(!class_exists($className,false))
 				$className = $namespacedClassName;
@@ -518,7 +518,7 @@ class TPageService extends \Prado\TService
 		$page->setPagePath($pagePath);
 
 		if($hasTemplateFile)
-			$page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path.self::PAGE_FILE_EXT));
+			$page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path . self::PAGE_FILE_EXT));
 
 		return $page;
 	}

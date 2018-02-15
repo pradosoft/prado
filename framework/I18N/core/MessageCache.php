@@ -12,7 +12,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__).'/TCache_Lite.php');
+require_once(dirname(__FILE__) . '/TCache_Lite.php');
 
 /**
  * Cache the translation table into the file system.
@@ -41,15 +41,15 @@ class MessageCache
 	 */
 	public function __construct($cacheDir)
 	{
-		$cacheDir = $cacheDir.'/';
+		$cacheDir = $cacheDir . '/';
 
 		if(!is_dir($cacheDir))
 			throw new Exception(
-				'The cache directory '.$cacheDir.' does not exists.'.
+				'The cache directory ' . $cacheDir . ' does not exists.' .
 				'The cache directory must be writable by the server.');
 		if(!is_writable($cacheDir))
 			throw new Exception(
-				'The cache directory '.$cacheDir.' must be writable '.
+				'The cache directory ' . $cacheDir . ' must be writable ' .
 				'by the server.');
 
 		$options = [
@@ -86,7 +86,7 @@ class MessageCache
 	 */
 	protected function getID($catalogue, $culture)
 	{
-		return $catalogue.':'.$culture;
+		return $catalogue . ':' . $culture;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class MessageCache
 	 */
 	protected function getGroup($catalogue, $culture)
 	{
-		return $catalogue.':'.get_class($this);
+		return $catalogue . ':' . get_class($this);
 	}
 
 	/**

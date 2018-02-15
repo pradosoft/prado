@@ -92,7 +92,7 @@ class TErrorHandler extends \Prado\TModule
 	public function getErrorTemplatePath()
 	{
 		if($this->_templatePath===null)
-			$this->_templatePath=Prado::getFrameworkPath().'/Exceptions/templates';
+			$this->_templatePath=Prado::getFrameworkPath() . '/Exceptions/templates';
 		return $this->_templatePath;
 	}
 
@@ -201,7 +201,7 @@ class TErrorHandler extends \Prado\TModule
 
 		$errorMessage = $exception->getMessage();
 		if($isDebug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
 		else
 		{
 			$version='';
@@ -233,12 +233,12 @@ class TErrorHandler extends \Prado\TModule
 		{
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";
-			echo "<pre>".$exception->__toString()."</pre>\n";
+			echo "<pre>" . $exception->__toString() . "</pre>\n";
 			echo "</body></html>";
 		}
 		else
 		{
-			error_log("Error happened while processing an existing error:\n".$exception->__toString());
+			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
 			header('HTTP/1.0 500 Internal Error');
 		}
 	}
@@ -254,7 +254,7 @@ class TErrorHandler extends \Prado\TModule
 	{
 		if(php_sapi_name()==='cli')
 		{
-			echo $exception->getMessage()."\n";
+			echo $exception->getMessage() . "\n";
 			echo $this->getExactTraceAsString($exception);
 			return;
 		}
@@ -284,14 +284,14 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-			$version=$_SERVER['SERVER_SOFTWARE'].' <a href="https://github.com/pradosoft/prado">PRADO</a>/'.Prado::getVersion();
+			$version=$_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
 		else
 			$version='';
 
 		$tokens=[
 			'%%ErrorType%%' => get_class($exception),
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
-			'%%SourceFile%%' => htmlspecialchars($fileName).' ('.$errorLine.')',
+			'%%SourceFile%%' => htmlspecialchars($fileName) . ' (' . $errorLine . ')',
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
@@ -313,9 +313,9 @@ class TErrorHandler extends \Prado\TModule
 	protected function getExceptionTemplate($exception)
 	{
 		$lang=Prado::getPreferredLanguage();
-		$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'-'.$lang.'.html';
+		$exceptionFile=Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
 		if(!is_file($exceptionFile))
-			$exceptionFile=Prado::getFrameworkPath().'/Exceptions/templates/'.self::EXCEPTION_FILE_NAME.'.html';
+			$exceptionFile=Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '.html';
 		if(($content=@file_get_contents($exceptionFile))===false)
 			die("Unable to open exception template file '$exceptionFile'.");
 		return $content;
@@ -339,7 +339,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function getErrorTemplate($statusCode,$exception)
 	{
-		$base=$this->getErrorTemplatePath().DIRECTORY_SEPARATOR.self::ERROR_FILE_NAME;
+		$base=$this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . self::ERROR_FILE_NAME;
 		$lang=Prado::getPreferredLanguage();
 		if(is_file("$base$statusCode-$lang.html"))
 			$errorFile="$base$statusCode-$lang.html";
@@ -434,7 +434,7 @@ class TErrorHandler extends \Prado\TModule
 			if($i===$errorLine-1)
 			{
 				$line=htmlspecialchars(sprintf("%04d: %s",$i+1,str_replace("\t",'    ',$lines[$i])));
-				$source.="<div class=\"error\">".$line."</div>";
+				$source.="<div class=\"error\">" . $line . "</div>";
 			}
 			else
 				$source.=htmlspecialchars(sprintf("%04d: %s",$i+1,str_replace("\t",'    ',$lines[$i])));

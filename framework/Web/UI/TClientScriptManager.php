@@ -172,7 +172,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		{
 			if(self::$_scripts === null)
 			{
-				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::PACKAGES_FILE;
+				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::PACKAGES_FILE;
 				list($folders, $packages, $deps)= include($packageFile);
 				self::$_scriptsFolders = $folders;
 				self::$_scripts = $deps;
@@ -202,15 +202,15 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 								$this->_expandedScripts[$script] = true;
 								if($isDebug)
 								{
-									if (!in_array($url=$baseUrl.'/'.$subPath, $packagesUrl))
+									if (!in_array($url=$baseUrl . '/' . $subPath, $packagesUrl))
 										$packagesUrl[]=$url;
 								} else {
 								  $minPath=preg_replace('/^(.*)(?<!\.min)\.js$/', "\\1.min.js", $subPath);
-								  if (!in_array($url=$baseUrl.'/'.$minPath, $packagesUrl))
+								  if (!in_array($url=$baseUrl . '/' . $minPath, $packagesUrl))
 									{
-										if(!is_file($filePath=$path.DIRECTORY_SEPARATOR.$minPath))
+										if(!is_file($filePath=$path . DIRECTORY_SEPARATOR . $minPath))
 										{
-											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base.'/'.$subPath)));
+											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base . '/' . $subPath)));
 											chmod($filePath, PRADO_CHMOD);
 										}
 										$packagesUrl[]=$url;
@@ -278,7 +278,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		}
 		else
 		{
-			return [$assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base];
+			return [$assets->getBasePath() . str_replace($assets->getBaseUrl(),'',$base), $base];
 		}
 	}
 
@@ -397,7 +397,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$options = TJavaScript::encode($this->getDefaultButtonOptions($panelID, $buttonID));
 		$code = "new Prado.WebUI.DefaultButton($options);";
 
-		$this->_endScripts['prado:'.$panelID]=$code;
+		$this->_endScripts['prado:' . $panelID]=$code;
 		$this->registerPradoScriptInternal('prado');
 
 		$params=[$panelID,$buttonID];
@@ -428,7 +428,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->registerPradoScriptInternal('jquery');
 		if($target instanceof TControl)
 			$target=$target->getClientID();
-		$this->_endScripts['prado:focus'] = 'jQuery(\'#'.$target.'\').focus();';
+		$this->_endScripts['prado:focus'] = 'jQuery(\'#' . $target . '\').focus();';
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerFocusControl',$params);
@@ -456,7 +456,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		{
 			if(self::$_styles === null)
 			{
-				$packageFile = Prado::getFrameworkPath().DIRECTORY_SEPARATOR.self::CSS_PACKAGES_FILE;
+				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::CSS_PACKAGES_FILE;
 				list($folders, $packages,$deps)= include($packageFile);
 				self::$_stylesFolders = $folders;
 				self::$_styles = $deps;
@@ -485,7 +485,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 								$this->_expandedStyles[$style] = true;
 								// TODO minify css?
-								if (!in_array($url=$baseUrl.'/'.$subPath, $packagesUrl))
+								if (!in_array($url=$baseUrl . '/' . $subPath, $packagesUrl))
 									$packagesUrl[]=$url;
 							}
 						}
@@ -752,9 +752,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		foreach($this->_styleSheetFiles as $url)
 		{
 			if(is_array($url))
-				$str.="<link rel=\"stylesheet\" type=\"text/css\" media=\"{$url[1]}\" href=\"".THttpUtility::htmlEncode($url[0])."\" />\n";
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" media=\"{$url[1]}\" href=\"" . THttpUtility::htmlEncode($url[0]) . "\" />\n";
 			else
-				$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"".THttpUtility::htmlEncode($url)."\" />\n";
+				$str.="<link rel=\"stylesheet\" type=\"text/css\" href=\"" . THttpUtility::htmlEncode($url) . "\" />\n";
 		}
 		$writer->write($str);
 	}
@@ -765,7 +765,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function renderStyleSheets($writer)
 	{
 		if(count($this->_styleSheets))
-			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n".implode("\n",$this->_styleSheets)."\n/*]]>*/\n</style>\n");
+			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n" . implode("\n",$this->_styleSheets) . "\n/*]]>*/\n</style>\n");
 	}
 
 	/**
@@ -902,16 +902,16 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			if(is_array($value))
 			{
 				foreach($value as $v)
-					$str.='<input type="text" style="display:none" autocomplete="off" name="'.$name.'[]" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+					$str.='<input type="text" style="display:none" autocomplete="off" name="' . $name . '[]" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";
 			}
 			else
 			{
-				$str.='<input type="text" style="display:none" autocomplete="off" name="'.$name.'" id="'.$id.'" value="'.THttpUtility::htmlEncode($value)."\" />\n";
+				$str.='<input type="text" style="display:none" autocomplete="off" name="' . $name . '" id="' . $id . '" value="' . THttpUtility::htmlEncode($value) . "\" />\n";
 			}
 			$this->_renderedHiddenFields[] = $name;
 		}
 		if($str!=='')
-			$writer->write("<div style=\"visibility:hidden;\">\n".$str."</div>\n");
+			$writer->write("<div style=\"visibility:hidden;\">\n" . $str . "</div>\n");
 	}
 
 	public function getHiddenFields()

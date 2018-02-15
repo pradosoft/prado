@@ -148,7 +148,7 @@ class TTableStyle extends TStyle
 	public function addAttributesToRender($writer)
 	{
 		if(($url=trim($this->getBackImageUrl()))!=='')
-			$writer->addStyleAttribute('background-image','url('.$url.')');
+			$writer->addStyleAttribute('background-image','url(' . $url . ')');
 
 		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
 			$writer->addStyleAttribute('text-align',strtolower($horizontalAlign));

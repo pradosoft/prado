@@ -74,7 +74,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	protected function getAssetUrl($file='')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui');
-		return $base.'/'.$file;
+		return $base . '/' . $file;
 	}
 
 	/**
@@ -84,7 +84,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 */
 	public function publishJuiStyle($file)
 	{
-		$url = $this->getAssetUrl(self::CSS_PATH.'/'.$this->getJuiBaseStyle().'/'.$file);
+		$url = $this->getAssetUrl(self::CSS_PATH . '/' . $this->getJuiBaseStyle() . '/' . $file);
 		$cs = $this->getPage()->getClientScript();
 		if(!$cs->isStyleSheetFileRegistered($url))
 			$cs->registerStyleSheetFile($url, $url);

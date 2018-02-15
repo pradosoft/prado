@@ -151,8 +151,8 @@ class MessageSource_Database extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $catalogue.'.'.$variant;
+				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$catalogues[] = $catalogue . '.' . $variant;
 			}
 		}
 		return array_reverse($catalogues);
@@ -168,7 +168,7 @@ class MessageSource_Database extends MessageSource
 		if(empty($catalogue))
 			$catalogue = 'messages';
 
-		$variant = $catalogue.'.'.$this->culture;
+		$variant = $catalogue . '.' . $this->culture;
 
 		$command=$this->getDBConnection()->createCommand(
 			'SELECT cat_id FROM catalogue WHERE name = :variant');

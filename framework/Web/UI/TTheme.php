@@ -91,7 +91,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		// TODO: the following needs to be cleaned up (Qiang)
 		if(($cache=$this->getApplication()->getCache())!==null)
 		{
-			$array=$cache->get(self::THEME_CACHE_PREFIX.$themePath);
+			$array=$cache->get(self::THEME_CACHE_PREFIX . $themePath);
 			if(is_array($array))
 			{
 				list($skins,$cssFiles,$jsFiles,$timestamp)=$array;
@@ -105,10 +105,10 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						if($file==='.' || $file==='..')
 							continue;
 						elseif(basename($file,'.css')!==$file)
-							$this->_cssFiles[]=$themeUrl.'/'.$file;
+							$this->_cssFiles[]=$themeUrl . '/' . $file;
 						elseif(basename($file,'.js')!==$file)
-							$this->_jsFiles[]=$themeUrl.'/'.$file;
-						elseif(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath.DIRECTORY_SEPARATOR.$file)>$timestamp)
+							$this->_jsFiles[]=$themeUrl . '/' . $file;
+						elseif(basename($file,self::SKIN_FILE_EXT)!==$file && filemtime($themePath . DIRECTORY_SEPARATOR . $file)>$timestamp)
 						{
 							$cacheValid=false;
 							break;
@@ -139,12 +139,12 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				if($file==='.' || $file==='..')
 					continue;
 				elseif(basename($file,'.css')!==$file)
-					$this->_cssFiles[]=$themeUrl.'/'.$file;
+					$this->_cssFiles[]=$themeUrl . '/' . $file;
 				elseif(basename($file,'.js')!==$file)
-					$this->_jsFiles[]=$themeUrl.'/'.$file;
+					$this->_jsFiles[]=$themeUrl . '/' . $file;
 				elseif(basename($file,self::SKIN_FILE_EXT)!==$file)
 				{
-					$template=new TTemplate(file_get_contents($themePath.'/'.$file),$themePath,$themePath.'/'.$file);
+					$template=new TTemplate(file_get_contents($themePath . '/' . $file),$themePath,$themePath . '/' . $file);
 					foreach($template->getItems() as $skin)
 					{
 						if(!isset($skin[2]))  // a text string, ignored
@@ -171,7 +171,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
 			if($cache!==null)
-				$cache->set(self::THEME_CACHE_PREFIX.$themePath,[$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
+				$cache->set(self::THEME_CACHE_PREFIX . $themePath,[$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
 		}
 	}
 
@@ -266,7 +266,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 							$value=$this->evaluateExpression($value[1]);
 							break;
 						case TTemplate::CONFIG_ASSET:
-							$value=$this->_themeUrl.'/'.ltrim($value[1],'/');
+							$value=$this->_themeUrl . '/' . ltrim($value[1],'/');
 							break;
 						case TTemplate::CONFIG_DATABIND:
 							$control->bindProperty($name,$value[1]);
@@ -293,7 +293,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						{
 							if($control->canSetProperty($name))
 							{
-								$setter='set'.$name;
+								$setter='set' . $name;
 								$control->$setter($value);
 							}
 							else

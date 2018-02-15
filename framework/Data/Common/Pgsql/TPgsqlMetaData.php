@@ -213,7 +213,7 @@ EOD;
 	{
 		$columnId = $col['attname']; //use column name as column Id
 
-		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnName'] = '"' . $columnId . '"'; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 		if(!$col['attnotnull'])
@@ -265,7 +265,7 @@ EOD;
 			if(is_int(strpos($matches[1], '.')))
 				return $matches[1];
 			else
-				return $tableInfo->getSchemaName().'.'.$matches[1];
+				return $tableInfo->getSchemaName() . '.' . $matches[1];
 		}
 	}
 
@@ -444,7 +444,7 @@ EOD;
 			if($schema===self::DEFAULT_SCHEMA)
 				$names[]=$row['table_name'];
 			else
-				$names[]=$row['table_schema'].'.'.$row['table_name'];
+				$names[]=$row['table_schema'] . '.' . $row['table_name'];
 		}
 		return $names;
 	}

@@ -112,7 +112,7 @@ class TMysqlMetaData extends TDbMetaData
 			$version = $this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION);
 			$digits=[];
 			preg_match('/(\d+)\.(\d+)\.(\d+)/', $version, $digits);
-			$this->_serverVersion=floatval($digits[1].'.'.$digits[2].$digits[3]);
+			$this->_serverVersion=floatval($digits[1] . '.' . $digits[2] . $digits[3]);
 		}
 		return $this->_serverVersion;
 	}
@@ -263,7 +263,7 @@ class TMysqlMetaData extends TDbMetaData
 		}
 		catch(TDbException $e)
 		{
-			$table = $schemaName===null?$tableName:$schemaName.'.'.$tableName;
+			$table = $schemaName===null?$tableName:$schemaName . '.' . $tableName;
 			throw new TDbException('dbcommon_invalid_table_name',$table,$e->getMessage());
 		}
 	}
@@ -402,9 +402,9 @@ EOD;
 	{
 		if($schema==='')
 			return $this->getDbConnection()->createCommand('SHOW TABLES')->queryColumn();
-		$names=$this->getDbConnection()->createCommand('SHOW TABLES FROM '.$this->quoteTableName($schema))->queryColumn();
+		$names=$this->getDbConnection()->createCommand('SHOW TABLES FROM ' . $this->quoteTableName($schema))->queryColumn();
 		foreach($names as &$name)
-			$name=$schema.'.'.$name;
+			$name=$schema . '.' . $name;
 		return $names;
 	}
 }

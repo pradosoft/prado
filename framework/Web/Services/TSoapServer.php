@@ -107,7 +107,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function fault($title, $details='', $code='SERVER', $actor='', $name='')
 	{
-		Prado::trace('SOAP-Fault '.$code. ' '.$title.' : '.$details, 'Prado\Web\Services\TSoapService');
+		Prado::trace('SOAP-Fault ' . $code . ' ' . $title . ' : ' . $details, 'Prado\Web\Services\TSoapService');
 		$this->_server->fault($code, $title, $actor, $details, $name);
 	}
 
@@ -118,12 +118,12 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	protected function guessMethodCallRequested($class)
 	{
-		$namespace = $class.'wsdl';
+		$namespace = $class . 'wsdl';
 		$message = file_get_contents("php://input");
 		$matches= [];
-		if(preg_match('/xmlns:([^=]+)="urn:'.$namespace.'"/', $message, $matches))
+		if(preg_match('/xmlns:([^=]+)="urn:' . $namespace . '"/', $message, $matches))
 		{
-			if(preg_match('/<'.$matches[1].':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method))
+			if(preg_match('/<' . $matches[1] . ':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method))
 			{
 				$this->_requestedMethod = $method[1];
 			}
@@ -194,11 +194,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 			Prado::using($provider);
 			if($this->getApplication()->getMode()===TApplicationMode::Performance && ($cache=$this->getApplication()->getCache())!==null)
 			{
-				$wsdl=$cache->get(self::WSDL_CACHE_PREFIX.$providerClass);
+				$wsdl=$cache->get(self::WSDL_CACHE_PREFIX . $providerClass);
 				if(is_string($wsdl))
 					return $wsdl;
 				$wsdl=WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
-				$cache->set(self::WSDL_CACHE_PREFIX.$providerClass,$wsdl);
+				$cache->set(self::WSDL_CACHE_PREFIX . $providerClass,$wsdl);
 				return $wsdl;
 			}
 			else
@@ -216,7 +216,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function getWsdlUri()
 	{
 		if($this->_wsdlUri==='')
-			return $this->getRequest()->getBaseUrl().$this->getService()->constructUrl($this->getID().'.wsdl',false);
+			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID() . '.wsdl',false);
 		else
 			return $this->_wsdlUri;
 	}
@@ -235,7 +235,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function getUri()
 	{
 		if($this->_uri==='')
-			return $this->getRequest()->getBaseUrl().$this->getService()->constructUrl($this->getID(),false);
+			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID(),false);
 		else
 			return $this->_uri;
 	}

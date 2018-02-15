@@ -115,7 +115,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		{
 			if ($this->getClientID() == $captcha->ClientID)
 			{
-				$responseFieldName .= ($cont > 0) ? '-'.$cont : '';
+				$responseFieldName .= ($cont > 0) ? '-' . $cont : '';
 			}
 			$cont++;
 		}

@@ -170,7 +170,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	protected function calculateKey($timestamp)
 	{
-		return $this->getKeyPrefix().':'
+		return $this->getKeyPrefix() . ':'
 			. $this->_page->getRequest()->getUserHostAddress()
 			. $this->_page->getPagePath()
 			. $timestamp;

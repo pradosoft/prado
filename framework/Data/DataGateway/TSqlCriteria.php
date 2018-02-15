@@ -269,21 +269,21 @@ class TSqlCriteria extends \Prado\TComponent
 	{
 		$str = '';
 		if(strlen((string)$this->getCondition()) > 0)
-			$str .= '"'.(string)$this->getCondition().'"';
+			$str .= '"' . (string)$this->getCondition() . '"';
 		$params = [];
 		foreach($this->getParameters() as $k=>$v)
 			$params[] = "{$k} => ${v}";
 		if(count($params) > 0)
-			$str .= ', "'.implode(', ',$params).'"';
+			$str .= ', "' . implode(', ',$params) . '"';
 		$orders = [];
 		foreach($this->getOrdersBy() as $k=>$v)
 			$orders[] = "{$k} => ${v}";
 		if(count($orders) > 0)
-			$str .= ', "'.implode(', ',$orders).'"';
+			$str .= ', "' . implode(', ',$orders) . '"';
 		if($this->_limit !==null)
-			$str .= ', '.$this->_limit;
+			$str .= ', ' . $this->_limit;
 		if($this->_offset !== null)
-			$str .= ', '.$this->_offset;
+			$str .= ', ' . $this->_offset;
 		return $str;
 	}
 }

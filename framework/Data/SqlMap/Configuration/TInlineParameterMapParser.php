@@ -67,7 +67,7 @@ class TInlineParameterMapParser
 			$prop = explode('=',$property);
 			$name = trim($prop[0]); $value=trim($prop[1]);
 			if($mapping->canSetProperty($name))
-				$mapping->{'set'.$name}($value);
+				$mapping->{'set' . $name}($value);
 			else
 			{
 				throw new TSqlMapUndefinedException(

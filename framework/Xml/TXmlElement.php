@@ -212,19 +212,19 @@ class TXmlElement extends \Prado\TComponent
 		$prefix=str_repeat(' ',$indent*4);
 		if($this->getHasElement())
 		{
-			$str=$prefix."<{$this->_tagName}$attr>\n";
+			$str=$prefix . "<{$this->_tagName}$attr>\n";
 			foreach($this->getElements() as $element)
-				$str.=$element->toString($indent+1)."\n";
-			$str.=$prefix."</{$this->_tagName}>";
+				$str.=$element->toString($indent+1) . "\n";
+			$str.=$prefix . "</{$this->_tagName}>";
 			return $str;
 		}
 		elseif(($value=$this->getValue())!=='')
 		{
 			$value=$this->xmlEncode($value);
-			return $prefix."<{$this->_tagName}$attr>$value</{$this->_tagName}>";
+			return $prefix . "<{$this->_tagName}$attr>$value</{$this->_tagName}>";
 		}
 		else
-			return $prefix."<{$this->_tagName}$attr />";
+			return $prefix . "<{$this->_tagName}$attr />";
 	}
 
 	/**

@@ -176,9 +176,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		if($max>-1 || $skip > -1)
 		{
-			$maxStr=$max>0?' LIMIT '.$max:'';
-			$skipStr=$skip>0?' OFFSET '.$skip:'';
-			$command->setText($command->getText().$maxStr.$skipStr);
+			$maxStr=$max>0?' LIMIT ' . $max:'';
+			$skipStr=$skip>0?' OFFSET ' . $skip:'';
+			$command->setText($command->getText() . $maxStr . $skipStr);
 		}
 		$connection->setActive(true);
 		return $command->query();
@@ -730,9 +730,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$groupBy = $resultMap->getGroupBy();
 		if(isset($row[$groupBy]))
-			return $resultMap->getID().$row[$groupBy];
+			return $resultMap->getID() . $row[$groupBy];
 		else
-			return $resultMap->getID().crc32(serialize($row));
+			return $resultMap->getID() . crc32(serialize($row));
 	}
 
 	/**
@@ -893,7 +893,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function getPostSelectKeys($resultMap, $property,$row)
 	{
 		$value = $property->getColumn();
-		if(is_int(strpos($value.',',0)) || is_int(strpos($value, '=',0)))
+		if(is_int(strpos($value . ',',0)) || is_int(strpos($value, '=',0)))
 		{
 			$keys = [];
 			foreach(explode(',', $value) as $entry)

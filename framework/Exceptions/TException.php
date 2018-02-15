@@ -56,7 +56,7 @@ class TException extends \Exception
 		$n=count($args);
 		$tokens=[];
 		for($i=0;$i<$n;++$i)
-			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+			$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
 
@@ -90,9 +90,9 @@ class TException extends \Exception
 	protected function getErrorMessageFile()
 	{
 		$lang=Prado::getPreferredLanguage();
-		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages-'.$lang.'.txt';
+		$msgFile=Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . $lang . '.txt';
 		if(!is_file($msgFile))
-			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages.txt';
+			$msgFile=Prado::getFrameworkPath() . '/Exceptions/messages/messages.txt';
 		return $msgFile;
 	}
 

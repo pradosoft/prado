@@ -519,7 +519,7 @@ class TComponent
 		if(($getset=='get')||($getset=='set'))
 		{
 			$propname=substr($method,3);
-			$jsmethod=$getset.'js'.$propname;
+			$jsmethod=$getset . 'js' . $propname;
 			if(method_exists($this,$jsmethod))
 			{
 				if(count($args)>0)
@@ -528,7 +528,7 @@ class TComponent
 				return call_user_func_array([$this,$jsmethod],$args);
 			}
 
-			if (($getset=='set')&&method_exists($this,'getjs'.$propname))
+			if (($getset=='set')&&method_exists($this,'getjs' . $propname))
 				throw new TInvalidOperationException('component_property_readonly',get_class($this),$method);
 		}
 
@@ -604,12 +604,12 @@ class TComponent
 	 */
 	public function __get($name)
 	{
-		if(method_exists($this,$getter='get'.$name))
+		if(method_exists($this,$getter='get' . $name))
 		{
 			// getting a property
 			return $this->$getter();
 		}
-		elseif(method_exists($this,$jsgetter='getjs'.$name))
+		elseif(method_exists($this,$jsgetter='getjs' . $name))
 		{
 			// getting a javascript property
 			return (string)$this->$jsgetter();
@@ -665,13 +665,13 @@ class TComponent
 	 */
 	public function __set($name,$value)
 	{
-		if(method_exists($this,$setter='set'.$name))
+		if(method_exists($this,$setter='set' . $name))
 		{
 			if(strncasecmp($name,'js',2)===0&&$value&&!($value instanceof TJavaScriptLiteral))
 				$value = new TJavaScriptLiteral($value);
 			return $this->$setter($value);
 		}
-		elseif(method_exists($this,$jssetter='setjs'.$name))
+		elseif(method_exists($this,$jssetter='setjs' . $name))
 		{
 			if($value&&!($value instanceof TJavaScriptString))
 				$value=new TJavaScriptString($value);
@@ -696,7 +696,7 @@ class TComponent
 
 		}
 
-		if(method_exists($this,'get'.$name)||method_exists($this,'getjs'.$name))
+		if(method_exists($this,'get' . $name)||method_exists($this,'getjs' . $name))
 		{
 			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 		}
@@ -720,9 +720,9 @@ class TComponent
 	 */
 	public function __isset($name)
 	{
-		if(method_exists($this,$getter='get'.$name))
+		if(method_exists($this,$getter='get' . $name))
 			return $this->$getter()!==null;
-		elseif(method_exists($this,$jsgetter='getjs'.$name))
+		elseif(method_exists($this,$jsgetter='getjs' . $name))
 			return $this->$jsgetter()!==null;
 		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
 		{
@@ -761,9 +761,9 @@ class TComponent
 	 */
 	public function __unset($name)
 	{
-		if(method_exists($this,$setter='set'.$name))
+		if(method_exists($this,$setter='set' . $name))
 			$this->$setter(null);
-		elseif(method_exists($this,$jssetter='setjs'.$name))
+		elseif(method_exists($this,$jssetter='setjs' . $name))
 			$this->$jssetter(null);
 		elseif(strncasecmp($name,'on',2)===0&&method_exists($this,$name))
 			$this->_e[strtolower($name)]->clear();
@@ -782,10 +782,10 @@ class TComponent
 						$unset++;
 					}
 				}
-				if(!$unset&&method_exists($this,'get'.$name))
+				if(!$unset&&method_exists($this,'get' . $name))
 					throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 			}
-		} elseif(method_exists($this,'get'.$name))
+		} elseif(method_exists($this,'get' . $name))
 			throw new TInvalidOperationException('component_property_readonly',get_class($this),$name);
 	}
 
@@ -812,7 +812,7 @@ class TComponent
 	 */
 	public function canGetProperty($name)
 	{
-		if(method_exists($this,'get'.$name)||method_exists($this,'getjs'.$name))
+		if(method_exists($this,'get' . $name)||method_exists($this,'getjs' . $name))
 			return true;
 		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{
@@ -836,7 +836,7 @@ class TComponent
 	 */
 	public function canSetProperty($name)
 	{
-		if(method_exists($this,'set'.$name)||method_exists($this,'setjs'.$name))
+		if(method_exists($this,'set' . $name)||method_exists($this,'setjs' . $name))
 			return true;
 		elseif($this->_m!==null&&$this->_behaviorsenabled)
 		{

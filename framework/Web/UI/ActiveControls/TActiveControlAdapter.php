@@ -99,7 +99,7 @@ class TActiveControlAdapter extends TControlAdapter
 		{
 			parent::render($writer);
 		} else {
-			$writer->write("<span id=\"".$this->_control->getClientID()."\" style=\"display:none\"></span>");
+			$writer->write("<span id=\"" . $this->_control->getClientID() . "\" style=\"display:none\"></span>");
 		}
 	}
 

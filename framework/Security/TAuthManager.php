@@ -92,7 +92,7 @@ class TAuthManager extends \Prado\TModule
 		if($this->_userManager===null)
 			throw new TConfigurationException('authmanager_usermanager_required');
 		if($this->_returnUrlVarName===null)
-			$this->_returnUrlVarName=$this->getApplication()->getID().':'.self::RETURN_URL_VAR;
+			$this->_returnUrlVarName=$this->getApplication()->getID() . ':' . self::RETURN_URL_VAR;
 		$application=$this->getApplication();
 		if(is_string($this->_userManager))
 		{
@@ -371,7 +371,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	protected function generateUserKey()
 	{
-		return md5($this->getApplication()->getUniqueID().'prado:user');
+		return md5($this->getApplication()->getUniqueID() . 'prado:user');
 	}
 
 	/**

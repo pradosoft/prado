@@ -220,7 +220,7 @@ class TGlobalization extends \Prado\TModule
 		}
 		if(isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache']))
 		{
-			$config['cache'] = $this->getApplication()->getRunTimePath().'/i18n';
+			$config['cache'] = $this->getApplication()->getRunTimePath() . '/i18n';
 			if(!is_dir($config['cache']))
 			{
 				if(@mkdir($config['cache'])===false)
@@ -293,10 +293,10 @@ class TGlobalization extends \Prado\TModule
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
 		foreach($variants as $variant)
-			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$variant.DIRECTORY_SEPARATOR.$path['basename'];
+			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $variant . DIRECTORY_SEPARATOR . $path['basename'];
 		$filename = substr($path['basename'],0,strrpos($path['basename'],'.'));
 		foreach($variants as $variant)
-			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$filename.'.'.$variant.'.'.$path['extension'];
+			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $filename . '.' . $variant . '.' . $path['extension'];
 		$files[] = $file;
 		return $files;
 	}

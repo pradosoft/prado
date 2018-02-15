@@ -90,7 +90,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 
 		$WhereInSubSelect="";
 		if(strpos($sql, 'WHERE')!==false)
-			$WhereInSubSelect = "WHERE " .substr($sql, strpos($sql, 'WHERE')+5, $nfimDoWhere - $niniDoWhere);
+			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE')+5, $nfimDoWhere - $niniDoWhere);
 
 		$sORDERBY = '';
 		if (stripos($sql, 'ORDER') !== false) {

@@ -183,7 +183,7 @@ class TSecurityManager extends \Prado\TModule
 		{
 			$key = md5($this->getEncryptionKey());
 			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return $iv.openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
+			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
 		}
 		else
 			throw new TNotSupportedException('securitymanager_openssl_required');
@@ -215,7 +215,7 @@ class TSecurityManager extends \Prado\TModule
 	public function hashData($data)
 	{
 		$hmac = $this->computeHMAC($data);
-		return $hmac.$data;
+		return $hmac . $data;
 	}
 
 	/**

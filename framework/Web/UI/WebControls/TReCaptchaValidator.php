@@ -93,12 +93,12 @@ class TReCaptchaValidator extends TBaseValidator
 
 		// communicate validation status to the client side
 		$value = $this->_isvalid===false ? '0' : '1';
-		$cs->registerHiddenField($this->getClientID().'_1',$value);
+		$cs->registerHiddenField($this->getClientID() . '_1',$value);
 		
 		// update validator display
 		if ($control = $this->getValidationTarget())
 		{
-			$fn = 'captchaUpdateValidatorStatus_'.$this->getClientID();
+			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			// check if we need to request a new captcha too
 			if ($this->Page->IsCallback)
@@ -114,21 +114,21 @@ class TReCaptchaValidator extends TBaseValidator
 					}
 			}
 
-			$cs->registerEndScript($this->getClientID().'::validate', implode(' ',[
+			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ',[
 				// this function will be used to update the validator
-				'function '.$fn.'(valid)',
+				'function ' . $fn . '(valid)',
 				'{',
-				'  jQuery('.TJavaScript::quoteString('#'.$this->getClientID().'_1').').val(valid);',
-				'  Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).'); ',
+				'  jQuery(' . TJavaScript::quoteString('#' . $this->getClientID() . '_1') . ').val(valid);',
+				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->ClientID) . '); ',
 				'}',
 				'',
 				// update the validator to the result if we're in a callback 
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
-				$this->Page->IsCallback ? $fn.'('.$value.');' : '',
+				$this->Page->IsCallback ? $fn . '(' . $value . ');' : '',
 				'',
 				// install event handler that clears the validation error when user changes the captcha response field
-				'jQuery("#'.$control->getClientID().'").on("keyup", '.TJavaScript::quoteString('#'.$control->getResponseFieldName()).', function() { ',
-					$fn.'("1");',
+				'jQuery("#' . $control->getClientID() . '").on("keyup", ' . TJavaScript::quoteString('#' . $control->getResponseFieldName()) . ', function() { ',
+					$fn . '("1");',
 				'});',
 			]));
 		}

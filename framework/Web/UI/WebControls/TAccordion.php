@@ -364,7 +364,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function loadPostData($key,$values)
 	{
-		if(($index=$values[$this->getClientID().'_1'])!==null)
+		if(($index=$values[$this->getClientID() . '_1'])!==null)
 		{
 			$index=(int)$index;
 			$currentIndex=$this->getActiveViewIndex();
@@ -437,7 +437,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		}
 
 		if($url === 'default') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'accordion.css');
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'accordion.css');
 		}
 
 		if($url !== '') {
@@ -462,9 +462,9 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$index = $this->getActiveViewIndex();
 		if(!$this->getViews()->itemAt($index)->Visible)
 			$index=0;
-		$cs->registerHiddenField($id.'_1', $index);
+		$cs->registerHiddenField($id . '_1', $index);
 		$page->registerRequiresPostData($this);
-		$page->registerRequiresPostData($id."_1");
+		$page->registerRequiresPostData($id . "_1");
 	}
 
 	/**

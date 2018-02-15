@@ -213,7 +213,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				if($component instanceof TControl)
 				{
 					if($component instanceof \Prado\Web\UI\WebControls\TOutputCache)
-						$component->setCacheKeyPrefix($this->_hashCode.$key);
+						$component->setCacheKeyPrefix($this->_hashCode . $key);
 					$component->setTemplateControl($tplControl);
 					if(isset($properties['id']))
 					{
@@ -337,7 +337,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	protected function configureEvent($control,$name,$value,$contextControl)
 	{
 		if(strpos($value,'.')===false)
-			$control->attachEventHandler($name,[$contextControl,'TemplateControl.'.$value]);
+			$control->attachEventHandler($name,[$contextControl,'TemplateControl.' . $value]);
 		else
 			$control->attachEventHandler($name,[$contextControl,$value]);
 	}
@@ -362,25 +362,25 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						$component->autoBindProperty($name,$value[1]);
 					else
 					{
-						$setter='set'.$name;
+						$setter='set' . $name;
 						$component->$setter($this->_tplControl->evaluateExpression($value[1]));
 					}
 					break;
 				case self::CONFIG_TEMPLATE:
-					$setter='set'.$name;
+					$setter='set' . $name;
 					$component->$setter($value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$setter='set'.$name;
-					$url=$this->publishFilePath($this->_contextPath.DIRECTORY_SEPARATOR.$value[1]);
+					$setter='set' . $name;
+					$url=$this->publishFilePath($this->_contextPath . DIRECTORY_SEPARATOR . $value[1]);
 					$component->$setter($url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
-					$setter='set'.$name;
+					$setter='set' . $name;
 					$component->$setter($this->getApplication()->getParameters()->itemAt($value[1]));
 					break;
 				case self::CONFIG_LOCALIZATION:
-					$setter='set'.$name;
+					$setter='set' . $name;
 					$component->$setter(Prado::localize($value[1]));
 					break;
 				default:	// an error if reaching here
@@ -393,7 +393,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			if (substr($name,0,2)=='js')
 				if ($value and !($value instanceof TJavaScriptLiteral))
 					$value = new TJavaScriptLiteral($value);
-			$setter='set'.$name;
+			$setter='set' . $name;
 			$component->$setter($value);
 		}
 	}
@@ -423,7 +423,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$component->setSubProperty($name,$value[1]);
 					break;
 				case self::CONFIG_ASSET:		// asset URL
-					$url=$this->publishFilePath($this->_contextPath.DIRECTORY_SEPARATOR.$value[1]);
+					$url=$this->publishFilePath($this->_contextPath . DIRECTORY_SEPARATOR . $value[1]);
 					$component->setSubProperty($name,$url);
 					break;
 				case self::CONFIG_PARAMETER:		// application parameter
@@ -514,7 +514,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$name=array_pop($stack);
 					if($name!==$type)
 					{
-						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+						$tag=$name[0]==='@' ? '</prop:' . substr($name,1) . '>' : "</com:$name>";
 						throw new TConfigurationException('template_closingtag_expected',$tag, "</com:$type>");
 					}
 					$container=$tpl[$container][0];
@@ -569,7 +569,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						$attrs=$this->parseAttributes($match[7][0],$match[7][1]);
 						$attributes=[];
 						foreach($attrs as $name=>$value)
-							$attributes[$prop.'.'.$name]=$value;
+							$attributes[$prop . '.' . $name]=$value;
 						$type=$tpl[$container][1];
 						$this->validateAttributes($type,$attributes);
 						foreach($attributes as $name=>$value)
@@ -582,7 +582,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					else  // regular property
 					{
 						$prop=strtolower($match[3][0]);
-						$stack[] = '@'.$prop;
+						$stack[] = '@' . $prop;
 						if(!$expectPropEnd)
 						{
 							if($matchStart>$textStart)
@@ -598,9 +598,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					if(empty($stack))
 						throw new TConfigurationException('template_closingtag_unexpected',"</prop:$prop>");
 					$name=array_pop($stack);
-					if($name!=='@'.$prop)
+					if($name!=='@' . $prop)
 					{
-						$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+						$tag=$name[0]==='@' ? '</prop:' . substr($name,1) . '>' : "</com:$name>";
 						throw new TConfigurationException('template_closingtag_expected',$tag,"</prop:$prop>");
 					}
 					if(($last=count($stack))<1 || $stack[$last-1][0]!=='@')
@@ -641,7 +641,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			if(!empty($stack))
 			{
 				$name=array_pop($stack);
-				$tag=$name[0]==='@' ? '</prop:'.substr($name,1).'>' : "</com:$name>";
+				$tag=$name[0]==='@' ? '</prop:' . substr($name,1) . '>' : "</com:$name>";
 				throw new TConfigurationException('template_closingtag_expected',$tag, "nothing");
 			}
 			if($textStart<strlen($input))
@@ -765,13 +765,13 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				if($token[2]==='#')
 					$isDataBind=true;
 				if($offset>$textStart)
-					$expr.=".'".strtr(substr($value,$textStart,$offset-$textStart),["'"=>"\\'","\\"=>"\\\\"])."'";
-				$expr.='.('.substr($token,3,$length-5).')';
+					$expr.=".'" . strtr(substr($value,$textStart,$offset-$textStart),["'"=>"\\'","\\"=>"\\\\"]) . "'";
+				$expr.='.(' . substr($token,3,$length-5) . ')';
 				$textStart=$offset+$length;
 			}
 			$length=strlen($value);
 			if($length>$textStart)
-				$expr.=".'".strtr(substr($value,$textStart,$length-$textStart),["'"=>"\\'","\\"=>"\\\\"])."'";
+				$expr.=".'" . strtr(substr($value,$textStart,$length-$textStart),["'"=>"\\'","\\"=>"\\\\"]) . "'";
 			if($isDataBind)
 				return [self::CONFIG_DATABIND,ltrim($expr,'.')];
 			else
@@ -811,7 +811,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
-					if(!$class->hasMethod('get'.$subname))
+					if(!$class->hasMethod('get' . $subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				elseif(strncasecmp($name,'on',2)===0)
@@ -825,9 +825,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				else
 				{
 					// a simple property
-					if (! ($class->hasMethod('set'.$name) || $class->hasMethod('setjs'.$name) || $this->isClassBehaviorMethod($class,'set'.$name)) )
+					if (! ($class->hasMethod('set' . $name) || $class->hasMethod('setjs' . $name) || $this->isClassBehaviorMethod($class,'set' . $name)) )
 					{
-						if ($class->hasMethod('get'.$name) || $class->hasMethod('getjs'.$name))
+						if ($class->hasMethod('get' . $name) || $class->hasMethod('getjs' . $name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);
@@ -852,7 +852,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				{
 					// a subproperty, so the first segment must be readable
 					$subname=substr($name,0,$pos);
-					if(!$class->hasMethod('get'.$subname))
+					if(!$class->hasMethod('get' . $subname))
 						throw new TConfigurationException('template_property_unknown',$type,$subname);
 				}
 				elseif(strncasecmp($name,'on',2)===0)
@@ -860,9 +860,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				else
 				{
 					// id is still alowed for TComponent, even if id property doesn't exist
-					if(strcasecmp($name,'id')!==0 && !($class->hasMethod('set'.$name) || $this->isClassBehaviorMethod($class,'set'.$name)))
+					if(strcasecmp($name,'id')!==0 && !($class->hasMethod('set' . $name) || $this->isClassBehaviorMethod($class,'set' . $name)))
 					{
-						if($class->hasMethod('get'.$name))
+						if($class->hasMethod('get' . $name))
 							throw new TConfigurationException('template_property_readonly',$type,$name);
 						else
 							throw new TConfigurationException('template_property_unknown',$type,$name);

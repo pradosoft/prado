@@ -273,10 +273,10 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			$control=$this->getValidationTarget();
 			if($control instanceof TWebControl)
 			{
-				$class = preg_replace ('/ '.preg_quote($cssClass).'/', '',$control->getCssClass());
+				$class = preg_replace ('/ ' . preg_quote($cssClass) . '/', '',$control->getCssClass());
 				if(!$this->getIsValid())
 				{
-					$class .= ' '.$cssClass;
+					$class .= ' ' . $cssClass;
 					$control->setCssClass($class);
 				} elseif ($control->getIsValid())
 					$control->setCssClass($class);
@@ -289,11 +289,11 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function registerClientScriptValidator()
 	{
-		$key = 'prado:'.$this->getClientID();
+		$key = 'prado:' . $this->getClientID();
 		if(!$this->getPage()->getClientScript()->isEndScriptRegistered($key))
 		{
 			$options = TJavaScript::encode($this->getClientScriptOptions());
-			$script = 'new '.$this->getClientClassName().'('.$options.');';
+			$script = 'new ' . $this->getClientClassName() . '(' . $options . ');';
 			$this->getPage()->getClientScript()->registerEndScript($key, $script);
 		}
 	}
@@ -426,7 +426,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 			 */
 			if($target instanceof TCheckBoxList && $target->getItemCount()>0)
 			{
-				$id=$target->getClientID().'_c0';
+				$id=$target->getClientID() . '_c0';
 			} else {
 				$id=$target->getClientID();
 			}

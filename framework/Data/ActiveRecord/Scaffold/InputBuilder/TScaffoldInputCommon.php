@@ -123,7 +123,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 			$val->setDataType(TValidationDataType::Float);
 			$val->setMaxValue($max);
 			$val->setStrictComparison(true);
-			$val->setErrorMessage('Please entery a decimal number strictly less than '.$max.'.');
+			$val->setErrorMessage('Please entery a decimal number strictly less than ' . $max . '.');
 		}
 		return $control;
 	}

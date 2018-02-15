@@ -23,12 +23,12 @@ namespace Prado\I18N\core;
 use Exception;
 use Prado\Prado;
 
-require_once(dirname(__FILE__).'/DateTimeFormatInfo.php');
+require_once(dirname(__FILE__) . '/DateTimeFormatInfo.php');
 
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__).'/util.php');
+require_once(dirname(__FILE__) . '/util.php');
 
 /**
  * DateFormat class.
@@ -146,7 +146,7 @@ class DateFormat
 				$function = $this->getFunctionName($pattern);
 				if($function != null)
 				{
-					$fName = 'get'.$function;
+					$fName = 'get' . $function;
 					if(in_array($fName, $this->methods))
 					{
 						$rs = $this->$fName($date, $pattern);
@@ -154,7 +154,7 @@ class DateFormat
 					}
 					else
 						throw new
-						Exception('function '.$function.' not found.');
+						Exception('function ' . $function . ' not found.');
 				}
 			}			
 		}

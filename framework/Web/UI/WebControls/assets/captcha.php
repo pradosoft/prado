@@ -18,7 +18,7 @@ define('THEME_HAS_SCRIBBLE',0x0008);
 define('THEME_MORPH_BACKGROUND',0x0010);
 define('THEME_SHADOWED_TEXT',0x0020);
 
-require_once(dirname(__FILE__).'/captcha_key.php');
+require_once(dirname(__FILE__) . '/captcha_key.php');
 
 $token='error';
 $theme=0;
@@ -30,7 +30,7 @@ if(isset($_GET['options']))
 	{
 		$hash=substr($str,0,32);
 		$str=substr($str,32);
-		if(md5($privateKey.$str)===$hash)
+		if(md5($privateKey . $str)===$hash)
 		{
 			$options=unserialize($str);
 			$publicKey=$options['publicKey'];
@@ -52,7 +52,7 @@ displayToken($token,$fontSize,$theme);
 
 function generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive)
 {
-	$token=substr(hash2string(md5($publicKey.$privateKey),$alphabet).hash2string(md5($privateKey.$publicKey),$alphabet),0,$tokenLength);
+	$token=substr(hash2string(md5($publicKey . $privateKey),$alphabet) . hash2string(md5($privateKey . $publicKey),$alphabet),0,$tokenLength);
 	return $caseSensitive?$token:strtoupper($token);
 }
 
@@ -99,7 +99,7 @@ function displayToken($token,$fontSize,$theme)
 		$theme&THEME_MORPH_BACKGROUND
 	);
 
-	$font=dirname(__FILE__).DIRECTORY_SEPARATOR.'verase.ttf';
+	$font=dirname(__FILE__) . DIRECTORY_SEPARATOR . 'verase.ttf';
 
 	if(function_exists('imagefilter'))
 		imagefilter($image,IMG_FILTER_GAUSSIAN_BLUR);

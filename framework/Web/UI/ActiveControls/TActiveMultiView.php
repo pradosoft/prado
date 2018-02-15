@@ -57,7 +57,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	 */
 	protected function getContainerID()
 	{
-		return $this->ClientID.'_Container';
+		return $this->ClientID . '_Container';
 	}
 
 	/**

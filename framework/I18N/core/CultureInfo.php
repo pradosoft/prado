@@ -138,11 +138,11 @@ class CultureInfo
 	 */
 	function __get($name)
 	{
-		$getProperty = 'get'.$name;
+		$getProperty = 'get' . $name;
 		if(in_array($getProperty, $this->properties))
 			return $this->$getProperty();
 		else
-			throw new Exception('Property '.$name.' does not exists.');
+			throw new Exception('Property ' . $name . ' does not exists.');
 	}
 
 	/**
@@ -151,11 +151,11 @@ class CultureInfo
 	 */
 	function __set($name, $value)
 	{
-		$setProperty = 'set'.$name;
+		$setProperty = 'set' . $name;
 		if(in_array($setProperty, $this->properties))
 			$this->$setProperty($value);
 		else
-			throw new Exception('Property '.$name.' can not be set.');
+			throw new Exception('Property ' . $name . ' can not be set.');
 	}
 
 
@@ -190,7 +190,7 @@ class CultureInfo
 	 */
 	protected static function dataDir()
 	{
-		return dirname(__FILE__).'/data/';
+		return dirname(__FILE__) . '/data/';
 	}
 
 	/**
@@ -223,7 +223,7 @@ class CultureInfo
 	public static function validCulture($culture)
 	{
 		if(preg_match('/^[_\\w]+$/', $culture))
-			return is_file(self::dataDir().$culture.self::fileExt());
+			return is_file(self::dataDir() . $culture . self::fileExt());
 
 		return false;
 	}
@@ -257,16 +257,16 @@ class CultureInfo
 
 		for($i = 1, $k = count($file_parts); $i < $k; ++$i)
 		{
-			$current_part .= '_'.$file_parts[$i];
+			$current_part .= '_' . $file_parts[$i];
 			$files[] = $current_part;
 		}
 
 		foreach($files as $file)
 		{
-			$filename = $this->dataDir.$file.$this->dataFileExt;
+			$filename = $this->dataDir . $file . $this->dataFileExt;
 
 			if(is_file($filename) == false)
-				throw new Exception('Data file for "'.$file.'" was not found.');
+				throw new Exception('Data file for "' . $file . '" was not found.');
 
 			if(in_array($filename, $this->dataFiles) === false)
 			{
@@ -419,7 +419,7 @@ class CultureInfo
 		$language = $this->findInfo("Languages/{$lang}");
 		$region = $this->findInfo("Countries/{$reg}");
 		if($region)
-			return $language[0].' ('.$region[0].')';
+			return $language[0] . ' (' . $region[0] . ')';
 		else
 			return $language[0];
 	}
@@ -442,7 +442,7 @@ class CultureInfo
 
 		$region = $culture->findInfo("Countries/{$reg}");
 		if($region)
-			return $language[0].' ('.$region[0].')';
+			return $language[0] . ' (' . $region[0] . ')';
 		else
 			return $language[0];
 	}
@@ -537,9 +537,9 @@ class CultureInfo
 
 		while (false !== ($entry = $dir->read()))
 		{
-			if(is_file($dataDir.$entry)
+			if(is_file($dataDir . $entry)
 				&& substr($entry,-4) == $dataExt
-				&& $entry != 'root'.$dataExt)
+				&& $entry != 'root' . $dataExt)
 			{
 				$culture = substr($entry,0,-4);
 				if(strlen($culture) == 2)

@@ -247,7 +247,7 @@ class TCache_Lite
 									'readControlType'];
 		foreach($options as $key => $value) {
 			if(in_array($key, $availableOptions)) {
-				$property = '_'.$key;
+				$property = '_' . $key;
 				$this->$property = $value;
 			}
 		}
@@ -375,9 +375,9 @@ class TCache_Lite
 	function clean($group = false)
 	{
 		if ($this->_fileNameProtection) {
-			$motif = ($group) ? 'cache_'.md5($group).'_' : 'cache_';
+			$motif = ($group) ? 'cache_' . md5($group) . '_' : 'cache_';
 		} else {
-			$motif = ($group) ? 'cache_'.$group.'_' : 'cache_';
+			$motif = ($group) ? 'cache_' . $group . '_' : 'cache_';
 		}
 		if ($this->_memoryCaching) {
 			while (list($key, $value) = each($this->_memoryCaching)) {
@@ -510,10 +510,10 @@ class TCache_Lite
 	function _setFileName($id, $group)
 	{
 		if ($this->_fileNameProtection) {
-			$this->_file = ($this->_cacheDir.'cache_'.md5($group).'_'
-									.md5($id));
+			$this->_file = ($this->_cacheDir . 'cache_' . md5($group) . '_'
+									. md5($id));
 		} else {
-			$this->_file = $this->_cacheDir.'cache_'.$group.'_'.$id;
+			$this->_file = $this->_cacheDir . 'cache_' . $group . '_' . $id;
 		}
 	}
 
@@ -614,7 +614,7 @@ class TCache_Lite
 		case 'strlen':
 			return sprintf('% 32d', strlen($data));
 		default:
-			$this->raiseError('Unknown controlType ! '.
+			$this->raiseError('Unknown controlType ! ' .
 			'(available values are only \'md5\', \'crc32\', \'strlen\')', -5);
 		}
 	}

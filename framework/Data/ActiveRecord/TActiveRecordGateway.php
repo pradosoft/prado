@@ -112,7 +112,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function getTableInfo(TDbConnection $connection, $tableName)
 	{
 		$connStr = $connection->getConnectionString();
-		$key = $connStr.$tableName;
+		$key = $connStr . $tableName;
 		if(!isset($this->_tables[$key]))
 		{
 			//call this first to ensure that unserializing the cache

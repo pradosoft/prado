@@ -371,7 +371,7 @@ class TCaptcha extends TImage
 			$manager=$this->getApplication()->getAssetManager();
 			$manager->publishFilePath($this->getFontFile());
 			$url=$manager->publishFilePath($this->getCaptchaScriptFile());
-			$url.='?options='.urlencode($this->getTokenImageOptions());
+			$url.='?options=' . urlencode($this->getTokenImageOptions());
 			$this->setImageUrl($url);
 
 			$this->setViewState('TokenGenerated',time());
@@ -399,7 +399,7 @@ class TCaptcha extends TImage
 		}
 		$options['randomSeed']=$this->getChangingTokenBackground()?0:$randomSeed;
 		$str=serialize($options);
-		return base64_encode(md5($privateKey.$str).$str);
+		return base64_encode(md5($privateKey . $str) . $str);
 	}
 
 	/**
@@ -407,12 +407,12 @@ class TCaptcha extends TImage
 	 */
 	protected function getCaptchaScriptFile()
 	{
-		return dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'captcha.php';
+		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'captcha.php';
 	}
 
 	protected function getFontFile()
 	{
-		return dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'verase.ttf';
+		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'verase.ttf';
 	}
 
 	/**
@@ -423,7 +423,7 @@ class TCaptcha extends TImage
 	{
 		$captchaScript=$this->getCaptchaScriptFile();
 		$path=dirname($this->getApplication()->getAssetManager()->getPublishedPath($captchaScript));
-		$fileName=$path.DIRECTORY_SEPARATOR.'captcha_key.php';
+		$fileName=$path . DIRECTORY_SEPARATOR . 'captcha_key.php';
 		if(!is_file($fileName))
 		{
 			@mkdir($path);
@@ -441,7 +441,7 @@ class TCaptcha extends TImage
 	 */
 	protected function generateRandomKey()
 	{
-		return md5(rand().rand().rand().rand());
+		return md5(rand() . rand() . rand() . rand());
 	}
 
 	/**
@@ -454,7 +454,7 @@ class TCaptcha extends TImage
 	 */
 	protected function generateToken($publicKey,$privateKey,$alphabet,$tokenLength,$caseSensitive)
 	{
-		$token=substr($this->hash2string(md5($publicKey.$privateKey),$alphabet).$this->hash2string(md5($privateKey.$publicKey),$alphabet),0,$tokenLength);
+		$token=substr($this->hash2string(md5($publicKey . $privateKey),$alphabet) . $this->hash2string(md5($privateKey . $publicKey),$alphabet),0,$tokenLength);
 		return $caseSensitive?$token:strtoupper($token);
 	}
 

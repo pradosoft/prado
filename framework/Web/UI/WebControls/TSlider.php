@@ -296,7 +296,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key,$values)
 	{
-		$value=(float)$values[$this->getClientID().'_1'];
+		$value=(float)$values[$this->getClientID() . '_1'];
 		if($this->getValue()!==$value)
 		{
 			$this->setValue($value);
@@ -351,7 +351,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if ($this->getCssClass()==='')
 		{
 			$class=($this->getDirection()==TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
-			$writer->addAttribute('class', 'Slider '.$class);
+			$writer->addAttribute('class', 'Slider ' . $class);
 		}
 
 	}
@@ -363,13 +363,13 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		// Render the 'Track'
 		$writer->addAttribute('class', 'Track');
-		$writer->addAttribute('id', $this->getClientID().'_track');
+		$writer->addAttribute('id', $this->getClientID() . '_track');
 		$writer->renderBeginTag('div');
 		// Render the 'Progress Indicator'
 		if ($this->getProgressIndicator())
 		{
 			$writer->addAttribute('class', 'Progress');
-			$writer->addAttribute('id', $this->getClientID().'_progress');
+			$writer->addAttribute('id', $this->getClientID() . '_progress');
 			$writer->renderBeginTag('div');
 			$writer->renderEndTag();
 		}
@@ -394,7 +394,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 		// Render the 'Handle'
 		$writer->addAttribute('class', 'Handle');
-		$writer->addAttribute('id', $this->getClientID().'_handle');
+		$writer->addAttribute('id', $this->getClientID() . '_handle');
 		$writer->renderBeginTag('div');
 		$writer->renderEndTag();
 	}
@@ -422,7 +422,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		{
 			$manager=$this->getApplication()->getAssetManager();
 			// publish the assets
-			$url=$manager->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'TSlider');
+			$url=$manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
 			$url.='/TSlider.css';
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
@@ -437,7 +437,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$cs = $page->getClientScript();
 		$cs->registerPradoScript("slider");
 		$id=$this->getClientID();
-		$cs->registerHiddenField($id.'_1',$this->getValue());
+		$cs->registerHiddenField($id . '_1',$this->getValue());
 		$page->registerRequiresPostData($this);
 		$cs->registerPostBackControl($this->getClientClassName(),$this->getSliderOptions());
 	}

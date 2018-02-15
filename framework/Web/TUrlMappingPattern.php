@@ -204,23 +204,23 @@ class TUrlMappingPattern extends \Prado\TComponent
 		{
 			foreach($this->_parameters as $key=>$value)
 			{
-				$params[]='{'.$key.'}';
-				$values[]='(?P<'.$key.'>'.$value.')';
+				$params[]='{' . $key . '}';
+				$values[]='(?P<' . $key . '>' . $value . ')';
 			}
 		}
 		if ($this->getIsWildCardPattern())
 		{
 				$params[]='{*}';
 				// service parameter must not contain '=' and '/'
-				$values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
+				$values[]='(?P<' . $this->getServiceID() . '>[^=/]+)';
 		}
 		$params[]='/';
 		$values[]='\\/';
-		$regexp=str_replace($params,$values,trim($this->getPattern(),'/').'/');
+		$regexp=str_replace($params,$values,trim($this->getPattern(),'/') . '/');
 		if ($this->_urlFormat===THttpRequestUrlFormat::Get)
-				$regexp='/^'.$regexp.'$/u';
+				$regexp='/^' . $regexp . '$/u';
 		else
-				$regexp='/^'.$regexp.'(?P<urlparams>.*)$/u';
+				$regexp='/^' . $regexp . '(?P<urlparams>.*)$/u';
 
 		if(!$this->getCaseSensitive())
 			$regexp.='i';
@@ -354,7 +354,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 		if(($pattern=$this->getRegularExpression())!=='')
 			preg_match($pattern,$request->getPathInfo(),$matches);
 		else
-			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/').'/',$matches);
+			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/') . '/',$matches);
 
 		if($this->getIsWildCardPattern() && isset($matches[$this->_serviceID]))
 			$matches[$this->_serviceID]=str_replace('*',$matches[$this->_serviceID],$this->_serviceParameter);
@@ -532,19 +532,19 @@ class TUrlMappingPattern extends \Prado\TComponent
 		foreach($getItems as $key=>$value)
 		{
 			if(($this->_parameters && $this->_parameters->contains($key)) || ($key==='*' && $this->getIsWildCardPattern()))
-				$replace['{'.$key.'}']=$encodeGetItems ? rawurlencode($value) : $value;
+				$replace['{' . $key . '}']=$encodeGetItems ? rawurlencode($value) : $value;
 			else
 				$extra[$key]=$value;
 		}
 
-		$url=$this->_manager->getUrlPrefix().'/'.ltrim(strtr($this->getPattern(),$replace),'/');
+		$url=$this->_manager->getUrlPrefix() . '/' . ltrim(strtr($this->getPattern(),$replace),'/');
 
 		// for the rest of the GET variables, put them in the query string
 		if(count($extra)>0)
 		{
 			if ($this->_urlFormat===THttpRequestUrlFormat::Path && $this->getIsWildCardPattern()) {
 				foreach ($extra as $name=>$value)
-					$url.='/'.$name.$this->_separator.($encodeGetItems?rawurlencode($value):$value);
+					$url.='/' . $name . $this->_separator . ($encodeGetItems?rawurlencode($value):$value);
 				return $url;
 			}
 
@@ -556,12 +556,12 @@ class TUrlMappingPattern extends \Prado\TComponent
 				{
 					if(is_array($value))
 					{
-						$name=rawurlencode($name.'[]');
+						$name=rawurlencode($name . '[]');
 						foreach($value as $v)
-							$url2.=$amp.$name.'='.rawurlencode($v);
+							$url2.=$amp . $name . '=' . rawurlencode($v);
 					}
 					else
-						$url2.=$amp.rawurlencode($name).'='.rawurlencode($value);
+						$url2.=$amp . rawurlencode($name) . '=' . rawurlencode($value);
 				}
 			}
 			else
@@ -571,13 +571,13 @@ class TUrlMappingPattern extends \Prado\TComponent
 					if(is_array($value))
 					{
 						foreach($value as $v)
-							$url2.=$amp.$name.'[]='.$v;
+							$url2.=$amp . $name . '[]=' . $v;
 					}
 					else
-						$url2.=$amp.$name.'='.$value;
+						$url2.=$amp . $name . '=' . $value;
 				}
 			}
-			$url=$url.'?'.substr($url2,strlen($amp));
+			$url=$url . '?' . substr($url2,strlen($amp));
 		}
 		return $this -> applySecureConnectionPrefix($url);
 	}

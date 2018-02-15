@@ -190,10 +190,10 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				else
 				{
 					if(strpos($act,'Business')===0)
-						$act='Business'.'.'.substr($act,8);
+						$act='Business' . '.' . substr($act,8);
 					elseif(strpos($act,'Home')===0)
-						$act='Home'.'.'.substr($act,4);
-					$writer->addAttribute('vcard_name','vCard.'.$act);
+						$act='Home' . '.' . substr($act,4);
+					$writer->addAttribute('vcard_name','vCard.' . $act);
 				}
 			}
 

@@ -175,7 +175,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
 					$p=realpath($path);
 				else
-					$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
+					$p=realpath($configPath . DIRECTORY_SEPARATOR . $path);
 				if($p===false || !is_dir($p))
 					throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
 				if(isset($this->_aliases[$id]))
@@ -212,7 +212,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 						if(preg_match('/^\\/|.:\\/|.:\\\\/',$path))	// if absolute path
 							$p=realpath($path);
 						else
-							$p=realpath($configPath.DIRECTORY_SEPARATOR.$path);
+							$p=realpath($configPath . DIRECTORY_SEPARATOR . $path);
 						if($p===false || !is_dir($p))
 							throw new TConfigurationException('appconfig_aliaspath_invalid',$id,$path);
 						if(isset($this->_aliases[$id]))
@@ -408,7 +408,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				throw new TConfigurationException('appconfig_includefile_required');
 			$filePath = $include['file'];
 			if(isset($this->_includes[$filePath]))
-				$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+				$this->_includes[$filePath]='(' . $this->_includes[$filePath] . ') || (' . $when . ')';
 			else
 				$$this->_includes[$filePath]=$when;
 			$this->_empty=false;
@@ -427,7 +427,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 		if(($filePath=$includeNode->getAttribute('file'))===null)
 			throw new TConfigurationException('appconfig_includefile_required');
 		if(isset($this->_includes[$filePath]))
-			$this->_includes[$filePath]='('.$this->_includes[$filePath].') || ('.$when.')';
+			$this->_includes[$filePath]='(' . $this->_includes[$filePath] . ') || (' . $when . ')';
 		else
 			$this->_includes[$filePath]=$when;
 		$this->_empty=false;

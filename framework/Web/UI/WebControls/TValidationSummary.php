@@ -363,7 +363,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		$messages=$this->getErrorMessages();
 		$content = '';
 		if(strlen($header))
-			$content.= $header."<br/>\n";
+			$content.= $header . "<br/>\n";
 		foreach($messages as $message)
 			$content.="$message<br/>\n";
 		$writer->write($content);
@@ -381,7 +381,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		$messages=$this->getErrorMessages();
 		$content = $header;
 		foreach($messages as $message)
-			$content.= ' '.$message;
+			$content.= ' ' . $message;
 		$writer->write($content);
 	}
 
@@ -400,7 +400,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		{
 			$content .= "<ul>\n";
 			foreach($messages as $message)
-				$content.= '<li>'.$message."</li>\n";
+				$content.= '<li>' . $message . "</li>\n";
 			$content .= "</ul>\n";
 		}
 		$writer->write($content);

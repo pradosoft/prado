@@ -175,7 +175,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	public function callApiMethod($methodName, $parameters)
 	{
 		if(!isset($this->rpcMethods[$methodName]))
-			throw new TRpcException('Method "'.$methodName.'" not found', '-32601');
+			throw new TRpcException('Method "' . $methodName . '" not found', '-32601');
 
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}

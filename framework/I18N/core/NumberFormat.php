@@ -21,13 +21,13 @@ namespace Prado\I18N\core;
 /**
  * Get the NumberFormatInfo class file.
  */
-require_once(dirname(__FILE__).'/NumberFormatInfo.php');
+require_once(dirname(__FILE__) . '/NumberFormatInfo.php');
 
 
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__).'/util.php');
+require_once(dirname(__FILE__) . '/util.php');
 
 
 /**
@@ -129,7 +129,7 @@ class NumberFormat
 		$integer = $this->formatInteger(abs($number));
 
 		if(strlen($decimal)>0)
-			$result = $integer.$decimal;
+			$result = $integer . $decimal;
 		else
 			$result = $integer;
 
@@ -142,7 +142,7 @@ class NumberFormat
 			$suffix = ["",""];
 
 		//append and prepend suffix
-		$result = $suffix[0].$result.$suffix[1];
+		$result = $suffix[0] . $result . $suffix[1];
 
 		//replace currency sign
 		$symbol = @$this->formatInfo->getCurrencySymbol($currency);
@@ -268,10 +268,10 @@ class NumberFormat
 			else
 				return $decimal;
 
-			return $decimalSeparator.$decimal;
+			return $decimalSeparator . $decimal;
 		}
 		elseif ($decimalDigits > 0)
-			return $decimalSeparator.str_pad($decimal,$decimalDigits,'0');
+			return $decimalSeparator . str_pad($decimal,$decimalDigits,'0');
 
 		return $decimal;
 	}

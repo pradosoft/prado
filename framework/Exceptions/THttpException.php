@@ -47,7 +47,7 @@ class THttpException extends TSystemException
 		$n=count($args);
 		$tokens=[];
 		for($i=0;$i<$n;++$i)
-			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+			$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
 

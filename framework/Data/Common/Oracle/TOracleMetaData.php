@@ -227,7 +227,7 @@ EOD;
 			if(is_int(strpos($matches[1], '.')))
 				return $matches[1];
 			else
-				return $tableInfo->getSchemaName().'.'.$matches[1];
+				return $tableInfo->getSchemaName() . '.' . $matches[1];
 		}
 	}
 
@@ -371,7 +371,7 @@ EOD;
 			if($schema===$this->getDefaultSchema() || $schema==='')
 				$names[]=$row['TABLE_NAME'];
 			else
-				$names[]=$row['TABLE_SCHEMA'].'.'.$row['TABLE_NAME'];
+				$names[]=$row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'];
 		}
 		return $names;
 	}

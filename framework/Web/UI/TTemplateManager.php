@@ -63,7 +63,7 @@ class TTemplateManager extends \Prado\TModule
 	public function getTemplateByClassName($className)
 	{
 		$class=new \ReflectionClass($className);
-		$tplFile=dirname($class->getFileName()).DIRECTORY_SEPARATOR.$class->getShortName().self::TEMPLATE_FILE_EXT;
+		$tplFile=dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $class->getShortName() . self::TEMPLATE_FILE_EXT;
 		return $this->getTemplateByFileName($tplFile);
 	}
 
@@ -80,7 +80,7 @@ class TTemplateManager extends \Prado\TModule
 				return new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
 			else
 			{
-				$array=$cache->get(self::TEMPLATE_CACHE_PREFIX.$fileName);
+				$array=$cache->get(self::TEMPLATE_CACHE_PREFIX . $fileName);
 				if(is_array($array))
 				{
 					list($template,$timestamps)=$array;
@@ -104,7 +104,7 @@ class TTemplateManager extends \Prado\TModule
 				$timestamps[$fileName]=filemtime($fileName);
 				foreach($includedFiles as $includedFile)
 					$timestamps[$includedFile]=filemtime($includedFile);
-				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,[$template,$timestamps]);
+				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName,[$template,$timestamps]);
 				return $template;
 			}
 		}

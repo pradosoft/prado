@@ -165,8 +165,8 @@ class TTextHighlighter extends TWebControl
 	protected function registerStyleSheet()
 	{
 		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.'.$this->getSyntaxStyle(),'.css');
-		$cssKey='prado:TTextHighlighter:'.$cssFile;
+		$cssFile=Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.' . $this->getSyntaxStyle(),'.css');
+		$cssKey='prado:TTextHighlighter:' . $cssFile;
 		if(!$cs->isStyleSheetFileRegistered($cssKey))
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
 	}
@@ -196,7 +196,7 @@ class TTextHighlighter extends TWebControl
 		$writer->addAttribute('id', $this->getClientID());
 		parent::renderBeginTag($writer);
 
-		$writer->addAttribute('id', $this->getClientID().'_code');
+		$writer->addAttribute('id', $this->getClientID() . '_code');
 		$writer->addAttribute('class', $this->getLanguage());
 		$writer->renderBeginTag('code');
 	}
@@ -235,7 +235,7 @@ class TTextHighlighter extends TWebControl
 
 		$options = TJavaScript::encode($this->getTextHighlightOptions());
 		$code = "new Prado.WebUI.TTextHighlighter($options);";
-		$cs->registerEndScript("prado:".$this->getClientID(), $code);
+		$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 
 	}
 }

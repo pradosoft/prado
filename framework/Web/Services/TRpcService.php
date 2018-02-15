@@ -161,7 +161,7 @@ class TRpcService extends \Prado\TService
 			throw new THttpException(400, 'RPC API-Provider id required');
 		
 		if(($_method = $_request->getRequestType()) != 'POST')
-			throw new THttpException(405, 'Invalid request method "'.$_method.'"!'); // TODO Exception muss "Allow POST" Header setzen
+			throw new THttpException(405, 'Invalid request method "' . $_method . '"!'); // TODO Exception muss "Allow POST" Header setzen
 
 		if(($_mimeType = $_request->getContentType()) === null)
 			throw new THttpException(406, 'Content-Type is missing!'); // TODO Exception muss gültige Content-Type werte zurück geben

@@ -294,14 +294,14 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			if(count($sqlText['parameters']) > 0)
 			{
 				$map = new TParameterMap();
-				$map->setID($statement->getID().'-InLineParameterMap');
+				$map->setID($statement->getID() . '-InLineParameterMap');
 				$statement->setInlineParameterMap($map);
 				foreach($sqlText['parameters'] as $property)
 					$map->addProperty($property);
 			}
 			$sqlStatement = $sqlText['sql'];
 		}
-		$sqlStatement=preg_replace('/'.self::INLINE_PLACEHOLDER.'/',self::INLINE_SYMBOL,$sqlStatement);
+		$sqlStatement=preg_replace('/' . self::INLINE_PLACEHOLDER . '/',self::INLINE_SYMBOL,$sqlStatement);
 
 		$this->prepareSql($statement, $sqlStatement, $node);
 	}
@@ -325,7 +325,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		}
 		else
 			$sql = new TStaticSql();
-		$sqlStatement=preg_replace('/'.self::SIMPLE_PLACEHOLDER.'/',self::SIMPLE_MARK,$sqlStatement);
+		$sqlStatement=preg_replace('/' . self::SIMPLE_PLACEHOLDER . '/',self::SIMPLE_MARK,$sqlStatement);
 		$sql->buildPreparedStatement($statement, $sqlStatement);
 		$statement->setSqlText($sql);
 	}
@@ -381,7 +381,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$selectKey = new TSqlMapSelectKey;
 		$this->setObjectPropFromNode($selectKey,$node);
 		$selectKey->setID($insert->getID());
-		$selectKey->setID($insert->getID().'.SelectKey');
+		$selectKey->setID($insert->getID() . '.SelectKey');
 		$this->processSqlStatement($selectKey,$node);
 		$insert->setSelectKey($selectKey);
 		$mappedStatement = new TMappedStatement($this->_manager, $selectKey);
@@ -435,7 +435,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		foreach($node->attributes() as $name=>$value)
 		{
 			if(in_array(strtolower($name), $properties))
-				$cacheModel->{'set'.$name}((string)$value);
+				$cacheModel->{'set' . $name}((string)$value);
 		}
 		$cache = Prado::createComponent($cacheModel->getImplementationClass(), $cacheModel);
 		$this->setObjectPropFromNode($cache,$node,$properties);

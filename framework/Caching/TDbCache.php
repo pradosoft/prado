@@ -199,7 +199,7 @@ class TDbCache extends TCache
 
 				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
-				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0=1';
+				$sql='SELECT 1 FROM ' . $this->_cacheTable . ' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
 
 				$this -> _createCheck = true;
@@ -221,7 +221,7 @@ class TDbCache extends TCache
 				else
 					$blob='BLOB';
 
-				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
+				$sql='CREATE TABLE ' . $this->_cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
 				$db->createCommand($sql)->execute();
 
 				$sql='CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';
@@ -255,7 +255,7 @@ class TDbCache extends TCache
 		{
 			if(!$this->_cacheInitialized) $this->initializeCache();
 			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
-			$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.$now;
+			$sql='DELETE FROM ' . $this->_cacheTable . ' WHERE expire<>0 AND expire<' . $now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this -> getApplication() -> setGlobalState($key, $now);
 		}
@@ -314,8 +314,8 @@ class TDbCache extends TCache
 			else
 			{
 				// default to SQLite3 database
-				$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.cache';
-				$db->setConnectionString('sqlite:'.$dbFile);
+				$dbFile=$this->getApplication()->getRuntimePath() . '/sqlite3.cache';
+				$db->setConnectionString('sqlite:' . $dbFile);
 			}
 			return $db;
 		}
@@ -465,7 +465,7 @@ class TDbCache extends TCache
 	{
 		if(!$this->_cacheInitialized) $this->initializeCache();
 		try {
-			$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
+			$sql='SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>' . time() . ') ORDER BY expire DESC';
 			$command=$this->getDbConnection()->createCommand($sql);
 			return unserialize($command->queryScalar());
 		}

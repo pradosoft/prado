@@ -188,7 +188,7 @@ class TLogger extends \Prado\TComponent
 		foreach($this->_categories as $category)
 		{
 			// element 2 is the category
-			if($value[2]===$category || strpos($value[2],$category.'.')===0)
+			if($value[2]===$category || strpos($value[2],$category . '.')===0)
 				return $value;
 		}
 		return false;

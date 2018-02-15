@@ -147,7 +147,7 @@ class TCacheHttpSession extends THttpSession
 	 */
 	protected function calculateKey($id)
 	{
-		return $this->_prefix.':'.$id;
+		return $this->_prefix . ':' . $id;
 	}
 }
 

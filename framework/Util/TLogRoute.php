@@ -160,7 +160,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	protected function formatLogMessage($message,$level,$category,$time)
 	{
-		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		return @date('M d H:i:s',$time) . ' [' . $this->getLevelName($level) . '] [' . $category . '] ' . $message . "\n";
 	}
 
 	/**

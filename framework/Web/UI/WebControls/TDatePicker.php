@@ -494,21 +494,21 @@ class TDatePicker extends TTextBox
 
 		$order = $formatter->getDayMonthYearOrdering();
 
-		if(isset($values[$key.'$day'])) {
-			$day = intval($values[$key.'$day']);
+		if(isset($values[$key . '$day'])) {
+			$day = intval($values[$key . '$day']);
 		} elseif(in_array('day', $order)) {
 			$day = $date['mday'];
 		} else {
 			$day = 1;
 		}
 
-		if(isset($values[$key.'$month']))
-			$month = intval($values[$key.'$month']) + 1;
+		if(isset($values[$key . '$month']))
+			$month = intval($values[$key . '$month']) + 1;
 		else
 			$month = $date['mon'];
 
-		if(isset($values[$key.'$year']))
-			$year = intval($values[$key.'$year']);
+		if(isset($values[$key . '$year']))
+			$year = intval($values[$key . '$year']);
 		else
 			$year = $date['year'];
 
@@ -693,8 +693,8 @@ class TDatePicker extends TTextBox
 	protected function renderCalendarDayOptions($writer, $selected=null)
 	{
 		$days = $this->getDropDownDayOptions();
-		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'day');
-		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'day');
+		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'day');
+		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'day');
 		$writer->addAttribute('class', 'datepicker_day_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -726,8 +726,8 @@ class TDatePicker extends TTextBox
 	protected function renderCalendarMonthOptions($writer, $selected=null)
 	{
 		$info = $this->getLocalizedCalendarInfo();
-		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'month');
-		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'month');
+		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'month');
+		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'month');
 		$writer->addAttribute('class', 'datepicker_month_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -753,7 +753,7 @@ class TDatePicker extends TTextBox
 			case 'MM':
 				$array = [];
 				for($i=1;$i<=12;$i++)
-						$array[$i-1] = $i < 10 ? '0'.$i : $i;
+						$array[$i-1] = $i < 10 ? '0' . $i : $i;
 				return $array;
 			case 'M':
 				$array = []; for($i=1;$i<=12;$i++) $array[$i-1] = $i;
@@ -772,8 +772,8 @@ class TDatePicker extends TTextBox
 		$years = [];
 		for($i = $this->getFromYear(); $i <= $this->getUpToYear(); $i++)
 			$years[$i] = $i;
-		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'year');
-		$writer->addAttribute('name', $this->getUniqueID().TControl::ID_SEPARATOR.'year');
+		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'year');
+		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'year');
 		$writer->addAttribute('class', 'datepicker_year_options');
 		if($this->getReadOnly() || !$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -788,7 +788,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function getDatePickerButtonID()
 	{
-		return $this->getClientID().'button';
+		return $this->getClientID() . 'button';
 	}
 
 	/**
@@ -799,7 +799,7 @@ class TDatePicker extends TTextBox
 	{
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('type', 'button');
-		$writer->addAttribute('class', $this->getCssClass().' TDatePickerButton');
+		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerButton');
 		$writer->addAttribute('value',$this->getButtonText());
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
@@ -818,7 +818,7 @@ class TDatePicker extends TTextBox
 		$writer->addAttribute('id', $this->getDatePickerButtonID());
 		$writer->addAttribute('src', $url);
 		$writer->addAttribute('alt', ' ');
-		$writer->addAttribute('class', $this->getCssClass().' TDatePickerImageButton');
+		$writer->addAttribute('class', $this->getCssClass() . ' TDatePickerImageButton');
 		if(!$this->getEnabled(true))
 			$writer->addAttribute('disabled', 'disabled');
 		$writer->addAttribute('type', 'image');
@@ -834,7 +834,7 @@ class TDatePicker extends TTextBox
 	protected function getAssetUrl($file='')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
-		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+		return $base . '/' . self::SCRIPT_PATH . '/' . $file;
 	}
 
 	/**
@@ -843,7 +843,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function publishCalendarStyle()
 	{
-		$url = $this->getAssetUrl($this->getCalendarStyle().'.css');
+		$url = $this->getAssetUrl($this->getCalendarStyle() . '.css');
 		$cs = $this->getPage()->getClientScript();
 		if(!$cs->isStyleSheetFileRegistered($url))
 			$cs->registerStyleSheetFile($url, $url);
@@ -886,7 +886,7 @@ class TDatePicker extends TTextBox
 
 			$options = TJavaScript::encode($this->getDatePickerOptions());
 			$code = "new Prado.WebUI.TDatePicker($options);";
-			$cs->registerEndScript("prado:".$this->getClientID(), $code);
+			$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 		}
 	}
 }

@@ -225,21 +225,21 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		// if we're in a callback, then schedule re-rendering of the control 
 		// if not, don't do anything, because a new challenge will be rendered anyway
 		if ($this->Page->IsCallback)
-			$this->Page->CallbackClient->jQuery($this->getClientID().' #recaptcha_reload','click');
+			$this->Page->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload','click');
 	}
 
 	public function renderContents($writer)
 	{
-		$readyscript = 'jQuery(document).trigger('.TJavaScript::quoteString('captchaready:'.$this->getClientID()).')';
+		$readyscript = 'jQuery(document).trigger(' . TJavaScript::quoteString('captchaready:' . $this->getClientID()) . ')';
 		$cs = $this->Page->ClientScript;
 		$id = $this->getClientID();
-		$divid = $id.'_1_recaptchadiv';
-		$writer->write('<div id="'.htmlspecialchars($divid).'">');
+		$divid = $id . '_1_recaptchadiv';
+		$writer->write('<div id="' . htmlspecialchars($divid) . '">');
 	
 		if (!$this->Page->IsCallback)
 			{
 				$writer->write(TJavaScript::renderScriptBlock(
-					'var RecaptchaOptions = '.TJavaScript::jsonEncode($this->getClientSideOptions()).';'
+					'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
 				));
 	
 				$html = $this->recaptcha_get_html($this->getPublicKey());
@@ -253,20 +253,20 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 				*/
 				$writer->write($html);
 
-				$cs->registerEndScript('ReCaptcha::EventScript', 'jQuery(document).ready(function() { '.$readyscript.'; } );');
+				$cs->registerEndScript('ReCaptcha::EventScript', 'jQuery(document).ready(function() { ' . $readyscript . '; } );');
 			}
 		else
 			{
 				$options = $this->getClientSideOptions();
-				$options['callback'] = new TJavaScriptLiteral('function() { '.$readyscript.'; '.$this->getCallbackScript().'; }');
+				$options['callback'] = new TJavaScriptLiteral('function() { ' . $readyscript . '; ' . $this->getCallbackScript() . '; }');
 				$cs->registerScriptFile('ReCaptcha::AjaxScript', self::RECAPTCHA_JS);
-				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', [
-					'if (!jQuery('.TJavaScript::quoteString('#'.$this->getResponseFieldName()).'))',
+				$cs->registerEndScript('ReCaptcha::CreateScript::' . $id, implode(' ', [
+					'if (!jQuery(' . TJavaScript::quoteString('#' . $this->getResponseFieldName()) . '))',
 					'{',
 					'Recaptcha.destroy();',
 					'Recaptcha.create(',
-						TJavaScript::quoteString($this->getPublicKey()).', ',
-						TJavaScript::quoteString($divid).', ',
+						TJavaScript::quoteString($this->getPublicKey()) . ', ',
+						TJavaScript::quoteString($divid) . ', ',
 						TJavaScript::encode($options),
 					');',
 					'}',
@@ -293,9 +293,9 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		if ($error)
 			$errorpart = "&amp;error=" . $error;
 
-		return '<script type="text/javascript" src="'. $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>
+		return '<script type="text/javascript" src="' . $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>
 		<noscript>
-		<iframe src="'. $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="500" frameborder="0"></iframe><br/>
+		<iframe src="' . $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="500" frameborder="0"></iframe><br/>
 		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
 		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
 		</noscript>';

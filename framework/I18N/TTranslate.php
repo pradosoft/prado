@@ -209,11 +209,11 @@ class TTranslate extends TI18NControl
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 		$subs = [];
 		foreach($this->getParameters() as $key => $value)
-			$subs['{'.$key.'}'] = $value;
+			$subs['{' . $key . '}'] = $value;
 		foreach($this->getControls() as $control)
 		{
 			if($control instanceof TTranslateParameter)
-				$subs['{'.$control->getKey().'}'] = $control->getParameter();
+				$subs['{' . $control->getKey() . '}'] = $control->getParameter();
 			elseif($control instanceof TControl)
 				$control->render($htmlWriter);
 			elseif(is_string($control))

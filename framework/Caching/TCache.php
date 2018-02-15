@@ -114,7 +114,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	protected function generateUniqueKey($key)
 	{
-		return md5($this->_prefix.$key);
+		return md5($this->_prefix . $key);
 	}
 
 	/**

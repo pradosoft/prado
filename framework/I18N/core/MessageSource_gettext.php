@@ -25,7 +25,7 @@ use Prado\I18N\core\Gettext\TGettext;
 /**
  * Get the Gettext class.
  */
-require_once(dirname(__FILE__).'/Gettext/TGettext.php');
+require_once(dirname(__FILE__) . '/Gettext/TGettext.php');
 
 /**
  * MessageSource_gettext class.
@@ -104,7 +104,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	protected function getSource($variant)
 	{
-		return $this->source.'/'.$variant;
+		return $this->source . '/' . $variant;
 	}
 
 	/**
@@ -129,7 +129,7 @@ class MessageSource_gettext extends MessageSource
 	protected function getCatalogueList($catalogue)
 	{
 		$variants = explode('_',$this->culture);
-		$source = $catalogue.$this->dataExt;
+		$source = $catalogue . $this->dataExt;
 
 		$catalogues = [$source];
 
@@ -139,9 +139,9 @@ class MessageSource_gettext extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $catalogue.$this->dataSeparator.
-								$variant.$this->dataExt;
+				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$catalogues[] = $catalogue . $this->dataSeparator .
+								$variant . $this->dataExt;
 			}
 		}
 		$byDir = $this->getCatalogueByDir($catalogue);
@@ -168,8 +168,8 @@ class MessageSource_gettext extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $variant.'/'.$catalogue.$this->dataExt;
+				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
 		}
 		return array_reverse($catalogues);
@@ -202,7 +202,7 @@ class MessageSource_gettext extends MessageSource
 	private function getPOFile($MOFile)
 	{
 		$filebase = substr($MOFile, 0, strlen($MOFile)-strlen($this->dataExt));
-		return $filebase.$this->poExt;
+		return $filebase . $this->poExt;
 	}
 
 	/**
@@ -387,12 +387,12 @@ class MessageSource_gettext extends MessageSource
 
 		foreach($files as $file)
 		{
-			if(is_dir($dir.'/'.$file)
+			if(is_dir($dir . '/' . $file)
 				&& preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file))
 			{
 
 				$catalogue = array_merge($catalogue,
-								$this->getCatalogues($dir.'/'.$file, $file));
+								$this->getCatalogues($dir . '/' . $file, $file));
 			}
 
 			$pos = strpos($file,$this->dataExt);

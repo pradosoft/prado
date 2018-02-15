@@ -333,7 +333,7 @@ class THtmlArea4 extends TTextBox
 
 		$options = TJavaScript::encode($options,true,true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea4'.$this->ClientID,$script);
+		$scripts->registerEndScript('prado:THtmlArea4' . $this->ClientID,$script);
 	}
 
 	protected function copyCustomPlugins()
@@ -344,7 +344,7 @@ class THtmlArea4 extends TTextBox
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
 			$name = basename($path);
-			$dest = $basepath.'/plugins/'.$name;
+			$dest = $basepath . '/plugins/' . $name;
 			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$assets->copyDirectory($path, $dest);
 		}

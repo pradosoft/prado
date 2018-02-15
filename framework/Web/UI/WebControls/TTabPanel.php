@@ -342,7 +342,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key,$values)
 	{
-		if(($index=$values[$this->getClientID().'_1'])!==null)
+		if(($index=$values[$this->getClientID() . '_1'])!==null)
 		{
 			$index=(int)$index;
 			$currentIndex=$this->getActiveViewIndex();
@@ -402,7 +402,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 		$page=$this->getPage();
 		$page->registerRequiresPostData($this);
-		$page->registerRequiresPostData($this->getClientID()."_1");
+		$page->registerRequiresPostData($this->getClientID() . "_1");
 	}
 
 	/**
@@ -419,7 +419,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 
 		if($url === 'default') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'tabpanel.css');
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'tabpanel.css');
 		}
 
 		if($url !== '') {
@@ -443,7 +443,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$index = $this->getActiveViewIndex();
 		if(!$this->getViews()->itemAt($index)->Visible)
 			$index=0;
-		$cs->registerHiddenField($id.'_1', $index);
+		$cs->registerHiddenField($id . '_1', $index);
 	}
 
 	/**

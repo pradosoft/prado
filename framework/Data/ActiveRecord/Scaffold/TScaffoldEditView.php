@@ -285,6 +285,6 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	public function getValidationGroup()
 	{
-		return 'group_'.$this->getUniqueID();
+		return 'group_' . $this->getUniqueID();
 	}
 }

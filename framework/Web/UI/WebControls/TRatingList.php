@@ -219,7 +219,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	protected function getRatingStyleCssClass()
 	{
-		return 'TRatingList_'.$this->getRatingStyle();
+		return 'TRatingList_' . $this->getRatingStyle();
 	}
 
 	/**
@@ -293,7 +293,7 @@ class TRatingList extends TRadioButtonList
 	protected function publishStyle($style)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$url = $this->getAssetUrl($style.'.css');
+		$url = $this->getAssetUrl($style . '.css');
 		if(!$cs->isStyleSheetFileRegistered($url))
 			$cs->registerStyleSheetFile($url, $url);
 		return $url;
@@ -329,7 +329,7 @@ class TRatingList extends TRadioButtonList
 	protected function getAssetUrl($file='')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
-		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+		return $base . '/' . self::SCRIPT_PATH . '/' . $file;
 	}
 
 	/**

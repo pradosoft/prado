@@ -130,7 +130,7 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function processLogs($logs)
 	{
-		$logFile=$this->getLogPath().DIRECTORY_SEPARATOR.$this->getLogFile();
+		$logFile=$this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
 		if(@filesize($logFile)>$this->_maxFileSize*1024)
 			$this->rotateFiles();
 		foreach($logs as $log)
@@ -142,19 +142,19 @@ class TFileLogRoute extends TLogRoute
 	 */
 	protected function rotateFiles()
 	{
-		$file=$this->getLogPath().DIRECTORY_SEPARATOR.$this->getLogFile();
+		$file=$this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
 		for($i=$this->_maxLogFiles;$i>0;--$i)
 		{
-			$rotateFile=$file.'.'.$i;
+			$rotateFile=$file . '.' . $i;
 			if(is_file($rotateFile))
 			{
 				if($i===$this->_maxLogFiles)
 					unlink($rotateFile);
 				else
-					rename($rotateFile,$file.'.'.($i+1));
+					rename($rotateFile,$file . '.' . ($i+1));
 			}
 		}
 		if(is_file($file))
-			rename($file,$file.'.1');
+			rename($file,$file . '.1');
 	}
 }

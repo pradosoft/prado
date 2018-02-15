@@ -151,7 +151,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
 		{
-			$writer->addAttribute('id',$this->getClientID().'_0');
+			$writer->addAttribute('id',$this->getClientID() . '_0');
 
 			$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
 			$style->addAttributesToRender($writer);

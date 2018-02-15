@@ -123,7 +123,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 		  $culture=$this->getCurrentCulture();
 		  if($culture!='en')
 		  {
-			$url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui')."/ui/i18n/datepicker-{$culture}.js";
+			$url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
 			$cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
 		  }
 		  $code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
@@ -132,7 +132,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 		}
 		parent::addAttributesToRender($writer);
 		$options=TJavaScript::encode($this->getOptions()->toArray());
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

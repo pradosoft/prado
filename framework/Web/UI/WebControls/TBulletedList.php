@@ -332,8 +332,8 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		else
 		{
 			$this->_currentRenderItemIndex = $index;
-			$writer->addAttribute('id', $this->getClientID().$index);
-			$writer->addAttribute('href', "javascript:;//".$this->getClientID().$index);
+			$writer->addAttribute('id', $this->getClientID() . $index);
+			$writer->addAttribute('href', "javascript:;//" . $this->getClientID() . $index);
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
 		}
@@ -353,7 +353,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		$options['CausesValidation'] = $this->getCausesValidation();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['EventParameter'] = $this->_currentRenderItemIndex;
-		$options['ID'] = $this->getClientID().$this->_currentRenderItemIndex;
+		$options['ID'] = $this->getClientID() . $this->_currentRenderItemIndex;
 		$options['StopEvent'] = true;
 		return $options;
 	}

@@ -204,7 +204,7 @@ abstract class TScaffoldBase extends TTemplateControl
 		parent::onPreRender($param);
 		if($this->getEnableDefaultStyle())
 		{
-			$url = $this->publishAsset($this->getDefaultStyle().'.css');
+			$url = $this->publishAsset($this->getDefaultStyle() . '.css');
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
 		}
 	}

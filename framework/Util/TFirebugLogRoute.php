@@ -46,7 +46,7 @@ EOD;
 		$delta = sprintf('%0.6f', $info['delta']);
 		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
-		$msg = "[{$total}] [{$delta}] ".$msg; // Add time spent and cumulated time spent
+		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
 
 		return $string;

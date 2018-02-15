@@ -166,7 +166,7 @@ EOD;
 			$string .= '<tr class="footer"><td colspan="5">';
 			foreach(self::$_levelValues as $name => $level)
 			{
-				$string .= '<span class="level'.$level.'">'.strtoupper($name)."</span>";
+				$string .= '<span class="level' . $level . '">' . strtoupper($name) . "</span>";
 			}
 		}
 		else
@@ -174,8 +174,8 @@ EOD;
 			$string .= "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
 			foreach(self::$_levelValues as $name => $level)
 			{
-				$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
-				$string .= ";margin: 0.5em; padding:0.01em;\">".strtoupper($name)."</span>";
+				$string .= "<span style=\"color:white; border:1px solid white; background-color:" . $this->getColorLevel($level);
+				$string .= ";margin: 0.5em; padding:0.01em;\">" . strtoupper($name) . "</span>";
 			}
 		}
 		$string .= '</td></tr></table>';

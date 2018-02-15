@@ -90,11 +90,11 @@ class TAssetManager extends \Prado\TModule
 	{
 		$application=$this->getApplication();
 		if($this->_basePath===null)
-			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()).DIRECTORY_SEPARATOR.self::DEFAULT_BASEPATH;
+			$this->_basePath=dirname($application->getRequest()->getApplicationFilePath()) . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
 		if(!is_writable($this->_basePath) || !is_dir($this->_basePath))
 			throw new TConfigurationException('assetmanager_basepath_invalid',$this->_basePath);
 		if($this->_baseUrl===null)
-			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationUrl()),'/\\').'/'.self::DEFAULT_BASEPATH;
+			$this->_baseUrl=rtrim(dirname($application->getRequest()->getApplicationUrl()),'/\\') . '/' . self::DEFAULT_BASEPATH;
 		$application->setAssetManager($this);
 		$this->_initialized=true;
 	}
@@ -169,20 +169,20 @@ class TAssetManager extends \Prado\TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$fileName=basename($fullpath);
-			$dst=$this->_basePath.DIRECTORY_SEPARATOR.$dir;
-			if(!is_file($dst.DIRECTORY_SEPARATOR.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dst=$this->_basePath . DIRECTORY_SEPARATOR . $dir;
+			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 				$this->copyFile($fullpath,$dst);
-			return $this->_published[$path]=$this->_baseUrl.'/'.$dir.'/'.$fileName;
+			return $this->_published[$path]=$this->_baseUrl . '/' . $dir . '/' . $fileName;
 		}
 		else
 		{
 			$dir=$this->hash($fullpath);
-			if(!is_dir($this->_basePath.DIRECTORY_SEPARATOR.$dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			if(!is_dir($this->_basePath . DIRECTORY_SEPARATOR . $dir) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 			{
 				Prado::trace("Publishing directory $fullpath",'Prado\Web\TAssetManager');
-				$this->copyDirectory($fullpath,$this->_basePath.DIRECTORY_SEPARATOR.$dir);
+				$this->copyDirectory($fullpath,$this->_basePath . DIRECTORY_SEPARATOR . $dir);
 			}
-			return $this->_published[$path]=$this->_baseUrl.'/'.$dir;
+			return $this->_published[$path]=$this->_baseUrl . '/' . $dir;
 		}
 	}
 
@@ -215,9 +215,9 @@ class TAssetManager extends \Prado\TModule
 	{
 		$path=realpath($path);
 		if(is_file($path))
-			return $this->_basePath.DIRECTORY_SEPARATOR.$this->hash(dirname($path)).DIRECTORY_SEPARATOR.basename($path);
+			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash(dirname($path)) . DIRECTORY_SEPARATOR . basename($path);
 		else
-			return $this->_basePath.DIRECTORY_SEPARATOR.$this->hash($path);
+			return $this->_basePath . DIRECTORY_SEPARATOR . $this->hash($path);
 	}
 
 	/**
@@ -231,9 +231,9 @@ class TAssetManager extends \Prado\TModule
 	{
 		$path=realpath($path);
 		if(is_file($path))
-			return $this->_baseUrl.'/'.$this->hash(dirname($path)).'/'.basename($path);
+			return $this->_baseUrl . '/' . $this->hash(dirname($path)) . '/' . basename($path);
 		else
-			return $this->_baseUrl.'/'.$this->hash($path);
+			return $this->_baseUrl . '/' . $this->hash($path);
 	}
 
 	/**
@@ -244,7 +244,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	protected function hash($dir)
 	{
-		return sprintf('%x',crc32($dir.Prado::getVersion()));
+		return sprintf('%x',crc32($dir . Prado::getVersion()));
 	}
 
 	/**
@@ -261,7 +261,7 @@ class TAssetManager extends \Prado\TModule
 			@mkdir($dst);
 			@chmod($dst, PRADO_CHMOD);
 		}
-		$dstFile=$dst.DIRECTORY_SEPARATOR.basename($src);
+		$dstFile=$dst . DIRECTORY_SEPARATOR . basename($src);
 		if(@filemtime($dstFile)<@filemtime($src))
 		{
 			Prado::trace("Publishing file $src to $dstFile",'Prado\Web\TAssetManager');
@@ -290,16 +290,16 @@ class TAssetManager extends \Prado\TModule
 			{
 				if($file==='.' || $file==='..' || $file==='.svn' || $file==='.git')
 					continue;
-				elseif(is_file($src.DIRECTORY_SEPARATOR.$file))
+				elseif(is_file($src . DIRECTORY_SEPARATOR . $file))
 				{
-					if(@filemtime($dst.DIRECTORY_SEPARATOR.$file)<@filemtime($src.DIRECTORY_SEPARATOR.$file))
+					if(@filemtime($dst . DIRECTORY_SEPARATOR . $file)<@filemtime($src . DIRECTORY_SEPARATOR . $file))
 					{
-						@copy($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
-						@chmod($dst.DIRECTORY_SEPARATOR.$file, PRADO_CHMOD);
+						@copy($src . DIRECTORY_SEPARATOR . $file,$dst . DIRECTORY_SEPARATOR . $file);
+						@chmod($dst . DIRECTORY_SEPARATOR . $file, PRADO_CHMOD);
 					}
 				}
 				else
-					$this->copyDirectory($src.DIRECTORY_SEPARATOR.$file,$dst.DIRECTORY_SEPARATOR.$file);
+					$this->copyDirectory($src . DIRECTORY_SEPARATOR . $file,$dst . DIRECTORY_SEPARATOR . $file);
 			}
 			closedir($folder);
 		} else {
@@ -328,16 +328,16 @@ class TAssetManager extends \Prado\TModule
 		{
 			$dir=$this->hash(dirname($fullpath));
 			$fileName=basename($fullpath);
-			$dst=$this->_basePath.DIRECTORY_SEPARATOR.$dir;
-			if(!is_file($dst.DIRECTORY_SEPARATOR.$fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dst=$this->_basePath . DIRECTORY_SEPARATOR . $dir;
+			if(!is_file($dst . DIRECTORY_SEPARATOR . $fileName) || $checkTimestamp || $this->getApplication()->getMode()!==TApplicationMode::Performance)
 			{
-				if(@filemtime($dst.DIRECTORY_SEPARATOR.$fileName)<@filemtime($fullpath))
+				if(@filemtime($dst . DIRECTORY_SEPARATOR . $fileName)<@filemtime($fullpath))
 				{
 					$this->copyFile($fullpath,$dst);
 					$this->deployTarFile($tarfile,$dst);
 				}
 			}
-			return $this->_published[$md5sum]=$this->_baseUrl.'/'.$dir;
+			return $this->_published[$md5sum]=$this->_baseUrl . '/' . $dir;
 		}
 	}
 

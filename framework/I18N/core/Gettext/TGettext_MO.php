@@ -38,7 +38,7 @@ namespace Prado\I18N\core\Gettext;
  * @license     PHP License
  */
 
-require_once dirname(__FILE__).'/TGettext.php';
+require_once dirname(__FILE__) . '/TGettext.php';
 
 /**
  * File_Gettext_MO

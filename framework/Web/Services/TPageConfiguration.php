@@ -116,14 +116,14 @@ class TPageConfiguration extends \Prado\TComponent
 			: TPageService::CONFIG_FILE_XML;
 		foreach($paths as $p)
 		{
-			$this->loadFromFile($path.DIRECTORY_SEPARATOR.$fileName,$configPagePath);
-			$path.=DIRECTORY_SEPARATOR.$p;
+			$this->loadFromFile($path . DIRECTORY_SEPARATOR . $fileName,$configPagePath);
+			$path.=DIRECTORY_SEPARATOR . $p;
 			if($configPagePath==='')
 				$configPagePath=$p;
 			else
-				$configPagePath.='.'.$p;
+				$configPagePath.='.' . $p;
 		}
-		$this->loadFromFile($path.DIRECTORY_SEPARATOR.$fileName,$configPagePath);
+		$this->loadFromFile($path . DIRECTORY_SEPARATOR . $fileName,$configPagePath);
 		$this->_rules=new TAuthorizationRuleCollection($this->_rules);
 	}
 
@@ -212,7 +212,7 @@ class TPageConfiguration extends \Prado\TComponent
 						{
 							// we know $configPagePath and $this->_pagePath
 							if($configPagePath!=='')  // prepend the pattern with ConfigPagePath
-								$pattern=$configPagePath.'.'.$pattern;
+								$pattern=$configPagePath . '.' . $pattern;
 							if(strcasecmp($pattern,$this->_pagePath)===0)
 							{
 								$ruleApplies=true;
@@ -258,7 +258,7 @@ class TPageConfiguration extends \Prado\TComponent
 					unset($page['properties']);
 				}
 				$matching=false;
-				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
+				$id=($configPagePath==='')?$id:$configPagePath . '.' . $id;
 				if(strcasecmp($id,$this->_pagePath)===0)
 					$matching=true;
 				elseif($id[strlen($id)-1]==='*') // try wildcard matching
@@ -278,7 +278,7 @@ class TPageConfiguration extends \Prado\TComponent
 					throw new TConfigurationException('pageserviceconf_includefile_required');
 				$filePath = $include['file'];
 				if(isset($this->_includes[$filePath]))
-					$this->_includes[$filePath]=[$configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')'];
+					$this->_includes[$filePath]=[$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
 				else
 					$this->_includes[$filePath]=[$configPagePath,$when];
 			}
@@ -311,7 +311,7 @@ class TPageConfiguration extends \Prado\TComponent
 						{
 							// we know $configPagePath and $this->_pagePath
 							if($configPagePath!=='')  // prepend the pattern with ConfigPagePath
-								$pattern=$configPagePath.'.'.$pattern;
+								$pattern=$configPagePath . '.' . $pattern;
 							if(strcasecmp($pattern,$this->_pagePath)===0)
 							{
 								$ruleApplies=true;
@@ -346,7 +346,7 @@ class TPageConfiguration extends \Prado\TComponent
 				if(empty($id))
 					throw new TConfigurationException('pageserviceconf_page_invalid',$configPath);
 				$matching=false;
-				$id=($configPagePath==='')?$id:$configPagePath.'.'.$id;
+				$id=($configPagePath==='')?$id:$configPagePath . '.' . $id;
 				if(strcasecmp($id,$this->_pagePath)===0)
 					$matching=true;
 				elseif($id[strlen($id)-1]==='*') // try wildcard matching
@@ -364,7 +364,7 @@ class TPageConfiguration extends \Prado\TComponent
 			if(($filePath=$node->getAttribute('file'))===null)
 				throw new TConfigurationException('pageserviceconf_includefile_required');
 			if(isset($this->_includes[$filePath]))
-				$this->_includes[$filePath]=[$configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')'];
+				$this->_includes[$filePath]=[$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
 			else
 				$this->_includes[$filePath]=[$configPagePath,$when];
 		}

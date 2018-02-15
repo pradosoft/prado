@@ -41,7 +41,7 @@ class TSqliteTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		return "'".$this->getTableName()."'";
+		return "'" . $this->getTableName() . "'";
 	}
 }
 

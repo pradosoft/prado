@@ -140,7 +140,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	protected function renderLinkButtonHref($writer)
 	{
 		//create unique no-op url references
-		$nop = "javascript:;//".$this->getClientID();
+		$nop = "javascript:;//" . $this->getClientID();
 		$writer->addAttribute('href', $nop);
 	}
 

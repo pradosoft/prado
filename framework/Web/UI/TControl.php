@@ -405,7 +405,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 				elseif(($prefix=$namingContainer->getUniqueID())==='')
 					return $this->_id;
 				else
-					return ($this->_uid=$prefix.self::ID_SEPARATOR.$this->_id);
+					return ($this->_uid=$prefix . self::ID_SEPARATOR . $this->_id);
 			}
 			else	// no naming container
 				return $this->_id;

@@ -159,11 +159,11 @@ class PradoBase
 		if(self::$_application!==null)
 		{
 			$am=self::$_application->getAssetManager();
-			$url=$am->publishFilePath(self::getPathOfNamespace('Prado\\'.$logoName,'.gif'));
+			$url=$am->publishFilePath(self::getPathOfNamespace('Prado\\' . $logoName,'.gif'));
 		}
 		else
-			$url='http://pradosoft.github.io/docs/'.$logoName.'.gif';
-		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado" target="_blank"><img src="'.$url.'" style="border-width:0px;" alt="Powered by PRADO" /></a>';
+			$url='http://pradosoft.github.io/docs/' . $logoName . '.gif';
+		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado" target="_blank"><img src="' . $url . '" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
 	/**
@@ -262,7 +262,7 @@ class PradoBase
 	protected static function prado3NamespaceToPhpNamespace($type)
 	{
 		if(substr($type, 0, 6) === 'System')
-			$type='Prado'.substr($type, 6);
+			$type='Prado' . substr($type, 6);
 
 		if(false === strpos($type, '\\'))
 			return str_replace('.', '\\', $type);
@@ -366,7 +366,7 @@ class PradoBase
 				$path = $v . DIRECTORY_SEPARATOR . $namespace . self::CLASS_FILE_EXT;
 				if(file_exists($path))
 				{
-					$phpNamespace = '\\'. $k.'\\'.$namespace;
+					$phpNamespace = '\\' . $k . '\\' . $namespace;
 					if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
 					{
 						if(!class_exists($namespace) && !interface_exists($namespace))
@@ -436,7 +436,7 @@ class PradoBase
 		$alias = array_shift($segs);
 
 		if(null !== ($file = array_pop($segs)) && null !== ($root = self::getPathOfAlias($alias)))
-			return rtrim($root.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR ,$segs),'/\\').(($file === '*') ? '' : DIRECTORY_SEPARATOR.$file.$ext);
+			return rtrim($root . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR ,$segs),'/\\') . (($file === '*') ? '' : DIRECTORY_SEPARATOR . $file . $ext);
 
 		return null;
 	}
@@ -485,7 +485,7 @@ class PradoBase
 	public static function fatalError($msg)
 	{
 		echo '<h1>Fatal Error</h1>';
-		echo '<p>'.$msg.'</p>';
+		echo '<p>' . $msg . '</p>';
 		if(!function_exists('debug_backtrace'))
 			return;
 		echo '<h2>Debug Backtrace</h2>';
@@ -496,7 +496,7 @@ class PradoBase
 			$index++;
 			if($index==0)  // hide the backtrace of this function
 				continue;
-			echo '#'.$index.' ';
+			echo '#' . $index . ' ';
 			if(isset($t['file']))
 				echo basename($t['file']) . ':' . $t['line'];
 			else
@@ -514,7 +514,7 @@ class PradoBase
 					{
 						$str=htmlentities(str_replace("\r\n", "", $item), ENT_QUOTES);
 						if (strlen($item) > 70)
-							echo "'". substr($str, 0, 70) . "...'";
+							echo "'" . substr($str, 0, 70) . "...'";
 						else
 							echo "'" . $str . "'";
 					}
@@ -678,7 +678,7 @@ class PradoBase
 
 		$params = [];
 		foreach($parameters as $key => $value)
-			$params['{'.$key.'}'] = $value;
+			$params['{' . $key . '}'] = $value;
 
 		//no translation handler provided
 		if($app===null || ($config = $app->getTranslationConfiguration())===null)

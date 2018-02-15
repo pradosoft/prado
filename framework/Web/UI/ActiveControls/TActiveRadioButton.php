@@ -179,7 +179,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 		if($attributes=$this->getViewState('LabelAttributes',null))
 			return $this->getLabelAttributes()->itemAt('id');
 		else
-			return $this->getClientID().'_label';
+			return $this->getClientID() . '_label';
 	}
 }
 

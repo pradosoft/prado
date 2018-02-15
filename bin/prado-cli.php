@@ -85,7 +85,7 @@ class PradoCommandLineInterpreter
 
 	public static function printGreeting()
 	{
-		echo "Command line tools for Prado ".Prado::getVersion().".\n";
+		echo "Command line tools for Prado " . Prado::getVersion() . ".\n";
 	}
 
 	/**
@@ -173,15 +173,15 @@ abstract class PradoCommandLineAction
 	{
 		$params = [];
 		foreach($this->parameters as $v)
-			$params[] = '<'.$v.'>';
+			$params[] = '<' . $v . '>';
 		$parameters = join($params, ' ');
 		$options = [];
 		foreach($this->optional as $v)
-			$options[] = '['.$v.']';
-		$optional = (strlen($parameters) ? ' ' : ''). join($options, ' ');
+			$options[] = '[' . $v . ']';
+		$optional = (strlen($parameters) ? ' ' : '') . join($options, ' ');
 		$description='';
 		foreach(explode("\n", wordwrap($this->description,65)) as $line)
-			$description .= '    '.$line."\n";
+			$description .= '    ' . $line . "\n";
 		return <<<EOD
   {$this->action} {$parameters}{$optional}
 {$description}
@@ -191,8 +191,8 @@ EOD;
 
 	protected function initializePradoApplication($directory)
 	{
-		$_SERVER['SCRIPT_FILENAME'] = $directory.'/index.php';
-		$app_dir = realpath($directory.'/protected/');
+		$_SERVER['SCRIPT_FILENAME'] = $directory . '/index.php';
+		$app_dir = realpath($directory . '/protected/');
 		if($app_dir !== false && is_dir($app_dir))
 		{
 			if(Prado::getApplication()===null)
@@ -201,7 +201,7 @@ EOD;
 				$app->run();
 				$dir = substr(str_replace(realpath('./'),'',$app_dir),1);
 				PradoCommandLineInterpreter::printGreeting();
-				echo '** Loaded PRADO appplication in directory "'.$dir."\".\n";
+				echo '** Loaded PRADO appplication in directory "' . $dir . "\".\n";
 			}
 
 			return Prado::getApplication();
@@ -209,9 +209,9 @@ EOD;
 		else
 		{
 			PradoCommandLineInterpreter::printGreeting();
-			echo '+'.str_repeat('-',77)."+\n";
-			echo '** Unable to load PRADO application in directory "'.$directory."\".\n";
-			echo '+'.str_repeat('-',77)."+\n";
+			echo '+' . str_repeat('-',77) . "+\n";
+			echo '** Unable to load PRADO application in directory "' . $directory . "\".\n";
+			echo '+' . str_repeat('-',77) . "+\n";
 		}
 		return false;
 	}
@@ -249,19 +249,19 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 		$rootPath = realpath(dirname(trim($dir)));
 
 		if(basename($dir)!=='.')
-			$basePath = $rootPath.DIRECTORY_SEPARATOR.basename($dir);
+			$basePath = $rootPath . DIRECTORY_SEPARATOR . basename($dir);
 		else
 			$basePath = $rootPath;
 		$appName = basename($basePath);
-		$assetPath = $basePath.DIRECTORY_SEPARATOR.'assets';
-		$protectedPath  = $basePath.DIRECTORY_SEPARATOR.'protected';
-		$runtimePath = $basePath.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'runtime';
-		$pagesPath = $protectedPath.DIRECTORY_SEPARATOR.'pages';
+		$assetPath = $basePath . DIRECTORY_SEPARATOR . 'assets';
+		$protectedPath  = $basePath . DIRECTORY_SEPARATOR . 'protected';
+		$runtimePath = $basePath . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'runtime';
+		$pagesPath = $protectedPath . DIRECTORY_SEPARATOR . 'pages';
 
-		$indexFile = $basePath.DIRECTORY_SEPARATOR.'index.php';
-		$htaccessFile = $protectedPath.DIRECTORY_SEPARATOR.'.htaccess';
-		$configFile = $protectedPath.DIRECTORY_SEPARATOR.'application.xml';
-		$defaultPageFile = $pagesPath.DIRECTORY_SEPARATOR.'Home.page';
+		$indexFile = $basePath . DIRECTORY_SEPARATOR . 'index.php';
+		$htaccessFile = $protectedPath . DIRECTORY_SEPARATOR . '.htaccess';
+		$configFile = $protectedPath . DIRECTORY_SEPARATOR . 'application.xml';
+		$defaultPageFile = $pagesPath . DIRECTORY_SEPARATOR . 'Home.page';
 
 		$this->createDirectory($basePath, 0755);
 		$this->createDirectory($assetPath,0777);
@@ -277,10 +277,10 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 	protected function renderIndexFile()
 	{
-		$framework = realpath(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR.'framework'.DIRECTORY_SEPARATOR.'prado.php';
+		$framework = realpath(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . 'prado.php';
 return '<?php
 
-$frameworkPath=\''.$framework.'\';
+$frameworkPath=\'' . $framework . '\';
 
 // The following directory checks may be removed if performance is required
 $basePath=dirname(__FILE__);
@@ -394,18 +394,18 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 			return;
 
 		$rootPath = realpath(dirname(trim($dir)));
-		$basePath = $rootPath.'/'.basename($dir);
+		$basePath = $rootPath . '/' . basename($dir);
 
-		$tests = $basePath.'/tests';
-		$unit_tests = $tests.'/unit';
-		$functional_tests = $tests.'/functional';
+		$tests = $basePath . '/tests';
+		$unit_tests = $tests . '/unit';
+		$functional_tests = $tests . '/functional';
 
 		$this->createDirectory($tests,0755);
 		$this->createDirectory($unit_tests,0755);
 		$this->createDirectory($functional_tests,0755);
 
-		$unit_test_index = $tests.'/unit.php';
-		$functional_test_index = $tests.'/functional.php';
+		$unit_test_index = $tests . '/unit.php';
+		$functional_test_index = $tests . '/functional.php';
 
 		$this->createFile($unit_test_index, $this->renderUnitTestFixture());
 		$this->createFile($functional_test_index, $this->renderFunctionalTestFixture());
@@ -413,10 +413,10 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 
 	protected function renderUnitTestFixture()
 	{
-		$tester = realpath(dirname(dirname(__FILE__))).'/tests/test_tools/unit_tests.php';
+		$tester = realpath(dirname(dirname(__FILE__))) . '/tests/test_tools/unit_tests.php';
 return '<?php
 
-include_once \''.$tester.'\';
+include_once \'' . $tester . '\';
 
 $app_directory = "../protected";
 $test_cases = dirname(__FILE__)."/unit";
@@ -428,10 +428,10 @@ $tester->run(new HtmlReporter());
 
 	protected function renderFunctionalTestFixture()
 	{
-		$tester = realpath(dirname(dirname(__FILE__))).'/tests/test_tools/functional_tests.php';
+		$tester = realpath(dirname(dirname(__FILE__))) . '/tests/test_tools/functional_tests.php';
 return '<?php
 
-include_once \''.$tester.'\';
+include_once \'' . $tester . '\';
 
 $test_cases = dirname(__FILE__)."/functional";
 
@@ -499,19 +499,19 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	{
 		if(is_dir($dir))
 			return realpath($dir);
-		if(false !== ($app_dir = realpath($dir.'/protected/')) && is_dir($app_dir))
+		if(false !== ($app_dir = realpath($dir . '/protected/')) && is_dir($app_dir))
 			return $app_dir;
-		echo '** Unable to find directory "'.$dir."\".\n";
+		echo '** Unable to find directory "' . $dir . "\".\n";
 		return false;
 	}
 
 	protected function getXmlFile($app_dir)
 	{
-		if(false !== ($xml = realpath($app_dir.'/application.xml')) && is_file($xml))
+		if(false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml))
 			return $xml;
-		if(false !== ($xml = realpath($app_dir.'/protected/application.xml')) && is_file($xml))
+		if(false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml))
 			return $xml;
-		echo '** Unable to find application.xml in '.$app_dir."\n";
+		echo '** Unable to find application.xml in ' . $app_dir . "\n";
 		return false;
 	}
 
@@ -525,7 +525,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			foreach($app->getModules() as $module)
 				if($module instanceof TActiveRecordConfig)
 					return $module;
-			echo '** Unable to find TActiveRecordConfig module in '.$xml."\n";
+			echo '** Unable to find TActiveRecordConfig module in ' . $xml . "\n";
 		}
 		return false;
 	}
@@ -540,7 +540,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			if(strpos($path, $app_dir)===0)
 				return $file;
 		}
-		echo '** Output file '.$file.' must be within directory '.$app_dir."\n";
+		echo '** Output file ' . $file . ' must be within directory ' . $app_dir . "\n";
 		return false;
 	}
 
@@ -552,7 +552,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
 			if(count($tableInfo->getColumns()) === 0)
 			{
-				echo '** Unable to find table or view "'.$tablename.'" in "'.$manager->getDbConnection()->getConnectionString()."\".\n";
+				echo '** Unable to find table or view "' . $tablename . '" in "' . $manager->getDbConnection()->getConnectionString() . "\".\n";
 				return false;
 			}
 			else
@@ -567,14 +567,14 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			echo "  Writing class $classname to file $output\n";
 			file_put_contents($output, $class);
 		} else {
-			echo '** Unable to connect to database with ConnectionID=\''.$config->getConnectionID()."'. Please check your settings in application.xml and ensure your database connection is set up first.\n";
+			echo '** Unable to connect to database with ConnectionID=\'' . $config->getConnectionID() . "'. Please check your settings in application.xml and ensure your database connection is set up first.\n";
 		}
 	}
 
 	protected function generateProperty($field,$column)
 	{
 		$prop = '';
-		$name = '$'.$field;
+		$name = '$' . $field;
 		$type = $column->getPHPType();
 		if($this->_soap)
 		{
@@ -665,7 +665,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 				case 'oci':
 //				case 'ibm':
 				default:
-					echo "\n    Sorry, generateAll is not implemented for ".$con->getDriverName()."\n";
+					echo "\n    Sorry, generateAll is not implemented for " . $con->getDriverName() . "\n";
 					
 			   }
 

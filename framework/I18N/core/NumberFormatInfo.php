@@ -23,7 +23,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__).'/CultureInfo.php');
+require_once(dirname(__FILE__) . '/CultureInfo.php');
 
 /**
  * NumberFormatInfo class
@@ -80,11 +80,11 @@ class NumberFormatInfo
 	 */
 	public function __get($name)
 	{
-		$getProperty = 'get'.$name;
+		$getProperty = 'get' . $name;
 		if(in_array($getProperty, $this->properties))
 			return $this->$getProperty();
 		else
-			throw new Exception('Property '.$name.' does not exists.');
+			throw new Exception('Property ' . $name . ' does not exists.');
 	}
 
 	/**
@@ -93,11 +93,11 @@ class NumberFormatInfo
 	 */
 	public function __set($name, $value)
 	{
-		$setProperty = 'set'.$name;
+		$setProperty = 'set' . $name;
 		if(in_array($setProperty, $this->properties))
 			$this->$setProperty($value);
 		else
-			throw new Exception('Property '.$name.' can not be set.');
+			throw new Exception('Property ' . $name . ' can not be set.');
 	}
 
 	/**
@@ -136,11 +136,11 @@ class NumberFormatInfo
 			$this->pattern = $this->parsePattern($type);
 
 		$this->pattern['negInfty'] =
-			$this->data['NumberElements'][6].
+			$this->data['NumberElements'][6] .
 			$this->data['NumberElements'][9];
 
 		$this->pattern['posInfty'] =
-			$this->data['NumberElements'][11].
+			$this->data['NumberElements'][11] .
 			$this->data['NumberElements'][9];
 	}
 

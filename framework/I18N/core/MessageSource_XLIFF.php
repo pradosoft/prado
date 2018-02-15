@@ -107,7 +107,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	protected function getSource($variant)
 	{
-		return $this->source.'/'.$variant;
+		return $this->source . '/' . $variant;
 	}
 
 	/**
@@ -128,7 +128,7 @@ class MessageSource_XLIFF extends MessageSource
 	protected function getCatalogueList($catalogue)
 	{
 		$variants = explode('_',$this->culture);
-		$source = $catalogue.$this->dataExt;
+		$source = $catalogue . $this->dataExt;
 		$catalogues = [$source];
 		$variant = null;
 
@@ -136,8 +136,8 @@ class MessageSource_XLIFF extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $catalogue.$this->dataSeparator.$variant.$this->dataExt;
+				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$catalogues[] = $catalogue . $this->dataSeparator . $variant . $this->dataExt;
 			}
 		}
 
@@ -171,8 +171,8 @@ class MessageSource_XLIFF extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $variant.'/'.$catalogue.$this->dataExt;
+				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
 		}
 
@@ -204,10 +204,10 @@ class MessageSource_XLIFF extends MessageSource
 
 		foreach($files as $file)
 		{
-			if(is_dir($dir.'/'.$file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file)) {
+			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file)) {
 				$catalogue = array_merge(
 					$catalogue,
-					$this->getCatalogues($dir.'/'.$file, $file)
+					$this->getCatalogues($dir . '/' . $file, $file)
 				);
 			}
 

@@ -53,7 +53,7 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function writeLine($str='')
 	{
-		$this->write($str."\n");
+		$this->write($str . "\n");
 	}
 }
 

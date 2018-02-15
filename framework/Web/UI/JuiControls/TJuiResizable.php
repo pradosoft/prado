@@ -125,7 +125,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 		$writer->addAttribute('id',$this->getClientID());
 		$options=TJavaScript::encode($this->getPostBackOptions());
 		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$code="jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 

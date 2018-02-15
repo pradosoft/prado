@@ -301,7 +301,7 @@ class TApplication extends \Prado\TComponent
 		$this->resolvePaths($basePath);
 
 		if($cacheConfig)
-			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
+			$this->_cacheFile=$this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
 
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
@@ -326,8 +326,8 @@ class TApplication extends \Prado\TComponent
 		// determine configuration path and file
 		if(empty($basePath) || ($basePath=realpath($basePath))===false)
 			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_dir($basePath) && is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
-			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
+		if(is_dir($basePath) && is_file($basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName()))
+			$configFile=$basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName();
 		elseif(is_file($basePath))
 		{
 			$configFile=$basePath;
@@ -337,12 +337,12 @@ class TApplication extends \Prado\TComponent
 			$configFile=null;
 
 		// determine runtime path
-		$runtimePath=$basePath.DIRECTORY_SEPARATOR.self::RUNTIME_PATH;
+		$runtimePath=$basePath . DIRECTORY_SEPARATOR . self::RUNTIME_PATH;
 		if(is_writable($runtimePath))
 		{
 			if($configFile!==null)
 			{
-				$runtimePath.=DIRECTORY_SEPARATOR.basename($configFile).'-'.Prado::getVersion();
+				$runtimePath.=DIRECTORY_SEPARATOR . basename($configFile) . '-' . Prado::getVersion();
 				if(!is_dir($runtimePath))
 				{
 					if(@mkdir($runtimePath)===false)
@@ -637,7 +637,7 @@ class TApplication extends \Prado\TComponent
 	{
 		$this->_runtimePath=$value;
 		if($this->_cacheFile)
-			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
+			$this->_cacheFile=$this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 	}
@@ -995,7 +995,7 @@ class TApplication extends \Prado\TComponent
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
 			if(!is_string($id))
-				$id='_module'.count($this->_lazyModules);
+				$id='_module' . count($this->_lazyModules);
 			$this->_lazyModules[$id]=$moduleConfig;
 			if($module = $this->internalLoadModule($id))
 				$modules[]=$module;

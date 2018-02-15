@@ -46,7 +46,7 @@ class TJavaScript
 	 */
 	public static function renderScriptFile($file)
 	{
-		return '<script type="text/javascript" src="'.THttpUtility::htmlEncode($file)."\"></script>\n";
+		return '<script type="text/javascript" src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";
 	}
 
 	/**
@@ -57,7 +57,7 @@ class TJavaScript
 	public static function renderScriptBlocks($scripts)
 	{
 		if(count($scripts))
-			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n".implode("\n",$scripts)."\n/*]]>*/\n</script>\n";
+			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n" . implode("\n",$scripts) . "\n/*]]>*/\n</script>\n";
 		else
 			return '';
 	}
@@ -70,7 +70,7 @@ class TJavaScript
 	public static function renderScriptBlocksCallback($scripts)
 	{
 		if(count($scripts))
-			return implode("\n",$scripts)."\n";
+			return implode("\n",$scripts) . "\n";
 		else
 			return '';
 	}
@@ -156,10 +156,10 @@ class TJavaScript
 					{
 						if($results!=='')
 							$results.=',';
-						$results.="'$k':".self::encode($v,$toMap,$encodeEmptyStrings);
+						$results.="'$k':" . self::encode($v,$toMap,$encodeEmptyStrings);
 					}
 				}
-				return '{'.$results.'}';
+				return '{' . $results . '}';
 			}
 			else
 			{
@@ -172,7 +172,7 @@ class TJavaScript
 						$results.=self::encode($v,$toMap, $encodeEmptyStrings);
 					}
 				}
-				return '['.$results.']';
+				return '[' . $results . ']';
 			}
 		}
 		elseif(is_integer($value))

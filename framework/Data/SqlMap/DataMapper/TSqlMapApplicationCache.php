@@ -45,7 +45,7 @@ class TSqlMapApplicationCache implements ICache
 	{
 		$id='keyList';
 		if ($this->_cacheModel instanceof TSqlMapCacheModel)
-				$id.='_'.$this->_cacheModel->getId();
+				$id.='_' . $this->_cacheModel->getId();
 		return $id;
 	}
 	/**

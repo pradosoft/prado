@@ -38,7 +38,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getCoordinates()
 	{
-		return $this->getX().','.$this->getY().','.$this->getRadius();
+		return $this->getX() . ',' . $this->getY() . ',' . $this->getRadius();
 	}
 
 	/**

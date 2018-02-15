@@ -346,7 +346,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			if(is_array($data) && count($data)===2)
 			{
 				list($username,$token)=$data;
-				if(isset($this->_users[$username]) && $token===md5($username.$this->_users[$username]))
+				if(isset($this->_users[$username]) && $token===md5($username . $this->_users[$username]))
 					return $this->getUser($username);
 			}
 		}
@@ -364,7 +364,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$username=strtolower($user->getName());
 		if(isset($this->_users[$username]))
 		{
-			$data=[$username,md5($username.$this->_users[$username])];
+			$data=[$username,md5($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
 	}

@@ -264,10 +264,10 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		{
 			$items = $this->getItems();
 			$cs = $this->getPage()->getCallbackClient();
-			$baseClientID = $this->getClientID().'_c';
+			$baseClientID = $this->getClientID() . '_c';
 			foreach($items as $index=>$item)
 			{
-				$cs->setAttribute($baseClientID.$index, 'disabled', $value);
+				$cs->setAttribute($baseClientID . $index, 'disabled', $value);
 			}
 		}
 	}

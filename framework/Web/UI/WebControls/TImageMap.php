@@ -60,7 +60,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 		parent::addAttributesToRender($writer);
 		if($this->getHotSpots()->getCount()>0)
 		{
-			$writer->addAttribute('usemap','#'.self::MAP_NAME_PREFIX.$this->getClientID());
+			$writer->addAttribute('usemap','#' . self::MAP_NAME_PREFIX . $this->getClientID());
 			$writer->addAttribute('id',$this->getUniqueID());
 		}
 		if($this->getEnabled() && !$this->getEnabled(true))
@@ -82,7 +82,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 			$clientID=$this->getClientID();
 			$cs=$this->getPage()->getClientScript();
 			$writer->writeLine();
-			$writer->addAttribute('name',self::MAP_NAME_PREFIX.$clientID);
+			$writer->addAttribute('name',self::MAP_NAME_PREFIX . $clientID);
 			$writer->renderBeginTag('map');
 			$writer->writeLine();
 			if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
@@ -100,9 +100,9 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 					$hotspot->setTarget($target);
 				if($hotspot->getHotSpotMode()===THotSpotMode::PostBack)
 				{
-					$id=$clientID.'_'.$i;
+					$id=$clientID . '_' . $i;
 					$writer->addAttribute('id',$id);
-					$writer->addAttribute('href','#'.$id); //create unique no-op url references
+					$writer->addAttribute('href','#' . $id); //create unique no-op url references
 					$options['ID']=$id;
 					$options['EventParameter']="$i";
 					$options['CausesValidation']=$hotspot->getCausesValidation();

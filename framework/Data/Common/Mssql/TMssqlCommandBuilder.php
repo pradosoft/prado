@@ -156,8 +156,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 		{
 			$str=[];
 			foreach($orders as $column => $direction)
-				$str[] = $column.' '.$direction;
-			return 'ORDER BY '.implode(', ', $str);
+				$str[] = $column . ' ' . $direction;
+			return 'ORDER BY ' . implode(', ', $str);
 		}
 	}
 

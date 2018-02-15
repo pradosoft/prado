@@ -168,7 +168,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			$control = $control->getClientID();
 
 		$this->callClientFunction('Prado.Element.select',
-				[$control, $type.$method, $value, $total]);
+				[$control, $type . $method, $value, $total]);
 	}
 
 	private function getSelectionControlType($control)

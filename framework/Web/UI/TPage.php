@@ -298,7 +298,7 @@ class TPage extends TTemplateControl
 				$data[$k]=self::decodeUTF8($v, $enc);
 			return $data;
 		} elseif(is_string($data)) {
-			return iconv('UTF-8',$enc.'//IGNORE',$data);
+			return iconv('UTF-8',$enc . '//IGNORE',$data);
 		} else {
 			return $data;
 		}

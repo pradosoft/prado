@@ -169,12 +169,12 @@ class TXmlDocument extends TXmlElement
 				if($prefix === '')
 					$attributes->add('xmlns', $uri);
 				else
-					$attributes->add('xmlns:'.$prefix, $uri);
+					$attributes->add('xmlns:' . $prefix, $uri);
 			}
 		}
 
 		foreach($element->attributes as $name=>$attr)
-			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') .$name,$attr->value);
+			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name,$attr->value);
 		foreach($element->childNodes as $child)
 		{
 			if($child instanceof \DOMElement)
@@ -206,9 +206,9 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToString()
 	{
-		$version=empty($this->_version)?' version="1.0"':' version="'.$this->_version.'"';
-		$encoding=empty($this->_encoding)?'':' encoding="'.$this->_encoding.'"';
-		return "<?xml{$version}{$encoding}?>\n".$this->toString(0);
+		$version=empty($this->_version)?' version="1.0"':' version="' . $this->_version . '"';
+		$encoding=empty($this->_encoding)?'':' encoding="' . $this->_encoding . '"';
+		return "<?xml{$version}{$encoding}?>\n" . $this->toString(0);
 	}
 
 	/**

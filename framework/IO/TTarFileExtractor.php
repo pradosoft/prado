@@ -144,16 +144,16 @@ class TTarFileExtractor
 
 		  // ----- Look if a local copy need to be done
 		  if ($this->_temp_tarname == '') {
-			  $this->_temp_tarname = uniqid('tar').'.tmp';
+			  $this->_temp_tarname = uniqid('tar') . '.tmp';
 			  if (!$v_file_from = @fopen($this->_tarname, 'rb')) {
 				$this->_error('Unable to open in read mode \''
-							  .$this->_tarname.'\'');
+							  . $this->_tarname . '\'');
 				$this->_temp_tarname = '';
 				return false;
 			  }
 			  if (!$v_file_to = @fopen($this->_temp_tarname, 'wb')) {
 				$this->_error('Unable to open in write mode \''
-							  .$this->_temp_tarname.'\'');
+							  . $this->_temp_tarname . '\'');
 				$this->_temp_tarname = '';
 				return false;
 			  }
@@ -173,7 +173,7 @@ class TTarFileExtractor
 		$this->_file = @fopen($v_filename, "rb");
 
 		if ($this->_file == 0) {
-			$this->_error('Unable to open in read mode \''.$v_filename.'\'');
+			$this->_error('Unable to open in read mode \'' . $v_filename . '\'');
 			return false;
 		}
 
@@ -246,7 +246,7 @@ class TTarFileExtractor
 
 		if (strlen($v_binary_data) != 512) {
 			$v_header['filename'] = '';
-			$this->_error('Invalid block size : '.strlen($v_binary_data));
+			$this->_error('Invalid block size : ' . strlen($v_binary_data));
 			return false;
 		}
 
@@ -263,8 +263,8 @@ class TTarFileExtractor
 		   $v_checksum+=ord(substr($v_binary_data,$i,1));
 
 		$v_data = unpack("a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/"
-						 ."a8checksum/a1typeflag/a100link/a6magic/a2version/"
-						 ."a32uname/a32gname/a8devmajor/a8devminor",
+						 . "a8checksum/a1typeflag/a100link/a6magic/a2version/"
+						 . "a32uname/a32gname/a8devmajor/a8devminor",
 						 $v_binary_data);
 
 		// ----- Extract the checksum
@@ -276,9 +276,9 @@ class TTarFileExtractor
 			if (($v_checksum == 256) && ($v_header['checksum'] == 0))
 				return true;
 
-			$this->_error('Invalid checksum for file "'.$v_data['filename']
-						  .'" : '.$v_checksum.' calculated, '
-						  .$v_header['checksum'].' expected');
+			$this->_error('Invalid checksum for file "' . $v_data['filename']
+						  . '" : ' . $v_checksum . ' calculated, '
+						  . $v_header['checksum'] . ' expected');
 			return false;
 		}
 
@@ -330,7 +330,7 @@ class TTarFileExtractor
 	$p_path = $this->_translateWinPath($p_path, false);
 	if ($p_path == '' || (substr($p_path, 0, 1) != '/'
 		&& substr($p_path, 0, 3) != "../" && !strpos($p_path, ':'))) {
-	  $p_path = "./".$p_path;
+	  $p_path = "./" . $p_path;
 	}
 	$p_remove_path = $this->_translateWinPath($p_remove_path);
 
@@ -353,7 +353,7 @@ class TTarFileExtractor
 		  $v_listing = true;
 	  break;
 	  default :
-		$this->_error('Invalid extract mode ('.$p_mode.')');
+		$this->_error('Invalid extract mode (' . $p_mode . ')');
 		return false;
 	}
 
@@ -416,26 +416,26 @@ class TTarFileExtractor
 			$p_path = substr($p_path, 0, strlen($p_path)-1);
 
 		  if (substr($v_header['filename'], 0, 1) == '/')
-			  $v_header['filename'] = $p_path.$v_header['filename'];
+			  $v_header['filename'] = $p_path . $v_header['filename'];
 		  else
-			$v_header['filename'] = $p_path.'/'.$v_header['filename'];
+			$v_header['filename'] = $p_path . '/' . $v_header['filename'];
 		}
 		if (file_exists($v_header['filename'])) {
 		  if (   (@is_dir($v_header['filename']))
 			  && ($v_header['typeflag'] == '')) {
-			$this->_error('File '.$v_header['filename']
-						  .' already exists as a directory');
+			$this->_error('File ' . $v_header['filename']
+						  . ' already exists as a directory');
 			return false;
 		  }
 		  if (   ($this->_isArchive($v_header['filename']))
 			  && ($v_header['typeflag'] == "5")) {
-			$this->_error('Directory '.$v_header['filename']
-						  .' already exists as a file');
+			$this->_error('Directory ' . $v_header['filename']
+						  . ' already exists as a file');
 			return false;
 		  }
 		  if (!is_writeable($v_header['filename'])) {
-			$this->_error('File '.$v_header['filename']
-						  .' already exists and is write protected');
+			$this->_error('File ' . $v_header['filename']
+						  . ' already exists and is write protected');
 			return false;
 		  }
 		  if (filemtime($v_header['filename']) > $v_header['mtime']) {
@@ -448,7 +448,7 @@ class TTarFileExtractor
 				 = $this->_dirCheck(($v_header['typeflag'] == "5"
 									?$v_header['filename']
 									:dirname($v_header['filename'])))) != 1) {
-			$this->_error('Unable to create path for '.$v_header['filename']);
+			$this->_error('Unable to create path for ' . $v_header['filename']);
 			return false;
 		}
 
@@ -457,15 +457,15 @@ class TTarFileExtractor
 			if (!@file_exists($v_header['filename'])) {
 				if (!@mkdir($v_header['filename'], PRADO_CHMOD)) {
 					$this->_error('Unable to create directory {'
-								  .$v_header['filename'].'}');
+								  . $v_header['filename'] . '}');
 					return false;
 				}
 				chmod($v_header['filename'], PRADO_CHMOD);
 			}
 		  } else {
 			  if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
-				  $this->_error('Error while opening {'.$v_header['filename']
-								.'} in write binary mode');
+				  $this->_error('Error while opening {' . $v_header['filename']
+								. '} in write binary mode');
 				  return false;
 			  } else {
 				  $n = floor($v_header['size']/512);
@@ -489,11 +489,11 @@ class TTarFileExtractor
 		  // ----- Check the file size
 		  clearstatcache();
 		  if (filesize($v_header['filename']) != $v_header['size']) {
-			  $this->_error('Extracted file '.$v_header['filename']
-							.' does not have the correct file size \''
-							.filesize($v_header['filename'])
-							.'\' ('.$v_header['size']
-							.' expected). Archive may be corrupted.');
+			  $this->_error('Extracted file ' . $v_header['filename']
+							. ' does not have the correct file size \''
+							. filesize($v_header['filename'])
+							. '\' (' . $v_header['size']
+							. ' expected). Archive may be corrupted.');
 			  return false;
 		  }
 		  }

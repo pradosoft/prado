@@ -23,7 +23,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__).'/CultureInfo.php');
+require_once(dirname(__FILE__) . '/CultureInfo.php');
 
 
 /**
@@ -98,11 +98,11 @@ class DateTimeFormatInfo
 	 */
 	function __get($name)
 	{
-		$getProperty = 'get'.$name;
+		$getProperty = 'get' . $name;
 		if(in_array($getProperty, $this->properties))
 			return $this->$getProperty();
 		else
-			throw new Exception('Property '.$name.' does not exists.');
+			throw new Exception('Property ' . $name . ' does not exists.');
 	}
 
 	/**
@@ -111,11 +111,11 @@ class DateTimeFormatInfo
 	 */
 	function __set($name, $value)
 	{
-		$setProperty = 'set'.$name;
+		$setProperty = 'set' . $name;
 		if(in_array($setProperty, $this->properties))
 			$this->$setProperty($value);
 		else
-			throw new Exception('Property '.$name.' can not be set.');
+			throw new Exception('Property ' . $name . ' can not be set.');
 	}
 
 	/**

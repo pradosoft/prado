@@ -86,7 +86,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 		$code = strtoupper($this->getToggleKey());
 		$info = '(<a href="http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/" target="_blank">more info</a>).';
 		$link = '<a href="javascript:if(logConsole)logConsole.toggle()">toggle the javascript log console.</a>';
-		$usage = 'Press ALT-'.$code.' (Or CTRL-'.$code.' on OS X) to';
+		$usage = 'Press ALT-' . $code . ' (Or CTRL-' . $code . ' on OS X) to';
 		$writer->write("{$usage} {$link} {$info}");
 	}
 }

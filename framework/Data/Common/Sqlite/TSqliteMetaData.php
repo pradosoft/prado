@@ -123,7 +123,7 @@ class TSqliteMetaData extends TDbMetaData
 	{
 		$columnId = $col['name']; //use column name as column Id
 
-		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnName'] = '"' . $columnId . '"'; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 

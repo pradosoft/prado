@@ -102,7 +102,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	protected function callClientFunction($func,$value)
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$code = $this->getClientClassName().'.'.$func;
+		$code = $this->getClientClassName() . '.' . $func;
 		$client->callClientFunction($code,[$this,$value]);
 	}
 
@@ -196,7 +196,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	protected function getLabelClientID()
 	{
-		return $this->getClientID().'__label';
+		return $this->getClientID() . '__label';
 	}
 
 	/**

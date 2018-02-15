@@ -38,7 +38,7 @@ namespace Prado\I18N\core\Gettext;
  * @license     PHP License
  */
 
-require_once dirname(__FILE__).'/TGettext.php';
+require_once dirname(__FILE__) . '/TGettext.php';
 
 /**
  * File_Gettext_PO
@@ -146,7 +146,7 @@ class TGettext_PO extends TGettext
 		// write strings
 		foreach ($this->strings as $o => $t) {
 			fwrite($fh,
-				'msgid "'  . parent::prepare($o, true) . '"' . "\n" .
+				'msgid "' . parent::prepare($o, true) . '"' . "\n" .
 				'msgstr "' . parent::prepare($t, true) . '"' . "\n\n"
 			);
 		}

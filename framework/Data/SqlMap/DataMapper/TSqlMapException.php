@@ -33,9 +33,9 @@ class TSqlMapException extends TException
 		for($i=0;$i<$n;++$i)
 		{
 			if($args[$i] instanceof SimpleXMLElement)
-				$tokens['{'.$i.'}']=$this->implodeNode($args[$i]);
+				$tokens['{' . $i . '}']=$this->implodeNode($args[$i]);
 			else
-				$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+				$tokens['{' . $i . '}']=TPropertyValue::ensureString($args[$i]);
 		}
 		parent::__construct(strtr($errorMessage,$tokens));
 	}
@@ -48,8 +48,8 @@ class TSqlMapException extends TException
 	{
 		$attributes=[];
 		foreach($node->attributes() as $k=>$v)
-			$attributes[]=$k.'="'.(string)$v.'"';
-		return '<'.$node->getName().' '.implode(' ',$attributes).'>';
+			$attributes[]=$k . '="' . (string)$v . '"';
+		return '<' . $node->getName() . ' ' . implode(' ',$attributes) . '>';
 	}
 
 	/**
@@ -59,9 +59,9 @@ class TSqlMapException extends TException
 	{
 		$lang=Prado::getPreferredLanguage();
 		$dir=dirname(__FILE__);
-		$msgFile=$dir.'/messages-'.$lang.'.txt';
+		$msgFile=$dir . '/messages-' . $lang . '.txt';
 		if(!is_file($msgFile))
-			$msgFile=$dir.'/messages.txt';
+			$msgFile=$dir . '/messages.txt';
 		return $msgFile;
 	}
 }

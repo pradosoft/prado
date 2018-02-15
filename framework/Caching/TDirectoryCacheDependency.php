@@ -159,7 +159,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 		$timestamps=[];
 		while(($file=readdir($dir))!==false)
 		{
-			$path=$directory.DIRECTORY_SEPARATOR.$file;
+			$path=$directory . DIRECTORY_SEPARATOR . $file;
 			if($file==='.' || $file==='..')
 				continue;
 			elseif(is_dir($path))

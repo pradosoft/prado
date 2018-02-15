@@ -38,7 +38,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getCoordinates()
 	{
-		return $this->getLeft().','.$this->getTop().','.$this->getRight().','.$this->getBottom();
+		return $this->getLeft() . ',' . $this->getTop() . ',' . $this->getRight() . ',' . $this->getBottom();
 	}
 
 	/**

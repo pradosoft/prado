@@ -151,11 +151,11 @@ class THead extends \Prado\Web\UI\TControl
 	{
 		$page=$this->getPage();
 		$title=$this->getTitle();
-		$writer->write("<head>\n<title>".THttpUtility::htmlEncode($title)."</title>\n");
+		$writer->write("<head>\n<title>" . THttpUtility::htmlEncode($title) . "</title>\n");
 		if(($baseUrl=$this->getBaseUrl())!=='')
-			$writer->write('<base href="'.$baseUrl."\" />\n");
+			$writer->write('<base href="' . $baseUrl . "\" />\n");
 		if(($icon=$this->getShortcutIcon())!=='')
-			$writer->write('<link rel="shortcut icon" href="'.$icon."\" />\n");
+			$writer->write('<link rel="shortcut icon" href="' . $icon . "\" />\n");
 
 		if(($metaTags=$this->getMetaTags())!==null)
 		{

@@ -261,7 +261,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$tableName = $table->getTableFullName();
 		$columnNames = array_merge(array_keys($sourceKeys),$this->_association_columns);
 		foreach($columnNames as $name)
-			$columns[] = $tableName.'.'.$table->getColumn($name)->getColumnName();
+			$columns[] = $tableName . '.' . $table->getColumn($name)->getColumnName();
 		return implode(', ', $columns);
 	}
 
@@ -331,7 +331,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$condition=[];
 		$table = $this->getAssociationTable();
 		foreach($data as $name=>$value)
-			$condition[] = $table->getColumn($name)->getColumnName().' = ?';
+			$condition[] = $table->getColumn($name)->getColumnName() . ' = ?';
 		$command = $builder->createCountCommand(implode(' AND ', $condition),array_values($data));
 		$result = $this->getCommandBuilder()->onExecuteCommand($command, intval($command->queryScalar()));
 		return intval($result) > 0;

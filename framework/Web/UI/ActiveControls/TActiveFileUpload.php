@@ -102,7 +102,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	protected function getAssetUrl($file='')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
-		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+		return $base . '/' . self::SCRIPT_PATH . '/' . $file;
 	}
 
 
@@ -237,7 +237,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		if ($cache = Prado::getApplication()->getCache())
 			{
 				// this is the most secure method, file info can't be forged from client side, no matter what
-				$token = md5('TActiveFileUpload::Params::'.$this->ClientID.'::'.rand(1000*1000,9999*1000));
+				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000*1000,9999*1000));
 				$cache->set($token, serialize($params), 5*60); // expire in 5 minutes - the callback should arrive back in seconds, actually
 			}
 		elseif ($mgr = Prado::getApplication()->getSecurityManager())
