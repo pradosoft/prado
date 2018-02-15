@@ -6,7 +6,7 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold;
@@ -32,7 +32,7 @@ use Prado\Web\UI\TTemplateControl;
  * file explicitly.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 abstract class TScaffoldBase extends TTemplateControl

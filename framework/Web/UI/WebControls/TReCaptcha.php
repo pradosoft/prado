@@ -350,14 +350,14 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	* Calls an HTTP POST function to verify if the user's guess was correct
-	* @param string $privkey
-	* @param string $remoteip
-	* @param string $challenge
-	* @param string $response
-	* @param array $extra_params an array of extra variables to post to the server
-	* @return bool
-	*/
+	 * Calls an HTTP POST function to verify if the user's guess was correct
+	 * @param string $privkey
+	 * @param string $remoteip
+	 * @param string $challenge
+	 * @param string $response
+	 * @param array $extra_params an array of extra variables to post to the server
+	 * @return bool
+	 */
 	private function recaptcha_check_answer($privkey, $remoteip, $challenge, $response, $extra_params = array())
 	{
 		//discard spam submissions

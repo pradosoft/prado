@@ -125,9 +125,9 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-     * Sets the date format for a date validation
-     * @param string the date format value
-     */
+	 * Sets the date format for a date validation
+	 * @param string the date format value
+	 */
 	public function setDateFormat($value)
 	{
 		$this->setViewState('DateFormat', $value, '');

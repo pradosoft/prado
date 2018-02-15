@@ -82,7 +82,7 @@ class DateFormat
 
 	/**
 	 * The DateTimeFormatInfo, containing culture specific patterns and names.
- 	 * @var DateTimeFormatInfo
+	 * @var DateTimeFormatInfo
 	 */
 	protected $formatInfo;
 
@@ -310,8 +310,8 @@ class DateFormat
 
 	/**
 	 * Get the year.
- 	 * "yy" will return the last two digits of year.
- 	 * "yyyy" will return the full integer year.
+	 * "yy" will return the last two digits of year.
+	 * "yyyy" will return the full integer year.
 	 * @param array getdate format.
 	 * @param string a pattern.
 	 * @return string year
@@ -331,10 +331,10 @@ class DateFormat
 
 	/**
 	 * Get the month.
- 	 * "M" will return integer 1 through 12
- 	 * "MM" will return the narrow month name, e.g. "J"
- 	 * "MMM" will return the abrreviated month name, e.g. "Jan"
- 	 * "MMMM" will return the month name, e.g. "January"
+	 * "M" will return integer 1 through 12
+	 * "MM" will return the narrow month name, e.g. "J"
+	 * "MMM" will return the abrreviated month name, e.g. "Jan"
+	 * "MMMM" will return the month name, e.g. "January"
 	 * @param array getdate format.
 	 * @param string a pattern.
 	 * @return string month name
@@ -358,10 +358,10 @@ class DateFormat
 
 	/**
 	 * Get the day of the week.
- 	 * "E" will return integer 0 (for Sunday) through 6 (for Saturday).
- 	 * "EE" will return the narrow day of the week, e.g. "M"
- 	 * "EEE" will return the abrreviated day of the week, e.g. "Mon"
- 	 * "EEEE" will return the day of the week, e.g. "Monday"
+	 * "E" will return integer 0 (for Sunday) through 6 (for Saturday).
+	 * "EE" will return the narrow day of the week, e.g. "M"
+	 * "EEE" will return the abrreviated day of the week, e.g. "Mon"
+	 * "EEEE" will return the day of the week, e.g. "Monday"
 	 * @param array getdate format.
 	 * @param string a pattern.
 	 * @return string day of the week.
@@ -386,7 +386,7 @@ class DateFormat
 
 	/**
 	 * Get the day of the month.
- 	 * "d" for non-padding, "dd" will always return 2 characters.
+	 * "d" for non-padding, "dd" will always return 2 characters.
 	 * @param array getdate format.
 	 * @param string a pattern.
 	 * @return string day of the month

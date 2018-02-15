@@ -82,8 +82,8 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
  	/**
-	 * Publish the ajax script
-	 */
+ 	 * Publish the ajax script
+ 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);

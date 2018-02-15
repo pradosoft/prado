@@ -49,7 +49,7 @@ use Prado\Web\UI\WebControls\TListItemType;
  * xxx is the property name).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldEditView extends TScaffoldBase

@@ -393,11 +393,11 @@ EOD;
 	}
 
         /**
-	 * Returns all table names in the database.
-	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
-	 * If not empty, the returned table names will be prefixed with the schema name.
-	 * @return array all table names in the database.
-	 */
+         * Returns all table names in the database.
+         * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+         * If not empty, the returned table names will be prefixed with the schema name.
+         * @return array all table names in the database.
+         */
 	public function findTableNames($schema='')
 	{
 		if($schema==='')

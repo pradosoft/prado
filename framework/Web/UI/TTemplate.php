@@ -53,7 +53,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 {
 	/**
 	 *  '<!--.*?--!>' - template comments
-		 *  '<!--.*?-->'  - HTML comments
+	 *  '<!--.*?-->'  - HTML comments
 	 *	'<\/?com:([\w\.\\\]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>' - component tags
 	 *	'<\/?prop:([\w\.\-]+)\s*>'  - property tags
 	 *	'<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>'  - directives

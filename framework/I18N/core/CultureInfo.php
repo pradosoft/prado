@@ -202,9 +202,9 @@ class CultureInfo
 	}
 
 	/**
-	* Gets the CultureInfo that for this culture string
-	* @return CultureInfo invariant culture info is "en".
-	*/
+	 * Gets the CultureInfo that for this culture string
+	 * @return CultureInfo invariant culture info is "en".
+	 */
 	public static function getInstance($culture)
 	{
 		static $instances = array();

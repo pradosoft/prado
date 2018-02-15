@@ -74,7 +74,7 @@ use Prado\Xml\TXmlElement;
  * </code>
  * where {@link setHost Host} and {@link setPort Port} or {@link setSocket Socket} are configurable properties
  * of TRedisCache.
-
+ *
  * @author Jens Klaer <kj.landwehr.software@gmail.com>
  * @author LANDWEHR Computer und Software GmbH
  * @since 4.0

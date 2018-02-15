@@ -32,8 +32,8 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 {
 
 	/**
-	* @var integer the zero-based index of the cell.
-	*/
+	 * @var integer the zero-based index of the cell.
+	 */
 	private $_selectedCellIndex = -1;
 
 	/**

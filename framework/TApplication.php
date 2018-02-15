@@ -576,7 +576,7 @@ class TApplication extends \Prado\TComponent
 
  	/**
  	 * @param string the application configuration type. 'xml' and 'php' are valid values
-	 */
+ 	 */
 	public function setConfigurationType($value)
 	{
 		$this->_configType = $value;

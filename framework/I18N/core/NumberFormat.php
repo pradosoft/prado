@@ -76,7 +76,7 @@ class NumberFormat
 
 	/**
 	 * The DateTimeFormatInfo, containing culture specific patterns and names.
- 	 * @var DateTimeFormatInfo
+	 * @var DateTimeFormatInfo
 	 */
 	protected $formatInfo;
 

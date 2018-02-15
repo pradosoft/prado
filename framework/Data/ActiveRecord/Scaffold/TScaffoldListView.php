@@ -52,7 +52,7 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  * Parameters property of TActiveRecordCriteria.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldListView extends TScaffoldBase

@@ -190,7 +190,7 @@ class DateTimeFormatInfo
 	 * the culture-specific abbreviated names of the days
 	 * of the week. The array for InvariantInfo contains
 	 * "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", and "Sat".
-     * @return array abbreviated day names
+	 * @return array abbreviated day names
 	 */
 	function getAbbreviatedDayNames()
 	{
@@ -215,7 +215,7 @@ class DateTimeFormatInfo
 	 * the culture-specific narrow names of the days
 	 * of the week. The array for InvariantInfo contains
 	 * "S", "M", "T", "W", "T", "F", and "S".
-     * @return array narrow day names
+	 * @return array narrow day names
 	 */
 	function getNarrowDayNames()
 	{
@@ -239,7 +239,7 @@ class DateTimeFormatInfo
 	 * culture-specific full names of the days of the week.
 	 * The array for InvariantInfo contains "Sunday", "Monday",
 	 * "Tuesday", "Wednesday", "Thursday", "Friday", and "Saturday".
-     * @return array day names
+	 * @return array day names
 	 */
 	function getDayNames()
 	{
@@ -416,8 +416,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the full time pattern "HH:mm:ss z" (default).
-     * This is culture sensitive.
-     * @return string pattern "HH:mm:ss z".
+	 * This is culture sensitive.
+	 * @return string pattern "HH:mm:ss z".
 	 */
 	function getFullTimePattern()
 	{
@@ -426,8 +426,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the long time pattern "HH:mm:ss z" (default).
-     * This is culture sensitive.
-     * @return string pattern "HH:mm:ss z".
+	 * This is culture sensitive.
+	 * @return string pattern "HH:mm:ss z".
 	 */
 	function getLongTimePattern()
 	{
@@ -436,8 +436,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the medium time pattern "HH:mm:ss" (default).
-     * This is culture sensitive.
-     * @return string pattern "HH:mm:ss".
+	 * This is culture sensitive.
+	 * @return string pattern "HH:mm:ss".
 	 */
 	function getMediumTimePattern()
 	{
@@ -446,8 +446,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the short time pattern "HH:mm" (default).
-     * This is culture sensitive.
-     * @return string pattern "HH:mm".
+	 * This is culture sensitive.
+	 * @return string pattern "HH:mm".
 	 */
 	function getShortTimePattern()
 	{
@@ -456,8 +456,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the full date pattern "EEEE, yyyy MMMM dd" (default).
-     * This is culture sensitive.
-     * @return string pattern "EEEE, yyyy MMMM dd".
+	 * This is culture sensitive.
+	 * @return string pattern "EEEE, yyyy MMMM dd".
 	 */
 	function getFullDatePattern()
 	{
@@ -466,8 +466,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the long date pattern "yyyy MMMM d" (default).
-     * This is culture sensitive.
-     * @return string pattern "yyyy MMMM d".
+	 * This is culture sensitive.
+	 * @return string pattern "yyyy MMMM d".
 	 */
 	function getLongDatePattern()
 	{
@@ -476,8 +476,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the medium date pattern "yyyy MMMM d" (default).
-     * This is culture sensitive.
-     * @return string pattern "yyyy MMM d".
+	 * This is culture sensitive.
+	 * @return string pattern "yyyy MMM d".
 	 */
 	function getMediumDatePattern()
 	{
@@ -486,8 +486,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the short date pattern "yy/MM/dd" (default).
-     * This is culture sensitive.
-     * @return string pattern "yy/MM/dd".
+	 * This is culture sensitive.
+	 * @return string pattern "yy/MM/dd".
 	 */
 	function getShortDatePattern()
 	{
@@ -506,8 +506,8 @@ class DateTimeFormatInfo
 
 	/**
 	 * Formats the date and time in a culture sensitive paterrn.
-     * The default is "Date Time".
-     * @return string date and time formated
+	 * The default is "Date Time".
+	 * @return string date and time formated
 	 */
 	function formatDateTime($date, $time)
 	{

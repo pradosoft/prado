@@ -31,8 +31,8 @@ namespace Prado\Web\UI\ActiveControls;
 class TActiveTableRowEventParameter extends TCallbackEventParameter
 {
 	/**
-	* @var integer the zero-based index of the row.
-	*/
+	 * @var integer the zero-based index of the row.
+	 */
 	private $_selectedRowIndex = -1;
 
 	/**

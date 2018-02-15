@@ -100,7 +100,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
 	 * @param string the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)

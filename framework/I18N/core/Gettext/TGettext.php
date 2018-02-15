@@ -66,7 +66,7 @@ class TGettext
      *
      * @access  protected
      * @var     array
-    */
+     */
     protected $strings = array();
 
     /**

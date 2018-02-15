@@ -20,216 +20,216 @@ namespace Prado\I18N\core;
 use Exception;
 
 /**
-* Fast, light and safe Cache Class
-*
-* TCache_Lite is a fast, light and safe cache system. It's optimized
-* for file containers. It is fast and safe (because it uses file
-* locking and/or anti-corruption tests).
-*
-* There are some examples in the 'docs/examples' file
-* Technical choices are described in the 'docs/technical' file
-*
-* A tutorial is available in english at this url :
-* http://www.pearfr.org/index.php/en/article/cache_lite
-* (big thanks to Pierre-Alain Joye for the translation)
-*
-* The same tutorial is also available in french at this url :
-* http://www.pearfr.org/index.php/fr/article/cache_lite
-*
-* Memory Caching is from an original idea of
-* Mike BENOIT <ipso@snappymail.ca>
-*
-* @package System.I18N.core
-* @author Fabien MARTY <fab@php.net>
-* @copyright  1997-2005 The PHP Group
-* @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
-* @link       http://pear.php.net/package/Cache_Lite
-*/
+ * Fast, light and safe Cache Class
+ *
+ * TCache_Lite is a fast, light and safe cache system. It's optimized
+ * for file containers. It is fast and safe (because it uses file
+ * locking and/or anti-corruption tests).
+ *
+ * There are some examples in the 'docs/examples' file
+ * Technical choices are described in the 'docs/technical' file
+ *
+ * A tutorial is available in english at this url :
+ * http://www.pearfr.org/index.php/en/article/cache_lite
+ * (big thanks to Pierre-Alain Joye for the translation)
+ *
+ * The same tutorial is also available in french at this url :
+ * http://www.pearfr.org/index.php/fr/article/cache_lite
+ *
+ * Memory Caching is from an original idea of
+ * Mike BENOIT <ipso@snappymail.ca>
+ *
+ * @package System.I18N.core
+ * @author Fabien MARTY <fab@php.net>
+ * @copyright  1997-2005 The PHP Group
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @link       http://pear.php.net/package/Cache_Lite
+ */
 class TCache_Lite
 {
 
     // --- Private properties ---
 
     /**
-    * Directory where to put the cache files
-    * (make sure to add a trailing slash)
-    *
-    * @var string $_cacheDir
-    */
+     * Directory where to put the cache files
+     * (make sure to add a trailing slash)
+     *
+     * @var string $_cacheDir
+     */
     protected $_cacheDir = '/tmp/';
 
     /**
-    * Enable / disable caching
-    *
-    * (can be very usefull for the debug of cached scripts)
-    *
-    * @var boolean $_caching
-    */
+     * Enable / disable caching
+     *
+     * (can be very usefull for the debug of cached scripts)
+     *
+     * @var boolean $_caching
+     */
     protected $_caching = true;
 
     /**
-    * Cache lifetime (in seconds)
-    *
-    * @var int $_lifeTime
-    */
+     * Cache lifetime (in seconds)
+     *
+     * @var int $_lifeTime
+     */
     protected $_lifeTime = 3600;
 
     /**
-    * Enable / disable fileLocking
-    *
-    * (can avoid cache corruption under bad circumstances)
-    *
-    * @var boolean $_fileLocking
-    */
+     * Enable / disable fileLocking
+     *
+     * (can avoid cache corruption under bad circumstances)
+     *
+     * @var boolean $_fileLocking
+     */
     protected $_fileLocking = true;
 
     /**
-    * Timestamp of the last valid cache
-    *
-    * @var int $_refreshTime
-    */
+     * Timestamp of the last valid cache
+     *
+     * @var int $_refreshTime
+     */
     protected $_refreshTime;
 
     /**
-    * File name (with path)
-    *
-    * @var string $_file
-    */
+     * File name (with path)
+     *
+     * @var string $_file
+     */
     protected $_file;
 
     /**
-    * Enable / disable write control (the cache is read just after writing
-    * to detect corrupt entries)
-    *
-    * Enable write control will lightly slow the cache writing but not the
-    * cache reading. Write control can detect some corrupt cache files but
-    * maybe it's not a perfect control
-    *
-    * @var boolean $_writeControl
-    */
+     * Enable / disable write control (the cache is read just after writing
+     * to detect corrupt entries)
+     *
+     * Enable write control will lightly slow the cache writing but not the
+     * cache reading. Write control can detect some corrupt cache files but
+     * maybe it's not a perfect control
+     *
+     * @var boolean $_writeControl
+     */
     protected $_writeControl = true;
 
     /**
-    * Enable / disable read control
-    *
-    * If enabled, a control key is embeded in cache file and this key is
-    * compared with the one calculated after the reading.
-    *
-    * @var boolean $_writeControl
-    */
+     * Enable / disable read control
+     *
+     * If enabled, a control key is embeded in cache file and this key is
+     * compared with the one calculated after the reading.
+     *
+     * @var boolean $_writeControl
+     */
     protected $_readControl = true;
 
     /**
-    * Type of read control (only if read control is enabled)
-    *
-    * Available values are :
-    * 'md5' for a md5 hash control (best but slowest)
-    * 'crc32' for a crc32 hash control (lightly less safe but faster,
-    * better choice)
-    * 'strlen' for a length only test (fastest)
-    *
-    * @var boolean $_readControlType
-    */
+     * Type of read control (only if read control is enabled)
+     *
+     * Available values are :
+     * 'md5' for a md5 hash control (best but slowest)
+     * 'crc32' for a crc32 hash control (lightly less safe but faster,
+     * better choice)
+     * 'strlen' for a length only test (fastest)
+     *
+     * @var boolean $_readControlType
+     */
     protected $_readControlType = 'crc32';
 
     /**
-    * Current cache id
-    *
-    * @var string $_id
-    */
+     * Current cache id
+     *
+     * @var string $_id
+     */
     protected $_id;
 
     /**
-    * Current cache group
-    *
-    * @var string $_group
-    */
+     * Current cache group
+     *
+     * @var string $_group
+     */
     protected $_group;
 
     /**
-    * Enable / Disable "Memory Caching"
-    *
-    * NB : There is no lifetime for memory caching !
-    *
-    * @var boolean $_memoryCaching
-    */
+     * Enable / Disable "Memory Caching"
+     *
+     * NB : There is no lifetime for memory caching !
+     *
+     * @var boolean $_memoryCaching
+     */
     protected $_memoryCaching = false;
 
     /**
-    * Enable / Disable "Only Memory Caching"
-    * (be carefull, memory caching is "beta quality")
-    *
-    * @var boolean $_onlyMemoryCaching
-    */
+     * Enable / Disable "Only Memory Caching"
+     * (be carefull, memory caching is "beta quality")
+     *
+     * @var boolean $_onlyMemoryCaching
+     */
     protected $_onlyMemoryCaching = false;
 
     /**
-    * Memory caching array
-    *
-    * @var array $_memoryCachingArray
-    */
+     * Memory caching array
+     *
+     * @var array $_memoryCachingArray
+     */
     protected $_memoryCachingArray = array();
 
     /**
-    * Memory caching counter
-    *
-    * @var int $memoryCachingCounter
-    */
+     * Memory caching counter
+     *
+     * @var int $memoryCachingCounter
+     */
     protected $_memoryCachingCounter = 0;
 
     /**
-    * Memory caching limit
-    *
-    * @var int $memoryCachingLimit
-    */
+     * Memory caching limit
+     *
+     * @var int $memoryCachingLimit
+     */
     protected $_memoryCachingLimit = 1000;
 
     /**
-    * File Name protection
-    *
-    * if set to true, you can use any cache id or group name
-    * if set to false, it can be faster but cache ids and group names
-    * will be used directly in cache file names so be carefull with
-    * special characters...
-    *
-    * @var boolean $fileNameProtection
-    */
+     * File Name protection
+     *
+     * if set to true, you can use any cache id or group name
+     * if set to false, it can be faster but cache ids and group names
+     * will be used directly in cache file names so be carefull with
+     * special characters...
+     *
+     * @var boolean $fileNameProtection
+     */
     protected $_fileNameProtection = true;
 
     /**
-    * Enable / disable automatic serialization
-    *
-    * it can be used to save directly datas which aren't strings
-    * (but it's slower)
-    *
-    * @var boolean $_serialize
-    */
+     * Enable / disable automatic serialization
+     *
+     * it can be used to save directly datas which aren't strings
+     * (but it's slower)
+     *
+     * @var boolean $_serialize
+     */
     protected $_automaticSerialization = false;
 
     // --- Public methods ---
 
     /**
-    * Constructor
-    *
-    * $options is an assoc. Available options are :
-    * $options = array(
-    * 'cacheDir' => directory where to put the cache files (string),
-    * 'caching' => enable / disable caching (boolean),
-    * 'lifeTime' => cache lifetime in seconds (int),
-    * 'fileLocking' => enable / disable fileLocking (boolean),
-    * 'writeControl' => enable / disable write control (boolean),
-    * 'readControl' => enable / disable read control (boolean),
-    * 'readControlType' => type of read control 'crc32', 'md5', 'strlen',
-    * 'memoryCaching' => enable / disable memory caching (boolean),
-    * 'onlyMemoryCaching' => enable / disable only memory caching (boolean),
-    * 'memoryCachingLimit' => max nbr of records in memory caching (int),
-    * 'fileNameProtection' => enable / disable file name protection (boolean),
-    * 'automaticSerialization' => enable / disable serialization (boolean)
-    * );
-    *
-    * @param array $options options
-    * @access public
-    */
+     * Constructor
+     *
+     * $options is an assoc. Available options are :
+     * $options = array(
+     * 'cacheDir' => directory where to put the cache files (string),
+     * 'caching' => enable / disable caching (boolean),
+     * 'lifeTime' => cache lifetime in seconds (int),
+     * 'fileLocking' => enable / disable fileLocking (boolean),
+     * 'writeControl' => enable / disable write control (boolean),
+     * 'readControl' => enable / disable read control (boolean),
+     * 'readControlType' => type of read control 'crc32', 'md5', 'strlen',
+     * 'memoryCaching' => enable / disable memory caching (boolean),
+     * 'onlyMemoryCaching' => enable / disable only memory caching (boolean),
+     * 'memoryCachingLimit' => max nbr of records in memory caching (int),
+     * 'fileNameProtection' => enable / disable file name protection (boolean),
+     * 'automaticSerialization' => enable / disable serialization (boolean)
+     * );
+     *
+     * @param array $options options
+     * @access public
+     */
     function __construct($options = array(null))
     {
         $availableOptions = array(	'automaticSerialization',
@@ -254,15 +254,15 @@ class TCache_Lite
 	}
 
     /**
-    * Test if a cache is available and (if yes) return it
-    *
-    * @param string $id cache id
-    * @param string $group name of the cache group
-    * @param boolean $doNotTestCacheValidity if set to true, the cache
-    * validity won't be tested
-    * @return string data of the cache (or false if no cache available)
-    * @access public
-    */
+     * Test if a cache is available and (if yes) return it
+     *
+     * @param string $id cache id
+     * @param string $group name of the cache group
+     * @param boolean $doNotTestCacheValidity if set to true, the cache
+     * validity won't be tested
+     * @return string data of the cache (or false if no cache available)
+     * @access public
+     */
     function get($id, $group = 'default', $doNotTestCacheValidity = false)
     {
         $this->_id = $id;
@@ -305,15 +305,15 @@ class TCache_Lite
     }
 
     /**
-    * Save some data in a cache file
-    *
-    * @param string $data data to put in cache (can be another type than strings
-    * if automaticSerialization is on)
-    * @param string $id cache id
-    * @param string $group name of the cache group
-    * @return boolean true if no problem
-    * @access public
-    */
+     * Save some data in a cache file
+     *
+     * @param string $data data to put in cache (can be another type than strings
+     * if automaticSerialization is on)
+     * @param string $id cache id
+     * @param string $group name of the cache group
+     * @return boolean true if no problem
+     * @access public
+     */
     function save($data, $id = null, $group = 'default')
     {
         if ($this->_caching) {
@@ -344,13 +344,13 @@ class TCache_Lite
     }
 
     /**
-    * Remove a cache file
-    *
-    * @param string $id cache id
-    * @param string $group name of the cache group
-    * @return boolean true if no problem
-    * @access public
-    */
+     * Remove a cache file
+     *
+     * @param string $id cache id
+     * @param string $group name of the cache group
+     * @return boolean true if no problem
+     * @access public
+     */
     function remove($id, $group = 'default')
     {
         $this->_setFileName($id, $group);
@@ -362,15 +362,15 @@ class TCache_Lite
     }
 
     /**
-    * Clean the cache
-    *
-    * if no group is specified all cache files will be destroyed
-    * else only cache files of the specified group will be destroyed
-    *
-    * @param string $group name of the cache group
-    * @return boolean true if no problem
-    * @access public
-    */
+     * Clean the cache
+     *
+     * if no group is specified all cache files will be destroyed
+     * else only cache files of the specified group will be destroyed
+     *
+     * @param string $group name of the cache group
+     * @return boolean true if no problem
+     * @access public
+     */
     function clean($group = false)
     {
         if ($this->_fileNameProtection) {
@@ -411,11 +411,11 @@ class TCache_Lite
     }
 
 	    /**
-    * Set a new life time
-    *
-    * @param int $newLifeTime new life time (in seconds)
-    * @access public
-    */
+	     * Set a new life time
+	     *
+	     * @param int $newLifeTime new life time (in seconds)
+	     * @access public
+	     */
     function setLifeTime($newLifeTime)
     {
         $this->_lifeTime = $newLifeTime;
@@ -423,9 +423,9 @@ class TCache_Lite
     }
 
     /**
-    *
-    * @access public
-    */
+     *
+     * @access public
+     */
     function saveMemoryCachingState($id, $group = 'default')
     {
         if ($this->_caching) {
@@ -439,9 +439,9 @@ class TCache_Lite
     }
 
     /**
-    *
-    * @access public
-    */
+     *
+     * @access public
+     */
     function getMemoryCachingState($id, $group = 'default',
     								$doNotTestCacheValidity = false)
     {
@@ -456,27 +456,27 @@ class TCache_Lite
     }
 
     /**
-    * Return the cache last modification time
-    *
-    * BE CAREFUL : THIS METHOD IS FOR HACKING ONLY !
-    *
-    * @return int last modification time
-    */
+     * Return the cache last modification time
+     *
+     * BE CAREFUL : THIS METHOD IS FOR HACKING ONLY !
+     *
+     * @return int last modification time
+     */
     function lastModified() {
         return filemtime($this->cache->_file);
     }
 
     /**
-    * Trigger a PEAR error
-    *
-    * To improve performances, the PEAR.php file is included dynamically.
-    * The file is so included only when an error is triggered. So, in most
-    * cases, the file isn't included and perfs are much better.
-    *
-    * @param string $msg error message
-    * @param int $code error code
-    * @access public
-    */
+     * Trigger a PEAR error
+     *
+     * To improve performances, the PEAR.php file is included dynamically.
+     * The file is so included only when an error is triggered. So, in most
+     * cases, the file isn't included and perfs are much better.
+     *
+     * @param string $msg error message
+     * @param int $code error code
+     * @access public
+     */
     function raiseError($msg, $code)
     {
        throw new Exception($msg);
@@ -485,9 +485,9 @@ class TCache_Lite
     // --- Private methods ---
 
     /**
-    *
-    * @access private
-    */
+     *
+     * @access private
+     */
     function _memoryCacheAdd($id, $data)
     {
         $this->_memoryCachingArray[$this->_file] = $data;
@@ -500,12 +500,12 @@ class TCache_Lite
     }
 
     /**
-    * Make a file name (with path)
-    *
-    * @param string $id cache id
-    * @param string $group name of the group
-    * @access private
-    */
+     * Make a file name (with path)
+     *
+     * @param string $id cache id
+     * @param string $group name of the group
+     * @access private
+     */
     function _setFileName($id, $group)
     {
         if ($this->_fileNameProtection) {
@@ -522,11 +522,11 @@ class TCache_Lite
     }
 
     /**
-    * Read the cache file and return the content
-    *
-    * @return string content of the cache file
-    * @access private
-    */
+     * Read the cache file and return the content
+     *
+     * @return string content of the cache file
+     * @access private
+     */
     function _read()
     {
         $fp = @fopen($this->_file, "rb");
@@ -556,12 +556,12 @@ class TCache_Lite
     }
 
     /**
-    * Write the given data in the cache file
-    *
-    * @param string $data data to put in cache
-    * @return boolean true if ok
-    * @access private
-    */
+     * Write the given data in the cache file
+     *
+     * @param string $data data to put in cache
+     * @return boolean true if ok
+     * @access private
+     */
     function _write($data)
     {
         $fp = @fopen($this->_file, "wb");
@@ -581,13 +581,13 @@ class TCache_Lite
     }
 
     /**
-    * Write the given data in the cache file and control it just after to avoid
-    * corrupted cache entries
-    *
-    * @param string $data data to put in cache
-    * @return boolean true if the test is ok
-    * @access private
-    */
+     * Write the given data in the cache file and control it just after to avoid
+     * corrupted cache entries
+     *
+     * @param string $data data to put in cache
+     * @return boolean true if the test is ok
+     * @access private
+     */
     function _writeAndControl($data)
     {
         $this->_write($data);
@@ -596,13 +596,13 @@ class TCache_Lite
     }
 
     /**
-    * Make a control key with the string containing datas
-    *
-    * @param string $data data
-    * @param string $controlType type of control 'md5', 'crc32' or 'strlen'
-    * @return string control key
-    * @access private
-    */
+     * Make a control key with the string containing datas
+     *
+     * @param string $data data
+     * @param string $controlType type of control 'md5', 'crc32' or 'strlen'
+     * @return string control key
+     * @access private
+     */
     function _hash($data, $controlType)
     {
         switch ($controlType) {

@@ -39,8 +39,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user modifies the text in the TActiveDatePicker control and
-     * then tabs out of the component. Defaults to true.
+	 * will occur whenever the user modifies the text in the TActiveDatePicker control and
+	 * then tabs out of the component. Defaults to true.
 	 */
 	public function getAutoPostBack()
 	{

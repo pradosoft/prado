@@ -214,7 +214,7 @@ class TRatingList extends TRadioButtonList
  	}
 
  	/**
-	 * @return string rating style css class name.
+ 	 * @return string rating style css class name.
  	 */
 	protected function getRatingStyleCssClass()
  	{
@@ -257,7 +257,7 @@ class TRatingList extends TRadioButtonList
  	}
 
  	/**
-	 * @return string find the client ID of the caption control.
+ 	 * @return string find the client ID of the caption control.
  	 */
 	protected function getCaptionControlID()
  	{

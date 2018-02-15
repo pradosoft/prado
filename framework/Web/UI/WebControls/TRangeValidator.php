@@ -129,9 +129,9 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-     * Sets the date format for a date validation
-     * @param string the date format value
-     */
+	 * Sets the date format for a date validation
+	 * @param string the date format value
+	 */
 	public function setDateFormat($value)
 	{
 		$this->setViewState('DateFormat', $value, '');
@@ -189,10 +189,10 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	* Determine if the value is within the integer range.
-	* @param string value to validate true
-	* @return boolean true if within integer range.
-	*/
+	 * Determine if the value is within the integer range.
+	 * @param string value to validate true
+	 * @return boolean true if within integer range.
+	 */
 	protected function isValidInteger($value)
 	{
 		$minValue=$this->getMinValue();

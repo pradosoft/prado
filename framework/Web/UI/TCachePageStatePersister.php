@@ -156,8 +156,8 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-     * @param string prefix of cache variable name to avoid conflict with other cache data
-     */
+	 * @param string prefix of cache variable name to avoid conflict with other cache data
+	 */
 	public function setKeyPrefix($value)
 	{
 	    $this->_prefix=$value;

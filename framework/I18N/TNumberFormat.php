@@ -24,48 +24,48 @@ use Prado\Prado;
  */
 
 /**
-  * To format numbers in locale sensitive manner use
-  * <code>
-  * <com:TNumberFormat Pattern="0.##" value="2.0" />
-  * </code>
-  *
-  * Numbers can be formatted as currency, percentage, decimal or scientific
-  * numbers by specifying the Type attribute. The known types are
-  * "currency", "percentage", "decimal" and "scientific".
-  *
-  * If someone from US want to see sales figures from a store in
-  * Germany (say using the EURO currency), formatted using the german
-  * currency, you would need to use the attribute Culture="de_DE" to get
-  * the currency right, e.g. 100,00. The decimal and grouping separator is
-  * then also from the de_DE locale. This may lead to some confusion because
-  * people from US know the "," as thousand separator. Therefore a "Currency"
-  * attribute is available, so that the output from the following example
-  * results in 100.00.
-  * <code>
-  * <com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" />
-  * </code>
-  *
-  * Namespace: System.I18N
-  *
-  * Properties
-  * - <b>Value</b>, number,
-  *   <br>Gets or sets the number to format. The tag content is used as Value
-  *   if the Value property is not specified.
-  * - <b>Type</b>, string,
-  *   <br>Gets or sets the formatting type. The valid types are
-  *    'decimal', 'currency', 'percentage' and 'scientific'.
-  * - <b>Currency</b>, string,
-  *   <br>Gets or sets the currency symbol for the currency format.
-  *   The default is 'USD' if the Currency property is not specified.
-  * - <b>Pattern</b>, string,
-  *   <br>Gets or sets the custom number formatting pattern.
-  * - <b>DefaultText</b>, string,
-  * <br>Gets or sets the default text. If Value is not set, DefaultText will be
-  * shown instead of the default currency Value/Pattern.
-  *
-  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
-  * @package Prado\I18N
-  */
+ * To format numbers in locale sensitive manner use
+ * <code>
+ * <com:TNumberFormat Pattern="0.##" value="2.0" />
+ * </code>
+ *
+ * Numbers can be formatted as currency, percentage, decimal or scientific
+ * numbers by specifying the Type attribute. The known types are
+ * "currency", "percentage", "decimal" and "scientific".
+ *
+ * If someone from US want to see sales figures from a store in
+ * Germany (say using the EURO currency), formatted using the german
+ * currency, you would need to use the attribute Culture="de_DE" to get
+ * the currency right, e.g. 100,00. The decimal and grouping separator is
+ * then also from the de_DE locale. This may lead to some confusion because
+ * people from US know the "," as thousand separator. Therefore a "Currency"
+ * attribute is available, so that the output from the following example
+ * results in 100.00.
+ * <code>
+ * <com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" />
+ * </code>
+ *
+ * Namespace: System.I18N
+ *
+ * Properties
+ * - <b>Value</b>, number,
+ *   <br>Gets or sets the number to format. The tag content is used as Value
+ *   if the Value property is not specified.
+ * - <b>Type</b>, string,
+ *   <br>Gets or sets the formatting type. The valid types are
+ *    'decimal', 'currency', 'percentage' and 'scientific'.
+ * - <b>Currency</b>, string,
+ *   <br>Gets or sets the currency symbol for the currency format.
+ *   The default is 'USD' if the Currency property is not specified.
+ * - <b>Pattern</b>, string,
+ *   <br>Gets or sets the custom number formatting pattern.
+ * - <b>DefaultText</b>, string,
+ * <br>Gets or sets the default text. If Value is not set, DefaultText will be
+ * shown instead of the default currency Value/Pattern.
+ *
+ * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @package Prado\I18N
+ */
 class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**

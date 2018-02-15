@@ -108,13 +108,13 @@ class TMemCache extends TCache
     private $_timeout = 360;
 
 	/**
-	* @var integer Controls the minimum value length before attempting to compress automatically.
-	*/
+	 * @var integer Controls the minimum value length before attempting to compress automatically.
+	 */
     private $_threshold=0;
 
 	/**
-	* @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
-	*/
+	 * @var float Specifies the minimum amount of savings to actually store the value compressed. The supplied value must be between 0 and 1. Default value is 0.2 giving a minimum 20% compression savings.
+	 */
     private $_minSavings=0.0;
 
 	/**
@@ -181,10 +181,10 @@ class TMemCache extends TCache
 	}
 
     /**
-	 * Loads configuration from an XML element
-	 * @param TXmlElement configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
-	 */
+     * Loads configuration from an XML element
+     * @param TXmlElement configuration node
+     * @throws TConfigurationException if log route class or type is not specified
+     */
 	private function loadConfig($xml)
 	{
 	    if($xml instanceof TXmlElement)

@@ -55,8 +55,8 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 {
 
 	/**
-	* @var TTable parent row control containing the cell
-	*/
+	 * @var TTable parent row control containing the cell
+	 */
 	private $_row;
 
 	/**

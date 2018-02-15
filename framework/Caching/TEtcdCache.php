@@ -83,9 +83,9 @@ class TEtcdCache extends TCache
 	}
   
   /**
-	 * Gets the host the etcd instance is running on, defaults to 'localhost'.
-	 * @return string the etcd host
-	 */
+   * Gets the host the etcd instance is running on, defaults to 'localhost'.
+   * @return string the etcd host
+   */
 	public function getHost() {
 	  return $this->_host;
 	}
@@ -99,9 +99,9 @@ class TEtcdCache extends TCache
 	}
     
   /**
-	 * Gets the port the etcd instance is running on, defaults to 2379.
-	 * @return integer the etcd port
-	 */
+   * Gets the port the etcd instance is running on, defaults to 2379.
+   * @return integer the etcd port
+   */
 	public function getPort() {
 	  return $this->_port;
 	}
@@ -115,9 +115,9 @@ class TEtcdCache extends TCache
 	}
      
   /**
-	 * Sets the directory to store values in, defaults to 'pradocache'.
-	 * @return string the directory to store values in
-	 */
+   * Sets the directory to store values in, defaults to 'pradocache'.
+   * @return string the directory to store values in
+   */
 	public function getDir() {
 	  return $this->_dir;
 	}
@@ -198,15 +198,15 @@ class TEtcdCache extends TCache
 	}
   
   /**
-	 * This method does the actual cURL request by generating the method specific
-	 * URL, setting the cURL options and adding additional request parameters.
-	 * The etcd always returns a JSON string which is decoded and returned to
-	 * the calling method.
-	 * @param string the HTTP method for the request (GET,PUT,DELETE)
-	 * @param string the the key to perform the action on (includes the directory)
-	 * @param array the additional post data to send with the request
-	 * @return \stdClass the response from the etcd instance
-	 */
+   * This method does the actual cURL request by generating the method specific
+   * URL, setting the cURL options and adding additional request parameters.
+   * The etcd always returns a JSON string which is decoded and returned to
+   * the calling method.
+   * @param string the HTTP method for the request (GET,PUT,DELETE)
+   * @param string the the key to perform the action on (includes the directory)
+   * @param array the additional post data to send with the request
+   * @return \stdClass the response from the etcd instance
+   */
   protected function request($method, $key, $value=array()) {
     $curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);

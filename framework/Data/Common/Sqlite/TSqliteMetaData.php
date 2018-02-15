@@ -194,10 +194,10 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
         /**
-	 * Returns all table names in the database.
-	 * @param string $schema the schema of the tables. This is not used for sqlite database.
-	 * @return array all table names in the database.
-	 */
+         * Returns all table names in the database.
+         * @param string $schema the schema of the tables. This is not used for sqlite database.
+         * @return array all table names in the database.
+         */
 	public function findTableNames($schema='')
 	{
 		$sql="SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";

@@ -34,7 +34,7 @@ use Prado\Prado;
  * the Active Record class to be displayed/edited/added.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.0
  */
 class TScaffoldView extends TScaffoldBase

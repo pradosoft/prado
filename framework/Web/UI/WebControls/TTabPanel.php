@@ -87,9 +87,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-     * Returns the index of the active tab view.
-     * Note, this property may not return the correct index.
-     * To ensure the correctness, call {@link getActiveView()} first.
+	 * Returns the index of the active tab view.
+	 * Note, this property may not return the correct index.
+	 * To ensure the correctness, call {@link getActiveView()} first.
 	 * @return integer the zero-based index of the active tab view. If -1, it means no active tab view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()

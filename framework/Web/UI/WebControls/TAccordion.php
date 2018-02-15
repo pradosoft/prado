@@ -186,24 +186,24 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	* @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
-	*/
+	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 */
 	public function getCssUrl()
 	{
 		return $this->getViewState('CssUrl','default');
 	}
 
 	/**
-	* @param string URL for the CSS file including all relevant CSS class definitions.
-	*/
+	 * @param string URL for the CSS file including all relevant CSS class definitions.
+	 */
 	public function setCssUrl($value)
 	{
 		$this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
 	}
 
 	/**
-		* @return string CSS class for the whole accordion control div.
-	*/
+	 * @return string CSS class for the whole accordion control div.
+	 */
 	public function getCssClass()
 	{
 		$cssClass=parent::getCssClass();
@@ -211,32 +211,32 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-		* @return string CSS class for the currently displayed view div. Defaults to 'accordion-view'.
-	*/
+	 * @return string CSS class for the currently displayed view div. Defaults to 'accordion-view'.
+	 */
 	public function getViewCssClass()
 	{
 		return $this->getViewStyle()->getCssClass();
 	}
 
 	/**
-	* @param string CSS class for the currently displayed view div.
-	*/
+	 * @param string CSS class for the currently displayed view div.
+	 */
 	public function setViewCssClass($value)
 	{
 		$this->getViewStyle()->setCssClass($value);
 	}
 
 	/**
-		* @return string CSS class for the currently displayed view div. Defaults to 'accordion-view'.
-	*/
+	 * @return string CSS class for the currently displayed view div. Defaults to 'accordion-view'.
+	 */
 	public function getAnimationDuration()
 	{
 		return $this->getViewState('AnimationDuration','1');
 	}
 
 	/**
-	* @param string CSS class for the currently displayed view div.
-	*/
+	 * @param string CSS class for the currently displayed view div.
+	 */
 	public function setAnimationDuration($value)
 	{
 		$this->setViewState('AnimationDuration',$value);

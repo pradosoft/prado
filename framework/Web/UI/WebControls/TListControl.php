@@ -332,8 +332,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user makes change to the list control and then tabs out of it.
-     * Defaults to false.
+	 * will occur whenever the user makes change to the list control and then tabs out of it.
+	 * Defaults to false.
 	 */
 	public function getAutoPostBack()
 	{

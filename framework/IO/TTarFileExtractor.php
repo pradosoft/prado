@@ -38,28 +38,28 @@ namespace Prado\IO;
 class TTarFileExtractor
 {
     /**
-    * @var string Name of the Tar
-    */
+     * @var string Name of the Tar
+     */
     private $_tarname='';
 
     /**
-    * @var file descriptor
-    */
+     * @var file descriptor
+     */
     private $_file=0;
 
     /**
-    * @var string Local Tar name of a remote Tar (http:// or ftp://)
-    */
+     * @var string Local Tar name of a remote Tar (http:// or ftp://)
+     */
     private $_temp_tarname='';
 
     /**
-    * Archive_Tar Class constructor. This flavour of the constructor only
-    * declare a new Archive_Tar object, identifying it by the name of the
-    * tar file.
-    *
-    * @param    string  $p_tarname  The name of the tar archive to create
-    * @access public
-    */
+     * Archive_Tar Class constructor. This flavour of the constructor only
+     * declare a new Archive_Tar object, identifying it by the name of the
+     * tar file.
+     *
+     * @param    string  $p_tarname  The name of the tar archive to create
+     * @access public
+     */
     public function __construct($p_tarname)
     {
         $this->_tarname = $p_tarname;
@@ -79,37 +79,37 @@ class TTarFileExtractor
     }
 
     /**
-    * This method extract all the content of the archive in the directory
-    * indicated by $p_path. When relevant the memorized path of the
-    * files/dir can be modified by removing the $p_remove_path path at the
-    * beginning of the file/dir path.
-    * While extracting a file, if the directory path does not exists it is
-    * created.
-    * While extracting a file, if the file already exists it is replaced
-    * without looking for last modification date.
-    * While extracting a file, if the file already exists and is write
-    * protected, the extraction is aborted.
-    * While extracting a file, if a directory with the same name already
-    * exists, the extraction is aborted.
-    * While extracting a directory, if a file with the same name already
-    * exists, the extraction is aborted.
-    * While extracting a file/directory if the destination directory exist
-    * and is write protected, or does not exist but can not be created,
-    * the extraction is aborted.
-    * If after extraction an extracted file does not show the correct
-    * stored file size, the extraction is aborted.
-    * When the extraction is aborted, a PEAR error text is set and false
-    * is returned. However the result can be a partial extraction that may
-    * need to be manually cleaned.
-    *
-    * @param string $p_path         The path of the directory where the
-	*                               files/dir need to by extracted.
-    * @param string $p_remove_path  Part of the memorized path that can be
-	*                               removed if present at the beginning of
-	*                               the file/dir path.
-    * @return boolean               true on success, false on error.
-    * @access public
-    */
+     * This method extract all the content of the archive in the directory
+     * indicated by $p_path. When relevant the memorized path of the
+     * files/dir can be modified by removing the $p_remove_path path at the
+     * beginning of the file/dir path.
+     * While extracting a file, if the directory path does not exists it is
+     * created.
+     * While extracting a file, if the file already exists it is replaced
+     * without looking for last modification date.
+     * While extracting a file, if the file already exists and is write
+     * protected, the extraction is aborted.
+     * While extracting a file, if a directory with the same name already
+     * exists, the extraction is aborted.
+     * While extracting a directory, if a file with the same name already
+     * exists, the extraction is aborted.
+     * While extracting a file/directory if the destination directory exist
+     * and is write protected, or does not exist but can not be created,
+     * the extraction is aborted.
+     * If after extraction an extracted file does not show the correct
+     * stored file size, the extraction is aborted.
+     * When the extraction is aborted, a PEAR error text is set and false
+     * is returned. However the result can be a partial extraction that may
+     * need to be manually cleaned.
+     *
+     * @param string $p_path         The path of the directory where the
+     *                               files/dir need to by extracted.
+     * @param string $p_remove_path  Part of the memorized path that can be
+     *                               removed if present at the beginning of
+     *                               the file/dir path.
+     * @return boolean               true on success, false on error.
+     * @access public
+     */
     protected function extractModify($p_path, $p_remove_path)
     {
         $v_result = true;

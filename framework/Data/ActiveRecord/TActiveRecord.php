@@ -1033,10 +1033,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 	
         /**
-        * Return record data as array
-        * @return array of column name and column values
-        * @since 3.2.4
-        */
+         * Return record data as array
+         * @return array of column name and column values
+         * @since 3.2.4
+         */
         public function toArray(){
         	$result=array();
         	foreach($this->getRecordTableInfo()->getLowerCaseColumnNames() as $columnName){
@@ -1047,10 +1047,10 @@ abstract class TActiveRecord extends \Prado\TComponent
     	}
     
     	/**
-     	* Return record data as JSON
-     	* @return JSON
-     	* @since 3.2.4
-     	*/
+    	 * Return record data as JSON
+    	 * @return JSON
+    	 * @since 3.2.4
+    	 */
     	public function toJSON(){
         	return json_encode($this->toArray());
     	}

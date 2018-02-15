@@ -377,8 +377,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user modifies the text in the TTextBox control and
-     * then tabs out of the component. Defaults to false.
+	 * will occur whenever the user modifies the text in the TTextBox control and
+	 * then tabs out of the component. Defaults to false.
 	 */
 	public function getAutoPostBack()
 	{

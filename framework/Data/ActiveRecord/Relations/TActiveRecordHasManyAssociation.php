@@ -92,10 +92,10 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	private $_association_columns=array();
 
 	/**
-	* Get the foreign key index values from the results and make calls to the
-	* database to find the corresponding foreign objects using association table.
-	* @param array original results.
-	*/
+	 * Get the foreign key index values from the results and make calls to the
+	 * database to find the corresponding foreign objects using association table.
+	 * @param array original results.
+	 */
 	protected function collectForeignObjects(&$results)
 	{
 		list($sourceKeys, $foreignKeys) = $this->getRelationForeignKeys();

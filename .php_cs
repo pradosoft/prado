@@ -3,6 +3,7 @@
 $config = PhpCsFixer\Config::create()
 	->setRiskyAllowed(true)
 	->setRules([
+		'align_multiline_comment' => true,
 		'elseif' => true,
 		'encoding' => true,
 	])

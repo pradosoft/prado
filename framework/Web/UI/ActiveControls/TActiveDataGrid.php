@@ -64,9 +64,9 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	* Creates a new callback control, sets the adapter to
-	* TActiveControlAdapter.
-	*/
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter.
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));

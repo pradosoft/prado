@@ -110,13 +110,13 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Factory method to instantiate a new MessageSource depending on the
 	 * source type. The allowed source types are 'XLIFF', 'PHP', 'gettext' and
-     * 'Database'. The source parameter depends on the source type. 
-     * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory 
-     * where the messages are stored. 
-     * For 'Database', 'source' must be a valid connection id.
+	 * 'Database'. The source parameter depends on the source type. 
+	 * For 'gettext', 'PHP' and 'XLIFF', 'source' should point to the directory 
+	 * where the messages are stored. 
+	 * For 'Database', 'source' must be a valid connection id.
 	 *
- 	 * Custom message source are possible by supplying the a filename parameter
- 	 * in the factory method.
+	 * Custom message source are possible by supplying the a filename parameter
+	 * in the factory method.
 	 * 
 	 * @param string the message source type.
 	 * @param string the location of the resource or the ConnectionID.

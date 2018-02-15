@@ -133,8 +133,8 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-     * @param string prefix of session variable name to avoid conflict with other cache data
-     */
+	 * @param string prefix of session variable name to avoid conflict with other cache data
+	 */
 	public function setKeyPrefix($value)
 	{
 	    $this->_prefix=$value;

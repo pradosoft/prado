@@ -66,7 +66,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
 	 * @param string the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
@@ -87,7 +87,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middle'
+	 * Valid values include 'NotSet','Top','Bottom','Middle'
 	 * @param string the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
