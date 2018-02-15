@@ -6,6 +6,7 @@ $config = PhpCsFixer\Config::create()
 		'align_multiline_comment' => true,
 		'array_syntax' => ['syntax' => 'short'],
 		'blank_line_after_namespace' => true,
+		'blank_line_after_opening_tag' => true,
 		'elseif' => true,
 		'encoding' => true,
 

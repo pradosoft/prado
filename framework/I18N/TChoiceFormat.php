@@ -12,8 +12,8 @@
 namespace Prado\I18N;
 
 /**
-  * Get the ChoiceFormat class.
-  */
+ * Get the ChoiceFormat class.
+ */
 use Prado\I18N\core\ChoiceFormat;
 use Prado\Prado;
 
