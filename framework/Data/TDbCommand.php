@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data;
+
 use Exception;
 use PDO;
 use PDOStatement;

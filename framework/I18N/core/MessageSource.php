@@ -17,7 +17,7 @@
 
 namespace Prado\I18N\core;
 
- /**
+/**
   * Get the IMessageSource interface.
   */
 use Exception;

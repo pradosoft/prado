@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Prado;

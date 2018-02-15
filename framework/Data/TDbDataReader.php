@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data;
+
 use PDO;
 use Prado\Exceptions\TDbException;
 

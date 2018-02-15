@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use DOMDocument;
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TConfigurationException;

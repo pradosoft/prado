@@ -10,6 +10,7 @@
  */
 
 namespace Prado;
+
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TConfigurationException;

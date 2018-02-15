@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+
 use Prado\Collections\TList;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\SqlMap\Configuration\TResultProperty;

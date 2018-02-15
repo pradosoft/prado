@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Collections\TList;
 use Prado\Collections\TMap;
 use Prado\Data\SqlMap\DataMapper\TInvalidPropertyException;

@@ -10,6 +10,7 @@
  */
 
 namespace Prado;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Xml\TXmlDocument;
 

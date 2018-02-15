@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Exception;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;

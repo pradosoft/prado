@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+
 use Prado\Caching\ICache;
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;

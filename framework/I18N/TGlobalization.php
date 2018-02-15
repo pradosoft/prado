@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;

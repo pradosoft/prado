@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;

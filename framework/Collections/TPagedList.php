@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 

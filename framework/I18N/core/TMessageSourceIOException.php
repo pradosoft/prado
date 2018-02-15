@@ -16,6 +16,7 @@
  */
 
 namespace Prado\I18N\core;
+
 use Prado\Exceptions\TException;
 
 /**

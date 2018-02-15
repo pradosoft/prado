@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\DataGateway;
+
 use Prado\Exceptions\TDbException;
 
 /**

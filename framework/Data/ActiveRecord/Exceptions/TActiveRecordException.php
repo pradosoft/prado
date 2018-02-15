@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord\Exceptions;
+
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 

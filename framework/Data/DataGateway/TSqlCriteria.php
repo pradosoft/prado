@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\DataGateway;
+
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TException;
 use Traversable;

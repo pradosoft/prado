@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\Web\Javascripts\TJavaScriptLiteral;

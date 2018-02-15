@@ -19,7 +19,7 @@
 
 namespace Prado\I18N\core;
 
-	/**
+/**
 	 * For a given DSN (database connection string), return some information
 	 * about the DSN. This function comes from PEAR's DB package.
 	 *

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use PDO;
 use Traversable;
 

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\THtmlArea4;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\IActiveControl;

@@ -14,6 +14,7 @@
  */
 
 namespace Prado;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\Javascripts\TJavaScript;
 

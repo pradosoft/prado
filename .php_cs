@@ -5,8 +5,10 @@ $config = PhpCsFixer\Config::create()
 	->setRules([
 		'align_multiline_comment' => true,
 		'array_syntax' => ['syntax' => 'short'],
+		'blank_line_after_namespace' => true,
 		'elseif' => true,
 		'encoding' => true,
+
 	])
 	->setFinder(
 		PhpCsFixer\Finder::create()

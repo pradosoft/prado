@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Caching\TFileCacheDependency;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;

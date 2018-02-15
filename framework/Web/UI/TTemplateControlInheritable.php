@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Exceptions\TConfigurationException;
 
 /**

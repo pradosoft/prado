@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Exception;
 use Prado\Exceptions\TInvalidDataValueException;
 

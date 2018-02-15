@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;

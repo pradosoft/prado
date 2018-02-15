@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**

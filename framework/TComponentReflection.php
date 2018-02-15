@@ -14,6 +14,7 @@
  */
 
 namespace Prado;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * TComponentReflection class.

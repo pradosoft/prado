@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 

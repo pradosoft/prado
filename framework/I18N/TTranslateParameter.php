@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+
 use Prado\Exceptions\TException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;

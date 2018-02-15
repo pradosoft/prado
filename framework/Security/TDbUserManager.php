@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+
 use Prado\Data\TDataSourceConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;

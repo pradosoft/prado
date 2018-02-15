@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord;
+
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\Common\TDbMetaData;

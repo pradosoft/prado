@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\TPropertyValue;
 use Prado\Exceptions\TConfigurationException;
 

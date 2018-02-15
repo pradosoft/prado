@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use Prado\Collections\TMap;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;

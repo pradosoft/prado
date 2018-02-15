@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Exceptions;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 
