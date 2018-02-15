@@ -76,7 +76,7 @@ class TReCaptchaValidator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
-		if (is_null($this->_isvalid))
+		if (null === $this->_isvalid)
 		{
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
@@ -104,7 +104,7 @@ class TReCaptchaValidator extends TBaseValidator
 			if ($this->Page->IsCallback)
 			{
 				if ($control->getVisible(true))
-					if (!is_null($this->_isvalid))
+					if (null !== $this->_isvalid)
 					{
 						// if the response has been tested and we reach the pre-render phase 
 						// then we need to regenerate the token, because it won't test positive

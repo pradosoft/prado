@@ -54,7 +54,7 @@ class TJsonRpcClient extends TRpcClient
 			throw new TRpcClientResponseException('Empty response received');
 
 		// handle error response
-		if(!is_null($_response['error']))
+		if(null !== $_response['error'])
 			throw new TRpcClientResponseException($_response['error']);
 
 		return $_response['result'];

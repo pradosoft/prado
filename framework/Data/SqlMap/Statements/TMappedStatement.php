@@ -932,14 +932,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	public function __wakeup()
 	{
-		if (is_null($this->_selectQueue)) $this->_selectQueue = [];
+		if (null === $this->_selectQueue) $this->_selectQueue = [];
 	}
 
 	public function __sleep()
 	{
 		$exprops = []; $cn = __CLASS__;
 		if (!count($this->_selectQueue)) $exprops[] = "\0$cn\0_selectQueue";
-		if (is_null($this->_groupBy)) $exprops[] = "\0$cn\0_groupBy";
+		if (null === $this->_groupBy) $exprops[] = "\0$cn\0_groupBy";
 		if (!$this->_IsRowDataFound) $exprops[] = "\0$cn\0_IsRowDataFound";
 		return array_diff(parent::__sleep(), $exprops);
 	}

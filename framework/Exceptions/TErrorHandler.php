@@ -443,7 +443,7 @@ class TErrorHandler extends \Prado\TModule
 	}
 
 	private function addLink($message) {
-		if (!is_null($class = $this->getErrorClassNameSpace($message))) {
+		if (null !== ($class = $this->getErrorClassNameSpace($message))) {
 			return str_replace($class['name'], '<a href="' . $class['url'] . '" target="_blank">' . $class['name'] . '</a>', $message);
 		}
 		return $message;

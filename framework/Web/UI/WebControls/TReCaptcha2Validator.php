@@ -66,7 +66,7 @@ class TReCaptcha2Validator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
-		if (is_null($this->_isvalid))
+		if (null === $this->_isvalid)
 		{
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();

@@ -13,7 +13,9 @@ $config = PhpCsFixer\Config::create()
 		'elseif' => true,
 		'encoding' => true,
 		'indentation_type' => true,
+		'is_null' => true,
 		'method_argument_space' => true,
+		'psr4' => true,
 	])
 	->setFinder(
 		PhpCsFixer\Finder::create()
