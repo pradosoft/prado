@@ -49,7 +49,7 @@ class TPreparedStatement extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = __CLASS__;
+		$exprops = []; $cn = __CLASS__;
 		if (!$this->_parameterNames or !$this->_parameterNames->getCount()) $exprops[] = "\0$cn\0_parameterNames";
 		if (!$this->_parameterValues or !$this->_parameterValues->getCount()) $exprops[] = "\0$cn\0_parameterValues";
 		return array_diff(parent::__sleep(),$exprops);

@@ -647,7 +647,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged',array($this,'listIndexChanged'));
+		$list->attachEventHandler('OnSelectedIndexChanged',[$this,'listIndexChanged']);
 	}
 
 	/**

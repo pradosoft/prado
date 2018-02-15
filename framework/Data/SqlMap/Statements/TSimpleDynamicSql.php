@@ -22,7 +22,7 @@ use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
  */
 class TSimpleDynamicSql extends TStaticSql
 {
-	private $_mappings=array();
+	private $_mappings=[];
 
 	public function __construct($mappings)
 	{

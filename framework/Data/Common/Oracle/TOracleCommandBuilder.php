@@ -34,7 +34,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	 * @return string SQL search condition matching on a set of columns.
 	 */
 	public function getSearchExpression($fields, $keywords) {
-		$columns = array ();
+		$columns =  [];
 		foreach ($fields as $field) {
 			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
 				$columns[] = $field;

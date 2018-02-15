@@ -54,19 +54,19 @@ class NumberFormatInfo
 	 * ICU number formatting data.
 	 * @var array
 	 */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * A list of properties that are accessable/writable.
 	 * @var array
 	 */
-	protected $properties = array();
+	protected $properties = [];
 
 	/**
 	 * The number pattern.
 	 * @var array
 	 */
-	protected $pattern = array();
+	protected $pattern = [];
 
 	const DECIMAL = 0;
 	const CURRENCY = 1;
@@ -109,7 +109,7 @@ class NumberFormatInfo
 	 * @param array ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	public function __construct($data=array(), $type=NumberFormatInfo::DECIMAL)
+	public function __construct($data=[], $type=NumberFormatInfo::DECIMAL)
 	{
 		$this->properties = get_class_methods($this);
 
@@ -353,7 +353,7 @@ class NumberFormatInfo
 	{
 		$regexp = '/[#,\.0]+/';
 		$result = preg_split($regexp, $pattern);
-		return array($result[0],$result[1]);
+		return [$result[0],$result[1]];
 	}
 
 
@@ -435,7 +435,7 @@ class NumberFormatInfo
     	$group1 = $this->pattern['groupSize1'];
     	$group2 = $this->pattern['groupSize2'];
 
-    	return array($group1, $group2);
+    	return [$group1, $group2];
     }
 
     /**
@@ -461,7 +461,7 @@ class NumberFormatInfo
     {
     	$prefix = $this->pattern['negPref'];
     	$postfix = $this->pattern['negPost'];
-    	return array($prefix, $postfix);
+    	return [$prefix, $postfix];
     }
 
     /**
@@ -486,7 +486,7 @@ class NumberFormatInfo
     {
     	$prefix = $this->pattern['posPref'];
     	$postfix = $this->pattern['posPost'];
-    	return array($prefix, $postfix);
+    	return [$prefix, $postfix];
     }
 
     /**

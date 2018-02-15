@@ -128,7 +128,7 @@ class TMemCache extends TCache
 	/**
 	 * @var array list of servers available
 	 */
-	private $_servers=array();
+	private $_servers=[];
 
 	/**
 	 * Destructor.
@@ -198,12 +198,12 @@ class TMemCache extends TCache
         			throw new TConfigurationException('memcache_serverport_required');
         		if(!is_numeric($port))
         		    throw new TConfigurationException('memcache_serverport_invalid');
-        		$server = array('Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true);
-        		$checks = array(
+        		$server = ['Host'=>$host,'Port'=>$port,'Weight'=>1,'Timeout'=>1800,'RetryInterval'=>15,'Persistent'=>true];
+        		$checks = [
         		    'Weight'=>'memcache_serverweight_invalid',
         		    'Timeout'=>'memcache_servertimeout_invalid',
         		    'RetryInterval'=>'memcach_serverretryinterval_invalid'
-        		);
+        		];
         		foreach($checks as $property=>$exception)
         		{
         		    $value=$properties->remove($property);

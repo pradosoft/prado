@@ -27,7 +27,7 @@ use Prado\Prado;
  */
 class TMssqlTableColumn extends TDbTableColumn
 {
-	private static $types = array();
+	private static $types = [];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.

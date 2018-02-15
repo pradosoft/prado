@@ -48,7 +48,7 @@ class TActiveButtonColumn extends TButtonColumn {
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
 			if($this->getDataTextField()!=='' || ($buttonType===TButtonColumnType::ImageButton && $this->getDataImageUrlField()!==''))
-				$button->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				$button->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
 			$cell->getControls()->add($button);
 			$cell->registerObject('Button',$button);
 		}

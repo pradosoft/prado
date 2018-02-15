@@ -189,7 +189,7 @@ function addScribble($image,$width,$height)
 	for($i=0;$i<8;$i++)
 	{
 		$color=imagecolorallocate($image,rand(100,180),rand(100,180),rand(100,180));
-		$points=array();
+		$points=[];
 		for($j=1;$j<rand(5,10);$j++)
 		{
 			$points[]=rand(2*(20*($i+1)),2*(50*($i+1)));

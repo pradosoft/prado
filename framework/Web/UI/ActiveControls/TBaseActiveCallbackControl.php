@@ -129,7 +129,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 				throw new TConfigurationException('callback_invalid_callback_options', $this->getControl()->getID(), $id);
 		}
 
-		return array();
+		return [];
 	}
 
 	/**

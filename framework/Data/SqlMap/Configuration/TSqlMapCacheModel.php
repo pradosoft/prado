@@ -41,10 +41,10 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	private $_requests = 0;
 	private $_id;
 	private $_implementation=TSqlMapCacheTypes::Basic;
-	private $_properties = array();
+	private $_properties = [];
 	private $_flushInterval = 0;
 
-	private static $_cacheTypes = array();
+	private static $_cacheTypes = [];
 
 	public static function registerCacheType($type, $className)
 	{
@@ -136,7 +136,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function registerTriggerStatement($mappedStatement)
 	{
-		$mappedStatement->attachEventHandler('OnExecuteQuery',array($this, 'flush'));
+		$mappedStatement->attachEventHandler('OnExecuteQuery',[$this, 'flush']);
 	}
 
 	/**

@@ -23,7 +23,7 @@ class TDbTableColumn extends \Prado\TComponent
 {
 	const UNDEFINED_VALUE= INF; //use infinity for undefined value
 
-	private $_info=array();
+	private $_info=[];
 
 	/**
 	 * Sets the table column meta data.

@@ -165,7 +165,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	
 	public function getClientSideOptions()
 	{
-		$options = array();
+		$options = [];
 		if ($theme = $this->getThemeName())
 			$options['theme'] = $theme;
 		if ($lang = $this->getLanguage())
@@ -259,7 +259,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 				$options = $this->getClientSideOptions();
 				$options['callback'] = new TJavaScriptLiteral('function() { '.$readyscript.'; '.$this->getCallbackScript().'; }');
 				$cs->registerScriptFile('ReCaptcha::AjaxScript', self::RECAPTCHA_JS);
-				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', array(
+				$cs->registerEndScript('ReCaptcha::CreateScript::'.$id, implode(' ', [
 					'if (!jQuery('.TJavaScript::quoteString('#'.$this->getResponseFieldName()).'))',
 					'{',
 					'Recaptcha.destroy();',
@@ -269,7 +269,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 						TJavaScript::encode($options),
 					');',
 					'}',
-				)));
+				]));
 			}
 			
 		$writer->write('</div>');
@@ -358,19 +358,19 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * @param array $extra_params an array of extra variables to post to the server
 	 * @return bool
 	 */
-	private function recaptcha_check_answer($privkey, $remoteip, $challenge, $response, $extra_params = array())
+	private function recaptcha_check_answer($privkey, $remoteip, $challenge, $response, $extra_params = [])
 	{
 		//discard spam submissions
 		if ($challenge == null || strlen($challenge) == 0 || $response == null || strlen($response) == 0)
 			return false;
 
 		$response = $this->recaptcha_http_post(self::RECAPTCHA_VERIFY_SERVER, "/recaptcha/api/verify",
-		array(
+		[
 			'privatekey' => $privkey,
 			'remoteip' => $remoteip,
 			'challenge' => $challenge,
 			'response' => $response
-			) + $extra_params
+			] + $extra_params
 		);
 
 		$answers = explode ("\n", $response [1]);

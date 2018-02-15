@@ -81,9 +81,9 @@ class TAuthorizationRule extends \Prado\TComponent
 			$this->_action=$action;
 		else
 			throw new TInvalidDataValueException('authorizationrule_action_invalid',$action);
-		$this->_users=array();
-		$this->_roles=array();
-		$this->_ipRules=array();
+		$this->_users=[];
+		$this->_roles=[];
+		$this->_ipRules=[];
 		$this->_everyone=false;
 		$this->_guest=false;
 		$this->_authenticated=false;

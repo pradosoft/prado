@@ -136,8 +136,8 @@ class TTableGateway extends \Prado\TComponent
 	protected function initCommandBuilder($builder)
 	{
 		$this->_command = new TDataGatewayCommand($builder);
-		$this->_command->OnCreateCommand[] = array($this, 'onCreateCommand');
-		$this->_command->OnExecuteCommand[] = array($this, 'onExecuteCommand');
+		$this->_command->OnCreateCommand[] = [$this, 'onCreateCommand'];
+		$this->_command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
 	}
 
 	/**
@@ -189,7 +189,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array binding parameters, positional or named.
 	 * @return array query results.
 	 */
-	public function findBySql($sql, $parameters=array())
+	public function findBySql($sql, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($sql,$parameters, $args);
@@ -202,7 +202,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array binding parameters, positional or named.
 	 * @return TDbDataReader query results.
 	 */
-	public function findAllBySql($sql, $parameters=array())
+	public function findAllBySql($sql, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($sql,$parameters, $args);
@@ -226,7 +226,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return array matching record object.
 	 */
-	public function find($criteria, $parameters=array())
+	public function find($criteria, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);
@@ -239,7 +239,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return TDbDataReader matching records.
 	 */
-	public function findAll($criteria=null, $parameters=array())
+	public function findAll($criteria=null, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
@@ -301,7 +301,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array condition parameters.
 	 * @return integer number of records deleted.
 	 */
-	public function deleteAll($criteria, $parameters=array())
+	public function deleteAll($criteria, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);
@@ -354,7 +354,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records.
 	 */
-	public function count($criteria=null,$parameters=array())
+	public function count($criteria=null,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
@@ -376,7 +376,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array additional binding name-value pairs.
 	 * @return integer number of records updated.
 	 */
-	public function update($data, $criteria, $parameters=array())
+	public function update($data, $criteria, $parameters=[])
 	{
 		$args = func_num_args() > 2 ? array_slice(func_get_args(),2) : null;
 		$criteria = $this->getCriteria($criteria,$parameters, $args);

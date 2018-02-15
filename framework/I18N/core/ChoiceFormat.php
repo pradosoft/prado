@@ -127,7 +127,7 @@ class ChoiceFormat
 		$rightBracket = $matches[$n-1][0];
 
 		$i = 0;
-		$elements = array();
+		$elements = [];
 		foreach($matches as $match)
 		{
 			$string = $match[0];
@@ -188,11 +188,11 @@ class ChoiceFormat
 	function parse($string)
 	{
 		$n = preg_match_all($this->parse,$string,$matches, PREG_OFFSET_CAPTURE);
-		$sets = array();
+		$sets = [];
 		foreach($matches[1] as $match)
 			$sets[] = $match[0];
 		$offset = $matches[0];
-		$strings = array();
+		$strings = [];
 		for($i = 0; $i < $n; $i++)
 		{
 			$len = strlen($offset[$i][0]);
@@ -200,7 +200,7 @@ class ChoiceFormat
 			$end = $i == $n-1 ? strlen($string) : $offset[$i+1][1];
 			$strings[] = substr($string, $begin, $end - $begin);
 		}
-		return array($sets, $strings);
+		return [$sets, $strings];
 	}
 
 	/**

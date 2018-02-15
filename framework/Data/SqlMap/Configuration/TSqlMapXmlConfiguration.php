@@ -34,7 +34,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * @var array global properties.
 	 */
-	private $_properties=array();
+	private $_properties=[];
 
 	/**
 	 * @param TSqlMapManager manager instance.

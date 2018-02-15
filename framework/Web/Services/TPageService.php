@@ -133,7 +133,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var array list of initial page property values
 	 */
-	private $_properties=array();
+	private $_properties=[];
 	/**
 	 * @var boolean whether service is initialized
 	 */
@@ -243,7 +243,7 @@ class TPageService extends \Prado\TService
 		else
 		{
 			$configCached=true;
-			$currentTimestamp=array();
+			$currentTimestamp=[];
 			$arr=$cache->get(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath);
 			if(is_array($arr))
 			{
@@ -296,7 +296,7 @@ class TPageService extends \Prado\TService
 						$pageConfig->loadPageConfigurationFromXml($config,$application->getBasePath(),'');
 				}
 				$pageConfig->loadFromFiles($this->getBasePath());
-				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,array($pageConfig,$currentTimestamp));
+				$cache->set(self::CONFIG_CACHE_PREFIX.$this->getID().$pagePath,[$pageConfig,$currentTimestamp]);
 			}
 		}
 		return $pageConfig;

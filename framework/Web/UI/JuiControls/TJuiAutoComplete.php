@@ -145,7 +145,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoFocus', 'delay', 'disabled', 'minLength', 'position', 'source');
+		return ['appendTo', 'autoFocus', 'delay', 'disabled', 'minLength', 'position', 'source'];
 	}
 
 	/**
@@ -154,7 +154,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getValidEvents()
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -374,14 +374,14 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	{
 		if($this->getActiveControl()->canUpdateClientSide(true))
 		{
-			$data=array();
+			$data=[];
 			$items=$this->getSuggestions()->getItems();
 			$writer = new TTextWriter;
 			for($i=0; $i<$items->Count; $i++)
 			{
 				$items->itemAt($i)->render($writer);
 				$item=$writer->flush();
-				$data[]=array( 'id' => $i, 'label' => $item);
+				$data[]=[ 'id' => $i, 'label' => $item];
 			}
 
 			$this->getResponse()->getAdapter()->setResponseData($data);

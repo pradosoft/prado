@@ -45,7 +45,7 @@ class TVarDumper
 	public static function dump($var,$depth=10,$highlight=false)
 	{
 		self::$_output='';
-		self::$_objects=array();
+		self::$_objects=[];
 		self::$_depth=$depth;
 		self::dumpInternal($var,0);
 		if($highlight)
@@ -115,7 +115,7 @@ class TVarDumper
 					self::$_output.="$className#$id\n".$spaces.'(';
 					foreach($keys as $key)
 					{
-						$keyDisplay=strtr(trim($key),array("\0"=>':'));
+						$keyDisplay=strtr(trim($key),["\0"=>':']);
 						self::$_output.="\n".$spaces."    [$keyDisplay] => ";
 						self::$_output.=self::dumpInternal($members[$key],$level+1);
 					}

@@ -143,8 +143,8 @@ class TDbCache extends TCache
 	 */
 	public function init($config)
 	{
-		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', array($this, 'doInitializeCache'));
-		$this -> getApplication() -> attachEventHandler('OnSaveState', array($this, 'doFlushCacheExpired'));
+		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+		$this -> getApplication() -> attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
 		parent::init($config);
 	}
 

@@ -44,7 +44,7 @@ namespace Prado\I18N\core;
             return $dsn;
         }
 
-        $parsed = array(
+        $parsed = [
             'phptype'  => false,
             'dbsyntax' => false,
             'username' => false,
@@ -54,7 +54,7 @@ namespace Prado\I18N\core;
             'port'     => false,
             'socket'   => false,
             'database' => false
-        );
+        ];
 
         // Find phptype and dbsyntax
         if (($pos = strpos($dsn, '://')) !== false) {
@@ -139,7 +139,7 @@ namespace Prado\I18N\core;
                 if (strpos($dsn, '&') !== false) {
                     $opts = explode('&', $dsn);
                 } else { // database?param1=value1
-                    $opts = array($dsn);
+                    $opts = [$dsn];
                 }
                 foreach ($opts as $opt) {
                     list($key, $value) = explode('=', $opt);

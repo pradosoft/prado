@@ -110,7 +110,7 @@ class TMysqlMetaData extends TDbMetaData
 		if(!$this->_serverVersion)
 		{
 			$version = $this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION);
-			$digits=array();
+			$digits=[];
 			preg_match('/(\d+)\.(\d+)\.(\d+)/', $version, $digits);
 			$this->_serverVersion=floatval($digits[1].'.'.$digits[2].$digits[3]);
 		}
@@ -141,7 +141,7 @@ class TMysqlMetaData extends TDbMetaData
 			$info['IsForeignKey'] = true;
 
 		$info['DbType'] = $col['Type'];
-		$match=array();
+		$match=[];
 		//find SET/ENUM values, column size, precision, and scale
 		if(preg_match('/\((.*)\)/', $col['Type'], $match))
 		{
@@ -152,7 +152,7 @@ class TMysqlMetaData extends TDbMetaData
 				$info['DbTypeValues'] = preg_split("/[',]/S", $match[1], -1, PREG_SPLIT_NO_EMPTY);
 
 			//find column size, precision and scale
-			$pscale = array();
+			$pscale = [];
 			if(preg_match('/(\d+)(?:,(\d+))?+/', $match[1], $pscale))
 			{
 				if($this->isPrecisionType($info['DbType']))
@@ -206,7 +206,7 @@ class TMysqlMetaData extends TDbMetaData
 				throw new TDbException('dbcommon_invalid_identifier_name', $table, $ref);
 			}
 		}
-		return count($result) > 1 ? $result : array(null, $result[0]);
+		return count($result) > 1 ? $result : [null, $result[0]];
 	}
 
 	/**
@@ -279,7 +279,7 @@ class TMysqlMetaData extends TDbMetaData
 		$table = $schemaName===null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$sql = "SHOW INDEX FROM {$table}";
 		$command = $this->getDbConnection()->createCommand($sql);
-		$primary = array();
+		$primary = [];
 		foreach($command->query() as $row)
 		{
 			if($row['Key_name']==='PRIMARY')
@@ -291,7 +291,7 @@ class TMysqlMetaData extends TDbMetaData
 			$foreign = $this->getForeignConstraints($schemaName,$tableName);
 		else
 			$foreign = $this->findForeignConstraints($schemaName,$tableName);
-		return array($primary,$foreign);
+		return [$primary,$foreign];
 	}
 
 	/**
@@ -321,7 +321,7 @@ EOD;
 		$command->bindValue(':table', $tableName);
 		if($schemaName!==null)
 			$command->bindValue(':schema', $schemaName);
-		$fkeys=array();
+		$fkeys=[];
 		foreach($command->query() as $col)
 		{
 			$fkeys[$col['con']]['keys'][$col['col']] = $col['fkcol'];
@@ -361,18 +361,18 @@ EOD;
 	protected function findForeignConstraints($schemaName, $tableName)
 	{
 		$sql = $this->getShowCreateTable($schemaName, $tableName);
-		$matches =array();
+		$matches =[];
 		$regexp = '/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+`?([^`]+)`?\s\(([^\)]+)\)/mi';
 		preg_match_all($regexp,$sql,$matches,PREG_SET_ORDER);
-		$foreign = array();
+		$foreign = [];
 		foreach($matches as $match)
 		{
 			$fields = array_map('trim',explode(',',str_replace('`','',$match[1])));
 			$fk_fields = array_map('trim',explode(',',str_replace('`','',$match[3])));
-			$keys=array();
+			$keys=[];
 			foreach($fields as $k=>$v)
 				$keys[$v] = $fk_fields[$k];
-			$foreign[] = array('keys' => $keys, 'table' => trim($match[2]));
+			$foreign[] = ['keys' => $keys, 'table' => trim($match[2])];
 		}
 		return $foreign;
 	}

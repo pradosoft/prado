@@ -62,7 +62,7 @@ class THtmlArea4 extends TTextBox
 	/**
 	 * @var array list of locale => language file pairs.
 	 */
-	private static $_langs = array(
+	private static $_langs = [
 			'ar' => 'ar',
 			'bg_BG' => 'bg_BG',
 			'bs' => 'bs',
@@ -115,12 +115,12 @@ class THtmlArea4 extends TTextBox
 			'vi_VN' => 'vi_VN',
 			'zh_CN' => 'zh_CN',
 			'zh_TW' => 'zh_TW',
-		);
+		];
 
 	/**
 	 * @var array list of default plugins to load, override using getAvailablePlugins();
 	 */
-	private static $_plugins = array(
+	private static $_plugins = [
 		'advlist',
 		'anchor',
 		'autolink',
@@ -159,14 +159,14 @@ class THtmlArea4 extends TTextBox
 		'visualblocks',
 		'visualchars',
 		'wordcount',
-	);
+	];
 
 	/**
 	 * @var array default themes to load
 	 */
-	private static $_themes = array(
+	private static $_themes = [
 		'modern',
-	);
+	];
 
 	/**
 	 * Constructor.
@@ -326,9 +326,9 @@ class THtmlArea4 extends TTextBox
 	{
 		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
-		$options = array(
+		$options = [
 			'EditorOptions' => $this->getEditorOptions()
-		);
+		];
 
 		$options = TJavaScript::encode($options,true,true);
 		$script = "new {$this->getClientClassName()}($options)";
@@ -384,7 +384,7 @@ class THtmlArea4 extends TTextBox
 	 */
 	protected function parseEditorOptions($string)
 	{
-		$options = array();
+		$options = [];
 		$substrings = preg_split('/,\s*\n|\n/', trim($string));
 		foreach($substrings as $bits)
 		{
@@ -411,7 +411,7 @@ class THtmlArea4 extends TTextBox
 		$app = $this->getApplication()->getGlobalization();
 		if(empty($culture) && ($app!==null))
 			$culture = $app->getCulture();
-		$variants = array();
+		$variants = [];
 		if($app!==null)
 			$variants = $app->getCultureVariants($culture);
 

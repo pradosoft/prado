@@ -312,7 +312,7 @@ class TCaptcha extends TImage
 		{
 			$fileName=$this->generatePrivateKeyFile();
 			$content=file_get_contents($fileName);
-			$matches=array();
+			$matches=[];
 			if(preg_match("/privateKey='(.*?)'/ms",$content,$matches)>0)
 				$this->_privateKey=$matches[1];
 			else
@@ -384,7 +384,7 @@ class TCaptcha extends TImage
 	{
 		$privateKey=$this->getPrivateKey();  // call this method to ensure private key is generated
 		$token=$this->getToken();
-		$options=array();
+		$options=[];
 		$options['publicKey']=$this->getPublicKey();
 		$options['tokenLength']=strlen($token);
 		$options['caseSensitive']=$this->getCaseSensitive();

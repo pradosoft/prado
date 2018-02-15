@@ -51,7 +51,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * @var TPostSelectBinding[] post select statement queue.
 	 */
-	private $_selectQueue=array();
+	private $_selectQueue=[];
 
 	/**
 	 * @var boolean true when data is mapped to a particular row.
@@ -310,7 +310,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	public function runQueryForMap($connection, $parameter, $command, $keyProperty, $valueProperty=null, $delegate=null)
 	{
-		$map = array();
+		$map = [];
 		//$recordSet = $this->executeSQLQuery($connection, $sql);
 		$connection->setActive(true);
 		$reader = $command->query();
@@ -685,7 +685,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 		if(empty($parent))
 		{
-			$rootObject = array('object'=>$resultObject, 'property' => null);
+			$rootObject = ['object'=>$resultObject, 'property' => null];
 			$this->_groupBy->add(null, $group, $rootObject);
 		}
 
@@ -709,7 +709,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				$value = $this->fillResultMap($nested, $row, $groupKey);
 
 				//add it to the object tree graph
-				$groupObject = array('object'=>$value, 'property' => $property->getProperty());
+				$groupObject = ['object'=>$value, 'property' => $property->getProperty()];
 				if(empty($parent))
 					$this->_groupBy->add($group, $groupKey, $groupObject);
 				else
@@ -768,7 +768,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	protected function fillArrayResultMap($resultMap, $row, $resultObject)
 	{
-		$result = array();
+		$result = [];
 		$registry=$this->getManager()->getTypeHandlers();
 		foreach($resultMap->getColumns() as $column)
 		{
@@ -894,7 +894,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$value = $property->getColumn();
 		if(is_int(strpos($value.',',0)) || is_int(strpos($value, '=',0)))
 		{
-			$keys = array();
+			$keys = [];
 			foreach(explode(',', $value) as $entry)
 			{
 				$pair =explode('=',$entry);
@@ -931,12 +931,12 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	public function __wakeup()
 	{
-		if (is_null($this->_selectQueue)) $this->_selectQueue = array();
+		if (is_null($this->_selectQueue)) $this->_selectQueue = [];
 	}
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = __CLASS__;
+		$exprops = []; $cn = __CLASS__;
 		if (!count($this->_selectQueue)) $exprops[] = "\0$cn\0_selectQueue";
 		if (is_null($this->_groupBy)) $exprops[] = "\0$cn\0_groupBy";
 		if (!$this->_IsRowDataFound) $exprops[] = "\0$cn\0_IsRowDataFound";

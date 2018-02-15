@@ -67,7 +67,7 @@ class TGettext
      * @access  protected
      * @var     array
      */
-    protected $strings = array();
+    protected $strings = [];
 
     /**
      * meta
@@ -78,7 +78,7 @@ class TGettext
      * @access  protected
      * @var     array
      */
-    protected $meta = array();
+    protected $meta = [];
 
     /**
      * file path
@@ -157,13 +157,13 @@ class TGettext
     static function prepare($string, $reverse = false)
     {
         if ($reverse) {
-            $smap = array('"', "\n", "\t", "\r");
-            $rmap = array('\"', '\\n"' . "\n" . '"', '\\t', '\\r');
+            $smap = ['"', "\n", "\t", "\r"];
+            $rmap = ['\"', '\\n"' . "\n" . '"', '\\t', '\\r'];
             return (string) str_replace($smap, $rmap, $string);
         } else {
         	$string = preg_replace('/"\s+"/', '', $string);
-            $smap = array('\\n', '\\r', '\\t', '\"');
-            $rmap = array("\n", "\r", "\t", '"');
+            $smap = ['\\n', '\\r', '\\t', '\"'];
+            $rmap = ["\n", "\r", "\t", '"'];
             return (string) str_replace($smap, $rmap, $string);
         }
     }
@@ -178,7 +178,7 @@ class TGettext
      */
     static function meta2array($meta)
     {
-        $array = array();
+        $array = [];
         foreach (explode("\n", $meta) as $info) {
             if ($info = trim($info)) {
                 list($key, $value) = explode(':', $info, 2);
@@ -214,7 +214,7 @@ class TGettext
      */
     function toArray()
     {
-    	return array('meta' => $this->meta, 'strings' => $this->strings);
+    	return ['meta' => $this->meta, 'strings' => $this->strings];
     }
 
     /**

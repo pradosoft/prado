@@ -39,7 +39,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	private $_document;
 
-	private $_FlushOnExecuteStatements=array();
+	private $_FlushOnExecuteStatements=[];
 
 	/**
 	 * Regular expressions for escaping simple/inline parameter symbols
@@ -430,7 +430,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function loadCacheModel($node)
 	{
 		$cacheModel = new TSqlMapCacheModel;
-		$properties = array('id','implementation');
+		$properties = ['id','implementation'];
 		foreach($node->attributes() as $name=>$value)
 		{
 			if(in_array(strtolower($name), $properties))
@@ -504,7 +504,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$id = $cacheModel->getID();
 		if(!isset($this->_FlushOnExecuteStatements[$id]))
-			$this->_FlushOnExecuteStatements[$id] = array();
+			$this->_FlushOnExecuteStatements[$id] = [];
 		foreach($node->attributes() as $name=>$value)
 		{
 			if(strtolower($name)==='statement')

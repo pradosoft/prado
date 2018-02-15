@@ -17,7 +17,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(array('unsigned', 'zerofill'),array('','',),strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'],['','',],strtolower($column->getDbType())));
 		switch($dbtype)
 		{
 			case 'date':
@@ -46,7 +46,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(array('unsigned', 'zerofill'),array('','',),strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'],['','',],strtolower($column->getDbType())));
 		switch($dbtype)
 		{
 			case 'date':

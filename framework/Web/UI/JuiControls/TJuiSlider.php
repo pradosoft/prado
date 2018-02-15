@@ -97,7 +97,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidOptions()
 	{
-		return array('animate', 'classes', 'disabled', 'max', 'min', 'orientation', 'range', 'step', 'value', 'values');
+		return ['animate', 'classes', 'disabled', 'max', 'min', 'orientation', 'range', 'step', 'value', 'values'];
 	}
 
 	/**
@@ -106,7 +106,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidEvents()
 	{
-		return array('change', 'create', 'slide', 'start', 'stop');
+		return ['change', 'create', 'slide', 'start', 'stop'];
 	}
 
 	/**

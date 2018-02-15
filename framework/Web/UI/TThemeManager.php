@@ -116,7 +116,7 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function getAvailableThemes()
 	{
-		$themes=array();
+		$themes=[];
 		$basePath=$this->getBasePath();
 		$folder=@opendir($basePath);
 		while($file=@readdir($folder))

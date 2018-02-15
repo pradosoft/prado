@@ -37,7 +37,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class
 	 */
-	private static $_template=array();
+	private static $_template=[];
 	/**
 	 * @var ITemplate the parsed template structure specific for this control instance
 	 */
@@ -53,11 +53,11 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * @var array list of TContent controls
 	 */
-	private $_contents=array();
+	private $_contents=[];
 	/**
 	 * @var array list of TContentPlaceHolder controls
 	 */
-	private $_placeholders=array();
+	private $_placeholders=[];
 
 	/**
 	 * Returns the template object associated with this control object.

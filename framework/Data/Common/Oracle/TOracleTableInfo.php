@@ -24,7 +24,7 @@ use Prado\Prado;
  */
 class TOracleTableInfo extends \Prado\TComponent
 {
-	private $_info=array();
+	private $_info=[];
 
 	private $_primaryKeys;
 	private $_foreignKeys;
@@ -37,7 +37,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
+	public function __construct($tableInfo=[],$primary=[],$foreign=[])
 	{
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
@@ -150,7 +150,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	{
 		if($this->_lowercase===null)
 		{
-			$this->_lowercase=array();
+			$this->_lowercase=[];
 			foreach($this->getColumns()->getKeys() as $key)
 				$this->_lowercase[strtolower($key)] = $key;
 		}

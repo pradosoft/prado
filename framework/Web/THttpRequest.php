@@ -135,7 +135,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var array contains all request variables
 	 */
-	private $_items=array();
+	private $_items=[];
 
 	/**
 	 * @return string id of this module
@@ -213,7 +213,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
+		return is_array($data)?array_map([$this,'stripSlashes'],$data):stripslashes($data);
 	}
 
 	/**
@@ -463,7 +463,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$result = apache_request_headers();
 		}
 		elseif($result === null) {
-			$result = array();
+			$result = [];
 			foreach($_SERVER as $key=>$value) {
 				if(strncasecmp($key, 'HTTP_', 5) !== 0) continue;
 					$key = str_replace(' ','-', ucwords(strtolower(str_replace('_',' ', substr($key, 5)))));

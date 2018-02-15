@@ -67,7 +67,7 @@ class TSqlMapPagedList extends TPagedList
 		$this->_statement = $statement;
 		$this->_parameter = $parameter;
 		$this->setPageSize($pageSize);
-		$this->attachEventHandler('OnFetchData', array($this, 'fetchDataFromStatement'));
+		$this->attachEventHandler('OnFetchData', [$this, 'fetchDataFromStatement']);
 		$this->gotoPage($page);
 	}
 
@@ -147,7 +147,7 @@ class TSqlMapPagedList extends TPagedList
 			if($total <= $pageSize)
 			{
 				$this->_prevPageList = array_slice($data, 0, $total);
-				$param->setData(array());
+				$param->setData([]);
 				$this->_nextPageList = null;
 			}
 			elseif($total <= $pageSize*2)
@@ -174,7 +174,7 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$index = $param->getNewPageIndex();
 		$pageSize = $this->getPageSize();
-		return $index < 1 ? array($index, $pageSize*2) : array(($index-1)*$pageSize, $pageSize*3);
+		return $index < 1 ? [$index, $pageSize*2] : [($index-1)*$pageSize, $pageSize*3];
 	}
 
 	/**

@@ -72,13 +72,13 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * A set of pattern presets and their respective formatting shorthand.
 	 * @var array
 	 */
-	static private $_patternPresets = array(
+	static private $_patternPresets = [
 			'fulldate'=>'P','full'=>'P',
 			'longdate'=>'D','long'=>'d',
 			'mediumdate'=>'p','medium'=>'p',
 			'shortdate'=>'d','short'=>'d',
 			'fulltime'=>'Q', 'longtime'=>'T',
-			'mediumtime'=>'q', 'shorttime'=>'t');
+			'mediumtime'=>'q', 'shorttime'=>'t'];
 
 	/**
 	 * Sets the date time formatting pattern.
@@ -101,7 +101,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		//try the subpattern of "date time" presets
 		$subpatterns = explode(' ',$string,2);
-		$datetime = array();
+		$datetime = [];
 		if(count($subpatterns)==2)
 		{
 			$datetime[] = $this->getPreset($subpatterns[0]);

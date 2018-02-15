@@ -42,7 +42,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	/**
 	 * @var array list of tags are do not need a closing tag
 	 */
-	private static $_simpleTags=array(
+	private static $_simpleTags=[
 		'area'=>true,
 		'base'=>true,
 		'basefont'=>true,
@@ -57,19 +57,19 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 		'link'=>true,
 		'meta'=>true,
 		'wbr'=>true,
-	);
+	];
 	/**
 	 * @var array list of attributes to be rendered for a tag
 	 */
-	private $_attributes=array();
+	private $_attributes=[];
 	/**
 	 * @var array list of openning tags
 	 */
-	private $_openTags=array();
+	private $_openTags=[];
 	/**
 	 * @var array list of style attributes
 	 */
-	private $_styles=array();
+	private $_styles=[];
 	/**
 	 * @var ITextWriter writer
 	 */
@@ -214,8 +214,8 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 			$this->_openTags[] = $tagName;
 		}
 		$this->_writer->write($str);
-		$this->_attributes=array();
-		$this->_styles=array();
+		$this->_attributes=[];
+		$this->_styles=[];
 	}
 
 	/**

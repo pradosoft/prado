@@ -27,11 +27,11 @@ use Prado\Prado;
  */
 class TPgsqlTableColumn extends TDbTableColumn
 {
-	private static $types=array(
-		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
-		'boolean' => array('boolean'),
-		'float' => array('bigint', 'bigserial', 'double precision', 'money', 'numeric')
-	);
+	private static $types=[
+		'integer' => ['bit', 'bit varying', 'real', 'serial', 'int', 'integer'],
+		'boolean' => ['boolean'],
+		'float' => ['bigint', 'bigserial', 'double precision', 'money', 'numeric']
+	];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.

@@ -63,9 +63,9 @@ class TOracleMetaData extends TDbMetaData
 	protected function getSchemaTableName($table)
 	{
 		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
-			return array($parts[0], $parts[1]);
+			return [$parts[0], $parts[1]];
 		else
-			return array($this->getDefaultSchema(),$parts[0]);
+			return [$this->getDefaultSchema(),$parts[0]];
 	}
 
 	/**
@@ -198,7 +198,7 @@ EOD;
 			}
 		}
 		*/
-		$matches = array();
+		$matches = [];
 		if(preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches))
 		{
 			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/','',$col['type']);
@@ -221,7 +221,7 @@ EOD;
 	 */
 	protected function getSequenceName($tableInfo,$src)
 	{
-		$matches = array();
+		$matches = [];
 		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
 		{
 			if(is_int(strpos($matches[1], '.')))
@@ -264,21 +264,21 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':table', $tableName);
 		//$command->bindValue(':schema', $schemaName);
-		$primary = array();
-		$foreign = array();
+		$primary = [];
+		$foreign = [];
 		foreach($command->query() as $row)
 		{
 			switch( strtolower( $row['contype'] ) )
 			{
 				case 'p':
-					$primary = array_merge( $primary, array(strtolower( $row['consrc'] )) );
+					$primary = array_merge( $primary, [strtolower( $row['consrc'] )] );
 					/*
 					$arr = $this->getPrimaryKeys($row['consrc']);
 					$primary = array_merge( $primary, array(strtolower( $arr[0] )) );
 					*/
 					break;
 				case 'r':
-					$foreign = array_merge( $foreign, array(strtolower( $row['consrc'] )) );
+					$foreign = array_merge( $foreign, [strtolower( $row['consrc'] )] );
 					/*
 					// if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
 					$fkey = $this->getForeignKeys( $row['consrc'] );
@@ -287,7 +287,7 @@ EOD;
 					break;
 			}
 		}
-		return array($primary,$foreign);
+		return [$primary,$foreign];
 	}
 
 	/**
@@ -297,10 +297,10 @@ EOD;
 	 */
 	protected function getPrimaryKeys($src)
 	{
-		$matches = array();
+		$matches = [];
 		if(preg_match('/PRIMARY\s+KEY\s+\(([^\)]+)\)/i', $src, $matches))
 			return preg_split('/,\s+/',$matches[1]);
-		return array();
+		return [];
 	}
 
 	/**
@@ -310,16 +310,16 @@ EOD;
 	 */
 	protected function getForeignKeys($src)
 	{
-		$matches = array();
+		$matches = [];
 		$brackets = '\(([^\)]+)\)';
 		$find = "/FOREIGN\s+KEY\s+{$brackets}\s+REFERENCES\s+([^\(]+){$brackets}/i";
 		if(preg_match($find, $src, $matches))
 		{
 			$keys = preg_split('/,\s+/', $matches[1]);
-			$fkeys = array();
+			$fkeys = [];
 			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
 				$fkeys[$keys[$i]] = $fkey;
-			return array('table' => str_replace('"','',$matches[2]), 'keys' => $fkeys);
+			return ['table' => str_replace('"','',$matches[2]), 'keys' => $fkeys];
 		}
 	}
 
@@ -365,7 +365,7 @@ EOD;
 		}
 
 		$rows=$command->queryAll();
-		$names=array();
+		$names=[];
 		foreach($rows as $row)
 		{
 			if($schema===$this->getDefaultSchema() || $schema==='')

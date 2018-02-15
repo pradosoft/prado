@@ -33,7 +33,7 @@ class TRatingList extends TRadioButtonList
 	/**
 	 * @var array list of published rating images.
 	 */
-	private $_ratingImages = array();
+	private $_ratingImages = [];
 
 	/**
 	 * Sets the default repeat direction to horizontal.
@@ -229,7 +229,7 @@ class TRatingList extends TRadioButtonList
 	public function setHalfRatingInterval($value)
  	{
 		$this->setViewState('HalfRating',
-				TPropertyValue::ensureArray($value), array(0.3, 0.7));
+				TPropertyValue::ensureArray($value), [0.3, 0.7]);
  	}
 
 	/**
@@ -237,7 +237,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function getHalfRatingInterval()
  	{
-		return $this->getViewState('HalfRating', array(0.3, 0.7));
+		return $this->getViewState('HalfRating', [0.3, 0.7]);
  	}
 
 	/**
@@ -305,8 +305,8 @@ class TRatingList extends TRadioButtonList
 	 */
 	protected function publishImages($style, $fileExt='.gif')
  	{
-		$types = array('blank', 'selected', 'half', 'combined');
-		$files = array();
+		$types = ['blank', 'selected', 'half', 'combined'];
+		$files = [];
 		foreach($types as $type)
 			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
 		return $files;

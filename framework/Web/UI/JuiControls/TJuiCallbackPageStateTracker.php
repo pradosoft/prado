@@ -32,7 +32,7 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {
   {
     parent::addStatesToTrack();
     $states = $this->getStatesToTrack();
-    $states['JuiOptions'] = array('TMapCollectionDiff', array($this, 'updateJuiOptions'));
+    $states['JuiOptions'] = ['TMapCollectionDiff', [$this, 'updateJuiOptions']];
   }
 
 	/**

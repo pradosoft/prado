@@ -50,7 +50,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 * @param string sql string after the WHERE stanza
 	 * @param mixed named or indexed parameters, accepts as multiple arguments.
 	 */
-	public function __construct($condition=null, $parameters=array())
+	public function __construct($condition=null, $parameters=[])
 	{
 		if(!is_array($parameters) && func_num_args() > 1)
 			$parameters = array_slice(func_get_args(),1);
@@ -219,7 +219,7 @@ class TSqlCriteria extends \Prado\TComponent
 		else
 		{
 			$value=trim(preg_replace('/\s+/',' ',(string)$value));
-			$orderBys=array();
+			$orderBys=[];
 			foreach(explode(',',$value) as $orderBy)
 			{
 				$vs=explode(' ',trim($orderBy));
@@ -269,12 +269,12 @@ class TSqlCriteria extends \Prado\TComponent
 		$str = '';
 		if(strlen((string)$this->getCondition()) > 0)
 			$str .= '"'.(string)$this->getCondition().'"';
-		$params = array();
+		$params = [];
 		foreach($this->getParameters() as $k=>$v)
 			$params[] = "{$k} => ${v}";
 		if(count($params) > 0)
 			$str .= ', "'.implode(', ',$params).'"';
-		$orders = array();
+		$orders = [];
 		foreach($this->getOrdersBy() as $k=>$v)
 			$orders[] = "{$k} => ${v}";
 		if(count($orders) > 0)

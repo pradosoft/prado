@@ -360,7 +360,7 @@ class TPagedList extends TList
 	public function toArray()
 	{
 		$c=$this->getCount();
-		$array=array();
+		$array=[];
 		for($i=0;$i<$c;++$i)
 			$array[$i]=$this->itemAt($i);
 		return $array;

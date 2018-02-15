@@ -85,7 +85,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private $_callbackClient;
 
-	private $_controlsToRender=array();
+	private $_controlsToRender=[];
 
 	/**
 	 * Constructor, trap errors and exception to let the callback response
@@ -121,7 +121,7 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		$id = $control->getUniqueID();
 		if(!isset($this->_controlsToRender[$id]))
-			$this->_controlsToRender[$id] = array($control,$writer);
+			$this->_controlsToRender[$id] = [$control,$writer];
 	}
 
 	/**

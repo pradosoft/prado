@@ -26,7 +26,7 @@ abstract class TRpcProtocol
 	/**
 	 * @var array containing the mapping from RPC method names to the actual handlers
 	 */
-	protected $rpcMethods = array();
+	protected $rpcMethods = [];
 
 	// abstracts
 
@@ -89,10 +89,10 @@ abstract class TRpcProtocol
 			throw new TRpcException('Method "'.$methodName.'" not found');
 
 		if($parameters === null)
-			$parameters = array();
+			$parameters = [];
 
 		if(!is_array($parameters))
-			$parameters = array($parameters);
+			$parameters = [$parameters];
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}
 }

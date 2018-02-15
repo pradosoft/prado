@@ -96,10 +96,10 @@ class MessageSource_Database extends MessageSource
 		$command->bindParameter(':variant',$variant,PDO::PARAM_STR);
 		$dataReader=$command->query();
 
-		$result = array();
+		$result = [];
 
 		foreach ($dataReader as $row)
-			$result[$row['source']] = array($row['target'],$row['id'],$row['comments']);
+			$result[$row['source']] = [$row['target'],$row['id'],$row['comments']];
 
 		return $result;
 	}
@@ -143,7 +143,7 @@ class MessageSource_Database extends MessageSource
 	{
 		$variants = explode('_',$this->culture);
 
-		$catalogues = array($catalogue);
+		$catalogues = [$catalogue];
 
 		$variant = null;
 
@@ -182,7 +182,7 @@ class MessageSource_Database extends MessageSource
 		$command->bindParameter(':catid',$cat_id,PDO::PARAM_INT);
 		$count=$command->queryScalar();
 
-		return array($cat_id, $variant, $count);
+		return [$cat_id, $variant, $count];
 	}
 
 	/**
@@ -308,7 +308,7 @@ class MessageSource_Database extends MessageSource
 		$command=$this->getDBConnection()->createCommand( 'SELECT name FROM catalogue ORDER BY name');
 		$dataReader=$command->query();
 
-		$result = array();
+		$result = [];
 
 		foreach ($dataReader as $row)
 		{

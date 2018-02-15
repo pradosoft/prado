@@ -37,7 +37,7 @@ use Prado\TPropertyValue;
 class TException extends \Exception
 {
 	private $_errorCode='';
-	static $_messageCache=array();
+	static $_messageCache=[];
 
 	/**
 	 * Constructor.
@@ -53,7 +53,7 @@ class TException extends \Exception
 		$args=func_get_args();
 		array_shift($args);
 		$n=count($args);
-		$tokens=array();
+		$tokens=[];
 		for($i=0;$i<$n;++$i)
 			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
 		parent::__construct(strtr($errorMessage,$tokens));
@@ -75,7 +75,7 @@ class TException extends \Exception
 			{
 				foreach($entries as $entry)
 				{
-					list($code,$message)=array_merge(explode('=',$entry,2), array( '' ) );
+					list($code,$message)=array_merge(explode('=',$entry,2), [ '' ] );
 					self::$_messageCache[$msgFile][trim($code)]=trim($message);
 				}
 			}

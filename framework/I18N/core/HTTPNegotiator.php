@@ -55,7 +55,7 @@ class HTTPNegotiator
 			return $this->languages;
 		}
 
-		$this->languages = array();
+		$this->languages = [];
 
 		if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
             return $this->languages;
@@ -112,7 +112,7 @@ class HTTPNegotiator
 			return $this->charsets;
 		}
 
-		$this->charsets = array();
+		$this->charsets = [];
 
 		if (!isset($_SERVER['HTTP_ACCEPT_CHARSET']))
             return $this->charsets;

@@ -48,7 +48,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function __construct(IUserManager $manager)
 	{
-		$this->_state=array();
+		$this->_state=[];
 		$this->_manager=$manager;
 		$this->setName($manager->getGuestName());
 	}
@@ -93,7 +93,7 @@ class TUser extends \Prado\TComponent implements IUser
 		if($isGuest=TPropertyValue::ensureBoolean($value))
 		{
 			$this->setName($this->_manager->getGuestName());
-			$this->setRoles(array());
+			$this->setRoles([]);
 		}
 		$this->setState('IsGuest',$isGuest);
 	}
@@ -103,7 +103,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return $this->getState('Roles',array());
+		return $this->getState('Roles',[]);
 	}
 
 	/**
@@ -112,16 +112,16 @@ class TUser extends \Prado\TComponent implements IUser
 	public function setRoles($value)
 	{
 		if(is_array($value))
-			$this->setState('Roles',$value,array());
+			$this->setState('Roles',$value,[]);
 		else
 		{
-			$roles=array();
+			$roles=[];
 			foreach(explode(',',$value) as $role)
 			{
 				if(($role=trim($role))!=='')
 					$roles[]=$role;
 			}
-			$this->setState('Roles',$roles,array());
+			$this->setState('Roles',$roles,[]);
 		}
 	}
 
@@ -154,7 +154,7 @@ class TUser extends \Prado\TComponent implements IUser
 		if(!empty($data))
 			$this->_state=unserialize($data);
 		if(!is_array($this->_state))
-			$this->_state=array();
+			$this->_state=[];
 		return $this;
 	}
 

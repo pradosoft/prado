@@ -90,7 +90,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
 		$control = new TDropDownList();
-		$years = array();
+		$years = [];
 		$current = intval(@date('Y'));
 		$from = $current-10; $to=$current+10;
 		for($i = $from; $i <= $to; $i++)
@@ -168,16 +168,16 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	protected function createTimeControl($container, $column, $record)
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
-		$hours=array();
+		$hours=[];
 		for($i=0;$i<24;$i++) $hours[] = str_pad($i,2,'0',STR_PAD_LEFT);
-		$mins=array();
+		$mins=[];
 		for($i=0;$i<60;$i++) $mins[] = str_pad($i,2,'0',STR_PAD_LEFT);
 		$hour = intval(@date('H'));
 		$min = intval(@date('i'));
 		$sec = intval(@date('s'));
 		if(!empty($value))
 		{
-			$match=array();
+			$match=[];
 			if(preg_match('/(\d+):(\d+):?(\d+)?/', $value, $match))
 			{
 				$hour = $match[1];
@@ -210,7 +210,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$scontrol->setSelectedValue(intval($sec));
 		$container->Controls[] = $scontrol;
 
-		return array($hcontrol,$mcontrol,$scontrol);
+		return [$hcontrol,$mcontrol,$scontrol];
 	}
 
 
@@ -236,7 +236,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$time = $this->createTimeControl($container, $column, $record);
 		if(!empty($value))
 		{
-			$match=array();
+			$match=[];
 			if(preg_match('/(\d+):(\d+):?(\d+)?/', substr($value, 11), $match))
 			{
 				$time[0]->setSelectedValue(intval($match[1]));
@@ -246,7 +246,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 			}
 		}
 		$time[0]->setID('scaffold_time_hour');
-		return array($control, $time[0], $time[1], $time[2]);
+		return [$control, $time[0], $time[1], $time[2]];
 	}
 
 	protected function getDateTimeValue($container, $column, $record)
@@ -283,7 +283,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 
 	protected function getMatchingIndices($checks, $values)
 	{
-		$index=array();
+		$index=[];
 		for($i=0, $k=count($checks); $i<$k; $i++)
 		{
 			if(in_array($checks[$i], $values))
@@ -311,7 +311,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 
 	protected function getSetValue($container, $column, $record)
 	{
-		$value=array();
+		$value=[];
 		foreach($container->findControl(self::DEFAULT_ID)->getItems() as $item)
 		{
 			if($item->getSelected())

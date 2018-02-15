@@ -28,31 +28,31 @@ class TApplicationConfiguration extends \Prado\TComponent
 	/**
 	 * @var array list of application initial property values, indexed by property names
 	 */
-	private $_properties=array();
+	private $_properties=[];
 	/**
 	 * @var array list of namespaces to be used
 	 */
-	private $_usings=array();
+	private $_usings=[];
 	/**
 	 * @var array list of path aliases, indexed by alias names
 	 */
-	private $_aliases=array();
+	private $_aliases=[];
 	/**
 	 * @var array list of module configurations
 	 */
-	private $_modules=array();
+	private $_modules=[];
 	/**
 	 * @var array list of service configurations
 	 */
-	private $_services=array();
+	private $_services=[];
 	/**
 	 * @var array list of parameters
 	 */
-	private $_parameters=array();
+	private $_parameters=[];
 	/**
 	 * @var array list of included configurations
 	 */
-	private $_includes=array();
+	private $_includes=[];
 	/**
 	 * @var boolean whether this configuration contains actual stuff
 	 */
@@ -251,14 +251,14 @@ class TApplicationConfiguration extends \Prado\TComponent
 				throw new TConfigurationException('appconfig_moduletype_required',$id);
 			$type = $module['class'];
 			unset($module['class']);
-			$properties = array();
+			$properties = [];
 			if(isset($module['properties']))
 			{
 				$properties = $module['properties'];
 				unset($module['properties']);
 			}
 			$properties['id'] = $id;
-			$this->_modules[$id]=array($type,$properties,$module);
+			$this->_modules[$id]=[$type,$properties,$module];
 			$this->_empty=false;
 		}
 	}
@@ -281,9 +281,9 @@ class TApplicationConfiguration extends \Prado\TComponent
 					throw new TConfigurationException('appconfig_moduletype_required',$id);
 				$element->setParent(null);
 				if($id===null)
-					$this->_modules[]=array($type,$properties->toArray(),$element);
+					$this->_modules[]=[$type,$properties->toArray(),$element];
 				else
-					$this->_modules[$id]=array($type,$properties->toArray(),$element);
+					$this->_modules[$id]=[$type,$properties->toArray(),$element];
 				$this->_empty=false;
 			}
 			else
@@ -303,10 +303,10 @@ class TApplicationConfiguration extends \Prado\TComponent
 			if(!isset($service['class']))
 				throw new TConfigurationException('appconfig_servicetype_required');
 			$type = $service['class'];
-			$properties = isset($service['properties']) ? $service['properties'] : array();
+			$properties = isset($service['properties']) ? $service['properties'] : [];
 			unset($service['properties']);
 			$properties['id'] = $id;
-			$this->_services[$id] = array($type,$properties,$service);
+			$this->_services[$id] = [$type,$properties,$service];
 			$this->_empty = false;
 		}
 	}
@@ -328,7 +328,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				if(($type=$properties->remove('class'))===null)
 					throw new TConfigurationException('appconfig_servicetype_required',$id);
 				$element->setParent(null);
-				$this->_services[$id]=array($type,$properties->toArray(),$element);
+				$this->_services[$id]=[$type,$properties->toArray(),$element];
 				$this->_empty=false;
 			}
 			else
@@ -351,9 +351,9 @@ class TApplicationConfiguration extends \Prado\TComponent
 				{
 					$type = $parameter['class'];
 					unset($parameter['class']);
-					$properties = isset($service['properties']) ? $service['properties'] : array();
+					$properties = isset($service['properties']) ? $service['properties'] : [];
 					$properties['id'] = $id;
-					$this->_parameters[$id] = array($type,$properties);
+					$this->_parameters[$id] = [$type,$properties];
 				}
 			}
 			else
@@ -385,7 +385,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 						$this->_parameters[$id]=$value;
 				}
 				else
-					$this->_parameters[$id]=array($type,$properties->toArray());
+					$this->_parameters[$id]=[$type,$properties->toArray()];
 				$this->_empty=false;
 			}
 			else

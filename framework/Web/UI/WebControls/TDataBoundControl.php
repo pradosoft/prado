@@ -372,13 +372,13 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 		if(!$this->_currentViewValid)
 		{
 			if($this->_currentView && $this->_currentViewIsFromDataSourceID)
-				$this->_currentView->detachEventHandler('DataSourceViewChanged',array($this,'dataSourceViewChanged'));
+				$this->_currentView->detachEventHandler('DataSourceViewChanged',[$this,'dataSourceViewChanged']);
 			if(($dataSource=$this->determineDataSource())!==null)
 			{
 				if(($view=$dataSource->getView($this->getDataMember()))===null)
 					throw new TInvalidDataValueException('databoundcontrol_datamember_invalid',$this->getDataMember());
 				if($this->_currentViewIsFromDataSourceID=$this->getUsingDataSourceID())
-					$view->attachEventHandler('OnDataSourceViewChanged',array($this,'dataSourceViewChanged'));
+					$view->attachEventHandler('OnDataSourceViewChanged',[$this,'dataSourceViewChanged']);
 				$this->_currentView=$view;
 			}
 			else
@@ -433,7 +433,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::onInit($param);
 		$page=$this->getPage();
-		$page->attachEventHandler('OnPreLoad',array($this,'pagePreLoad'));
+		$page->attachEventHandler('OnPreLoad',[$this,'pagePreLoad']);
 	}
 
 	/**
@@ -479,7 +479,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 				if(is_array($value))
 					$list->add($value);
 				else
-					$list->add(array($value,is_string($key)?$key:$value));
+					$list->add([$value,is_string($key)?$key:$value]);
 			}
 			return $list;
 		}

@@ -57,7 +57,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 	{
 		parent::addMethod($methodName, $methodDetails);
 
-		xmlrpc_server_register_method($this->_xmlrpcServer, $methodName, array($this, 'callApiMethod'));
+		xmlrpc_server_register_method($this->_xmlrpcServer, $methodName, [$this, 'callApiMethod']);
 	}
 
 	// methods
@@ -94,10 +94,10 @@ class TXmlRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		return $this->encode(array(
+		return $this->encode([
 			'faultCode' => $exception->getCode(),
 			'faultString' => $exception->getMessage()
-		));
+		]);
 	}
 
 	/**

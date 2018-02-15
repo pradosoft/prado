@@ -65,13 +65,13 @@ class TCallbackPageStateTracker
 	protected function addStatesToTrack()
 	{
 		$states = $this->getStatesToTrack();
-		$states['Visible'] = array('TScalarDiff', array($this, 'updateVisible'));
-		$states['Enabled'] = array('TScalarDiff', array($this, 'updateEnabled'));
-		$states['Attributes'] = array('TMapCollectionDiff', array($this, 'updateAttributes'));
-		$states['Style'] = array('TStyleDiff', array($this, 'updateStyle'));
-		$states['TabIndex'] = array('TScalarDiff', array($this, 'updateTabIndex'));
-		$states['ToolTip'] = array('TScalarDiff', array($this, 'updateToolTip'));
-		$states['AccessKey'] = array('TScalarDiff', array($this, 'updateAccessKey'));
+		$states['Visible'] = ['TScalarDiff', [$this, 'updateVisible']];
+		$states['Enabled'] = ['TScalarDiff', [$this, 'updateEnabled']];
+		$states['Attributes'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
+		$states['Style'] = ['TStyleDiff', [$this, 'updateStyle']];
+		$states['TabIndex'] = ['TScalarDiff', [$this, 'updateTabIndex']];
+		$states['ToolTip'] = ['TScalarDiff', [$this, 'updateToolTip']];
+		$states['AccessKey'] = ['TScalarDiff', [$this, 'updateAccessKey']];
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TCallbackPageStateTracker
 	 */
 	protected function getChanges()
 	{
-		$changes = array();
+		$changes = [];
 		foreach($this->_states as $name => $details)
 		{
 			$new = $this->_control->getViewState($name);
@@ -109,7 +109,7 @@ class TCallbackPageStateTracker
 			{
 				$diff = new $details[0]($new, $old, $this->_nullObject);
 				if(($change = $diff->getDifference()) !== $this->_nullObject)
-					$changes[] = array($details[1],array($change));
+					$changes[] = [$details[1],[$change]];
 			}
 		}
 		return $changes;

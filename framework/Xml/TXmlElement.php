@@ -246,13 +246,13 @@ class TXmlElement extends \Prado\TComponent
 
 	private function xmlEncode($str)
 	{
-		return strtr($str,array(
+		return strtr($str,[
 			'>'=>'&gt;',
 			'<'=>'&lt;',
 			'&'=>'&amp;',
 			'"'=>'&quot;',
 			"\r"=>'&#xD;',
 			"\t"=>'&#x9;',
-			"\n"=>'&#xA;'));
+			"\n"=>'&#xA;']);
 	}
 }

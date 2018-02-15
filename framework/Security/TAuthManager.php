@@ -101,9 +101,9 @@ class TAuthManager extends \Prado\TModule
 				throw new TConfigurationException('authmanager_usermanager_invalid',$this->_userManager);
 			$this->_userManager=$users;
 		}
-		$application->attachEventHandler('OnAuthentication',array($this,'doAuthentication'));
-		$application->attachEventHandler('OnEndRequest',array($this,'leave'));
-		$application->attachEventHandler('OnAuthorization',array($this,'doAuthorization'));
+		$application->attachEventHandler('OnAuthentication',[$this,'doAuthentication']);
+		$application->attachEventHandler('OnEndRequest',[$this,'leave']);
+		$application->attachEventHandler('OnAuthorization',[$this,'doAuthorization']);
 		$this->_initialized=true;
 	}
 

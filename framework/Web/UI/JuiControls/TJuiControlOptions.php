@@ -74,7 +74,7 @@ class TJuiControlOptions
 	public function __set($name,$value)
 	{
 		if($this->_options===null)
-			$this->_options=array();
+			$this->_options=[];
 
 		foreach($this->_control->getValidOptions() as $option)
 		{
@@ -112,7 +112,7 @@ class TJuiControlOptions
 	public function __get($name)
 	{
 		if($this->_options===null)
-			$this->_options=array();
+			$this->_options=[];
 
 		foreach($this->_control->getValidOptions() as $option)
 		{
@@ -130,7 +130,7 @@ class TJuiControlOptions
 	 * @return mixed array with the names of all variables of that object that should be serialized.
 	 */
 	public function __sleep() {
-	  return array('_options');
+	  return ['_options'];
 	}
 
 	/**
@@ -138,7 +138,7 @@ class TJuiControlOptions
 	 */
 	public function toArray()
 	{
-		$ret= ($this->_options===null) ? array() : $this->_options;
+		$ret= ($this->_options===null) ? [] : $this->_options;
 
 		foreach($this->_control->getValidEvents() as $event)
 			if($this->_control->hasEventHandler('on'.$event))

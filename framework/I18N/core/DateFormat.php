@@ -54,7 +54,7 @@ class DateFormat
 	 * A list of tokens and their function call.
 	 * @var array
 	 */
-	protected $tokens = array(
+	protected $tokens = [
 			'G'=>'Era',
 			'y'=>'Year',
 			'M'=>'Month',
@@ -72,13 +72,13 @@ class DateFormat
 			'k'=>'HourInDay',
 			'K'=>'HourInAMPM',
 			'z'=>'TimeZone'
-			);
+			];
 
 	/**
 	 * A list of methods, to be used by the token function calls.
 	 * @var array
 	 */
-	protected $methods = array();
+	protected $methods = [];
 
 	/**
 	 * The DateTimeFormatInfo, containing culture specific patterns and names.
@@ -276,7 +276,7 @@ class DateFormat
 	protected function getTokens($pattern)
 	{
 		$char = null;
-		$tokens = array();
+		$tokens = [];
 		$token = null;
 
 		$text = false;

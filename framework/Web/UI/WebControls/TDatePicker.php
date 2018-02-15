@@ -488,7 +488,7 @@ class TDatePicker extends TTextBox
 		$date = @getdate();
 
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 
 		$order = $formatter->getDayMonthYearOrdering();
@@ -518,7 +518,7 @@ class TDatePicker extends TTextBox
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
 
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->format($date);
@@ -566,7 +566,7 @@ class TDatePicker extends TTextBox
 	protected function getCulturalOptions()
 	{
 		if($this->getCurrentCulture() == 'en')
-			return array();
+			return [];
 
 		$date = $this->getLocalizedCalendarInfo();
 		$options['MonthNames'] = $date->getMonthNames();
@@ -660,7 +660,7 @@ class TDatePicker extends TTextBox
 	protected function getTimeStampFromText()
 	{
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}
@@ -708,7 +708,7 @@ class TDatePicker extends TTextBox
 	protected function getDropDownDayOptions()
 	{
 		$formatter = new TSimpleDateFormatter($this->getDateFormat());
-		$days = array();
+		$days = [];
 		$requiresPadding = $formatter->getDayPattern() === 'dd';
 		for($i=1;$i<=31;$i++)
 		{
@@ -750,12 +750,12 @@ class TDatePicker extends TTextBox
 		{
 			case 'MMM': return $info->getAbbreviatedMonthNames();
 			case 'MM':
-				$array = array();
+				$array = [];
 				for($i=1;$i<=12;$i++)
 						$array[$i-1] = $i < 10 ? '0'.$i : $i;
 				return $array;
 			case 'M':
-				$array = array(); for($i=1;$i<=12;$i++) $array[$i-1] = $i;
+				$array = []; for($i=1;$i<=12;$i++) $array[$i-1] = $i;
 				return $array;
 			default :	return $info->getMonthNames();
 		}
@@ -768,7 +768,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function renderCalendarYearOptions($writer, $selected=null)
 	{
-		$years = array();
+		$years = [];
 		for($i = $this->getFromYear(); $i <= $this->getUpToYear(); $i++)
 			$years[$i] = $i;
 		$writer->addAttribute('id', $this->getClientID().TControl::CLIENT_ID_SEPARATOR.'year');

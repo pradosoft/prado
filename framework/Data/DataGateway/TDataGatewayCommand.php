@@ -199,7 +199,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	{
 		if (!count($values))
 			return 'FALSE';
-		$columns = array();
+		$columns = [];
 		$tableName = $table->getTableFullName();
 		foreach($fields as $field)
 			$columns[] = $tableName.'.'.$table->getColumn($field)->getColumnName();
@@ -226,7 +226,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 				$this->getTableInfo()->getTableFullName());
 		}
 		if($count>1 && (!isset($values[0]) || !is_array($values[0])))
-			$values = array($values);
+			$values = [$values];
 		if($count > 1 && count($values[0]) !== $count)
 		{
 			throw new TDbException('dbtablegateway_pk_value_count_mismatch',
@@ -243,7 +243,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	protected function quoteTuple($array)
 	{
 		$conn = $this->getDbConnection();
-		$data = array();
+		$data = [];
 		foreach($array as $k=>$v)
 			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
 		return '('.implode(', ', $data).')';
@@ -262,8 +262,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 			throw new TDbException('dbtablegateway_no_primary_key_found',
 				$this->getTableInfo()->getTableFullName());
 		}
-		$criteria=array();
-		$bindings=array();
+		$criteria=[];
+		$bindings=[];
 		$i = 0;
 		foreach($primary as $key)
 		{
@@ -271,7 +271,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 			$criteria[] = $column.' = :'.$key;
 			$bindings[$key] = isset($values[$key])?$values[$key]:$values[$i++];
 		}
-		return array(implode(' AND ', $criteria), $bindings);
+		return [implode(' AND ', $criteria), $bindings];
 	}
 
 	/**
@@ -395,14 +395,14 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$table = $this->getTableInfo();
 		$columns = $table->getLowerCaseColumnNames();
 		$regexp = '/('.implode('|', array_keys($columns)).')(and|_and_|or|_or_)?/i';
-		$matches = array();
+		$matches = [];
 		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
 		{
 			throw new TDbException('dbtablegateway_mismatch_column_name',
 				$method, implode(', ', $columns), $table->getTableFullName());
 		}
 
-		$fields = array();
+		$fields = [];
 		foreach($matches as $match)
 		{
 			$key = $columns[$match[1]];

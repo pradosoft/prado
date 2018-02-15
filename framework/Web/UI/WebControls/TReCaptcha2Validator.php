@@ -88,7 +88,7 @@ class TReCaptcha2Validator extends TBaseValidator
         {
             $fn = 'captchaUpdateValidatorStatus_'.$this->getClientID();
 
-            $cs->registerEndScript($this->getClientID().'::validate', implode(' ',array(
+            $cs->registerEndScript($this->getClientID().'::validate', implode(' ',[
                 // this function will be used to update the validator
                 'function '.$fn.'(valid)',
                 '{',
@@ -104,7 +104,7 @@ class TReCaptcha2Validator extends TBaseValidator
                 'jQuery("#'.$control->getClientID().'").on("change", '.TJavaScript::quoteString('#'.$control->getResponseFieldName()).', function() { ',
                     $fn.'("1");',
                 '});',
-            )));
+            ]));
         }
     }
 }

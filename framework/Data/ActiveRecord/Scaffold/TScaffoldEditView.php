@@ -271,7 +271,7 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	protected function getScaffoldInputBuilder($record)
 	{
-		static $_builders=array();
+		static $_builders=[];
 		$class = get_class($record);
 		if(!isset($_builders[$class]))
 		{

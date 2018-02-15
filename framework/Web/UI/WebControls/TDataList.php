@@ -1173,9 +1173,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	private function getAlternatingItemDisplay()
 	{
 		if(($classPath=$this->getAlternatingItemRenderer())==='' && $this->_alternatingItemTemplate===null)
-			return array($this->getItemRenderer(),$this->_itemTemplate);
+			return [$this->getItemRenderer(),$this->_itemTemplate];
 		else
-			return array($classPath,$this->_alternatingItemTemplate);
+			return [$classPath,$this->_alternatingItemTemplate];
 	}
 
 	private function getSelectedItemDisplay($itemIndex)
@@ -1183,12 +1183,12 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if(($classPath=$this->getSelectedItemRenderer())==='' && $this->_selectedItemTemplate===null)
 		{
 			if($itemIndex%2===0)
-				return array($this->getItemRenderer(),$this->_itemTemplate);
+				return [$this->getItemRenderer(),$this->_itemTemplate];
 			else
 				return $this->getAlternatingItemDisplay();
 		}
 		else
-			return array($classPath,$this->_selectedItemTemplate);
+			return [$classPath,$this->_selectedItemTemplate];
 	}
 
 	private function getEditItemDisplay($itemIndex)
@@ -1196,7 +1196,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if(($classPath=$this->getEditItemRenderer())==='' && $this->_editItemTemplate===null)
 			return $this->getSelectedItemDisplay($itemIndex);
 		else
-			return array($classPath,$this->_editItemTemplate);
+			return [$classPath,$this->_editItemTemplate];
 	}
 
 	/**

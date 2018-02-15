@@ -51,8 +51,8 @@ class TFirePhpLogRoute extends TLogRoute
 		}
 
 		$firephp = FirePHP::getInstance(true);
-		$firephp->setOptions(array('useNativeJsonEncode' => false));
-		$firephp->group($this->getGroupLabel(), array('Collapsed' => true));
+		$firephp->setOptions(['useNativeJsonEncode' => false]);
+		$firephp->group($this->getGroupLabel(), ['Collapsed' => true]);
 		$firephp->log('Time,  Message');
 
 		$first = $logs[0][3];

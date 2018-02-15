@@ -99,11 +99,11 @@ class TTemplateManager extends \Prado\TModule
 				}
 				$template=new TTemplate(file_get_contents($fileName),dirname($fileName),$fileName);
 				$includedFiles=$template->getIncludedFiles();
-				$timestamps=array();
+				$timestamps=[];
 				$timestamps[$fileName]=filemtime($fileName);
 				foreach($includedFiles as $includedFile)
 					$timestamps[$includedFile]=filemtime($includedFile);
-				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,array($template,$timestamps));
+				$cache->set(self::TEMPLATE_CACHE_PREFIX.$fileName,[$template,$timestamps]);
 				return $template;
 			}
 		}

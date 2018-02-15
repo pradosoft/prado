@@ -71,7 +71,7 @@ class TLazyLoadList
 	 */
 	public function intercept($method, $arguments)
 	{
-		return call_user_func_array(array($this->_innerList, $method), $arguments);
+		return call_user_func_array([$this->_innerList, $method], $arguments);
 	}
 
 	/**

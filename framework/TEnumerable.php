@@ -38,7 +38,7 @@ namespace Prado;
  */
 class TEnumerable implements \Iterator
 {
-	private $_enums=array();
+	private $_enums=[];
 
 	public function __construct() {
 		$reflection=new \ReflectionClass($this);

@@ -36,7 +36,7 @@ class TUri extends \Prado\TComponent
 	/**
 	 * @var array list of default ports for known schemes
 	 */
-	private static $_defaultPort=array(
+	private static $_defaultPort=[
 		'ftp'=>21,
 		'gopher'=>70,
 		'http'=>80,
@@ -45,7 +45,7 @@ class TUri extends \Prado\TComponent
 		'nntp'=>119,
 		'wais'=>210,
 		'telnet'=>23
-	);
+	];
 	/**
 	 * @var string scheme of the URI
 	 */

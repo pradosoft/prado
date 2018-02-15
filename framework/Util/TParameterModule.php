@@ -102,15 +102,15 @@ class TParameterModule extends \Prado\TModule
 	 */
 	protected function loadParameters($config)
 	{
-		$parameters=array();
+		$parameters=[];
 		if(is_array($config))
 		{
 			foreach($config as $id => $parameter)
 			{
 				if(is_array($parameter) && isset($parameter['class']))
 				{
-					$properties = isset($parameter['properties'])?$parameter['properties']:array();
-					$parameters[$id]=array($parameter['class'],$properties);
+					$properties = isset($parameter['properties'])?$parameter['properties']:[];
+					$parameters[$id]=[$parameter['class'],$properties];
 				}
 				else
 				{
@@ -133,7 +133,7 @@ class TParameterModule extends \Prado\TModule
 						$parameters[$id]=$value;
 				}
 				else
-					$parameters[$id]=array($type,$properties->toArray());
+					$parameters[$id]=[$type,$properties->toArray()];
 			}
 		}
 

@@ -74,7 +74,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * @var array published assets
 	 */
-	private $_published=array();
+	private $_published=[];
 	/**
 	 * @var boolean whether the module is initialized
 	 */
@@ -198,7 +198,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param $values List of published assets
 	 * @since 3.1.6
 	 */
-	protected function setPublished($values=array())
+	protected function setPublished($values=[])
 	{
 		$this->_published = $values;
 	}

@@ -118,7 +118,7 @@ class TActiveCustomValidator extends TCustomValidator
 		{
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.updateActiveCustomValidator';
-			$client->callClientFunction($func, array($this, $value));
+			$client->callClientFunction($func, [$this, $value]);
 		}
 	}
 
@@ -160,7 +160,7 @@ class TActiveCustomValidator extends TCustomValidator
 		{
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.setErrorMessage';
-			$client->callClientFunction($func, array($this, $value));
+			$client->callClientFunction($func, [$this, $value]);
 		}
 	}
 

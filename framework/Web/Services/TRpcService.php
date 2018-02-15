@@ -72,15 +72,15 @@ class TRpcService extends \Prado\TService
 	/**
 	 * @var array containing mimetype to protocol handler mappings
 	 */
-	protected $protocolHandlers = array(
+	protected $protocolHandlers = [
 		'application/json' => 'TJsonRpcProtocol',
 		'text/xml' => 'TXmlRpcProtocol'
-	);
+	];
 
 	/**
 	 * @var array containing API provider and their configured properties
 	 */
-	protected $apiProviders = array();
+	protected $apiProviders = [];
 
 	// methods
 

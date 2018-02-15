@@ -194,20 +194,20 @@ class TCompareValidator extends TBaseValidator
 		switch($this->getDataType())
 		{
 			case TValidationDataType::Integer:
-				return array(intval($value1), intval($value2));
+				return [intval($value1), intval($value2)];
 			case TValidationDataType::Float:
-				return array(floatval($value1), floatval($value2));
+				return [floatval($value1), floatval($value2)];
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
 				if($dateFormat!=='')
 				{
 					$formatter = new TSimpleDateFormatter($dateFormat);
-					return array($formatter->parse($value1), $formatter->parse($value2));
+					return [$formatter->parse($value1), $formatter->parse($value2)];
 				}
 				else
-					return array(strtotime($value1), strtotime($value2));
+					return [strtotime($value1), strtotime($value2)];
 		}
-		return array($value1, $value2);
+		return [$value1, $value2];
 	}
 
 	/**

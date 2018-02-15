@@ -1,7 +1,7 @@
 <?php
 
 //package base folder in prado alias notation
-$folders = array(
+$folders = [
 	'prado' => 'Prado\\Web\\Javascripts\\source\\prado',
 	'jquery' => 'Vendor\\bower-asset\\jquery\\dist',
 	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
@@ -10,131 +10,131 @@ $folders = array(
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
 	'clipboard' => 'Vendor\\bower-asset\\clipboard\\dist',
-);
+];
 
 //package names and its contents (files relative to the current directory)
-$packages = array(
+$packages = [
 	// base prado scripts
-	'prado' => array(
+	'prado' => [
 		'prado/prado.js',
 		'prado/controls/controls.js',
-	),
+	],
 
-	'logger' => array(
+	'logger' => [
 		'prado/logger/logger.js',
-	),
+	],
 
-	'validator' => array(
+	'validator' => [
 		'prado/validator/validation3.js',
-	),
+	],
 
-	'datepicker' => array(
+	'datepicker' => [
 		'prado/datepicker/datepicker.js',
-	),
+	],
 
-	'colorpicker' => array(
+	'colorpicker' => [
 		'prado/colorpicker/colorpicker.js',
-	),
+	],
 
-	'ajax' => array(
+	'ajax' => [
 		'prado/activecontrols/ajax3.js',
 		'prado/activecontrols/activecontrols3.js',
-	),
+	],
 
-	'slider'=>array(
+	'slider'=>[
 		'prado/controls/slider.js',
-	),
+	],
 
-	'keyboard'=>array(
+	'keyboard'=>[
 		'prado/controls/keyboard.js',
-	),
+	],
 
-	'tabpanel'=>array(
+	'tabpanel'=>[
 		'prado/controls/tabpanel.js',
-	),
+	],
 
-	'activedatepicker' => array(
+	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
-	),
+	],
 
-	'activefileupload' => array(
+	'activefileupload' => [
 		'prado/activefileupload/activefileupload.js',
-	),
+	],
 
-	'htmlarea'=>array(
+	'htmlarea'=>[
 		'prado/controls/htmlarea.js',
-	),
+	],
 
-	'htmlarea4'=>array(
+	'htmlarea4'=>[
 		'prado/controls/htmlarea4.js',
-	),
+	],
 
-	'accordion'=>array(
+	'accordion'=>[
 		'prado/controls/accordion.js',
-	),
+	],
 
-	'inlineeditor' => array(
+	'inlineeditor' => [
 		'prado/activecontrols/inlineeditor.js',
-	),
+	],
 
-	'ratings' => array(
+	'ratings' => [
 		'prado/ratings/ratings.js',
-	),
+	],
 
 	// jquery
-	'jquery' => array(
+	'jquery' => [
 		'jquery/jquery.js',
-	),
-	'jqueryui' => array(
+	],
+	'jqueryui' => [
 		'jquery-ui/jquery-ui.js',
-	),
+	],
 		
 	//bootstrap
-	'bootstrap' => array(
+	'bootstrap' => [
 		'bootstrap/js/bootstrap.js',
-	),
+	],
 
 	//tinymce
-	'tinymce' => array(
+	'tinymce' => [
 		'tinymce/tinymce.js',
-	),
+	],
 
 	//highlightjs
-	'highlightjs' => array(
+	'highlightjs' => [
 		'highlightjs/highlight.pack.js',
 		'highlightjs-line-numbers/highlightjs-line-numbers.min.js',
-	),
+	],
 
 	//clipboard
-	'clipboard' => array(
+	'clipboard' => [
 		'clipboard/clipboard.js',
-	)
-);
+	]
+];
 
 //package names and their dependencies
-$dependencies = array(
-	'jquery'			=> array('jquery'),
-	'prado'				=> array('jquery', 'prado'),
-	'bootstrap'			=> array('jquery', 'bootstrap'),
-	'validator'			=> array('jquery', 'prado', 'validator'),
-	'tabpanel'			=> array('jquery', 'prado', 'tabpanel'),
-	'ajax'				=> array('jquery', 'prado', 'ajax'),
-	'logger'			=> array('jquery', 'prado', 'logger'),
-	'activefileupload'	=> array('jquery', 'prado', 'ajax', 'activefileupload'),
-	'effects'			=> array('jquery', 'jqueryui'),
-	'datepicker'		=> array('jquery', 'prado', 'datepicker'),
-	'activedatepicker'	=> array('jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'),
-	'colorpicker'		=> array('jquery', 'prado', 'colorpicker'),
-	'htmlarea'			=> array('jquery', 'prado', 'htmlarea'),
-	'htmlarea4'			=> array('jquery', 'prado', 'htmlarea4', 'tinymce'),
-	'keyboard'			=> array('jquery', 'prado', 'keyboard'),
-	'slider'			=> array('jquery', 'prado', 'slider'),
-	'inlineeditor'		=> array('jquery', 'prado', 'ajax', 'inlineeditor'),
-	'accordion'			=> array('jquery', 'prado', 'accordion'),
-	'ratings'			=> array('jquery', 'prado', 'ajax', 'ratings'),
-	'jqueryui'			=> array('jquery', 'jqueryui'),
-	'texthighlight'		=> array('jquery', 'prado', 'highlightjs', 'clipboard'),
-);
+$dependencies = [
+	'jquery'			=> ['jquery'],
+	'prado'				=> ['jquery', 'prado'],
+	'bootstrap'			=> ['jquery', 'bootstrap'],
+	'validator'			=> ['jquery', 'prado', 'validator'],
+	'tabpanel'			=> ['jquery', 'prado', 'tabpanel'],
+	'ajax'				=> ['jquery', 'prado', 'ajax'],
+	'logger'			=> ['jquery', 'prado', 'logger'],
+	'activefileupload'	=> ['jquery', 'prado', 'ajax', 'activefileupload'],
+	'effects'			=> ['jquery', 'jqueryui'],
+	'datepicker'		=> ['jquery', 'prado', 'datepicker'],
+	'activedatepicker'	=> ['jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'],
+	'colorpicker'		=> ['jquery', 'prado', 'colorpicker'],
+	'htmlarea'			=> ['jquery', 'prado', 'htmlarea'],
+	'htmlarea4'			=> ['jquery', 'prado', 'htmlarea4', 'tinymce'],
+	'keyboard'			=> ['jquery', 'prado', 'keyboard'],
+	'slider'			=> ['jquery', 'prado', 'slider'],
+	'inlineeditor'		=> ['jquery', 'prado', 'ajax', 'inlineeditor'],
+	'accordion'			=> ['jquery', 'prado', 'accordion'],
+	'ratings'			=> ['jquery', 'prado', 'ajax', 'ratings'],
+	'jqueryui'			=> ['jquery', 'jqueryui'],
+	'texthighlight'		=> ['jquery', 'prado', 'highlightjs', 'clipboard'],
+];
 
-return array($folders, $packages, $dependencies);
+return [$folders, $packages, $dependencies];
 

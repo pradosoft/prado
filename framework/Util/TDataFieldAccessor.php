@@ -71,7 +71,7 @@ class TDataFieldAccessor
 				if(strpos($field,'.')===false)  // simple field
 				{
 					if(method_exists($data, 'get'.$field))
-						return call_user_func(array($data,'get'.$field));
+						return call_user_func([$data,'get'.$field]);
 					else
 						return $data->{$field};
 				}

@@ -718,7 +718,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		{
 			$this->_multiView=new TMultiView;
 			$this->_multiView->setID('WizardMultiView');
-			$this->_multiView->attachEventHandler('OnActiveViewChanged',array($this,'onActiveStepChanged'));
+			$this->_multiView->attachEventHandler('OnActiveViewChanged',[$this,'onActiveStepChanged']);
 			$this->_multiView->ignoreBubbleEvents();
 		}
 		return $this->_multiView;
@@ -1096,8 +1096,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 			if(($this->_sideBarDataList=$this->_sideBar->findControl(self::ID_SIDEBAR_LIST))!==null)
 			{
-				$this->_sideBarDataList->attachEventHandler('OnItemCommand',array($this,'dataListItemCommand'));
-				$this->_sideBarDataList->attachEventHandler('OnItemDataBound',array($this,'dataListItemDataBound'));
+				$this->_sideBarDataList->attachEventHandler('OnItemCommand',[$this,'dataListItemCommand']);
+				$this->_sideBarDataList->attachEventHandler('OnItemDataBound',[$this,'dataListItemDataBound']);
 				$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 				$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 				$this->_sideBarDataList->dataBind();

@@ -155,7 +155,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	{
 		if(($dir=opendir($directory))===false)
 			throw new TIOException('directorycachedependency_directory_invalid',$directory);
-		$timestamps=array();
+		$timestamps=[];
 		while(($file=readdir($dir))!==false)
 		{
 			$path=$directory.DIRECTORY_SEPARATOR.$file;

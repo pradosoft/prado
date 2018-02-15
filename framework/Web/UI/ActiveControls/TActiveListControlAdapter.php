@@ -76,7 +76,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			if($promptValue==='')
 				$promptValue=$this->getControl()->getPromptText();
 
-			$list = array();
+			$list = [];
 			foreach($indices as $index)
 			{
 				$index = intval($index);
@@ -114,7 +114,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		if($this->canUpdateClientSide())
 		{
 			$this->updateListItems();
-			$list = array();
+			$list = [];
 			foreach($values as $value)
 				$list[] = $value;
 			if(count($list) > 0)

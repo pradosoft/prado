@@ -121,16 +121,16 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	protected function findOrdering($sql)
 	{
 		if(!preg_match('/ORDER BY/i', $sql))
-			return array();
-		$matches=array();
-		$ordering=array();
+			return [];
+		$matches=[];
+		$ordering=[];
 		preg_match_all('/(ORDER BY)[\s"\[](.*)(ASC|DESC)?(?:[\s"\[]|$|COMPUTE|FOR)/i', $sql, $matches);
 		if(count($matches)>1 && count($matches[2]) > 0)
 		{
 			$parts = explode(',', $matches[2][0]);
 			foreach($parts as $part)
 			{
-				$subs=array();
+				$subs=[];
 				if(preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs))
 				{
 					if(count($subs) > 1 && count($subs[2]) > 0)
@@ -154,7 +154,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	{
 		if(count($orders)>0)
 		{
-			$str=array();
+			$str=[];
 			foreach($orders as $column => $direction)
 				$str[] = $column.' '.$direction;
 			return 'ORDER BY '.implode(', ', $str);

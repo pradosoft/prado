@@ -113,7 +113,7 @@ class TTarFileExtractor
     protected function extractModify($p_path, $p_remove_path)
     {
         $v_result = true;
-        $v_list_detail = array();
+        $v_list_detail = [];
 
         if ($v_result = $this->_openRead()) {
             $v_result = $this->_extractList($p_path, $v_list_detail,

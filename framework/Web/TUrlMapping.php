@@ -75,7 +75,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
 	 */
-	protected $_patterns=array();
+	protected $_patterns=[];
 	/**
 	 * @var TUrlMappingPattern matched pattern.
 	 */
@@ -91,7 +91,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var array rules for constructing URLs
 	 */
-	protected $_constructRules=array();
+	protected $_constructRules=[];
 
 	private $_urlPrefix='';
 
@@ -247,7 +247,7 @@ class TUrlMapping extends TUrlManager
 				foreach($config['urls'] as $url)
 				{
 					$class=isset($url['class'])?$url['class']:$defaultClass;
-					$properties = isset($url['properties'])?$url['properties']:array();
+					$properties = isset($url['properties'])?$url['properties']:[];
 					$this->buildUrlMapping($class,$properties,$url);
 				}
 			}
@@ -312,7 +312,7 @@ class TUrlMapping extends TUrlManager
 			if(count($matches)>0)
 			{
 				$this->_matched=$pattern;
-				$params=array();
+				$params=[];
 				foreach($matches as $key=>$value)
 				{
 					if(is_string($key))
@@ -355,7 +355,7 @@ class TUrlMapping extends TUrlManager
 		if($this->_customUrl)
 		{
 			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
-				$getItems=array();
+				$getItems=[];
 			$key=$serviceID.':'.$serviceParam;
 			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
 				$serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';

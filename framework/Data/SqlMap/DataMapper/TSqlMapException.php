@@ -28,7 +28,7 @@ class TSqlMapException extends TException
 		$args=func_get_args();
 		array_shift($args);
 		$n=count($args);
-		$tokens=array();
+		$tokens=[];
 		for($i=0;$i<$n;++$i)
 		{
 			if($args[$i] instanceof SimpleXMLElement)
@@ -45,7 +45,7 @@ class TSqlMapException extends TException
 	 */
 	protected function implodeNode($node)
 	{
-		$attributes=array();
+		$attributes=[];
 		foreach($node->attributes() as $k=>$v)
 			$attributes[]=$k.'="'.(string)$v.'"';
 		return '<'.$node->getName().' '.implode(' ',$attributes).'>';

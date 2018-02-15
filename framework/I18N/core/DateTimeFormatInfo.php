@@ -83,13 +83,13 @@ class DateTimeFormatInfo
 	 * ICU date time formatting data.
 	 * @var array
 	 */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * A list of properties that are accessable/writable.
 	 * @var array
 	 */
-	protected $properties = array();
+	protected $properties = [];
 
 	/**
 	 * Allow functions that begins with 'set' to be called directly
@@ -127,7 +127,7 @@ class DateTimeFormatInfo
 	 * @param array ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	function __construct($data=array())
+	function __construct($data=[])
 	{
 		$this->properties = get_class_methods($this);
 
@@ -512,7 +512,7 @@ class DateTimeFormatInfo
 	function formatDateTime($date, $time)
 	{
 		$pattern = $this->getDateTimeOrderPattern();
-		return str_replace(array('{0}','{1}'), array($time, $date), $pattern);
+		return str_replace(['{0}','{1}'], [$time, $date], $pattern);
 	}
 
 }

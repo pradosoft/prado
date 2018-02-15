@@ -69,7 +69,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 {
 	private $_id='';
 	private $_owner=null;
-	private $_viewState=array();
+	private $_viewState=[];
 
 	/**
 	 * @return string the ID of the column.
@@ -528,7 +528,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			return TPropertyValue::ensureString($value);
 		elseif($formatString[0]==='#')
 		{
-			$expression=strtr(substr($formatString,1),array('{0}'=>'$value'));
+			$expression=strtr(substr($formatString,1),['{0}'=>'$value']);
 			try
 			{
 				if(eval("\$result=$expression;")===false)

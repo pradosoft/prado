@@ -27,12 +27,12 @@ use Prado\Prado;
  */
 class TOracleTableColumn extends TDbTableColumn
 {
-	private static $types=array(
-		'numeric' => array( 'numeric' )
+	private static $types=[
+		'numeric' => [ 'numeric' ]
 //		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
 //		'boolean' => array('boolean'),
 //		'float' => array('bigint', 'bigserial', 'double precision', 'money', 'numeric')
-	);
+	];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.

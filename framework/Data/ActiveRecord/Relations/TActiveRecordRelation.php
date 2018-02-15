@@ -76,9 +76,9 @@ abstract class TActiveRecordRelation
 	 */
 	public function __call($method,$args)
 	{
-		static $stack=array();
+		static $stack=[];
 
-		$results = call_user_func_array(array($this->getSourceRecord(),$method),$args);
+		$results = call_user_func_array([$this->getSourceRecord(),$method],$args);
 		$validArray = is_array($results) && count($results) > 0;
 		if($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord)
 		{
@@ -89,7 +89,7 @@ abstract class TActiveRecordRelation
 		elseif($results instanceof TActiveRecordRelation)
 			$stack[] = $this; //call it later
 		elseif($results === null || !$validArray)
-			$stack = array();
+			$stack = [];
 		return $results;
 	}
 
@@ -152,9 +152,9 @@ abstract class TActiveRecordRelation
 	 */
 	private function getFkFields($fkeys)
 	{
-		$matching = array();
+		$matching = [];
 		preg_match_all('/\s*(\S+\.)?([\w-]+)\s*/', $this->getContext()->getFkField(), $matching);
-		$fields = array();
+		$fields = [];
 		foreach($fkeys as $fkName => $field)
 		{
 			if(in_array($fkName, $matching[2]))
@@ -170,7 +170,7 @@ abstract class TActiveRecordRelation
 	 */
 	protected function getObjectHash($obj, $properties)
 	{
-		$ids=array();
+		$ids=[];
 		foreach($properties as $property)
 			$ids[] = is_object($obj) ? (string)$obj->getColumnValue($property) : (string)$obj[$property];
 		return serialize($ids);
@@ -197,11 +197,11 @@ abstract class TActiveRecordRelation
 	protected function getIndexValues($keys, $results)
 	{
 		if(!is_array($results) && !$results instanceof \ArrayAccess)
-			$results = array($results);
-		$values=array();
+			$results = [$results];
+		$values=[];
 		foreach($results as $result)
 		{
-			$value = array();
+			$value = [];
 			foreach($keys as $name)
 				$value[] = $result->getColumnValue($name);
 			$values[] = $value;
@@ -218,7 +218,7 @@ abstract class TActiveRecordRelation
 	 */
 	protected function populateResult(&$results,$properties,&$fkObjects,$fields)
 	{
-		$collections=array();
+		$collections=[];
 		foreach($fkObjects as $fkObject)
 			$collections[$this->getObjectHash($fkObject, $fields)][]=$fkObject;
 		$this->setResultCollection($results, $collections, $properties);
@@ -251,7 +251,7 @@ abstract class TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		$source->$prop=isset($collections[$hash]) ? $collections[$hash] : array();
+		$source->$prop=isset($collections[$hash]) ? $collections[$hash] : [];
 	}
 }
 

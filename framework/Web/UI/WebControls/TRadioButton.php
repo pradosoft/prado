@@ -50,7 +50,7 @@ class TRadioButton extends TCheckBox
 	/**
 	 * @param array list of radio buttons that are on the current page hierarchy
 	 */
-	private static $_activeButtons=array();
+	private static $_activeButtons=[];
 	/**
 	 * @var integer number of radio buttons created
 	 */
@@ -205,7 +205,7 @@ class TRadioButton extends TCheckBox
 	public function getRadioButtonsInGroup()
 	{
 		$group = $this->getUniqueGroupName();
-		$buttons = array();
+		$buttons = [];
 		foreach(self::$_activeButtons as $control)
 		{
 			if($control->getUniqueGroupName() === $group)

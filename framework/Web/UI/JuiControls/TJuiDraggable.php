@@ -91,7 +91,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('addClasses', 'appendTo', 'axis', 'cancel', 'connectToSortable', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'grid', 'handle', 'helper', 'iframeFix', 'opacity', 'refreshPositions', 'revert', 'revertDuration', 'scope', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'snap', 'snapMode', 'snapTolerance', 'stack', 'zIndex');
+		return ['addClasses', 'appendTo', 'axis', 'cancel', 'connectToSortable', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'grid', 'handle', 'helper', 'iframeFix', 'opacity', 'refreshPositions', 'revert', 'revertDuration', 'scope', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'snap', 'snapMode', 'snapTolerance', 'stack', 'zIndex'];
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidEvents()
 	{
-		return array('create', 'drag', 'start', 'stop');
+		return ['create', 'drag', 'start', 'stop'];
 	}
 
 	/**

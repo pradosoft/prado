@@ -45,7 +45,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
 
 	private $_gateway;
-	private $_meta=array();
+	private $_meta=[];
 	private $_connection;
 
 	private $_cache;

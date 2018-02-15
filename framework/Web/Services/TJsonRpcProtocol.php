@@ -53,29 +53,29 @@ class TJsonRpcProtocol extends TRpcProtocol
 					throw new TRpcException('Missing request method', '-32600');
 
 			if(!isset($_request['params']))
-				$parameters = array();
+				$parameters = [];
 			else
 				$parameters = $_request['params'];
 
 			if(!is_array($parameters))
-				$parameters = array($parameters);
+				$parameters = [$parameters];
 
 			// a request without an id is a notification that doesn't need a response
 			if($this->_id !== null)
 			{
 				if($this->_specificationVersion==2.0)
 				{
-					return $this->encode(array(
+					return $this->encode([
 						'jsonrpc' => '2.0',
 						'id' => $this->_id,
 						'result' => $this->callApiMethod($_request['method'], $parameters),
-					));
+					]);
 				} else {
-					return $this->encode(array(
+					return $this->encode([
 						'id' => $this->_id,
 						'result' => $this->callApiMethod($_request['method'], $_request['params']),
 						'error' => null
-					));
+					]);
 				}
 			}
 		}
@@ -102,24 +102,24 @@ class TJsonRpcProtocol extends TRpcProtocol
 	{
 		if($this->_specificationVersion==2.0)
 		{
-			return $this->encode(array(
+			return $this->encode([
 				'id' => $this->_id,
 				'result' => null,
-				'error'=> array(
+				'error'=> [
 					'code' => $exception->getCode(),
 					'message'=> $exception->getMessage(),
 					'data' => null,
-					)
-			));
+					]
+			]);
 		} else {
-			return $this->encode(array(
+			return $this->encode([
 				'id' => $this->_id,
-				'error'=> array(
+				'error'=> [
 					'code' => $exception->getCode(),
 					'message'=> $exception->getMessage(),
 					'data' => null,
-					)
-			));			
+					]
+			]);			
 		}
 	}
 

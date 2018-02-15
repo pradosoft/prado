@@ -125,7 +125,7 @@ class TPropertyValue
 				return $array;
 			}
 			else
-				return $len>0?array($value):array();
+				return $len>0?[$value]:[];
 		}
 		else
 			return (array)$value;
@@ -159,7 +159,7 @@ class TPropertyValue
 	 */
 	public static function ensureEnum($value,$enums)
 	{
-		static $types=array();
+		static $types=[];
 		if(func_num_args()===2 && is_string($enums))
 		{
 			if(!isset($types[$enums]))

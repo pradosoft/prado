@@ -207,7 +207,7 @@ class TTranslate extends TI18NControl
 	public function render($writer)
 	{
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
-		$subs = array();
+		$subs = [];
 		foreach($this->getParameters() as $key => $value)
 			$subs['{'.$key.'}'] = $value;
 		foreach($this->getControls() as $control)

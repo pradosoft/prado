@@ -139,7 +139,7 @@ class NumberFormat
 		elseif($number < 0)
 			$suffix = $this->formatInfo->NegativePattern;
 		else
-			$suffix = array("","");
+			$suffix = ["",""];
 
 		//append and prepend suffix
 		$result = $suffix[0].$result.$suffix[1];

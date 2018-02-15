@@ -64,7 +64,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * @var array the list of uploaded files represented by {@link TFileUploadItem}
 	 */
-	private $_files=array();
+	private $_files=[];
 
 	/**
 	 * @return string tag name of the file upload control

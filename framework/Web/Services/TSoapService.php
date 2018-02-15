@@ -96,7 +96,7 @@ use Prado\Xml\TXmlDocument;
 class TSoapService extends \Prado\TService
 {
 	const DEFAULT_SOAP_SERVER='Prado\Web\Services\TSoapServer';
-	private $_servers=array();
+	private $_servers=[];
 	private $_configFile=null;
 	private $_wsdlRequest=false;
 	private $_serverID=null;
@@ -169,7 +169,7 @@ class TSoapService extends \Prado\TService
 			{
 				foreach($config['soap'] as $id => $server)
 				{
-					$properties = isset($server['properties'])?$server['properties']:array();
+					$properties = isset($server['properties'])?$server['properties']:[];
 					if(isset($this->_servers[$id]))
 						throw new TConfigurationException('soapservice_serverid_duplicated',$id);
 					$this->_servers[$id]=$properties;

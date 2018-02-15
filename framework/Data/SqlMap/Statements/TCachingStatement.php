@@ -46,7 +46,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	public function executeQueryForMap($connection, $parameter,$keyProperty, $valueProperty=null,  $skip=-1, $max=-1,$delegate=null)
 	{
 		$sql = $this->createCommand($connection, $parameter, $skip, $max);
-		$key = $this->getCacheKey(array(clone($sql), $keyProperty, $valueProperty,$skip, $max));
+		$key = $this->getCacheKey([clone($sql), $keyProperty, $valueProperty,$skip, $max]);
 		$map = $this->getStatement()->getCache()->get($key);
 		if($map===null)
 		{
@@ -70,7 +70,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	public function executeQueryForList($connection, $parameter, $result=null, $skip=-1, $max=-1, $delegate=null)
 	{
 		$sql = $this->createCommand($connection, $parameter, $skip, $max);
-		$key = $this->getCacheKey(array(clone($sql), $parameter, $skip, $max));
+		$key = $this->getCacheKey([clone($sql), $parameter, $skip, $max]);
 		$list = $this->getStatement()->getCache()->get($key);
 		if($list===null)
 		{
@@ -84,7 +84,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	public function executeQueryForObject($connection, $parameter, $result=null)
 	{
 		$sql = $this->createCommand($connection, $parameter);
-		$key = $this->getCacheKey(array(clone($sql), $parameter));
+		$key = $this->getCacheKey([clone($sql), $parameter]);
 		$object = $this->getStatement()->getCache()->get($key);
 		if($object===null)
 		{

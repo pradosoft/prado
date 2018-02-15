@@ -153,7 +153,7 @@ class TEtcdCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-    $value = array('value' => serialize($value));
+    $value = ['value' => serialize($value)];
     if ($expire > 0) $value['ttl'] = $expire;
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);    
     return !property_exists($result, 'errorCode');
@@ -170,7 +170,7 @@ class TEtcdCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-    $value = array('value' => serialize($value), 'prevExist' => 'false');
+    $value = ['value' => serialize($value), 'prevExist' => 'false'];
     if ($expire > 0) $value['ttl'] = $expire;
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
     return !property_exists($result, 'errorCode');
@@ -207,13 +207,13 @@ class TEtcdCache extends TCache
    * @param array the additional post data to send with the request
    * @return \stdClass the response from the etcd instance
    */
-  protected function request($method, $key, $value=array()) {
+  protected function request($method, $key, $value=[]) {
     $curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
     curl_setopt($curl, CURLOPT_HEADER, false);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);   
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+    curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
     $response = curl_exec($curl);
     curl_close($curl);

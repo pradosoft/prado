@@ -488,7 +488,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 		if (($viewheight = $this->getViewHeight())>0)
 			$options['maxHeight'] = $viewheight;
-		$views = array();
+		$views = [];
 		foreach($this->getViews() as $view)
 			$views[$view->getClientID()] = $view->getVisible() ? '1': '0';
 		$options['Views'] = $views;

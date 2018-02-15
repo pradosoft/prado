@@ -38,7 +38,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * @var array log messages
 	 */
-	private $_logs=array();
+	private $_logs=[];
 	/**
 	 * @var integer log levels (bits) to be filtered
 	 */
@@ -75,7 +75,7 @@ class TLogger extends \Prado\TComponent
 				$ctl = null;
 		} else
 			$ctl = null;
-		$this->_logs[]=array($message,$level,$category,microtime(true),memory_get_usage(),$ctl);
+		$this->_logs[]=[$message,$level,$category,microtime(true),memory_get_usage(),$ctl];
 	}
 
 	/**
@@ -121,13 +121,13 @@ class TLogger extends \Prado\TComponent
 			return $this->_logs;
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByLevels')) ));
+			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByLevels']) ));
 		if(!empty($categories))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByCategories')) ));
+			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByCategories']) ));
 		if(!empty($controls))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByControl')) ));
+			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByControl']) ));
 		if(!is_null($timestamp))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByTimeStamp')) ));
+			$logs = array_values(array_filter( array_filter($logs,[$this,'filterByTimeStamp']) ));
 		return $logs;
 	}
 
@@ -163,18 +163,18 @@ class TLogger extends \Prado\TComponent
 		$this->_timestamp=$timestamp;
 		if(empty($levels) && empty($categories) && empty($controls) && is_null($timestamp))
 		{
-			$this->_logs=array();
+			$this->_logs=[];
 			return;
 		}
 		$logs = $this->_logs;
 		if(!empty($levels))
-			$logs = array_filter( array_filter($logs,array($this,'filterByLevels')) );
+			$logs = array_filter( array_filter($logs,[$this,'filterByLevels']) );
 		if(!empty($categories))
-			$logs = array_filter( array_filter($logs,array($this,'filterByCategories')) );
+			$logs = array_filter( array_filter($logs,[$this,'filterByCategories']) );
 		if(!empty($controls))
-			$logs = array_filter( array_filter($logs,array($this,'filterByControl')) );
+			$logs = array_filter( array_filter($logs,[$this,'filterByControl']) );
 		if(!is_null($timestamp))
-			$logs = array_filter( array_filter($logs,array($this,'filterByTimeStamp')) );
+			$logs = array_filter( array_filter($logs,[$this,'filterByTimeStamp']) );
 		$this->_logs = array_values( array_diff_key($this->_logs, $logs) );
 	}
 

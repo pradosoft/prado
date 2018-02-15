@@ -27,10 +27,10 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	const TYPE_STATEMENTS=1;
 	const TYPE_DATABINDING=2;
 	private $_container=null;
-	private $_items=array();
-	private $_expressions=array();
-	private $_statements=array();
-	private $_bindings=array();
+	private $_items=[];
+	private $_expressions=[];
+	private $_statements=[];
+	private $_bindings=[];
 
 	/**
 	 * Constructor.
@@ -38,9 +38,9 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function __construct($items)
 	{
-		$this->_items=array();
-		$this->_expressions=array();
-		$this->_statements=array();
+		$this->_items=[];
+		$this->_expressions=[];
+		$this->_statements=[];
 		foreach($items as $id=>$item)
 		{
 			if(is_array($item))

@@ -32,7 +32,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	/**
 	 * @var TCallbackResponseWriter[] list of writers.
 	 */
-	private $_writers=array();
+	private $_writers=[];
 	/**
 	 * @var mixed callback response data.
 	 */

@@ -312,7 +312,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	protected function getErrorMessages()
 	{
 		$validators=$this->getPage()->getValidators($this->getValidationGroup());
-		$messages = array();
+		$messages = [];
 		foreach($validators as $validator)
 		{
 			if(!$validator->getIsValid() && ($msg=$validator->getErrorMessage())!=='')

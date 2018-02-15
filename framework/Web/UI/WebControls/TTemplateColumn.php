@@ -213,7 +213,7 @@ class TTemplateColumn extends TDataGridColumn
 					$control->setItemType($itemType);
 				}
 				if($control instanceof \Prado\IDataRenderer)
-					$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+					$control->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
 			}
 			elseif($template!==null)
 				$template->instantiateIn($cell);

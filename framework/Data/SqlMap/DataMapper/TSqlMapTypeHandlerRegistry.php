@@ -22,7 +22,7 @@ use Prado\Prado;
  */
 class TSqlMapTypeHandlerRegistry
 {
-	private $_typeHandlers=array();
+	private $_typeHandlers=[];
 
 	/**
 	 * @param string database field type
@@ -67,7 +67,7 @@ class TSqlMapTypeHandlerRegistry
 			switch(strtolower($type))
 			{
 				case 'string': return '';
-				case 'array': return array();
+				case 'array': return [];
 				case 'float': case 'double': case 'decimal': return 0.0;
 				case 'integer': case 'int': return 0;
 				case 'bool': case 'boolean': return false;

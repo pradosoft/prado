@@ -50,14 +50,14 @@ class TPage extends TTemplateControl
 	/**
 	 * @var array system post fields
 	 */
-	private static $_systemPostFields=array(
+	private static $_systemPostFields=[
 		'PRADO_POSTBACK_TARGET'=>true,
 		'PRADO_POSTBACK_PARAMETER'=>true,
 		'PRADO_LASTFOCUS'=>true,
 		'PRADO_PAGESTATE'=>true,
 		'PRADO_CALLBACK_TARGET'=>true,
 		'PRADO_CALLBACK_PARAMETER'=>true
-	);
+	];
 	/**
 	 * @var TForm form instance
 	 */
@@ -69,7 +69,7 @@ class TPage extends TTemplateControl
 	/**
 	 * @var array list of registered validators
 	 */
-	private $_validators=array();
+	private $_validators=[];
 	/**
 	 * @var boolean if validation has been performed
 	 */
@@ -101,15 +101,15 @@ class TPage extends TTemplateControl
 	/**
 	 * @var array list of controls whose data have been changed due to the postback
 	 */
-	protected $_controlsPostDataChanged=array();
+	protected $_controlsPostDataChanged=[];
 	/**
 	 * @var array list of controls that need to load post data in the current request
 	 */
-	protected $_controlsRequiringPostData=array();
+	protected $_controlsRequiringPostData=[];
 	/**
 	 * @var array list of controls that need to load post data in the next postback
 	 */
-	protected $_controlsRegisteredForPostData=array();
+	protected $_controlsRegisteredForPostData=[];
 	/**
 	 * @var TControl control that needs to raise postback event
 	 */
@@ -754,7 +754,7 @@ class TPage extends TTemplateControl
 	public function saveState()
 	{
 		parent::saveState();
-		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,array());
+		$this->setViewState('ControlsRequiringPostBack',$this->_controlsRegisteredForPostData,[]);
 	}
 
 	/**
@@ -765,7 +765,7 @@ class TPage extends TTemplateControl
 	public function loadState()
 	{
 		parent::loadState();
-		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',array());
+		$this->_controlsRequiringPostData=$this->getViewState('ControlsRequiringPostBack',[]);
 	}
 
 	/**
@@ -810,7 +810,7 @@ class TPage extends TTemplateControl
 		$this->_controlsRegisteredForPostData[$id]=true;
 		$params=func_get_args();
 		foreach($this->getCachingStack() as $item)
-			$item->registerAction('Page','registerRequiresPostData',array($id));
+			$item->registerAction('Page','registerRequiresPostData',[$id]);
 	}
 
 	/**

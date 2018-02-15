@@ -64,7 +64,7 @@ class TPriorityMap extends TMap
 	/**
 	 * @var array internal data storage
 	 */
-	private $_d=array();
+	private $_d=[];
 	/**
 	 * @var boolean whether this list is read-only
 	 */
@@ -188,7 +188,7 @@ class TPriorityMap extends TMap
 			return $this->_fd;
 
 		$this->sortPriorities();
-		$this->_fd = array();
+		$this->_fd = [];
 		foreach($this->_d as $priority => $itemsatpriority)
 			$this->_fd = array_merge($this->_fd, $itemsatpriority);
 		return $this->_fd;
@@ -362,7 +362,7 @@ class TPriorityMap extends TMap
 						unset($this->_d[$innerpriority]);
 				}
 			if(!isset($this->_d[$priority])) {
-				$this->_d[$priority]=array($key=>$value);
+				$this->_d[$priority]=[$key=>$value];
 				$this->_o=false;
 			}
 			else
@@ -477,7 +477,7 @@ class TPriorityMap extends TMap
 	public function toArrayBelowPriority($priority,$inclusive=false)
 	{
 		$this->sortPriorities();
-		$items=array();
+		$items=[];
 		foreach($this->_d as $itemspriority=>$itemsatpriority)
 		{
 			if((!$inclusive&&$itemspriority>=$priority)||$itemspriority>$priority)
@@ -497,7 +497,7 @@ class TPriorityMap extends TMap
 	public function toArrayAbovePriority($priority,$inclusive=true)
 	{
 		$this->sortPriorities();
-		$items=array();
+		$items=[];
 		foreach($this->_d as $itemspriority=>$itemsatpriority)
 		{
 			if((!$inclusive&&$itemspriority<=$priority)||$itemspriority<$priority)

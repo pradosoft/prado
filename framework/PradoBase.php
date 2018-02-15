@@ -63,20 +63,20 @@ class PradoBase
 	/**
 	 * @var array list of path aliases
 	 */
-	private static $_aliases=array(
+	private static $_aliases=[
 		'Prado'=>PRADO_DIR,
 		'Vendor'=>PRADO_VENDORDIR
-		);
+		];
 	/**
 	 * @var array list of namespaces currently in use
 	 */
-	private static $_usings=array(
+	private static $_usings=[
 		'Prado'=>PRADO_DIR
-		);
+		];
 	/**
 	 * @var array list of namespaces currently in use
 	 */
-	public static $classMap=array();	
+	public static $classMap=[];	
 	/**
 	 * @var TApplication the application instance
 	 */
@@ -88,7 +88,7 @@ class PradoBase
 	/**
 	 * @var array list of class exists checks
 	 */
-	protected static $classExists = array();
+	protected static $classExists = [];
 	/**
 	 * @return string the version of Prado framework
 	 */
@@ -110,7 +110,7 @@ class PradoBase
 	{
 		self::$classMap = require(__DIR__ . '/classes.php');
 
-		spl_autoload_register(array(get_called_class(), 'autoload'));
+		spl_autoload_register([get_called_class(), 'autoload']);
 	}
 
 	/**
@@ -123,15 +123,15 @@ class PradoBase
 		/**
 		 * Sets error handler to be Prado::phpErrorHandler
 		 */
-		set_error_handler(array('\Prado\PradoBase','phpErrorHandler'));
+		set_error_handler(['\Prado\PradoBase','phpErrorHandler']);
 		/**
 		 * Sets shutdown function to be Prado::phpFatalErrorHandler
 		 */
-		register_shutdown_function(array('PradoBase','phpFatalErrorHandler'));
+		register_shutdown_function(['PradoBase','phpFatalErrorHandler']);
 		/**
 		 * Sets exception handler to be Prado::exceptionHandler
 		 */
-		set_exception_handler(array('\Prado\PradoBase','exceptionHandler'));
+		set_exception_handler(['\Prado\PradoBase','exceptionHandler']);
 		/**
 		 * Disable php's builtin error reporting to avoid duplicated reports
 		 */
@@ -556,7 +556,7 @@ class PradoBase
 				$languages[0]='en';
 			else
 			{
-				$languages=array();
+				$languages=[];
 				foreach(explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
 				{
 					$array=explode(';q=',trim($language));
@@ -671,11 +671,11 @@ class PradoBase
 	 * @see TTranslate::formatter()
 	 * @see TTranslate::init()
 	 */
-	public static function localize($text, $parameters=array(), $catalogue=null, $charset=null)
+	public static function localize($text, $parameters=[], $catalogue=null, $charset=null)
 	{
 		$app = Prado::getApplication()->getGlobalization(false);
 
-		$params = array();
+		$params = [];
 		foreach($parameters as $key => $value)
 			$params['{'.$key.'}'] = $value;
 

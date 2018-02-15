@@ -60,7 +60,7 @@ class CultureInfo
 	 * The ICU data array.
 	 * @var array
 	 */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * The current culture.
@@ -78,7 +78,7 @@ class CultureInfo
 	 * A list of ICU date files loaded.
 	 * @var array
 	 */
-	private $dataFiles = array();
+	private $dataFiles = [];
 
 	/**
 	 * The current date time format info.
@@ -96,7 +96,7 @@ class CultureInfo
 	 * A list of properties that are accessable/writable.
 	 * @var array
 	 */
-	protected $properties = array();
+	protected $properties = [];
 
 	/**
 	 * Culture type, all.
@@ -207,7 +207,7 @@ class CultureInfo
 	 */
 	public static function getInstance($culture)
 	{
-		static $instances = array();
+		static $instances = [];
 		if(!isset($instances[$culture]))
 			$instances[$culture] = new CultureInfo($culture);
 		return $instances[$culture];
@@ -252,7 +252,7 @@ class CultureInfo
 		$file_parts = explode('_',$culture);
 		$current_part = $file_parts[0];
 
-		$files = array($current_part);
+		$files = [$current_part];
 
 		for($i = 1, $k = count($file_parts); $i < $k; ++$i)
 		{
@@ -290,8 +290,8 @@ class CultureInfo
 	 */
 	protected function &getData($filename)
 	{
-		static $data = array();
-		static $files = array();
+		static $data = [];
+		static $files = [];
 
 		if(!in_array($filename, $files))
 		{
@@ -318,7 +318,7 @@ class CultureInfo
 	 */
 	protected function findInfo($path='/', $merge=false)
 	{
-		$result = array();
+		$result = [];
 		foreach($this->dataFiles as $section)
 		{
 			$info = $this->searchArray($this->data[$section], $path);
@@ -484,9 +484,9 @@ class CultureInfo
 			$elements = $this->findInfo('NumberElements');
 			$patterns = $this->findInfo('NumberPatterns');
 			$currencies = $this->getCurrencies();
-			$data = array(	'NumberElements'=>$elements,
+			$data = [	'NumberElements'=>$elements,
 							'NumberPatterns'=>$patterns,
-							'Currencies' => $currencies);
+							'Currencies' => $currencies];
 
 			$this->setNumberFormat(new NumberFormatInfo($data));
 		}
@@ -531,8 +531,8 @@ class CultureInfo
 		$dataExt = CultureInfo::fileExt();
 		$dir = dir($dataDir);
 
-		$neutral = array();
-		$specific = array();
+		$neutral = [];
+		$specific = [];
 
 		while (false !== ($entry = $dir->read()))
 		{

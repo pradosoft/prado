@@ -58,7 +58,7 @@ class TTimeTriggeredCallback extends TCallback
 		$this->setViewState('Interval', $interval, 1);
 		if ($this->getActiveControl()->canUpdateClientSide()){
 			$client = $this->getPage()->getCallbackClient();
-			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', array($this, $interval));
+			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', [$this, $interval]);
 		}
 	}
 
@@ -68,7 +68,7 @@ class TTimeTriggeredCallback extends TCallback
 	public function startTimer()
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.start', array($this));
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.start', [$this]);
 	}
 
 	/**
@@ -77,7 +77,7 @@ class TTimeTriggeredCallback extends TCallback
 	public function stopTimer()
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.stop', array($this));
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.stop', [$this]);
 	}
 
 	/**

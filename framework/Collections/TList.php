@@ -46,7 +46,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d=array();
+	private $_d=[];
 	/**
 	 * number of items
 	 * @var integer
@@ -159,7 +159,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				$this->_d[$this->_c++]=$item;
 			elseif($index>=0 && $index<$this->_c)
 			{
-				array_splice($this->_d,$index,0,array($item));
+				array_splice($this->_d,$index,0,[$item]);
 				$this->_c++;
 			}
 			else

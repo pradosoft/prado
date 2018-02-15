@@ -82,7 +82,7 @@ abstract class MessageSource implements IMessageSource
 	 * Array of translation messages.
 	 * @var array 
 	 */
-	protected $messages = array();
+	protected $messages = [];
 
 	/**
 	 * The source of message translations.
@@ -96,7 +96,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	protected $cache;
 	
-	protected $untranslated = array();
+	protected $untranslated = [];
 
 	/**
 	 * Private constructor. MessageSource must be initialized using
@@ -126,7 +126,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	static function &factory($type, $source='.', $filename='')
 	{
-		$types = array('XLIFF','PHP','gettext','Database');
+		$types = ['XLIFF','PHP','gettext','Database'];
 
 		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "'.$type.'", valid types are '.
@@ -170,7 +170,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		$variants = $this->getCatalogueList($catalogue);
 		
-		$this->messages = array();
+		$this->messages = [];
 		
 		foreach($variants as $variant)
 		{
@@ -283,7 +283,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	protected function &loadData($variant)
 	{
-		return array();
+		return [];
 	}
 	
 	/**
@@ -314,6 +314,6 @@ abstract class MessageSource implements IMessageSource
 	 */	
 	protected function getCatalogueList($catalogue)
 	{
-		return array();
+		return [];
 	}		
 }

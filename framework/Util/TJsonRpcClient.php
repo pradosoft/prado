@@ -71,11 +71,11 @@ class TJsonRpcClient extends TRpcClient
 		static $_requestId;
 		$_requestId = ($_requestId === null) ? 1 : $_requestId + 1;
 
-		return json_encode(array(
+		return json_encode([
 			'method' => $method,
 			'params' => $parameters,
 			'id' => $this->isNotification ? null : $_requestId
-		));
+		]);
 	}
 
 	/**

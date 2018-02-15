@@ -167,7 +167,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	protected function getSelection($control)
 	{
-		$values = array();
+		$values = [];
 
 		//get the data
 		foreach($control->getItems() as $item)
@@ -183,7 +183,7 @@ class TListControlValidator extends TBaseValidator
 	 */
 	protected function getRequiredValues()
 	{
-		$required = array();
+		$required = [];
 		$string = $this->getRequiredSelections();
 		if(!empty($string))
 			$required = preg_split('/,\s*/', $string);

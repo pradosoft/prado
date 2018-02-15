@@ -67,7 +67,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
     {
       if($this->getEnableVisualEdit())
       {
-        $value=str_ireplace(array("\r\n", "\n"), "", $value);
+        $value=str_ireplace(["\r\n", "\n"], "", $value);
         $command="tinymce.get('{$this->getClientID()}').setContent('{$value}')";
         $this->getPage()->getCallbackClient()->evaluateScript($command);
       }

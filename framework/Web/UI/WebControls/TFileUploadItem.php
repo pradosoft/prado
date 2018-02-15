@@ -152,13 +152,13 @@ class TFileUploadItem extends \Prado\TComponent
    */
   public function toArray()
   {
-    return array(
+    return [
       'fileName' => $this->_fileName,
       'fileSize' => $this->_fileSize,
       'fileType' => $this->_fileType,
       'errorCode' => $this->_errorCode,
       'localName' => $this->_localName
-    );
+    ];
   }
 
 }

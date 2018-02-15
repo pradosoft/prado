@@ -38,8 +38,8 @@ class TInlineParameterMapParser
 	 */
 	public function parse($sqlText, $scope)
 	{
-		$matches = array();
-		$mappings = array();
+		$matches = [];
+		$mappings = [];
 		preg_match_all(self::PARAMETER_TOKEN_REGEXP, $sqlText, $matches);
 
 		for($i = 0, $k=count($matches[1]); $i<$k; $i++)
@@ -47,7 +47,7 @@ class TInlineParameterMapParser
 			$mappings[] = $this->parseMapping($matches[1][$i], $scope);
 			$sqlText = str_replace($matches[0][$i], '?', $sqlText);
 		}
-		return array('sql'=>$sqlText, 'parameters'=>$mappings);
+		return ['sql'=>$sqlText, 'parameters'=>$mappings];
 	}
 
 	/**

@@ -50,7 +50,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * @var array list of routes available
 	 */
-	private $_routes=array();
+	private $_routes=[];
 	/**
 	 * @var string external configuration file
 	 */
@@ -84,7 +84,7 @@ class TLogRouter extends \Prado\TModule
 				throw new TConfigurationException('logrouter_configfile_invalid',$this->_configFile);
 		}
 		$this->loadConfig($config);
-		$this->getApplication()->attachEventHandler('OnEndRequest',array($this,'collectLogs'));
+		$this->getApplication()->attachEventHandler('OnEndRequest',[$this,'collectLogs']);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TLogRouter extends \Prado\TModule
 			{
 				foreach($config['routes'] as $route)
 				{
-					$properties = isset($route['properties'])?$route['properties']:array();
+					$properties = isset($route['properties'])?$route['properties']:[];
 					if(!isset($route['class']))
 						throw new TConfigurationException('logrouter_routeclass_required');
 					$route=Prado::createComponent($route['class']);

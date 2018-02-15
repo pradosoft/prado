@@ -69,11 +69,11 @@ class TPropertyAccess
 			elseif(is_object($object))
 			{
 				$getter = 'get'.$prop;
-				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
+				if(method_exists($object, $getter) && is_callable([$object, $getter]))
 					$object = $object->{$getter}();
 				elseif(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
-				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
+				elseif(method_exists($object, '__get') && is_callable([$object, '__get']))
 					$object = $object->{$prop};
 				else
 					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
@@ -106,11 +106,11 @@ class TPropertyAccess
 			elseif(is_object($object))
 			{
 				$getter = 'get'.$prop;
-				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
+				if(method_exists($object, $getter) && is_callable([$object, $getter]))
 					$object = $object->{$getter}();
 				elseif(in_array($prop, array_keys(get_object_vars($object))))
 					$object = $object->{$prop};
-				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
+				elseif(method_exists($object, '__get') && is_callable([$object, '__get']))
 					$object = $object->{$prop};
 				else
 					return false;
@@ -144,7 +144,7 @@ class TPropertyAccess
 		elseif(is_object($object))
 		{
 			$setter = 'set'.$prop;
-			if (method_exists($object, $setter) && is_callable(array($object, $setter)))
+			if (method_exists($object, $setter) && is_callable([$object, $setter]))
 				$object->{$setter}($value);
 			else
 				$object->{$prop} = $value;

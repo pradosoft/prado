@@ -62,7 +62,7 @@ class PradoCommandLineInterpreter
 	/**
 	 * @var array command action classes
 	 */
-	protected $_actions=array();
+	protected $_actions=[];
 
 	/**
 	 * @param string action class name
@@ -171,11 +171,11 @@ abstract class PradoCommandLineAction
 
 	public function renderHelp()
 	{
-		$params = array();
+		$params = [];
 		foreach($this->parameters as $v)
 			$params[] = '<'.$v.'>';
 		$parameters = join($params, ' ');
-		$options = array();
+		$options = [];
 		foreach($this->optional as $v)
 			$options[] = '['.$v.']';
 		$optional = (strlen($parameters) ? ' ' : ''). join($options, ' ');
@@ -227,8 +227,8 @@ EOD;
 class PradoCommandLineCreateProject extends PradoCommandLineAction
 {
 	protected $action = '-c';
-	protected $parameters = array('directory');
-	protected $optional = array();
+	protected $parameters = ['directory'];
+	protected $optional = [];
 	protected $description = 'Creates a Prado project skeleton for the given <directory>.';
 
 	public function performAction($args)
@@ -377,8 +377,8 @@ EOD;
 class PradoCommandLineCreateTests extends PradoCommandLineAction
 {
 	protected $action = '-t';
-	protected $parameters = array('directory');
-	protected $optional = array();
+	protected $parameters = ['directory'];
+	protected $optional = [];
 	protected $description = 'Create test fixtures in the given <directory>.';
 
 	public function performAction($args)
@@ -451,8 +451,8 @@ $tester->run(new SimpleReporter());
 class PradoCommandLinePhpShell extends PradoCommandLineAction
 {
 	protected $action = 'shell';
-	protected $parameters = array();
-	protected $optional = array('directory');
+	protected $parameters = [];
+	protected $optional = ['directory'];
 	protected $description = 'Runs a PHP interactive interpreter. Initializes the Prado application in the given [directory].';
 
 	public function performAction($args)
@@ -474,8 +474,8 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 {
 	protected $action = 'generate';
-	protected $parameters = array('table', 'output');
-	protected $optional = array('directory', 'soap');
+	protected $parameters = ['table', 'output'];
+	protected $optional = ['directory', 'soap'];
 	protected $description = 'Generate Active Record skeleton for <table> to <output> file using application.xml in [directory]. May also generate [soap] properties.';
 	private $_soap=false;
 
@@ -557,7 +557,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			}
 			else
 			{
-				$properties = array();
+				$properties = [];
 				foreach($tableInfo->getColumns() as $field=>$column)
 					$properties[] = $this->generateProperty($field,$column);
 			}
@@ -626,8 +626,8 @@ EOD;
 class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 {
     protected $action = 'generateAll';
-    protected $parameters = array('output');
-    protected $optional = array('directory', 'soap', 'overwrite', 'prefix', 'postfix');
+    protected $parameters = ['output'];
+    protected $optional = ['directory', 'soap', 'overwrite', 'prefix', 'postfix'];
     protected $description = "Generate Active Record skeleton for all Tables to <output> file using application.xml in [directory]. May also generate [soap] properties.\nGenerated Classes are named like the Table with optional [Prefix] and/or [Postfix]. [Overwrite] is used to overwrite existing Files.";
     private $_soap = false;
     private $_prefix = '';
@@ -671,7 +671,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 
             $dataReader = $command->query();
             $dataReader->bindColumn(1, $table);
-            $tables = array();
+            $tables = [];
             while ($dataReader->read() !== false) {
                 $tables[] = $table;
             }
@@ -694,9 +694,9 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			$app_dir = '.';
 			if(Prado::getApplication()!==null)
 				$app_dir = dirname(Prado::getApplication()->getBasePath());
-			$args = array($input[0],$input[1], $input[2],$app_dir);
+			$args = [$input[0],$input[1], $input[2],$app_dir];
 			if(count($input)>3)
-				$args = array($input[0],$input[1], $input[2],$app_dir,'soap');
+				$args = [$input[0],$input[1], $input[2],$app_dir,'soap'];
 			$cmd = new PradoCommandLineActiveRecordGen;
 			$cmd->performAction($args);
 		}

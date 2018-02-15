@@ -176,7 +176,7 @@ class TTextHighlighter extends TWebControl
 	 */
 	protected function getTextHighlightOptions()
 	{
-		$options = array();
+		$options = [];
 		$options['ID'] = $this->getClientID();
 		$options['tabsize'] = str_repeat(' ', $this->getTabSize());
 		$options['copycode'] = $this->getEnableCopyCode();

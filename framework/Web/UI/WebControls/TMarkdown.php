@@ -51,7 +51,7 @@ class TMarkdown extends TTextHighlighter
 		$result = Parsedown::instance()->parse($text);
 		return preg_replace_callback(
 				'/<pre><code class="language-(\w+)">((.|\n)*?)<\\/code><\\/pre>/im',
-				array($this, 'highlightCode'), $result);
+				[$this, 'highlightCode'], $result);
 	}
 
 	/**

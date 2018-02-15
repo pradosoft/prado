@@ -261,7 +261,7 @@ class TGlobalization extends \Prado\TModule
 	{
 		if($culture===null) $culture = $this->getCulture();
 		$variants = explode('_', $culture);
-		$result = array();
+		$result = [];
 		for(; count($variants) > 0; array_pop($variants))
 			$result[] = implode('_', $variants);
 		return $result;
@@ -288,7 +288,7 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function getLocalizedResource($file,$culture=null)
 	{
-		$files = array();
+		$files = [];
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
 		foreach($variants as $variant)

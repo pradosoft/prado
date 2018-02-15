@@ -37,7 +37,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @var array lookup table for level names
 	 */
-	protected static $_levelNames=array(
+	protected static $_levelNames=[
 		TLogger::DEBUG=>'Debug',
 		TLogger::INFO=>'Info',
 		TLogger::NOTICE=>'Notice',
@@ -45,11 +45,11 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		TLogger::ERROR=>'Error',
 		TLogger::ALERT=>'Alert',
 		TLogger::FATAL=>'Fatal'
-	);
+	];
 	/**
 	 * @var array lookup table for level values
 	 */
-	protected static $_levelValues=array(
+	protected static $_levelValues=[
 		'debug'=>TLogger::DEBUG,
 		'info'=>TLogger::INFO,
 		'notice'=>TLogger::NOTICE,
@@ -57,7 +57,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		'error'=>TLogger::ERROR,
 		'alert'=>TLogger::ALERT,
 		'fatal'=>TLogger::FATAL
-	);
+	];
 	/**
 	 * @var integer log level filter (bits)
 	 */

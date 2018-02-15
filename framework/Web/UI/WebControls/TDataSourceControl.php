@@ -28,7 +28,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function getViewNames()
 	{
-		return array();
+		return [];
 	}
 
 	public function onDataSourceChanged($param)

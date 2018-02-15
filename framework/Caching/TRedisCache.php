@@ -244,7 +244,7 @@ class TRedisCache extends TCache
    */
   protected function setValue($key, $value, $expire)
   {
-    $options = $expire === 0 ? array() : array('ex' => $expire);
+    $options = $expire === 0 ? [] : ['ex' => $expire];
     return $this->_cache->set($key, $value, $options);
   }
 
@@ -259,7 +259,7 @@ class TRedisCache extends TCache
    */
   protected function addValue($key, $value, $expire)
   {
-    $options = $expire === 0 ? array('nx') : array('nx', 'ex' => $expire);
+    $options = $expire === 0 ? ['nx'] : ['nx', 'ex' => $expire];
     return $this->_cache->set($key, $value, $options);
   }
 

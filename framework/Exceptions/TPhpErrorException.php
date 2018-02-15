@@ -32,7 +32,7 @@ class TPhpErrorException extends TSystemException
 	 */
 	public function __construct($errno,$errstr,$errfile,$errline)
 	{
-		static $errorTypes=array(
+		static $errorTypes=[
 			E_ERROR           => "Error",
 			E_WARNING         => "Warning",
 			E_PARSE           => "Parsing Error",
@@ -45,7 +45,7 @@ class TPhpErrorException extends TSystemException
 			E_USER_WARNING    => "User Warning",
 			E_USER_NOTICE     => "User Notice",
 			E_STRICT          => "Runtime Notice"
-		);
+		];
 		$errorType=isset($errorTypes[$errno])?$errorTypes[$errno]:'Unknown Error';
 		parent::__construct("[$errorType] $errstr (@line $errline in file $errfile).");
 	}
@@ -58,6 +58,6 @@ class TPhpErrorException extends TSystemException
 	 */
 	public static function isFatalError($error)
 	{
-		return isset($error['type']) && in_array($error['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING));
+		return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
 	}
 }

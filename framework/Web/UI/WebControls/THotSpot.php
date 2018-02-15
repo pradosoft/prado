@@ -26,7 +26,7 @@ use Prado\TPropertyValue;
  */
 abstract class THotSpot extends \Prado\TComponent
 {
-	private $_viewState=array();
+	private $_viewState=[];
 
 	/**
 	 * Returns a viewstate value.

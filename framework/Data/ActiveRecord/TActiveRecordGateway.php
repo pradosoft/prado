@@ -31,9 +31,9 @@ use ReflectionClass;
 class TActiveRecordGateway extends \Prado\TComponent
 {
 	private $_manager;
-	private $_tables=array(); //table cache
-	private $_meta=array(); //meta data cache.
-	private $_commandBuilders=array();
+	private $_tables=[]; //table cache
+	private $_meta=[]; //meta data cache.
+	private $_commandBuilders=[];
 	private $_currentRecord;
 
 	/**
@@ -148,8 +148,8 @@ class TActiveRecordGateway extends \Prado\TComponent
 		{
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
 			$command = new TDataGatewayCommand($builder);
-			$command->OnCreateCommand[] = array($this, 'onCreateCommand');
-			$command->OnExecuteCommand[] = array($this, 'onExecuteCommand');
+			$command->OnCreateCommand[] = [$this, 'onCreateCommand'];
+			$command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
 			$this->_commandBuilders[$connStr] = $command;
 
 		}
@@ -306,7 +306,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	protected function getInsertValues(TActiveRecord $record)
 	{
-		$values=array();
+		$values=[];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
 		foreach($tableInfo->getColumns() as $name=>$column)
 		{
@@ -341,9 +341,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	protected function getUpdateValues(TActiveRecord $record)
 	{
-		$values=array();
+		$values=[];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
-		$primary=array();
+		$primary=[];
 		foreach($tableInfo->getColumns() as $name=>$column)
 		{
 			if($column->getIsExcluded())
@@ -360,7 +360,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			else
 				$values[$name] = $value;
 		}
-		return array($values,$primary);
+		return [$values,$primary];
 	}
 
 	protected function updateAssociatedRecords(TActiveRecord $record,$updateBelongsTo=false)
@@ -382,7 +382,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	protected function getPrimaryKeyValues(TActiveRecord $record)
 	{
 		$tableInfo = $this->getCommand($record)->getTableInfo();
-		$primary=array();
+		$primary=[];
 		foreach($tableInfo->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())

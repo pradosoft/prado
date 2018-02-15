@@ -41,7 +41,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @var array internal data storage
 	 */
-	private $_d=array();
+	private $_d=[];
 	/**
 	 * @var boolean whether this list is read-only
 	 */
@@ -56,7 +56,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_d===array())
+		if ($this->_d===[])
 			$exprops[] = "\0Prado\Collections\TMap\0_d";
 		if ($this->_r===false)
 			$exprops[] = "\0Prado\Collections\TMap\0_r";

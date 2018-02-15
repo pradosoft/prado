@@ -45,39 +45,39 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * @var array registered hidden fields, indexed by hidden field names
 	 */
-	private $_hiddenFields=array();
+	private $_hiddenFields=[];
 	/**
 	 * @var array javascript blocks to be rendered at the beginning of the form
 	 */
-	private $_beginScripts=array();
+	private $_beginScripts=[];
 	/**
 	 * @var array javascript blocks to be rendered at the end of the form
 	 */
-	private $_endScripts=array();
+	private $_endScripts=[];
 	/**
 	 * @var array javascript files to be rendered in the form
 	 */
-	private $_scriptFiles=array();
+	private $_scriptFiles=[];
 	/**
 	 * @var array javascript files to be rendered in page head section
 	 */
-	private $_headScriptFiles=array();
+	private $_headScriptFiles=[];
 	/**
 	 * @var array javascript blocks to be rendered in page head section
 	 */
-	private $_headScripts=array();
+	private $_headScripts=[];
 	/**
 	 * @var array CSS files
 	 */
-	private $_styleSheetFiles=array();
+	private $_styleSheetFiles=[];
 	/**
 	 * @var array CSS declarations
 	 */
-	private $_styleSheets=array();
+	private $_styleSheets=[];
 	/**
 	 * @var array registered PRADO script libraries
 	 */
-	private $_registeredScripts=array();
+	private $_registeredScripts=[];
 	/**
 	 * Client-side javascript library dependencies, loads from PACKAGES_FILE;
 	 * @var array
@@ -96,7 +96,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * @var array registered PRADO style libraries
 	 */
-	private $_registeredStyles=array();
+	private $_registeredStyles=[];
 	/**
 	 * Client-side style library dependencies, loads from CSS_PACKAGES_FILE;
 	 * @var array
@@ -115,7 +115,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	private $_renderedHiddenFields;
 
-	private $_renderedScriptFiles=array();
+	private $_renderedScriptFiles=[];
 
 	private $_expandedScripts;
 	private $_expandedStyles;
@@ -183,9 +183,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			else
 				throw new TInvalidOperationException('csmanager_pradoscript_invalid',$name);
 
-			if(($packages=array_keys($this->_registeredScripts))!==array())
+			if(($packages=array_keys($this->_registeredScripts))!==[])
 			{
-				$packagesUrl=array();
+				$packagesUrl=[];
 				$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
 				foreach ($packages as $p)
 				{
@@ -273,11 +273,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$assets = Prado::getApplication()->getAssetManager();
 		if(strpos($base, $assets->getBaseUrl())===false)
 		{
-			return array($assets->getPublishedPath($base), $assets->publishFilePath($base));
+			return [$assets->getPublishedPath($base), $assets->publishFilePath($base)];
 		}
 		else
 		{
-			return array($assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base);
+			return [$assets->getBasePath().str_replace($assets->getBaseUrl(),'',$base), $base];
 		}
 	}
 
@@ -297,7 +297,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		  $namespace = $dir;
 		}
 
-		return array($namespace, $subPath);
+		return [$namespace, $subPath];
 	}
 
 	/**
@@ -316,7 +316,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		  $namespace = $dir;
 		}
 
-		return array($namespace, $subPath);
+		return [$namespace, $subPath];
 	}
 
 	/**
@@ -327,7 +327,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options=null)
 	{
-		$options = !is_array($options) ? array() : $options;
+		$options = !is_array($options) ? [] : $options;
 		$class = new \ReflectionClass($callbackHandler);
 		$clientSide = $callbackHandler->getActiveControl()->getClientSide();
 		$options = array_merge($options, $clientSide->getOptions()->toArray());
@@ -399,7 +399,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_endScripts['prado:'.$panelID]=$code;
 		$this->registerPradoScriptInternal('prado');
 
-		$params=array($panelID,$buttonID);
+		$params=[$panelID,$buttonID];
 		$this->_page->registerCachingAction('Page.ClientScript','registerDefaultButton',$params);
 	}
 
@@ -467,9 +467,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 			else
 				throw new TInvalidOperationException('csmanager_pradostyle_invalid',$name);
 
-			if(($packages=array_keys($this->_registeredStyles))!==array())
+			if(($packages=array_keys($this->_registeredStyles))!==[])
 			{
-				$packagesUrl=array();
+				$packagesUrl=[];
 				$isDebug=$this->getApplication()->getMode()===TApplicationMode::Debug;
 				foreach ($packages as $p)
 				{
@@ -523,7 +523,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		if($media==='')
 			$this->_styleSheetFiles[$key]=$url;
 		else
-			$this->_styleSheetFiles[$key]=array($url,$media);
+			$this->_styleSheetFiles[$key]=[$url,$media];
 
 		$params=func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript','registerStyleSheetFile',$params);
@@ -892,7 +892,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	protected function renderHiddenFieldsInt($writer, $initial)
  	{
-		if ($initial) $this->_renderedHiddenFields = array();
+		if ($initial) $this->_renderedHiddenFields = [];
 		$str='';
 		foreach($this->_hiddenFields as $name=>$value)
 		{

@@ -63,7 +63,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),array("\0TDbCommand\0_statement"));
+		return array_diff(parent::__sleep(),["\0TDbCommand\0_statement"]);
 	}
 
 	/**
@@ -303,7 +303,7 @@ class TDbCommand extends \Prado\TComponent
 	public function queryColumn()
 	{
 		$rows=$this->query()->readAll();
-		$column=array();
+		$column=[];
 		foreach($rows as $row)
 			$column[]=current($row);
 		return $column;

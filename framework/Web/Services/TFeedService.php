@@ -63,7 +63,7 @@ use Prado\Exceptions\THttpException;
  */
 class TFeedService extends \Prado\TService
 {
-	private $_feeds=array();
+	private $_feeds=[];
 
 	/**
 	 * Initializes this module.
@@ -110,7 +110,7 @@ class TFeedService extends \Prado\TService
 		if(isset($this->_feeds[$id]))
 		{
 			$feedConfig=$this->_feeds[$id];
-			$properties = array();
+			$properties = [];
 			$feed = null;
 			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
 			{
@@ -118,7 +118,7 @@ class TFeedService extends \Prado\TService
 				{
 					$feed=Prado::createComponent($feedConfig['class']);
 					if($service instanceof IFeedContentProvider)
-						$properties=isset($feedConfig['properties'])?$feedConfig['properties']:array();
+						$properties=isset($feedConfig['properties'])?$feedConfig['properties']:[];
 					else
 						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
 				}

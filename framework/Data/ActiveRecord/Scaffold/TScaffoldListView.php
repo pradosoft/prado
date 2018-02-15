@@ -63,8 +63,8 @@ class TScaffoldListView extends TScaffoldBase
 	protected function initializeSort()
 	{
 		$table = $this->getTableInfo();
-		$sorts = array('Sort By', str_repeat('-',15));
-		$headers = array();
+		$sorts = ['Sort By', str_repeat('-',15)];
+		$headers = [];
 		foreach($table->getColumns() as $name=>$colum)
 		{
 			$fname = ucwords(str_replace('_', ' ', $name));
@@ -149,7 +149,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	public function setSearchParameters($value)
 	{
-		$this->setViewState('SearchParameters', TPropertyValue::ensureArray($value),array());
+		$this->setViewState('SearchParameters', TPropertyValue::ensureArray($value),[]);
 	}
 
 	/**
@@ -157,7 +157,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	public function getSearchParameters()
 	{
-		return $this->getViewState('SearchParameters', array());
+		return $this->getViewState('SearchParameters', []);
 	}
 
 	/**

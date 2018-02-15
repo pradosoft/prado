@@ -85,7 +85,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	private $_cache=null;
 	private $_contents;
 	private $_state;
-	private $_actions=array();
+	private $_actions=[];
 	private $_varyByParam='';
 	private $_keyPrefix='';
 	private $_varyBySession=false;
@@ -191,11 +191,11 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		foreach($this->_actions as $action)
 		{
 			if($action[0]==='Page.ClientScript')
-				call_user_func_array(array($cs,$action[1]),$action[2]);
+				call_user_func_array([$cs,$action[1]],$action[2]);
 			elseif($action[0]==='Page')
-				call_user_func_array(array($page,$action[1]),$action[2]);
+				call_user_func_array([$page,$action[1]],$action[2]);
 			else
-				call_user_func_array(array($this->getSubProperty($action[0]),$action[1]),$action[2]);
+				call_user_func_array([$this->getSubProperty($action[0]),$action[1]],$action[2]);
 		}
 	}
 
@@ -265,7 +265,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	public function registerAction($context,$funcName,$funcParams)
 	{
-		$this->_actions[]=array($context,$funcName,$funcParams);
+		$this->_actions[]=[$context,$funcName,$funcParams];
 	}
 
 	public function getCacheKey()
@@ -292,7 +292,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 			$key.=$this->getSession()->getSessionID();
 		if($this->_varyByParam!=='')
 		{
-			$params=array();
+			$params=[];
 			$request=$this->getRequest();
 			foreach(explode(',',$this->_varyByParam) as $name)
 			{
@@ -485,7 +485,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		elseif($this->_cacheAvailable)
 		{
 			$textwriter = new TTextWriter();
-			$multiwriter = new TOutputCacheTextWriterMulti(array($writer->getWriter(),$textwriter));
+			$multiwriter = new TOutputCacheTextWriterMulti([$writer->getWriter(),$textwriter]);
 			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $multiwriter);
 
 			$stack=$this->getPage()->getCachingStack();
@@ -494,7 +494,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 			$stack->pop();
 
 			$content=$textwriter->flush();
-			$data=array($content,$this->_state,$this->_actions,time());
+			$data=[$content,$this->_state,$this->_actions,time()];
 			$this->_cache->set($this->getCacheKey(),$data,$this->getDuration(),$this->getCacheDependency());
 		}
 		else

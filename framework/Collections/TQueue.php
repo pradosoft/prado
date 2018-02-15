@@ -40,7 +40,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d=array();
+	private $_d=[];
 	/**
 	 * number of items
 	 * @var integer
@@ -94,7 +94,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	public function clear()
 	{
 		$this->_c=0;
-		$this->_d=array();
+		$this->_d=[];
 	}
 
 	/**

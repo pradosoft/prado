@@ -50,7 +50,7 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * @var array list of destination email addresses.
 	 */
-	private $_emails=array();
+	private $_emails=[];
 	/**
 	 * @var string email subject
 	 */
@@ -108,7 +108,7 @@ class TEmailLogRoute extends TLogRoute
 			$this->_emails=$emails;
 		else
 		{
-			$this->_emails=array();
+			$this->_emails=[];
 			foreach(explode(',',$emails) as $email)
 			{
 				$email=trim($email);

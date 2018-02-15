@@ -197,8 +197,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	protected function getParameterizedPattern()
 	{
-		$params=array();
-		$values=array();
+		$params=[];
+		$values=[];
 		if ($this->_parameters)
 		{
 			foreach($this->_parameters as $key=>$value)
@@ -349,7 +349,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function getPatternMatches($request)
 	{
-		$matches=array();
+		$matches=[];
 		if(($pattern=$this->getRegularExpression())!=='')
 			preg_match($pattern,$request->getPathInfo(),$matches);
 		else
@@ -525,8 +525,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 			}
 		}
 
-		$extra=array();
-		$replace=array();
+		$extra=[];
+		$replace=[];
 		// for the GET variables matching the pattern, put them in the URL path
 		foreach($getItems as $key=>$value)
 		{

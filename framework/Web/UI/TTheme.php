@@ -69,11 +69,11 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	/**
 	 * @var array list of css files
 	 */
-	private $_cssFiles=array();
+	private $_cssFiles=[];
 	/**
 	 * @var array list of js files
 	 */
-	private $_jsFiles=array();
+	private $_jsFiles=[];
 
 	/**
 	 * Constructor.
@@ -128,9 +128,9 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		}
 		if(!$cacheValid)
 		{
-			$this->_cssFiles=array();
-			$this->_jsFiles=array();
-			$this->_skins=array();
+			$this->_cssFiles=[];
+			$this->_jsFiles=[];
+			$this->_skins=[];
 			if(($dir=opendir($themePath))===false)
 				throw new TIOException('theme_path_inexistent',$themePath);
 			while(($file=readdir($dir))!==false)
@@ -170,7 +170,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
 			if($cache!==null)
-				$cache->set(self::THEME_CACHE_PREFIX.$themePath,array($this->_skins,$this->_cssFiles,$this->_jsFiles,time()));
+				$cache->set(self::THEME_CACHE_PREFIX.$themePath,[$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
 		}
 	}
 

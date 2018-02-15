@@ -35,9 +35,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TComponentReflection extends \Prado\TComponent
 {
 	private $_className;
-	private $_properties=array();
-	private $_events=array();
-	private $_methods=array();
+	private $_properties=[];
+	private $_events=[];
+	private $_methods=[];
 
 	/**
 	 * Constructor.
@@ -73,9 +73,9 @@ class TComponentReflection extends \Prado\TComponent
 	private function reflect()
 	{
 		$class=new \ReflectionClass($this->_className);
-		$properties=array();
-		$events=array();
-		$methods=array();
+		$properties=[];
+		$events=[];
+		$methods=[];
 		$isComponent=is_subclass_of($this->_className,'TComponent') || strcasecmp($this->_className,'TComponent')===0;
 		foreach($class->getMethods() as $method)
 		{
@@ -96,40 +96,40 @@ class TComponentReflection extends \Prado\TComponent
 					$methods[$methodName]=$method;
 			}
 		}
-		$reserved=array();
+		$reserved=[];
 		ksort($properties);
 		foreach($properties as $name=>$method)
 		{
-			$this->_properties[$name]=array(
+			$this->_properties[$name]=[
 				'type'=>$this->determinePropertyType($method),
 				'readonly'=>!$class->hasMethod('set'.$name),
 				'protected'=>$method->isProtected(),
 				'class'=>$method->getDeclaringClass()->getName(),
 				'comments'=>$method->getDocComment()
-			);
+			];
 			$reserved['get'.strtolower($name)]=1;
 			$reserved['set'.strtolower($name)]=1;
 		}
 		ksort($events);
 		foreach($events as $name=>$method)
 		{
-			$this->_events[$name]=array(
+			$this->_events[$name]=[
 				'class'=>$method->getDeclaringClass()->getName(),
 				'protected'=>$method->isProtected(),
 				'comments'=>$method->getDocComment()
-			);
+			];
 			$reserved[strtolower($name)]=1;
 		}
 		ksort($methods);
 		foreach($methods as $name=>$method)
 		{
 			if(!isset($reserved[strtolower($name)]))
-				$this->_methods[$name]=array(
+				$this->_methods[$name]=[
 					'class'=>$method->getDeclaringClass()->getName(),
 					'protected'=>$method->isProtected(),
 					'static'=>$method->isStatic(),
 					'comments'=>$method->getDocComment()
-				);
+				];
 		}
 	}
 

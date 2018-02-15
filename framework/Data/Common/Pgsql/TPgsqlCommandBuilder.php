@@ -34,7 +34,7 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	 */
 	public function getSearchExpression($fields, $keywords)
 	{
-		$columns = array();
+		$columns = [];
 		foreach($fields as $field)
 		{
 			if($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
@@ -61,7 +61,7 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function getSearchCondition($column, $words)
 	{
-		$conditions=array();
+		$conditions=[];
 		foreach($words as $word)
 			$conditions[] = $column.' ILIKE '.$this->getDbConnection()->quoteString('%'.$word.'%');
 		return '('.implode(' AND ', $conditions).')';

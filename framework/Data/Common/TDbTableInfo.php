@@ -23,7 +23,7 @@ use Prado\Prado;
  */
 class TDbTableInfo extends \Prado\TComponent
 {
-	private $_info=array();
+	private $_info=[];
 
 	private $_primaryKeys;
 	private $_foreignKeys;
@@ -42,7 +42,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
+	public function __construct($tableInfo=[],$primary=[],$foreign=[])
 	{
 		$this->_info=$tableInfo;
 		$this->_primaryKeys=$primary;
@@ -129,7 +129,7 @@ class TDbTableInfo extends \Prado\TComponent
 	{
 		if($this->_names===null)
 		{
-			$this->_names=array();
+			$this->_names=[];
 			foreach($this->getColumns() as $column)
 				$this->_names[] = $column->getColumnName();
 		}
@@ -159,7 +159,7 @@ class TDbTableInfo extends \Prado\TComponent
 	{
 		if($this->_lowercase===null)
 		{
-			$this->_lowercase=array();
+			$this->_lowercase=[];
 			foreach($this->getColumns()->getKeys() as $key)
 				$this->_lowercase[strtolower($key)] = $key;
 		}

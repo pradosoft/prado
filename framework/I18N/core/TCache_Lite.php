@@ -168,7 +168,7 @@ class TCache_Lite
      *
      * @var array $_memoryCachingArray
      */
-    protected $_memoryCachingArray = array();
+    protected $_memoryCachingArray = [];
 
     /**
      * Memory caching counter
@@ -230,9 +230,9 @@ class TCache_Lite
      * @param array $options options
      * @access public
      */
-    function __construct($options = array(null))
+    function __construct($options = [null])
     {
-        $availableOptions = array(	'automaticSerialization',
+        $availableOptions = [	'automaticSerialization',
         							'fileNameProtection',
         							'memoryCaching',
         							'onlyMemoryCaching',
@@ -243,7 +243,7 @@ class TCache_Lite
         							'fileLocking',
         							'writeControl',
         							'readControl',
-        							'readControlType');
+        							'readControlType'];
         foreach($options as $key => $value) {
             if(in_array($key, $availableOptions)) {
                 $property = '_'.$key;
@@ -429,10 +429,10 @@ class TCache_Lite
     function saveMemoryCachingState($id, $group = 'default')
     {
         if ($this->_caching) {
-            $array = array(
+            $array = [
                 'counter' => $this->_memoryCachingCounter,
                 'array' => $this->_memoryCachingState
-            );
+            ];
             $data = serialize($array);
             $this->save($data, $id, $group);
         }

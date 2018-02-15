@@ -119,7 +119,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	{
 		$namespace = $class.'wsdl';
 		$message = file_get_contents("php://input");
-		$matches= array();
+		$matches= [];
 		if(preg_match('/xmlns:([^=]+)="urn:'.$namespace.'"/', $message, $matches))
 		{
 			if(preg_match('/<'.$matches[1].':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method))
@@ -158,7 +158,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	protected function getOptions()
 	{
-		$options=array();
+		$options=[];
 		if($this->_version==='1.1')
 			$options['soap_version']=SOAP_1_1;
 		elseif($this->_version==='1.2')

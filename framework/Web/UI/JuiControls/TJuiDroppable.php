@@ -111,7 +111,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('accept', 'activeClass', 'addClasses', 'disabled', 'greedy', 'hoverClass', 'scope', 'tolerance');
+		return ['accept', 'activeClass', 'addClasses', 'disabled', 'greedy', 'hoverClass', 'scope', 'tolerance'];
 	}
 
 	/**
@@ -120,7 +120,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidEvents()
 	{
-		return array('activate', 'create', 'deactivate', 'drop', 'out', 'over');
+		return ['activate', 'create', 'deactivate', 'drop', 'out', 'over'];
 	}
 
 	/**

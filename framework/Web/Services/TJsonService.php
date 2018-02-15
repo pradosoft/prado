@@ -61,7 +61,7 @@ class TJsonService extends \Prado\TService
 	/**
 	 * @var array registered services
 	 */
-	private $_services=array();
+	private $_services=[];
 
 	/**
 	 * Initializes this module.
@@ -116,7 +116,7 @@ class TJsonService extends \Prado\TService
 					$service=Prado::createComponent($serviceConfig['class']);
 					if($service instanceof TJsonResponse)
 					{
-						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:array();
+						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:[];
 						$this->createJsonResponse($service,$properties,$serviceConfig);
 					}
 					else

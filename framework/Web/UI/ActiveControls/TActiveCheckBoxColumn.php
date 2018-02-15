@@ -53,7 +53,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 			$cell->getControls()->add($checkBox);
 			$cell->registerObject('CheckBox',$checkBox);
 			if($this->getDataField()!=='')
-				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				$checkBox->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
 		}
 		else
 			parent::initializeCell($cell,$columnIndex,$itemType);

@@ -87,7 +87,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getValidOptions()
 	{
-		return array('disabled', 'max', 'value');
+		return ['disabled', 'max', 'value'];
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getValidEvents()
 	{
-		return array('change', 'complete', 'create');
+		return ['change', 'complete', 'create'];
 	}
 
 	/**

@@ -93,7 +93,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('alsoResize', 'animate', 'animateDuration', 'animateEasing', 'aspectRatio', 'autoHide', 'cancel', 'containment', 'delay', 'disabled', 'distance', 'ghost', 'grid', 'handles', 'helper', 'maxHeight', 'maxWidth', 'minHeight', 'minWidth');
+		return ['alsoResize', 'animate', 'animateDuration', 'animateEasing', 'aspectRatio', 'autoHide', 'cancel', 'containment', 'delay', 'disabled', 'distance', 'ghost', 'grid', 'handles', 'helper', 'maxHeight', 'maxWidth', 'minHeight', 'minWidth'];
 	}
 
 	/**
@@ -102,7 +102,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidEvents()
 	{
-		return array('create', 'resize', 'start', 'stop');
+		return ['create', 'resize', 'start', 'stop'];
 	}
 
 	/**

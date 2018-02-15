@@ -864,19 +864,19 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			$this->clearViewState('ItemCount');
 		if($this->_autoColumns)
 		{
-			$state=array();
+			$state=[];
 			foreach($this->_autoColumns as $column)
 				$state[]=$column->saveState();
-			$this->setViewState('AutoColumns',$state,array());
+			$this->setViewState('AutoColumns',$state,[]);
 		}
 		else
 			$this->clearViewState('AutoColumns');
 		if($this->_columns)
 		{
-			$state=array();
+			$state=[];
 			foreach($this->_columns as $column)
 				$state[]=$column->saveState();
-			$this->setViewState('Columns',$state,array());
+			$this->setViewState('Columns',$state,[]);
 		}
 		else
 			$this->clearViewState('Columns');
@@ -893,7 +893,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			return;
 		if(!$this->getIsDataBound())
 		{
-			$state=$this->getViewState('AutoColumns',array());
+			$state=$this->getViewState('AutoColumns',[]);
 			if(!empty($state))
 			{
 				$this->_autoColumns=new TDataGridColumnCollection($this);
@@ -906,7 +906,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			}
 			else
 				$this->_autoColumns=null;
-			$state=$this->getViewState('Columns',array());
+			$state=$this->getViewState('Columns',[]);
 			if($this->_columns && $this->_columns->getCount()===count($state))
 			{
 				$i=0;

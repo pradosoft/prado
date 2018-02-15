@@ -37,7 +37,7 @@ class Translation extends \Prado\TComponent
 	 * This is a class static variable.
 	 * @var array
 	 */
-	protected static $formatters=array();
+	protected static $formatters=[];
 
 	/**
 	 * Initialize the TTranslate translation components
@@ -64,14 +64,14 @@ class Translation extends \Prado\TComponent
 
 			//mark untranslated text
 			if($ps=$config['marker'])
-				self::$formatters[$catalogue]->setUntranslatedPS(array($ps,$ps));
+				self::$formatters[$catalogue]->setUntranslatedPS([$ps,$ps]);
 
 			//save the message on end request
 			// Do it only once !
 			if(!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave']))
 			{
 				Prado::getApplication()->attachEventHandler(
-				'OnEndRequest', array('Translation', 'saveMessages'));
+				'OnEndRequest', ['Translation', 'saveMessages']);
 				$saveEventHandlerAttached=true;
 			}
 		}

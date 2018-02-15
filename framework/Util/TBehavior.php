@@ -31,7 +31,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	 */
 	public function events()
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -45,7 +45,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	{
 		$this->_owner=$owner;
 		foreach($this->events() as $event=>$handler)
-			$owner->attachEventHandler($event,array($this,$handler));
+			$owner->attachEventHandler($event,[$this,$handler]);
 	}
 
 	/**
@@ -58,7 +58,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	public function detach($owner)
 	{
 		foreach($this->events() as $event=>$handler)
-			$owner->detachEventHandler($event,array($this,$handler));
+			$owner->detachEventHandler($event,[$this,$handler]);
 		$this->_owner=null;
 	}
 

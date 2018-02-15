@@ -94,7 +94,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * them specially.
 	 * @var array list of control class names
 	 */
-	private static $_clientClass = array('THtmlArea', 'THtmlArea4', 'TDatePicker', 'TListBox', 'TCheckBoxList');
+	private static $_clientClass = ['THtmlArea', 'THtmlArea4', 'TDatePicker', 'TListBox', 'TCheckBoxList'];
 
 	/**
 	 * Constructor.

@@ -136,7 +136,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var array list of events that define application lifecycles
 	 */
-	private static $_steps=array(
+	private static $_steps=[
 		'onBeginRequest',
 		'onLoadState',
 		'onLoadStateComplete',
@@ -150,7 +150,7 @@ class TApplication extends \Prado\TComponent
 		'onSaveStateComplete',
 		'onPreFlushOutput',
 		'flushOutput'
-	);
+	];
 
 	/**
 	 * @var string application ID
@@ -179,11 +179,11 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var array list of loaded application modules
 	 */
-	private $_modules=array();
+	private $_modules=[];
 	/**
 	 * @var array list of application modules yet to be loaded
 	 */
-	private $_lazyModules=array();
+	private $_lazyModules=[];
 	/**
 	 * @var \Prado\Collections\TMap list of application parameters
 	 */
@@ -215,7 +215,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var array global variables (persistent across sessions, requests)
 	 */
-	private $_globals=array();
+	private $_globals=[];
 	/**
 	 * @var string cache file
 	 */
@@ -305,7 +305,7 @@ class TApplication extends \Prado\TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID=md5($this->_runtimePath);
 		$this->_parameters=new \Prado\Collections\TMap;
-		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
+		$this->_services=[$this->getPageServiceID()=>['TPageService',[],null]];
 
 		Prado::setPathOfAlias('Application',$this->_basePath);
 	}
@@ -947,7 +947,7 @@ class TApplication extends \Prado\TComponent
 		// keep the key to avoid reuse of the old module id
 		$this->_lazyModules[$id]=null;
 
-		return array($module,$configElement);
+		return [$module,$configElement];
 	}
 	/**
 	 * Applies an application configuration.
@@ -973,7 +973,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		if(empty($this->_services))
-			$this->_services=array($this->getPageServiceID()=>array('Prado\Web\Services\TPageService',array(),null));
+			$this->_services=[$this->getPageServiceID()=>['Prado\Web\Services\TPageService',[],null]];
 
 		// load parameters
 		foreach($config->getParameters() as $id=>$parameter)
@@ -990,7 +990,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		// load and init modules specified in app config
-		$modules=array();
+		$modules=[];
 		foreach($config->getModules() as $id=>$moduleConfig)
 		{
 			if(!is_string($id))

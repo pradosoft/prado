@@ -117,11 +117,11 @@ EOD;
 		//remove possible delimiters
 		$result = explode('.', preg_replace('/\[|\]|"/', '', $table));
 		if(count($result)===1)
-			return array(null,null,$result[0]);
+			return [null,null,$result[0]];
 		if(count($result)===2)
-			return array(null,$result[0],$result[1]);
+			return [null,$result[0],$result[1]];
 		if(count($result)>2)
-			return array($result[0],$result[1],$result[2]);
+			return [$result[0],$result[1],$result[2]];
 	}
 
 	/**
@@ -195,11 +195,11 @@ EOD;
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $col['TABLE_NAME']);
-		$primary = array();
+		$primary = [];
 		foreach($command->query()->readAll() as $field)
 			$primary[] = $field['field_name'];
 		$foreign = $this->getForeignConstraints($col);
-		return array($primary,$foreign);
+		return [$primary,$foreign];
 	}
 
 	/**
@@ -238,7 +238,7 @@ EOD;
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $col['TABLE_NAME']);
-		$fkeys=array();
+		$fkeys=[];
 		$catalogSchema = "[{$col['TABLE_CATALOG']}].[{$col['TABLE_SCHEMA']}]";
 		foreach($command->query() as $info)
 		{
@@ -279,7 +279,7 @@ EOD;
 		$command=$this->getDbConnection()->createCommand($sql);
 		$command->bindParam(":schema", $schema);
 		$rows=$command->queryAll();
-		$names=array();
+		$names=[];
 		foreach ($rows as $row)
 		{
 			if ($schema == self::DEFAULT_SCHEMA)

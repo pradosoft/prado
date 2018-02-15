@@ -58,25 +58,25 @@ class MessageFormat
 	 * A list of loaded message catalogues.
 	 * @var array 
 	 */
-	protected $catagloues = array();
+	protected $catagloues = [];
 	
 	/**
 	 * The translation messages.
 	 * @var array 
 	 */
-	protected $messages = array();
+	protected $messages = [];
 	
 	/**
 	 * A list of untranslated messages.
 	 * @var array 
 	 */
-	protected $untranslated = array();
+	protected $untranslated = [];
 	
 	/**
 	 * The prefix and suffix to append to untranslated messages.
 	 * @var array 
 	 */
-	protected $postscript = array('','');
+	protected $postscript = ['',''];
 	
 	/**
 	 * Set the default catalogue.
@@ -153,7 +153,7 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	public function format($string,$args=array(), $catalogue=null, $charset=null) 
+	public function format($string,$args=[], $catalogue=null, $charset=null) 
 	{
 		if(empty($charset)) $charset = $this->getCharset();
 		
@@ -172,7 +172,7 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	protected function formatString($string, $args=array(), $catalogue=null)
+	protected function formatString($string, $args=[], $catalogue=null)
 	{		
 		if(empty($catalogue))
 		{
@@ -185,7 +185,7 @@ class MessageFormat
 		$this->loadCatalogue($catalogue);
 		
 		if(empty($args))
-			$args = array();		
+			$args = [];		
 		
 		foreach($this->messages[$catalogue] as $variant)
 		{

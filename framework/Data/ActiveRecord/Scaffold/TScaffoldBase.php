@@ -58,7 +58,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordPropertyValues($record)
 	{
-		$data = array();
+		$data = [];
 		foreach($this->getTableInfo()->getColumns() as $name=>$column)
 			$data[] = $record->getColumnValue($name);
 		return $data;
@@ -70,7 +70,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordPkValues($record)
 	{
-		$data=array();
+		$data=[];
 		foreach($this->getTableInfo()->getColumns() as $name=>$column)
 		{
 			if($column->getIsPrimaryKey())

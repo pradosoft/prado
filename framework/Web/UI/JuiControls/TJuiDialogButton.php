@@ -63,10 +63,10 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function getPostBackOptions()
 	{
-		return array(
+		return [
 			'text' => $this->getText(),
 			'click' => new TJavaScriptLiteral("function(){new Prado.Callback('".$this->getUniqueID()."', 'onClick');}"
-			)) ;
+			)] ;
 	}
 
 	/**

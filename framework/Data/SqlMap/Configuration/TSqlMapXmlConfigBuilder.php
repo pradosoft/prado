@@ -34,7 +34,7 @@ abstract class TSqlMapXmlConfigBuilder
 		if(isset($node['class']))
 		{
 			$obj = Prado::createComponent((string)$node['class']);
-			$this->setObjectPropFromNode($obj,$node,array('class'));
+			$this->setObjectPropFromNode($obj,$node,['class']);
 			return $obj;
 		}
 		throw new TSqlMapConfigurationException(
@@ -48,7 +48,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param SimpleXmlNode property node
 	 * @param array exception property name
 	 */
-	protected function setObjectPropFromNode($obj,$node,$except=array())
+	protected function setObjectPropFromNode($obj,$node,$except=[])
 	{
 		foreach($node->attributes() as $name=>$value)
 		{
@@ -105,7 +105,7 @@ abstract class TSqlMapXmlConfigBuilder
 	protected function getElementByIdValue($document, $tag, $value)
 	{
 		//hack to allow upper case and lower case attribute names.
-		foreach(array('id','ID','Id', 'iD') as $id)
+		foreach(['id','ID','Id', 'iD'] as $id)
 		{
 			$xpath = "//{$tag}[@{$id}='{$value}']";
 			foreach($document->xpath($xpath) as $node)

@@ -125,7 +125,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getParameters()
 	{
-		return isset($this->_relation[4])?$this->_relation[4]:array();
+		return isset($this->_relation[4])?$this->_relation[4]:[];
 	}
 
 	/**

@@ -154,7 +154,7 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected static function hideSecurityRelated($value, $exception=null)
 	{
-		$aRpl = array();
+		$aRpl = [];
 		if($exception !== null && $exception instanceof \Exception)
 		{
 			if($exception instanceof TPhpFatalErrorException && 
@@ -206,13 +206,13 @@ class TErrorHandler extends \Prado\TModule
 			$version='';
 			$errorMessage = self::hideSecurityRelated($errorMessage, $exception);
 		}
-		$tokens=array(
+		$tokens=[
 			'%%StatusCode%%' => "$statusCode",
 			'%%ErrorMessage%%' => htmlspecialchars($errorMessage),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
-		);
+		];
 
 		$this->getApplication()->getResponse()->setStatusCode($statusCode, $isDebug ? $exception->getMessage() : null);
 
@@ -287,7 +287,7 @@ class TErrorHandler extends \Prado\TModule
 		else
 			$version='';
 
-		$tokens=array(
+		$tokens=[
 			'%%ErrorType%%' => get_class($exception),
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
 			'%%SourceFile%%' => htmlspecialchars($fileName).' ('.$errorLine.')',
@@ -295,7 +295,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M',time())
-		);
+		];
 
 		$content=$this->getExceptionTemplate($exception);
 

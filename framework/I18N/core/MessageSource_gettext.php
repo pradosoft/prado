@@ -75,7 +75,7 @@ class MessageSource_gettext extends MessageSource
 		$mo->load();
 		$result = $mo->toArray();
 
-		$results = array();
+		$results = [];
 		$count=0;
 		foreach($result['strings'] as $source => $target)
 		{
@@ -131,7 +131,7 @@ class MessageSource_gettext extends MessageSource
 		$variants = explode('_',$this->culture);
 		$source = $catalogue.$this->dataExt;
 
-		$catalogues = array($source);
+		$catalogues = [$source];
 
 		$variant = null;
 
@@ -160,7 +160,7 @@ class MessageSource_gettext extends MessageSource
 	private function getCatalogueByDir($catalogue)
 	{
 		$variants = explode('_',$this->culture);
-		$catalogues = array();
+		$catalogues = [];
 
 		$variant = null;
 
@@ -194,7 +194,7 @@ class MessageSource_gettext extends MessageSource
 			$file = $this->getSource($variant);
 			$po = $this->getPOFile($file);
 			if(is_file($file) || is_file($po))
-				return array($variant, $file, $po);
+				return [$variant, $file, $po];
 		}
 		return false;
 	}
@@ -231,7 +231,7 @@ class MessageSource_gettext extends MessageSource
 			throw new TIOException("Unable to save to file {$POFile}, file must be writable.");
 
 		//set the strings as untranslated.
-		$strings = array();
+		$strings = [];
 		foreach($messages as $message)
 			$strings[$message] = '';
 
@@ -383,7 +383,7 @@ class MessageSource_gettext extends MessageSource
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
 
-		$catalogue = array();
+		$catalogue = [];
 
 		foreach($files as $file)
 		{
@@ -442,12 +442,12 @@ class MessageSource_gettext extends MessageSource
 
 		$po = TGettext::factory('PO',$po_file);
 		$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
-		$result['strings'] = array();
+		$result['strings'] = [];
 
 		$po->fromArray($result);
 		$mo = $po->toMO();
 		if($po->save() && $mo->save($mo_file))
-			return array($variant, $mo_file, $po_file);
+			return [$variant, $mo_file, $po_file];
 		else
 			throw new TException("Unable to create file $po_file and $mo_file");
 	}

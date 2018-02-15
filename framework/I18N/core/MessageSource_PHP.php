@@ -72,7 +72,7 @@ class MessageSource_PHP extends MessageSource
 
 		$translationUnit = $php['trans-unit'];
 
-		$translations = array();
+		$translations = [];
 
 		foreach($translationUnit as $k => $unit)
 		{
@@ -126,7 +126,7 @@ class MessageSource_PHP extends MessageSource
 	{
 		$variants = explode('_',$this->culture);
 		$source = $catalogue.$this->dataExt;
-		$catalogues = array($source);
+		$catalogues = [$source];
 		$variant = null;
 
 		for($i = 0, $k = count($variants); $i < $k; ++$i)
@@ -152,7 +152,7 @@ class MessageSource_PHP extends MessageSource
 	private function getCatalogueByDir($catalogue)
 	{
 		$variants = explode('_',$this->culture);
-		$catalogues = array();
+		$catalogues = [];
 		$variant = null;
 
 		for($i = 0, $k = count($variants); $i < $k; ++$i)
@@ -188,7 +188,7 @@ class MessageSource_PHP extends MessageSource
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
-		$catalogue = array();
+		$catalogue = [];
 
 		foreach($files as $file)
 		{
@@ -240,7 +240,7 @@ class MessageSource_PHP extends MessageSource
 		{
 			$file = $this->getSource($variant);
 			if(is_file($file)) {
-				return array($variant, $file);
+				return [$variant, $file];
 			}
 		}
 		return false;
@@ -292,10 +292,10 @@ class MessageSource_PHP extends MessageSource
 		//for each message add it to the XML file using DOM
 		foreach($messages as $message)
 		{
-			$php['trans-unit'][]= array(
+			$php['trans-unit'][]= [
 				'source' => $message,
 				'target' => '',
-			);
+			];
 		}
 
 		return $this->internalSaveFile($php, $filename, $variant);
@@ -400,7 +400,7 @@ class MessageSource_PHP extends MessageSource
 		file_put_contents($file, $this->getTemplate($catalogue));
 		chmod($file, PRADO_CHMOD);
 
-		return array($variant, $file);
+		return [$variant, $file];
 	}
 
 	protected function getTemplate($catalogue)

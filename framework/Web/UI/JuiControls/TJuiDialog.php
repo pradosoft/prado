@@ -86,7 +86,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizable', 'show', 'title', 'width');
+		return ['appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizable', 'show', 'title', 'width'];
 	}
 
 	/**
@@ -95,7 +95,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidEvents()
 	{
-		return array('beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop');
+		return ['beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop'];
 	}
 
 	/**

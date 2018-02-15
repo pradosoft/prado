@@ -109,7 +109,7 @@ class TLiteralColumn extends TDataGridColumn
 		{
 			if($this->getDataField()!=='')
 			{
-				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				$cell->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
 			} else {
 				$text=$this->getText();
 				if($this->getEncode())

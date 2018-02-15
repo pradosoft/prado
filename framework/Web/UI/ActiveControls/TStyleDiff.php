@@ -30,7 +30,7 @@ class TStyleDiff extends TViewStateDiff
 	protected function getCombinedStyle($obj)
 	{
 		if(!($obj instanceof TStyle))
-			return array();
+			return [];
 		$style = $obj->getStyleFields();
 		$style = array_merge($style,$this->getStyleFromString($obj->getCustomStyle()));
 		if($obj->hasFont())
@@ -44,7 +44,7 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	protected function getStyleFromString($string)
 	{
-		$style = array();
+		$style = [];
 		if(!is_string($string)) return $style;
 
 		foreach(explode(';',$string) as $sub)
@@ -96,7 +96,7 @@ class TStyleDiff extends TViewStateDiff
 			$css = $this->getCssClassDiff();
 			$style = $this->getStyleDiff();
 			if(($css!==null) || ($style!==null))
-				return array('CssClass' => $css, 'Style' => $style);
+				return ['CssClass' => $css, 'Style' => $style];
 			else
 				$this->_null;
 		}

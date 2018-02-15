@@ -26,7 +26,7 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * @var array storage of CSS fields
 	 */
-	private $_fields=array();
+	private $_fields=[];
 	/**
 	 * @var TFont font object
 	 */
@@ -53,7 +53,7 @@ class TStyle extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_fields===array())
+		if ($this->_fields===[])
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_fields";
 		if($this->_font===null)
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_font";
@@ -348,7 +348,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function reset()
 	{
-		$this->_fields=array();
+		$this->_fields=[];
 		$this->_font=null;
 		$this->_class=null;
 		$this->_customStyle=null;

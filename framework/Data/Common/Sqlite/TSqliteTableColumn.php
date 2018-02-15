@@ -30,7 +30,7 @@ class TSqliteTableColumn extends TDbTableColumn
 	/**
 	 * @TODO add sqlite types.
 	 */
-	private static $types = array();
+	private static $types = [];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.

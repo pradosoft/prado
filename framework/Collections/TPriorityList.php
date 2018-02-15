@@ -56,7 +56,7 @@ class TPriorityList extends TList
 	/**
 	 * @var array internal data storage
 	 */
-	private $_d=array();
+	private $_d=[];
 	/**
 	 * @var boolean indicates if the _d is currently ordered.
 	 */
@@ -206,7 +206,7 @@ class TPriorityList extends TList
 			return $this->_fd;
 
 		$this->sortPriorities();
-		$this->_fd=array();
+		$this->_fd=[];
 		foreach($this->_d as $priority => $itemsatpriority)
 			$this->_fd=array_merge($this->_fd,$itemsatpriority);
 		return $this->_fd;
@@ -329,15 +329,15 @@ class TPriorityList extends TList
 				$this->_d[$priority][]=$item;
 			} elseif(isset($this->_d[$priority])) {
 				$c=$index+$cc;
-				array_splice($this->_d[$priority],$index,0,array($item));
+				array_splice($this->_d[$priority],$index,0,[$item]);
 			} else {
 				$c = $cc;
 				$this->_o = false;
-				$this->_d[$priority]=array($item);
+				$this->_d[$priority]=[$item];
 			}
 
 			if($this->_fd&&is_array($this->_fd)) // if there is a flattened array cache
-				array_splice($this->_fd,$c,0,array($item));
+				array_splice($this->_fd,$c,0,[$item]);
 		} else {
 			$c=null;
 			if($index===false&&isset($this->_d[$priority])) {
@@ -345,14 +345,14 @@ class TPriorityList extends TList
 				$this->_d[$priority][]=$item;
 			} elseif(isset($this->_d[$priority])) {
 				$cc=$index;
-				array_splice($this->_d[$priority],$index,0,array($item));
+				array_splice($this->_d[$priority],$index,0,[$item]);
 			} else {
 				$cc=0;
 				$this->_o=false;
-				$this->_d[$priority]=array($item);
+				$this->_d[$priority]=[$item];
 			}
 			if($this->_fd&&is_array($this->_fd)&&count($this->_d)==1)
-				array_splice($this->_fd,$cc,0,array($item));
+				array_splice($this->_fd,$cc,0,[$item]);
 			else
 				$this->_fd=null;
 		}
@@ -497,8 +497,8 @@ class TPriorityList extends TList
 		foreach($this->_d as $priority=>$items) {
 			if(($index=array_search($item,$items,true))!==false) {
 				$absindex+=$index;
-				return $withindex?array($priority,$index,$absindex,
-						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex):$priority;
+				return $withindex?[$priority,$index,$absindex,
+						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex]:$priority;
 			} else
 				$absindex+=count($items);
 		}
@@ -526,8 +526,8 @@ class TPriorityList extends TList
 			if($index>=($c=count($items)))
 				$index-=$c;
 			else
-				return $withindex?array($priority,$index,$absindex,
-						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex):$priority;
+				return $withindex?[$priority,$index,$absindex,
+						'priority'=>$priority,'index'=>$index,'absindex'=>$absindex]:$priority;
 		}
 		return false;
 	}
@@ -601,7 +601,7 @@ class TPriorityList extends TList
 	public function toArrayBelowPriority($priority,$inclusive=false)
 	{
 		$this->sortPriorities();
-		$items=array();
+		$items=[];
 		foreach($this->_d as $itemspriority=>$itemsatpriority)
 		{
 			if((!$inclusive&&$itemspriority>=$priority)||$itemspriority>$priority)
@@ -621,7 +621,7 @@ class TPriorityList extends TList
 	public function toArrayAbovePriority($priority,$inclusive=true)
 	{
 		$this->sortPriorities();
-		$items=array();
+		$items=[];
 		foreach($this->_d as $itemspriority=>$itemsatpriority)
 		{
 			if((!$inclusive&&$itemspriority<=$priority)||$itemspriority<$priority)

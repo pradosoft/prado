@@ -12,7 +12,7 @@
  * @package Prado
  */
 
-return array(
+return [
 'ICache' => 'Prado\Caching\ICache',
 'ICacheDependency' => 'Prado\Caching\ICacheDependency',
 'TAPCCache' => 'Prado\Caching\TAPCCache',
@@ -669,4 +669,4 @@ return array(
 'TXmlDocument' => 'Prado\Xml\TXmlDocument',
 'TXmlElement' => 'Prado\Xml\TXmlElement',
 'TXmlElementList' => 'Prado\Xml\TXmlElementList',
-);
+];

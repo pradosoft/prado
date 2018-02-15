@@ -207,7 +207,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getValues()
 	{
-		return $this->getViewState('Values', array());
+		return $this->getViewState('Values', []);
 	}
 
 	/**
@@ -218,7 +218,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setValues($value)
 	{
-		$this->setViewState('Values', TPropertyValue::ensureArray($value), array());
+		$this->setViewState('Values', TPropertyValue::ensureArray($value), []);
 	}
 
 	/**
@@ -458,7 +458,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['axis'] = strtolower($this->getDirection());
 		$options['maximum'] = $maxValue;
 		$options['minimum'] = $minValue;
-		$options['range'] = array($minValue, $maxValue);
+		$options['range'] = [$minValue, $maxValue];
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values=$this->getValues();
@@ -483,7 +483,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			{
 				$step=($maxValue-$minValue)/self::MAX_STEPS;
 			}
-			$values=array();
+			$values=[];
 			for ($i=$minValue;$i<=$maxValue;$i+=$step)
 				$values[]=$i;
 			// Add max if it's not in the array because of step

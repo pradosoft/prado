@@ -230,7 +230,7 @@ class THyperLinkColumn extends TDataGridColumn
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
 			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
-				$link->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				$link->attachEventHandler('OnDataBinding',[$this,'dataBindColumn']);
 			$cell->getControls()->add($link);
 			$cell->registerObject('HyperLink',$link);
 		}

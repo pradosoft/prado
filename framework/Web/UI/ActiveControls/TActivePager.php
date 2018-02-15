@@ -107,8 +107,8 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged',array($this,'listIndexChanged'));
-		$list->attachEventHandler('OnCallback', array($this, 'handleCallback'));
+		$list->attachEventHandler('OnSelectedIndexChanged',[$this,'listIndexChanged']);
+		$list->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$button->setCausesValidation(false);
 		$button->setCssClass($this->getButtonCssClass());
 
-		$button->attachEventHandler('OnCallback', array($this, 'handleCallback'));
+		$button->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 		$button->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
 		);

@@ -262,7 +262,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	{
 		if(strlen($type = $this->getListClass()) > 0)
 			return $this->createInstanceOf($registry,$type);
-		return array();
+		return [];
 	}
 
 	/**
@@ -296,7 +296,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	public function __sleep()
 	{
 		$cn = __CLASS__;
-		$exprops = array("\0$cn\0_resultMap");
+		$exprops = ["\0$cn\0_resultMap"];
 		if (!$this->_parameterMapName) $exprops[] = "\0$cn\0_parameterMapName";
 		if (!$this->_parameterMap) $exprops[] = "\0$cn\0_parameterMap";
 		if (!$this->_parameterClassName) $exprops[] = "\0$cn\0_parameterClassName";

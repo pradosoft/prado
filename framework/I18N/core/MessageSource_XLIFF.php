@@ -75,7 +75,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$translationUnit = $XML->xpath('//trans-unit');
 
-		$translations = array();
+		$translations = [];
 
 		foreach($translationUnit as $unit)
 		{
@@ -129,7 +129,7 @@ class MessageSource_XLIFF extends MessageSource
 	{
 		$variants = explode('_',$this->culture);
 		$source = $catalogue.$this->dataExt;
-		$catalogues = array($source);
+		$catalogues = [$source];
 		$variant = null;
 
 		for($i = 0, $k = count($variants); $i < $k; ++$i)
@@ -143,7 +143,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$byDir = $this->getCatalogueByDir($catalogue);
 		$catalogues = array_merge($byDir,array_reverse($catalogues));
-		$files = array();
+		$files = [];
 
 		foreach($catalogues as $file)
 		{
@@ -164,7 +164,7 @@ class MessageSource_XLIFF extends MessageSource
 	private function getCatalogueByDir($catalogue)
 	{
 		$variants = explode('_',$this->culture);
-		$catalogues = array();
+		$catalogues = [];
 		$variant = null;
 
 		for($i = 0, $k = count($variants); $i < $k; ++$i)
@@ -200,7 +200,7 @@ class MessageSource_XLIFF extends MessageSource
 	{
 		$dir = $dir?$dir:$this->source;
 		$files = scandir($dir);
-		$catalogue = array();
+		$catalogue = [];
 
 		foreach($files as $file)
 		{
@@ -252,7 +252,7 @@ class MessageSource_XLIFF extends MessageSource
 		{
 			$file = $this->getSource($variant);
 			if(is_file($file)) {
-				return array($variant, $file);
+				return [$variant, $file];
 			}
 		}
 		return false;
@@ -509,7 +509,7 @@ class MessageSource_XLIFF extends MessageSource
 		file_put_contents($file, $this->getTemplate($catalogue));
 		chmod($file, PRADO_CHMOD);
 
-		return array($variant, $file);
+		return [$variant, $file];
 	}
 
 	protected function getTemplate($catalogue)

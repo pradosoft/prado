@@ -30,13 +30,13 @@ use Prado\Prado;
  */
 abstract class TDbMetaData extends \Prado\TComponent
 {
-	private $_tableInfoCache=array();
+	private $_tableInfoCache=[];
 	private $_connection;
 
 	/**
 	 * @var array
 	 */
-	protected static $delimiterIdentifier = array('[', ']', '"', '`', "'");
+	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
 	 * @param TDbConnection database connection.

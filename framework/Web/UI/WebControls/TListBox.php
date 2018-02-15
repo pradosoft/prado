@@ -104,8 +104,8 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 					return false;
 			}
 			if(!is_array($selections))
-				$selections=array($selections);
-			$list=array();
+				$selections=[$selections];
+			$list=[];
 			foreach($selections as $selection)
 				$list[]=$items->findIndexByValue($selection,false);
 			$list2=$this->getSelectedIndices();

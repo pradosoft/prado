@@ -499,7 +499,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getSelectedIndices()
 	{
-		$selections=array();
+		$selections=[];
 		if($this->_items)
 		{
 			$n=$this->_items->getCount();
@@ -613,7 +613,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getSelectedValues()
 	{
-		$values=array();
+		$values=[];
 		if($this->_items)
 		{
 			foreach($this->_items as $item)
@@ -635,7 +635,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			if($this->_items)
 			{
 				$this->clearSelection();
-				$lookup=array();
+				$lookup=[];
 				foreach($this->_items as $item)
 					$lookup[$item->getValue()]=$item;
 				foreach($values as $value)
@@ -862,7 +862,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			return TPropertyValue::ensureString($value);
 		elseif($formatString[0]==='#')
 		{
-			$expression=strtr(substr($formatString,1),array('{0}'=>'$value'));
+			$expression=strtr(substr($formatString,1),['{0}'=>'$value']);
 			try
 			{
 				if(eval("\$result=$expression;")===false)

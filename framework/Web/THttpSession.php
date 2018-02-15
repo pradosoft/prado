@@ -128,7 +128,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->open();
 		$this->_initialized=true;
 		$this->getApplication()->setSession($this);
-		register_shutdown_function(array($this, "close"));
+		register_shutdown_function([$this, "close"]);
 	}
 
 	/**
@@ -139,7 +139,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if(!$this->_started)
 		{
 			if($this->_customStorage)
-				session_set_save_handler(array($this,'_open'),array($this,'_close'),array($this,'_read'),array($this,'_write'),array($this,'_destroy'),array($this,'_gc'));
+				session_set_save_handler([$this,'_open'],[$this,'_close'],[$this,'_read'],[$this,'_write'],[$this,'_destroy'],[$this,'_gc']);
 			if($this->_cookie!==null)
 				session_set_cookie_params($this->_cookie->getExpire(),$this->_cookie->getPath(),$this->_cookie->getDomain(),$this->_cookie->getSecure(),$this->_cookie->getHttpOnly());
 			if(ini_get('session.auto_start')!=='1')

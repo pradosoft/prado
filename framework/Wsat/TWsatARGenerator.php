@@ -38,7 +38,7 @@ class TWsatARGenerator extends TWsatBaseGenerator
          * unquote chars
          * @var array
          */
-        private $uqChars = array('[', ']', '"', '`', "'");
+        private $uqChars = ['[', ']', '"', '`', "'"];
 
         function __construct()
         {
@@ -80,7 +80,7 @@ class TWsatARGenerator extends TWsatBaseGenerator
 
         public function buildRelations()
         {
-                $this->_relations = array();
+                $this->_relations = [];
                 foreach ($this->getAllTableNames() as $table_name)
                 {
                         $tableInfo = $this->_dbMetaData->getTableInfo($table_name);
@@ -92,19 +92,19 @@ class TWsatARGenerator extends TWsatBaseGenerator
                                 $table_name_mm = $fks[0]["table"];
                                 $table_name_mm2 = $fks[1]["table"];
 
-                                $this->_relations[$table_name_mm][] = array(
+                                $this->_relations[$table_name_mm][] = [
                                         "prop_name" => strtolower($table_name_mm2),
                                         "rel_type" => "self::MANY_TO_MANY",
                                         "ref_class_name" => $this->_getProperClassName($table_name_mm2),
                                         "prop_ref" => $table_name
-                                );
+                                ];
 
-                                $this->_relations[$table_name_mm2][] = array(
+                                $this->_relations[$table_name_mm2][] = [
                                         "prop_name" => strtolower($table_name_mm),
                                         "rel_type" => "self::MANY_TO_MANY",
                                         "ref_class_name" => $this->_getProperClassName($table_name_mm),
                                         "prop_ref" => $table_name
-                                );
+                                ];
                                 continue;
                         }
                         foreach ($fks as $fk_data)//1-M relationships
@@ -113,19 +113,19 @@ class TWsatARGenerator extends TWsatBaseGenerator
                                 $slave_table = $table_name;
                                 $fk_prop = key($fk_data["keys"]);
 
-                                $this->_relations[$owner_table][] = array(
+                                $this->_relations[$owner_table][] = [
                                         "prop_name" => strtolower($slave_table),
                                         "rel_type" => "self::HAS_MANY",
                                         "ref_class_name" => $this->_getProperClassName($slave_table),
                                         "prop_ref" => $fk_prop
-                                );
+                                ];
 
-                                $this->_relations[$slave_table][] = array(
+                                $this->_relations[$slave_table][] = [
                                         "prop_name" => strtolower($owner_table),
                                         "rel_type" => "self::BELONGS_TO",
                                         "ref_class_name" => $this->_getProperClassName($owner_table),
                                         "prop_ref" => $fk_prop
-                                );
+                                ];
                         }
                 }
         }
@@ -140,7 +140,7 @@ class TWsatARGenerator extends TWsatBaseGenerator
                         throw new Exception("Unable to find table or view $tableName in " . $this->_dbMetaData->getDbConnection()->getConnectionString() . ".");
                 else
                 {
-                        $properties = array();
+                        $properties = [];
                         foreach ($tableInfo->getColumns() as $field => $metadata)
                                 $properties[] = $this->generateProperty($field, $metadata);
                         $toString = $this->_buildSmartToString($tableInfo);

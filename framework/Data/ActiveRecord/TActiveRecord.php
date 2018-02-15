@@ -175,8 +175,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @var array column mapping. Keys: physical column names, values: logical column names.
 	 * @since 3.1.1
 	 */
-	public static $COLUMN_MAPPING=array();
-	private static $_columnMapping=array();
+	public static $COLUMN_MAPPING=[];
+	private static $_columnMapping=[];
 
 	/**
 	 * This static variable defines the relationships.
@@ -185,8 +185,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @var array relationship.
 	 * @since 3.1.1
 	 */
-	public static $RELATIONS=array();
-	private static $_relations=array();
+	public static $RELATIONS=[];
+	private static $_relations=[];
 
 	/**
 	 * @var TDbConnection database connection object.
@@ -207,7 +207,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),array("\0*\0_connection"));
+		return array_diff(parent::__sleep(),["\0*\0_connection"]);
 	}
 
 	/**
@@ -226,7 +226,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array optional name value pair record data.
 	 * @param TDbConnection optional database connection this object record use.
 	 */
-	public function __construct($data=array(), $connection=null)
+	public function __construct($data=[], $connection=null)
 	{
 		if($connection!==null)
 			$this->setDbConnection($connection);
@@ -292,9 +292,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if(!isset(self::$_relations[$className]))
 		{
 			$class=new ReflectionClass($className);
-			$relations=array();
+			$relations=[];
 			foreach($class->getStaticPropertyValue('RELATIONS') as $key=>$value)
-				$relations[strtolower($key)]=array($key,$value);
+				$relations[strtolower($key)]=[$key,$value];
 			self::$_relations[$className]=$relations;
 		}
 	}
@@ -388,7 +388,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public static function finder($className=__CLASS__)
 	{
-		static $finders = array();
+		static $finders = [];
 		if(!isset($finders[$className]))
 		{
 			$f = Prado::createComponent($className);
@@ -513,7 +513,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records deleted.
 	 */
-	public function deleteAll($criteria=null, $parameters=array())
+	public function deleteAll($criteria=null, $parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
@@ -538,7 +538,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	protected function populateObjects($reader)
 	{
-		$result=array();
+		$result=[];
 		foreach($reader as $data)
 			$result[] = $this->populateObject($data);
 		return $result;
@@ -579,7 +579,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return TActiveRecord matching record object. Null if no result is found.
 	 */
-	public function find($criteria,$parameters=array())
+	public function find($criteria,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($criteria,$parameters, $args);
@@ -595,7 +595,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return array matching record objects. Empty array if no result is found.
 	 */
-	public function findAll($criteria=null,$parameters=array())
+	public function findAll($criteria=null,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
@@ -659,7 +659,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array $parameters
 	 * @return TActiveRecord, null if no result is returned.
 	 */
-	public function findBySql($sql,$parameters=array())
+	public function findBySql($sql,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
@@ -676,7 +676,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array $parameters
 	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
-	public function findAllBySql($sql,$parameters=array())
+	public function findAllBySql($sql,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		$criteria = $this->getRecordCriteria($sql,$parameters, $args);
@@ -708,7 +708,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param mixed parameter values.
 	 * @return int number of records.
 	 */
-	public function count($criteria=null,$parameters=array())
+	public function count($criteria=null,$parameters=[])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
 		if($criteria!==null)
@@ -723,7 +723,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array method call arguments.
 	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
-	protected function getRelationHandler($name,$args=array())
+	protected function getRelationHandler($name,$args=[])
 	{
 		if(($context=$this->createRelationContext($name)) !== null)
 		{
@@ -894,7 +894,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param array additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
-	protected function getRecordCriteria($criteria, $parameters, $args=array())
+	protected function getRecordCriteria($criteria, $parameters, $args=[])
 	{
 		if(is_string($criteria))
 		{
@@ -1038,7 +1038,7 @@ abstract class TActiveRecord extends \Prado\TComponent
          * @since 3.2.4
          */
         public function toArray(){
-        	$result=array();
+        	$result=[];
         	foreach($this->getRecordTableInfo()->getLowerCaseColumnNames() as $columnName){
             		$result[$columnName]=$this->getColumnValue($columnName);
            	}

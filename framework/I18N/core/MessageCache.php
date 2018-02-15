@@ -52,11 +52,11 @@ class MessageCache
 				'The cache directory '.$cacheDir.' must be writable '.
 				'by the server.');
 
-		$options = array(
+		$options = [
 			'cacheDir' => $cacheDir,
 			'lifeTime' => $this->getLifeTime(),
 			'automaticSerialization' => true
-		);
+		];
 
 		$this->cache = new TCache_Lite($options);
 	}

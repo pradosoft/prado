@@ -103,9 +103,9 @@ class TUrlManager extends \Prado\TModule
 		switch($request->getUrlFormat())
 		{
 			case THttpRequestUrlFormat::Path:
-				return $request->getApplicationUrl().'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+				return $request->getApplicationUrl().'/'.strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/').'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+				return rtrim(dirname($request->getApplicationUrl()), '/').'/'.strtr($url,[$amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()]);
 			default:
 				return $request->getApplicationUrl().'?'.$url;
 		}
@@ -134,7 +134,7 @@ class TUrlManager extends \Prado\TModule
 		{
 			$separator=$request->getUrlParamSeparator();
 			$paths=explode('/',$pathInfo);
-			$getVariables=array();
+			$getVariables=[];
 			foreach($paths as $path)
 			{
 				if(($path=trim($path))!=='')
@@ -155,7 +155,7 @@ class TUrlManager extends \Prado\TModule
 			return $getVariables;
 		}
 		else
-			return array();
+			return [];
 	}
 }
 

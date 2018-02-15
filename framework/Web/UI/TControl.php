@@ -152,11 +152,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * @var array viewstate data
 	 */
-	private $_viewState=array();
+	private $_viewState=[];
 	/**
 	 * @var array temporary state (usually set in template)
 	 */
-	private $_tempState=array();
+	private $_tempState=[];
 	/**
 	 * @var boolean whether we should keep state in viewstate
 	 */
@@ -172,7 +172,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * @var array a collection of rare control data
 	 */
-	private $_rf=array();
+	private $_rf=[];
 
 	/**
 	 * Returns a property value by name or a control by ID.
@@ -988,7 +988,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			return null;
 		if(!isset($container->_rf[self::RF_NAMED_CONTROLS]))
 		{
-			$container->_rf[self::RF_NAMED_CONTROLS]=array();
+			$container->_rf[self::RF_NAMED_CONTROLS]=[];
 			$container->fillNameTable($container,$container->_rf[self::RF_CONTROLS]);
 		}
 		if(($pos=strpos($id,self::ID_SEPARATOR))===false)
@@ -1012,7 +1012,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function findControlsByType($type,$strict=true)
 	{
-		$controls=array();
+		$controls=[];
 		if($this->getHasControls())
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1037,7 +1037,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function findControlsByID($id)
 	{
-		$controls=array();
+		$controls=[];
 		if($this->getHasControls())
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)
@@ -1640,7 +1640,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 				if(isset($state[0]))
 					$this->_viewState=&$state[0];
 				else
-					$this->_viewState=array();
+					$this->_viewState=[];
 			}
 			unset($state[0]);
 			if($this->getHasControls())
@@ -1680,7 +1680,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		else
 			$this->saveState();
 		$needViewState=($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
-		$state=array();
+		$state=[];
 		if($this->getHasControls())
 		{
 			foreach($this->_rf[self::RF_CONTROLS] as $control)

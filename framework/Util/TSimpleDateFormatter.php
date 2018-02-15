@@ -158,7 +158,7 @@ class TSimpleDateFormatter
 
 	public function getDayMonthYearOrdering()
 	{
-		$ordering = array();
+		$ordering = [];
 		if(is_int($day= strpos($this->pattern, 'd')))
 			$ordering['day'] = $day;
 		if(is_int($month= strpos($this->pattern, 'M')))

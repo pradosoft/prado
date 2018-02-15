@@ -79,11 +79,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * @var array list of users managed by this module
 	 */
-	private $_users=array();
+	private $_users=[];
 	/**
 	 * @var array list of roles managed by this module
 	 */
-	private $_roles=array();
+	private $_roles=[];
 	/**
 	 * @var string guest name
 	 */
@@ -363,7 +363,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$username=strtolower($user->getName());
 		if(isset($this->_users[$username]))
 		{
-			$data=array($username,md5($username.$this->_users[$username]));
+			$data=[$username,md5($username.$this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
 	}

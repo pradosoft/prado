@@ -95,7 +95,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoRefresh', 'cancel', 'delay', 'disabled', 'distance', 'filter', 'tolerance');
+		return ['appendTo', 'autoRefresh', 'cancel', 'delay', 'disabled', 'distance', 'filter', 'tolerance'];
 	}
 
 	/**
@@ -104,7 +104,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getValidEvents()
 	{
-		return array('create', 'selected', 'selecting', 'start', 'stop', 'unselected', 'unselecting');
+		return ['create', 'selected', 'selecting', 'start', 'stop', 'unselected', 'unselecting'];
 	}
 
 	/**

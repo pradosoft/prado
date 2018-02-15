@@ -332,7 +332,7 @@ class TResultProperty extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = 'TResultProperty';
+		$exprops = []; $cn = 'TResultProperty';
 		if ($this->_nullValue===null) $exprops[] = "\0$cn\0_nullValue";
 		if ($this->_propertyName===null) $exprops[] = "\0$cn\0_propertyNama";
 		if ($this->_columnName===null) $exprops[] = "\0$cn\0_columnName";

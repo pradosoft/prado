@@ -93,13 +93,13 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	protected function createStreamContext($content, $contentType)
 	{
-		return stream_context_create(array(
-			'http' => array(
+		return stream_context_create([
+			'http' => [
 				'method' => 'POST',
 				'header' => "Content-Type: {$contentType}",
 				'content' => $content
-			)
-		));
+			]
+		]);
 	}
 
 	/**

@@ -80,8 +80,8 @@ class TSqliteMetaData extends TDbMetaData
 		$command = $this->getDbConnection()->createCommand($sql);
 		$foreign = $this->getForeignKeys($table);
 		$index=0;
-		$columns=array();
-		$primary=array();
+		$columns=[];
+		$primary=[];
 		foreach($command->query() as $col)
 		{
 			$col['index'] = $index++;
@@ -142,7 +142,7 @@ class TSqliteMetaData extends TDbMetaData
 		$info['AutoIncrement'] = $type==='integer' && $col['pk']==='1';
 
 		$info['DbType'] = $type;
-		$match=array();
+		$match=[];
 		if(is_int($pos=strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match))
 		{
 			$ps = explode(',', $match[1]);
@@ -169,7 +169,7 @@ class TSqliteMetaData extends TDbMetaData
 	{
 		$sql = "PRAGMA foreign_key_list({$table})";
 		$command = $this->getDbConnection()->createCommand($sql);
-		$fkeys = array();
+		$fkeys = [];
 		foreach($command->query() as $col)
 		{
 			$fkeys[$col['table']]['keys'][$col['from']] = $col['to'];

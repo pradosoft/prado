@@ -463,8 +463,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$options['ID'] = $this->getClientID();
 		$options['ActiveCssClass'] = $this->getActiveTabCssClass();
 		$options['NormalCssClass'] = $this->getTabCssClass();
-		$viewIDs = array();
-		$viewVis = array();
+		$viewIDs = [];
+		$viewVis = [];
 		foreach($this->getViews() as $view)
 		{
 			$viewIDs[] = $view->getClientID();

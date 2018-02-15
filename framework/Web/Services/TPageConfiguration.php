@@ -35,19 +35,19 @@ class TPageConfiguration extends \Prado\TComponent
 	/**
 	 * @var array list of application configurations
 	 */
-	private $_appConfigs=array();
+	private $_appConfigs=[];
 	/**
 	 * @var array list of page initial property values
 	 */
-	private $_properties=array();
+	private $_properties=[];
 	/**
 	 * @var TAuthorizationRuleCollection list of authorization rules
 	 */
-	private $_rules=array();
+	private $_rules=[];
 	/**
 	 * @var array list of included configurations
 	 */
-	private $_includes=array();
+	private $_includes=[];
 	/**
 	 * @var string the currently request page in the format of Path.To.PageName
 	 */
@@ -196,7 +196,7 @@ class TPageConfiguration extends \Prado\TComponent
 		// authorization
 		if(isset($config['authorization']) && is_array($config['authorization']))
 		{
-			$rules = array();
+			$rules = [];
 			foreach($config['authorization'] as $authorization)
 			{
 				$patterns=isset($authorization['pages'])?$authorization['pages']:'';
@@ -250,7 +250,7 @@ class TPageConfiguration extends \Prado\TComponent
 			}
 			foreach($config['pages'] as $id => $page)
 			{
-				$properties = array();
+				$properties = [];
 				if(isset($page['properties']))
 				{
 					$properties=$page['properties'];
@@ -277,9 +277,9 @@ class TPageConfiguration extends \Prado\TComponent
 					throw new TConfigurationException('pageserviceconf_includefile_required');
 				$filePath = $include['file'];
 				if(isset($this->_includes[$filePath]))
-					$this->_includes[$filePath]=array($configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')');
+					$this->_includes[$filePath]=[$configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')'];
 				else
-					$this->_includes[$filePath]=array($configPagePath,$when);
+					$this->_includes[$filePath]=[$configPagePath,$when];
 			}
 		}
 	}
@@ -295,7 +295,7 @@ class TPageConfiguration extends \Prado\TComponent
 		// authorization
 		if(($authorizationNode=$dom->getElementByTagName('authorization'))!==null)
 		{
-			$rules=array();
+			$rules=[];
 			foreach($authorizationNode->getElements() as $node)
 			{
 				$patterns=$node->getAttribute('pages');
@@ -363,9 +363,9 @@ class TPageConfiguration extends \Prado\TComponent
 			if(($filePath=$node->getAttribute('file'))===null)
 				throw new TConfigurationException('pageserviceconf_includefile_required');
 			if(isset($this->_includes[$filePath]))
-				$this->_includes[$filePath]=array($configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')');
+				$this->_includes[$filePath]=[$configPagePath,'('.$this->_includes[$filePath][1].') || ('.$when.')'];
 			else
-				$this->_includes[$filePath]=array($configPagePath,$when);
+				$this->_includes[$filePath]=[$configPagePath,$when];
 		}
 	}
 }

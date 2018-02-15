@@ -137,7 +137,7 @@ class TParameterProperty extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = 'TParameterProperty';
+		$exprops = []; $cn = 'TParameterProperty';
 		if ($this->_typeHandler===null) $exprops[] = "\0$cn\0_typeHandler";
 		if ($this->_type===null) $exprops[] = "\0$cn\0_type";
 		if ($this->_column===null) $exprops[] = "\0$cn\0_column";
