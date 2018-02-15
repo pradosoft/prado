@@ -90,7 +90,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function setLevels($levels)
 	{
-		if(is_integer($levels))
+		if(is_int($levels))
 			$this->_levels=$levels;
 		else
 		{

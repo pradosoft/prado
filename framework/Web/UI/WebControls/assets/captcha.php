@@ -196,7 +196,7 @@ function addScribble($image, $width, $height)
 			$points[]=rand(30, $height+30);
 		}
 		imagesetthickness($image, rand(2, 6));
-		imagepolygon($image, $points, intval(sizeof($points)/2), $color);
+		imagepolygon($image, $points, intval(count($points)/2), $color);
 		imagecolordeallocate($image, $color);
 	}
 }

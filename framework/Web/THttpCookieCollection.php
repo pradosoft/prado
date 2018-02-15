@@ -85,7 +85,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 */
 	public function itemAt($index)
 	{
-		if(is_integer($index))
+		if(is_int($index))
 			return parent::itemAt($index);
 		else
 			return $this->findCookieByName($index);

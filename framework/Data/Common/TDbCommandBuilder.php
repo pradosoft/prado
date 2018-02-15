@@ -239,7 +239,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 				$v = isset($columns[$value]);
 				$k = isset($columns[$key]);
-				if(is_integer($key) && $v) {
+				if(is_int($key) && $v) {
 					$key = $value;
 					$k = $v;
 				}
@@ -285,7 +285,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 					continue;
 				}
 
-				if(!$v && !$k && is_integer($key)) {
+				if(!$v && !$k && is_int($key)) {
 					$result[] = is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value);
 					continue;
 				}

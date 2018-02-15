@@ -362,7 +362,7 @@ EOD;
 	 */
 	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)
 	{
-		$index = join(', ', explode(' ', $columnIndex));
+		$index = implode(', ', explode(' ', $columnIndex));
 		$sql =
 <<<EOD
 		SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE

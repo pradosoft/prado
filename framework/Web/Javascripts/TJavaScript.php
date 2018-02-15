@@ -175,7 +175,7 @@ class TJavaScript
 				return '[' . $results . ']';
 			}
 		}
-		elseif(is_integer($value))
+		elseif(is_int($value))
 			return "$value";
 		elseif(is_float($value))
 		{

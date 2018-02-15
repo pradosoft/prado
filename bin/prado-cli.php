@@ -174,11 +174,11 @@ abstract class PradoCommandLineAction
 		$params = [];
 		foreach($this->parameters as $v)
 			$params[] = '<' . $v . '>';
-		$parameters = join($params, ' ');
+		$parameters = implode($params, ' ');
 		$options = [];
 		foreach($this->optional as $v)
 			$options[] = '[' . $v . ']';
-		$optional = (strlen($parameters) ? ' ' : '') . join($options, ' ');
+		$optional = (strlen($parameters) ? ' ' : '') . implode($options, ' ');
 		$description='';
 		foreach(explode("\n", wordwrap($this->description, 65)) as $line)
 			$description .= '    ' . $line . "\n";

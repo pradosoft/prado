@@ -381,7 +381,7 @@ class TTarFileExtractor
 		// ----- By default no unzip if the file is not found
 		$v_extract_file = false;
 
-		for ($i=0; $i<sizeof($p_file_list); $i++) {
+		for ($i=0; $i<count($p_file_list); $i++) {
 		  // ----- Look if it is a directory
 		  if (substr($p_file_list[$i], -1) == '/') {
 			// ----- Look if the directory is in the filename path
@@ -433,7 +433,7 @@ class TTarFileExtractor
 						  . ' already exists as a file');
 			return false;
 		  }
-		  if (!is_writeable($v_header['filename'])) {
+		  if (!is_writable($v_header['filename'])) {
 			$this->_error('File ' . $v_header['filename']
 						  . ' already exists and is write protected');
 			return false;

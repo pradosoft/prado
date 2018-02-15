@@ -505,7 +505,7 @@ class PradoBase
 			if(isset($t['class']))
 				echo $t['class'] . $t['type'];
 			echo $t['function'] . '(';
-			if(isset($t['args']) && sizeof($t['args']) > 0)
+			if(isset($t['args']) && count($t['args']) > 0)
 			{
 				$count=0;
 				foreach($t['args'] as $item)
