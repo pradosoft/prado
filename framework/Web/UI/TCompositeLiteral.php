@@ -34,7 +34,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 
 	/**
 	 * Constructor.
-	 * @param array list of items to be represented by TCompositeLiteral
+	 * @param array $items list of items to be represented by TCompositeLiteral
 	 */
 	public function __construct($items)
 	{

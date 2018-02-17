@@ -675,7 +675,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
-	 * @param integer the selected item index
+	 * @param integer $value the selected item index
 	 */
 	public function setSelectedItemIndex($value)
 	{
@@ -743,7 +743,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Edits an item by its index in {@link getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
-	 * @param integer the edit item index
+	 * @param integer $value the edit item index
 	 */
 	public function setEditItemIndex($value)
 	{
@@ -783,7 +783,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param boolean whether to show header
+	 * @param boolean $value whether to show header
 	 */
 	public function setShowHeader($value)
 	{
@@ -799,7 +799,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param boolean whether to show footer
+	 * @param boolean $value whether to show footer
 	 */
 	public function setShowFooter($value)
 	{
@@ -828,7 +828,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param string caption of the table layout
+	 * @param string $value caption of the table layout
 	 */
 	public function setCaption($value)
 	{
@@ -860,7 +860,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param integer the number of columns that the list should be displayed with.
+	 * @param integer $value the number of columns that the list should be displayed with.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -876,7 +876,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TRepeatDirection the direction of traversing the list
+	 * @param TRepeatDirection $value the direction of traversing the list
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -892,7 +892,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TRepeatLayout how the list should be displayed, using table or using line breaks
+	 * @param TRepeatLayout $value how the list should be displayed, using table or using line breaks
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -958,7 +958,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TDataListItemEventParameter event parameter
+	 * @param TDataListItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
@@ -972,7 +972,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TDataListItemEventParameter event parameter
+	 * @param TDataListItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
@@ -983,7 +983,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>OnCommand</b> event.
-	 * @param TDataListCommandEventParameter event parameter
+	 * @param TDataListCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{
@@ -994,7 +994,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>OnCommand</b> event and the command name is 'edit' (case-insensitive).
-	 * @param TDataListCommandEventParameter event parameter
+	 * @param TDataListCommandEventParameter $param event parameter
 	 */
 	public function onEditCommand($param)
 	{
@@ -1005,7 +1005,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>OnCommand</b> event and the command name is 'delete' (case-insensitive).
-	 * @param TDataListCommandEventParameter event parameter
+	 * @param TDataListCommandEventParameter $param event parameter
 	 */
 	public function onDeleteCommand($param)
 	{
@@ -1016,7 +1016,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>OnCommand</b> event and the command name is 'update' (case-insensitive).
-	 * @param TDataListCommandEventParameter event parameter
+	 * @param TDataListCommandEventParameter $param event parameter
 	 */
 	public function onUpdateCommand($param)
 	{
@@ -1027,7 +1027,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a child control of the data list
 	 * raises an <b>OnCommand</b> event and the command name is 'cancel' (case-insensitive).
-	 * @param TDataListCommandEventParameter event parameter
+	 * @param TDataListCommandEventParameter $param event parameter
 	 */
 	public function onCancelCommand($param)
 	{
@@ -1425,7 +1425,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Performs databinding to populate data list items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the data
+	 * @param Traversable $data the data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -1470,7 +1470,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Renders the data list control.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter writer for rendering purpose.
+	 * @param THtmlWriter $writer writer for rendering purpose.
 	 */
 	public function render($writer)
 	{

@@ -56,7 +56,7 @@ class THead extends \Prado\Web\UI\TControl
 	 * The method raises 'Init' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -91,7 +91,7 @@ class THead extends \Prado\Web\UI\TControl
 	 * Sets the page title.
 	 * This title will be rendered only if the {@link TPage::getTitle Title} property
 	 * of the page is empty.
-	 * @param string the page title.
+	 * @param string $value the page title.
 	 */
 	public function setTitle($value)
 	{
@@ -107,7 +107,7 @@ class THead extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string base URL of the page. This URL is rendered as the 'href' attribute of <base> tag.
+	 * @param string $url base URL of the page. This URL is rendered as the 'href' attribute of <base> tag.
 	 */
 	public function setBaseUrl($url)
 	{
@@ -123,7 +123,7 @@ class THead extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string the URL for the shortcut icon of the page.
+	 * @param string $url the URL for the shortcut icon of the page.
 	 */
 	public function setShortcutIcon($url)
 	{
@@ -145,7 +145,7 @@ class THead extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the head control.
-	 * @param THtmlWriter the writer for rendering purpose.
+	 * @param THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function render($writer)
 	{

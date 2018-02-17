@@ -96,7 +96,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -130,7 +130,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		return $this->getViewState('SiteKey');
 	}
 	/**
-	 * @param string your site key.
+	 * @param string $value your site key.
 	 */
 	public function setSiteKey($value)
 	{
@@ -145,7 +145,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		return $this->getViewState('SecretKey');
 	}
 	/**
-	 * @param string your secret key.
+	 * @param string $value your secret key.
 	 */
 	public function setSecretKey($value)
 	{
@@ -160,7 +160,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		return $this->getViewState('Language', 'en');
 	}
 	/**
-	 * @param string your language.
+	 * @param string $value your language.
 	 */
 	public function setLanguage($value)
 	{
@@ -177,7 +177,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * The color theme of the widget.
 	 * Default: light
-	 * @param string the color theme of the widget.
+	 * @param string $value the color theme of the widget.
 	 */
 	public function setTheme($value)
 	{
@@ -194,7 +194,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * The type of CAPTCHA to serve.
 	 * Default: image
-	 * @param string the type of CAPTCHA to serve.
+	 * @param string $value the type of CAPTCHA to serve.
 	 */
 	public function setType($value)
 	{
@@ -211,7 +211,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * The size of the widget.
 	 * Default: normal
-	 * @param string the size of the widget.
+	 * @param string $value the size of the widget.
 	 */
 	public function setSize($value)
 	{
@@ -230,7 +230,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	 * The tabindex of the widget and challenge.
 	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
 	 * Default: 0
-	 * @param string the tabindex of the widget and challenge.
+	 * @param string $value the tabindex of the widget and challenge.
 	 */
 	public function setTabIndex($value)
 	{
@@ -299,7 +299,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Checks for API keys
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{

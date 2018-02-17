@@ -15,7 +15,7 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\I18N\core
  */
- 
+
 namespace Prado\I18N\core;
 
 /**
@@ -48,7 +48,7 @@ interface IMessageSource
 	 * @return boolean true if loaded, false otherwise.
 	 */
 	public function load($catalogue = 'messages');
-	
+
 	/**
 	 * Get the translation table. This includes all the loaded sections.
 	 * It must return a 2 level array of translation strings.
@@ -64,7 +64,7 @@ interface IMessageSource
 	 * @return array 2 level array translation table.
 	 */
 	public function read();
-	
+
 	/**
 	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
@@ -73,7 +73,7 @@ interface IMessageSource
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages');
-	
+
 	/**
 	 * Add a untranslated message to the source. Need to call save()
 	 * to save the messages to source.
@@ -81,7 +81,7 @@ interface IMessageSource
 	 * @return void
 	 */
 	public function append($message);
-	
+
 	/**
 	 * Delete a particular message from the specified catalogue.
 	 * @param string the source message to delete.
@@ -89,7 +89,7 @@ interface IMessageSource
 	 * @return boolean true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages');
-		
+
 	/**
 	 * Update the translation.
 	 * @param string the source string.
@@ -99,24 +99,24 @@ interface IMessageSource
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages');
-	
+
 	/**
 	 * Returns a list of catalogue as key and all it variants as value.
 	 * @return array list of catalogues
 	 */
 	public function catalogues();
-		
+
 	/**
 	 * Set the culture for this particular message source.
-	 * @param string the Culture name.
+	 * @param string $culture the Culture name.
 	 */
 	public function setCulture($culture);
-	
+
 	/**
 	 * Get the culture identifier for the source.
 	 * @return string culture identifier.
 	 */
 	public function getCulture();
-		
+
 }
 

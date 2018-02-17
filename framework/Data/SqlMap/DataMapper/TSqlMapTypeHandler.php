@@ -33,7 +33,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	private $_dbType = 'NULL';
 	private $_type;
 	/**
-	 * @param string database field type.
+	 * @param string $value database field type.
 	 */
 	public function setDbType($value)
 	{
@@ -65,7 +65,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * Performs processing on a value before it is used to set
 	 * the parameter of a IDbCommand.
 	 * @param object The interface for setting the value.
-	 * @param object The value to be set.
+	 * @param object $object The value to be set.
 	 */
 	abstract public function getParameter($object);
 

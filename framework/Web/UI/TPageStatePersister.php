@@ -50,7 +50,7 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 
 	/**
 	 * Saves state in hidden fields.
-	 * @param mixed state to be stored
+	 * @param mixed $state state to be stored
 	 */
 	public function save($state)
 	{

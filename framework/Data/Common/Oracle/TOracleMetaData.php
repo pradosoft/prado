@@ -41,7 +41,7 @@ class TOracleMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string default schema.
+	 * @param string $schema default schema.
 	 */
 	public function setDefaultSchema($schema)
 	{

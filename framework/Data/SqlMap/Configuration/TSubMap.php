@@ -37,7 +37,7 @@ class TSubMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string value for comparison with discriminator column value.
+	 * @param string $value value for comparison with discriminator column value.
 	 */
 	public function setValue($value)
 	{
@@ -54,7 +54,7 @@ class TSubMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string ID of a result map
+	 * @param string $value ID of a result map
 	 */
 	public function setResultMapping($value)
 	{

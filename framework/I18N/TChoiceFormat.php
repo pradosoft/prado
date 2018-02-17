@@ -87,7 +87,7 @@ class TChoiceFormat extends TTranslate
 
 	/**
 	 * Sets the numerical choice value
-	 * @param float the choice value
+	 * @param float $value the choice value
 	 */
 	public function setValue($value)
 	{

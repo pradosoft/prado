@@ -67,7 +67,7 @@ class TJsonService extends \Prado\TService
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $xml configuration for this module, can be null
 	 */
 	public function init($xml)
 	{
@@ -76,7 +76,7 @@ class TJsonService extends \Prado\TService
 
 	/**
 	 * Load the service definitions.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $config configuration for this module, can be null
 	 */
 	protected function loadJsonServices($config)
 	{

@@ -90,7 +90,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Name of the Active Record class to be viewed or scaffolded.
-	 * @param string Active Record class name.
+	 * @param string $value Active Record class name.
 	 */
 	public function setRecordClass($value)
 	{
@@ -173,7 +173,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param string default scaffold stylesheet name
+	 * @param string $value default scaffold stylesheet name
 	 */
 	public function setDefaultStyle($value)
 	{
@@ -189,7 +189,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean enable default stylesheet, default is true.
+	 * @param boolean $value enable default stylesheet, default is true.
 	 */
 	public function setEnableDefaultStyle($value)
 	{

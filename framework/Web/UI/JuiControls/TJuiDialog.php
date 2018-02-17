@@ -133,7 +133,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -185,7 +185,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	/**
 	 * Overrides parent implementation to just render the inner contents and avoid replacing the element itself when
 	 * updating clientside, because replacing/removing will cause jqueryui to fire destroy on the original dialog extension.
-	 * @param THtmlWriter html writer
+	 * @param THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

@@ -47,7 +47,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string keyboard key for toggling the console, default is J.
+	 * @param string $value keyboard key for toggling the console, default is J.
 	 */
 	public function setToggleKey($value)
 	{
@@ -64,7 +64,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Registers the required logger javascript.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -79,7 +79,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Register the required javascript libraries and
 	 * display some general usage information.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

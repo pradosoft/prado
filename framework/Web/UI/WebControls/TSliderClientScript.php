@@ -35,7 +35,7 @@ class TSliderClientScript extends TClientSideOptions
 {
 	/**
 	 * Javascript code to execute when the slider value is changed.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnChange($javascript)
 	{
@@ -52,7 +52,7 @@ class TSliderClientScript extends TClientSideOptions
 	}
 
 	/* Javascript code to execute when the slider moves.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnSlide($javascript)
 	{

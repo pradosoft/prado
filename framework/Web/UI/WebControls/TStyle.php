@@ -68,7 +68,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TStyle style to copy from
+	 * @param TStyle $style = null style to copy from
 	 */
 	public function __construct($style = null)
 	{
@@ -95,7 +95,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the background color of the control
+	 * @param string $value the background color of the control
 	 */
 	public function setBackColor($value)
 	{
@@ -114,7 +114,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the border color of the control
+	 * @param string $value the border color of the control
 	 */
 	public function setBorderColor($value)
 	{
@@ -134,7 +134,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * Sets the border style of the control.
-	 * @param string the border style of the control
+	 * @param string $value the border style of the control
 	 */
 	public function setBorderStyle($value)
 	{
@@ -153,7 +153,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the border width of the control
+	 * @param string $value the border width of the control
 	 */
 	public function setBorderWidth($value)
 	{
@@ -180,7 +180,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the name of the CSS class of the control
+	 * @param string $value the name of the CSS class of the control
 	 */
 	public function setCssClass($value)
 	{
@@ -206,7 +206,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDisplayStyle control display style, default is TDisplayStyle::Fixed
+	 * @param TDisplayStyle $value control display style, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplayStyle($value)
 	{
@@ -245,7 +245,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the foreground color of the control
+	 * @param string $value the foreground color of the control
 	 */
 	public function setForeColor($value)
 	{
@@ -264,7 +264,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the height of the control
+	 * @param string $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -285,7 +285,7 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * Sets custom style fields from a string.
 	 * Custom style fields will be overwritten by style fields explicitly defined.
-	 * @param string the custom style of the control
+	 * @param string $value the custom style of the control
 	 */
 	public function setCustomStyle($value)
 	{
@@ -313,7 +313,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * Clears a single style field value;
-	 * @param string style field name
+	 * @param string $name style field name
 	 */
 	public function clearStyleField($name)
 	{
@@ -337,7 +337,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the width of the control
+	 * @param string $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -359,7 +359,7 @@ class TStyle extends \Prado\TComponent
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -379,7 +379,7 @@ class TStyle extends \Prado\TComponent
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -397,7 +397,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

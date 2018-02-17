@@ -59,7 +59,7 @@ class TCaptchaValidator extends TBaseValidator
 	 * Sets the ID path of the CAPTCHA control to validate.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the validator's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setCaptchaControl($value)
 	{

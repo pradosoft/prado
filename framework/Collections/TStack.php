@@ -138,7 +138,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Pushes an item into the stack.
-	 * @param mixed the item to be pushed into the stack
+	 * @param mixed $item the item to be pushed into the stack
 	 */
 	public function push($item)
 	{

@@ -80,7 +80,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string log file name
+	 * @param string $value log file name
 	 */
 	public function setLogFile($value)
 	{
@@ -115,7 +115,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param integer number of files used for rotation.
+	 * @param integer $value number of files used for rotation.
 	 */
 	public function setMaxLogFiles($value)
 	{
@@ -126,7 +126,7 @@ class TFileLogRoute extends TLogRoute
 
 	/**
 	 * Saves log messages in files.
-	 * @param array list of log messages
+	 * @param array $logs list of log messages
 	 */
 	protected function processLogs($logs)
 	{

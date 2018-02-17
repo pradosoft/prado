@@ -42,7 +42,7 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the tag name of this control.
+	 * @param string $value the tag name of this control.
 	 */
 	public function setTagName($value)
 	{

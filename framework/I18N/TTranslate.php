@@ -77,7 +77,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Sets the text for localization.
-	 * @param string the text for translation.
+	 * @param string $value the text for translation.
 	 */
 	public function setText($value)
 	{
@@ -86,7 +86,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Set the key for message lookup.
-	 * @param string key
+	 * @param string $value key
 	 */
 	public function setKey($value)
 	{
@@ -113,7 +113,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Set the message catalogue.
-	 * @param string catalogue.
+	 * @param string $value catalogue.
 	 */
 	public function setCatalogue($value)
 	{
@@ -122,7 +122,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean trim or not.
+	 * @param boolean $value trim or not.
 	 */
 	public function setTrim($value)
 	{

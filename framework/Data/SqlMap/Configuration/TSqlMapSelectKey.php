@@ -35,7 +35,7 @@ class TSqlMapSelectKey extends TSqlMapStatement
 	}
 
 	/**
-	 * @param string select generated key type, 'post' or 'pre'.
+	 * @param string $value select generated key type, 'post' or 'pre'.
 	 */
 	public function setType($value)
 	{
@@ -51,7 +51,7 @@ class TSqlMapSelectKey extends TSqlMapStatement
 	}
 
 	/**
-	 * @param string property name for the generated key.
+	 * @param string $value property name for the generated key.
 	 */
 	public function setProperty($value)
 	{

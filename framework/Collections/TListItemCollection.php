@@ -141,7 +141,7 @@ class TListItemCollection extends TList
 	/**
 	 * Loads state into every item in the collection.
 	 * This method should only be used by framework and control developers.
-	 * @param array|null state to be loaded.
+	 * @param array|null $state state to be loaded.
 	 */
 	public function loadState($state)
 	{

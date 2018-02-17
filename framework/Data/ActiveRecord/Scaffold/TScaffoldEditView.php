@@ -77,7 +77,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string the class name for scaffold editor. Defaults to empty, meaning not set.
+	 * @param string $value the class name for scaffold editor. Defaults to empty, meaning not set.
 	 */
 	public function setEditRenderer($value)
 	{
@@ -85,7 +85,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @param array Active Record primary key value to be edited.
+	 * @param array $value Active Record primary key value to be edited.
 	 */
 	public function setRecordPk($value)
 	{

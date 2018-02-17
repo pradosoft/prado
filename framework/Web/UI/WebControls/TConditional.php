@@ -105,7 +105,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	/**
 	 * Sets the PHP expression to be evaluated for conditionally displaying content.
 	 * The context of the expression is the template control containing TConditional.
-	 * @param string the PHP expression used for determining which template to use.
+	 * @param string $value the PHP expression used for determining which template to use.
 	 */
 	public function setCondition($value)
 	{

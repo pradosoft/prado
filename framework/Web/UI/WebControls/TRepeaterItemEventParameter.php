@@ -34,7 +34,7 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl repeater item related with the corresponding event
+	 * @param TControl $item repeater item related with the corresponding event
 	 */
 	public function __construct($item)
 	{

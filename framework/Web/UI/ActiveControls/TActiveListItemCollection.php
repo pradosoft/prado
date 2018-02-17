@@ -100,7 +100,7 @@ class TActiveListItemCollection extends TListItemCollection
 
 	/**
 	 * Removes an item from at specified index.
-	 * @param int zero based index.
+	 * @param int $index zero based index.
 	 */
 	public function removeAt($index)
 	{

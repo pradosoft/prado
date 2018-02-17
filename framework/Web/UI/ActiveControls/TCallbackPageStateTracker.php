@@ -44,7 +44,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Constructor. Add a set of default states to track.
-	 * @param TControl control to track.
+	 * @param TControl $control control to track.
 	 */
 	public function __construct($control)
 	{
@@ -135,7 +135,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the tooltip.
-	 * @param string new tooltip
+	 * @param string $value new tooltip
 	 */
 	protected function updateToolTip($value)
 	{
@@ -144,7 +144,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the tab index.
-	 * @param integer tab index
+	 * @param integer $value tab index
 	 */
 	protected function updateTabIndex($value)
 	{
@@ -153,7 +153,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the modifier access key
-	 * @param string access key
+	 * @param string $value access key
 	 */
 	protected function updateAccessKey($value)
 	{
@@ -163,7 +163,7 @@ class TCallbackPageStateTracker
 	/**
 	 * Hides or shows the control on the client-side. The control must be
 	 * already rendered on the client-side.
-	 * @param boolean true to show the control, false to hide.
+	 * @param boolean $visible true to show the control, false to hide.
 	 */
 	protected function updateVisible($visible)
 	{
@@ -175,7 +175,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Enables or Disables the control on the client-side.
-	 * @param boolean true to enable the control, false to disable.
+	 * @param boolean $enable true to enable the control, false to disable.
 	 */
 	protected function updateEnabled($enable)
 	{
@@ -184,7 +184,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the CSS style on the control on the client-side.
-	 * @param array list of new CSS style declarations.
+	 * @param array $style list of new CSS style declarations.
 	 */
 	protected function updateStyle($style)
 	{
@@ -196,7 +196,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates/adds a list of attributes on the control.
-	 * @param array list of attribute name-value pairs.
+	 * @param array $attributes list of attribute name-value pairs.
 	 */
 	protected function updateAttributes($attributes)
 	{

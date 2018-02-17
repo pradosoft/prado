@@ -106,7 +106,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Initialize the active record manager.
-	 * @param TXmlDocument xml configuration.
+	 * @param TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
@@ -164,7 +164,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Set true to cache the table meta data.
-	 * @param boolean true to cache sqlmap instance.
+	 * @param boolean $value true to cache sqlmap instance.
 	 */
 	public function setEnableCache($value)
 	{

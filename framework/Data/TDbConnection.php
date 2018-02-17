@@ -264,7 +264,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the username for establishing DB connection
+	 * @param string $value the username for establishing DB connection
 	 */
 	public function setUsername($value)
 	{
@@ -280,7 +280,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the password for establishing DB connection
+	 * @param string $value the password for establishing DB connection
 	 */
 	public function setPassword($value)
 	{
@@ -296,7 +296,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the charset used for database connection
+	 * @param string $value the charset used for database connection
 	 */
 	public function setCharset ($value)
 	{
@@ -461,7 +461,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbColumnCaseMode the case of the column names
+	 * @param TDbColumnCaseMode $value the case of the column names
 	 */
 	public function setColumnCase($value)
 	{
@@ -497,7 +497,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbNullConversionMode how the null and empty strings are converted
+	 * @param TDbNullConversionMode $value how the null and empty strings are converted
 	 */
 	public function setNullConversion($value)
 	{

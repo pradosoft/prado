@@ -27,7 +27,7 @@ class TPagedListPageChangedEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param integer old page index
+	 * @param integer $oldPage old page index
 	 */
 	public function __construct($oldPage)
 	{

@@ -83,7 +83,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the font is in bold face
+	 * @param boolean $value whether the font is in bold face
 	 */
 	public function setBold($value)
 	{
@@ -103,7 +103,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the font is italic
+	 * @param boolean $value whether the font is italic
 	 */
 	public function setItalic($value)
 	{
@@ -123,7 +123,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the font is overlined
+	 * @param boolean $value whether the font is overlined
 	 */
 	public function setOverline($value)
 	{
@@ -143,7 +143,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the font size
+	 * @param string $value the font size
 	 */
 	public function setSize($value)
 	{
@@ -160,7 +160,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the font is strikeout
+	 * @param boolean $value whether the font is strikeout
 	 */
 	public function setStrikeout($value)
 	{
@@ -180,7 +180,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the font is underlined
+	 * @param boolean $value whether the font is underlined
 	 */
 	public function setUnderline($value)
 	{
@@ -200,7 +200,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the font name (family)
+	 * @param string $value the font name (family)
 	 */
 	public function setName($value)
 	{
@@ -230,7 +230,7 @@ class TFont extends \Prado\TComponent
 	 * Merges the font with a new one.
 	 * If a font field is not set in the font, it will be overwritten with
 	 * the new one.
-	 * @param TFont the new font
+	 * @param TFont $font the new font
 	 */
 	public function mergeWith($font)
 	{
@@ -256,7 +256,7 @@ class TFont extends \Prado\TComponent
 	 * Copies the fields in a new font to this font.
 	 * If a font field is set in the new font, the corresponding field
 	 * in this font will be overwritten.
-	 * @param TFont the new font
+	 * @param TFont $font the new font
 	 */
 	public function copyFrom($font)
 	{
@@ -309,7 +309,7 @@ class TFont extends \Prado\TComponent
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

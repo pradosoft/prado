@@ -27,7 +27,7 @@ interface IUser
 	 */
 	public function getName();
 	/**
-	 * @param string username
+	 * @param string $value username
 	 */
 	public function setName($value);
 	/**
@@ -35,7 +35,7 @@ interface IUser
 	 */
 	public function getIsGuest();
 	/**
-	 * @param boolean if the user is a guest
+	 * @param boolean $value if the user is a guest
 	 */
 	public function setIsGuest($value);
 	/**

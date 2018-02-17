@@ -71,7 +71,7 @@ class TCustomValidator extends TBaseValidator
 
 	/**
 	 * Sets the name of the custom client-side script function used for validation.
-	 * @param string the script function name
+	 * @param string $value the script function name
 	 */
 	public function setClientValidationFunction($value)
 	{

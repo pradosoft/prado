@@ -52,7 +52,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * On callback response, the inner HTMl of the label is updated.
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
@@ -66,7 +66,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * Sets the location of image file of the THyperLink.
-	 * @param string the image file location
+	 * @param string $value the image file location
 	 */
 	public function setImageUrl($value)
 	{
@@ -85,7 +85,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
@@ -103,7 +103,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the THyperLink component is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{

@@ -33,7 +33,7 @@ class TColorPickerClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for when a color is selected.
+	 * @param string $javascript javascript code for when a color is selected.
 	 */
 	public function setOnColorSelected($javascript)
 	{

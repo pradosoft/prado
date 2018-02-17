@@ -77,7 +77,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTableRow} objects into the {@link getRows Rows} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
@@ -97,7 +97,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -143,7 +143,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string table caption
+	 * @param string $value table caption
 	 */
 	public function setCaption($value)
 	{
@@ -159,7 +159,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableCaptionAlign table caption alignment.
+	 * @param TTableCaptionAlign $value table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -178,7 +178,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @param integer $value the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -197,7 +197,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @param integer $value the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellPadding($value)
 	{
@@ -216,7 +216,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param THorizontalAlign the horizontal alignment of the table content.
+	 * @param THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -235,7 +235,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableGridLines the grid line setting of the table
+	 * @param TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -255,7 +255,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the URL of the background image for the table
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -264,7 +264,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the table control which will render table caption if present.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -281,7 +281,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

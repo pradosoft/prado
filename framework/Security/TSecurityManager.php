@@ -62,7 +62,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * The security module is registered with the application.
-	 * @param TXmlElement initial module configuration
+	 * @param TXmlElement $config initial module configuration
 	 */
 	public function init($config)
 	{
@@ -162,7 +162,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@link encrypt} and {@link decrypt}.
-	 * @param mixed either a string containing the cipther name.
+	 * @param mixed $value either a string containing the cipther name.
 	 */
 	public function setCryptAlgorithm($value)
 	{

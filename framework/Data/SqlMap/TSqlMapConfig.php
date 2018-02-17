@@ -148,7 +148,7 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Set true to cache sqlmap instances.
-	 * @param boolean true to cache sqlmap instance.
+	 * @param boolean $value true to cache sqlmap instance.
 	 */
 	public function setEnableCache($value)
 	{

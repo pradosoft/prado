@@ -30,7 +30,7 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 
 	/**
 	 * Constructor. Attach a response to be adapted.
-	 * @param THttpResponse the response object the adapter is to attach to.
+	 * @param THttpResponse $response the response object the adapter is to attach to.
 	 */
 	public function __construct($response)
 	{
@@ -56,7 +56,7 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 
 	/**
 	 * This method is invoked when the response is to redirect to another page.
-	 * @param string new url to redirect to.
+	 * @param string $url new url to redirect to.
 	 */
 	public function httpRedirect($url)
 	{

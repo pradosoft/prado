@@ -34,7 +34,7 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -56,7 +56,7 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @param TTableHeaderScope the scope of the cells that the header cell applies to.
+	 * @param TTableHeaderScope $value the scope of the cells that the header cell applies to.
 	 */
 	public function setScope($value)
 	{
@@ -72,7 +72,7 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @param string  the abbr attribute of the HTML th element
+	 * @param string $value the abbr attribute of the HTML th element
 	 */
 	public function setAbbreviatedText($value)
 	{
@@ -88,7 +88,7 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @param string the axis attribute of the HTML th element
+	 * @param string $value the axis attribute of the HTML th element
 	 */
 	public function setCategoryText($value)
 	{

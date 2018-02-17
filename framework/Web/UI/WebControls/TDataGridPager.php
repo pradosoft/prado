@@ -31,7 +31,7 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Constructor.
-	 * @param TDataGrid datagrid object
+	 * @param TDataGrid $dataGrid datagrid object
 	 */
 	public function __construct($dataGrid)
 	{

@@ -31,7 +31,7 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -46,7 +46,7 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	}
 
 	/**
-	 * @param string id of this module
+	 * @param string $value id of this module
 	 */
 	public function setID($value)
 	{

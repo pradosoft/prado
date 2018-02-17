@@ -104,7 +104,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Adds attribute name-value pairs to renderer.
 	 * By default, this method renders the style string.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -120,7 +120,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
 	 * If the {@link getTagName TagName} is empty, only {@link renderContents} is invoked.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -137,7 +137,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Renders the openning tag for the control (including attributes)
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -149,7 +149,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -159,7 +159,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Renders the closing tag for the control
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

@@ -65,7 +65,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	}
 
 	/**
-	 * @param mixed callback response data.
+	 * @param mixed $data callback response data.
 	 */
 	public function setResponseData($data)
 	{
@@ -82,7 +82,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 
 	/**
 	 * Delay the redirect until we process the rest of the page.
-	 * @param string new url to redirect to.
+	 * @param string $url new url to redirect to.
 	 */
 	public function httpRedirect($url)
 	{

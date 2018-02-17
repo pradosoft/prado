@@ -66,7 +66,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param string base active control instance
+	 * @param string $type base active control instance
 	 */
 	protected function setBaseControlClass($type)
 	{
@@ -104,7 +104,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param TBaseActiveControl change base active control
+	 * @param TBaseActiveControl $control change base active control
 	 */
 	public function setBaseActiveControl($control)
 	{
@@ -178,7 +178,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param string state tracker class.
+	 * @param string $value state tracker class.
 	 */
 	public function setStateTracker($value)
 	{

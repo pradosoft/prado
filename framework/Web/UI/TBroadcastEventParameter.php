@@ -48,7 +48,7 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param string name of the broadcast event
+	 * @param string $value name of the broadcast event
 	 */
 	public function setName($value)
 	{
@@ -64,7 +64,7 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed parameter of the broadcast event
+	 * @param mixed $value parameter of the broadcast event
 	 */
 	public function setParameter($value)
 	{

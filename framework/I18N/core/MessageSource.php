@@ -77,7 +77,7 @@ abstract class MessageSource implements IMessageSource
 	 * @var string
 	 */
 	protected $culture;
-	
+
 	/**
 	 * Array of translation messages.
 	 * @var array
@@ -89,13 +89,13 @@ abstract class MessageSource implements IMessageSource
 	 * @var string
 	 */
 	protected $source;
-	
+
 	/**
 	 * The translation cache.
 	 * @var MessageCache
 	 */
 	protected $cache;
-	
+
 	protected $untranslated = [];
 
 	/**
@@ -106,7 +106,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		//throw new Exception('Please use the factory method to instantiate.');
 	}
-	
+
 	/**
 	 * Factory method to instantiate a new MessageSource depending on the
 	 * source type. The allowed source types are 'XLIFF', 'PHP', 'gettext' and
@@ -131,22 +131,22 @@ abstract class MessageSource implements IMessageSource
 		if(empty($filename) && !in_array($type, $types))
 			throw new Exception('Invalid type "' . $type . '", valid types are ' .
 				implode(', ', $types));
-		
+
 		$class = 'MessageSource_' . $type;
-		
+
 		if(empty($filename))
 			$filename = dirname(__FILE__) . '/' . $class . '.php';
-						
+
 		if(is_file($filename) == false)
 			throw new Exception("File $filename not found");
-						
+
 		include_once $filename;
-		
+
 		$obj = new $class($source);
-		
+
 		return $obj;
 	}
-	
+
 	/**
 	 * Load a particular message catalogue. Use read() to
 	 * to get the array of messages. The catalogue loading sequence
@@ -169,22 +169,22 @@ abstract class MessageSource implements IMessageSource
 	public function load($catalogue = 'messages')
 	{
 		$variants = $this->getCatalogueList($catalogue);
-		
+
 		$this->messages = [];
-		
+
 		foreach($variants as $variant)
 		{
 			$source = $this->getSource($variant);
-			
+
 			if($this->isValidSource($source) == false) continue;
 
 			$loadData = true;
-			
+
 			if($this->cache)
 			{
 				$data = $this->cache->get($variant,
 					$this->culture, $this->getLastModified($source));
-				
+
 				if(is_array($data))
 				{
 					$this->messages[$variant] = $data;
@@ -204,10 +204,10 @@ abstract class MessageSource implements IMessageSource
 				unset($data);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Get the array of messages.
 	 * @param parameter
@@ -217,7 +217,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return $this->messages;
 	}
-		
+
 	/**
 	 * Get the cache handler for this source.
 	 * @return MessageCache cache handler
@@ -226,7 +226,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return $this->cache;
 	}
-	
+
 	/**
 	 * Set the cache handler for caching the messages.
 	 * @param MessageCache the cache handler.
@@ -235,27 +235,27 @@ abstract class MessageSource implements IMessageSource
 	{
 		$this->cache = $cache;
 	}
-	
+
 	/**
 	 * Add a untranslated message to the source. Need to call save()
 	 * to save the messages to source.
-	 * @param string message to add
+	 * @param string $message message to add
 	 */
 	public function append($message)
 	{
 		if(!in_array($message, $this->untranslated))
 			$this->untranslated[] = $message;
 	}
-	
+
 	/**
 	 * Set the culture for this message source.
-	 * @param string culture name
+	 * @param string $culture culture name
 	 */
 	public function setCulture($culture)
 	{
 		$this->culture = $culture;
 	}
-	
+
 	/**
 	 * Get the culture identifier for the source.
 	 * @return string culture identifier.
@@ -274,7 +274,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return 0;
 	}
-	
+
 	/**
 	 * Load the message for a particular catalogue+variant.
 	 * This methods needs to implemented by subclasses.
@@ -285,7 +285,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return [];
 	}
-	
+
 	/**
 	 * Get the source, this could be a filename or database ID.
 	 * @param string catalogue+variant
@@ -295,7 +295,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return $variant;
 	}
-	
+
 	/**
 	 * Determine if the source is valid.
 	 * @param string catalogue+variant
@@ -305,7 +305,7 @@ abstract class MessageSource implements IMessageSource
 	{
 		return false;
 	}
-	
+
 	/**
 	 * Get all the variants of a particular catalogue.
 	 * This method must be implemented by subclasses.

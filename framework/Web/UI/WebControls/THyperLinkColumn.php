@@ -52,7 +52,7 @@ class THyperLinkColumn extends TDataGridColumn
 
 	/**
 	 * Sets the text caption of the hyperlink.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
@@ -68,7 +68,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the hyperlink caption
+	 * @param string $value the field name from the data source to bind to the hyperlink caption
 	 */
 	public function setDataTextField($value)
 	{
@@ -84,7 +84,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the hyperlink caption will be displayed.
+	 * @param string $value the formatting string used to control how the hyperlink caption will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
@@ -100,7 +100,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string height of the image in the THyperLink
+	 * @param string $value height of the image in the THyperLink
 	 */
 	public function setImageHeight($value)
 	{
@@ -116,7 +116,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string url of the image in the THyperLink
+	 * @param string $value url of the image in the THyperLink
 	 */
 	public function setImageUrl($value)
 	{
@@ -132,7 +132,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string width of the image in the THyperLink
+	 * @param string $value width of the image in the THyperLink
 	 */
 	public function setImageWidth($value)
 	{
@@ -149,7 +149,7 @@ class THyperLinkColumn extends TDataGridColumn
 
 	/**
 	 * Sets the URL to link to when the hyperlink is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
@@ -165,7 +165,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the navigate url of hyperlink
+	 * @param string $value the field name from the data source to bind to the navigate url of hyperlink
 	 */
 	public function setDataNavigateUrlField($value)
 	{
@@ -181,7 +181,7 @@ class THyperLinkColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the navigate url of hyperlink will be displayed.
+	 * @param string $value the formatting string used to control how the navigate url of hyperlink will be displayed.
 	 */
 	public function setDataNavigateUrlFormatString($value)
 	{
@@ -198,7 +198,7 @@ class THyperLinkColumn extends TDataGridColumn
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the hyperlink is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{

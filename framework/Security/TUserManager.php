@@ -106,7 +106,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It loads user/role information from the module configuration.
-	 * @param mixed module configuration
+	 * @param mixed $config module configuration
 	 */
 	public function init($config)
 	{
@@ -130,7 +130,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/*
 	 * Loads user/role information
-	 * @param mixed the variable containing the user information
+	 * @param mixed $config the variable containing the user information
 	 */
 	private function loadUserData($config)
 	{
@@ -142,7 +142,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Loads user/role information from an php array.
-	 * @param array the array containing the user information
+	 * @param array $config the array containing the user information
 	 */
 	private function loadUserDataFromPhp($config)
 	{
@@ -181,7 +181,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Loads user/role information from an XML node.
-	 * @param TXmlElement the XML node containing the user information
+	 * @param TXmlElement $xmlNode the XML node containing the user information
 	 */
 	private function loadUserDataFromXml($xmlNode)
 	{
@@ -263,7 +263,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param string name to be used for guest users.
+	 * @param string $value name to be used for guest users.
 	 */
 	public function setGuestName($value)
 	{
@@ -279,7 +279,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed.
+	 * @param TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
 	 */
 	public function setPasswordMode($value)
 	{
@@ -372,7 +372,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Sets a user as a guest.
 	 * User name is changed as guest name, and roles are emptied.
-	 * @param TUser the user to be changed to a guest.
+	 * @param TUser $user the user to be changed to a guest.
 	 */
 	public function switchToGuest($user)
 	{

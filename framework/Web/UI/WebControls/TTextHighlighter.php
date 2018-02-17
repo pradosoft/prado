@@ -77,7 +77,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean whether to show line numbers in the highlighted result.
+	 * @param boolean $value whether to show line numbers in the highlighted result.
 	 */
 	public function setShowLineNumbers($value)
 	{
@@ -93,7 +93,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean true to show the "Copy Code" link.
+	 * @param boolean $value true to show the "Copy Code" link.
 	 */
 	public function setEnableCopyCode($value)
 	{
@@ -109,7 +109,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param style of syntax highlightning
+	 * @param style $value of syntax highlightning
 	 */
 	public function setSyntaxStyle($value)
 	{
@@ -125,7 +125,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param integer tab size
+	 * @param integer $value tab size
 	 */
 	public function setTabSize($value)
 	{
@@ -141,7 +141,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
+	 * @param boolean $value wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
 	 */
 	public function setEncodeHtml($value)
 	{
@@ -151,7 +151,7 @@ class TTextHighlighter extends TWebControl
 	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function onPreRender($writer)
 	{
@@ -188,7 +188,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -205,7 +205,7 @@ class TTextHighlighter extends TWebControl
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -220,7 +220,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

@@ -288,7 +288,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	/**
 	 * Sets the last insert ID to the corresponding property of the record if available.
-	 * @param TActiveRecord record for insertion
+	 * @param TActiveRecord $record record for insertion
 	 */
 	protected function updatePostInsert($record)
 	{

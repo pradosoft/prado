@@ -58,7 +58,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 
 	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
-	 * @param string the alternative text
+	 * @param string $value the alternative text
 	 */
 	public function setAlternateText($value)
 	{
@@ -75,7 +75,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
@@ -88,7 +88,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @param string the URL of the image file
+	 * @param string $value the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
@@ -101,7 +101,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
@@ -120,7 +120,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * {@link TPage::validate} method first. It will raise
 	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -133,7 +133,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{

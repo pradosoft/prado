@@ -85,7 +85,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string custom type handler class name (may use namespace).
+	 * @param string $value custom type handler class name (may use namespace).
 	 */
 	public function setTypeHandler($value)
 	{
@@ -103,7 +103,7 @@ class TDiscriminator extends \Prado\TComponent
 	/**
 	 * The columnIndex attribute value is the index of the column in the
 	 * ResultSet from which the value will be used to populate the object property.
-	 * @param int index of the column in the ResultSet
+	 * @param int $value index of the column in the ResultSet
 	 */
 	public function setColumnIndex($value)
 	{
@@ -119,7 +119,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed outgoing null value replacement.
+	 * @param mixed $value outgoing null value replacement.
 	 */
 	public function setNullValue($value)
 	{
@@ -135,7 +135,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSubMap add new sub mapping.
+	 * @param TSubMap $subMap add new sub mapping.
 	 */
 	public function addSubMap($subMap)
 	{
@@ -154,7 +154,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * Copies the discriminator properties to a new TResultProperty.
-	 * @param TResultMap result map holding the discriminator.
+	 * @param TResultMap $resultMap result map holding the discriminator.
 	 */
 	public function initMapping($resultMap)
 	{
@@ -168,7 +168,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * Set the result maps for particular sub-mapping values.
-	 * @param TSqlMapManager sql map manager instance.
+	 * @param TSqlMapManager $manager sql map manager instance.
 	 */
 	public function initialize($manager)
 	{

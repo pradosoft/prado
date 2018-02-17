@@ -41,7 +41,7 @@ class TStyleDiff extends TViewStateDiff
 
 	/**
 	 * @param string CSS custom style string.
-	 * @param array CSS style as name-value array.
+	 * @param array $string CSS style as name-value array.
 	 */
 	protected function getStyleFromString($string)
 	{

@@ -40,7 +40,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Selects an item based on zero-base index on the client side.
-	 * @param integer the index (zero-based) of the item to be selected
+	 * @param integer $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -63,7 +63,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Selects a list of item based on zero-base indices on the client side.
-	 * @param array list of index of items to be selected
+	 * @param array $indices list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices)
 	{
@@ -93,7 +93,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Sets selection by item value on the client side.
-	 * @param string the value of the item to be selected.
+	 * @param string $value the value of the item to be selected.
 	 */
 	public function setSelectedValue($value)
 	{
@@ -107,7 +107,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Sets selection by a list of item values on the client side.
-	 * @param array list of the selected item values
+	 * @param array $values list of the selected item values
 	 */
 	public function setSelectedValues($values)
 	{

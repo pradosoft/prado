@@ -79,7 +79,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the access key that allows you to quickly navigate to the HotSpot region.
+	 * @param string $value the access key that allows you to quickly navigate to the HotSpot region.
 	 */
 	public function setAccessKey($value)
 	{
@@ -95,7 +95,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the alternate text to display for a HotSpot object.
+	 * @param string $value the alternate text to display for a HotSpot object.
 	 */
 	public function setAlternateText($value)
 	{
@@ -111,7 +111,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THotSpotMode the behavior of a HotSpot object when it is clicked.
+	 * @param THotSpotMode $value the behavior of a HotSpot object when it is clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
@@ -127,7 +127,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the URL to navigate to when a HotSpot object is clicked.
+	 * @param string $value the URL to navigate to when a HotSpot object is clicked.
 	 */
 	public function setNavigateUrl($value)
 	{
@@ -143,7 +143,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string a value that is post back when the HotSpot is clicked.
+	 * @param string $value a value that is post back when the HotSpot is clicked.
 	 */
 	public function setPostBackValue($value)
 	{
@@ -159,7 +159,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer the tab index of the HotSpot region.
+	 * @param integer $value the tab index of the HotSpot region.
 	 */
 	public function setTabIndex($value)
 	{
@@ -175,7 +175,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this hotspot will cause input validation
+	 * @param boolean $value whether postback event trigger by this hotspot will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -191,7 +191,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the group of validators which the hotspot causes validation upon postback
+	 * @param string $value the group of validators which the hotspot causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{

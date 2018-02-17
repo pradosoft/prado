@@ -102,7 +102,7 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Stores log messages into database.
-	 * @param array list of log messages
+	 * @param array $logs list of log messages
 	 */
 	protected function processLogs($logs)
 	{
@@ -186,7 +186,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.
-	 * @param string ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@link TDataSourceConfig} module
 	 */
 	public function setConnectionID($value)
 	{

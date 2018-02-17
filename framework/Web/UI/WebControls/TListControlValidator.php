@@ -80,7 +80,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param integer minimum number of selections.
+	 * @param integer $value minimum number of selections.
 	 */
 	public function setMinSelection($value)
 	{
@@ -98,7 +98,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param integer max number of selections.
+	 * @param integer $value max number of selections.
 	 */
 	public function setMaxSelection($value)
 	{
@@ -118,7 +118,7 @@ class TListControlValidator extends TBaseValidator
 
 	/**
 	 * Set the list of required values, using aa comma separated list.
-	 * @param string comma separated list of required values.
+	 * @param string $value comma separated list of required values.
 	 */
 	public function setRequiredSelections($value)
 	{

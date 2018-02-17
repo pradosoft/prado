@@ -46,7 +46,7 @@ class TJuiControlOptions
 
 	/**
 	 * Constructor. Set the parent control owning these options.
-	 * @param TControl parent control
+	 * @param TControl $control parent control
 	 */
 	public function __construct($control)
 	{
@@ -150,7 +150,7 @@ class TJuiControlOptions
 
 	/**
 	 * Raise the specific callback event handler of the target control.
-	 * @param mixed callback parameters
+	 * @param mixed $param callback parameters
 	 */
 	public function raiseCallbackEvent($param)
 	{

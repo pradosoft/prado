@@ -61,7 +61,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Renders the label.
 	 * It overrides the parent implementation by checking if an associated
 	 * control is visible or not. If not, the label will not be rendered.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -84,7 +84,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	public function renderContents($writer)
 	{
@@ -103,7 +103,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	}
 
 	/**
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
@@ -147,7 +147,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
-	 * @param string the associated control ID
+	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)
 	{

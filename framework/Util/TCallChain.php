@@ -34,7 +34,7 @@ class TCallChain extends TList implements IDynamicMethods
 
 	/**
 	 * This initializes the list and the name of the method to be called
-	 *	@param string the name of the function call
+	 *	@param string $method the name of the function call
 	 */
 	public function __construct($method) {
 		$this->_method = $method;

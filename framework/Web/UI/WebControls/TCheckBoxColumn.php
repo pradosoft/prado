@@ -46,7 +46,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the column
+	 * @param string $value the field name from the data source to bind to the column
 	 */
 	public function setDataField($value)
 	{
@@ -62,7 +62,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{

@@ -147,7 +147,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string id of this module
+	 * @param string $value id of this module
 	 */
 	public function setID($value)
 	{
@@ -157,7 +157,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -244,7 +244,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Set true to cache the UrlManager instance. Consider to enable this cache
 	 * when the application defines a lot of TUrlMappingPatterns
-	 * @param boolean true to cache urlmanager instance.
+	 * @param boolean $value true to cache urlmanager instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -321,7 +321,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * You may specify a different module for URL managing tasks
 	 * by loading it as an application module and setting this property
 	 * with the module ID.
-	 * @param string the ID of the URL manager module
+	 * @param string $value the ID of the URL manager module
 	 */
 	public function setUrlManager($value)
 	{
@@ -370,7 +370,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * while a Path URL format is like index.php/name1,value1/name2,value.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat the format of URLs.
+	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 */
 	public function setUrlFormat($value)
 	{
@@ -636,7 +636,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean whether cookies should be validated.
+	 * @param boolean $value whether cookies should be validated.
 	 */
 	public function setEnableCookieValidation($value)
 	{
@@ -800,7 +800,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the requested service ID.
-	 * @param string requested service ID
+	 * @param string $value requested service ID
 	 */
 	public function setServiceID($value)
 	{
@@ -817,7 +817,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the requested service parameter.
-	 * @param string requested service parameter
+	 * @param string $value requested service parameter
 	 */
 	public function setServiceParameter($value)
 	{
@@ -964,7 +964,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

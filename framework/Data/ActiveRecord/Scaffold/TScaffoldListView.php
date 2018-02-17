@@ -129,7 +129,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string search condition, the SQL string after the WHERE clause.
+	 * @param string $value search condition, the SQL string after the WHERE clause.
 	 */
 	public function setSearchCondition($value)
 	{
@@ -145,7 +145,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param array search parameters
+	 * @param array $value search parameters
 	 */
 	public function setSearchParameters($value)
 	{
@@ -289,7 +289,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string TScaffoldEditView control ID for editing selected Active Record.
+	 * @param string $value TScaffoldEditView control ID for editing selected Active Record.
 	 */
 	public function setEditViewID($value)
 	{

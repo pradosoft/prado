@@ -55,7 +55,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 	/**
 	 * On callback response, the inner HTML of the label is updated.
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
@@ -71,7 +71,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
 	 * On callback response, the For attribute of the label is updated.
-	 * @param string the associated control ID
+	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)
 	{
@@ -88,7 +88,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 	/**
 	 * Adds attribute id to the renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer) {
 		$writer->addAttribute('id', $this->getClientID());

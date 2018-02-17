@@ -56,7 +56,7 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer X coordinate of the clicking point
+	 * @param integer $value X coordinate of the clicking point
 	 */
 	public function setX($value)
 	{
@@ -72,7 +72,7 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer Y coordinate of the clicking point
+	 * @param integer $value Y coordinate of the clicking point
 	 */
 	public function setY($value)
 	{

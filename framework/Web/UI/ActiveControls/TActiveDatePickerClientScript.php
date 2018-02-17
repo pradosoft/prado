@@ -32,7 +32,7 @@ class TActiveDatePickerClientScript extends TCallbackClientSide
 {
 	/**
 	 * Javascript code to execute when the date picker's date is changed.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnDateChanged($javascript)
 	{

@@ -79,7 +79,7 @@ class TErrorHandler extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -225,7 +225,7 @@ class TErrorHandler extends \Prado\TModule
 	 * THttpException and errors happened when the application is in <b>Debug</b>
 	 * mode will be displayed to the client user.
 	 * Error is displayed without using existing template to prevent further errors.
-	 * @param Exception exception instance
+	 * @param Exception $exception exception instance
 	 */
 	protected function handleRecursiveError($exception)
 	{
@@ -248,7 +248,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Exceptions are displayed with rich context information, including
 	 * the call stack and the context source code.
 	 * This method is only invoked when application is in <b>Debug</b> mode.
-	 * @param Exception exception instance
+	 * @param Exception $exception exception instance
 	 */
 	protected function displayException($exception)
 	{
@@ -364,7 +364,7 @@ class TErrorHandler extends \Prado\TModule
 		} else {
 			$trace = $exception->getTrace();
 		}
-		
+
 		// if PHP exception, we want to show the 2nd stack level context
 		// because the 1st stack level is of little use (it's in error handler)
 		if($exception instanceof TPhpErrorException) {

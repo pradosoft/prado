@@ -34,7 +34,7 @@ class TForm extends TControl
 {
 	/**
 	 * Registers the form with the page.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -44,7 +44,7 @@ class TForm extends TControl
 
 	/**
 	 * Adds form specific attributes to renderer.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -70,7 +70,7 @@ class TForm extends TControl
 
 	/**
 	 * Renders the form.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -120,7 +120,7 @@ class TForm extends TControl
 	 * Sets a button to be default one in a form.
 	 * A default button will be clicked if a user presses 'Enter' key within
 	 * the form.
-	 * @param string id path to the default button control.
+	 * @param string $value id path to the default button control.
 	 */
 	public function setDefaultButton($value)
 	{
@@ -136,7 +136,7 @@ class TForm extends TControl
 	}
 
 	/**
-	 * @param string form submission method. Valid values include 'post' and 'get'.
+	 * @param string $value form submission method. Valid values include 'post' and 'get'.
 	 */
 	public function setMethod($value)
 	{

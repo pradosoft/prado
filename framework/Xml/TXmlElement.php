@@ -55,7 +55,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param string tag-name for this element
+	 * @param string $tagName tag-name for this element
 	 */
 	public function __construct($tagName)
 	{
@@ -71,7 +71,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TXmlElement parent element of this element
+	 * @param TXmlElement $parent parent element of this element
 	 */
 	public function setParent($parent)
 	{
@@ -87,7 +87,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string tag-name of this element
+	 * @param string $tagName tag-name of this element
 	 */
 	public function setTagName($tagName)
 	{
@@ -103,7 +103,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string text enclosed between opening and closing tag of this element
+	 * @param string $value text enclosed between opening and closing tag of this element
 	 */
 	public function setValue($value)
 	{

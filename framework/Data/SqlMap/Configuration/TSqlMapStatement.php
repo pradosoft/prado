@@ -53,7 +53,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name for this statement, which must be unique for each sql map manager.
+	 * @param string $value name for this statement, which must be unique for each sql map manager.
 	 */
 	public function setID($value)
 	{
@@ -71,7 +71,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	/**
 	 * A Parameter Map defines an ordered list of values that match up with
 	 * the "?" placeholders of a standard, parameterized query statement.
-	 * @param string parameter map name.
+	 * @param string $value parameter map name.
 	 */
 	public function setParameterMap($value)
 	{
@@ -90,7 +90,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * If a {@link ParameterMap setParameterMap()} property is not specified,
 	 * you may specify a ParameterClass instead and use inline parameters.
 	 * The value of the parameterClass attribute can be any existing PHP class name.
-	 * @param string parameter class name.
+	 * @param string $value parameter class name.
 	 */
 	public function setParameterClass($value)
 	{
@@ -108,7 +108,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	/**
 	 * A Result Map lets you control how data is extracted from the result of a
 	 * query, and how the columns are mapped to object properties.
-	 * @param string result map name.
+	 * @param string $value result map name.
 	 */
 	public function setResultMap($value)
 	{
@@ -129,7 +129,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * name of a PHP class or primitives like integer, string, or array. The
 	 * class specified will be automatically mapped to the columns in the
 	 * result, based on the result metadata.
-	 * @param string result class name.
+	 * @param string $value result class name.
 	 */
 	public function setResultClass($value)
 	{
@@ -145,7 +145,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string cache mode name.
+	 * @param string $value cache mode name.
 	 */
 	public function setCacheModel($value)
 	{
@@ -161,7 +161,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapCacheModel cache implementation instance for this statement.
+	 * @param TSqlMapCacheModel $value cache implementation instance for this statement.
 	 */
 	public function setCache($value)
 	{
@@ -177,7 +177,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TStaticSql sql text container.
+	 * @param TStaticSql $value sql text container.
 	 */
 	public function setSqlText($value)
 	{
@@ -194,7 +194,7 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * An \ArrayAccess class can be specified to handle the type of objects in the collection.
-	 * @param string name of a PHP class that implements \ArrayAccess.
+	 * @param string $value name of a PHP class that implements \ArrayAccess.
 	 */
 	public function setListClass($value)
 	{
@@ -210,7 +210,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of another statement element to extend.
+	 * @param string $value name of another statement element to extend.
 	 */
 	public function setExtends($value)
 	{
@@ -236,7 +236,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TInlineParameterMap parameter extracted from the sql text.
+	 * @param TInlineParameterMap $map parameter extracted from the sql text.
 	 */
 	public function setInlineParameterMap($map)
 	{
@@ -244,7 +244,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapManager initialize the statement, sets the result and parameter maps.
+	 * @param TSqlMapManager $manager initialize the statement, sets the result and parameter maps.
 	 */
 	public function initialize($manager)
 	{

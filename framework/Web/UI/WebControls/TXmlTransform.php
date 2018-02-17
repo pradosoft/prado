@@ -69,7 +69,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
   }
 
   /**
-   * @param string The path to the XML style sheet.  It must be in namespace format.
+   * @param string $value The path to the XML style sheet.  It must be in namespace format.
    */
   public function setTransformPath($value) {
 	if(!is_file($value)) {
@@ -174,7 +174,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
 
   /**
    * Performs XSL transformation and render the output.
-   * @param THtmlWriter The writer used for the rendering purpose
+   * @param THtmlWriter $writer The writer used for the rendering purpose
    */
   public function render($writer) {
 	if(($document = $this->getSourceXmlDocument()) === null) {

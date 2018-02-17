@@ -85,7 +85,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the number format pattern.
-	 * @param string format pattern.
+	 * @param string $pattern format pattern.
 	 */
 	public function setPattern($pattern)
 	{
@@ -103,7 +103,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the numberic value for this control.
-	 * @param string the number value
+	 * @param string $value the number value
 	 */
 	public function setValue($value)
 	{
@@ -121,7 +121,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the default text value for this control.
-	 * @param string default text value
+	 * @param string $value default text value
 	 */
 	public function setDefaultText($value)
 	{
@@ -200,7 +200,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	/**
 	 * Set the 3-letter ISO 4217 code. For example, the code
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
-	 * @param string currency code.
+	 * @param string $currency currency code.
 	 */
 	public function setCurrency($currency)
 	{

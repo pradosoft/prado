@@ -166,7 +166,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Sets the culture/language for the date picker.
-	 * @param string a culture string, e.g. en_AU.
+	 * @param string $value a culture string, e.g. en_AU.
 	 */
 	public function setCulture($value)
 	{
@@ -193,7 +193,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Sets the format of the date string.
-	 * @param string the format of the date string
+	 * @param string $value the format of the date string
 	 */
 	public function setDateFormat($value)
 	{
@@ -235,7 +235,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @param string date string
+	 * @param string $value date string
 	 */
 	public function setDate($value)
 	{
@@ -255,7 +255,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Sets the date for the date picker using timestamp.
-	 * @param float time stamp for the date picker
+	 * @param float $value time stamp for the date picker
 	 */
 	public function setTimeStamp($value)
 	{

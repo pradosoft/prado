@@ -98,7 +98,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * {@link TActiveTableCellEventParameter} containing the zero-based index of the
 	 * TActiveTableCell.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -112,7 +112,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * 'OnCellSelected' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TActiveTableCellEventParameter event parameter to be passed to the event handlers
+	 * @param TActiveTableCellEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCellSelected($param)
 	{
@@ -123,7 +123,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
 	 * {@link onCellSelected OnCellSelected} event is set.
-	 * @param THtmlWriter the writer responsible for rendering
+	 * @param THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -138,7 +138,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * called before the OnPreRender event, such as when render() is called during
 	 * a callback event handler, the rendering is defered until OnPreRender event
 	 * is raised.
-	 * @param THtmlWriter html writer
+	 * @param THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

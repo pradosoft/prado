@@ -70,7 +70,7 @@ class TTableItemStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -90,7 +90,7 @@ class TTableItemStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -109,7 +109,7 @@ class TTableItemStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -135,7 +135,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-	 * @param THorizontalAlign the horizontal alignment
+	 * @param THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -152,7 +152,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-	 * @param TVerticalAlign the horizontal alignment
+	 * @param TVerticalAlign $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
@@ -169,7 +169,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the value indicating whether the content wraps within the table item.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{

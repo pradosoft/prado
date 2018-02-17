@@ -104,7 +104,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Process the callback request.
-	 * @param THtmlWriter html content writer.
+	 * @param THtmlWriter $writer html content writer.
 	 */
 	public function processCallbackEvent($writer)
 	{
@@ -134,7 +134,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Render the callback response.
-	 * @param THtmlWriter html content writer.
+	 * @param THtmlWriter $writer html content writer.
 	 */
 	public function renderCallbackResponse($writer)
 	{
@@ -147,7 +147,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Redirect url on the client-side using javascript.
-	 * @param string new url to load.
+	 * @param string $url new url to load.
 	 */
 	protected function redirect($url)
 	{
@@ -158,7 +158,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Renders the callback response by adding additional callback data and
 	 * javascript actions in the header and page state if required.
-	 * @param THtmlWriter html content writer.
+	 * @param THtmlWriter $writer html content writer.
 	 */
 	protected function renderResponse($writer)
 	{
@@ -309,7 +309,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param mixed postback event parameter
+	 * @param mixed $value postback event parameter
 	 */
 	public function setCallbackEventParameter($value)
 	{

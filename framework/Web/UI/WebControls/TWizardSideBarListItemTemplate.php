@@ -25,7 +25,7 @@ class TWizardSideBarListItemTemplate extends \Prado\TComponent implements ITempl
 	/**
 	 * Instantiates the template.
 	 * It creates a {@link TLinkButton}.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

@@ -49,7 +49,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -72,7 +72,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the caption displayed on this tab
+	 * @param string $value the caption displayed on this tab
 	 */
 	public function setCaption($value)
 	{
@@ -90,7 +90,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the URL of the target page.
 	 * If not empty, clicking on this tab will redirect the browser to the specified URL.
-	 * @param string the URL of the target page.
+	 * @param string $value the URL of the target page.
 	 */
 	public function setNavigateUrl($value)
 	{
@@ -108,7 +108,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the text content to be displayed on this view.
 	 * If this is not empty, the child content of the view will be ignored.
-	 * @param string the text content displayed on this view
+	 * @param string $value the text content displayed on this view
 	 */
 	public function setText($value)
 	{
@@ -124,7 +124,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether this tab view is active.
+	 * @param boolean $value whether this tab view is active.
 	 */
 	public function setActive($value)
 	{
@@ -133,7 +133,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the tab view.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
@@ -145,7 +145,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the tab associated with the tab view.
-	 * @param THtmlWriter the writer for rendering purpose.
+	 * @param THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function renderTab($writer)
 	{
@@ -167,7 +167,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Renders the content in the tab.
 	 * By default, a hyperlink is displayed.
-	 * @param THtmlWriter the HTML writer
+	 * @param THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
 	{

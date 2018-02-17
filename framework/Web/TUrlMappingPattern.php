@@ -236,7 +236,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string full regular expression mapping pattern.
+	 * @param string $value full regular expression mapping pattern.
 	 */
 	public function setRegularExpression($value)
 	{
@@ -252,7 +252,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the {@link getPattern Pattern} should be treated as case sensititve.
+	 * @param boolean $value whether the {@link getPattern Pattern} should be treated as case sensititve.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -260,7 +260,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string service parameter, such as page class name.
+	 * @param string $value service parameter, such as page class name.
 	 */
 	public function setServiceParameter($value)
 	{
@@ -276,7 +276,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string service id to handle.
+	 * @param string $value service id to handle.
 	 */
 	public function setServiceID($value)
 	{
@@ -300,7 +300,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string url pattern to match.
+	 * @param string $value url pattern to match.
 	 */
 	public function setPattern($value)
 	{
@@ -321,7 +321,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TAttributeCollection new parameter key value pairs.
+	 * @param TAttributeCollection $value new parameter key value pairs.
 	 */
 	public function setParameters($value)
 	{
@@ -400,7 +400,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Sets a value indicating whether to enable custom constructUrl using this pattern
-	 * @param boolean whether to enable custom constructUrl.
+	 * @param boolean $value whether to enable custom constructUrl.
 	 */
 	public function setEnableCustomUrl($value)
 	{

@@ -46,7 +46,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $value database connection.
 	 */
 	public function setDbConnection($value)
 	{
@@ -54,7 +54,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo table information.
+	 * @param TDbTableInfo $value table information.
 	 */
 	public function setTableInfo($value)
 	{
@@ -495,8 +495,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array
-	 * @return boolean true if any array key is an integer.
+	 * @param array $array * @return boolean true if any array key is an integer.
 	 */
 	protected function hasIntegerKey($array)
 	{

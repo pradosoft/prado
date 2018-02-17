@@ -217,7 +217,7 @@ class THtmlArea extends TTextBox
 	/**
 	 * Overrides the parent implementation.
 	 * TextMode for THtmlArea is always 'MultiLine' and cannot be changed to others.
-	 * @param string the text mode
+	 * @param string $value the text mode
 	 */
 	public function setTextMode($value)
 	{
@@ -242,7 +242,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Sets whether to show WYSIWYG text editor.
-	 * @param boolean whether to show WYSIWYG text editor
+	 * @param boolean $value whether to show WYSIWYG text editor
 	 */
 	public function setEnableVisualEdit($value)
 	{
@@ -260,7 +260,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Sets the culture/language for the html area
-	 * @param string a culture string, e.g. en_AU.
+	 * @param string $value a culture string, e.g. en_AU.
 	 */
 	public function setCulture($value)
 	{
@@ -280,7 +280,7 @@ class THtmlArea extends TTextBox
 	/**
 	 * Sets the list of options for the WYSIWYG (TinyMCE) editor
 	 * @see http://tinymce.moxiecode.com/tinymce/docs/index.html
-	 * @param string options
+	 * @param string $value options
 	 */
 	public function setOptions($value)
 	{
@@ -288,7 +288,7 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @param string path to custom plugins to be copied.
+	 * @param string $value path to custom plugins to be copied.
 	 */
 	public function setCustomPluginPath($value)
 	{
@@ -307,7 +307,7 @@ class THtmlArea extends TTextBox
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{

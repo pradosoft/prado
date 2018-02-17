@@ -44,7 +44,7 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @param float seconds between callback requests, must be a positive number, default is 1 second.
+	 * @param float $value seconds between callback requests, must be a positive number, default is 1 second.
 	 */
 	public function setInterval($value)
 	{
@@ -81,7 +81,7 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @param boolean true to start the timer when page loads.
+	 * @param boolean $value true to start the timer when page loads.
 	 */
 	public function setStartTimerOnLoad($value)
 	{
@@ -110,7 +110,7 @@ class TTimeTriggeredCallback extends TCallback
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{

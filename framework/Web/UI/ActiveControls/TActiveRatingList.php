@@ -58,7 +58,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -70,7 +70,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -78,7 +78,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -91,7 +91,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param float rating value, also sets the selected Index
+	 * @param float $value rating value, also sets the selected Index
 	 */
 	public function setRating($value)
 	{
@@ -119,7 +119,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param string caption text
+	 * @param string $value caption text
 	 */
 	public function setCaption($value)
 	{

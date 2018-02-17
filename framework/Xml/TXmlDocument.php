@@ -94,7 +94,7 @@ class TXmlDocument extends TXmlElement
 	}
 
 	/**
-	 * @param string version of this XML document
+	 * @param string $version version of this XML document
 	 */
 	public function setVersion($version)
 	{
@@ -110,7 +110,7 @@ class TXmlDocument extends TXmlElement
 	}
 
 	/**
-	 * @param string encoding of this XML document
+	 * @param string $encoding encoding of this XML document
 	 */
 	public function setEncoding($encoding)
 	{

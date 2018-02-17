@@ -54,7 +54,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -72,7 +72,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Wrapper for {@link setReadOnly ReadOnly} property.
-	 * @param boolean whether the rating list can be edited
+	 * @param boolean $value whether the rating list can be edited
 	 */
 	public function setAllowInput($value)
 	{
@@ -81,7 +81,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Wrapper for {@link setReadOnly ReadOnly} property.
-	 * @param boolean whether the rating list can be edited
+	 * @param boolean $value whether the rating list can be edited
 	 */
 	public function setEnabled($value)
 	{
@@ -114,7 +114,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param float rating value, also sets the selected Index
+	 * @param float $value rating value, also sets the selected Index
 	 */
 	public function setRating($value)
 	{
@@ -143,7 +143,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param int change the rating selection index
+	 * @param int $param change the rating selection index
 	 */
 	public function onSelectedIndexChanged($param)
 	{
@@ -162,7 +162,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param string control or html element ID for displaying a caption.
+	 * @param string $value control or html element ID for displaying a caption.
 	 */
 	public function setCaptionID($value)
 	{
@@ -199,7 +199,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param string set the rating style, default is "default"
+	 * @param string $value set the rating style, default is "default"
 	 */
 	public function setRatingStyle($value)
 	{
@@ -225,7 +225,7 @@ class TRatingList extends TRadioButtonList
 	/**
 	 * Sets the interval such that those rating values within the interval
 	 * will be considered as a half star rating.
-	 * @param array rating display half value interval, default is array(0.3, 0.7);
+	 * @param array $value rating display half value interval, default is array(0.3, 0.7);
 	 */
 	public function setHalfRatingInterval($value)
 	{
@@ -336,7 +336,7 @@ class TRatingList extends TRadioButtonList
 	 * Add rating style class name to the class attribute
 	 * when {@link setReadOnly ReadOnly} property is true and when the
 	 * {@link setCssClass CssClass} property is empty.
-	 * @param THtmlWriter renderer
+	 * @param THtmlWriter $writer renderer
 	 */
 	public function render($writer)
 	{

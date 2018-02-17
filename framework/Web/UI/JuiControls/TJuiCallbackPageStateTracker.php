@@ -37,7 +37,7 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker {
 
 	/**
 	 * Updates the options of the jQueryUI widget.
-	 * @param array list of widget options to change.
+	 * @param array $options list of widget options to change.
 	 */
   protected function updateJuiOptions($options)
   {

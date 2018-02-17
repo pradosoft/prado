@@ -88,7 +88,7 @@ class TCaptcha extends TImage
 	 * Bit 3: whether we should add some scribbles to the image (1) or not (0).
 	 * Bit 4: whether the image background should be morphed (1) or not (0).
 	 * Bit 5: whether the token text should cast a shadow (1) or not (0).
-	 * @param integer the theme of the token image. It must be an integer between 0 and 63.
+	 * @param integer $value the theme of the token image. It must be an integer between 0 and 63.
 	 */
 	public function setTokenImageTheme($value)
 	{
@@ -111,7 +111,7 @@ class TCaptcha extends TImage
 	 * Sets the font size used for displaying the token in an image.
 	 * This property affects the generated token image size.
 	 * The image width is proportional to this font size.
-	 * @param integer the font size used for displaying the token in an image. It must be an integer between 20 and 100.
+	 * @param integer $value the font size used for displaying the token in an image. It must be an integer between 20 and 100.
 	 */
 	public function setTokenFontSize($value)
 	{
@@ -131,7 +131,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer the minimum length of the token. It must be between 2 and 40.
+	 * @param integer $value the minimum length of the token. It must be between 2 and 40.
 	 */
 	public function setMinTokenLength($value)
 	{
@@ -151,7 +151,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer the maximum length of the token. It must be between 2 and 40.
+	 * @param integer $value the maximum length of the token. It must be between 2 and 40.
 	 */
 	public function setMaxTokenLength($value)
 	{
@@ -171,7 +171,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param boolean whether the token should be treated as case-sensitive. If false, only upper-case letters will appear in the token.
+	 * @param boolean $value whether the token should be treated as case-sensitive. If false, only upper-case letters will appear in the token.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -187,7 +187,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param string the characters that may appear in the token. At least 2 characters must be specified.
+	 * @param string $value the characters that may appear in the token. At least 2 characters must be specified.
 	 */
 	public function setTokenAlphabet($value)
 	{
@@ -205,7 +205,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer the number of seconds that a generated token will remain valid. A value smaller than 1 means the token will not expire.
+	 * @param integer $value the number of seconds that a generated token will remain valid. A value smaller than 1 means the token will not expire.
 	 */
 	public function setTokenExpiry($value)
 	{
@@ -221,7 +221,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param boolean whether the background of the token image should be variated during postbacks.
+	 * @param boolean $value whether the background of the token image should be variated during postbacks.
 	 */
 	public function setChangingTokenBackground($value)
 	{
@@ -237,7 +237,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer how many times a generated token can be tested. For unlimited tests, set it to 0.
+	 * @param integer $value how many times a generated token can be tested. For unlimited tests, set it to 0.
 	 */
 	public function setTestLimit($value)
 	{
@@ -269,7 +269,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param string the public key used for generating the token. A random one will be generated if this is not set.
+	 * @param string $value the public key used for generating the token. A random one will be generated if this is not set.
 	 */
 	public function setPublicKey($value)
 	{
@@ -359,7 +359,7 @@ class TCaptcha extends TImage
 
 	/**
 	 * Configures the image URL that shows the token.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{

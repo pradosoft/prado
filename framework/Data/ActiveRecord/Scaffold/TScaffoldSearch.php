@@ -57,7 +57,7 @@ class TScaffoldSearch extends TScaffoldBase
 	}
 
 	/**
-	 * @param string ID of the TScaffoldListView this search control belongs to.
+	 * @param string $value ID of the TScaffoldListView this search control belongs to.
 	 */
 	public function setListViewID($value)
 	{
@@ -124,7 +124,7 @@ class TScaffoldSearch extends TScaffoldBase
 	}
 
 	/**
-	 * @param string comma delimited list of fields that may be searched.
+	 * @param string $value comma delimited list of fields that may be searched.
 	 */
 	public function setSearchableFields($value)
 	{

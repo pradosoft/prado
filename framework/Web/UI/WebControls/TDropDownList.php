@@ -48,7 +48,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -143,7 +143,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{

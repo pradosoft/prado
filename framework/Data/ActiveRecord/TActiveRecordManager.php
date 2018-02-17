@@ -67,7 +67,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param ICache application cache
+	 * @param ICache $value application cache
 	 */
 	public function setCache($value)
 	{
@@ -75,7 +75,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection default database connection
+	 * @param TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{

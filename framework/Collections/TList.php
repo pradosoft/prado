@@ -81,7 +81,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @param boolean whether this list is read-only or not
+	 * @param boolean $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -391,7 +391,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Unsets the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to unset item
+	 * @param integer $offset the offset to unset item
 	 */
 	public function offsetUnset($offset)
 	{

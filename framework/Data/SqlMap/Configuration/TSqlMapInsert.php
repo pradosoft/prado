@@ -35,7 +35,7 @@ class TSqlMapInsert extends TSqlMapStatement
 	}
 
 	/**
-	 * @param TSqlMapSelectKey select key.
+	 * @param TSqlMapSelectKey $value select key.
 	 */
 	public function setSelectKey($value)
 	{

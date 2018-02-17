@@ -68,7 +68,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
 	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -89,7 +89,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
 	 * Valid values include 'NotSet','Top','Bottom','Middle'
-	 * @param string the horizontal alignment
+	 * @param string $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
@@ -106,7 +106,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the columnspan for the table cell.
-	 * @param integer the columnspan for the table cell, 0 if not set.
+	 * @param integer $value the columnspan for the table cell, 0 if not set.
 	 */
 	public function setColumnSpan($value)
 	{
@@ -123,7 +123,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the rowspan for the table cell.
-	 * @param integer the rowspan for the table cell, 0 if not set.
+	 * @param integer $value the rowspan for the table cell, 0 if not set.
 	 */
 	public function setRowSpan($value)
 	{
@@ -143,7 +143,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the value indicating whether the text content wraps within a table cell.
-	 * @param boolean whether the text content wraps within a table cell.
+	 * @param boolean $value whether the text content wraps within a table cell.
 	 */
 	public function setWrap($value)
 	{
@@ -161,7 +161,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Sets the text content of the table cell.
 	 * If the text content is empty, body content (child controls) of the cell will be rendered.
-	 * @param string the text content
+	 * @param string $value the text content
 	 */
 	public function setText($value)
 	{
@@ -196,7 +196,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -209,7 +209,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Renders body contents of the table cell.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

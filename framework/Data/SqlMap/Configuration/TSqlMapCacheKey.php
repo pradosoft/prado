@@ -25,7 +25,7 @@ class TSqlMapCacheKey
 	private $_key;
 
 	/**
-	 * @param mixed object to be cached.
+	 * @param mixed $object object to be cached.
 	 */
 	public function __construct($object)
 	{

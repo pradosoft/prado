@@ -52,7 +52,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    * In addition, the render method of all connected pagers is called so they
    * get updated when the data source is changed. Also the repeater registers
    * itself for rendering in order to get it's content replaced on client side.
-   * @param Traversable|array|string data source object
+   * @param Traversable|array|string $value data source object
    */
   public function setDataSource($value)
   {
@@ -76,7 +76,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
    * Renders the repeater.
    * If the repeater did not pass the prerender phase yet, it will register itself for rendering later.
    * Else it will call the {@link renderRepeater()} method which will do the rendering of the repeater.
-   * @param THtmlWriter writer for the rendering purpose
+   * @param THtmlWriter $writer writer for the rendering purpose
    */
   public function render($writer)
   {
@@ -109,7 +109,7 @@ class TActiveDataList extends TDataList implements IActiveControl {
   /**
    * Renders the repeater by writing a span tag with the container id obtained from {@link getContainerID()}
    * which will be called by the replacement method of the client script to update it's content.
-   * @param THtmlWriter writer for the rendering purpose
+   * @param THtmlWriter $writer writer for the rendering purpose
    */
   private function renderDataList($writer)
   {

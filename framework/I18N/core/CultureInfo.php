@@ -231,7 +231,7 @@ class CultureInfo
 	/**
 	 * Set the culture for the current instance. The culture indentifier
 	 * must be of the form "<language>_(country/region)".
-	 * @param string culture identifier, e.g. "fr_FR_EURO".
+	 * @param string $culture culture identifier, e.g. "fr_FR_EURO".
 	 */
 	protected function setCulture($culture)
 	{
@@ -246,7 +246,7 @@ class CultureInfo
 
 	/**
 	 * Load the ICU culture data for the specific culture identifier.
-	 * @param string the culture identifier.
+	 * @param string $culture the culture identifier.
 	 */
 	protected function loadCultureData($culture)
 	{
@@ -389,7 +389,7 @@ class CultureInfo
 
 	/**
 	 * Set the date time format information.
-	 * @param DateTimeFormatInfo the new date time format info.
+	 * @param DateTimeFormatInfo $dateTimeFormat the new date time format info.
 	 */
 	public function setDateTimeFormat($dateTimeFormat)
 	{
@@ -496,7 +496,7 @@ class CultureInfo
 
 	/**
 	 * Set the number format information.
-	 * @param NumberFormatInfo the new number format info.
+	 * @param NumberFormatInfo $numberFormat the new number format info.
 	 */
 	public function setNumberFormat($numberFormat)
 	{

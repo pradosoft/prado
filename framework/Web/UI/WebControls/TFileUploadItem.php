@@ -90,7 +90,7 @@ class TFileUploadItem extends \Prado\TComponent
   }
 
   /**
-   * @param string the local name of the file (where it is after being uploaded).
+   * @param string $value the local name of the file (where it is after being uploaded).
    */
   public function setLocalName($value)
   {

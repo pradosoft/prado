@@ -174,7 +174,7 @@ class TGettext
 	 * @static
 	 * @access  public
 	 * @return  array
-	 * @param   string  $meta
+	 * @param   string $meta  $meta
 	 */
 	public static function meta2array($meta)
 	{
@@ -240,7 +240,7 @@ class TGettext
 	 * @see     toArray()
 	 * @access  protected
 	 * @return  bool
-	 * @param   array       $array
+	 * @param   array $array  $array
 	 */
 	public function fromArray($array)
 	{

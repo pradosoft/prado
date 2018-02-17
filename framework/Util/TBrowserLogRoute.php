@@ -56,7 +56,7 @@ class TBrowserLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string the css class of the control
+	 * @param string $value the css class of the control
 	 */
 	public function setCssClass($value)
 	{

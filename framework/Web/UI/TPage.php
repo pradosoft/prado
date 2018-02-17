@@ -189,7 +189,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Runs through the page lifecycles.
-	 * @param THtmlTextWriter the HTML writer
+	 * @param THtmlTextWriter $writer the HTML writer
 	 */
 	public function run($writer)
 	{
@@ -392,7 +392,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Set a new callback client handler.
-	 * @param TCallbackClientScript new callback client script handler.
+	 * @param TCallbackClientScript $client new callback client script handler.
 	 */
 	public function setCallbackClient($client)
 	{
@@ -427,7 +427,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param mixed callback event parameter
+	 * @param mixed $value callback event parameter
 	 */
 	public function setCallbackEventParameter($value)
 	{
@@ -482,7 +482,7 @@ class TPage extends TTemplateControl
 	 * Performs input validation.
 	 * This method will invoke the registered validators to perform the actual validation.
 	 * If validation group is specified, only the validators in that group will be invoked.
-	 * @param string validation group. If null, all validators will perform validation.
+	 * @param string $validationGroup = null validation group. If null, all validators will perform validation.
 	 */
 	public function validate($validationGroup = null)
 	{
@@ -540,7 +540,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets the theme to be used for the page.
-	 * @param string|TTheme the theme name or the theme object to be used for the page.
+	 * @param string|TTheme $value the theme name or the theme object to be used for the page.
 	 */
 	public function setTheme($value)
 	{
@@ -560,7 +560,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets the stylesheet theme to be used for the page.
-	 * @param string|TTheme the stylesheet theme name or the stylesheet theme object to be used for the page.
+	 * @param string|TTheme $value the stylesheet theme name or the stylesheet theme object to be used for the page.
 	 */
 	public function setStyleSheetTheme($value)
 	{
@@ -570,7 +570,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl a control to be applied skin with
+	 * @param TControl $control a control to be applied skin with
 	 */
 	public function applyControlSkin($control)
 	{
@@ -581,7 +581,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a stylesheet skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl a control to be applied stylesheet skin with
+	 * @param TControl $control a control to be applied stylesheet skin with
 	 */
 	public function applyControlStyleSheet($control)
 	{
@@ -612,7 +612,7 @@ class TPage extends TTemplateControl
 	 * should be done before {@link onInit OnInit} (e.g. setting {@link setTheme Theme} or
 	 * {@link setStyleSheetTheme StyleSheetTheme}).
 	 * Remember to call the parent implementation to ensure OnPreInit event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreInit($param)
 	{
@@ -625,7 +625,7 @@ class TPage extends TTemplateControl
 	 * You may override this method to provide additional initialization that
 	 * should be done after {@link onInit OnInit}.
 	 * Remember to call the parent implementation to ensure OnInitComplete event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInitComplete($param)
 	{
@@ -638,7 +638,7 @@ class TPage extends TTemplateControl
 	 * You may override this method to provide additional page loading logic that
 	 * should be done before {@link onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure OnPreLoad event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreLoad($param)
 	{
@@ -651,7 +651,7 @@ class TPage extends TTemplateControl
 	 * You may override this method to provide additional page loading logic that
 	 * should be done after {@link onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure OnLoadComplete event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onLoadComplete($param)
 	{
@@ -664,7 +664,7 @@ class TPage extends TTemplateControl
 	 * You may override this method to provide additional preparation for page rendering
 	 * that should be done after {@link onPreRender OnPreRender}.
 	 * Remember to call the parent implementation to ensure OnPreRenderComplete event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRenderComplete($param)
 	{
@@ -713,7 +713,7 @@ class TPage extends TTemplateControl
 	 * This method is invoked right after {@link onSaveState OnSaveState} stage.
 	 * You may override this method to provide additional logic after page state is saved.
 	 * Remember to call the parent implementation to ensure OnSaveStateComplete event is raised.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onSaveStateComplete($param)
 	{
@@ -803,7 +803,7 @@ class TPage extends TTemplateControl
 	 * This method needs to be invoked if the control to load post data
 	 * may not have a post variable in some cases. For example, a checkbox,
 	 * if not checked, will not have a post value.
-	 * @param TControl control registered for loading post data
+	 * @param TControl $control control registered for loading post data
 	 */
 	public function registerRequiresPostData($control)
 	{
@@ -851,7 +851,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param string postback event parameter
+	 * @param string $value postback event parameter
 	 */
 	public function setPostBackEventParameter($value)
 	{
@@ -986,7 +986,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets input focus on a control after the page is rendered to users.
-	 * @param TControl|string control to receive focus, or the ID of the element on the page to receive focus
+	 * @param TControl|string $value control to receive focus, or the ID of the element on the page to receive focus
 	 */
 	public function setFocus($value)
 	{
@@ -1002,7 +1002,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean whether client supports javascript. If false, javascript will not be generated for controls.
+	 * @param boolean $value whether client supports javascript. If false, javascript will not be generated for controls.
 	 */
 	public function setClientSupportsJavaScript($value)
 	{
@@ -1048,7 +1048,7 @@ class TPage extends TTemplateControl
 	 * Sets the page title.
 	 * Note, a {@link THead} control needs to place on the page
 	 * in order that this title be rendered.
-	 * @param string page title. This will override the title set in {@link getHead Head}.
+	 * @param string $value page title. This will override the title set in {@link getHead Head}.
 	 */
 	public function setTitle($value)
 	{
@@ -1071,7 +1071,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Sets the state to be stored on the client side.
 	 * This method should only be used by framework and control developers.
-	 * @param string the state to be stored on the client side
+	 * @param string $state the state to be stored on the client side
 	 */
 	public function setClientState($state)
 	{
@@ -1095,7 +1095,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param string class name of the page state persister.
+	 * @param string $value class name of the page state persister.
 	 */
 	public function setStatePersisterClass($value)
 	{
@@ -1126,7 +1126,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean whether page state should be HMAC validated.
+	 * @param boolean $value whether page state should be HMAC validated.
 	 */
 	public function setEnableStateValidation($value)
 	{
@@ -1142,7 +1142,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean whether page state should be encrypted.
+	 * @param boolean $value whether page state should be encrypted.
 	 */
 	public function setEnableStateEncryption($value)
 	{
@@ -1176,7 +1176,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param string the requested page path for this page
+	 * @param string $value the requested page path for this page
 	 */
 	public function setPagePath($value)
 	{

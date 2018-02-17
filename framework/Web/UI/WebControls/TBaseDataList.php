@@ -62,7 +62,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param integer the cellspacing for the table layout.
+	 * @param integer $value the cellspacing for the table layout.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -81,7 +81,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param integer the cellpadding for the table layout
+	 * @param integer $value the cellpadding for the table layout
 	 */
 	public function setCellPadding($value)
 	{
@@ -100,7 +100,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param THorizontalAlign the horizontal alignment of the table content.
+	 * @param THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -120,7 +120,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * Sets the grid line style of the table layout.
-	 * @param TTableGridLines the grid line setting of the table
+	 * @param TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -137,7 +137,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param string the field of the data source that provides the keys of the list items.
+	 * @param string $value the field of the data source that provides the keys of the list items.
 	 */
 	public function setDataKeyField($value)
 	{
@@ -177,7 +177,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * Raises OnSelectedIndexChanged event.
 	 * This method is invoked when a different item is selected
 	 * in a data listing control between posts to the server.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{

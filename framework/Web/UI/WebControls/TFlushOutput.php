@@ -61,7 +61,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean sets whether buffering of output can continue after this point
+	 * @param boolean $value sets whether buffering of output can continue after this point
 	 */
 	public function setContinueBuffering($value)
 	{
@@ -70,7 +70,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 
 	/**
 	 * Flushes the output of all completely rendered controls to the client.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{

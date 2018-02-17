@@ -108,7 +108,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param TTextAlign the text alignment of the checkboxes
+	 * @param TTextAlign $value the text alignment of the checkboxes
 	 */
 	public function setTextAlign($value)
 	{
@@ -138,7 +138,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param integer the number of columns that the list should be displayed with.
+	 * @param integer $value the number of columns that the list should be displayed with.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -154,7 +154,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param string the direction (Vertical, Horizontal) of traversing the list
+	 * @param string $value the direction (Vertical, Horizontal) of traversing the list
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -170,7 +170,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param string how the list should be displayed, using table or using line breaks (Table, Flow)
+	 * @param string $value how the list should be displayed, using table or using line breaks (Table, Flow)
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -190,7 +190,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Sets the cellspacing for the table keeping the checkbox list.
-	 * @param integer the cellspacing for the table keeping the checkbox list.
+	 * @param integer $value the cellspacing for the table keeping the checkbox list.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -210,7 +210,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Sets the cellpadding for the table keeping the checkbox list.
-	 * @param integer the cellpadding for the table keeping the checkbox list.
+	 * @param integer $value the cellpadding for the table keeping the checkbox list.
 	 */
 	public function setCellPadding($value)
 	{
@@ -248,7 +248,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param boolean whether the control is to be enabled.
+	 * @param boolean $value whether the control is to be enabled.
 	 */
 	public function setEnabled($value)
 	{
@@ -360,7 +360,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Registers for post data on postback.
 	 * This method overrides the parent implementation.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -390,7 +390,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter writer for rendering purpose.
+	 * @param THtmlWriter $writer writer for rendering purpose.
 	 */
 	public function render($writer)
 	{
@@ -458,7 +458,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{

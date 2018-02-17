@@ -68,7 +68,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Configure an XML mapping.
-	 * @param string xml mapping filename.
+	 * @param string $filename xml mapping filename.
 	 */
 	public function configure($filename)
 	{
@@ -117,7 +117,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the result maps.
-	 * @param SimpleXmlElement result map node.
+	 * @param SimpleXmlElement $node result map node.
 	 */
 	protected function loadResultMap($node)
 	{
@@ -193,7 +193,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load parameter map from xml.
 	 *
-	 * @param SimpleXmlElement parameter map node.
+	 * @param SimpleXmlElement $node parameter map node.
 	 */
 	protected function loadParameterMap($node)
 	{
@@ -239,7 +239,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load statement mapping from xml configuration file.
-	 * @param SimpleXmlElement statement node.
+	 * @param SimpleXmlElement $node statement node.
 	 */
 	protected function loadStatementTag($node)
 	{
@@ -332,7 +332,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load select statement from xml mapping.
-	 * @param SimpleXmlElement select node.
+	 * @param SimpleXmlElement $node select node.
 	 */
 	protected function loadSelectTag($node)
 	{
@@ -348,7 +348,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load insert statement from xml mapping.
-	 * @param SimpleXmlElement insert node.
+	 * @param SimpleXmlElement $node insert node.
 	 */
 	protected function loadInsertTag($node)
 	{
@@ -390,7 +390,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load update statement from xml mapping.
-	 * @param SimpleXmlElement update node.
+	 * @param SimpleXmlElement $node update node.
 	 */
 	protected function loadUpdateTag($node)
 	{
@@ -403,7 +403,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load delete statement from xml mapping.
-	 * @param SimpleXmlElement delete node.
+	 * @param SimpleXmlElement $node delete node.
 	 */
 	protected function loadDeleteTag($node)
 	{
@@ -417,7 +417,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load procedure statement from xml mapping.
 	 * @todo Implement loading procedure
-	 * @param SimpleXmlElement procedure node
+	 * @param SimpleXmlElement $node procedure node
 	 */
 	protected function loadProcedureTag($node)
 	{
@@ -426,7 +426,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load cache models from xml mapping.
-	 * @param SimpleXmlElement cache node.
+	 * @param SimpleXmlElement $node cache node.
 	 */
 	protected function loadCacheModel($node)
 	{

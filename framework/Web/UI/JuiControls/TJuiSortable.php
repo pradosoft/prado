@@ -136,7 +136,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -266,7 +266,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	private $_repeater;
 
 	/**
-	 * @param array data source for Sortables.
+	 * @param array $data data source for Sortables.
 	 */
 	public function setDataSource($data)
 	{

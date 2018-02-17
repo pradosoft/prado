@@ -111,7 +111,7 @@ class TBoundColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the column
+	 * @param string $value the field name from the data source to bind to the column
 	 */
 	public function setDataField($value)
 	{
@@ -127,7 +127,7 @@ class TBoundColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
+	 * @param string $value the formatting string used to control how the bound data will be displayed.
 	 */
 	public function setDataFormatString($value)
 	{
@@ -143,7 +143,7 @@ class TBoundColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{

@@ -88,7 +88,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Raises <b>OnCheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCheckedChanged($param)
 	{
@@ -101,7 +101,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * does not have direct mapping between post data and the checkbox name.
 	 *
 	 * This method overrides the parent implementation and is invoked before render.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -139,7 +139,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -156,7 +156,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets the text caption of the checkbox.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
@@ -172,7 +172,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string the value of the checkbox
+	 * @param string $value the value of the checkbox
 	 */
 	public function setValue($value)
 	{
@@ -188,7 +188,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param TTextAlign the alignment of the text caption. Valid values include Left and Right.
+	 * @param TTextAlign $value the alignment of the text caption. Valid values include Left and Right.
 	 */
 	public function setTextAlign($value)
 	{
@@ -205,7 +205,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets a value indicating whether the checkbox is to be checked or not.
-	 * @param boolean whether the checkbox is to be checked or not.
+	 * @param boolean $value whether the checkbox is to be checked or not.
 	 */
 	public function setChecked($value)
 	{
@@ -248,7 +248,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets a value indicating whether clicking on the checkbox will post the page.
-	 * @param boolean whether clicking on the checkbox will post the page.
+	 * @param boolean $value whether clicking on the checkbox will post the page.
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -265,7 +265,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets the value indicating whether postback event trigger by this checkbox will cause input validation.
-	 * @param boolean whether postback event trigger by this checkbox will cause input validation.
+	 * @param boolean $value whether postback event trigger by this checkbox will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -281,7 +281,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string the group of validators which the checkbox causes validation upon postback
+	 * @param string $value the group of validators which the checkbox causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
@@ -308,7 +308,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Renders the checkbox control.
 	 * This method overrides the parent implementation by rendering a checkbox input element
 	 * and a span element if needed.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -414,7 +414,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{

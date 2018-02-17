@@ -83,7 +83,7 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Registers the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -94,7 +94,7 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Unregisters the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUnLoad($param)
 	{
@@ -235,7 +235,7 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{

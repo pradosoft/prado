@@ -41,7 +41,7 @@ class TWizardStep extends TView
 	/**
 	 * Sets the wizard owning this step.
 	 * This method is used internally by {@link TWizard}.
-	 * @param TWizard the wizard owning this step
+	 * @param TWizard $wizard the wizard owning this step
 	 */
 	public function setWizard($wizard)
 	{
@@ -57,7 +57,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param string the title for this step.
+	 * @param string $value the title for this step.
 	 */
 	public function setTitle($value)
 	{
@@ -75,7 +75,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param boolean whether this step can be re-visited.
+	 * @param boolean $value whether this step can be re-visited.
 	 */
 	public function setAllowReturn($value)
 	{
@@ -91,7 +91,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param TWizardStepType the wizard step type.
+	 * @param TWizardStepType $type the wizard step type.
 	 */
 	public function setStepType($type)
 	{

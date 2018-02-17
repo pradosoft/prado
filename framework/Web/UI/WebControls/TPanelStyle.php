@@ -68,7 +68,7 @@ class TPanelStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -110,7 +110,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the URL of the background image for the panel component.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -126,7 +126,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TContentDirection alignment of the content in the panel.
+	 * @param TContentDirection $value alignment of the content in the panel.
 	 */
 	public function setDirection($value)
 	{
@@ -143,7 +143,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{
@@ -160,7 +160,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-	 * @param THorizontalAlign the horizontal alignment
+	 * @param THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -176,7 +176,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TScrollBars the visibility and position of scroll bars in a panel control.
+	 * @param TScrollBars $value the visibility and position of scroll bars in a panel control.
 	 */
 	public function setScrollBars($value)
 	{
@@ -202,7 +202,7 @@ class TPanelStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -226,7 +226,7 @@ class TPanelStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{

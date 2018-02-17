@@ -34,7 +34,7 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl DataList item related with the corresponding event
+	 * @param TControl $item DataList item related with the corresponding event
 	 */
 	public function __construct($item)
 	{

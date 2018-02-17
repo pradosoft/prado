@@ -103,7 +103,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string text to be displayed in the header of this column
+	 * @param string $value text to be displayed in the header of this column
 	 */
 	public function setHeaderText($value)
 	{
@@ -119,7 +119,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the url of the image to be displayed in header
+	 * @param string $value the url of the image to be displayed in header
 	 */
 	public function setHeaderImageUrl($value)
 	{
@@ -173,7 +173,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string text to be displayed in the footer of this column
+	 * @param string $value text to be displayed in the footer of this column
 	 */
 	public function setFooterText($value)
 	{
@@ -241,7 +241,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the name of the field or expression for sorting
+	 * @param string $value the name of the field or expression for sorting
 	 */
 	public function setSortExpression($value)
 	{
@@ -275,7 +275,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether the column is visible
+	 * @param boolean $value whether the column is visible
 	 */
 	public function setVisible($value)
 	{
@@ -312,7 +312,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * Loads persistent state values.
-	 * @param mixed state values
+	 * @param mixed $state state values
 	 */
 	public function loadState($state)
 	{

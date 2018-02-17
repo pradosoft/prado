@@ -59,7 +59,7 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Gets the containing result map ID.
-	 * @param TResultMap containing result map.
+	 * @param TResultMap $resultMap = null containing result map.
 	 */
 	public function __construct($resultMap = null)
 	{
@@ -76,7 +76,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed null value replacement.
+	 * @param mixed $value null value replacement.
 	 */
 	public function setNullValue($value)
 	{
@@ -92,7 +92,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of a property of the result object that will be set to.
+	 * @param string $value name of a property of the result object that will be set to.
 	 */
 	public function setProperty($value)
 	{
@@ -144,7 +144,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string ID of another <resultMap> used to fill the property.
+	 * @param string $value ID of another <resultMap> used to fill the property.
 	 */
 	public function setResultMapping($value)
 	{
@@ -160,7 +160,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TResult nested result map.
+	 * @param TResult $value nested result map.
 	 */
 	public function setNestedResultMap($value)
 	{
@@ -176,7 +176,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string property type of the object property to be set.
+	 * @param string $value property type of the object property to be set.
 	 */
 	public function setType($value)
 	{
@@ -192,7 +192,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string custom type handler class name (may use namespace).
+	 * @param string $value custom type handler class name (may use namespace).
 	 */
 	public function setTypeHandler($value)
 	{
@@ -210,7 +210,7 @@ class TResultProperty extends \Prado\TComponent
 	/**
 	 * The select property is used to describe a relationship between objects
 	 * and to automatically load complex (i.e. user defined) property types.
-	 * @param string name of another mapped statement.
+	 * @param string $value name of another mapped statement.
 	 */
 	public function setSelect($value)
 	{
@@ -226,7 +226,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean indicate whether or not the select statement's results should be lazy loaded
+	 * @param boolean $value indicate whether or not the select statement's results should be lazy loaded
 	 */
 	public function setLazyLoad($value)
 	{

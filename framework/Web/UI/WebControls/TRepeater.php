@@ -432,7 +432,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param string the field of the data source that provides the keys of the list items.
+	 * @param string $value the field of the data source that provides the keys of the list items.
 	 */
 	public function setDataKeyField($value)
 	{
@@ -572,7 +572,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Renders the repeater.
 	 * This method overrides the parent implementation by rendering the body
 	 * content as the whole presentation of the repeater. Outer tag is not rendered.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -645,7 +645,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Performs databinding to populate repeater items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the data
+	 * @param Traversable $data the data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -710,7 +710,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TRepeaterItemEventParameter event parameter
+	 * @param TRepeaterItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
@@ -724,7 +724,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TRepeaterItemEventParameter event parameter
+	 * @param TRepeaterItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
@@ -743,7 +743,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * You may override this method to provide customized event handling.
 	 * Be sure to call parent's implementation so that
 	 * event handlers have chance to respond to the event.
-	 * @param TRepeaterCommandEventParameter event parameter
+	 * @param TRepeaterCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{

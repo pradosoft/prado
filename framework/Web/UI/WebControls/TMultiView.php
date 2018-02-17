@@ -192,7 +192,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Initializes the active view if any.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -204,7 +204,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Raises <b>OnActiveViewChanged</b> event.
 	 * The event is raised when the currently active view is changed to a new one
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onActiveViewChanged($param)
 	{
@@ -265,7 +265,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the currently active view.
-	 * @param THtmlWriter the writer for the rendering purpose.
+	 * @param THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function render($writer)
 	{

@@ -64,7 +64,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string caption of the table layout
+	 * @param string $value caption of the table layout
 	 */
 	public function setCaption($value)
 	{
@@ -96,7 +96,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer the number of columns that the repeated items should be displayed in.
+	 * @param integer $value the number of columns that the repeated items should be displayed in.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -114,7 +114,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatDirection the direction of traversing the repeated items
+	 * @param TRepeatDirection $value the direction of traversing the repeated items
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -130,7 +130,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatLayout how the repeated items should be displayed, using table or using line breaks.
+	 * @param TRepeatLayout $value how the repeated items should be displayed, using table or using line breaks.
 	 */
 	public function setRepeatLayout($value)
 	{

@@ -78,7 +78,7 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Specifies the SQL statement to be executed.
 	 * Any previous execution will be terminated or cancel.
-	 * @param string the SQL statement to be executed
+	 * @param string $value the SQL statement to be executed
 	 */
 	public function setText($value)
 	{

@@ -39,7 +39,7 @@ class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param string cache key to be appended to the default calculation scheme
+	 * @param string $value cache key to be appended to the default calculation scheme
 	 */
 	public function setCacheKey($value)
 	{

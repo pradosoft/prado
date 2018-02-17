@@ -151,7 +151,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param TXmlElement service configuration
+	 * @param TXmlElement $config service configuration
 	 */
 	public function init($config)
 	{
@@ -182,7 +182,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Applies a page configuration.
-	 * @param TPageConfiguration the configuration
+	 * @param TPageConfiguration $config the configuration
 	 */
 	protected function applyConfiguration($config)
 	{
@@ -430,7 +430,7 @@ class TPageService extends \Prado\TService
 	 * Sets the base page class name (in namespace format).
 	 * If a page only has a template file without page class file,
 	 * this base page class will be instantiated.
-	 * @param string class name
+	 * @param string $value class name
 	 */
 	public function setBasePageClass($value)
 	{

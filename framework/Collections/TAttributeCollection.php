@@ -91,7 +91,7 @@ class TAttributeCollection extends TMap
 	}
 
 	/**
-	 * @param boolean whether the keys are case-sensitive.
+	 * @param boolean $value whether the keys are case-sensitive.
 	 */
 	public function setCaseSensitive($value)
 	{

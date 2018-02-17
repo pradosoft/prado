@@ -53,7 +53,7 @@ class TCallbackResponseWriter extends TTextWriter
 	}
 
 	/**
-	 * @param string boundary identifier.
+	 * @param string $value boundary identifier.
 	 */
 	public function setBoundary($value)
 	{

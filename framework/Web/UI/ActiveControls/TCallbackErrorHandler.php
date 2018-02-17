@@ -36,7 +36,7 @@ class TCallbackErrorHandler extends TErrorHandler
 	/**
 	 * Displays the exceptions to the client-side TJavascriptLogger.
 	 * A HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
-	 * @param Exception exception details.
+	 * @param Exception $exception exception details.
 	 */
 	protected function displayException($exception)
 	{

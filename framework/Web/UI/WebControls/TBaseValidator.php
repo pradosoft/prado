@@ -109,7 +109,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Registers the validator with page.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -120,7 +120,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Unregisters the validator from page.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onUnload($param)
 	{
@@ -133,7 +133,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Adds attributes to renderer. Calls parent implementation and renders the
 	 * client control scripts.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -232,7 +232,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Renders the javascript code to the end script.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	public function renderClientControlScript($writer)
 	{
@@ -317,7 +317,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * This method overrides parent's implementation by setting {@link setIsValid IsValid} to true if disabled.
-	 * @param boolean whether the validator is enabled.
+	 * @param boolean $value whether the validator is enabled.
 	 */
 	public function setEnabled($value)
 	{
@@ -336,7 +336,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param TValidatorDisplayStyle the style of displaying the error message
+	 * @param TValidatorDisplayStyle $value the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{
@@ -352,7 +352,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param boolean whether client-side validation is enabled.
+	 * @param boolean $value whether client-side validation is enabled.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -369,7 +369,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Sets the text for the error message.
-	 * @param string the error message
+	 * @param string $value the error message
 	 */
 	public function setErrorMessage($value)
 	{
@@ -388,7 +388,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Sets the ID path of the input control to validate.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the validator's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setControlToValidate($value)
 	{
@@ -404,7 +404,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param boolean whether to set focus at the validating place if the validation fails
+	 * @param boolean $value whether to set focus at the validating place if the validation fails
 	 */
 	public function setFocusOnError($value)
 	{
@@ -436,7 +436,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Sets the ID of the HTML element that will receive focus if validation fails and {@link getFocusOnError FocusOnError} is true.
-	 * @param string the ID of the HTML element to receive focus
+	 * @param string $value the ID of the HTML element to receive focus
 	 */
 	public function setFocusElementID($value)
 	{
@@ -452,7 +452,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param string the group which this validator belongs to
+	 * @param string $value the group which this validator belongs to
 	 */
 	public function setValidationGroup($value)
 	{
@@ -469,7 +469,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Sets the value indicating whether the validation succeeds
-	 * @param boolean whether the validation succeeds
+	 * @param boolean $value whether the validation succeeds
 	 */
 	public function setIsValid($value)
 	{
@@ -553,7 +553,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param string the css class that is applied to the control being validated in case the validation fails
+	 * @param string $value the css class that is applied to the control being validated in case the validation fails
 	 */
 	public function setControlCssClass($value)
 	{
@@ -596,7 +596,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Renders the validator control.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

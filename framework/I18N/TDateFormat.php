@@ -82,7 +82,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Sets the date time formatting pattern.
-	 * @param string format pattern.
+	 * @param string $value format pattern.
 	 */
 	public function setPattern($value)
 	{
@@ -160,7 +160,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the date-time value for this control.
-	 * @param string the date-time value.
+	 * @param string $value the date-time value.
 	 */
 	public function setValue($value)
 	{
@@ -178,7 +178,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the default text value for this control.
-	 * @param string default text value
+	 * @param string $value default text value
 	 */
 	public function setDefaultText($value)
 	{

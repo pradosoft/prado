@@ -139,7 +139,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Adds an object to the end of the queue.
-	 * @param mixed the item to be appended into the queue
+	 * @param mixed $item the item to be appended into the queue
 	 */
 	public function enqueue($item)
 	{

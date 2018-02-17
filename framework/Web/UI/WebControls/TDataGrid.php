@@ -220,7 +220,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Adds objects parsed in template to datagrid.
 	 * Datagrid columns are added into {@link getColumns Columns} collection.
-	 * @param mixed object parsed in template
+	 * @param mixed $object object parsed in template
 	 */
 	public function addParsedObject($object)
 	{
@@ -287,7 +287,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param string the URL of the background image for the datagrid
+	 * @param string $value the URL of the background image for the datagrid
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -436,7 +436,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param string caption for the datagrid
+	 * @param string $value caption for the datagrid
 	 */
 	public function setCaption($value)
 	{
@@ -452,7 +452,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param TTableCaptionAlign datagrid caption alignment. Valid values include
+	 * @param TTableCaptionAlign $value datagrid caption alignment. Valid values include
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -518,7 +518,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
-	 * @param integer the selected item index
+	 * @param integer $value the selected item index
 	 */
 	public function setSelectedItemIndex($value)
 	{
@@ -570,7 +570,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Edits an item by its index in {@link getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
-	 * @param integer the edit item index
+	 * @param integer $value the edit item index
 	 */
 	public function setEditItemIndex($value)
 	{
@@ -597,7 +597,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean whether sorting is enabled
+	 * @param boolean $value whether sorting is enabled
 	 */
 	public function setAllowSorting($value)
 	{
@@ -613,7 +613,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean whether datagrid columns should be automatically generated
+	 * @param boolean $value whether datagrid columns should be automatically generated
 	 */
 	public function setAutoGenerateColumns($value)
 	{
@@ -629,7 +629,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean whether the header should be displayed
+	 * @param boolean $value whether the header should be displayed
 	 */
 	public function setShowHeader($value)
 	{
@@ -645,7 +645,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean whether the footer should be displayed
+	 * @param boolean $value whether the footer should be displayed
 	 */
 	public function setShowFooter($value)
 	{
@@ -746,7 +746,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>cancel</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onCancelCommand($param)
 	{
@@ -757,7 +757,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>delete</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onDeleteCommand($param)
 	{
@@ -768,7 +768,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>edit</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onEditCommand($param)
 	{
@@ -778,7 +778,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{
@@ -789,7 +789,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnSortCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>sort</b> command name.
-	 * @param TDataGridSortCommandEventParameter event parameter
+	 * @param TDataGridSortCommandEventParameter $param event parameter
 	 */
 	public function onSortCommand($param)
 	{
@@ -800,7 +800,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>update</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onUpdateCommand($param)
 	{
@@ -811,7 +811,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked right after a datagrid item is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridItemEventParameter event parameter
+	 * @param TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
@@ -822,7 +822,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnPagerCreated</b> event.
 	 * This method is invoked right after a datagrid pager is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridPagerEventParameter event parameter
+	 * @param TDataGridPagerEventParameter $param event parameter
 	 */
 	public function onPagerCreated($param)
 	{
@@ -833,7 +833,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked for each datagrid item after it performs
 	 * databinding.
-	 * @param TDataGridItemEventParameter event parameter
+	 * @param TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
@@ -843,7 +843,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This method is invoked when current page is changed.
-	 * @param TDataGridPageChangedEventParameter event parameter
+	 * @param TDataGridPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
@@ -996,7 +996,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Performs databinding to populate datagrid items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the bound data
+	 * @param Traversable $data the bound data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -1196,7 +1196,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds the pager content based on pager style.
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildPager($pager)
 	{
@@ -1252,7 +1252,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a next-prev pager
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNextPrevPager($pager)
 	{
@@ -1311,7 +1311,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a numeric pager
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNumericPager($pager)
 	{
@@ -1563,7 +1563,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the openning tag for the datagrid control which will render table caption if present.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -1580,7 +1580,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the datagrid.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -1618,7 +1618,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the tabular data.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function renderTable($writer)
 	{

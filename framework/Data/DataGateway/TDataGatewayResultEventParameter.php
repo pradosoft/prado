@@ -48,7 +48,7 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed change the result returned by the gateway.
+	 * @param mixed $value change the result returned by the gateway.
 	 */
 	public function setResult($value)
 	{

@@ -61,7 +61,7 @@ class TActivePanel extends TPanel implements IActiveControl
 
 	/**
 	 * Adds attribute id to the renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer) {
 		$writer->addAttribute('id', $this->getClientID());
@@ -73,7 +73,7 @@ class TActivePanel extends TPanel implements IActiveControl
 	 * When render() is called before the OnPreRender event, such as when render()
 	 * is called during a callback event handler, the rendering
 	 * is defered until OnPreRender event is raised.
-	 * @param THtmlWriter html writer
+	 * @param THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

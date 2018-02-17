@@ -84,7 +84,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * In addition, the render method of all connected pagers is called so they
 	 * get updated when the data source is changed. Also the datagrid registers
 	 * itself for rendering in order to get it's content replaced on client side.
-	 * @param Traversable|array|string data source object
+	 * @param Traversable|array|string $value data source object
 	 */
 	public function setDataSource($value) {
 		parent::setDataSource($value);
@@ -170,7 +170,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderDataGrid()} method which will do the rendering of the datagrid.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer) {
 		if($this->getHasPreRendered()) {
@@ -201,7 +201,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid by writing a {@link getSurroundingTag()} with the container id obtained
 	 * from {@link getSurroundingTagId()} which will be called by the replacement method of the client
 	 * script to update it's content.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	private function renderDataGrid($writer) {
 	  $writer->addAttribute('id', $this->getSurroundingTagID());

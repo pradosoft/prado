@@ -39,7 +39,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param integer current step index
+	 * @param integer $currentStep current step index
 	 */
 	public function __construct($currentStep)
 	{
@@ -64,7 +64,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer the zero-based index of the next step.
+	 * @param integer $index the zero-based index of the next step.
 	 */
 	public function setNextStepIndex($index)
 	{
@@ -80,7 +80,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether navigation to the next step should be canceled.
+	 * @param boolean $value whether navigation to the next step should be canceled.
 	 */
 	public function setCancelNavigation($value)
 	{

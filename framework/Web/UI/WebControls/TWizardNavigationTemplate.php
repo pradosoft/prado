@@ -27,7 +27,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 
 	/**
 	 * Constructor.
-	 * @param TWizard the wizard owning this template
+	 * @param TWizard $wizard the wizard owning this template
 	 */
 	public function __construct($wizard)
 	{
@@ -45,7 +45,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	/**
 	 * Instantiates the template.
 	 * Derived classes should override this method.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

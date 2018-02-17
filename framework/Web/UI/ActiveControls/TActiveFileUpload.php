@@ -110,7 +110,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * This method is invoked when a file is uploaded.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onFileUpload($param)
 	{
@@ -201,7 +201,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 *
 	 * This method is required by {@link ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param){
 		$cp = $param->getCallbackParameter();
@@ -371,7 +371,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Adds ID attribute, and renders the javascript for active component.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer){
 		parent::addAttributesToRender($writer);

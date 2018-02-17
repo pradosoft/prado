@@ -44,7 +44,7 @@ abstract class TDataRenderer extends TTemplateControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param mixed $value data to be associated with the item
 	 */
 	public function setData($value)
 	{

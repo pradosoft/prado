@@ -79,7 +79,7 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 * it will invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onCallback OnCallback} event. This method is mainly
 	 * used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -93,7 +93,7 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{

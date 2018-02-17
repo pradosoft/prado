@@ -181,7 +181,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Filter function used by {@link getLogs}.
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByCategories($value)
 	{
@@ -196,7 +196,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByLevels($value)
 	{
@@ -209,7 +209,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByControl($value)
 	{
@@ -224,7 +224,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByTimeStamp($value)
 	{

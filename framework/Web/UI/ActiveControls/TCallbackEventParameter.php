@@ -71,7 +71,7 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed callback response data.
+	 * @param mixed $value callback response data.
 	 */
 	public function setResponseData($value)
 	{

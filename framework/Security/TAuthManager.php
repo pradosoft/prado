@@ -211,7 +211,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the name of the session variable storing return URL.
+	 * @param string $value the name of the session variable storing return URL.
 	 */
 	public function setReturnUrlVarName($value)
 	{
@@ -228,7 +228,7 @@ class TAuthManager extends \Prado\TModule
 
 	/**
 	 * Sets the URL that the browser should be redirected to when login succeeds.
-	 * @param string the URL to be redirected to.
+	 * @param string $value the URL to be redirected to.
 	 */
 	public function setReturnUrl($value)
 	{
@@ -326,7 +326,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Performs user logout on authentication expiration.
 	 * An 'OnAuthExpire' event will be raised if there is any handler attached to it.
-	 * @param mixed parameter to be passed to OnAuthExpire event.
+	 * @param mixed $param parameter to be passed to OnAuthExpire event.
 	 */
 	public function onAuthExpire($param)
 	{
@@ -340,7 +340,7 @@ class TAuthManager extends \Prado\TModule
 	 * Authorization rules obtained from the application will be used to check
 	 * if a user is allowed. If authorization fails, the response status code
 	 * will be set as 401 and the application terminates.
-	 * @param mixed parameter to be passed to OnAuthorize event
+	 * @param mixed $param parameter to be passed to OnAuthorize event
 	 */
 	public function onAuthorize($param)
 	{

@@ -71,7 +71,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param string username
+	 * @param string $value username
 	 */
 	public function setName($value)
 	{
@@ -87,7 +87,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param boolean if the user is a guest
+	 * @param boolean $value if the user is a guest
 	 */
 	public function setIsGuest($value)
 	{
@@ -209,7 +209,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param boolean whether user session state is changed
+	 * @param boolean $value whether user session state is changed
 	 */
 	public function setStateChanged($value)
 	{

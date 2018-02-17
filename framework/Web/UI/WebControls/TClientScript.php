@@ -62,7 +62,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 * libraries are: "prado", "effects", "ajax", "validator", "logger",
 	 * "datepicker", "colorpicker". Library dependencies are automatically resolved.
 	 *
-	 * @param string comma delimited list of javascript libraries to include.
+	 * @param string $value comma delimited list of javascript libraries to include.
 	 */
 	public function setPradoScripts($value)
 	{
@@ -78,7 +78,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string custom javascript file url.
+	 * @param string $value custom javascript file url.
 	 */
 	public function setScriptUrl($value)
 	{
@@ -94,7 +94,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param bool whether to flush script files using TClientScriptManager::flushScriptFiles() before rendering the script block
+	 * @param bool $value whether to flush script files using TClientScriptManager::flushScriptFiles() before rendering the script block
 	 */
 	public function setFlushScriptFiles($value)
 	{
@@ -104,7 +104,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	/**
 	 * Calls the client script manager to add each of the requested client
 	 * script libraries.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -122,7 +122,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 * Renders the body content as javascript block.
 	 * Overrides parent implementation, parent renderChildren method is called during
 	 * {@link registerCustomScript}.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	public function render($writer)
 	{
@@ -134,7 +134,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the custom script file.
-	 * @param THtmLWriter the renderer
+	 * @param THtmLWriter $writer the renderer
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
@@ -144,7 +144,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 
 	/**
 	 * Registers the body content as javascript.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function renderCustomScript($writer)
 	{

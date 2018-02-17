@@ -334,7 +334,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection db connection object for this record.
+	 * @param TDbConnection $connection db connection object for this record.
 	 */
 	public function setDbConnection($connection)
 	{
@@ -944,7 +944,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to insert its data into the database.
 	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInsert($param)
 	{
@@ -954,7 +954,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to delete its data from the database.
 	 * To prevent the delete operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onDelete($param)
 	{
@@ -964,7 +964,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to update its data in the database.
 	 * To prevent the update operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter event parameter to be passed to the event handlers
+	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUpdate($param)
 	{
@@ -1031,7 +1031,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		return isset(self::$_relations[get_class($this)][strtolower($property)]);
 	}
-	
+
 		/**
 		 * Return record data as array
 		 * @return array of column name and column values
@@ -1042,10 +1042,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 			foreach($this->getRecordTableInfo()->getLowerCaseColumnNames() as $columnName){
 					$result[$columnName] = $this->getColumnValue($columnName);
 			   }
-		
+
 			return $result;
 		}
-	
+
 		/**
 		 * Return record data as JSON
 		 * @return JSON

@@ -47,7 +47,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 * Client-side OnHideSummary validation summary event is raise when all the
 	 * validators are valid. This will override the default client-side
 	 * validation summary behaviour.
-	 * @param string javascript code for client-side OnHideSummary event.
+	 * @param string $javascript javascript code for client-side OnHideSummary event.
 	 */
 	public function setOnHideSummary($javascript)
 	{
@@ -58,7 +58,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 * Client-side OnShowSummary event is raise when one or more validators are
 	 * not valid. This will override the default client-side validation summary
 	 * behaviour.
-	 * @param string javascript code for client-side OnShowSummary event.
+	 * @param string $javascript javascript code for client-side OnShowSummary event.
 	 */
 	public function setOnShowSummary($javascript)
 	{

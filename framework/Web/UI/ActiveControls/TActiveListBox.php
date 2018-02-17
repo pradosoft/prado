@@ -85,7 +85,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * Sets the selection mode of the list control (Single, Multiple)
 	 * on the client-side if the  {@link setEnableUpdate EnableUpdate}
 	 * property is set to true.
-	 * @param string the selection mode
+	 * @param string $value the selection mode
 	 */
 	public function setSelectionMode($value)
 	{
@@ -107,7 +107,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -119,7 +119,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{

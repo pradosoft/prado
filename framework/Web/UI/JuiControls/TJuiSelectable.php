@@ -138,7 +138,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -214,7 +214,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	private $_repeater;
 
 	/**
-	 * @param array data source for Selectables.
+	 * @param array $data data source for Selectables.
 	 */
 	public function setDataSource($data)
 	{

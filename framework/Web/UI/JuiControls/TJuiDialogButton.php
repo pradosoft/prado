@@ -78,7 +78,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	}
 
 	/**
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
@@ -97,7 +97,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	/**
 	 * Raises callback event.
 	 * raises the appropriate event(s) (e.g. OnClick)
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{

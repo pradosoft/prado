@@ -71,7 +71,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Sets the minimum value of the validation range.
-	 * @param string the minimum value
+	 * @param string $value the minimum value
 	 */
 	public function setMinValue($value)
 	{
@@ -88,7 +88,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Sets the maximum value of the validation range.
-	 * @param string the maximum value
+	 * @param string $value the maximum value
 	 */
 	public function setMaxValue($value)
 	{
@@ -96,7 +96,7 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param boolean true to perform strict comparison (i.e. strictly less than max and/or strictly greater than min).
+	 * @param boolean $value true to perform strict comparison (i.e. strictly less than max and/or strictly greater than min).
 	 */
 	public function setStrictComparison($value)
 	{
@@ -122,7 +122,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Sets the data type that the values being compared are converted to before the comparison is made.
-	 * @param TRangeValidationDataType the data type
+	 * @param TRangeValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
@@ -131,7 +131,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Sets the date format for a date validation
-	 * @param string the date format value
+	 * @param string $value the date format value
 	 */
 	public function setDateFormat($value)
 	{
@@ -147,7 +147,7 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string charset for string length comparison.
+	 * @param string $value charset for string length comparison.
 	 */
 	public function setCharset($value)
 	{

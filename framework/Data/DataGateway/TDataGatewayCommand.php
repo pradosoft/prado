@@ -40,7 +40,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 {
 	private $_builder;
 	/**
-	 * @param TDbCommandBuilder database specific database command builder.
+	 * @param TDbCommandBuilder $builder database specific database command builder.
 	 */
 	public function __construct($builder)
 	{
@@ -210,7 +210,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
 	 * @param array values for IN predicate
-	 * @param string SQL string for primary keys IN a list.
+	 * @param string $values SQL string for primary keys IN a list.
 	 */
 	protected function getCompositeKeyCondition($values)
 	{

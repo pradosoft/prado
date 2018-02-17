@@ -73,7 +73,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Set the parameter substitution key.
-	 * @param string substitution key.
+	 * @param string $value substitution key.
 	 */
 	public function setKey($value)
 	{
@@ -82,7 +82,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean trim or not.
+	 * @param boolean $value trim or not.
 	 */
 	public function setTrim($value)
 	{

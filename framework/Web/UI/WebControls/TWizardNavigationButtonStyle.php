@@ -49,7 +49,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -69,7 +69,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -94,7 +94,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @param string image URL for the image button
+	 * @param string $value image URL for the image button
 	 */
 	public function setImageUrl($value)
 	{
@@ -110,7 +110,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @param string button caption
+	 * @param string $value button caption
 	 */
 	public function setButtonText($value)
 	{
@@ -126,7 +126,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @param TWizardNavigationButtonType button type.
+	 * @param TWizardNavigationButtonType $value button type.
 	 */
 	public function setButtonType($value)
 	{
@@ -135,7 +135,7 @@ class TWizardNavigationButtonStyle extends TStyle
 
 	/**
 	 * Applies this style to the specified button
-	 * @param mixed button to be applied with this style
+	 * @param mixed $button button to be applied with this style
 	 */
 	public function apply($button)
 	{

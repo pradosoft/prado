@@ -61,7 +61,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string unique cache model identifier.
+	 * @param string $value unique cache model identifier.
 	 */
 	public function setID($value)
 	{
@@ -77,7 +77,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
+	 * @param string $value cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
 	 */
 	public function setImplementation($value)
 	{
@@ -88,7 +88,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param integer $value the number of seconds in which the cached value will expire. 0 means never expire.
 	 */
 	public function setFlushInterval($value)
 	{
@@ -105,7 +105,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 
 	/**
 	 * Initialize the cache implementation, sets the actual cache contain if supplied.
-	 * @param ISqLMapCache cache implementation instance.
+	 * @param ISqLMapCache $cache = null cache implementation instance.
 	 */
 	public function initialize($cache = null)
 	{
@@ -133,7 +133,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 
 	/**
 	 * Register a mapped statement that will trigger a cache flush.
-	 * @param TMappedStatement mapped statement that may flush the cache.
+	 * @param TMappedStatement $mappedStatement mapped statement that may flush the cache.
 	 */
 	public function registerTriggerStatement($mappedStatement)
 	{

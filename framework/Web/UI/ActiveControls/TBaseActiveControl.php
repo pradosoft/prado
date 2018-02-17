@@ -44,7 +44,7 @@ class TBaseActiveControl extends \Prado\TComponent
 
 	/**
 	 * Constructor. Attach a base active control to an active control instance.
-	 * @param TControl active control
+	 * @param TControl $control active control
 	 */
 	public function __construct($control)
 	{
@@ -105,7 +105,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean true to allow fine grain callback updates.
+	 * @param boolean $value true to allow fine grain callback updates.
 	 */
 	public function setEnableUpdate($value)
 	{

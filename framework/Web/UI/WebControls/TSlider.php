@@ -73,7 +73,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TSliderDirection Direction of slider (Horizontal or Vertical)
+	 * @param TSliderDirection $value Direction of slider (Horizontal or Vertical)
 	 */
 	public function setDirection($value)
 	{
@@ -89,7 +89,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param string URL for the CSS file including all relevant CSS class definitions.
+	 * @param string $value URL for the CSS file including all relevant CSS class definitions.
 	 */
 	public function setCssUrl($value)
 	{
@@ -105,7 +105,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param float Maximum value for slider
+	 * @param float $value Maximum value for slider
 	 */
 	public function setMaxValue($value)
 	{
@@ -121,7 +121,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param float Minimum value for slider
+	 * @param float $value Minimum value for slider
 	 */
 	public function setMinValue($value)
 	{
@@ -141,7 +141,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * An evenly distributed stop marks will be generated according to
 	 * {@link getMinValue MinValue}, {@link getMaxValue MaxValue} and StepSize.
 	 * To use uneven stop marks, set {@link setValues Values}.
-	 * @param float Step size.
+	 * @param float $value Step size.
 	 */
 	public function setStepSize($value)
 	{
@@ -157,7 +157,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean wether to display a progress indicator or not. Defaults to true.
+	 * @param boolean $value wether to display a progress indicator or not. Defaults to true.
 	 */
 	public function setProgressIndicator ($value)
 	{
@@ -172,7 +172,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param float current value of slider
+	 * @param float $value current value of slider
 	 */
 	public function setValue($value)
 	{
@@ -215,7 +215,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Sets the possible values that the slider can take.
 	 * If this is set, {@link setStepSize StepSize} will be ignored. The latter
 	 * generates a set of evenly distributed candidate values.
-	 * @param array list of allowed values the slider can take
+	 * @param array $value list of allowed values the slider can take
 	 */
 	public function setValues($value)
 	{
@@ -235,7 +235,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the slider value.
-	 * @param boolean the value indicating if postback automatically
+	 * @param boolean $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -280,7 +280,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
@@ -342,7 +342,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Add the specified css classes to the track
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -401,7 +401,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender ($param)
 	{

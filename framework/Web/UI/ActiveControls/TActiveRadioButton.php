@@ -66,7 +66,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -78,7 +78,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -88,7 +88,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	/**
 	 * Updates the button text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
@@ -105,7 +105,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Checks the radio button.
 	 * Updates radio button checked state on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param boolean whether the radio button is to be checked or not.
+	 * @param boolean $value whether the radio button is to be checked or not.
 	 */
 	public function setChecked($value)
 	{

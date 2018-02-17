@@ -74,7 +74,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  public
 	 * @return  object      File_Gettext_MO
-	 * @param   string      $file   path to GNU MO file
+	 * @param   string $file = ''  $file   path to GNU MO file
 	 */
 	public function __construct($file = '')
 	{
@@ -86,7 +86,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  mixed
-	 * @param   int     $bytes
+	 * @param   int $bytes = 1  $bytes
 	 */
 	public function _read($bytes = 1)
 	{
@@ -101,7 +101,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  int
-	 * @param   bool    $bigendian
+	 * @param   bool $bigendian = false  $bigendian
 	 */
 	public function _readInt($bigendian = false)
 	{
@@ -115,7 +115,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  int
-	 * @param   int     $int
+	 * @param   int $int  $int
 	 */
 	public function _writeInt($int)
 	{
@@ -127,7 +127,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  int
-	 * @param   string  $data
+	 * @param   string $data  $data
 	 */
 	public function _write($data)
 	{
@@ -139,7 +139,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  int
-	 * @param   string  $string
+	 * @param   string $string  $string
 	 */
 	public function _writeStr($string)
 	{
@@ -165,7 +165,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access   public
 	 * @return   mixed   Returns true on success or PEAR_Error on failure.
-	 * @param    string  $file
+	 * @param    string $file = null  $file
 	 */
 	public function load($file = null)
 	{
@@ -261,7 +261,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  public
 	 * @return  mixed   Returns true on success or PEAR_Error on failure.
-	 * @param   string  $file
+	 * @param   string $file = null  $file
 	 */
 	public function save($file = null)
 	{

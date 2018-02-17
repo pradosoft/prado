@@ -52,7 +52,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param TInlineFrameAlign alignment of the iframe.
+	 * @param TInlineFrameAlign $value alignment of the iframe.
 	 */
 	public function setAlign($value)
 	{
@@ -68,7 +68,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
@@ -84,7 +84,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param boolean whether there should be a visual separator between the frames.
+	 * @param boolean $value whether there should be a visual separator between the frames.
 	 */
 	public function setShowBorder($value)
 	{
@@ -100,7 +100,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param string URL that this iframe will load content from.
+	 * @param string $value URL that this iframe will load content from.
 	 */
 	public function setFrameUrl($value)
 	{
@@ -142,7 +142,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param TInlineFrameScrollBars the visibility and position of scroll bars in an iframe.
+	 * @param TInlineFrameScrollBars $value the visibility and position of scroll bars in an iframe.
 	 */
 	public function setScrollBars($value)
 	{
@@ -156,9 +156,9 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 	  return $this->getViewState('Width', -1);
 	}
-	
+
 	/**
-	 * @param integer the width of the control
+	 * @param integer $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -166,7 +166,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 		$value = -1;
 	  $this->setViewState('Width', $value, -1);
 	}
-	
+
 	/**
 	 * @return integer the height of the control
 	 */
@@ -174,9 +174,9 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	{
 	  return $this->getViewState('Height', -1);
 	}
-	
+
 	/**
-	 * @param integer the height of the control
+	 * @param integer $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -184,7 +184,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 		$value = -1;
 	  $this->setViewState('Height', $value, -1);
 	}
-	
+
 	/**
 	 * @return integer the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins. Defaults to -1, meaning not set.
@@ -228,7 +228,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -252,10 +252,10 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 		if(($longdesc = $this->getDescriptionUrl()) !== '')
 			$writer->addAttribute('longdesc', $longdesc);
-		
+
 		if (($width = $this->getWidth()) !== -1)
 		  $writer->addAttribute('width', $width);
-		
+
 		if (($height = $this->getHeight()) !== -1)
 		  $writer->addAttribute('height', $height);
 

@@ -86,7 +86,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @param boolean whether this list is read-only or not
+	 * @param boolean $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -276,7 +276,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

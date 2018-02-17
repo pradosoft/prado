@@ -513,7 +513,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Process 'select' result properties
-	 * @param IDbConnection database connection
+	 * @param IDbConnection $connection database connection
 	 */
 	protected function executePostSelect($connection)
 	{
@@ -544,7 +544,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Raise the execute query event.
-	 * @param array prepared SQL statement and subsititution parameters
+	 * @param array $sql prepared SQL statement and subsititution parameters
 	 */
 	public function onExecuteQuery($sql)
 	{

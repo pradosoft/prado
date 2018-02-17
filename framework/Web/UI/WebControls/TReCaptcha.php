@@ -71,7 +71,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		return 'span';
 	}
-	
+
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
@@ -82,13 +82,13 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
 		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	public function getValidationPropertyValue()
 	{
 		return $this->Request[$this->getChallengeFieldName()];
@@ -113,7 +113,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		return $this->setViewState('PrivateKey', TPropertyValue::ensureString($value));
 	}
-	
+
 	public function getThemeName()
 	{
 		return $this->getViewState('ThemeName');
@@ -158,12 +158,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		return /*$this->ClientID.'_'.*/self::ChallengeFieldName;
 	}
-	
+
 	public function getResponseFieldName()
 	{
 		return /*$this->ClientID.'_'.*/self::ResponseFieldName;
 	}
-	
+
 	public function getClientSideOptions()
 	{
 		$options = [];
@@ -197,7 +197,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Checks for API keys
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -235,13 +235,13 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$id = $this->getClientID();
 		$divid = $id . '_1_recaptchadiv';
 		$writer->write('<div id="' . htmlspecialchars($divid) . '">');
-	
+
 		if (!$this->Page->IsCallback)
 			{
 				$writer->write(TJavaScript::renderScriptBlock(
 					'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
 				));
-	
+
 				$html = $this->recaptcha_get_html($this->getPublicKey());
 				/*
 				reCAPTCHA currently does not support multiple validations per page
@@ -272,7 +272,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 					'}',
 				]));
 			}
-			
+
 		$writer->write('</div>');
 	}
 

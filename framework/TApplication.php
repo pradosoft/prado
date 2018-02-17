@@ -447,7 +447,7 @@ class TApplication extends \Prado\TComponent
 	 * Clears a global value.
 	 *
 	 * The value cleared will no longer be available in this request and the following requests.
-	 * @param string the name of the value to be cleared
+	 * @param string $key the name of the value to be cleared
 	 */
 	public function clearGlobalState($key)
 	{
@@ -488,7 +488,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string application ID
+	 * @param string $value application ID
 	 */
 	public function setID($value)
 	{
@@ -504,7 +504,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string page service ID
+	 * @param string $value page service ID
 	 */
 	public function setPageServiceID($value)
 	{
@@ -528,7 +528,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TApplicationMode application mode
+	 * @param TApplicationMode $value application mode
 	 */
 	public function setMode($value)
 	{
@@ -544,7 +544,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the directory containing the application configuration file
+	 * @param string $value the directory containing the application configuration file
 	 */
 	public function setBasePath($value)
 	{
@@ -560,7 +560,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the application configuration file (absolute path)
+	 * @param string $value the application configuration file (absolute path)
 	 */
 	public function setConfigurationFile($value)
 	{
@@ -576,7 +576,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the application configuration type. 'xml' and 'php' are valid values
+	 * @param string $value the application configuration type. 'xml' and 'php' are valid values
 	 */
 	public function setConfigurationType($value)
 	{
@@ -631,7 +631,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the directory storing cache data and application-level persistent data. (absolute path)
+	 * @param string $value the directory storing cache data and application-level persistent data. (absolute path)
 	 */
 	public function setRuntimePath($value)
 	{
@@ -651,7 +651,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IService the currently requested service
+	 * @param IService $value the currently requested service
 	 */
 	public function setService($value)
 	{
@@ -1062,7 +1062,7 @@ class TApplication extends \Prado\TComponent
 	 * Starts the specified service.
 	 * The service instance will be created. Its properties will be initialized
 	 * and the configurations will be applied, if any.
-	 * @param string service ID
+	 * @param string $serviceID service ID
 	 */
 	public function startService($serviceID)
 	{
@@ -1100,7 +1100,7 @@ class TApplication extends \Prado\TComponent
 	 * Raises OnError event.
 	 * This method is invoked when an exception is raised during the lifecycles
 	 * of the application.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onError($param)
 	{
@@ -1224,7 +1224,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Flushes output to client side.
-	 * @param boolean whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering = true whether to continue buffering after flush if buffering was active
 	 */
 	public function flushOutput($continueBuffering = true)
 	{

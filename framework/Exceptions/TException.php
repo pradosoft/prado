@@ -105,7 +105,7 @@ class TException extends \Exception
 	}
 
 	/**
-	 * @param string error code
+	 * @param string $code error code
 	 */
 	public function setErrorCode($code)
 	{
@@ -121,7 +121,7 @@ class TException extends \Exception
 	}
 
 	/**
-	 * @param string error message
+	 * @param string $message error message
 	 */
 	protected function setErrorMessage($message)
 	{

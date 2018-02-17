@@ -54,7 +54,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 
 	/**
 	 * Ensures child controls are created.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -71,7 +71,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate the template for the content of the wizard step.
+	 * @param ITemplate $value the template for the content of the wizard step.
 	 */
 	public function setContentTemplate($value)
 	{
@@ -87,7 +87,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate the template for displaying the navigation UI of a wizard step.
+	 * @param ITemplate $value the template for displaying the navigation UI of a wizard step.
 	 */
 	public function setNavigationTemplate($value)
 	{

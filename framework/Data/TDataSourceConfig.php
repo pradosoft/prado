@@ -56,7 +56,7 @@ class TDataSourceConfig extends \Prado\TModule
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
-	 * @param TXmlDocument xml configuration.
+	 * @param TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
@@ -84,7 +84,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 * The module ID of another TDataSourceConfig. The {@link getDbConnection DbConnection}
 	 * property of this configuration will equal to {@link getDbConnection DbConnection}
 	 * of the given TDataSourceConfig module.
-	 * @param string module ID.
+	 * @param string $value module ID.
 	 */
 	public function setConnectionID($value)
 	{

@@ -78,7 +78,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Constructor.
-	 * @param ITextWriter a writer that THtmlWriter will pass its rendering result to
+	 * @param ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
 	 */
 	public function __construct($writer)
 	{
@@ -96,7 +96,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	}
 	/**
 	 * Adds a list of attributes to be rendered.
-	 * @param array list of attributes to be rendered
+	 * @param array $attrs list of attributes to be rendered
 	 */
 	public function addAttributes($attrs)
 	{
@@ -116,7 +116,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Removes the named attribute from rendering
-	 * @param string name of the attribute to be removed
+	 * @param string $name name of the attribute to be removed
 	 */
 	public function removeAttribute($name)
 	{
@@ -125,7 +125,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Adds a list of stylesheet attributes to be rendered.
-	 * @param array list of stylesheet attributes to be rendered
+	 * @param array $attrs list of stylesheet attributes to be rendered
 	 */
 	public function addStyleAttributes($attrs)
 	{
@@ -145,7 +145,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Removes the named stylesheet attribute from rendering
-	 * @param string name of the stylesheet attribute to be removed
+	 * @param string $name name of the stylesheet attribute to be removed
 	 */
 	public function removeStyleAttribute($name)
 	{
@@ -164,7 +164,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Renders a string.
-	 * @param string string to be rendered
+	 * @param string $str string to be rendered
 	 */
 	public function write($str)
 	{
@@ -173,7 +173,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Renders a string and appends a newline to it.
-	 * @param string string to be rendered
+	 * @param string $str = '' string to be rendered
 	 */
 	public function writeLine($str = '')
 	{
@@ -190,7 +190,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Renders the openning tag.
-	 * @param string tag name
+	 * @param string $tagName tag name
 	 */
 	public function renderBeginTag($tagName)
 	{

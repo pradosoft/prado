@@ -92,7 +92,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	}
 	/**
 	 * Saves state in session.
-	 * @param mixed state to be stored
+	 * @param mixed $state state to be stored
 	 */
 	public function save($state)
 	{

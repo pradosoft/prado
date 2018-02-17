@@ -72,7 +72,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback}
 	 * event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -85,7 +85,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -95,7 +95,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	/**
 	 * Updates the link text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
@@ -134,7 +134,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	/**
 	 * Ensures that the anchor is rendered correctly when its Enabled property
 	 * changes in a callback
-	 * @param bool enabled
+	 * @param bool $value enabled
 	 */
 	public function setEnabled($value)
 	{

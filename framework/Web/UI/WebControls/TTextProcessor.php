@@ -43,7 +43,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * HTML-decodes static text.
 	 * This method overrides parent implementation.
-	 * @param mixed object to be added as body content
+	 * @param mixed $object object to be added as body content
 	 */
 	public function addParsedObject($object)
 	{
@@ -61,7 +61,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string text to be processed
+	 * @param string $value text to be processed
 	 */
 	public function setText($value)
 	{
@@ -72,7 +72,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	 * Renders body content.
 	 * This method overrides the parent implementation by replacing
 	 * the body content with the processed text content.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function renderContents($writer)
 	{

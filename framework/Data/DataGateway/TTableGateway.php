@@ -102,7 +102,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo table or view information.
+	 * @param TDbTableInfo $tableInfo table or view information.
 	 */
 	protected function setTableInfo($tableInfo)
 	{
@@ -112,7 +112,7 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Sets up the command builder for the given table.
-	 * @param string table or view name.
+	 * @param string $tableName table or view name.
 	 */
 	protected function setTableName($tableName)
 	{
@@ -131,7 +131,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommandBuilder database specific command builder.
+	 * @param TDbCommandBuilder $builder database specific command builder.
 	 */
 	protected function initCommandBuilder($builder)
 	{

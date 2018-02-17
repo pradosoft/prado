@@ -63,7 +63,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string URL to the stylesheet file
+	 * @param string $value URL to the stylesheet file
 	 */
 	public function setStyleSheetUrl($value)
 	{
@@ -87,7 +87,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string media type of the CSS (such as 'print', 'screen', etc.). If empty, it means the CSS applies to all media types.
+	 * @param string $value media type of the CSS (such as 'print', 'screen', etc.). If empty, it means the CSS applies to all media types.
 	 */
 	public function setMediaType($value)
 	{
@@ -97,7 +97,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	/**
 	 * Registers the stylesheet file and content to be rendered.
 	 * This method overrides the parent implementation and is invoked right before rendering.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -117,7 +117,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	/**
 	 * Renders the control.
 	 * This method overrides the parent implementation and renders nothing.
-	 * @param ITextWriter writer
+	 * @param ITextWriter $writer writer
 	 */
 	public function render($writer)
 	{

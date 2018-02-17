@@ -153,7 +153,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Registers Prado javascript by library name. See "Web/Javascripts/packages.php"
 	 * for library names.
-	 * @param string script library name.
+	 * @param string $name script library name.
 	 */
 	public function registerPradoScript($name)
 	{
@@ -421,7 +421,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers the control to receive default focus.
-	 * @param string the client ID of the control to receive default focus
+	 * @param string $target the client ID of the control to receive default focus
 	 */
 	public function registerFocusControl($target)
 	{
@@ -437,7 +437,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Registers Prado style by library name. See "Web/Javascripts/packages.php"
 	 * for library names.
-	 * @param string style library name.
+	 * @param string $name style library name.
 	 */
 	public function registerPradoStyle($name)
 	{
@@ -744,7 +744,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheetFiles($writer)
 	{
@@ -760,7 +760,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheets($writer)
 	{
@@ -769,7 +769,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderHeadScriptFiles($writer)
 	{
@@ -777,7 +777,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderHeadScripts($writer)
 	{
@@ -816,7 +816,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderAllPendingScriptFiles($writer)
 	{
@@ -828,7 +828,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderBeginScripts($writer)
 	{
@@ -836,7 +836,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderEndScripts($writer)
 	{
@@ -844,7 +844,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderBeginScriptsCallback($writer)
 	{
@@ -852,7 +852,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderEndScriptsCallback($writer)
 	{

@@ -55,7 +55,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets the ID path of the {@link TTextBox} control.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the keyboard's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setForControl($value)
 	{
@@ -71,7 +71,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the keyboard should be hidden when the textbox is not in focus.
+	 * @param boolean $value whether the keyboard should be hidden when the textbox is not in focus.
 	 */
 	public function setAutoHide($value)
 	{
@@ -90,7 +90,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets a value indicating the CSS class name for the keyboard <div> element.
 	 * Note, if you change this property, make sure you also supply a customized CSS file
 	 * by specifying {@link setCssUrl CssUrl} which uses the new CSS class name for styling.
-	 * @param string the CSS class name for the keyboard <div> element.
+	 * @param string $value the CSS class name for the keyboard <div> element.
 	 */
 	public function setKeyboardCssClass($value)
 	{
@@ -106,7 +106,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the URL for the CSS file to customize the appearance of the keyboard.
+	 * @param string $value the URL for the CSS file to customize the appearance of the keyboard.
 	 */
 	public function setCssUrl($value)
 	{
@@ -116,7 +116,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -131,7 +131,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional TKeyboard specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{

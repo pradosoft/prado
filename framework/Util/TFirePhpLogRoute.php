@@ -119,7 +119,7 @@ class TFirePhpLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string group label.
+	 * @param string $value group label.
 	 */
 	public function setGroupLabel($value)
 	{

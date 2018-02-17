@@ -70,7 +70,7 @@ class TGlobalization extends \Prado\TModule
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
 	 * If you override this method, call parent::init($xml) first.
-	 * @param mixed application configuration
+	 * @param mixed $config application configuration
 	 */
 	public function init($config)
 	{
@@ -103,7 +103,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param bool default culture, e.g. <tt>en_US</tt> for American English
+	 * @param bool $value default culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setTranslateDefaultCulture($value)
 	{
@@ -119,7 +119,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string default culture, e.g. <tt>en_US</tt> for American English
+	 * @param string $culture default culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setDefaultCulture($culture)
 	{
@@ -135,7 +135,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string default localization charset, e.g. <tt>UTF-8</tt>
+	 * @param string $charset default localization charset, e.g. <tt>UTF-8</tt>
 	 */
 	public function setDefaultCharset($charset)
 	{
@@ -151,7 +151,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string culture, e.g. <tt>en_US</tt> for American English
+	 * @param string $culture culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setCulture($culture)
 	{
@@ -167,7 +167,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string localization charset, e.g. <tt>UTF-8</tt>
+	 * @param string $charset localization charset, e.g. <tt>UTF-8</tt>
 	 */
 	public function setCharset($charset)
 	{
@@ -196,7 +196,7 @@ class TGlobalization extends \Prado\TModule
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
-	 * @param TMap|array configuration options
+	 * @param TMap|array $config configuration options
 	 */
 	protected function setTranslationConfiguration($config)
 	{
@@ -245,7 +245,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string update the translation catalogue.
+	 * @param string $value update the translation catalogue.
 	 */
 	public function setTranslationCatalogue($value)
 	{

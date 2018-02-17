@@ -33,7 +33,7 @@ interface IPageStatePersister
 	public function setPage(TPage $page);
 	/**
 	 * Saves state to persistent storage.
-	 * @param mixed state to be stored
+	 * @param mixed $state state to be stored
 	 */
 	public function save($state);
 	/**

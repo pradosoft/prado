@@ -53,7 +53,7 @@ class TCacheHttpSession extends THttpSession
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * It reads the CacheModule property.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -78,7 +78,7 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-	 * @param string the ID of the cache module.
+	 * @param string $value the ID of the cache module.
 	 */
 	public function setCacheModuleID($value)
 	{
@@ -134,7 +134,7 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-	 * @param string prefix of session variable name to avoid conflict with other cache data
+	 * @param string $value prefix of session variable name to avoid conflict with other cache data
 	 */
 	public function setKeyPrefix($value)
 	{

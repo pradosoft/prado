@@ -98,7 +98,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param string the ID of the cache module. If not set, the primary cache module will be used.
+	 * @param string $value the ID of the cache module. If not set, the primary cache module will be used.
 	 */
 	public function setCacheModuleID($value)
 	{
@@ -157,7 +157,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param string prefix of cache variable name to avoid conflict with other cache data
+	 * @param string $value prefix of cache variable name to avoid conflict with other cache data
 	 */
 	public function setKeyPrefix($value)
 	{
@@ -178,7 +178,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 
 	/**
 	 * Saves state in cache.
-	 * @param mixed state to be stored
+	 * @param mixed $data state to be stored
 	 */
 	public function save($data)
 	{

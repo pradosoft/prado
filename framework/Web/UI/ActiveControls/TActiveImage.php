@@ -48,7 +48,7 @@ class TActiveImage extends TImage implements IActiveControl
 
 	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
-	 * @param string the alternative text
+	 * @param string $value the alternative text
 	 */
 	public function setAlternateText($value)
 	{
@@ -65,7 +65,7 @@ class TActiveImage extends TImage implements IActiveControl
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
@@ -78,7 +78,7 @@ class TActiveImage extends TImage implements IActiveControl
 	}
 
 	/**
-	 * @param string the URL of the image file
+	 * @param string $value the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
@@ -91,7 +91,7 @@ class TActiveImage extends TImage implements IActiveControl
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{

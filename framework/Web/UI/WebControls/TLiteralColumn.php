@@ -42,7 +42,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the column
+	 * @param string $value the field name from the data source to bind to the column
 	 */
 	public function setDataField($value)
 	{
@@ -58,7 +58,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
+	 * @param string $value the formatting string used to control how the bound data will be displayed.
 	 */
 	public function setDataFormatString($value)
 	{
@@ -74,7 +74,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string static text to be displayed in the column.
+	 * @param string $value static text to be displayed in the column.
 	 */
 	public function setText($value)
 	{
@@ -90,7 +90,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean  whether the rendered text should be HTML-encoded.
+	 * @param boolean $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{

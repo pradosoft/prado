@@ -79,7 +79,7 @@ class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed new page data
+	 * @param mixed $value new page data
 	 */
 	public function setData($value)
 	{

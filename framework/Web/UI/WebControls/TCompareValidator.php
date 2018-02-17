@@ -67,7 +67,7 @@ class TCompareValidator extends TBaseValidator
 	/**
 	 * Sets the data type that the values being
 	 * compared are converted to before the comparison is made.
-	 * @param TValidationDataType the data type
+	 * @param TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
@@ -84,7 +84,7 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Sets the input component to compare with the input control being validated.
-	 * @param string the ID path of the component to compare with
+	 * @param string $value the ID path of the component to compare with
 	 */
 	public function setControlToCompare($value)
 	{
@@ -101,7 +101,7 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Sets the constant value to compare with the value entered by the user into the input component being validated.
-	 * @param string the constant value
+	 * @param string $value the constant value
 	 */
 	public function setValueToCompare($value)
 	{
@@ -118,7 +118,7 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Sets the comparison operation to perform
-	 * @param TValidationCompareOperator the comparison operation
+	 * @param TValidationCompareOperator $value the comparison operation
 	 */
 	public function setOperator($value)
 	{
@@ -127,7 +127,7 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Sets the date format for a date validation
-	 * @param string the date format value
+	 * @param string $value the date format value
 	 */
 	public function setDateFormat($value)
 	{

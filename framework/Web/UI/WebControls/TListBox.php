@@ -41,7 +41,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional list box specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -67,7 +67,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	/**
 	 * Registers the list control to load post data on postback.
 	 * This method overrides the parent implementation.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -183,7 +183,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @param integer the number of rows to be displayed in the list control
+	 * @param integer $value the number of rows to be displayed in the list control
 	 */
 	public function setRows($value)
 	{
@@ -202,7 +202,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @param TListSelectionMode the selection mode
+	 * @param TListSelectionMode $value the selection mode
 	 */
 	public function setSelectionMode($value)
 	{
@@ -229,7 +229,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{

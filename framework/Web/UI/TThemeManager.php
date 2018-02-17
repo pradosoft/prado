@@ -75,7 +75,7 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -180,7 +180,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the base URL for all themes.
+	 * @param string $value the base URL for all themes.
 	 */
 	public function setBaseUrl($value)
 	{

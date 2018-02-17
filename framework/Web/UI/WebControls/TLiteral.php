@@ -46,7 +46,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 
 	/**
 	 * Sets the static text of the TLiteral
-	 * @param string the text to be set
+	 * @param string $value the text to be set
 	 */
 	public function setText($value)
 	{
@@ -88,7 +88,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	}
 
 	/**
-	 * @param boolean  whether the rendered text should be HTML-encoded.
+	 * @param boolean $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{
@@ -97,7 +97,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 
 	/**
 	 * Renders the literal control.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

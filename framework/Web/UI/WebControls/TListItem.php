@@ -97,7 +97,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the item is enabled
+	 * @param boolean $value whether the item is enabled
 	 */
 	public function setEnabled($value)
 	{
@@ -113,7 +113,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the item is selected
+	 * @param boolean $value whether the item is selected
 	 */
 	public function setSelected($value)
 	{
@@ -129,7 +129,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string text of the item
+	 * @param string $value text of the item
 	 */
 	public function setText($value)
 	{
@@ -145,7 +145,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string value of the item
+	 * @param string $value value of the item
 	 */
 	public function setValue($value)
 	{

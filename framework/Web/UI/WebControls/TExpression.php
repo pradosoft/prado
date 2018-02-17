@@ -42,7 +42,7 @@ class TExpression extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string the expression to be evaluated
+	 * @param string $value the expression to be evaluated
 	 */
 	public function setExpression($value)
 	{
@@ -51,7 +51,7 @@ class TExpression extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the evaluation result of the expression.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

@@ -57,7 +57,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -77,7 +77,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param string the user class name in namespace format. The user class must extend from {@link TDbUser}.
+	 * @param string $value the user class name in namespace format. The user class must extend from {@link TDbUser}.
 	 */
 	public function setUserClass($value)
 	{
@@ -93,7 +93,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param string name to be used for guest users.
+	 * @param string $value name to be used for guest users.
 	 */
 	public function setGuestName($value)
 	{
@@ -140,7 +140,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection
 	 * that will be used by the user manager.
-	 * @param string module ID.
+	 * @param string $value module ID.
 	 */
 	public function setConnectionID($value)
 	{

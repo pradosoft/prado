@@ -116,7 +116,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -125,7 +125,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -182,7 +182,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
@@ -203,7 +203,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Performs databinding to populate list items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the data
+	 * @param Traversable $data the data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -324,7 +324,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean whether performing databind should append items or clear the existing ones.
+	 * @param boolean $value whether performing databind should append items or clear the existing ones.
 	 */
 	public function setAppendDataBoundItems($value)
 	{
@@ -345,7 +345,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * makes change to the list control and then tabs out of it.
-	 * @param boolean the value indicating if postback automatically
+	 * @param boolean $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -361,7 +361,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this list control will cause input validation.
+	 * @param boolean $value whether postback event trigger by this list control will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -377,7 +377,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the field of the data source that provides the text content of the list items.
+	 * @param string $value the field of the data source that provides the text content of the list items.
 	 */
 	public function setDataTextField($value)
 	{
@@ -413,7 +413,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the field of the data source that provides the value of each list item.
+	 * @param string $value the field of the data source that provides the value of each list item.
 	 */
 	public function setDataValueField($value)
 	{
@@ -429,7 +429,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the field of the data source that provides the label of the list item groups
+	 * @param string $value the field of the data source that provides the label of the list item groups
 	 */
 	public function setDataGroupField($value)
 	{
@@ -478,7 +478,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param integer the index (zero-based) of the item to be selected
+	 * @param integer $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -512,7 +512,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param array list of index of items to be selected
+	 * @param array $indices list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices)
 	{
@@ -587,7 +587,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Sets selection by item value.
 	 * Existing selections will be cleared if the item value is found in the item collection.
 	 * Note, if the value is null, existing selections will also be cleared.
-	 * @param string the value of the item to be selected.
+	 * @param string $value the value of the item to be selected.
 	 */
 	public function setSelectedValue($value)
 	{
@@ -627,7 +627,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param array list of the selected item values
+	 * @param array $values list of the selected item values
 	 */
 	public function setSelectedValues($values)
 	{
@@ -663,7 +663,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string value to be selected
+	 * @param string $value value to be selected
 	 */
 	public function setText($value)
 	{
@@ -694,7 +694,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the group of validators which the list control causes validation upon postback
+	 * @param string $value the group of validators which the list control causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
@@ -743,7 +743,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Raises OnSelectedIndexChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{
@@ -755,7 +755,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Raises OnTextChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onTextChanged($param)
 	{
@@ -786,7 +786,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	/**
 	 * Renders body content of the list control.
 	 * This method renders items contained in the list control as the body content.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function renderContents($writer)
 	{

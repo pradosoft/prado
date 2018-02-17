@@ -56,7 +56,7 @@ class TPageConfiguration extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param string the currently request page in the format of Path.To.PageName
+	 * @param string $pagePath the currently request page in the format of Path.To.PageName
 	 */
 	public function __construct($pagePath)
 	{
@@ -103,7 +103,7 @@ class TPageConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads configuration for a page specified in a path format.
-	 * @param string root path for pages
+	 * @param string $basePath root path for pages
 	 */
 	public function loadFromFiles($basePath)
 	{

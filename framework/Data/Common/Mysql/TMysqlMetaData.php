@@ -212,7 +212,7 @@ class TMysqlMetaData extends TDbMetaData
 	/**
 	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @param string identifier name
-	 * @param boolean true if valid identifier.
+	 * @param boolean $name true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{

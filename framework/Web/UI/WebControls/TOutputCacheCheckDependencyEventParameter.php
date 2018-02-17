@@ -37,7 +37,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether the dependency remains valid
+	 * @param boolean $value whether the dependency remains valid
 	 */
 	public function setIsValid($value)
 	{

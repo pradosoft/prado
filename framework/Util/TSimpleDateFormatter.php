@@ -81,7 +81,7 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * @param string formatting pattern.
+	 * @param string $pattern formatting pattern.
 	 */
 	public function setPattern($pattern)
 	{
@@ -97,7 +97,7 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * @param string formatting charset.
+	 * @param string $charset formatting charset.
 	 */
 	public function setCharset($charset)
 	{

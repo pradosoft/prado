@@ -30,7 +30,7 @@ class TTextHighlighterWriter extends \Prado\Web\UI\THtmlWriter
 	protected $firstLine = true;
 	/**
 	 * Renders a string.
-	 * @param string string to be rendered
+	 * @param string $str string to be rendered
 	 */
 	public function write($str)
 	{

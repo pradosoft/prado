@@ -40,7 +40,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $conn database connection.
 	 */
 	public function __construct($conn)
 	{

@@ -60,7 +60,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean true to hide the textbox after losing focus.
+	 * @param boolean $value true to hide the textbox after losing focus.
 	 */
 	public function setAutoHideTextBox($value)
 	{
@@ -76,7 +76,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean true to display the edit textbox
+	 * @param boolean $value true to display the edit textbox
 	 */
 	public function setDisplayTextBox($value)
 	{
@@ -107,7 +107,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param string ID of the control that can trigger to edit the textbox
+	 * @param string $value ID of the control that can trigger to edit the textbox
 	 */
 	public function setEditTriggerControlID($value)
 	{
@@ -137,7 +137,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	/**
 	 * On callback response, the inner HTMl of the label and the
 	 * value of the textbox is updated
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
@@ -181,7 +181,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -204,7 +204,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -250,7 +250,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	/**
 	 * Raised when editing the content is requsted to be loaded from the
 	 * server side.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoadingText($param)
 	{
@@ -281,7 +281,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{

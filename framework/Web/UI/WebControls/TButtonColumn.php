@@ -58,7 +58,7 @@ class TButtonColumn extends TDataGridColumn
 
 	/**
 	 * Sets the text caption of the button.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
@@ -74,7 +74,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the button caption
+	 * @param string $value the field name from the data source to bind to the button caption
 	 */
 	public function setDataTextField($value)
 	{
@@ -90,7 +90,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the button caption will be displayed.
+	 * @param string $value the formatting string used to control how the button caption will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
@@ -106,7 +106,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the URL of the image file for image buttons
+	 * @param string $value the URL of the image file for image buttons
 	 */
 	public function setImageUrl($value)
 	{
@@ -122,7 +122,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the button image url
+	 * @param string $value the field name from the data source to bind to the button image url
 	 */
 	public function setDataImageUrlField($value)
 	{
@@ -138,7 +138,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the button image url will be displayed.
+	 * @param string $value the formatting string used to control how the button image url will be displayed.
 	 */
 	public function setDataImageUrlFormatString($value)
 	{
@@ -154,7 +154,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param TButtonColumnType the type of command button
+	 * @param TButtonColumnType $value the type of command button
 	 */
 	public function setButtonType($value)
 	{
@@ -171,7 +171,7 @@ class TButtonColumn extends TDataGridColumn
 
 	/**
 	 * Sets the command name associated with the <b>Command</b> event.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setCommandName($value)
 	{
@@ -187,7 +187,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this button will cause input validation
+	 * @param boolean $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -203,7 +203,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string $value the group of validators which the button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{

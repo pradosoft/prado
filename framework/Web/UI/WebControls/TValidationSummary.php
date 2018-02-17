@@ -63,7 +63,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle the style of displaying the error messages
+	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
@@ -80,7 +80,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the header text to be displayed at the top of the summary
-	 * @param string the header text
+	 * @param string $value the header text
 	 */
 	public function setHeaderText($value)
 	{
@@ -96,7 +96,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayMode the mode of displaying error messages
+	 * @param TValidationSummaryDisplayMode $value the mode of displaying error messages
 	 */
 	public function setDisplayMode($value)
 	{
@@ -112,7 +112,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the TValidationSummary component updates itself using client-side script.
+	 * @param boolean $value whether the TValidationSummary component updates itself using client-side script.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -128,7 +128,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the validation summary is displayed in a message box.
+	 * @param boolean $value whether the validation summary is displayed in a message box.
 	 */
 	public function setShowMessageBox($value)
 	{
@@ -144,7 +144,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the validation summary is displayed inline.
+	 * @param boolean $value whether the validation summary is displayed inline.
 	 */
 	public function setShowSummary($value)
 	{
@@ -160,7 +160,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether scroll summary into viewport or not.
+	 * @param boolean $value whether scroll summary into viewport or not.
 	 */
 	public function setScrollToSummary($value)
 	{
@@ -176,7 +176,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the validation summary should be anchored.
+	 * @param boolean $value whether the validation summary should be anchored.
 	 */
 	public function setShowAnchor($value)
 	{
@@ -194,7 +194,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the summary to auto-update on the client-side
-	 * @param boolean true for automatic summary updates.
+	 * @param boolean $value true for automatic summary updates.
 	 */
 	public function setAutoUpdate($value)
 	{
@@ -210,7 +210,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the group which this validator belongs to
+	 * @param string $value the group which this validator belongs to
 	 */
 	public function setValidationGroup($value)
 	{
@@ -408,7 +408,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary header text only.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderHeaderOnly($writer)
 	{

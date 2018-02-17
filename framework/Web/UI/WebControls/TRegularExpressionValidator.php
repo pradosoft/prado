@@ -63,7 +63,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string the regular expression that determines the pattern used to validate a field.
+	 * @param string $value the regular expression that determines the pattern used to validate a field.
 	 */
 	public function setRegularExpression($value)
 	{

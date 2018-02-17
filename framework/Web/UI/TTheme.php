@@ -184,7 +184,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param string theme name
+	 * @param string $value theme name
 	 */
 	protected function setName($value)
 	{
@@ -200,7 +200,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param string the URL to the theme folder
+	 * @param string $value the URL to the theme folder
 	 */
 	protected function setBaseUrl($value)
 	{
@@ -216,7 +216,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param string tthe file path to the theme folder
+	 * @param string $value tthe file path to the theme folder
 	 */
 	protected function setBasePath($value)
 	{
@@ -232,7 +232,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param array list of skins for the theme
+	 * @param array $value list of skins for the theme
 	 */
 	protected function setSkins($value)
 	{
@@ -321,7 +321,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param array list of CSS files (URL) in the theme
+	 * @param array $value list of CSS files (URL) in the theme
 	 */
 	protected function setStyleSheetFiles($value)
 	{
@@ -337,7 +337,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 
 	/**
-	 * @param array list of Javascript files (URL) in the theme
+	 * @param array $value list of Javascript files (URL) in the theme
 	 */
 	protected function setJavaScriptFiles($value)
 	{

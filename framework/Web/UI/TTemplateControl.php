@@ -81,7 +81,7 @@ class TTemplateControl extends TCompositeControl
 	 * Sets the parsed template.
 	 * Note, the template will be applied to the whole control class.
 	 * This method should only be used by framework and control developers.
-	 * @param ITemplate the parsed template
+	 * @param ITemplate $value the parsed template
 	 */
 	public function setTemplate($value)
 	{
@@ -179,7 +179,7 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * @param string  master control class name (in namespace form)
+	 * @param string $value master control class name (in namespace form)
 	 */
 	public function setMasterClass($value)
 	{
@@ -219,7 +219,7 @@ class TTemplateControl extends TCompositeControl
 	 * by ensuring child controls are created first,
 	 * and if master class is set, master will be applied.
 	 * Only framework developers should use this method.
-	 * @param TControl the naming container control
+	 * @param TControl $namingContainer = null the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -240,7 +240,7 @@ class TTemplateControl extends TCompositeControl
 			throw new TConfigurationException('templatecontrol_mastercontrol_required', get_class($this));
 		parent::initRecursive($namingContainer);
 	}
-		
+
 		/**
 		 * Function to update view controls with data in a given AR object.
 		 * View controls and AR object need to have the same name in IDs and Attrs respectively.

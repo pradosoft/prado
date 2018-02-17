@@ -44,7 +44,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Sets the control property name to observe value changes that fires the callback request.
-	 * @param string The control property name to observe value changes.
+	 * @param string $value The control property name to observe value changes.
 	 */
 	public function setPropertyName($value)
 	{
@@ -54,7 +54,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	/**
 	 * Sets the polling interval in seconds to observe property changes.
 	 * Default is 1 second.
-	 * @param float polling interval in seconds.
+	 * @param float $value polling interval in seconds.
 	 */
 	public function setInterval($value)
 	{
@@ -80,7 +80,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Sets the decay rate between callback. Default is 0;
-	 * @param float decay rate between callbacks.
+	 * @param float $value decay rate between callbacks.
 	 */
 	public function setDecayRate($value)
 	{
@@ -104,7 +104,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{

@@ -110,7 +110,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string id of this module
+	 * @param string $value id of this module
 	 */
 	public function setID($value)
 	{
@@ -121,7 +121,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * If AutoStart is true, the session will be started.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -396,7 +396,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * the use of transparent session ids. Refer to the main documentation of the class
 	 * THttpSession class for a configuration example.
 	 *
-	 * @param boolean whether transparent sid support is enabled or not.
+	 * @param boolean $value whether transparent sid support is enabled or not.
 	 */
 	public function setUseTransparentSessionID($value)
 	{
@@ -633,7 +633,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

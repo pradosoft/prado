@@ -31,7 +31,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Initializes module.
-	 * @param TXmlElement module configuration (may be null)
+	 * @param TXmlElement $config module configuration (may be null)
 	 */
 	public function init($config)
 	{
@@ -65,7 +65,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Saves application state in persistent storage.
-	 * @param mixed application state
+	 * @param mixed $state application state
 	 */
 	public function save($state)
 	{

@@ -39,7 +39,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the previous button
+	 * @param mixed $value the previous button
 	 */
 	public function setPreviousButton($value)
 	{
@@ -55,7 +55,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the next button
+	 * @param mixed $value the next button
 	 */
 	public function setNextButton($value)
 	{
@@ -71,7 +71,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the cancel button
+	 * @param mixed $value the cancel button
 	 */
 	public function setCancelButton($value)
 	{
@@ -87,7 +87,7 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the complete button
+	 * @param mixed $value the complete button
 	 */
 	public function setCompleteButton($value)
 	{

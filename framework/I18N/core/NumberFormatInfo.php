@@ -125,7 +125,7 @@ class NumberFormatInfo
 	 * Set the pattern for a specific number pattern. The validate patterns
 	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
 	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
-	 * @param int pattern type.
+	 * @param int $type = NumberFormatInfo::DECIMAL pattern type.
 	 */
 	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{
@@ -368,7 +368,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the number of decimal places.
-	 * @param int number of decimal places.
+	 * @param int $value number of decimal places.
 	 */
 	public function setDecimalDigits($value)
 	{
@@ -396,7 +396,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string to use as the decimal separator.
-	 * @param string the decimal point
+	 * @param string $value the decimal point
 	 */
 	public function setDecimalSeparator($value)
 	{
@@ -416,7 +416,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string to use as the group separator.
-	 * @param string the group separator.
+	 * @param string $value the group separator.
 	 */
 	public function setGroupSeparator($value)
 	{
@@ -443,7 +443,7 @@ class NumberFormatInfo
 	 * There can be two grouping sizes, the value should
 	 * be an <b>array(group1, group2)</b>, if there is only 1 grouping size,
 	 * group2 should be false.
-	 * @param array grouping size(s).
+	 * @param array $groupSize grouping size(s).
 	 */
 	public function setGroupSizes($groupSize)
 	{
@@ -468,7 +468,7 @@ class NumberFormatInfo
 	 * Set the format pattern for negative values.
 	 * The negative pattern is composed of a prefix, and postfix in the form
 	 * <b>array(prefix, postfix)</b>.
-	 * @param arary negative pattern.
+	 * @param arary $pattern negative pattern.
 	 */
 	public function setNegativePattern($pattern)
 	{
@@ -493,7 +493,7 @@ class NumberFormatInfo
 	 * Set the format pattern for positive values.
 	 * The positive pattern is composed of a prefix, and postfix in the form
 	 * <b>array(prefix, postfix)</b>.
-	 * @param arary positive pattern.
+	 * @param arary $pattern positive pattern.
 	 */
 	public function setPositivePattern($pattern)
 	{
@@ -516,7 +516,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string to use as the currency symbol.
-	 * @param string currency symbol.
+	 * @param string $symbol currency symbol.
 	 */
 	public function setCurrencySymbol($symbol)
 	{
@@ -534,7 +534,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string that represents negative infinity.
-	 * @param string negative infinity.
+	 * @param string $value negative infinity.
 	 */
 	public function setNegativeInfinitySymbol($value)
 	{
@@ -552,7 +552,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string that represents positive infinity.
-	 * @param string positive infinity.
+	 * @param string $value positive infinity.
 	 */
 	public function setPositiveInfinitySymbol($value)
 	{
@@ -570,7 +570,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string that denotes that the associated number is negative.
-	 * @param string negative sign.
+	 * @param string $value negative sign.
 	 */
 	public function setNegativeSign($value)
 	{
@@ -588,7 +588,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string that denotes that the associated number is positive.
-	 * @param string positive sign.
+	 * @param string $value positive sign.
 	 */
 	public function setPositiveSign($value)
 	{
@@ -606,7 +606,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string that represents the IEEE NaN (not a number) value.
-	 * @param string NaN symbol.
+	 * @param string $value NaN symbol.
 	 */
 	public function setNaNSymbol($value)
 	{
@@ -624,7 +624,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string to use as the percent symbol.
-	 * @param string percent symbol.
+	 * @param string $value percent symbol.
 	 */
 	public function setPercentSymbol($value)
 	{
@@ -642,7 +642,7 @@ class NumberFormatInfo
 
 	/**
 	 * Set the string to use as the per mille symbol.
-	 * @param string percent symbol.
+	 * @param string $value percent symbol.
 	 */
 	public function setPerMilleSymbol($value)
 	{

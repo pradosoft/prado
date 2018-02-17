@@ -30,7 +30,7 @@ interface IButtonControl
 	public function getText();
 
 	/**
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value);
 
@@ -40,7 +40,7 @@ interface IButtonControl
 	public function getCausesValidation();
 
 	/**
-	 * @param boolean whether postback event trigger by this button will cause input validation
+	 * @param boolean $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value);
 
@@ -50,7 +50,7 @@ interface IButtonControl
 	public function getCommandName();
 
 	/**
-	 * @param string the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value);
 
@@ -60,7 +60,7 @@ interface IButtonControl
 	public function getCommandParameter();
 
 	/**
-	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value);
 
@@ -70,24 +70,24 @@ interface IButtonControl
 	public function getValidationGroup();
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string $value the group of validators which the button causes validation upon postback
 	 */
 	public function setValidationGroup($value);
 
 	/**
 	 * Raises <b>OnClick</b> event.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param);
 
 	/**
 	 * Raises <b>OnCommand</b> event.
-	 * @param TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param TCommandEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param);
 
 	/**
-	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 * @param boolean $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value);
 

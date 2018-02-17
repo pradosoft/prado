@@ -160,7 +160,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param string sets the text before the open tag in the TWebControl
+	 * @param string $value sets the text before the open tag in the TWebControl
 	 */
 	public function setPreTagText($value) {
 		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
@@ -176,7 +176,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param string sets the text after the open tag in the TWebControl
+	 * @param string $value sets the text after the open tag in the TWebControl
 	 */
 	public function setPreContentsText($value) {
 		if(!$this->_control->getIsSkinApplied())
@@ -192,7 +192,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param string sets the text before the close tag in the TWebControl
+	 * @param string $value sets the text before the close tag in the TWebControl
 	 */
 	public function setPostContentsText($value) {
 		if(!$this->_control->getIsSkinApplied())
@@ -208,7 +208,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param string sets the text after the close tag in the TWebControl
+	 * @param string $value sets the text after the close tag in the TWebControl
 	 */
 	public function setPostTagText($value) {
 		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
@@ -224,7 +224,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param TTemplate sets the template before the open tag in the TWebControl
+	 * @param TTemplate $value sets the template before the open tag in the TWebControl
 	 */
 	public function setPreTagTemplate($value) {
 		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
@@ -240,7 +240,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param TTemplate sets the template after the open tag in the TWebControl
+	 * @param TTemplate $value sets the template after the open tag in the TWebControl
 	 */
 	public function setPreContentsTemplate($value) {
 		if(!$this->_control->getIsSkinApplied())
@@ -256,7 +256,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param TTemplate sets the template before the close tag in the TWebControl
+	 * @param TTemplate $value sets the template before the close tag in the TWebControl
 	 */
 	public function setPostContentsTemplate($value) {
 		if(!$this->_control->getIsSkinApplied())
@@ -272,7 +272,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param TTemplate sets the template before the close tag in the TWebControl
+	 * @param TTemplate $value sets the template before the close tag in the TWebControl
 	 */
 	public function setPostTagTemplate($value) {
 		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
@@ -355,7 +355,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * This method places the pre tag text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
 	public function renderPreTagText($writer) {
 		$writer->write($this->getPreTagText());
@@ -363,7 +363,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * This method places the pre contents text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
 	public function renderPreContentsText($writer) {
 		$writer->write($this->getPreContentsText());
@@ -371,7 +371,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * This method places the post contents text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
 	public function renderPostContentsText($writer) {
 		$writer->write($this->getPostContentsText());
@@ -379,7 +379,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * This method places the post tag text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
 	public function renderPostTagText($writer) {
 		$writer->write($this->getPostTagText());

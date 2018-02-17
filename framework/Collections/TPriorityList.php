@@ -143,7 +143,7 @@ class TPriorityList extends TList
 
 	/**
 	 * This must be called internally or when instantiated.
-	 * @param numeric sets the default priority of inserted items without a specified priority
+	 * @param numeric $value sets the default priority of inserted items without a specified priority
 	 */
 	protected function setDefaultPriority($value)
 	{
@@ -160,7 +160,7 @@ class TPriorityList extends TList
 
 	/**
 	 * This must be called internally or when instantiated.
-	 * @param integer The precision of numeric priorities.
+	 * @param integer $value The precision of numeric priorities.
 	 */
 	protected function setPrecision($value)
 	{
@@ -738,7 +738,7 @@ class TPriorityList extends TList
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

@@ -78,7 +78,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Sets name attribute to the unique ID of the control.
 	 * This method overrides the parent implementation with additional file update control specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -100,7 +100,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Sets Enctype of the form on the page.
 	 * This method overrides the parent implementation and is invoked before render.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -132,7 +132,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * a reasonably large size to save users the trouble of waiting
 	 * for a big file being transferred only to find that it was too big
 	 * and the transfer failed.
-	 * @param int the maximum upload size allowed for a file.
+	 * @param int $size the maximum upload size allowed for a file.
 	 */
 	public function setMaxFileSize($size)
 	{
@@ -268,7 +268,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises <b>OnFileUpload</b> event to fire up the event handler.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onFileUpload($param)
 	{
@@ -305,7 +305,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	  return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
@@ -321,7 +321,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param bool wether this file upload supports multiple files.
+	 * @param bool $value wether this file upload supports multiple files.
 	 */
 	public function setMultiple($value)
 	{

@@ -40,7 +40,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Sets the client-side event name that fires the callback request.
-	 * @param string The client-side event name the trigger listens to.
+	 * @param string $value The client-side event name the trigger listens to.
 	 */
 	public function setEventName($value)
 	{
@@ -48,7 +48,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * @param boolean true to prevent/stop default event action.
+	 * @param boolean $value true to prevent/stop default event action.
 	 */
 	public function setPreventDefaultAction($value)
 	{
@@ -77,7 +77,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{

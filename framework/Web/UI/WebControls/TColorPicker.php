@@ -56,7 +56,7 @@ class TColorPicker extends TTextBox
 
 	/**
 	 * Sets whether to pop up the color picker when the button is clicked.
-	 * @param boolean whether to show the color picker popup
+	 * @param boolean $value whether to show the color picker popup
 	 */
 	public function setShowColorPicker($value)
 	{
@@ -64,7 +64,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param TColorPickerMode color picker UI mode
+	 * @param TColorPickerMode $value color picker UI mode
 	 */
 	public function setMode($value)
 	{
@@ -80,7 +80,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string set the color picker style
+	 * @param string $value set the color picker style
 	 */
 	public function setColorPickerStyle($value)
 	{
@@ -104,7 +104,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string text for the color picker OK button
+	 * @param string $value text for the color picker OK button
 	 */
 	public function setOKButtonText($value)
 	{
@@ -120,7 +120,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string text for the color picker Cancel button
+	 * @param string $value text for the color picker Cancel button
 	 */
 	public function setCancelButtonText($value)
 	{
@@ -207,7 +207,7 @@ class TColorPicker extends TTextBox
 	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
 	 * additional color picker button.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function renderEndTag($writer)
 	{

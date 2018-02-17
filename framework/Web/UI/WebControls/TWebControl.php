@@ -53,7 +53,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Subclasses can override getEnsureId or just set this property.  eg. If your subclass
 	 * control does work with javascript and your class wants to flag that it requires an id
 	 * to operate properly.  Once set to true, it stays that way.
-	 * @param boolean pass true to enable enforcement of the tag attribute id.
+	 * @param boolean $value pass true to enable enforcement of the tag attribute id.
 	 */
 	public function setEnsureId($value)
 	{
@@ -129,7 +129,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the background color of the control
+	 * @param string $value the background color of the control
 	 */
 	public function setBackColor($value)
 	{
@@ -148,7 +148,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the border color of the control
+	 * @param string $value the border color of the control
 	 */
 	public function setBorderColor($value)
 	{
@@ -167,7 +167,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the border style of the control
+	 * @param string $value the border style of the control
 	 */
 	public function setBorderStyle($value)
 	{
@@ -186,7 +186,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the border width of the control
+	 * @param string $value the border width of the control
 	 */
 	public function setBorderWidth($value)
 	{
@@ -213,7 +213,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the foreground color of the control
+	 * @param string $value the foreground color of the control
 	 */
 	public function setForeColor($value)
 	{
@@ -232,7 +232,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 * @param TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplay($value)
 	{
@@ -248,7 +248,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the css class of the control
+	 * @param string $value the css class of the control
 	 */
 	public function setCssClass($value)
 	{
@@ -267,7 +267,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the height of the control
+	 * @param string $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -340,7 +340,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the tab index of the control.
 	 * Pass 0 if you want to disable tab index.
-	 * @param integer the tab index to be set
+	 * @param integer $value the tab index to be set
 	 */
 	public function setTabIndex($value)
 	{
@@ -369,7 +369,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the tooltip of the control.
 	 * Pass an empty string if you want to disable tooltip.
-	 * @param string the tooltip to be set
+	 * @param string $value the tooltip to be set
 	 */
 	public function setToolTip($value)
 	{
@@ -388,7 +388,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the width of the control
+	 * @param string $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -400,7 +400,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * If your subclass overrides the onPreRender method be sure to call
 	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
 	 * among other things.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param) {
 		if($decorator = $this->getDecorator(false))
@@ -414,7 +414,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * By default, the method will render 'id', 'accesskey', 'disabled',
 	 * 'tabindex', 'title' and all custom attributes.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -444,7 +444,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * - {@link renderBeginTag}
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -455,7 +455,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -474,7 +474,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -483,7 +483,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

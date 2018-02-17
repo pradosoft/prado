@@ -53,31 +53,31 @@ class MessageFormat
 	 * @var MessageSource
 	 */
 	protected $source;
-	
+
 	/**
 	 * A list of loaded message catalogues.
 	 * @var array
 	 */
 	protected $catagloues = [];
-	
+
 	/**
 	 * The translation messages.
 	 * @var array
 	 */
 	protected $messages = [];
-	
+
 	/**
 	 * A list of untranslated messages.
 	 * @var array
 	 */
 	protected $untranslated = [];
-	
+
 	/**
 	 * The prefix and suffix to append to untranslated messages.
 	 * @var array
 	 */
 	protected $postscript = ['',''];
-	
+
 	/**
 	 * Set the default catalogue.
 	 * @var string
@@ -105,7 +105,7 @@ class MessageFormat
 
 	/**
 	 * Sets the charset for message output.
-	 * @param string charset, default is UTF-8
+	 * @param string $charset charset, default is UTF-8
 	 */
 	public function setCharset($charset)
 	{
@@ -120,19 +120,19 @@ class MessageFormat
 	{
 		return $this->charset;
 	}
-	
+
 	/**
 	 * Load the message from a particular catalogue. A listed
 	 * loaded catalogues is kept to prevent reload of the same
 	 * catalogue. The load catalogue messages are stored
 	 * in the $this->message array.
-	 * @param string message catalogue to load.
+	 * @param string $catalogue message catalogue to load.
 	 */
 	protected function loadCatalogue($catalogue)
 	{
 		if(in_array($catalogue, $this->catagloues))
 			return;
-			
+
 		if($this->source->load($catalogue))
 		{
 			$this->messages[$catalogue] = $this->source->read();
@@ -156,7 +156,7 @@ class MessageFormat
 	public function format($string, $args = [], $catalogue = null, $charset = null)
 	{
 		if(empty($charset)) $charset = $this->getCharset();
-		
+
 		//force args as UTF-8
 		foreach($args as $k => $v)
 			$args[$k] = I18N_toUTF8($v, $charset);
@@ -181,12 +181,12 @@ class MessageFormat
 			else
 				$catalogue = $this->Catalogue;
 		}
-				
+
 		$this->loadCatalogue($catalogue);
-		
+
 		if(empty($args))
 			$args = [];
-		
+
 		foreach($this->messages[$catalogue] as $variant)
 		{
 			// foreach of the translation units
@@ -214,15 +214,15 @@ class MessageFormat
 				}
 			}
 		}
-		
+
 		// well we did not find the translation string.
 		$this->source->append($string);
-		
+
 		return 	$this->postscript[0] .
 				strtr($string, $args) .
 				$this->postscript[1];
 	}
-	
+
 	/**
 	 * Get the message source.
 	 * @return MessageSource
@@ -231,12 +231,12 @@ class MessageFormat
 	{
 		return $this->source;
 	}
-	
+
 	/**
 	 * Set the prefix and suffix to append to untranslated messages.
 	 * e.g. $postscript=array('[T]','[/T]'); will output
 	 * "[T]Hello[/T]" if the translation for "Hello" can not be determined.
-	 * @param array first element is the prefix, second element the suffix.
+	 * @param array $postscript first element is the prefix, second element the suffix.
 	 */
 	public function setUntranslatedPS($postscript)
 	{

@@ -63,7 +63,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string a unique identifier for the <parameterMap>.
+	 * @param string $value a unique identifier for the <parameterMap>.
 	 */
 	public function setID($value)
 	{
@@ -87,7 +87,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of another <parameterMap> upon which to base this TParameterMap.
+	 * @param string $value name of another <parameterMap> upon which to base this TParameterMap.
 	 */
 	public function setExtends($value)
 	{

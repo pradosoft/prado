@@ -105,7 +105,7 @@ class TDbTransaction extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether this transaction is active
+	 * @param boolean $value whether this transaction is active
 	 */
 	protected function setActive($value)
 	{

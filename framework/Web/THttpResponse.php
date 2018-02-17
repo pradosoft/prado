@@ -163,7 +163,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -182,7 +182,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param integer time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
+	 * @param integer $value time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
 	 */
 	public function setCacheExpire($value)
 	{
@@ -233,7 +233,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string|boolean output charset.
+	 * @param string|boolean $charset output charset.
 	 */
 	public function setCharset($charset)
 	{
@@ -316,7 +316,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs a string.
 	 * It may not be sent back to user immediately if output buffer is enabled.
-	 * @param string string to be output
+	 * @param string $str string to be output
 	 */
 	public function write($str)
 	{
@@ -490,7 +490,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@link flush} instead.
-	 * @param boolean whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering = true whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
@@ -642,7 +642,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie cook to be sent
+	 * @param THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
 	{
@@ -676,7 +676,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Deletes a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie cook to be deleted
+	 * @param THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
 	{
@@ -700,7 +700,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string the type of HTML writer to be used, may be the class name or the namespace
+	 * @param string $value the type of HTML writer to be used, may be the class name or the namespace
 	 */
 	public function setHtmlWriterType($value)
 	{
@@ -710,7 +710,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Creates a new instance of HTML writer.
 	 * If the type of the HTML writer is not supplied, {@link getHtmlWriterType HtmlWriterType} will be assumed.
-	 * @param string type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 * @param string $type = null type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
 	 */
 	public function createHtmlWriter($type = null)
 	{

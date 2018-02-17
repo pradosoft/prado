@@ -37,7 +37,7 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param string the template source code that causes the exception
+	 * @param string $value the template source code that causes the exception
 	 */
 	public function setTemplateSource($value)
 	{
@@ -53,7 +53,7 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param string the template file that causes the exception
+	 * @param string $value the template file that causes the exception
 	 */
 	public function setTemplateFile($value)
 	{
@@ -69,7 +69,7 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param integer the line number at which the template has error
+	 * @param integer $value the line number at which the template has error
 	 */
 	public function setLineNumber($value)
 	{

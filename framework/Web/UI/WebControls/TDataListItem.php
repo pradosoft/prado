@@ -55,7 +55,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	}
 
 	/**
-	 * @param string tag name of the control to be rendered
+	 * @param string $value tag name of the control to be rendered
 	 */
 	public function setTagName($value)
 	{
@@ -81,7 +81,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	}
 
 	/**
-	 * @param TListItemType item type.
+	 * @param TListItemType $value item type.
 	 */
 	public function setItemType($value)
 	{
@@ -99,7 +99,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
+	 * @param integer $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{

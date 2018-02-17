@@ -49,7 +49,7 @@ class TValidatorClientSide extends TClientSideOptions
 	/**
 	 * Client-side OnValidate validator event is raise before the validators
 	 * validation functions are called.
-	 * @param string javascript code for client-side OnValidate event.
+	 * @param string $javascript javascript code for client-side OnValidate event.
 	 */
 	public function setOnValidate($javascript)
 	{
@@ -59,7 +59,7 @@ class TValidatorClientSide extends TClientSideOptions
 	/**
 	 * Client-side OnSuccess event is raise after validation is successfull.
 	 * This will override the default client-side validator behaviour.
-	 * @param string javascript code for client-side OnSuccess event.
+	 * @param string $javascript javascript code for client-side OnSuccess event.
 	 */
 	public function setOnValidationSuccess($javascript)
 	{
@@ -77,7 +77,7 @@ class TValidatorClientSide extends TClientSideOptions
 	/**
 	 * Client-side OnError event is raised after validation failure.
 	 * This will override the default client-side validator behaviour.
-	 * @param string javascript code for client-side OnError event.
+	 * @param string $javascript javascript code for client-side OnError event.
 	 */
 	public function setOnValidationError($javascript)
 	{
@@ -93,7 +93,7 @@ class TValidatorClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param boolean true to revalidate when the control to validate changes value.
+	 * @param boolean $value true to revalidate when the control to validate changes value.
 	 */
 	public function setObserveChanges($value)
 	{

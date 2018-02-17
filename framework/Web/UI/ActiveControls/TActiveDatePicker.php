@@ -51,7 +51,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the text in the TActiveDatePicker control and then tabs out of the component.
-	 * @param boolean the value indicating if postback automatically
+	 * @param boolean $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -93,7 +93,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 
 	/**
 	 * Client-side Text property can only be updated after the OnLoad stage.
-	 * @param string text content for the textbox
+	 * @param string $value text content for the textbox
 	 */
 	public function setText($value){
 		if(parent::getText() === $value)
@@ -120,7 +120,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param){
 		$this->onCallback($param);
@@ -131,7 +131,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param){
 		$this->raiseEvent('OnCallback', $this, $param);

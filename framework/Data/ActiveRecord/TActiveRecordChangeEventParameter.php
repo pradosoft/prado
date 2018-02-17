@@ -39,7 +39,7 @@ class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean set to false to prevent the event.
+	 * @param boolean $value set to false to prevent the event.
 	 */
 	public function setIsValid($value)
 	{

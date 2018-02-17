@@ -222,7 +222,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the URI for WSDL
+	 * @param string $value the URI for WSDL
 	 */
 	public function setWsdlUri($value)
 	{
@@ -241,7 +241,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the URI for the SOAP service
+	 * @param string $uri the URI for the SOAP service
 	 */
 	public function setUri($uri)
 	{
@@ -257,7 +257,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the SOAP provider class (in namespace format)
+	 * @param string $provider the SOAP provider class (in namespace format)
 	 */
 	public function setProvider($provider)
 	{
@@ -293,7 +293,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string actor of the SOAP service
+	 * @param string $value actor of the SOAP service
 	 */
 	public function setActor($value)
 	{
@@ -309,7 +309,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string encoding of the SOAP service
+	 * @param string $value encoding of the SOAP service
 	 */
 	public function setEncoding($value)
 	{
@@ -325,7 +325,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether the SOAP service is persistent within session.
+	 * @param boolean $value whether the SOAP service is persistent within session.
 	 */
 	public function setSessionPersistent($value)
 	{

@@ -142,7 +142,7 @@ class PradoBase
 	/**
 	 * Class autoload loader.
 	 * This method is provided to be invoked within an __autoload() magic method.
-	 * @param string class name
+	 * @param string $className class name
 	 */
 	public static function autoload($className)
 	{
@@ -206,7 +206,7 @@ class PradoBase
 	 * module of the Prado application to handle the exception.
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
-	 * @param Exception exception that is not caught
+	 * @param Exception $exception exception that is not caught
 	 */
 	public static function exceptionHandler($exception)
 	{
@@ -480,7 +480,7 @@ class PradoBase
 	 * Fatal error handler.
 	 * This method displays an error message together with the current call stack.
 	 * The application will exit after calling this method.
-	 * @param string error message
+	 * @param string $msg error message
 	 */
 	public static function fatalError($msg)
 	{

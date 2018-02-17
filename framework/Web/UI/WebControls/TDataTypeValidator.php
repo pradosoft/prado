@@ -55,7 +55,7 @@ class TDataTypeValidator extends TBaseValidator
 
 	/**
 	 * Sets the data type that the values being compared are converted to before the comparison is made.
-	 * @param TValidationDataType the data type
+	 * @param TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
@@ -64,7 +64,7 @@ class TDataTypeValidator extends TBaseValidator
 
 	/**
 	 * Sets the date format for a date validation
-	 * @param string the date format value
+	 * @param string $value the date format value
 	 */
 	public function setDateFormat($value)
 	{

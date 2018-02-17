@@ -52,7 +52,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	}
 
 	/**
-	 * @param TListItemType item type.
+	 * @param TListItemType $value item type.
 	 */
 	public function setItemType($value)
 	{
@@ -72,7 +72,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
+	 * @param integer $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{

@@ -61,7 +61,7 @@ class TParameterModule extends \Prado\TModule
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param mixed content enclosed within the module tag
+	 * @param mixed $config content enclosed within the module tag
 	 */
 	public function init($config)
 	{

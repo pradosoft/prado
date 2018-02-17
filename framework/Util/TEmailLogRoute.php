@@ -76,7 +76,7 @@ class TEmailLogRoute extends TLogRoute
 
 	/**
 	 * Sends log messages to specified email addresses.
-	 * @param array list of log messages
+	 * @param array $logs list of log messages
 	 */
 	protected function processLogs($logs)
 	{
@@ -129,7 +129,7 @@ class TEmailLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string email subject.
+	 * @param string $value email subject.
 	 */
 	public function setSubject($value)
 	{
@@ -145,7 +145,7 @@ class TEmailLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param string send from address of the email
+	 * @param string $value send from address of the email
 	 */
 	public function setSentFrom($value)
 	{

@@ -158,7 +158,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param string Css class name of the element to use for suggestion.
+	 * @param string $value Css class name of the element to use for suggestion.
 	 */
 	public function setTextCssClass($value)
 	{
@@ -183,7 +183,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param string word or token separators (delimiters).
+	 * @param string $value word or token separators (delimiters).
 	 */
 	public function setSeparator($value)
 	{
@@ -232,7 +232,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * raise if the request is to find sugggestions, the {@link onTextChanged OnTextChanged}
 	 * and {@link onCallback OnCallback} events are <b>NOT</b> raised.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -259,7 +259,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggest' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggest($param)
 	{
@@ -271,7 +271,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggestionSelected' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggestionSelected($param)
 	{
@@ -279,7 +279,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param array data source for suggestions.
+	 * @param array $data data source for suggestions.
 	 */
 	public function setDataSource($data)
 	{
@@ -350,7 +350,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the result panel.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	protected function renderResultPanel($writer)
 	{
@@ -359,7 +359,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions during a callback respones.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function renderCallback($writer)
 	{
@@ -368,7 +368,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions repeater.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function renderSuggestions($writer)
 	{

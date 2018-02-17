@@ -128,7 +128,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
+	 * @param string $bool boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
 	public function setIsNotification($bool)
 	{
@@ -144,7 +144,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string url of the RPC server
+	 * @param string $value url of the RPC server
 	 */
 	public function setServerUrl($value)
 	{

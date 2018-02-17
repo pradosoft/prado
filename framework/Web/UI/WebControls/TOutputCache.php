@@ -145,7 +145,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by setting up
 	 * the stack of the output cache in the page.
 	 * Only framework developers should use this method.
-	 * @param TControl the naming container control
+	 * @param TControl $namingContainer = null the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -325,7 +325,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @param string the ID of the cache module. If empty, the primary cache module will be used.
+	 * @param string $value the ID of the cache module. If empty, the primary cache module will be used.
 	 */
 	public function setCacheModuleID($value)
 	{
@@ -335,7 +335,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	/**
 	 * Sets the prefix of the cache key.
 	 * This method is used internally by {@link TTemplate}.
-	 * @param string key prefix
+	 * @param string $value key prefix
 	 */
 	public function setCacheKeyPrefix($value)
 	{
@@ -421,7 +421,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @param boolean whether the content being cached should be differentiated according to user sessions.
+	 * @param boolean $value whether the content being cached should be differentiated according to user sessions.
 	 */
 	public function setVaryBySession($value)
 	{
@@ -441,7 +441,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * By default, this is disabled. Be very cautious when enabling it.
 	 * If the cached content including interactive user controls such as
 	 * TTextBox, TDropDownList, your page may fail to render on postbacks.
-	 * @param boolean whether cached output will be used on postback requests.
+	 * @param boolean $value whether cached output will be used on postback requests.
 	 */
 	public function setCachingPostBack($value)
 	{
@@ -453,7 +453,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * An event handler may be written to check customized dependency conditions.
 	 * The checking result should be saved by setting {@link TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
 	 * property of the event parameter (which defaults to true).
-	 * @param TOutputCacheCheckDependencyEventParameter event parameter
+	 * @param TOutputCacheCheckDependencyEventParameter $param event parameter
 	 */
 	public function onCheckDependency($param)
 	{
@@ -466,7 +466,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * An event handler may be written to add variety of the key calculation.
 	 * The value set in {@link TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
 	 * this event parameter will be appended to the default key calculation scheme.
-	 * @param TOutputCacheCalculateKeyEventParameter event parameter
+	 * @param TOutputCacheCalculateKeyEventParameter $param event parameter
 	 */
 	public function onCalculateKey($param)
 	{

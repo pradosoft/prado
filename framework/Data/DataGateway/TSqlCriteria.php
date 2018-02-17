@@ -128,7 +128,7 @@ class TSqlCriteria extends \Prado\TComponent
 
 	/**
 	 * Sets the search conditions to be placed after the WHERE clause in the SQL.
-	 * @param string search conditions.
+	 * @param string $value search conditions.
 	 */
 	public function setCondition($value)
 	{
@@ -184,7 +184,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @param \ArrayAccess named parameters.
+	 * @param \ArrayAccess $value named parameters.
 	 */
 	public function setParameters($value)
 	{
@@ -211,7 +211,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed ordering clause.
+	 * @param mixed $value ordering clause.
 	 */
 	public function setOrdersBy($value)
 	{
@@ -239,7 +239,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int maximum number of records to return.
+	 * @param int $value maximum number of records to return.
 	 */
 	public function setLimit($value)
 	{
@@ -255,7 +255,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int record offset.
+	 * @param int $value record offset.
 	 */
 	public function setOffset($value)
 	{

@@ -30,7 +30,7 @@ class TFileCacheDependency extends TCacheDependency
 
 	/**
 	 * Constructor.
-	 * @param string name of the file whose change is to be checked.
+	 * @param string $fileName name of the file whose change is to be checked.
 	 */
 	public function __construct($fileName)
 	{
@@ -46,7 +46,7 @@ class TFileCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param string the name of the file whose change is to be checked
+	 * @param string $value the name of the file whose change is to be checked
 	 */
 	public function setFileName($value)
 	{

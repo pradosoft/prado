@@ -45,7 +45,7 @@ abstract class TSqlMapCache implements ICache
 
 	/**
 	 * Maximum number of items to cache. Default size is 100.
-	 * @param int cache size.
+	 * @param int $value cache size.
 	 */
 	public function setCacheSize($value)
 	{

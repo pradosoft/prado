@@ -32,7 +32,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 
 	/**
 	 * Constructor.
-	 * @param string the name of the global state
+	 * @param string $name the name of the global state
 	 */
 	public function __construct($name)
 	{

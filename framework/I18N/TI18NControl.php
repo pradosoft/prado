@@ -61,7 +61,7 @@ class TI18NControl extends TControl
 
 	/**
 	 * Sets the charset for message output
-	 * @param string the charset, e.g. UTF-8
+	 * @param string $value the charset, e.g. UTF-8
 	 */
 	public function setCharset($value)
 	{
@@ -81,7 +81,7 @@ class TI18NControl extends TControl
 
 	/**
 	 * Get the custom culture identifier.
-	 * @param string culture identifier.
+	 * @param string $culture culture identifier.
 	 */
 	public function setCulture($culture)
 	{

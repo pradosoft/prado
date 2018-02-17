@@ -95,7 +95,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 * OnServerValidate} event is raised first and then the
 	 * {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -106,7 +106,7 @@ class TActiveCustomValidator extends TCustomValidator
 	}
 
 	/**
-	 * @param boolean whether the value is valid; this method will trigger a clientside update if needed
+	 * @param boolean $value whether the value is valid; this method will trigger a clientside update if needed
 	 */
 	public function setIsValid($value)
 	{
@@ -127,7 +127,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -147,7 +147,7 @@ class TActiveCustomValidator extends TCustomValidator
 
 	/**
 	 * Sets the text for the error message. Updates client-side error message.
-	 * @param string the error message
+	 * @param string $value the error message
 	 */
 	public function setErrorMessage($value)
 	{

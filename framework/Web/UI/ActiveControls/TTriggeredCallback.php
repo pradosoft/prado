@@ -36,7 +36,7 @@ abstract class TTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @param string The ID of the server control the trigger is bounded to.
+	 * @param string $value The ID of the server control the trigger is bounded to.
 	 */
 	public function setControlID($value)
 	{

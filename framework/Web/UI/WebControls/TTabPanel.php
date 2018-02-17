@@ -79,7 +79,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTabView} objects into the {@link getViews Views} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
@@ -119,7 +119,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string The ID of the active tab view.
+	 * @param string $value The ID of the active tab view.
 	 */
 	public function setActiveViewID($value)
 	{
@@ -188,7 +188,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param bool whether to enable automatic tab switch on hover
+	 * @param bool $value whether to enable automatic tab switch on hover
 	 */
 	public function setAutoSwitch($value)
 	{
@@ -205,7 +205,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string URL for the CSS file including all relevant CSS class definitions.
+	 * @param string $value URL for the CSS file including all relevant CSS class definitions.
 	 */
 	public function setCssUrl($value)
 	{
@@ -230,7 +230,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string CSS class for the currently displayed view div.
+	 * @param string $value CSS class for the currently displayed view div.
 	 */
 	public function setViewCssClass($value)
 	{
@@ -260,7 +260,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string CSS class for non-active tabs.
+	 * @param string $value CSS class for non-active tabs.
 	 */
 	public function setTabCssClass($value)
 	{
@@ -290,7 +290,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param string CSS class for the active tab.
+	 * @param string $value CSS class for the active tab.
 	 */
 	public function setActiveTabCssClass($value)
 	{
@@ -314,7 +314,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Activates the specified view.
 	 * If there is any other view currently active, it will be deactivated.
-	 * @param TTabView the view to be activated. If null, all views will be deactivated.
+	 * @param TTabView $view the view to be activated. If null, all views will be deactivated.
 	 */
 	protected function activateView($view)
 	{
@@ -380,7 +380,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -392,7 +392,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -503,7 +503,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders body contents of the tab control.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

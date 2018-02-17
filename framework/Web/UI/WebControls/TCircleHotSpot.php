@@ -50,7 +50,7 @@ class TCircleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer radius of the circular HotSpot region.
+	 * @param integer $value radius of the circular HotSpot region.
 	 */
 	public function setRadius($value)
 	{
@@ -66,7 +66,7 @@ class TCircleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer the X coordinate of the center of the circular HotSpot region.
+	 * @param integer $value the X coordinate of the center of the circular HotSpot region.
 	 */
 	public function setX($value)
 	{
@@ -82,7 +82,7 @@ class TCircleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer the Y coordinate of the center of the circular HotSpot region.
+	 * @param integer $value the Y coordinate of the center of the circular HotSpot region.
 	 */
 	public function setY($value)
 	{

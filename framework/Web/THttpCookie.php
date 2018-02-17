@@ -74,7 +74,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the domain to associate the cookie with
+	 * @param string $value the domain to associate the cookie with
 	 */
 	public function setDomain($value)
 	{
@@ -90,7 +90,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
+	 * @param integer $value the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
 	 */
 	public function setExpire($value)
 	{
@@ -122,7 +122,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the name of the cookie
+	 * @param string $value the name of the cookie
 	 */
 	public function setName($value)
 	{
@@ -138,7 +138,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the value of the cookie
+	 * @param string $value the value of the cookie
 	 */
 	public function setValue($value)
 	{
@@ -154,7 +154,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the path on the server in which the cookie will be available on
+	 * @param string $value the path on the server in which the cookie will be available on
 	 */
 	public function setPath($value)
 	{
@@ -170,7 +170,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean ether the cookie should only be transmitted over a secure HTTPS connection
+	 * @param boolean $value ether the cookie should only be transmitted over a secure HTTPS connection
 	 */
 	public function setSecure($value)
 	{

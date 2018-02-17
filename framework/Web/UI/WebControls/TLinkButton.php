@@ -75,7 +75,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -85,7 +85,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -109,7 +109,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Renders the client-script code.
-	 * @param THtmlWriter renderer
+	 * @param THtmlWriter $writer renderer
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -118,7 +118,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 * @param boolean $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
@@ -135,7 +135,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Renders the Href for link button.
-	 * @param THtmlWriter renderer
+	 * @param THtmlWriter $writer renderer
 	 */
 	protected function renderLinkButtonHref($writer)
 	{
@@ -174,7 +174,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Renders the body content enclosed between the control tag.
 	 * If {@link getText Text} is not empty, it will be rendered. Otherwise,
 	 * the body content enclosed in the control tag will be rendered.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -193,7 +193,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
@@ -235,7 +235,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
@@ -251,7 +251,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{
@@ -268,7 +268,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Sets the value indicating whether postback event trigger by this button will cause input validation.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setCausesValidation($value)
 	{
@@ -284,7 +284,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string $value the group of validators which the button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
@@ -298,7 +298,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter the event parameter
+	 * @param TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -313,7 +313,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
@@ -325,7 +325,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{

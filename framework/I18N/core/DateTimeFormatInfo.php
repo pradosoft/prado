@@ -203,7 +203,7 @@ class DateTimeFormatInfo
 	 * an array of string starting with Sunday and ends in Saturady.
 	 * For example,
 	 * <code>array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");</code>
-	 * @param array abbreviated day names.
+	 * @param array $value abbreviated day names.
 	 */
 	public function setAbbreviatedDayNames($value)
 	{
@@ -227,7 +227,7 @@ class DateTimeFormatInfo
 	 * an array of string starting with Sunday and ends in Saturady.
 	 * For example,
 	 * <code>array("S", "M", "T", "W", "T", "F", "S");</code>
-	 * @param array narrow day names.
+	 * @param array $value narrow day names.
 	 */
 	public function setNarrowDayNames($value)
 	{
@@ -253,7 +253,7 @@ class DateTimeFormatInfo
 	 * For example,
 	 * <code>array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
 	 * "Friday", "Saturday".);</code>
-	 * @param array day names.
+	 * @param array $value day names.
 	 */
 	public function setDayNames($value)
 	{
@@ -277,7 +277,7 @@ class DateTimeFormatInfo
 	 * an array of string starting with J and ends in D.
 	 * For example,
 	 * <code>array("J","F","M","A","M","J","J","A","S","O","N","D");</code>
-	 * @param array month names.
+	 * @param array $value month names.
 	 */
 	public function setNarrowMonthNames($value)
 	{
@@ -306,7 +306,7 @@ class DateTimeFormatInfo
 	 * For example,
 	 * <code>array("Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	 * "Jul", "Aug", "Sep","Oct","Nov","Dec");</code>
-	 * @param array month names.
+	 * @param array $value month names.
 	 */
 	public function setAbbreviatedMonthNames($value)
 	{
@@ -332,7 +332,7 @@ class DateTimeFormatInfo
 	 * For example,
 	 * <code>array("January", "February", "March", "April", "May", "June",
 	 * "July", "August", "September","October","November","December");</code>
-	 * @param array month names.
+	 * @param array $value month names.
 	 */
 	public function setMonthNames($value)
 	{
@@ -363,7 +363,7 @@ class DateTimeFormatInfo
 
 	/**
 	 * Set the AM Designator. For example, 'AM'.
-	 * @param string AM designator.
+	 * @param string $value AM designator.
 	 */
 	public function setAMDesignator($value)
 	{
@@ -385,7 +385,7 @@ class DateTimeFormatInfo
 
 	/**
 	 * Set the PM Designator. For example, 'PM'.
-	 * @param string PM designator.
+	 * @param string $value PM designator.
 	 */
 	public function setPMDesignator($value)
 	{
@@ -407,7 +407,7 @@ class DateTimeFormatInfo
 	/**
 	 * Set the AM and PM markers array.
 	 * For example <code>array('AM','PM');</code>
-	 * @param array AM and PM markers
+	 * @param array $value AM and PM markers
 	 */
 	public function setAMPMMarkers($value)
 	{

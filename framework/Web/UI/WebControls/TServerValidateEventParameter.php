@@ -64,7 +64,7 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether the value is valid
+	 * @param boolean $value whether the value is valid
 	 */
 	public function setIsValid($value)
 	{

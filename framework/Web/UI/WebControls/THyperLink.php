@@ -45,7 +45,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes related to a hyperlink element to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -61,7 +61,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Renders the body content of the hyperlink.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -114,7 +114,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the text caption of the THyperLink.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
@@ -134,7 +134,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
@@ -151,7 +151,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the height of the image in the THyperLink
-	 * @param string height of the image in the THyperLink
+	 * @param string $value height of the image in the THyperLink
 	 */
 	public function setImageHeight($value)
 	{
@@ -168,7 +168,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the location of image file of the THyperLink.
-	 * @param string the image file location
+	 * @param string $value the image file location
 	 */
 	public function setImageUrl($value)
 	{
@@ -185,7 +185,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the width of the image in the THyperLink
-	 * @param string width of the image
+	 * @param string $value width of the image
 	 */
 	public function setImageWidth($value)
 	{
@@ -202,7 +202,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
@@ -245,7 +245,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the THyperLink component is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{

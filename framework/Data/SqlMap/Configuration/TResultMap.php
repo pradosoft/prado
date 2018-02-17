@@ -66,7 +66,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string a unique identifier for the <resultMap>.
+	 * @param string $value a unique identifier for the <resultMap>.
 	 */
 	public function setID($value)
 	{
@@ -82,7 +82,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result class name.
+	 * @param string $value result class name.
 	 */
 	public function setClass($value)
 	{
@@ -106,7 +106,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result map extends another result map.
+	 * @param string $value result map extends another result map.
 	 */
 	public function setExtends($value)
 	{
@@ -122,7 +122,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result map group by
+	 * @param string $value result map group by
 	 */
 	public function setGroupBy($value)
 	{

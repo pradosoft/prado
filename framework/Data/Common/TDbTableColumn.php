@@ -28,7 +28,7 @@ class TDbTableColumn extends \Prado\TComponent
 
 	/**
 	 * Sets the table column meta data.
-	 * @param array table column information.
+	 * @param array $columnInfo table column information.
 	 */
 	public function __construct($columnInfo)
 	{

@@ -64,7 +64,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	 * Renders the TActiveMultiView.
 	 * If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -80,7 +80,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	/**
 	 * Renders the TActiveMultiView by writing a span tag with the container id obtained from {@link getContainerID()}
 	 * which will be called by the replacement method of the client script to update it's content.
-	 * @param $writer THtmlWriter writer for the rendering purpose
+	 * @param $writer $writer THtmlWriter writer for the rendering purpose
 	 */
 	protected function renderMultiView($writer)
 	{

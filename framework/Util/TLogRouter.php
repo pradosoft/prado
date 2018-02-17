@@ -167,7 +167,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Collects log messages from a logger.
 	 * This method is an event handler to application's EndRequest event.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function collectLogs($param)
 	{

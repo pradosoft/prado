@@ -60,7 +60,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param TButtonColumnType the type of command button.
+	 * @param TButtonColumnType $value the type of command button.
 	 */
 	public function setButtonType($value)
 	{
@@ -76,7 +76,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the caption of the edit button
+	 * @param string $value the caption of the edit button
 	 */
 	public function setEditText($value)
 	{
@@ -92,7 +92,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the URL of the image file for edit image buttons
+	 * @param string $value the URL of the image file for edit image buttons
 	 */
 	public function setEditImageUrl($value)
 	{
@@ -108,7 +108,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the caption of the update button
+	 * @param string $value the caption of the update button
 	 */
 	public function setUpdateText($value)
 	{
@@ -124,7 +124,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the URL of the image file for update image buttons
+	 * @param string $value the URL of the image file for update image buttons
 	 */
 	public function setUpdateImageUrl($value)
 	{
@@ -140,7 +140,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the caption of the cancel button
+	 * @param string $value the caption of the cancel button
 	 */
 	public function setCancelText($value)
 	{
@@ -156,7 +156,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the URL of the image file for cancel image buttons
+	 * @param string $value the URL of the image file for cancel image buttons
 	 */
 	public function setCancelImageUrl($value)
 	{
@@ -172,7 +172,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by edit or update button will cause input validation
+	 * @param boolean $value whether postback event trigger by edit or update button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -188,7 +188,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the group of validators which the edit or update button causes validation upon postback
+	 * @param string $value the group of validators which the edit or update button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{

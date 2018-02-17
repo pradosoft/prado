@@ -39,7 +39,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTableCell} objects into the {@link getCells Cells} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
@@ -89,7 +89,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
 	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -110,7 +110,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
 	 * Valid values include 'NotSet','Top','Bottom','Middle'
-	 * @param string the horizontal alignment
+	 * @param string $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
@@ -126,7 +126,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableRowSection location of a row in a table.
+	 * @param TTableRowSection $value location of a row in a table.
 	 */
 	public function setTableSection($value)
 	{
@@ -135,7 +135,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table row
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

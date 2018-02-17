@@ -33,7 +33,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	/**
 	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
 	 * options tracking in ViewState.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -42,7 +42,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	}
 
 	/**
-	 * @param string set the jquery-ui style
+	 * @param string $value set the jquery-ui style
 	 */
 	public function setJuiBaseStyle($value)
 	{

@@ -140,7 +140,7 @@ class TDbCache extends TCache
 	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
 	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
 	 *
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
@@ -381,7 +381,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string the username for establishing DB connection
+	 * @param string $value the username for establishing DB connection
 	 */
 	public function setUsername($value)
 	{
@@ -397,7 +397,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string the password for establishing DB connection
+	 * @param string $value the password for establishing DB connection
 	 */
 	public function setPassword($value)
 	{

@@ -91,7 +91,7 @@ class TTableStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -117,7 +117,7 @@ class TTableStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -143,7 +143,7 @@ class TTableStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -182,7 +182,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the URL of the background image for the table
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -199,7 +199,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table.
-	 * @param THorizontalAlign the horizontal alignment
+	 * @param THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -252,7 +252,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the grid line style of the table.
-	 * @param TTableGridLines the grid line setting of the table
+	 * @param TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -269,7 +269,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param boolean whether the table borders should be collapsed.
+	 * @param boolean $value whether the table borders should be collapsed.
 	 */
 	public function setBorderCollapse($value)
 	{

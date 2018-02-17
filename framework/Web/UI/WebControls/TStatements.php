@@ -43,7 +43,7 @@ class TStatements extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string the PHP statements to be executed
+	 * @param string $value the PHP statements to be executed
 	 */
 	public function setStatements($value)
 	{
@@ -52,7 +52,7 @@ class TStatements extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the evaluation result of the statements.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

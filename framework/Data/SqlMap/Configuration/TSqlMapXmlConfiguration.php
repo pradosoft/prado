@@ -38,7 +38,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	private $_properties = [];
 
 	/**
-	 * @param TSqlMapManager manager instance.
+	 * @param TSqlMapManager $manager manager instance.
 	 */
 	public function __construct($manager)
 	{
@@ -57,7 +57,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Configure the TSqlMapManager using the given xml file.
-	 * @param string SqlMap configuration xml file.
+	 * @param string $filename = null SqlMap configuration xml file.
 	 */
 	public function configure($filename = null)
 	{
@@ -86,7 +86,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load global replacement property.
-	 * @param SimpleXmlElement property node.
+	 * @param SimpleXmlElement $node property node.
 	 */
 	protected function loadGlobalProperty($node)
 	{
@@ -95,7 +95,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the type handler configurations.
-	 * @param SimpleXmlElement type handler node
+	 * @param SimpleXmlElement $node type handler node
 	 */
 	protected function loadTypeHandler($node)
 	{
@@ -105,7 +105,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the database connection tag.
-	 * @param SimpleXmlElement connection node.
+	 * @param SimpleXmlElement $node connection node.
 	 */
 	protected function loadDatabaseConnection($node)
 	{

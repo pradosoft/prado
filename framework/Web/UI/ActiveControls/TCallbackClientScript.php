@@ -189,7 +189,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Client script to click on an element. <b>This client-side function is unpredictable.</b>
 	 *
-	 * @param TControl control element or element id
+	 * @param TControl $control control element or element id
 	 */
 	public function click($control)
 	{
@@ -262,7 +262,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Shows an element by changing its CSS display style as empty.
-	 * @param TControl control element or element id
+	 * @param TControl $element control element or element id
 	 */
 	public function show($element)
 	{
@@ -271,7 +271,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Hides an element by changing its CSS display style to "none".
-	 * @param TControl control element or element id
+	 * @param TControl $element control element or element id
 	 */
 	public function hide($element)
 	{
@@ -306,7 +306,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Removes an element from the HTML page.
-	 * @param TControl control element or element id
+	 * @param TControl $element control element or element id
 	 */
 	public function remove($element)
 	{
@@ -358,7 +358,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Focus on a particular element.
-	 * @param TControl control element or element id.
+	 * @param TControl $element control element or element id.
 	 */
 	public function focus($element)
 	{
@@ -461,7 +461,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
-	 * @param THtmlWriter writer for the content.
+	 * @param THtmlWriter $writer writer for the content.
 	 */
 	public function evaluateScript($writer)
 	{
@@ -481,7 +481,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Appends a block of inline javascript enclosed in a boundary.
 	 * Similar to to evaluateScript(), but functions declared in the
 	 * inline block will be available to page elements.
-	 * @param THtmlWriter writer for the content.
+	 * @param THtmlWriter $content writer for the content.
 	 */
 	public function appendScriptBlock($content)
 	{

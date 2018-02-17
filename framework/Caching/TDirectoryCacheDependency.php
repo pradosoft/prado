@@ -42,7 +42,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 
 	/**
 	 * Constructor.
-	 * @param string the directory to be checked
+	 * @param string $directory the directory to be checked
 	 */
 	public function __construct($directory)
 	{
@@ -79,7 +79,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param boolean whether the subdirectories of the directory will also be checked.
+	 * @param boolean $value whether the subdirectories of the directory will also be checked.
 	 */
 	public function setRecursiveCheck($value)
 	{

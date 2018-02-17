@@ -110,7 +110,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the format of the date string.
-	 * @param string the format of the date string
+	 * @param string $value the format of the date string
 	 */
 	public function setDateFormat($value)
 	{
@@ -127,7 +127,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets whether to pop up the calendar window when the control receives focus
-	 * @param boolean whether to show the calendar window
+	 * @param boolean $value whether to show the calendar window
 	 */
 	public function setShowCalendar($value)
 	{
@@ -145,7 +145,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the culture/language for the date picker.
-	 * @param string a culture string, e.g. en_AU.
+	 * @param string $value a culture string, e.g. en_AU.
 	 */
 	public function setCulture($value)
 	{
@@ -153,7 +153,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerInputMode input method of date values
+	 * @param TDatePickerInputMode $value input method of date values
 	 */
 	public function setInputMode($value)
 	{
@@ -169,7 +169,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerMode calendar UI mode
+	 * @param TDatePickerMode $value calendar UI mode
 	 */
 	public function setMode($value)
 	{
@@ -184,7 +184,7 @@ class TDatePicker extends TTextBox
 	   return $this->getViewState('Mode', TDatePickerMode::Basic);
 	}
 	/**
-	 * @param string the image url for "Image" UI mode.
+	 * @param string $value the image url for "Image" UI mode.
 	 */
 	public function setButtonImageUrl($value)
 	{
@@ -200,7 +200,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string set the calendar style
+	 * @param string $value set the calendar style
 	 */
 	public function setCalendarStyle($value)
 	{
@@ -217,7 +217,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Set the first day of week, with 0 as Sunday, 1 as Monday, etc.
-	 * @param integer 0 for Sunday, 1 for Monday, 2 for Tuesday, etc.
+	 * @param integer $value 0 for Sunday, 1 for Monday, 2 for Tuesday, etc.
 	 */
 	public function setFirstDayOfWeek($value)
 	{
@@ -241,7 +241,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string text for the date picker button
+	 * @param string $value text for the date picker button
 	 */
 	public function setButtonText($value)
 	{
@@ -249,7 +249,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param integer date picker starting year, default is 2000.
+	 * @param integer $value date picker starting year, default is 2000.
 	 */
 	public function setFromYear($value)
 	{
@@ -265,7 +265,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param integer date picker ending year, default +10 years
+	 * @param integer $value date picker ending year, default +10 years
 	 */
 	public function setUpToYear($value)
 	{
@@ -281,7 +281,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerPositionMode calendar UI position
+	 * @param TDatePickerPositionMode $value calendar UI position
 	 */
 	public function setPositionMode($value)
 	{
@@ -309,7 +309,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the date for the date picker using timestamp.
-	 * @param float time stamp for the date picker
+	 * @param float $value time stamp for the date picker
 	 */
 	public function setTimeStamp($value)
 	{
@@ -358,7 +358,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string date string
+	 * @param string $value date string
 	 */
 	public function setDate($value)
 	{
@@ -417,7 +417,7 @@ class TDatePicker extends TTextBox
 	 * Renders body content.
 	 * This method overrides parent implementation by adding
 	 * additional date picker button if Mode is Button or ImageButton.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -852,7 +852,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Add the client id to the input textbox, and register the client scripts.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

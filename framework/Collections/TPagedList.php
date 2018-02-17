@@ -96,7 +96,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param boolean whether to allow custom paging
+	 * @param boolean $value whether to allow custom paging
 	 */
 	public function setCustomPaging($value)
 	{
@@ -112,7 +112,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer number of items in each page
+	 * @param integer $value number of items in each page
 	 */
 	public function setPageSize($value)
 	{
@@ -143,7 +143,7 @@ class TPagedList extends TList
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This event is raised each time when the list changes to a different page.
-	 * @param TPagedListPageChangedEventParameter event parameter
+	 * @param TPagedListPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
@@ -155,7 +155,7 @@ class TPagedList extends TList
 	 * This event is raised each time when the list changes to a different page
 	 * and needs the new page of data. This event can only be raised when
 	 * {@link setCustomPaging CustomPaging} is true.
-	 * @param TPagedListFetchDataEventParameter event parameter
+	 * @param TPagedListFetchDataEventParameter $param event parameter
 	 */
 	public function onFetchData($param)
 	{
@@ -233,7 +233,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer user-assigned number of items in data source
+	 * @param integer $value user-assigned number of items in data source
 	 */
 	public function setVirtualCount($value)
 	{

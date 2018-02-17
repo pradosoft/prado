@@ -71,7 +71,7 @@ class TDropDownListColumn extends TDataGridColumn
 	/**
 	 * Loads items from viewstate.
 	 * This method overrides the parent implementation by loading list items
-	 * @param mixed state values
+	 * @param mixed $state state values
 	 */
 	public function loadState($state)
 	{
@@ -95,7 +95,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
@@ -119,7 +119,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 * Sets the field of the data source that provides the text content of the column.
 	 * If this is not set, the data specified via {@link getDataValueField DataValueField}
 	 * will be displayed in the column.
-	 * @param string the field of the data source that provides the text content of the column.
+	 * @param string $value the field of the data source that provides the text content of the column.
 	 */
 	public function setDataTextField($value)
 	{
@@ -135,7 +135,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
+	 * @param string $value the formatting string used to control how the bound data will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
@@ -154,7 +154,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 * Sets the field of the data source that provides the key selecting an item in dropdown list.
 	 * If this is not present, the data specified via {@link getDataTextField DataTextField} (without
 	 * applying the formatting string) will be used for selection, instead.
-	 * @param string the field of the data source that provides the key selecting an item in dropdown list.
+	 * @param string $value the field of the data source that provides the key selecting an item in dropdown list.
 	 */
 	public function setDataValueField($value)
 	{
@@ -170,7 +170,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -186,7 +186,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param Traversable|array|string data source to be bound to the dropdown list boxes.
+	 * @param Traversable|array|string $value data source to be bound to the dropdown list boxes.
 	 */
 	public function setListDataSource($value)
 	{
@@ -202,7 +202,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the data field used to populate the values of the dropdown list items
+	 * @param string $value the data field used to populate the values of the dropdown list items
 	 */
 	public function setListValueField($value)
 	{
@@ -218,7 +218,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the data field used to populate the texts of the dropdown list items
+	 * @param string $value the data field used to populate the texts of the dropdown list items
 	 */
 	public function setListTextField($value)
 	{
@@ -234,7 +234,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param string the formatting string used to control how the list item texts will be displayed.
+	 * @param string $value the formatting string used to control how the list item texts will be displayed.
 	 */
 	public function setListTextFormatString($value)
 	{

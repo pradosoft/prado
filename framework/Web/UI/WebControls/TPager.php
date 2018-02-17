@@ -93,7 +93,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Sets the ID path of the control whose content would be paginated.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the pager's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setControlToPaginate($value)
 	{
@@ -127,7 +127,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param TPagerMode pager mode.
+	 * @param TPagerMode $value pager mode.
 	 */
 	public function setMode($value)
 	{
@@ -143,7 +143,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param TPagerButtonType the type of command button for paging.
+	 * @param TPagerButtonType $value the type of command button for paging.
 	 */
 	public function setButtonType($value)
 	{
@@ -159,7 +159,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string text for the next page button.
+	 * @param string $value text for the next page button.
 	 */
 	public function setNextPageText($value)
 	{
@@ -175,7 +175,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string text for the next page button.
+	 * @param string $value text for the next page button.
 	 */
 	public function setPrevPageText($value)
 	{
@@ -191,7 +191,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string text for the first page button. If empty, the first page button will not be rendered.
+	 * @param string $value text for the first page button. If empty, the first page button will not be rendered.
 	 */
 	public function setFirstPageText($value)
 	{
@@ -207,7 +207,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string text for the last page button. If empty, the last page button will not be rendered.
+	 * @param string $value text for the last page button. If empty, the last page button will not be rendered.
 	 */
 	public function setLastPageText($value)
 	{
@@ -387,7 +387,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Performs databinding to populate data items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the bound data
+	 * @param Traversable $param the bound data
 	 */
 	public function onPreRender($param)
 	{
@@ -413,7 +413,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Renders the control.
 	 * The method overrides the parent implementation by rendering
 	 * the pager only when there are two or more pages.
-	 * @param THtmlWriter the writer
+	 * @param THtmlWriter $writer the writer
 	 */
 	public function render($writer)
 	{
@@ -665,7 +665,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * This event is raised when page index is changed due to a page button click.
-	 * @param TPagerPageChangedEventParameter event parameter
+	 * @param TPagerPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{

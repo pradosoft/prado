@@ -59,7 +59,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 
 	/**
 	 * Sets the client side options. Can only be set when client side is null.
-	 * @param TCallbackClientSide client side options.
+	 * @param TCallbackClientSide $client client side options.
 	 */
 	public function setClientSide($client)
 	{
@@ -185,7 +185,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @param mixed callback parameter value.
+	 * @param mixed $value callback parameter value.
 	 */
 	public function setCallbackParameter($value)
 	{

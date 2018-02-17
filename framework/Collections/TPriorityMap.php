@@ -118,7 +118,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @param boolean whether this list is read-only or not
+	 * @param boolean $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -135,7 +135,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * This must be called internally or when instantiated.
-	 * @param numeric sets the default priority of inserted items without a specified priority
+	 * @param numeric $value sets the default priority of inserted items without a specified priority
 	 */
 	protected function setDefaultPriority($value)
 	{
@@ -152,7 +152,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * This must be called internally or when instantiated.
-	 * @param integer The precision of numeric priorities.
+	 * @param integer $value The precision of numeric priorities.
 	 */
 	protected function setPrecision($value)
 	{
@@ -600,7 +600,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

@@ -55,7 +55,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	/**
 	 * Renders body content.
 	 * This method overrides parent implementation by removing malicious code from the body content
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{

@@ -84,7 +84,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{
@@ -102,7 +102,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
 	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -119,7 +119,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the URL of the background image for the panel component.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -156,7 +156,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 * The default button will be fired (clicked) whenever a user enters 'return'
 	 * key within the panel.
 	 * The button must be locatable via the function call {@link TControl::findControl findControl}.
-	 * @param string the ID path to the default button.
+	 * @param string $value the ID path to the default button.
 	 */
 	public function setDefaultButton($value)
 	{
@@ -172,7 +172,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 * @param string $value the legend text. If this value is not empty, the panel will be rendered as a fieldset.
 	 */
 	public function setGroupingText($value)
 	{
@@ -198,7 +198,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -214,7 +214,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

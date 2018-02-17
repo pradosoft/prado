@@ -23,7 +23,7 @@ class TWizardFinishNavigationTemplate extends TWizardNavigationTemplate
 {
 	/**
 	 * Instantiates the template.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

@@ -68,7 +68,7 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @param string item to be deleted.
+	 * @param string $key item to be deleted.
 	 */
 	public function delete($key)
 	{

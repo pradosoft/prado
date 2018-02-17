@@ -60,7 +60,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string id of the meta tag
+	 * @param string $value id of the meta tag
 	 */
 	public function setID($value)
 	{
@@ -76,7 +76,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string http-equiv attribute of the meta tag
+	 * @param string $value http-equiv attribute of the meta tag
 	 */
 	public function setHttpEquiv($value)
 	{
@@ -92,7 +92,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name attribute of the meta tag
+	 * @param string $value name attribute of the meta tag
 	 */
 	public function setName($value)
 	{
@@ -108,7 +108,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string content attribute of the meta tag
+	 * @param string $value content attribute of the meta tag
 	 */
 	public function setContent($value)
 	{
@@ -124,7 +124,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string scheme attribute of the meta tag
+	 * @param string $value scheme attribute of the meta tag
 	 */
 	public function setScheme($value)
 	{
@@ -140,7 +140,7 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string charset attribute of the meta tag
+	 * @param string $value charset attribute of the meta tag
 	 */
 	public function setCharset($value)
 	{
@@ -149,7 +149,7 @@ class TMetaTag extends \Prado\TComponent
 
 	/**
 	 * Renders the meta tag.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{

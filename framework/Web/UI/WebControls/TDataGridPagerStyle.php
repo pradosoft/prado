@@ -73,7 +73,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerMode pager mode.
+	 * @param TDataGridPagerMode $value pager mode.
 	 */
 	public function setMode($value)
 	{
@@ -89,7 +89,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerButtonType the type of command button
+	 * @param TDataGridPagerButtonType $value the type of command button
 	 */
 	public function setButtonType($value)
 	{
@@ -105,7 +105,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param string text for the next page button.
+	 * @param string $value text for the next page button.
 	 */
 	public function setNextPageText($value)
 	{
@@ -121,7 +121,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param string text for the previous page button.
+	 * @param string $value text for the previous page button.
 	 */
 	public function setPrevPageText($value)
 	{
@@ -137,7 +137,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param string text for the first page button.
+	 * @param string $value text for the first page button.
 	 */
 	public function setFirstPageText($value)
 	{
@@ -153,7 +153,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param string text for the last page button.
+	 * @param string $value text for the last page button.
 	 */
 	public function setLastPageText($value)
 	{
@@ -188,7 +188,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerPosition where the pager is to be displayed.
+	 * @param TDataGridPagerPosition $value where the pager is to be displayed.
 	 */
 	public function setPosition($value)
 	{
@@ -204,7 +204,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param boolean whether the pager is visible.
+	 * @param boolean $value whether the pager is visible.
 	 */
 	public function setVisible($value)
 	{
@@ -230,7 +230,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -258,7 +258,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
