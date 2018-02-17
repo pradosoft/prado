@@ -132,7 +132,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the item with the specified key.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
@@ -188,7 +188,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
@@ -207,7 +207,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
@@ -226,7 +226,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
@@ -243,7 +243,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -254,7 +254,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)

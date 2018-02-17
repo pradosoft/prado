@@ -53,7 +53,7 @@ class TPhpErrorException extends TSystemException
 	/**
 	 * Returns if error is one of fatal type.
 	 *
-	 * @param array $error error got from error_get_last()
+	 * @param array $error $error error got from error_get_last()
 	 * @return boolean if error is one of fatal type
 	 */
 	public static function isFatalError($error)

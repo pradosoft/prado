@@ -151,7 +151,7 @@ class TGettext_MO extends TGettext
 	 *
 	 * @access  private
 	 * @return  string
-	 * @param   array   $params     associative array with offset and length
+	 * @param   array $params $params     associative array with offset and length
 	 *                              of the string
 	 */
 	public function _readStr($params)

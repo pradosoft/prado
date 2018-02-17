@@ -368,7 +368,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param TTextBoxAutoCompleteType the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
+	 * @param TTextBoxAutoCompleteType $value the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
 	 * @throws TInvalidDataValueException if the input parameter is not a valid AutoComplete type
 	 */
 	public function setAutoCompleteType($value)
@@ -587,7 +587,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the behavior mode of the TTextBox component.
-	 * @param TTextBoxMode the text mode
+	 * @param TTextBoxMode $value the text mode
 	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)

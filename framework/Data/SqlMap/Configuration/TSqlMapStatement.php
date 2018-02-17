@@ -255,7 +255,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return \ArrayAccess new instance of list class.
 	 */
 	public function createInstanceOfListClass($registry)

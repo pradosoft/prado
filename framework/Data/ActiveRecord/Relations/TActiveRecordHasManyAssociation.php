@@ -251,7 +251,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @param array source table column names.
+	 * @param array $sourceKeys source table column names.
 	 * @return string comma separated source column names.
 	 */
 	protected function getSourceColumns($sourceKeys)

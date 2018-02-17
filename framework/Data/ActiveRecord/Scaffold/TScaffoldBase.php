@@ -53,7 +53,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord record instance
+	 * @param TActiveRecord $record record instance
 	 * @return array record property values
 	 */
 	protected function getRecordPropertyValues($record)
@@ -65,7 +65,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord record instance
+	 * @param TActiveRecord $record record instance
 	 * @return array record primary key values.
 	 */
 	protected function getRecordPkValues($record)

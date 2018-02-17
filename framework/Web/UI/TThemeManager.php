@@ -88,7 +88,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string name of the theme to be retrieved
+	 * @param string $name name of the theme to be retrieved
 	 * @return TTheme the theme retrieved
 	 */
 	public function getTheme($name)
@@ -146,7 +146,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the base path for all themes. It must be in the format of a namespace.
+	 * @param string $value the base path for all themes. It must be in the format of a namespace.
 	 * @throws TInvalidDataValueException if the base path is not a proper namespace.
 	 */
 	public function setBasePath($value)

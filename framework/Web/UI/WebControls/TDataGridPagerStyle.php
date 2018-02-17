@@ -169,7 +169,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param integer maximum number of pager buttons to be displayed
+	 * @param integer $value maximum number of pager buttons to be displayed
 	 * @throws TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)

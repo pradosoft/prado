@@ -171,7 +171,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of the attribute
+	 * @param string $name name of the attribute
 	 * @return boolean whether the named attribute exists
 	 */
 	public function hasAttribute($name)
@@ -198,7 +198,7 @@ class TListItem extends \Prado\TComponent
 
 	/**
 	 * Removes the named attribute.
-	 * @param string the name of the attribute to be removed.
+	 * @param string $name the name of the attribute to be removed.
 	 * @return string attribute value removed, empty string if attribute does not exist.
 	 */
 	public function removeAttribute($name)

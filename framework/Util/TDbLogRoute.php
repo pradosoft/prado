@@ -75,7 +75,7 @@ class TDbLogRoute extends TLogRoute
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * It initializes the database for logging purpose.
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if the DB table does not exist.
 	 */
 	public function init($config)
@@ -208,7 +208,7 @@ class TDbLogRoute extends TLogRoute
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
-	 * @param string the name of the DB table to store log content
+	 * @param string $value the name of the DB table to store log content
 	 * @see setAutoCreateLogTable
 	 */
 	public function setLogTableName($value)
@@ -226,7 +226,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param boolean whether the log DB table should be automatically created if not exists.
+	 * @param boolean $value whether the log DB table should be automatically created if not exists.
 	 * @see setLogTableName
 	 */
 	public function setAutoCreateLogTable($value)

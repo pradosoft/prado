@@ -185,7 +185,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Gets the Control type for client-side validation. If new cases exists in
 	 * TBaseValidator::$_clientClass, be sure to update the corresponding
 	 * "Javascript/validation3.js" file as well.
-	 * @param TControl control to validate.
+	 * @param TControl $control control to validate.
 	 * @return string control type for client-side validation.
 	 */
 	private function getClientControlClass($control)
@@ -307,7 +307,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * This method overrides the parent implementation to forbid setting ForControl.
-	 * @param string the associated control ID
+	 * @param string $value the associated control ID
 	 * @throws TNotSupportedException whenever this method is called
 	 */
 	public function setForControl($value)

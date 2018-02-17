@@ -266,7 +266,7 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Create the default scaffold editor control factory.
-	 * @param TActiveRecord record instance.
+	 * @param TActiveRecord $record record instance.
 	 * @return TScaffoldInputBase scaffold editor control factory.
 	 */
 	protected function getScaffoldInputBuilder($record)

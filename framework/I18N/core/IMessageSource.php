@@ -77,7 +77,7 @@ interface IMessageSource
 	/**
 	 * Add a untranslated message to the source. Need to call save()
 	 * to save the messages to source.
-	 * @param string message to add
+	 * @param string $message message to add
 	 * @return void
 	 */
 	public function append($message);

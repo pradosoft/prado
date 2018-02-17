@@ -92,7 +92,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string ID path to the data source control. The data source
+	 * @param string $value ID path to the data source control. The data source
 	 * control must be locatable via {@link TControl::findControl} call.
 	 */
 	public function setDataSourceID($value)
@@ -216,7 +216,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer the zero-based index of the current page
+	 * @param integer $value the zero-based index of the current page
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	public function setCurrentPageIndex($value)
@@ -235,7 +235,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer the number of data items on each page.
+	 * @param integer $value the number of data items on each page.
 	 * @throws TInvalidDataValueException if the value is less than 1
 	 */
 	public function setPageSize($value)

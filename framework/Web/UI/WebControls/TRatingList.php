@@ -90,7 +90,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * The repeat layout must be Table.
-	 * @param string repeat layout type
+	 * @param string $value repeat layout type
 	 * @throws TInvaliddataValueException when repeat layout is not Table.
 	 */
 	public function setRepeatLayout($value)
@@ -131,7 +131,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param float rating value
+	 * @param float $rating rating value
 	 * @return int rating as integer
 	 */
 	protected function getRatingIndex($rating)
@@ -287,7 +287,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param string rating style name
+	 * @param string $style rating style name
 	 * @return string URL of the css style file
 	 */
 	protected function publishStyle($style)

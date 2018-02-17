@@ -488,7 +488,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 	 * </code>
 	 *
-	 * @param mixed primary key values.
+	 * @param mixed $keys primary key values.
 	 * @return int number of records deleted.
 	 */
 	public function deleteByPk($keys)
@@ -523,7 +523,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Populates a new record with the query result.
 	 * This is a wrapper of {@link createRecord}.
-	 * @param array name value pair of record data
+	 * @param array $data name value pair of record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
 	protected function populateObject($data)
@@ -613,7 +613,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $finder->findByPk(array($key1,$key2,...));
 	 * </code>
 	 *
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return TActiveRecord. Null if no result is found.
 	 */
 	public function findByPk($keys)
@@ -640,7 +640,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $finder->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
 	 * $finder->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
 	 * </code>
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return array matching ActiveRecords. Empty array is returned if no result is found.
 	 */
 	public function findAllByPks($keys)
@@ -873,8 +873,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param TActiveRecordInvalidFinderResult|null
-	 * @see TActiveRecordManager::setInvalidFinderResult
+	 * @param TActiveRecordInvalidFinderResult|null $value * @see TActiveRecordManager::setInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)

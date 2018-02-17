@@ -31,7 +31,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Handles the RPC request
-	 * @param string $requestPayload
+	 * @param string $requestPayload $requestPayload
 	 * @return string JSON RPC response
 	 */
 	public function callMethod($requestPayload)
@@ -136,7 +136,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Decodes JSON encoded data into PHP data
-	 * @param string $data in JSON format
+	 * @param string $data $data in JSON format
 	 * @return array PHP data
 	 */
 	public function decode($data)
@@ -148,7 +148,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Encodes PHP data into JSON data
-	 * @param mixed PHP data
+	 * @param mixed $data PHP data
 	 * @return string JSON encoded PHP data
 	 */
 	public function encode($data)

@@ -362,7 +362,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Each array key in the $data array must correspond to the column name of the table
 	 * (if a column allows to be null, it may be omitted) to be inserted with
 	 * the corresponding array value.
-	 * @param array name-value pairs of new data to be inserted.
+	 * @param array $data name-value pairs of new data to be inserted.
 	 * @return TDbCommand insert command
 	 */
 	public function createInsertCommand($data)
@@ -399,7 +399,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Returns a list of insert field name and a list of binding names.
-	 * @param object array or object to be inserted.
+	 * @param object $values array or object to be inserted.
 	 * @return array tuple ($fields, $bindings)
 	 */
 	protected function getInsertFieldBindings($values)
@@ -431,7 +431,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string SQL query string.
+	 * @param string $sql SQL query string.
 	 * @return TDbCommand corresponding database command.
 	 */
 	public function createCommand($sql)
@@ -480,7 +480,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed PHP value
+	 * @param mixed $value PHP value
 	 * @return integer PDO parameter types.
 	 */
 	public static function getPdoType($value)

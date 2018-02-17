@@ -149,7 +149,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapCacheKey|string cache key
+	 * @param TSqlMapCacheKey|string $key cache key
 	 * @return mixed cached value.
 	 */
 	public function get($key)

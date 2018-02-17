@@ -97,7 +97,7 @@ class TCustomValidator extends TBaseValidator
 	 * The method also allows derived classes to handle the event without attaching a delegate.
 	 * <b>Note</b> The derived classes should call parent implementation
 	 * to ensure the <b>OnServerValidate</b> event is raised.
-	 * @param string the value to be validated
+	 * @param string $value the value to be validated
 	 * @return boolean whether the value is valid
 	 */
 	public function onServerValidate($value)

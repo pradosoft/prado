@@ -54,7 +54,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 * libraries are: "jquery-ui", "bootstrap" and all the split
 	 * jquery.ui.componentname libraries.
 	 *
-	 * @param string comma delimited list of css libraries to include.
+	 * @param string $value comma delimited list of css libraries to include.
 	 * @since 3.3.1
 	 */
 	public function setPradoStyles($value)

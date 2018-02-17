@@ -61,7 +61,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 
 	/**
 	 * Removes an item at the specified position.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)

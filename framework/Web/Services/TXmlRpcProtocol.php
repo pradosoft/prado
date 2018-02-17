@@ -65,7 +65,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Handles the RPC request
-	 * @param string $requestPayload
+	 * @param string $requestPayload $requestPayload
 	 * @return string XML RPC response
 	 */
 	public function callMethod($requestPayload)
@@ -113,7 +113,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Decodes XML encoded data into PHP data
-	 * @param string $data in XML format
+	 * @param string $data $data in XML format
 	 * @return array PHP data
 	 */
 	public function decode($data)
@@ -123,7 +123,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Encodes PHP data into XML data
-	 * @param mixed PHP data
+	 * @param mixed $data PHP data
 	 * @return string XML encoded PHP data
 	 */
 	public function encode($data)

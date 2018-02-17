@@ -137,7 +137,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param integer the number of seconds in which the cached state will expire. 0 means never expire.
+	 * @param integer $value the number of seconds in which the cached state will expire. 0 means never expire.
 	 * @throws TInvalidDataValueException if the number is smaller than 0.
 	 */
 	public function setCacheTimeout($value)
@@ -165,7 +165,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param string micro timestamp when saving state occurs
+	 * @param string $timestamp micro timestamp when saving state occurs
 	 * @return string a key that is unique per user request
 	 */
 	protected function calculateKey($timestamp)

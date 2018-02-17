@@ -82,7 +82,7 @@ class TDataTypeValidator extends TBaseValidator
 
 	/**
 	 * Determine if the given value is of a particular type using RegExp.
-	 * @param string value to check
+	 * @param string $value value to check
 	 * @return boolean true if value fits the type expression.
 	 */
 	protected function evaluateDataTypeCheck($value)

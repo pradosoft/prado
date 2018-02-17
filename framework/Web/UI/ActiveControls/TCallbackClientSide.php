@@ -55,7 +55,7 @@ class TCallbackClientSide extends TClientSideOptions
 {
 	/**
 	 * Returns javascript statement enclosed within a javascript function.
-	 * @param string javascript statement
+	 * @param string $javascript javascript statement
 	 * @return string javascript statement wrapped in a javascript function
 	 */
 	protected function ensureFunction($javascript)
@@ -214,7 +214,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param boolean true to post the inputs of the form with callback
+	 * @param boolean $value true to post the inputs of the form with callback
 	 * requests. Default is to post the inputs.
 	 */
 	public function setPostState($value)
@@ -241,7 +241,7 @@ class TCallbackClientSide extends TClientSideOptions
 	/**
 	 * Set to true to enable the callback response to enable the viewstate
 	 * update. This will automatically set HasPrority to true.
-	 * @param boolean true enables the callback response to update the
+	 * @param boolean $value true enables the callback response to update the
 	 * viewstate.
 	 */
 	public function setEnablePageStateUpdate($value)

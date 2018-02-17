@@ -60,7 +60,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param string language (case-insensitive) whose syntax is to be used for highlighting.
+	 * @param string $value language (case-insensitive) whose syntax is to be used for highlighting.
 	 * If a language is not supported, it will be displayed as plain text.
 	 */
 	public function setLanguage($value)

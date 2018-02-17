@@ -192,8 +192,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param TActiveRecordInvalidFinderResult
-	 * @see getInvalidFinderResult
+	 * @param TActiveRecordInvalidFinderResult $value * @see getInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)

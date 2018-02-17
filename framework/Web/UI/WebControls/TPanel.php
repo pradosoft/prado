@@ -64,7 +64,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 * @throws TInvalidDataValueException if default button is not right.
 	 */
 	protected function addAttributesToRender($writer)
@@ -135,7 +135,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string alignment of the content in the panel.
+	 * @param string $value alignment of the content in the panel.
 	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
 	 */
 	public function setDirection($value)
@@ -188,7 +188,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the visibility and position of scroll bars in a panel control.
+	 * @param string $value the visibility and position of scroll bars in a panel control.
 	 * Valid values include None, Auto, Both, Horizontal and Vertical.
 	 */
 	public function setScrollBars($value)

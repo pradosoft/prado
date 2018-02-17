@@ -55,7 +55,7 @@ class TJuiControlOptions
 
 	/**
 	 * Sets the parent control.
-	 * @param TControl $control
+	 * @param TControl $control $control
 	 * @throws THttpException
 	 */
 	public function setControl($control)
@@ -107,7 +107,7 @@ class TJuiControlOptions
 	/**
 	 * Gets an option named value. Options are used to store and retrive
 	 * named values for the base active controls.
-	 * @param string option name.
+	 * @param string $name option name.
 	 * @return mixed options value or null if not set.
 	 */
 	public function __get($name)

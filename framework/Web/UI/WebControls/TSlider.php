@@ -195,7 +195,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Sets the value of the TSlider control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
-	 * @param string the value of the TSlider control.
+	 * @param string $value the value of the TSlider control.
 	 * @see setValue
 	 */
 	public function setData($value)

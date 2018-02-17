@@ -208,7 +208,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string  the target window or frame to display the new page when the HotSpot region
+	 * @param string $value the target window or frame to display the new page when the HotSpot region
 	 * is clicked.
 	 */
 	public function setTarget($value)
@@ -279,7 +279,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * Removes the named attribute.
-	 * @param string the name of the attribute to be removed.
+	 * @param string $name the name of the attribute to be removed.
 	 * @return string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)

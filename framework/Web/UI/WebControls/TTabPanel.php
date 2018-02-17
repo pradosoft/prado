@@ -99,7 +99,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param integer the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @param integer $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
@@ -168,7 +168,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param TTabView the view to be activated
+	 * @param TTabView $view the view to be activated
 	 * @throws TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($view)

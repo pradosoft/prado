@@ -71,7 +71,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Copies iterable data into the queue.
 	 * Note, existing data in the list will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
@@ -99,7 +99,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return boolean whether the queue contains the item
 	 */
 	public function contains($item)

@@ -110,7 +110,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param Sets the css class of the buttons that will be rendered by this pager.
+	 * @param Sets $value the css class of the buttons that will be rendered by this pager.
 	 * @since 3.2.1
 	 */
 	public function setButtonCssClass($value)
@@ -224,7 +224,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setFirstPageImageUrl($value)
@@ -242,7 +242,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setLastPageImageUrl($value)
@@ -260,7 +260,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setNextPageImageUrl($value)
@@ -278,7 +278,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setPrevPageImageUrl($value)
@@ -302,7 +302,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Use {0} as the placeholder for the numbers.
 	 * For example, the image URL http://example.com/images/button{0}.gif
 	 * will be replaced as http://example.com/images/button1.gif, http://example.com/images/button2.gif, etc.
-	 * @param string the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
+	 * @param string $value the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
 	 * @since 3.1.1
 	 */
 	public function setNumericPageImageUrl($value)
@@ -319,7 +319,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer maximum number of pager buttons to be displayed
+	 * @param integer $value maximum number of pager buttons to be displayed
 	 * @throws TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)
@@ -338,7 +338,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer the zero-based index of the current page
+	 * @param integer $value the zero-based index of the current page
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setCurrentPageIndex($value)
@@ -357,7 +357,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer number of pages of data items available
+	 * @param integer $value number of pages of data items available
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setPageCount($value)

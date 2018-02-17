@@ -38,7 +38,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Constructor.
 	 * Create a new message source using a Database
-	 * @param string Database datasource, in PEAR's DB DSN format.
+	 * @param string $source Database datasource, in PEAR's DB DSN format.
 	 * @see MessageSource::factory();
 	 */
 	public function __construct($source)
@@ -82,7 +82,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Get an array of messages for a particular catalogue and cultural
 	 * variant.
-	 * @param string the catalogue name + variant
+	 * @param string $variant the catalogue name + variant
 	 * @return array translation messages.
 	 */
 	protected function &loadData($variant)
@@ -103,11 +103,11 @@ class MessageSource_Database extends MessageSource
 
 		return $result;
 	}
-	
+
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
 	 * We need to query the database to get the date_modified.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -136,7 +136,7 @@ class MessageSource_Database extends MessageSource
 
 	/**
 	 * Get all the variants of a particular catalogue.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)

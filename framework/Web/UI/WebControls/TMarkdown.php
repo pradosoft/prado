@@ -44,7 +44,7 @@ class TMarkdown extends TTextHighlighter
 	/**
 	 * Processes a text string.
 	 * This method is required by the parent class.
-	 * @param string text string to be processed
+	 * @param string $text text string to be processed
 	 * @return string the processed text result
 	 */
 	public function processText($text)
@@ -57,7 +57,7 @@ class TMarkdown extends TTextHighlighter
 
 	/**
 	 * Highlights source code using TTextHighlighter
-	 * @param array matches of code blocks
+	 * @param array $matches matches of code blocks
 	 * @return string highlighted code.
 	 */
 	protected function highlightCode($matches)

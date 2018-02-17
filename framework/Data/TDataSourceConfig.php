@@ -140,7 +140,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 * {@link setConnectionClass ConnectionClass} property must be set before
 	 * calling {@link getDbConnection} if you wish to create the connection using the
 	 * given class name.
-	 * @param string Database connection class name.
+	 * @param string $value Database connection class name.
 	 * @throws TConfigurationException when database connection is already established.
 	 */
 	public function setConnectionClass($value)

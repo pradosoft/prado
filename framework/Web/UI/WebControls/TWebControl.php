@@ -107,7 +107,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Sets the access key of the control.
 	 * Only one-character string can be set, or an exception will be raised.
 	 * Pass in an empty string if you want to disable access key.
-	 * @param string the access key to be set
+	 * @param string $value the access key to be set
 	 * @throws TInvalidDataValueException if the access key is specified with more than one character
 	 */
 	public function setAccessKey($value)
@@ -310,7 +310,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the css style string of the control.
 	 * The style string will be prefixed to the styles set via other control properties (e.g. Height, Width).
-	 * @param string the css style string
+	 * @param string $value the css style string
 	 * @throws TInvalidDataValueException if the parameter is not a string
 	 */
 	public function setStyle($value)

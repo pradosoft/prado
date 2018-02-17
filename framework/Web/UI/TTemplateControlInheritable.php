@@ -51,7 +51,7 @@ class TTemplateControlInheritable extends TTemplateControl
 			if(!is_string($_value)) {
 				throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
 			}
-			
+
 			$this->setSubProperty($_name, $_value);
 		}
 
@@ -61,7 +61,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	/**
 	 * This method creates the cild controls for the given class
 	 *
-	 * @param string $parentClass The class to generate the child controls for
+	 * @param string $parentClass $parentClass The class to generate the child controls for
 	 * @return void
 	 */
 	public function doCreateChildControlsFor($parentClass)
@@ -87,14 +87,14 @@ class TTemplateControlInheritable extends TTemplateControl
 				if(!is_string($_value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', get_class(this), $_name);
 				}
-				
+
 				$this->setSubProperty($_name, $_value);
 			}
 
 			$_template->instantiateIn($this);
 		}
 	}
-	
+
 	// getter/setter
 
 	/**

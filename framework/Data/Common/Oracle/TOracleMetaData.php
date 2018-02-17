@@ -57,7 +57,7 @@ class TOracleMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table name with optional schema name prefix, uses default schema name prefix is not provided.
+	 * @param string $table table name with optional schema name prefix, uses default schema name prefix is not provided.
 	 * @return array tuple as ($schemaName,$tableName)
 	 */
 	protected function getSchemaTableName($table)
@@ -70,7 +70,7 @@ class TOracleMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $table table name.
 	 * @return TOracleTableInfo table information.
 	 */
 	protected function createTableInfo($table)
@@ -292,7 +292,7 @@ EOD;
 
 	/**
 	 * Gets the primary key field names
-	 * @param string Oracle primary key definition
+	 * @param string $src Oracle primary key definition
 	 * @return array primary key field names.
 	 */
 	protected function getPrimaryKeys($src)
@@ -305,7 +305,7 @@ EOD;
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string Oracle foreign key definition
+	 * @param string $src Oracle foreign key definition
 	 * @return array foreign relationship table name and keys, null otherwise
 	 */
 	protected function getForeignKeys($src)

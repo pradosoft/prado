@@ -115,7 +115,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	/**
 	 * Base on simplified syntax http://msdn2.microsoft.com/en-us/library/aa259187(SQL.80).aspx
 	 *
-	 * @param string $sql
+	 * @param string $sql $sql
 	 * @return array ordering expression as key and ordering direction as value
 	 */
 	protected function findOrdering($sql)
@@ -147,7 +147,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
-	 * @param array ordering obtained from findOrdering()
+	 * @param array $orders ordering obtained from findOrdering()
 	 * @return string concat the orderings
 	 */
 	protected function joinOrdering($orders)
@@ -162,7 +162,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
-	 * @param array original ordering
+	 * @param array $orders original ordering
 	 * @return array ordering with reversed direction.
 	 */
 	protected function reverseDirection($orders)

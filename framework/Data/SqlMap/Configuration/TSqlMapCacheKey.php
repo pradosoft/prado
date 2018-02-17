@@ -33,7 +33,7 @@ class TSqlMapCacheKey
 	}
 
 	/**
-	 * @param string serialized object
+	 * @param string $string serialized object
 	 * @return string crc32 hash of the serialized object.
 	 */
 	protected function generateKey($string)

@@ -98,7 +98,7 @@ class TParameterModule extends \Prado\TModule
 
 	/**
 	 * Loads parameters into application.
-	 * @param mixed XML of PHP representation of the parameters
+	 * @param mixed $config XML of PHP representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)

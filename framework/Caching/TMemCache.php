@@ -125,7 +125,7 @@ class TMemCache extends TCache
 	 * Defaults to false.
 	 */
 	private $_useMemcached = false;
-	
+
 	/**
 	 * @var array list of servers available
 	 */
@@ -147,7 +147,7 @@ class TMemCache extends TCache
 	 * UniquePrefix has been set, creates a Memcache instance and connects
 	 * to the memcache server.
 	 * @param TApplication Prado application, can be null
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */
 	public function init($config)
@@ -156,7 +156,7 @@ class TMemCache extends TCache
 			throw new TConfigurationException('memcache_extension_required');
 		if(!extension_loaded('memcached') && $this->_useMemcached)
 			throw new TConfigurationException('memcached_extension_required');
-		
+
 		$this->_cache = $this->_useMemcached ? new Memcached : new Memcache;
 		$this->loadConfig($config);
 		if(count($this->_servers))
@@ -183,7 +183,7 @@ class TMemCache extends TCache
 
 	/**
 	 * Loads configuration from an XML element
-	 * @param TXmlElement configuration node
+	 * @param TXmlElement $xml configuration node
 	 * @throws TConfigurationException if log route class or type is not specified
 	 */
 	private function loadConfig($xml)
@@ -228,7 +228,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param string host name of the memcache server
+	 * @param string $value host name of the memcache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setHost($value)
@@ -248,7 +248,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param integer port number of the memcache server
+	 * @param integer $value port number of the memcache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setPort($value)
@@ -258,7 +258,7 @@ class TMemCache extends TCache
 		else
 			$this->_port = TPropertyValue::ensureInteger($value);
 	}
-	
+
 	/**
 	 * @return boolean if memcached instead memcache
 	 */
@@ -268,7 +268,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param string if memcached instead memcache
+	 * @param string $value if memcached instead memcache
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setUseMemcached($value)
@@ -278,7 +278,7 @@ class TMemCache extends TCache
 		else
 			$this->_useMemcached = $value;
 	}
-	
+
 	/**
 	 * @return integer minimum value length before attempting to compress
 	 */
@@ -288,7 +288,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param integer minimum value length before attempting to compress
+	 * @param integer $value minimum value length before attempting to compress
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setThreshold($value)
@@ -308,7 +308,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param float minimum amount of savings to actually store the value compressed
+	 * @param float $value minimum amount of savings to actually store the value compressed
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setMinSavings($value)
@@ -322,7 +322,7 @@ class TMemCache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -369,7 +369,7 @@ class TMemCache extends TCache
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)

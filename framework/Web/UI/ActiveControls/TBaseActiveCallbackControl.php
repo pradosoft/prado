@@ -83,7 +83,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * component to duplicate the client-side
 	 * options for this control. The {@link getClientSide ClientSide}
 	 * subproperties takes precedence over the CallbackOptions property.
-	 * @param string ID of a TCallbackOptions control from which ClientSide
+	 * @param string $value ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
 	 */
 	public function setCallbackOptions($value)
@@ -143,7 +143,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @param boolean whether callback event trigger by this button will cause
+	 * @param boolean $value whether callback event trigger by this button will cause
 	 * input validation
 	 */
 	public function setCausesValidation($value)
@@ -161,7 +161,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation
+	 * @param string $value the group of validators which the button causes validation
 	 * upon callback
 	 */
 	public function setValidationGroup($value)

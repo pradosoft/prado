@@ -121,7 +121,7 @@ class TRedisCache extends TCache
    * Initializes this module.
    * This method is required by the IModule interface. It creates a Memcache instance and connects to the memcache server.
    * @param TApplication Prado application, can be null
-   * @param TXmlElement configuration for this module, can be null
+   * @param TXmlElement $config configuration for this module, can be null
    * @throws TConfigurationException if php-redis extension is not installed or redis cache sever connection fails
    */
   public function init($config)
@@ -152,7 +152,7 @@ class TRedisCache extends TCache
   }
 
   /**
-   * @param string the host name of the redis cache server
+   * @param string $value the host name of the redis cache server
    * @throws TInvalidOperationException if the module is already initialized
    */
   public function setHost($value)
@@ -172,7 +172,7 @@ class TRedisCache extends TCache
   }
 
   /**
-   * @param integer the port number of the redis cache server
+   * @param integer $value the port number of the redis cache server
    * @throws TInvalidOperationException if the module is already initialized
    */
   public function setPort($value)
@@ -192,7 +192,7 @@ class TRedisCache extends TCache
   }
 
   /**
-   * @param string the unix socket of the redis cache server
+   * @param string $value the unix socket of the redis cache server
    * @throws TInvalidOperationException if the module is already initialized
    */
   public function setSocket($value)
@@ -212,7 +212,7 @@ class TRedisCache extends TCache
   }
 
   /**
-   * @param integer the database index to use.
+   * @param integer $value the database index to use.
    * @throws TInvalidOperationException if the module is already initialized
    */
   public function setIndex($value)
@@ -226,7 +226,7 @@ class TRedisCache extends TCache
   /**
    * Retrieves a value from cache with a specified key.
    * This is the implementation of the method declared in the parent class.
-   * @param string a unique key identifying the cached value
+   * @param string $key a unique key identifying the cached value
    * @return string the value stored in cache, false if the value is not in the cache or expired.
    */
   protected function getValue($key)
@@ -267,7 +267,7 @@ class TRedisCache extends TCache
   /**
    * Deletes a value with the specified key from cache
    * This is the implementation of the method declared in the parent class.
-   * @param string the key of the value to be deleted
+   * @param string $key the key of the value to be deleted
    * @return boolean if no error happens during deletion
    */
   protected function deleteValue($key)

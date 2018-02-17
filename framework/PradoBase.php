@@ -227,7 +227,7 @@ class PradoBase
 	 * Repeated invocation of this method or the application constructor
 	 * will cause the throw of an exception.
 	 * This method should only be used by framework developers.
-	 * @param TApplication the application instance
+	 * @param TApplication $application the application instance
 	 * @throws TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public static function setApplication($application)
@@ -442,7 +442,7 @@ class PradoBase
 	}
 
 	/**
-	 * @param string alias to the path
+	 * @param string $alias alias to the path
 	 * @return string the path corresponding to the alias, null if alias not defined.
 	 */
 	public static function getPathOfAlias($alias)

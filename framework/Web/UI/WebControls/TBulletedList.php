@@ -204,7 +204,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param integer starting index when {@link getBulletStyle BulletStyle} is one of
+	 * @param integer $value starting index when {@link getBulletStyle BulletStyle} is one of
 	 * the following: 'Numbered', 'LowerAlpha', 'UpperAlpha', 'LowerRoman', 'UpperRoman'.
 	 */
 	public function setFirstBulletNumber($value)

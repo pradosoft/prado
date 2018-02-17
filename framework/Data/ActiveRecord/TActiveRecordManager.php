@@ -152,8 +152,7 @@ class TActiveRecordManager extends \Prado\TComponent
 
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
-	 * @param TActiveRecordInvalidFinderResult
-	 * @since 3.1.5
+	 * @param TActiveRecordInvalidFinderResult $value * @since 3.1.5
 	 * @see getInvalidFinderResult
 	 */
 	public function setInvalidFinderResult($value)

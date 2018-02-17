@@ -109,7 +109,7 @@ class TFileUploadItem extends \Prado\TComponent
 
   /**
    * Sets the error code describing the status of this file uploading.
-   * @param integer the error code
+   * @param integer $value the error code
    * @see http://www.php.net/manual/en/features.file-upload.errors.php
    */
   public function setErrorCode($value)

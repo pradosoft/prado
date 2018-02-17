@@ -89,7 +89,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param mixed $value data to be associated with the item
 	 * @since 3.1.0
 	 */
 	public function setData($value)

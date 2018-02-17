@@ -65,7 +65,7 @@ class TTemplateColumn extends TDataGridColumn
 	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setItemRenderer($value)
@@ -90,7 +90,7 @@ class TTemplateColumn extends TDataGridColumn
 	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setEditItemRenderer($value)
@@ -107,7 +107,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate the edit item template
+	 * @param ITemplate $value the edit item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
@@ -127,7 +127,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate the item template
+	 * @param ITemplate $value the item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
@@ -147,7 +147,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate the header template.
+	 * @param ITemplate $value the header template.
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
@@ -167,7 +167,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate the footer template
+	 * @param ITemplate $value the footer template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)

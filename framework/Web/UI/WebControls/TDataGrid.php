@@ -661,7 +661,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param ITemplate the template applied when no data is bound to the datagrid
+	 * @param ITemplate $value the template applied when no data is bound to the datagrid
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
@@ -1383,7 +1383,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Automatically generates datagrid columns based on datasource schema
-	 * @param Traversable data source bound to the datagrid
+	 * @param Traversable $dataSource data source bound to the datagrid
 	 * @return TDataGridColumnCollection
 	 */
 	protected function createAutoColumns($dataSource)

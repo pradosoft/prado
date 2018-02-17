@@ -53,7 +53,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	/**
 	 * Constructor.
-	 * @param string the directory where the messages are stored.
+	 * @param string $source the directory where the messages are stored.
 	 * @see MessageSource::factory();
 	 */
 	public function __construct($source)
@@ -63,7 +63,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	/**
 	 * Load the messages from a XLIFF file.
-	 * @param string XLIFF file.
+	 * @param string $filename XLIFF file.
 	 * @return array of messages.
 	 */
 	protected function &loadData($filename)
@@ -91,7 +91,7 @@ class MessageSource_XLIFF extends MessageSource
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
 	 * Just use the file modified time.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -102,7 +102,7 @@ class MessageSource_XLIFF extends MessageSource
 	/**
 	 * Get the XLIFF file for a specific message catalogue and cultural
 	 * vairant.
-	 * @param string message catalogue
+	 * @param string $variant message catalogue
 	 * @return string full path to the XLIFF file.
 	 */
 	protected function getSource($variant)
@@ -112,7 +112,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	/**
 	 * Determin if the XLIFF file source is valid.
-	 * @param string XLIFF file
+	 * @param string $source XLIFF file
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
@@ -122,7 +122,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	/**
 	 * Get all the variants of a particular catalogue.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)
@@ -491,7 +491,7 @@ class MessageSource_XLIFF extends MessageSource
 		if($catalogue === null) {
 			$catalogue = 'messages';
 		}
-		
+
 		$variants = $this->getCatalogueList($catalogue);
 		$variant = array_shift($variants);
 		$file = $this->getSource($variant);
@@ -505,7 +505,7 @@ class MessageSource_XLIFF extends MessageSource
 		if(!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");
 		}
-		
+
 		file_put_contents($file, $this->getTemplate($catalogue));
 		chmod($file, PRADO_CHMOD);
 

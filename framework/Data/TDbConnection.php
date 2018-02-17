@@ -163,7 +163,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Open or close the DB connection.
-	 * @param boolean whether to open or close DB connection
+	 * @param boolean $value whether to open or close DB connection
 	 * @throws TDbException if connection fails
 	 */
 	public function setActive($value)
@@ -247,7 +247,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
+	 * @param string $value The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function setConnectionString($value)
@@ -366,7 +366,7 @@ class TDbConnection extends \Prado\TComponent
 
 
 	/**
-	 * @param string Transaction class name to be created by calling {@link TDbConnection::beginTransaction}.
+	 * @param string $value Transaction class name to be created by calling {@link TDbConnection::beginTransaction}.
 	 * @since 3.1.7
 	 */
 	public function setTransactionClass($value)
@@ -404,7 +404,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -414,7 +414,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -424,7 +424,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -526,7 +526,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether creating or updating a DB record will be automatically committed.
+	 * @param boolean $value whether creating or updating a DB record will be automatically committed.
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function setAutoCommit($value)
@@ -544,7 +544,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the connection is persistent or not
+	 * @param boolean $value whether the connection is persistent or not
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function setPersistent($value)

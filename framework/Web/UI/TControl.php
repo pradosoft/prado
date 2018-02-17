@@ -372,7 +372,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param string the new control ID. The value must consist of word characters [a-zA-Z0-9_] only
+	 * @param string $id the new control ID. The value must consist of word characters [a-zA-Z0-9_] only
 	 * @throws TInvalidDataValueException if ID is in a bad format
 	 */
 	public function setID($id)
@@ -436,7 +436,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Converts a unique ID to a client ID.
-	 * @param string the unique ID of a control
+	 * @param string $uniqueID the unique ID of a control
 	 * @return string the client ID of the control
 	 */
 	public static function convertUniqueIdToClientId($uniqueID)
@@ -453,7 +453,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param string the skin ID of this control
+	 * @param string $value the skin ID of this control
 	 * @throws TInvalidOperationException if the SkinID is set in a stage later than PreInit, or if the skin is applied already.
 	 */
 	public function setSkinID($value)
@@ -486,7 +486,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param boolean whether to enable theming
+	 * @param boolean $value whether to enable theming
 	 * @throws TInvalidOperationException if this method is invoked after OnPreInit
 	 */
 	public function setEnableTheming($value)
@@ -671,7 +671,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Removes the named attribute.
-	 * @param string the name of the attribute to be removed.
+	 * @param string $name the name of the attribute to be removed.
 	 * @return string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
@@ -1033,7 +1033,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * it searches through all controls that have this control as the ancestor
 	 * while {@link findcontrol} only searches through controls that have this
 	 * control as the direct naming container.
-	 * @param string the ID being looked for
+	 * @param string $id the ID being looked for
 	 * @return array list of controls found
 	 */
 	public function findControlsByID($id)
@@ -1081,7 +1081,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Unregisters an object by name.
-	 * @param string name of the object
+	 * @param string $name name of the object
 	 * @see registerObject
 	 */
 	public function unregisterObject($name)
@@ -1162,7 +1162,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Adds the object instantiated on a template to the child control collection.
 	 * This method overrides the parent implementation.
 	 * Only framework developers and control developers should use this method.
-	 * @param string|TComponent text string or component parsed and instantiated in template
+	 * @param string|TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
@@ -1702,7 +1702,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Applies a stylesheet skin to a control.
-	 * @param TPage the page containing the control
+	 * @param TPage $page the page containing the control
 	 * @throws TInvalidOperationException if the stylesheet skin is applied already
 	 */
 	public function applyStyleSheetSkin($page)

@@ -66,7 +66,7 @@ class MessageSource_gettext extends MessageSource
 
 	/**
 	 * Load the messages from a MO file.
-	 * @param string MO file.
+	 * @param string $filename MO file.
 	 * @return array of messages.
 	 */
 	protected function &loadData($filename)
@@ -88,7 +88,7 @@ class MessageSource_gettext extends MessageSource
 
 	/**
 	 * Determin if the MO file source is valid.
-	 * @param string MO file
+	 * @param string $filename MO file
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($filename)
@@ -99,7 +99,7 @@ class MessageSource_gettext extends MessageSource
 	/**
 	 * Get the MO file for a specific message catalogue and cultural
 	 * vairant.
-	 * @param string message catalogue
+	 * @param string $variant message catalogue
 	 * @return string full path to the MO file.
 	 */
 	protected function getSource($variant)
@@ -110,7 +110,7 @@ class MessageSource_gettext extends MessageSource
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
 	 * Just use the file modified time.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -123,7 +123,7 @@ class MessageSource_gettext extends MessageSource
 
 	/**
 	 * Get all the variants of a particular catalogue.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)

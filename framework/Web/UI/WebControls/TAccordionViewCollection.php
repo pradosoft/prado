@@ -42,7 +42,7 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 
 	/**
 	 * Finds the index of the accordion view whose ID is the same as the one being looked for.
-	 * @param string the explicit ID of the accordion view to be looked for
+	 * @param string $id the explicit ID of the accordion view to be looked for
 	 * @return integer the index of the accordion view found, -1 if not found.
 	 */
 	public function findIndexByID($id)

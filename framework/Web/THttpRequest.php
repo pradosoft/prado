@@ -386,7 +386,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
 	 * @throws TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
@@ -655,7 +655,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Enable this, if you're using PHP via CGI with php.ini setting "cgi.fix_pathinfo=1"
 	 * and have trouble with friendly URL feature. Enable this only if you really know what you are doing!
-	 * @param integer enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
+	 * @param integer $value enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
 	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
 	 */
 	public function setCgiFix($value)
@@ -865,7 +865,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the item with the specified key.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
@@ -912,7 +912,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the request contains an item with the specified key
 	 */
 	public function contains($key)
@@ -931,7 +931,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -942,7 +942,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)

@@ -341,7 +341,7 @@ class DateTimeFormatInfo
 
 	/**
 	 * A string containing the name of the era.
-	 * @param int era The integer representing the era.
+	 * @param int $era era The integer representing the era.
 	 * @return string the era name.
 	 */
 	public function getEra($era)

@@ -741,7 +741,7 @@ class TDatePicker extends TTextBox
 	 * Returns the localized month names that depends on the month format pattern.
 	 * "MMMM" will return the month names, "MM" or "MMM" return abbr. month names
 	 * and "M" return month digits.
-	 * @param DateTimeFormatInfo localized date format information.
+	 * @param DateTimeFormatInfo $info localized date format information.
 	 * @return array localized month names.
 	 */
 	protected function getLocalizedMonthNames($info)

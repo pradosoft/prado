@@ -159,7 +159,7 @@ class NumberFormat
 
 	/**
 	 * For the integer, perform groupings and string padding.
-	 * @param string the decimal number in string form.
+	 * @param string $string the decimal number in string form.
 	 * @return string  formatted integer string with grouping
 	 */
 	protected function formatInteger($string)
@@ -232,7 +232,7 @@ class NumberFormat
 
 	/**
 	 * Format the decimal places.
-	 * @param string the decimal number in string form.
+	 * @param string $string the decimal number in string form.
 	 * @return string formatted decimal places.
 	 */
 	protected function formatDecimal($string)
@@ -279,7 +279,7 @@ class NumberFormat
 	/**
 	 * Set the pattern to format against. The default patterns
 	 * are retrieved from the NumberFormatInfo instance.
-	 * @param string the requested patterns.
+	 * @param string $pattern the requested patterns.
 	 * @return string a number format pattern.
 	 */
 	protected function setPattern($pattern)

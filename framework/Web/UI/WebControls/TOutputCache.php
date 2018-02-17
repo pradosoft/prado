@@ -382,7 +382,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @param integer number of seconds that the data can remain in cache. If 0, it means data is not cached.
+	 * @param integer $value number of seconds that the data can remain in cache. If 0, it means data is not cached.
 	 * @throws TInvalidDataValueException if the value is smaller than 0.
 	 */
 	public function setDuration($value)

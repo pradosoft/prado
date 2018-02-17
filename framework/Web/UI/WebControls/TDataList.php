@@ -403,7 +403,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the template for item
+	 * @param ITemplate $value the template for item
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
@@ -436,7 +436,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the template for each alternating item
+	 * @param ITemplate $value the template for each alternating item
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
@@ -469,7 +469,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the selected item template
+	 * @param ITemplate $value the selected item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSelectedItemTemplate($value)
@@ -502,7 +502,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the edit item template
+	 * @param ITemplate $value the edit item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
@@ -535,7 +535,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the header template
+	 * @param ITemplate $value the header template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
@@ -576,7 +576,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the footer template
+	 * @param ITemplate $value the footer template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
@@ -617,7 +617,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the template applied when no data is bound to the datalist
+	 * @param ITemplate $value the template applied when no data is bound to the datalist
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
@@ -637,7 +637,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate the separator template
+	 * @param ITemplate $value the separator template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)

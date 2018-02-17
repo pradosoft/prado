@@ -42,7 +42,7 @@ class TTabViewCollection extends \Prado\Web\UI\TControlCollection
 
 	/**
 	 * Finds the index of the tab view whose ID is the same as the one being looked for.
-	 * @param string the explicit ID of the tab view to be looked for
+	 * @param string $id the explicit ID of the tab view to be looked for
 	 * @return integer the index of the tab view found, -1 if not found.
 	 */
 	public function findIndexByID($id)

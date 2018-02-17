@@ -276,7 +276,7 @@ class TDbCache extends TCache
 	 * To disable automatic deletion of expired items,
 	 * e.g. for external flushing via cron you can set value to '0'
 	 *
-	 * @param integer Interval in sec
+	 * @param integer $value Interval in sec
 	 * @since 3.1.5
 	 */
 	public function setFlushInterval($value)
@@ -347,7 +347,7 @@ class TDbCache extends TCache
 	 * The datasource module will be used to establish the DB connection for this cache module.
 	 * The database connection can also be specified via {@link setConnectionString ConnectionString}.
 	 * When both ConnectionID and ConnectionString are specified, the former takes precedence.
-	 * @param string ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@link TDataSourceConfig} module
 	 * @since 3.1.1
 	 */
 	public function setConnectionID($value)
@@ -364,7 +364,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
+	 * @param string $value The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @see http://www.php.net/manual/en/function.pdo-construct.php
 	 */
 	public function setConnectionString($value)
@@ -429,7 +429,7 @@ class TDbCache extends TCache
 	 *
 	 * Important: Make sure that the indices are non-unique!
 	 *
-	 * @param string the name of the DB table to store cache content
+	 * @param string $value the name of the DB table to store cache content
 	 * @see setAutoCreateCacheTable
 	 */
 	public function setCacheTableName($value)
@@ -447,7 +447,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param boolean whether the cache DB table should be automatically created if not exists.
+	 * @param boolean $value whether the cache DB table should be automatically created if not exists.
 	 * @see setCacheTableName
 	 */
 	public function setAutoCreateCacheTable($value)
@@ -458,7 +458,7 @@ class TDbCache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -531,7 +531,7 @@ class TDbCache extends TCache
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)

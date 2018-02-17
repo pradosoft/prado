@@ -191,7 +191,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Determine if the value is within the integer range.
-	 * @param string value to validate true
+	 * @param string $value value to validate true
 	 * @return boolean true if within integer range.
 	 */
 	protected function isValidInteger($value)
@@ -220,7 +220,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Determine if the value is within the specified float range.
-	 * @param string value to validate
+	 * @param string $value value to validate
 	 * @return boolean true if within range.
 	 */
 	protected function isValidFloat($value)
@@ -240,7 +240,7 @@ class TRangeValidator extends TBaseValidator
 	/**
 	 * Determine if the date is within the specified range.
 	 * Uses pradoParseDate and strtotime to get the date from string.
-	 * @param string date as string to validate
+	 * @param string $value date as string to validate
 	 * @return boolean true if within range.
 	 */
 	protected function isValidDate($value)
@@ -275,7 +275,7 @@ class TRangeValidator extends TBaseValidator
 	/**
 	 * Compare the string with a minimum and a maxiumum value.
 	 * Uses strcmp for comparision.
-	 * @param string value to compare with.
+	 * @param string $value value to compare with.
 	 * @return boolean true if the string is within range.
 	 */
 	protected function isValidString($value)
@@ -292,7 +292,7 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string string for comparision
+	 * @param string $value string for comparision
 	 * @return boolean true if min and max string length are satisfied.
 	 */
 	protected function isValidStringLength($value)

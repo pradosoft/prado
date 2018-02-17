@@ -48,7 +48,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the name of the column in the result set from which the
+	 * @param string $value the name of the column in the result set from which the
 	 * value will be used to populate the property.
 	 */
 	public function setColumn($value)
@@ -143,7 +143,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string database value
+	 * @param string $value database value
 	 * @return TResultMap result mapping.
 	 */
 	public function getSubMap($value)

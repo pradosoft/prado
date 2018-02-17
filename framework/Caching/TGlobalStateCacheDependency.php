@@ -48,7 +48,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param string the name of the global state
+	 * @param string $value the name of the global state
 	 * @see TApplication::setGlobalState
 	 */
 	public function setStateName($value)

@@ -83,7 +83,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Gets the TImage for rendering the ImageUrl property. This is not for
 	 * creating dynamic images.
-	 * @param string image url.
+	 * @param string $imageUrl image url.
 	 * @return TImage image control for rendering.
 	 */
 	protected function createImage($imageUrl)

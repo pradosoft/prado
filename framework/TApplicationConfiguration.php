@@ -61,7 +61,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Parses the application configuration file.
-	 * @param string configuration file name
+	 * @param string $fname configuration file name
 	 * @throws TConfigurationException if there is any parsing error
 	 */
 	public function loadFromFile($fname)

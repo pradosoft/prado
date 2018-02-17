@@ -190,7 +190,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Removes the named parameter.
-	 * @param string the name of the parameter to be removed.
+	 * @param string $name the name of the parameter to be removed.
 	 * @return string parameter value removed, null if parameter does not exist.
 	 */
 	public function removeParameter($name)

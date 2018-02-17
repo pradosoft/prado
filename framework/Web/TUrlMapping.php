@@ -101,7 +101,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $config configuration for this module, can be null
 	 * @throws TConfigurationException if module is configured in the global scope.
 	 */
 	public function init($config)
@@ -165,7 +165,7 @@ class TUrlMapping extends TUrlManager
 	 * Sets a value indicating whether to enable custom constructUrl.
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
-	 * @param boolean whether to enable custom constructUrl.
+	 * @param boolean $value whether to enable custom constructUrl.
 	 * @since 3.1.1
 	 */
 	public function setEnableCustomUrl($value)
@@ -224,7 +224,7 @@ class TUrlMapping extends TUrlManager
 	 * Sets the default class of URL mapping patterns.
 	 * When a URL matching pattern does not specify "class" attribute, it will default to the class
 	 * specified by this property. You may use either a class name or a namespace format of class (if the class needs to be included first.)
-	 * @param string the default class of URL mapping patterns.
+	 * @param string $value the default class of URL mapping patterns.
 	 * @since 3.1.1
 	 */
 	public function setDefaultMappingClass($value)
@@ -234,7 +234,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * Load and configure each url mapping pattern.
-	 * @param mixed configuration node
+	 * @param mixed $config configuration node
 	 * @throws TConfigurationException if specific pattern class is invalid
 	 */
 	protected function loadUrlMappings($config)

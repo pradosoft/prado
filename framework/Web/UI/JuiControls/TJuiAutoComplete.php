@@ -199,7 +199,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param float maximum delay (in seconds) before requesting a suggestion.
+	 * @param float $value maximum delay (in seconds) before requesting a suggestion.
 	 * Default is 0.4.
 	 */
 	public function setFrequency($value)
@@ -216,7 +216,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param integer minimum number of characters before requesting a suggestion.
+	 * @param integer $value minimum number of characters before requesting a suggestion.
 	 * Default is 1
 	 */
 	public function setMinChars($value)

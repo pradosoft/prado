@@ -461,7 +461,7 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * @param mixed item
+	 * @param mixed $item item
 	 * @return boolean whether the list contains the item
 	 */
 	public function contains($item)
@@ -470,7 +470,7 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * @param mixed item
+	 * @param mixed $item item
 	 * @return integer the index of the item in the flattened list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
@@ -636,7 +636,7 @@ class TPriorityList extends TList
 	/**
 	 * Copies iterable data into the priority list.
 	 * Note, existing data in the map will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
@@ -664,7 +664,7 @@ class TPriorityList extends TList
 	 * New data will be appended to the end of the existing data.  If another TPriorityList is merged,
 	 * the incoming parameter items will be appended at the priorities they are present.  These items will be added
 	 * to the end of the existing items with equal priorities, if there are any.
-	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
@@ -690,7 +690,7 @@ class TPriorityList extends TList
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -701,7 +701,7 @@ class TPriorityList extends TList
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)

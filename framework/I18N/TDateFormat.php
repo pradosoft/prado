@@ -129,7 +129,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * For a given string, try and find a preset pattern.
-	 * @param string the preset pattern name
+	 * @param string $string the preset pattern name
 	 * @return string a preset pattern if found, null otherwise.
 	 */
 	protected function getPreset($string)

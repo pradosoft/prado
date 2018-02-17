@@ -38,7 +38,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -48,7 +48,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -58,7 +58,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column alias
+	 * @param string $name $name column alias
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -68,7 +68,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $tableName table name.
 	 * @return TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($tableName)
@@ -102,7 +102,7 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table name.
+	 * @param string $tableName table name.
 	 * @return boolean true if the table is a view.
 	 */
 	protected function getIsView($tableName)
@@ -162,7 +162,7 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 *
 	 *
-	 * @param string quoted table name.
+	 * @param string $table quoted table name.
 	 * @return array foreign key details.
 	 */
 	protected function getForeignKeys($table)

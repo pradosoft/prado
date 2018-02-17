@@ -183,7 +183,7 @@ class ChoiceFormat
 	/**
 	 * Parse a choice string and get a list of sets and a list of strings
 	 * corresponding to the sets.
-	 * @param string the string containing the choices
+	 * @param string $string the string containing the choices
 	 * @return array array($sets, $strings)
 	 */
 	public function parse($string)

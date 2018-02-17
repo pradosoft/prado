@@ -41,7 +41,7 @@ class TSqlMapException extends TException
 	}
 
 	/**
-	 * @param SimpleXmlElement node
+	 * @param SimpleXmlElement $node node
 	 * @return string tag name and attribute names and values.
 	 */
 	protected function implodeNode($node)

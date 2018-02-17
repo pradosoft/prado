@@ -696,7 +696,7 @@ class TPage extends TTemplateControl
 	 * The media type is determined according to the following file name pattern:
 	 *        xxx.media-type.extension
 	 * For example, 'mystyle.print.css' means its media type is 'print'.
-	 * @param string CSS URL
+	 * @param string $url CSS URL
 	 * @return string media type of the CSS file
 	 */
 	private function getCssMediaType($url)
@@ -790,7 +790,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param string the field name
+	 * @param string $field the field name
 	 * @return boolean whether the specified field is a system field in postback data
 	 */
 	protected function isSystemPostField($field)
@@ -945,7 +945,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Ensures the control is rendered within a form.
-	 * @param TControl the control to be rendered
+	 * @param TControl $control the control to be rendered
 	 * @throws TConfigurationException if the control is outside of the form
 	 */
 	public function ensureRenderInForm($control)
@@ -1159,7 +1159,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean whether page state should be compressed.
+	 * @param boolean $value whether page state should be compressed.
 	 * @since 3.1.6
 	 */
 	public function setEnableStateCompression($value)

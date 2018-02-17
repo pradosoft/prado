@@ -204,7 +204,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string the session ID for the current session
+	 * @param string $value the session ID for the current session
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setSessionID($value)
@@ -224,7 +224,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string the session name for the current session, must be an alphanumeric string, defaults to PHPSESSID
+	 * @param string $value the session name for the current session, must be an alphanumeric string, defaults to PHPSESSID
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setSessionName($value)
@@ -246,7 +246,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string the current session save path
+	 * @param string $value the current session save path
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setSavePath($value)
@@ -304,7 +304,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param THttpSessionCookieMode how to use cookie to store session ID
+	 * @param THttpSessionCookieMode $value how to use cookie to store session ID
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setCookieMode($value)
@@ -342,7 +342,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean whether the session should be automatically started when the session module is initialized, defaults to false.
+	 * @param boolean $value whether the session should be automatically started when the session module is initialized, defaults to false.
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setAutoStart($value)
@@ -420,7 +420,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param integer the number of seconds after which data will be seen as 'garbage' and cleaned up
+	 * @param integer $value the number of seconds after which data will be seen as 'garbage' and cleaned up
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setTimeout($value)
@@ -456,7 +456,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session read handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return string the session data
 	 */
 	public function _read($id)
@@ -479,7 +479,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session destroy handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return boolean whether session is destroyed successfully
 	 */
 	public function _destroy($id)
@@ -490,7 +490,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session GC (garbage collection) handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param integer the number of seconds after which data will be seen as 'garbage' and cleaned up.
+	 * @param integer $maxLifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
 	 * @return boolean whether session is GCed successfully
 	 */
 	public function _gc($maxLifetime)
@@ -539,7 +539,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the session variable value with the session variable name.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the session variable name
+	 * @param mixed $key the session variable name
 	 * @return mixed the session variable value, null if no such variable exists
 	 */
 	public function itemAt($key)
@@ -560,7 +560,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Removes a session variable.
-	 * @param mixed the name of the session variable to be removed
+	 * @param mixed $key the name of the session variable to be removed
 	 * @return mixed the removed value, null if no such session variable.
 	 */
 	public function remove($key)
@@ -585,7 +585,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param mixed session variable name
+	 * @param mixed $key session variable name
 	 * @return boolean whether there is the named session variable
 	 */
 	public function contains($key)
@@ -603,7 +603,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -613,7 +613,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)

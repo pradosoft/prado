@@ -207,7 +207,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * @param boolean whether theming is enabled for this control.
+	 * @param boolean $value whether theming is enabled for this control.
 	 * @throws TNotSupportedException This method is always thrown when calling this method.
 	 */
 	public function setEnableTheming($value)
@@ -216,7 +216,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * @param string Skin ID
+	 * @param string $value Skin ID
 	 * @throws TNotSupportedException This method is always thrown when calling this method.
 	 */
 	public function setSkinID($value)

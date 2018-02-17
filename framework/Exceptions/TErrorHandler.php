@@ -99,7 +99,7 @@ class TErrorHandler extends \Prado\TModule
 	/**
 	 * Sets the path storing all error and exception template files.
 	 * The path must be in namespace format, such as System.Exceptions (which is the default).
-	 * @param string template path in namespace format
+	 * @param string $value template path in namespace format
 	 * @throws TConfigurationException if the template path is invalid
 	 */
 	public function setErrorTemplatePath($value)
@@ -307,7 +307,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Retrieves the template used for displaying internal exceptions.
 	 * Internal exceptions will be displayed with source code causing the exception.
 	 * This occurs when the application is in debug mode.
-	 * @param Exception the exception to be displayed
+	 * @param Exception $exception the exception to be displayed
 	 * @return string the template content
 	 */
 	protected function getExceptionTemplate($exception)

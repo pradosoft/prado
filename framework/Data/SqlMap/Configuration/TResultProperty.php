@@ -109,7 +109,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of the column in the result set from which the value
+	 * @param string $value name of the column in the result set from which the value
 	 * will be used to populate the property.
 	 */
 	public function setColumn($value)
@@ -127,7 +127,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int index of the column in the ResultSet from which the value will
+	 * @param int $value index of the column in the ResultSet from which the value will
 	 * be used to populate the object property
 	 */
 	public function setColumnIndex($value)
@@ -268,7 +268,7 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($registry)
@@ -303,7 +303,7 @@ class TResultProperty extends \Prado\TComponent
 	/**
 	 * Returns true if the result property {@link Type getType()} is of TList type
 	 * or that the actual result object is an instance of TList.
-	 * @param object result object
+	 * @param object $target result object
 	 * @return boolean true if the result object is an instance of TList
 	 */
 	public function instanceOfListType($target)
@@ -316,7 +316,7 @@ class TResultProperty extends \Prado\TComponent
 	/**
 	 * Returns true if the result property {@link Type getType()} is of \ArrayAccess
 	 * or that the actual result object is an array or implements \ArrayAccess
-	 * @param object result object
+	 * @param object $target result object
 	 * @return boolean true if the result object is an instance of \ArrayAccess or is an array.
 	 */
 	public function instanceOfArrayType($target)

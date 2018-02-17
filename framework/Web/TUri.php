@@ -87,7 +87,7 @@ class TUri extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * Decomposes the specified URI into parts.
-	 * @param string URI to be represented
+	 * @param string $uri URI to be represented
 	 * @throws TInvalidDataValueException if URI is of bad format
 	 */
 	public function __construct($uri)

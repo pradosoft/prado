@@ -396,7 +396,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Sets data text format string.
 	 * The format string is used in {@link TDataValueFormatter::format()} to format the Text property value
 	 * of each item in the list control.
-	 * @param string the formatting string used to control how data bound to the list control is displayed.
+	 * @param string $value the formatting string used to control how data bound to the list control is displayed.
 	 * @see TDataValueFormatter::format()
 	 */
 	public function setDataTextFormatString($value)
@@ -711,7 +711,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the prompt text which is to be displayed as the first list item.
+	 * @param string $value the prompt text which is to be displayed as the first list item.
 	 * @since 3.1.1
 	 */
 	public function setPromptText($value)
@@ -764,7 +764,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Renders the prompt text, if any.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 * @since 3.1.1
 	 */
 	protected function renderPrompt($writer)

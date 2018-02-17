@@ -62,7 +62,7 @@ class TException extends \Exception
 
 	/**
 	 * Translates an error code into an error message.
-	 * @param string error code that is passed in the exception constructor.
+	 * @param string $key error code that is passed in the exception constructor.
 	 * @return string the translated error message
 	 */
 	protected function translateErrorMessage($key)

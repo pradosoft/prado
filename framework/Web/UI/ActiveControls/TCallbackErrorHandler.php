@@ -70,7 +70,7 @@ class TCallbackErrorHandler extends TErrorHandler
 	}
 
 	/**
-	 * @param Exception exception details.
+	 * @param Exception $exception exception details.
 	 * @return array exception stack trace details.
 	 */
 	private function getExceptionStackTrace($exception)

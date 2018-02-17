@@ -50,7 +50,7 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Constructor.
-	 * @param string the directory where the messages are stored.
+	 * @param string $source the directory where the messages are stored.
 	 * @see MessageSource::factory();
 	 */
 	public function __construct($source)
@@ -60,7 +60,7 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Load the messages from a PHP file.
-	 * @param string PHP file.
+	 * @param string $filename PHP file.
 	 * @return array of messages.
 	 */
 	protected function &loadData($filename)
@@ -88,7 +88,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
 	 * Just use the file modified time.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -99,7 +99,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Get the PHP file for a specific message catalogue and cultural
 	 * variant.
-	 * @param string message catalogue
+	 * @param string $variant message catalogue
 	 * @return string full path to the PHP file.
 	 */
 	protected function getSource($variant)
@@ -109,7 +109,7 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Determin if the PHP file source is valid.
-	 * @param string PHP file
+	 * @param string $source PHP file
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
@@ -119,7 +119,7 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Get all the variants of a particular catalogue.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)
@@ -382,7 +382,7 @@ class MessageSource_PHP extends MessageSource
 		if($catalogue === null) {
 			$catalogue = 'messages';
 		}
-		
+
 		$variants = $this->getCatalogueList($catalogue);
 		$variant = array_shift($variants);
 		$file = $this->getSource($variant);
@@ -396,7 +396,7 @@ class MessageSource_PHP extends MessageSource
 		if(!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");
 		}
-		
+
 		file_put_contents($file, $this->getTemplate($catalogue));
 		chmod($file, PRADO_CHMOD);
 

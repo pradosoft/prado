@@ -37,7 +37,7 @@ class TSqlMapTypeHandlerRegistry
 	}
 
 	/**
-	 * @param string type handler class name
+	 * @param string $class type handler class name
 	 * @return TSqlMapTypeHandler type handler
 	 */
 	public function getTypeHandler($class)

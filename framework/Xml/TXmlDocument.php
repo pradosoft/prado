@@ -134,7 +134,7 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
-	 * @param string the XML string
+	 * @param string $string the XML string
 	 * @return boolean whether the XML string is parsed successfully
 	 */
 	public function loadFromString($string)
@@ -186,7 +186,7 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Saves this XML document as an XML file.
-	 * @param string the name of the file to be stored with XML output
+	 * @param string $file the name of the file to be stored with XML output
 	 * @throws TIOException if the file cannot be written
 	 */
 	public function saveToFile($file)
@@ -233,7 +233,7 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Recursively converts DOM XML nodes into TXmlElement
-	 * @param DOMXmlNode the node to be converted
+	 * @param DOMXmlNode $node the node to be converted
 	 * @return TXmlElement the converted TXmlElement
 	 */
 	protected function buildElement($node)

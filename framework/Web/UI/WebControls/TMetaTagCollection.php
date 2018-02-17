@@ -43,7 +43,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 
 	/**
 	 * Finds the lowest cardinal index of the meta tag whose id is the one being looked for.
-	 * @param string the ID of the meta tag to be looked for
+	 * @param string $id the ID of the meta tag to be looked for
 	 * @return integer the index of the meta tag found, -1 if not found.
 	 */
 	public function findIndexByID($id)
@@ -60,7 +60,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 
 	/**
 	 * Finds the item whose value is the one being looked for.
-	 * @param string the id of the meta tag to be looked for
+	 * @param string $id the id of the meta tag to be looked for
 	 * @return TMetaTag the meta tag found, null if not found.
 	 */
 	public function findMetaTagByID($id)

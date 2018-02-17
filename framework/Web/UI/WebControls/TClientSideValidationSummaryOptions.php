@@ -76,7 +76,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	/**
 	 * Ensure the string is a valid javascript function. The code block
 	 * is enclosed with "function(summary, validators){ }" block.
-	 * @param string javascript code.
+	 * @param string $javascript javascript code.
 	 * @return string javascript function code.
 	 */
 	protected function ensureFunction($javascript)

@@ -83,7 +83,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * @param boolean whether this cache module is used as primary/system cache. Defaults to false.
+	 * @param boolean $value whether this cache module is used as primary/system cache. Defaults to false.
 	 * @see getPrimaryCache
 	 */
 	public function setPrimaryCache($value)
@@ -109,7 +109,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * @param string a key identifying a value to be cached
+	 * @param string $key a key identifying a value to be cached
 	 * @return sring a key generated from the provided key which ensures the uniqueness across applications
 	 */
 	protected function generateUniqueKey($key)
@@ -119,7 +119,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * Retrieves a value from cache with a specified key.
-	 * @param string a key identifying the cached value
+	 * @param string $id a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function get($id)
@@ -176,7 +176,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * Deletes a value with the specified key from cache
-	 * @param string the key of the value to be deleted
+	 * @param string $id the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	public function delete($id)
@@ -201,7 +201,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * in specific cache storage. The uniqueness and dependency are handled
 	 * in {@link get()} already. So only the implementation of data retrieval
 	 * is needed.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	abstract protected function getValue($key);
@@ -237,7 +237,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This method should be implemented by child classes to delete the data from actual cache storage.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	abstract protected function deleteValue($key);
@@ -245,7 +245,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Returns whether there is a cache entry with a specified key.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param string a key identifying the cached value
+	 * @param string $id a key identifying the cached value
 	 * @return boolean
 	 */
 	public function offsetExists($id)
@@ -256,7 +256,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Retrieves the value from cache with a specified key.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param string a key identifying the cached value
+	 * @param string $id a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function offsetGet($id)
@@ -280,7 +280,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Deletes the value with the specified key from cache
 	 * This method is required by the interface \ArrayAccess.
-	 * @param string the key of the value to be deleted
+	 * @param string $id the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	public function offsetUnset($id)

@@ -54,7 +54,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer the timestamp of the cached result. This is used internally.
+	 * @param integer $value the timestamp of the cached result. This is used internally.
 	 * @since 3.1.1
 	 */
 	public function setCacheTime($value)

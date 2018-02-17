@@ -236,7 +236,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return boolean whether the list contains the item
 	 */
 	public function contains($item)
@@ -245,7 +245,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return integer the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
@@ -315,7 +315,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Copies iterable data into the list.
 	 * Note, existing data in the list will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
@@ -334,7 +334,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Merges iterable data into the map.
 	 * New data will be appended to the end of the existing data.
-	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
@@ -351,7 +351,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to check on
+	 * @param integer $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)

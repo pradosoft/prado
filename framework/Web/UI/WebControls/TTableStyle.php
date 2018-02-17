@@ -215,7 +215,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param integer cellpadding of the table. A value equal to -1 clears up the setting.
+	 * @param integer $value cellpadding of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
 	 */
 	public function setCellPadding($value)
@@ -233,7 +233,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param integer cellspacing of the table. A value equal to -1 clears up the setting.
+	 * @param integer $value cellspacing of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
 	 */
 	public function setCellSpacing($value)

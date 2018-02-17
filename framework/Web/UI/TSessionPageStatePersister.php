@@ -80,7 +80,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	}
 
 	/**
-	 * @param integer maximum number of page states that should be kept in session
+	 * @param integer $value maximum number of page states that should be kept in session
 	 * @throws TInvalidDataValueException if the number is smaller than 1.
 	 */
 	public function setHistorySize($value)

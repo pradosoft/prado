@@ -64,7 +64,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	/**
 	 * Performs processing on a value before it is used to set
 	 * the parameter of a IDbCommand.
-	 * @param object The interface for setting the value.
+	 * @param object $object The interface for setting the value.
 	 * @param object $object The value to be set.
 	 */
 	abstract public function getParameter($object);
@@ -73,7 +73,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	/**
 	 * Performs processing on a value before after it has been retrieved
 	 * from a database
-	 * @param object The interface for getting the value.
+	 * @param object $string The interface for getting the value.
 	 * @return mixed The processed value.
 	 */
 	abstract public function getResult($string);

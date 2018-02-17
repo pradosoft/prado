@@ -114,7 +114,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param array|string list of categories to be looked for. If the value is a string,
+	 * @param array|string $categories list of categories to be looked for. If the value is a string,
 	 * it is assumed to be comma-separated category names.
 	 */
 	public function setCategories($categories)
@@ -133,7 +133,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param integer level value
+	 * @param integer $level level value
 	 * @return string level name
 	 */
 	protected function getLevelName($level)
@@ -142,7 +142,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string level name
+	 * @param string $level level name
 	 * @return integer level value
 	 */
 	protected function getLevelValue($level)

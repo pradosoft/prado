@@ -715,7 +715,7 @@ class TComponent
 	 * This also works for global events.  When behaviors are enabled, it
 	 * will check for a behavior of the specified name, and also check
 	 * the behavior for events and properties.
-	 * @param string the property name or the event name
+	 * @param string $name the property name or the event name
 	 * @since 3.2.3
 	 */
 	public function __isset($name)
@@ -793,7 +793,7 @@ class TComponent
 	 * Determines whether a property is defined.
 	 * A property is defined if there is a getter or setter method
 	 * defined in the class. Note, property names are case-insensitive.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property is defined
 	 */
 	public function hasProperty($name)
@@ -807,7 +807,7 @@ class TComponent
 	 * for the property name. Note, property name is case-insensitive.
 	 * This also checks for getjs.  When enabled, it loops through all
 	 * active behaviors for the get property when undefined by the object.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property can be read
 	 */
 	public function canGetProperty($name)
@@ -831,7 +831,7 @@ class TComponent
 	 * for the property name. Note, property name is case-insensitive.
 	 * This also checks for setjs.  When enabled, it loops through all
 	 * active behaviors for the set property when undefined by the object.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property can be written
 	 */
 	public function canSetProperty($name)
@@ -856,7 +856,7 @@ class TComponent
 	 * 'Parent' property value (which should be a component also).
 	 * When a property is not defined by an object, this also loops through all
 	 * active behaviors of the object.
-	 * @param string property path
+	 * @param string $path property path
 	 * @return mixed the property path value
 	 */
 	public function getSubProperty($path)
@@ -899,7 +899,7 @@ class TComponent
 	 * When enabled, this will loop through all active behaviors for 'on' events
 	 * defined by the behavior.
 	 * Note, event name is case-insensitive.
-	 * @param string the event name
+	 * @param string $name the event name
 	 * @return boolean
 	 */
 	public function hasEvent($name)
@@ -922,7 +922,7 @@ class TComponent
 	 * Checks if an event has any handlers.  This function also checks through all
 	 * the behaviors for 'on' events when behaviors are enabled.
 	 * 'dy' dynamic events are not handled by this function.
-	 * @param string the event name
+	 * @param string $name the event name
 	 * @return boolean whether an event has been attached one or several handlers
 	 */
 	public function hasEventHandler($name)
@@ -1312,7 +1312,7 @@ class TComponent
 	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through
 	 * dyCreatedOnTemplate.
 	 *
-	 * @param TComponent potential parent of this control
+	 * @param TComponent $parent potential parent of this control
 	 * @see addParsedObject
 	 */
 	public function createdOnTemplate($parent)
@@ -1335,7 +1335,7 @@ class TComponent
 	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
 	 * dyAddParsedObject.
 	 *
-	 * @param string|TComponent text string or component parsed and instantiated in template
+	 * @param string|TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
@@ -1496,7 +1496,7 @@ class TComponent
 	 * Each behavior is indexed by its name and should be an instance of
 	 * {@link IBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
-	 * @param array list of behaviors to be attached to the component
+	 * @param array $behaviors list of behaviors to be attached to the component
 	 * @since 3.2.3
 	 */
 	public function attachBehaviors($behaviors)
@@ -1513,7 +1513,7 @@ class TComponent
 	 * Each behavior is indexed by its name and should be an instance of
 	 * {@link IBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
-	 * @param array list of behaviors to be detached from the component
+	 * @param array $behaviors list of behaviors to be detached from the component
 	 * @since 3.2.3
 	 */
 	public function detachBehaviors($behaviors)
@@ -1673,7 +1673,7 @@ class TComponent
 	 * to be executed when enableBehavior is called.  All attached behaviors are notified through
 	 * dyEnableBehavior.
 	 *
-	 * @param string the behavior's name. It uniquely identifies the behavior.
+	 * @param string $name the behavior's name. It uniquely identifies the behavior.
 	 * @since 3.2.3
 	 */
 	public function enableBehavior($name)
@@ -1701,7 +1701,7 @@ class TComponent
 	 * to be executed when disableBehavior is called.  All attached behaviors are notified through
 	 * dyDisableBehavior.
 	 *
-	 * @param string the behavior's name. It uniquely identifies the behavior.
+	 * @param string $name the behavior's name. It uniquely identifies the behavior.
 	 * @since 3.2.3
 	 */
 	public function disableBehavior($name)

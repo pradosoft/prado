@@ -103,7 +103,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl {
   }
 
   /**
-   * @param string Namespace or path to XML document
+   * @param string $value Namespace or path to XML document
    * @throws TInvalidDataValueException
    */
   public function setDocumentPath($value) {

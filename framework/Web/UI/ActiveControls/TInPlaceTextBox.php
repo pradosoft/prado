@@ -155,7 +155,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Update ClientSide Readonly property
-	 * @param boolean value
+	 * @param boolean $value value
 	 * @since 3.1.2
 	 */
 	public function setReadOnly ($value)

@@ -45,8 +45,7 @@ abstract class TRpcProtocol
 	 */
 	abstract public function createErrorResponse(TRpcException $exception);
 	/**
-	 * @param response
-	 * Sets the needed headers for the response (eg: content-type, charset)
+	 * @param response $response * Sets the needed headers for the response (eg: content-type, charset)
 	 * @abstract
 	 */
 	abstract public function createResponseHeaders($response);

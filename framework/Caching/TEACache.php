@@ -51,7 +51,7 @@ class TEACache extends TCache
    /**
     * Initializes this module.
     * This method is required by the IModule interface.
-    * @param TXmlElement configuration for this module, can be null
+    * @param TXmlElement $config configuration for this module, can be null
     * @throws TConfigurationException if eaccelerator extension is not installed or not started, check your php.ini
     */
 	public function init($config)
@@ -64,7 +64,7 @@ class TEACache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -104,7 +104,7 @@ class TEACache extends TCache
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)

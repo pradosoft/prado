@@ -95,7 +95,7 @@ class TCacheHttpSession extends THttpSession
 
 	/**
 	 * Session read handler.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return string the session data
 	 */
 	public function _read($id)
@@ -117,7 +117,7 @@ class TCacheHttpSession extends THttpSession
 	/**
 	 * Session destroy handler.
 	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return boolean whether session is destroyed successfully
 	 */
 	public function _destroy($id)
@@ -142,7 +142,7 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-	 * @param string session variable name
+	 * @param string $id session variable name
 	 * @return string a safe cache key associated with the session variable name
 	 */
 	protected function calculateKey($id)

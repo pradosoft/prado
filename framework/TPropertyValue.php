@@ -57,7 +57,7 @@ class TPropertyValue
 	 * Note, string 'true' (case-insensitive) will be converted to true,
 	 * string 'false' (case-insensitive) will be converted to false.
 	 * If a string represents a non-zero number, it will be treated as true.
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return boolean
 	 */
 	public static function ensureBoolean($value)
@@ -72,7 +72,7 @@ class TPropertyValue
 	 * Converts a value to string type.
 	 * Note, a boolean value will be converted to 'true' if it is true
 	 * and 'false' if it is false.
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return string
 	 */
 	public static function ensureString($value)
@@ -87,7 +87,7 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to integer type.
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return integer
 	 */
 	public static function ensureInteger($value)
@@ -97,7 +97,7 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to float type.
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return float
 	 */
 	public static function ensureFloat($value)
@@ -111,7 +111,7 @@ class TPropertyValue
 	 * will be returned. If the value is a string and it is not in this form
 	 * then an array consisting of just the string will be returned. If the value
 	 * is not a string then
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return array
 	 */
 	public static function ensureArray($value)
@@ -134,7 +134,7 @@ class TPropertyValue
 
 	/**
 	 * Converts a value to object type.
-	 * @param mixed the value to be converted.
+	 * @param mixed $value the value to be converted.
 	 * @return object
 	 */
 	public static function ensureObject($value)
@@ -185,7 +185,7 @@ class TPropertyValue
 
 	/**
 	 * Converts the value to 'null' if the given value is empty
-	 * @param mixed value to be converted
+	 * @param mixed $value value to be converted
 	 * @return mixed input or NULL if input is empty
 	 */
 	public static function ensureNullIfEmpty($value)

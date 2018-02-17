@@ -110,7 +110,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Sets the root directory storing published asset files.
 	 * The directory must be in namespace format.
-	 * @param string the root directory storing published asset files
+	 * @param string $value the root directory storing published asset files
 	 * @throws TInvalidOperationException if the module is initialized already
 	 */
 	public function setBasePath($value)
@@ -134,7 +134,7 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the base url that the published asset files can be accessed
+	 * @param string $value the base url that the published asset files can be accessed
 	 * @throws TInvalidOperationException if the module is initialized already
 	 */
 	public function setBaseUrl($value)
@@ -208,7 +208,7 @@ class TAssetManager extends \Prado\TModule
 	 * Returns the published path of a file path.
 	 * This method does not perform any publishing. It merely tells you
 	 * if the file path is published, where it will go.
-	 * @param string directory or file path being published
+	 * @param string $path directory or file path being published
 	 * @return string the published file path
 	 */
 	public function getPublishedPath($path)
@@ -224,7 +224,7 @@ class TAssetManager extends \Prado\TModule
 	 * Returns the URL of a published file path.
 	 * This method does not perform any publishing. It merely tells you
 	 * if the file path is published, what the URL will be to access it.
-	 * @param string directory or file path being published
+	 * @param string $path directory or file path being published
 	 * @return string the published URL for the file path
 	 */
 	public function getPublishedUrl($path)
@@ -239,7 +239,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Generate a CRC32 hash for the directory path. Collisions are higher
 	 * than MD5 but generates a much smaller hash string.
-	 * @param string string to be hashed.
+	 * @param string $dir string to be hashed.
 	 * @return string hashed string.
 	 */
 	protected function hash($dir)

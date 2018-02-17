@@ -198,7 +198,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string cache control method to use for session pages. Valid values
+	 * @param string $value cache control method to use for session pages. Valid values
 	 *               include none/nocache/private/private_no_expire/public
 	 */
 	public function setCacheControl($value)
@@ -249,7 +249,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param boolean whether to enable output buffer
+	 * @param boolean $value whether to enable output buffer
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setBufferOutput($value)
@@ -401,7 +401,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Redirects the browser to the specified URL.
 	 * The current application will be terminated after this method is invoked.
-	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function redirect($url)
@@ -421,7 +421,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * calling this function to change the type of redirection.
 	 * If not specified, StatusCode will be 302 (Found) by default
 	 *
-	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function httpRedirect($url)

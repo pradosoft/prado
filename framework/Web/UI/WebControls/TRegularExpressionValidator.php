@@ -91,7 +91,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string pattern modifiers for server side validation,
+	 * @param string $value pattern modifiers for server side validation,
 	 * see http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
 	 */
 	public function setPatternModifiers($value)
@@ -108,7 +108,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string pattern modifiers for clientside.
+	 * @param string $value pattern modifiers for clientside.
 	 * (Only 'g','i' and 'm' are available.)
 	 */
 	public function setClientSidePatternModifiers($value)

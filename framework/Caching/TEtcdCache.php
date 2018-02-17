@@ -60,12 +60,12 @@ class TEtcdCache extends TCache
    * @var string the etcd host
    */
   protected $_host = 'localhost';
-  
+
   /**
    * @var integer the etcd port
    */
   protected $_port = 2379;
-  
+
   /**
    * @var string the directory to store values in
    */
@@ -74,7 +74,7 @@ class TEtcdCache extends TCache
    /**
     * Initializes this module.
     * This method is required by the IModule interface.
-    * @param TXmlElement configuration for this module, can be null
+    * @param TXmlElement $config configuration for this module, can be null
     * @throws TConfigurationException if cURL extension is not installed
     */
 	public function init($config)
@@ -82,7 +82,7 @@ class TEtcdCache extends TCache
 		if (!function_exists('curl_version')) throw new TConfigurationException('curl_extension_required');
 		parent::init($config);
 	}
-  
+
   /**
    * Gets the host the etcd instance is running on, defaults to 'localhost'.
    * @return string the etcd host
@@ -98,7 +98,7 @@ class TEtcdCache extends TCache
 	public function setHost($value) {
 	$this->_host = TPropertyValue::ensureString($value);
 	}
-	
+
   /**
    * Gets the port the etcd instance is running on, defaults to 2379.
    * @return integer the etcd port
@@ -114,7 +114,7 @@ class TEtcdCache extends TCache
 	public function setPort($value) {
 	$this->_port = TPropertyValue::ensureInteger($value);
 	}
-	 
+
   /**
    * Sets the directory to store values in, defaults to 'pradocache'.
    * @return string the directory to store values in
@@ -134,7 +134,7 @@ class TEtcdCache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -180,7 +180,7 @@ class TEtcdCache extends TCache
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)
@@ -197,7 +197,7 @@ class TEtcdCache extends TCache
 	{
 	 $this->request('DELETE', $this->_dir . '?recursive=true');
 	}
-  
+
   /**
    * This method does the actual cURL request by generating the method specific
    * URL, setting the cURL options and adding additional request parameters.

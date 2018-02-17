@@ -222,7 +222,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Collects configuration for a page.
-	 * @param TXmlElement additional configuration specified in the application configuration
+	 * @param TXmlElement $config additional configuration specified in the application configuration
 	 * @return TPageConfiguration
 	 */
 	protected function loadPageConfig($config)
@@ -376,7 +376,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param string default page path to be served if no explicit page is request
+	 * @param string $value default page path to be served if no explicit page is request
 	 * @throws TInvalidOperationException if the page service is initialized
 	 */
 	public function setDefaultPage($value)
@@ -414,7 +414,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param string root directory (in namespace form) storing pages
+	 * @param string $value root directory (in namespace form) storing pages
 	 * @throws TInvalidOperationException if the service is initialized already or basepath is invalid
 	 */
 	public function setBasePath($value)
@@ -447,7 +447,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Sets the clientscript manager class (in namespace format).
-	 * @param string class name
+	 * @param string $value class name
 	 * @since 3.1.7
 	 */
 	public function setClientScriptManagerClass($value)

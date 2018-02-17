@@ -139,7 +139,7 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Sets the name of the group that the radio button belongs to.
 	 * The group is unique among the control's naming container.
-	 * @param string the group name
+	 * @param string $value the group name
 	 * @see setUniqueGroupName
 	 */
 	public function setGroupName($value)
@@ -189,7 +189,7 @@ class TRadioButton extends TCheckBox
 	 * it will group all appropriate radio buttons on the whole page hierarchy.
 	 * Note, when both {@link setUniqueGroupName UniqueGroupName} and
 	 * {@link setGroupName GroupName}, the former takes precedence.
-	 * @param string the group name
+	 * @param string $value the group name
 	 * @see setGroupName
 	 */
 	public function setUniqueGroupName($value)

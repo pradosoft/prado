@@ -195,7 +195,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer the amount of space, in pixels, that should be left between
+	 * @param integer $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins.
 	 */
 	public function setMarginWidth($value)
@@ -215,7 +215,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer the amount of space, in pixels, that should be left between
+	 * @param integer $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins.
 	 */
 	public function setMarginHeight($value)

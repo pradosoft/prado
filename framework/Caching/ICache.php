@@ -24,7 +24,7 @@ interface ICache
 {
 	/**
 	 * Retrieves a value from cache with a specified key.
-	 * @param string a key identifying the cached value
+	 * @param string $id a key identifying the cached value
 	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function get($id);
@@ -52,7 +52,7 @@ interface ICache
 	public function add($id, $value, $expire = 0, $dependency = null);
 	/**
 	 * Deletes a value with the specified key from cache
-	 * @param string the key of the value to be deleted
+	 * @param string $id the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	public function delete($id);

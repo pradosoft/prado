@@ -68,7 +68,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a TCookie object.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
@@ -80,7 +80,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	}
 
 	/**
-	 * @param integer|string index of the cookie in the collection or the cookie's name
+	 * @param integer|string $index index of the cookie in the collection or the cookie's name
 	 * @return THttpCookie the cookie found
 	 */
 	public function itemAt($index)
@@ -93,7 +93,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 
 	/**
 	 * Finds the cookie with the specified name.
-	 * @param string the name of the cookie to be looked for
+	 * @param string $name the name of the cookie to be looked for
 	 * @return THttpCookie the cookie, null if not found
 	 */
 	public function findCookieByName($name)

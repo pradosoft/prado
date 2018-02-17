@@ -127,7 +127,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param string role to be tested. Note, role is case-insensitive.
+	 * @param string $role role to be tested. Note, role is case-insensitive.
 	 * @return boolean whether the user is of this role
 	 */
 	public function isInRole($role)
@@ -147,7 +147,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param string user data that is serialized and restored from session
+	 * @param string $data user data that is serialized and restored from session
 	 * @return IUser the user object
 	 */
 	public function loadFromString($data)

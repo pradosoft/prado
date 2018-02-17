@@ -147,7 +147,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Setting the behavior mode of the underlying TTextBox component is NOT supported.
-	 * @param TTextBoxMode the text mode
+	 * @param TTextBoxMode $value the text mode
 	 * @throws TNotSupportedException not supported, fixed to TTextBoxMode::SingleLine.
 	 */
 	public function setTextMode($value)

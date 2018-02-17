@@ -94,7 +94,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the key used to generate HMAC
+	 * @param string $value the key used to generate HMAC
 	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setValidationKey($value)
@@ -121,7 +121,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the key used to encrypt/decrypt data.
+	 * @param string $value the key used to encrypt/decrypt data.
 	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setEncryptionKey($value)
@@ -142,7 +142,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * This method accepts all hash algorithms returned by hash_algos().
-	 * @param string hashing algorithm used to generate HMAC.
+	 * @param string $value hashing algorithm used to generate HMAC.
 	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
 	 */
 	public function setHashAlgorithm($value)
@@ -209,7 +209,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Prefixes data with an HMAC.
-	 * @param string data to be hashed.
+	 * @param string $data data to be hashed.
 	 * @return string data prefixed with HMAC
 	 */
 	public function hashData($data)
@@ -239,7 +239,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Computes the HMAC for the data with {@link getValidationKey ValidationKey}.
-	 * @param string data to be generated HMAC
+	 * @param string $data data to be generated HMAC
 	 * @return string the HMAC for the data
 	 */
 	protected function computeHMAC($data)
@@ -250,7 +250,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Returns the length of the given string.
 	 * If available uses the multibyte string function mb_strlen.
-	 * @param string $string the string being measured for length
+	 * @param string $string $string the string being measured for length
 	 * @return int the length of the string
 	 */
 	private function strlen($string)

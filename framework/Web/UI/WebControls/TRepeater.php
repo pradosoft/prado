@@ -286,7 +286,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the template for repeater items
+	 * @param ITemplate $value the template for repeater items
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
@@ -306,7 +306,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the alternative item template
+	 * @param ITemplate $value the alternative item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
@@ -326,7 +326,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the header template
+	 * @param ITemplate $value the header template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
@@ -346,7 +346,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the footer template
+	 * @param ITemplate $value the footer template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
@@ -366,7 +366,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the template applied when no data is bound to the repeater
+	 * @param ITemplate $value the template applied when no data is bound to the repeater
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
@@ -386,7 +386,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate the separator template
+	 * @param ITemplate $value the separator template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)

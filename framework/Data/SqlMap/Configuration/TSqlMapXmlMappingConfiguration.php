@@ -149,7 +149,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Create a new result map and its associated result properties,
 	 * disciminiator and sub maps.
-	 * @param SimpleXmlElement result map node
+	 * @param SimpleXmlElement $node result map node
 	 * @return TResultMap SqlMap result mapping.
 	 */
 	protected function createResultMap($node)
@@ -221,7 +221,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Create a new parameter map from xml node.
-	 * @param SimpleXmlElement parameter map node.
+	 * @param SimpleXmlElement $node parameter map node.
 	 * @return TParameterMap new parameter mapping.
 	 */
 	protected function createParameterMap($node)
@@ -360,7 +360,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Create new insert statement from xml node.
-	 * @param SimpleXmlElement insert node.
+	 * @param SimpleXmlElement $node insert node.
 	 * @return TSqlMapInsert insert statement.
 	 */
 	protected function createInsertStatement($node)

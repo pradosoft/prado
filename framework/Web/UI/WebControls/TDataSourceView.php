@@ -59,7 +59,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	/**
 	 * Deletes DB row(s) with the specified keys.
-	 * @param array|TMap keys for specifying the rows to be deleted
+	 * @param array|TMap $keys keys for specifying the rows to be deleted
 	 * @return integer affected rows
 	 */
 	public function delete($keys)

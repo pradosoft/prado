@@ -144,7 +144,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param boolean $value true to tell the decoration that the templates need state and should be
+	 * @param boolean $value $value true to tell the decoration that the templates need state and should be
 	 * placed in a control step before the state is saved.
 	 */
 	public function setUseState($value)

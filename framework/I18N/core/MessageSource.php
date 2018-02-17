@@ -267,7 +267,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -278,7 +278,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Load the message for a particular catalogue+variant.
 	 * This methods needs to implemented by subclasses.
-	 * @param string catalogue+variant.
+	 * @param string $variant catalogue+variant.
 	 * @return array of translation messages.
 	 */
 	protected function &loadData($variant)
@@ -288,7 +288,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Get the source, this could be a filename or database ID.
-	 * @param string catalogue+variant
+	 * @param string $variant catalogue+variant
 	 * @return string the resource key
 	 */
 	protected function getSource($variant)
@@ -298,7 +298,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Determine if the source is valid.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
@@ -309,7 +309,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Get all the variants of a particular catalogue.
 	 * This method must be implemented by subclasses.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)

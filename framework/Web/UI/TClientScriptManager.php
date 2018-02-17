@@ -266,7 +266,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string javascript or css package path.
+	 * @param string $base javascript or css package path.
 	 * @return array tuple($path,$url).
 	 */
 	protected function getPackagePathUrl($base)
@@ -283,7 +283,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string javascript package source folder path.
+	 * @param string $script javascript package source folder path.
 	 * @return array tuple($basepath,$subpath).
 	 */
 	protected function getScriptPackageFolder($script)
@@ -302,7 +302,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string css package source folder path.
+	 * @param string $script css package source folder path.
 	 * @return array tuple($basepath,$subpath).
 	 */
 	protected function getStylePackageFolder($script)
@@ -656,7 +656,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a CSS file registered with the specified key
 	 */
 	public function isStyleSheetFileRegistered($key)
@@ -665,7 +665,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a CSS block registered with the specified key
 	 */
 	public function isStyleSheetRegistered($key)
@@ -674,7 +674,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a head javascript file registered with the specified key
 	 */
 	public function isHeadScriptFileRegistered($key)
@@ -683,7 +683,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a head javascript block registered with the specified key
 	 */
 	public function isHeadScriptRegistered($key)
@@ -692,7 +692,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a javascript file registered with the specified key
 	 */
 	public function isScriptFileRegistered($key)
@@ -701,7 +701,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a beginning javascript block registered with the specified key
 	 */
 	public function isBeginScriptRegistered($key)
@@ -710,7 +710,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is an ending javascript block registered with the specified key
 	 */
 	public function isEndScriptRegistered($key)
@@ -735,7 +735,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string a unique key
+	 * @param string $key a unique key
 	 * @return boolean whether there is a hidden field registered with the specified key
 	 */
 	public function isHiddenFieldRegistered($key)

@@ -324,7 +324,7 @@ class TCaptcha extends TImage
 
 	/**
 	 * Validates a user input with the token.
-	 * @param string user input
+	 * @param string $input user input
 	 * @return boolean if the user input is not the same as the token.
 	 */
 	public function validate($input)

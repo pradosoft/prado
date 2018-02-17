@@ -47,7 +47,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 * @throws TInvalidDataValueException if associated control cannot be found using the ID
 	 */
 	protected function addAttributesToRender($writer)

@@ -42,7 +42,7 @@ class TComponentReflection extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param object|string the component instance or the class name
+	 * @param object|string $component the component instance or the class name
 	 * @throws TInvalidDataTypeException if the object is not a component
 	 */
 	public function __construct($component)

@@ -215,7 +215,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 
 	public function onCallback($param)

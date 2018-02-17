@@ -303,7 +303,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Encodes the given data into a query string format
-	 * @param $data - array of string elements to be encoded
+	 * @param $data $data - array of string elements to be encoded
 	 * @return string - encoded request
 	 */
 	private function recaptcha_qsencode ($data) {

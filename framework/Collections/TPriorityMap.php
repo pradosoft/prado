@@ -307,7 +307,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Returns the priority of a particular item within the map.  This searches the map for the item.
-	 * @param mixed item to look for within the map
+	 * @param mixed $item item to look for within the map
 	 * @return numeric priority of the item in the map
 	 */
 	public function priorityOf($item)
@@ -321,7 +321,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Retutrns the priority of an item at a particular flattened index.
-	 * @param integer index of the item within the map
+	 * @param integer $key index of the item within the map
 	 * @return numeric priority of the item in the map
 	 */
 	public function priorityAt($key)
@@ -448,7 +448,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
@@ -567,7 +567,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -578,7 +578,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)

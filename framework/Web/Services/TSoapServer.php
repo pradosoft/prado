@@ -57,7 +57,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the ID of the SOAP server
+	 * @param string $id the ID of the SOAP server
 	 * @throws TInvalidDataValueException if the ID ends with '.wsdl'.
 	 */
 	public function setID($id)
@@ -273,7 +273,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string SOAP version, either '1.1' or '1.2'
+	 * @param string $value SOAP version, either '1.1' or '1.2'
 	 * @throws TInvalidDataValueException if neither '1.1' nor '1.2'
 	 */
 	public function setVersion($value)

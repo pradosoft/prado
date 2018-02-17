@@ -57,7 +57,7 @@ class TTarFileExtractor
 	 * declare a new Archive_Tar object, identifying it by the name of the
 	 * tar file.
 	 *
-	 * @param    string  $p_tarname  The name of the tar archive to create
+	 * @param    string $p_tarname $p_tarname  The name of the tar archive to create
 	 * @access public
 	 */
 	public function __construct($p_tarname)

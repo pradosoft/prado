@@ -106,7 +106,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * Format the date according to the pattern.
-	 * @param string|int the date to format, either integer or a string readable by strtotime.
+	 * @param string|int $value the date to format, either integer or a string readable by strtotime.
 	 * @return string formatted date.
 	 */
 	public function format($value)
@@ -171,7 +171,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * Gets the time stamp from string or integer.
-	 * @param string|int date to parse
+	 * @param string|int $value date to parse
 	 * @return array date info array
 	 */
 	private function getDate($value)

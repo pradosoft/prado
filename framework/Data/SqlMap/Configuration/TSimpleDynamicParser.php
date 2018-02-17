@@ -26,7 +26,7 @@ class TSimpleDynamicParser
 
 	/**
 	 * Parse the sql text for dynamic place holders of the form $name$.
-	 * @param string Sql text.
+	 * @param string $sqlText Sql text.
 	 * @return array name value pairs 'sql' and 'parameters'.
 	 */
 	public function parse($sqlText)

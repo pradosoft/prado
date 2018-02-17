@@ -101,7 +101,7 @@ class TAttributeCollection extends TMap
 	/**
 	 * Returns the item with the specified key.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
@@ -124,7 +124,7 @@ class TAttributeCollection extends TMap
 	/**
 	 * Removes an item from the map by its key.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key of the item to be removed
+	 * @param mixed $key the key of the item to be removed
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
@@ -135,7 +135,7 @@ class TAttributeCollection extends TMap
 	/**
 	 * Returns whether the specified is in the map.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
@@ -147,7 +147,7 @@ class TAttributeCollection extends TMap
 	 * Determines whether a property is defined.
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property is defined
 	 */
 	public function hasProperty($name)
@@ -159,7 +159,7 @@ class TAttributeCollection extends TMap
 	 * Determines whether a property can be read.
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property can be read
 	 */
 	public function canGetProperty($name)
@@ -171,7 +171,7 @@ class TAttributeCollection extends TMap
 	 * Determines whether a property can be set.
 	 * This method overrides parent implementation by always returning true
 	 * because you can always add a new value to the collection.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean true
 	 */
 	public function canSetProperty($name)

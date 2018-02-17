@@ -256,7 +256,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->findByPk(array($key1,$key2,...));
 	 * </code>
 	 *
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return array matching record.
 	 */
 	public function findByPk($keys)
@@ -280,7 +280,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
 	 * $table->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
 	 * </code>
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return TDbDataReader data reader.
 	 */
 	public function findAllByPks($keys)
@@ -328,7 +328,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 	 * </code>
 	 *
-	 * @param mixed primary key values.
+	 * @param mixed $keys primary key values.
 	 * @return int number of records deleted.
 	 */
 	public function deleteByPk($keys)

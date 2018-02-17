@@ -238,7 +238,7 @@ class NumberFormatInfo
 
 	/**
 	 * Parse the given pattern and return a list of known properties.
-	 * @param string a number pattern.
+	 * @param string $pattern a number pattern.
 	 * @return array list of pattern properties.
 	 */
 	protected function parsePattern($pattern)
@@ -346,7 +346,7 @@ class NumberFormatInfo
 
 	/**
 	 * Get the prefix and postfix of a pattern.
-	 * @param string pattern
+	 * @param string $pattern pattern
 	 * @return array of prefix and postfix, array(prefix,postfix).
 	 */
 	protected function getPrePostfix($pattern)

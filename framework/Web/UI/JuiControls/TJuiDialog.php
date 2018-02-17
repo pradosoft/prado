@@ -174,7 +174,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 
 	/**
 	 * Rendering as a fieldset is not supported for TJuiDialog.
-	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 * @param string $value the legend text. If this value is not empty, the panel will be rendered as a fieldset.
 	 * @throws TNotSupportedException not supported for TJuiDialog.
 	 */
 	public function setGroupingText($value)

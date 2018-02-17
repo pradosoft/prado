@@ -167,7 +167,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Calculate the data fetch offsets and limits.
-	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 * @param TPagedListFetchDataEventParameter $param fetch parameters
 	 * @return array 1st element is the offset, 2nd element is the limit.
 	 */
 	protected function getOffsetAndLimit($param)

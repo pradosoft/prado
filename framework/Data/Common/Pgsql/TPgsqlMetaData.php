@@ -40,7 +40,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -50,7 +50,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -60,7 +60,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column alias
+	 * @param string $name $name column alias
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -85,7 +85,7 @@ class TPgsqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table name with optional schema name prefix, uses default schema name prefix is not provided.
+	 * @param string $table table name with optional schema name prefix, uses default schema name prefix is not provided.
 	 * @return array tuple as ($schemaName,$tableName)
 	 */
 	protected function getSchemaTableName($table)
@@ -98,7 +98,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $table table name.
 	 * @return TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
@@ -388,7 +388,7 @@ EOD;
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string pgsql foreign key definition
+	 * @param string $src pgsql foreign key definition
 	 * @return array foreign relationship table name and keys, null otherwise
 	 */
 	protected function getForeignKeys($src)

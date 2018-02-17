@@ -174,7 +174,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Replace the place holders ${name} in text with properties the
 	 * corresponding global property value.
-	 * @param string original string.
+	 * @param string $string original string.
 	 * @return string string with global property replacement.
 	 */
 	public function replaceProperties($string)

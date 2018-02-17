@@ -116,7 +116,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param mixed $value data to be associated with the item
 	 * @since 3.1.0
 	 */
 	public function setData($value)

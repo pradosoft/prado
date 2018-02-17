@@ -114,7 +114,7 @@ class TTemplateManager extends \Prado\TModule
 
 	/**
 	 * Finds a localized template file.
-	 * @param string template file.
+	 * @param string $filename template file.
 	 * @return string|null a localized template file if found, null otherwise.
 	 */
 	protected function getLocalizedTemplate($filename)

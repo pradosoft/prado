@@ -35,7 +35,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Processes a text string.
 	 * This method must be implemented by child classes.
-	 * @param string text string to be processed
+	 * @param string $text text string to be processed
 	 * @return string the processed text result
 	 */
 	abstract public function processText($text);

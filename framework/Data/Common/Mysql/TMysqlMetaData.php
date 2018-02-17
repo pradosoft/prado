@@ -45,7 +45,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -55,7 +55,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -65,7 +65,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column alias
+	 * @param string $name $name column alias
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -75,7 +75,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $table table name.
 	 * @return TMysqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
@@ -211,7 +211,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
-	 * @param string identifier name
+	 * @param string $name identifier name
 	 * @param boolean $name true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
@@ -221,7 +221,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * @param string table schema name
-	 * @param string table name.
+	 * @param string $table table name.
 	 * @return TMysqlTableInfo
 	 */
 	protected function createNewTableInfo($table)

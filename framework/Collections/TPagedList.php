@@ -131,7 +131,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer current page index
+	 * @param integer $value current page index
 	 * @throws TInvalidDataValueException if the page index is out of range
 	 */
 	public function setCurrentPageIndex($value)
@@ -164,7 +164,7 @@ class TPagedList extends TList
 
 	/**
 	 * Changes to a page with the specified page index.
-	 * @param integer page index
+	 * @param integer $pageIndex page index
 	 * @return integer|boolean the new page index, false if page index is out of range.
 	 */
 	public function gotoPage($pageIndex)
@@ -320,7 +320,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return integer the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
@@ -335,7 +335,7 @@ class TPagedList extends TList
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to check on
+	 * @param integer $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)

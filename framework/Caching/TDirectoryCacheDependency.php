@@ -58,7 +58,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param string the directory to be checked
+	 * @param string $directory the directory to be checked
 	 * @throws TInvalidDataValueException if the directory does not exist
 	 */
 	public function setDirectory($directory)
@@ -123,7 +123,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method is invoked when dependency of the whole directory is being checked.
 	 * By default, it always returns true, meaning the file should be checked.
 	 * You may override this method to check only certain files.
-	 * @param string the name of the file that may be checked for dependency.
+	 * @param string $fileName the name of the file that may be checked for dependency.
 	 * @return boolean whether this file should be checked.
 	 */
 	protected function validateFile($fileName)
@@ -136,7 +136,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method is invoked when dependency of the whole directory is being checked.
 	 * By default, it always returns true, meaning the subdirectory should be checked.
 	 * You may override this method to check only certain subdirectories.
-	 * @param string the name of the subdirectory that may be checked for dependency.
+	 * @param string $directory the name of the subdirectory that may be checked for dependency.
 	 * @return boolean whether this subdirectory should be checked.
 	 */
 	protected function validateDirectory($directory)

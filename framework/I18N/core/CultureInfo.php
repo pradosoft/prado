@@ -217,7 +217,7 @@ class CultureInfo
 	/**
 	 * Determine if a given culture is valid. Simply checks that the
 	 * culture data exists.
-	 * @param string a culture
+	 * @param string $culture a culture
 	 * @return boolean true if valid, false otherwise.
 	 */
 	public static function validCulture($culture)
@@ -286,7 +286,7 @@ class CultureInfo
 	 * Get the data by unserializing the ICU data from disk.
 	 * The data files are cached in a static variable inside
 	 * this function.
-	 * @param string the ICU data filename
+	 * @param string $filename the ICU data filename
 	 * @return array ICU data
 	 */
 	protected function &getData($filename)
@@ -570,7 +570,7 @@ class CultureInfo
 	 * Simplify a single element array into its own value.
 	 * E.g. <code>array(0 => array('hello'), 1 => 'world');</code>
 	 * becomes <code>array(0 => 'hello', 1 => 'world');</code>
-	 * @param array with single elements arrays
+	 * @param array $array with single elements arrays
 	 * @return array simplified array.
 	 */
 	private function simplify($array)

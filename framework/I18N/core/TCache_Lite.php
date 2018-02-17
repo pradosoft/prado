@@ -414,7 +414,7 @@ class TCache_Lite
 		/**
 		 * Set a new life time
 		 *
-		 * @param int $newLifeTime new life time (in seconds)
+		 * @param int $newLifeTime $newLifeTime new life time (in seconds)
 		 * @access public
 		 */
 	public function setLifeTime($newLifeTime)

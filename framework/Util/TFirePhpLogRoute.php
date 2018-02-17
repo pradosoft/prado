@@ -84,7 +84,7 @@ class TFirePhpLogRoute extends TLogRoute
 
 	/**
 	 * Translates a PRADO log level attribute into one understood by FirePHP for correct visualization
-	 * @param string prado log level
+	 * @param string $level prado log level
 	 * @return string FirePHP log level
 	 */
 	protected static function translateLogLevel($level)

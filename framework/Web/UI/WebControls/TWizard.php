@@ -196,7 +196,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TWizardStep step to be activated
+	 * @param TWizardStep $step step to be activated
 	 * @throws TInvalidOperationException if the step is not in the wizard step collection
 	 */
 	public function setActiveStep($step)
@@ -386,7 +386,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param string the URL that the browser will be redirected to if the cancel button in the
+	 * @param string $value the URL that the browser will be redirected to if the cancel button in the
 	 * wizard is clicked.
 	 */
 	public function setCancelDestinationUrl($value)
@@ -1270,7 +1270,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Determines the index of the previous step based on history.
-	 * @param boolean whether the first item in the history stack should be popped
+	 * @param boolean $popStack whether the first item in the history stack should be popped
 	 * up after calling this method.
 	 */
 	protected function getPreviousStepIndex($popStack)
@@ -1314,7 +1314,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param integer index of the step
+	 * @param integer $index index of the step
 	 * @return boolean whether navigation to the specified step is allowed
 	 */
 	protected function allowNavigationToStep($index)

@@ -151,7 +151,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param string the path where the uploaded file will be stored temporarily in namespace format
+	 * @param string $value the path where the uploaded file will be stored temporarily in namespace format
 	 * default "Application.runtime.*"
 	 */
 	public function setTempPath($value){
@@ -167,7 +167,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param boolean a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
+	 * @param boolean $value a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
 	public function setAutoPostBack($value){

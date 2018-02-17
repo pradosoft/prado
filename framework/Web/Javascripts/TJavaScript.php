@@ -28,7 +28,7 @@ class TJavaScript
 {
 	/**
 	 * Renders a list of javascript files
-	 * @param array URLs to the javascript files
+	 * @param array $files URLs to the javascript files
 	 * @return string rendering result
 	 */
 	public static function renderScriptFiles($files)
@@ -41,7 +41,7 @@ class TJavaScript
 
 	/**
 	 * Renders a javascript file
-	 * @param string URL to the javascript file
+	 * @param string $file URL to the javascript file
 	 * @return string rendering result
 	 */
 	public static function renderScriptFile($file)
@@ -51,7 +51,7 @@ class TJavaScript
 
 	/**
 	 * Renders a list of javascript blocks
-	 * @param array javascript blocks
+	 * @param array $scripts javascript blocks
 	 * @return string rendering result
 	 */
 	public static function renderScriptBlocks($scripts)
@@ -64,7 +64,7 @@ class TJavaScript
 
 	/**
 	 * Renders a list of javascript code
-	 * @param array javascript blocks
+	 * @param array $scripts javascript blocks
 	 * @return string rendering result
 	 */
 	public static function renderScriptBlocksCallback($scripts)
@@ -77,7 +77,7 @@ class TJavaScript
 
 	/**
 	 * Renders javascript block
-	 * @param string javascript block
+	 * @param string $script javascript block
 	 * @return string rendering result
 	 */
 	public static function renderScriptBlock($script)
@@ -89,7 +89,7 @@ class TJavaScript
 	 * Quotes a javascript string.
 	 * After processing, the string is safely enclosed within a pair of
 	 * quotation marks and can serve as a javascript string.
-	 * @param string string to be quoted
+	 * @param string $js string to be quoted
 	 * @return string the quoted string
 	 */
 	public static function quoteString($js)
@@ -286,7 +286,7 @@ class TJavaScript
 	/**
 	 * Minimize the size of a javascript script.
 	 * This method is based on Douglas Crockford's JSMin.
-	 * @param string code that you want to minimzie
+	 * @param string $code code that you want to minimzie
 	 * @return minimized version of the code
 	 */
 	public static function JSMin($code)

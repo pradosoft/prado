@@ -26,7 +26,7 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * Create an instance of an object give by the attribute named 'class' in the
 	 * node and set the properties on the object given by attribute names and values.
-	 * @param SimpleXmlNode property node
+	 * @param SimpleXmlNode $node property node
 	 * @return Object new instance of class with class name given by 'class' attribute value.
 	 */
 	protected function createObjectFromNode($node)

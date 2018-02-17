@@ -69,7 +69,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Executes a delete command.
-	 * @param TSqlCriteria delete conditions and parameters.
+	 * @param TSqlCriteria $criteria delete conditions and parameters.
 	 * @return integer number of records affected.
 	 */
 	public function delete($criteria)
@@ -108,7 +108,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Find one record matching the critera.
-	 * @param TSqlCriteria find conditions and parameters.
+	 * @param TSqlCriteria $criteria find conditions and parameters.
 	 * @return array matching record.
 	 */
 	public function find($criteria)
@@ -118,7 +118,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Find one or more matching records.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAll($criteria)
@@ -128,7 +128,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbCommand.
 	 */
 	protected function getFindCommand($criteria)
@@ -146,7 +146,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $command;
 	}
 	/**
-	 * @param mixed primary key value, or composite key values as array.
+	 * @param mixed $keys primary key value, or composite key values as array.
 	 * @return array matching record.
 	 */
 	public function findByPk($keys)
@@ -159,7 +159,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 	/**
-	 * @param array multiple primary key values or composite value arrays
+	 * @param array $keys multiple primary key values or composite value arrays
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAllByPk($keys)
@@ -182,7 +182,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array multiple primary key values or composite value arrays
+	 * @param array $keys multiple primary key values or composite value arrays
 	 * @return integer number of rows affected.
 	 */
 	public function deleteByPk($keys)
@@ -209,7 +209,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
-	 * @param array values for IN predicate
+	 * @param array $values values for IN predicate
 	 * @param string $values SQL string for primary keys IN a list.
 	 */
 	protected function getCompositeKeyCondition($values)
@@ -238,7 +238,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * @param TDbConnection database connection.
-	 * @param array values
+	 * @param array $array values
 	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
 	 */
 	protected function quoteTuple($array)
@@ -252,7 +252,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Create the condition and parameters for find by primary.
-	 * @param array primary key values
+	 * @param array $values primary key values
 	 * @return array tuple($where, $parameters)
 	 */
 	protected function getPrimaryKeyCondition($values)
@@ -277,7 +277,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Find one matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findBySql($criteria)
@@ -288,7 +288,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Find zero or more matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAllBySql($criteria)
@@ -299,7 +299,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Build sql command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbCommand command corresponding to the criteria.
 	 */
 	protected function getSqlCommand($criteria)
@@ -319,7 +319,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return integer number of records.
 	 */
 	public function count($criteria)

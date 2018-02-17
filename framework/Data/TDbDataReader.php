@@ -93,7 +93,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Returns a single column from the next row of a result set.
-	 * @param int zero-based column index
+	 * @param int $columnIndex zero-based column index
 	 * @return mixed|false the column of the current row, false if no more row available
 	 */
 	public function readColumn($columnIndex)

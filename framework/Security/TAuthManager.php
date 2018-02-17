@@ -84,7 +84,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if user manager does not exist or is not IUserManager
 	 */
 	public function init($config)
@@ -117,7 +117,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string|IUserManager the user manager module ID or the user manager object
+	 * @param string|IUserManager $provider the user manager module ID or the user manager object
 	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
 	 */
 	public function setUserManager($provider)
@@ -140,7 +140,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Sets the login page that the client browser will be redirected to if login is needed.
 	 * Login page should be specified in the format of page path.
-	 * @param string path of login page should login is required
+	 * @param string $pagePath path of login page should login is required
 	 * @see TPageService
 	 */
 	public function setLoginPage($pagePath)
@@ -245,7 +245,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param boolean whether to allow remembering login so that the user logs on automatically next time. Users have to enable cookie to make use of this feature.
+	 * @param boolean $value whether to allow remembering login so that the user logs on automatically next time. Users have to enable cookie to make use of this feature.
 	 * @since 3.1.1
 	 */
 	public function setAllowAutoLogin($value)
@@ -263,7 +263,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param integer authentication expiration time in seconds. Defaults to zero (no expiration).
+	 * @param integer $value authentication expiration time in seconds. Defaults to zero (no expiration).
 	 * @since 3.1.3
 	 */
 	public function setAuthExpire($value)
@@ -276,7 +276,7 @@ class TAuthManager extends \Prado\TModule
 	 * An OnAuthenticate event will be raised if there is any handler attached to it.
 	 * If the application already has a non-null user, it will return without further authentication.
 	 * Otherwise, user information will be restored from session data.
-	 * @param mixed parameter to be passed to OnAuthenticate event
+	 * @param mixed $param parameter to be passed to OnAuthenticate event
 	 * @throws TConfigurationException if session module does not exist.
 	 */
 	public function onAuthenticate($param)
@@ -376,7 +376,7 @@ class TAuthManager extends \Prado\TModule
 
 	/**
 	 * Updates the user data stored in session.
-	 * @param IUser user object
+	 * @param IUser $user user object
 	 * @throws new TConfigurationException if session module is not loaded.
 	 */
 	public function updateSessionUser($user)
@@ -393,7 +393,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Switches to a new user.
 	 * This method will logout the current user first and login with a new one (without password.)
-	 * @param string the new username
+	 * @param string $username the new username
 	 * @return boolean if the switch is successful
 	 */
 	public function switchUser($username)

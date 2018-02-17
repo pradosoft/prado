@@ -109,8 +109,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
 	 * </code>
 	 *
-	 * @param mixed
-	 * @since 3.1.7
+	 * @param mixed $value * @since 3.1.7
 	 * @see TDbCommandBuilder::getSelectFieldList()
 	 */
 	public function setSelect($value)

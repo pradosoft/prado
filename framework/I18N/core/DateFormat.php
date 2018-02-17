@@ -164,7 +164,7 @@ class DateFormat
 
 	/**
 	 * For a particular token, get the corresponding function to call.
-	 * @param string token
+	 * @param string $token token
 	 * @return mixed the function if good token, null otherwise.
 	 */
 	protected function getFunctionName($token)
@@ -270,7 +270,7 @@ class DateFormat
 	 * similar characters, e.g. 'aabb' will form 2 tokens of 'aa' and 'bb'.
 	 * Any substrings, starting and ending with a single quote (')
 	 * will be treated as a single token.
-	 * @param string pattern.
+	 * @param string $pattern pattern.
 	 * @return array string tokens in an array.
 	 */
 	protected function getTokens($pattern)

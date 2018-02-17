@@ -84,7 +84,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets the ID of the column.
 	 * By explicitly specifying the column ID, one can access the column
 	 * by $templateControl->ColumnID.
-	 * @param string the ID of the column.
+	 * @param string $value the ID of the column.
 	 * @throws TInvalidDataValueException if the ID is of bad format
 	 */
 	public function setID($value)
@@ -142,7 +142,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the {@link getFooterText FooterText}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setHeaderRenderer($value)
@@ -196,7 +196,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the {@link getFooterText FooterText}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setFooterRenderer($value)
@@ -258,7 +258,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether cells having the same content should be grouped together.
+	 * @param boolean $value whether cells having the same content should be grouped together.
 	 * @since 3.1.1
 	 */
 	public function setEnableCellGrouping($value)

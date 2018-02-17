@@ -193,7 +193,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @param THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie)

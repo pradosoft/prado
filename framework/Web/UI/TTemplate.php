@@ -459,7 +459,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Container index is the index to the array element that stores the container object.
 	 * If an object has no container, its container index is -1.
 	 *
-	 * @param string the template string
+	 * @param string $input the template string
 	 * @throws TConfigurationException if a parsing error is encountered
 	 */
 	protected function parse($input)
@@ -746,7 +746,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Parses a single attribute.
-	 * @param string the string to be parsed.
+	 * @param string $value the string to be parsed.
 	 * @return array attribute initialization
 	 */
 	protected function parseAttribute($value)
@@ -923,7 +923,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Preprocesses the template string by including external templates
-	 * @param string template string
+	 * @param string $input template string
 	 * @return string expanded template string
 	 */
 	protected function preprocess($input)

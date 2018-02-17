@@ -66,7 +66,7 @@ class TBoundColumn extends TDataGridColumn
 	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
 	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setItemRenderer($value)
@@ -94,7 +94,7 @@ class TBoundColumn extends TDataGridColumn
 	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
 	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
 	 */
 	public function setEditItemRenderer($value)

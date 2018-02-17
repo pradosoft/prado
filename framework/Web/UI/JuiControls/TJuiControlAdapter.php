@@ -79,7 +79,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 
 	/**
 	 * Publish the jQuery-ui style Css asset file.
-	 * @param file name
+	 * @param file $file name
 	 * @return string Css file url.
 	 */
 	public function publishJuiStyle($file)

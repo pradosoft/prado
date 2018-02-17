@@ -66,7 +66,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 
 	/**
 	 * Use HTMLPurifier to remove malicous content from HTML.
-	 * @param string HTML content
+	 * @param string $text HTML content
 	 * @return string safer HTML content
 	 */
 	protected function parseSafeHtml($text)

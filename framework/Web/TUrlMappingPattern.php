@@ -180,7 +180,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Initializes the pattern.
-	 * @param TXmlElement configuration for this module.
+	 * @param TXmlElement $config configuration for this module.
 	 * @throws TConfigurationException if service parameter is not specified
 	 */
 	public function init($config)
@@ -345,7 +345,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
-	 * @param THttpRequest the request module
+	 * @param THttpRequest $request the request module
 	 * @return array matched parameters, empty if no matches.
 	 */
 	public function getPatternMatches($request)
@@ -431,7 +431,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * {@link setUrlParamSeparator} and defaults to '/'.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat the format of URLs.
+	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 * @since 3.1.4
 	 */
 	public function setUrlFormat($value)
@@ -448,7 +448,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
 	 * @throws TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
@@ -469,7 +469,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TUrlMappingPatternSecureConnection the SecureConnection behavior.
+	 * @param TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
 	 * @since 3.2
 	 */
 	public function setSecureConnection($value)
