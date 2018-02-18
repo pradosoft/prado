@@ -303,10 +303,10 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Update the translation.
-	 * @param string the source string.
-	 * @param string the new translation string.
-	 * @param string comments
-	 * @param string the catalogue to save to.
+	 * @param string $text the source string.
+	 * @param string $target the new translation string.
+	 * @param string $comments comments
+	 * @param string $catalogue = 'messages' the catalogue to save to.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages')

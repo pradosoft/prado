@@ -47,10 +47,10 @@ class TLazyLoadList
 
 	/**
 	 * Create a new instance of a lazy collection.
-	 * @param TMappedStatement statement to be executed to load the data.
-	 * @param mixed parameter value for the statement.
-	 * @param object result object that contains the lazy collection.
-	 * @param string property of the result object to set the loaded collection.
+	 * @param TMappedStatement $mappedStatement statement to be executed to load the data.
+	 * @param mixed $param parameter value for the statement.
+	 * @param object $target result object that contains the lazy collection.
+	 * @param string $propertyName property of the result object to set the loaded collection.
 	 * @return TObjectProxy proxied collection object.
 	 */
 	public static function newInstance($mappedStatement, $param, $target, $propertyName)

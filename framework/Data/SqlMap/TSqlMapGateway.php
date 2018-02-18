@@ -121,10 +121,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Executes the SQL and retuns a subset of the results in a dynamic
 	 * TPagedList that can be used to automatically scroll through results
 	 * from a database table.
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param integer The maximum number of objects to store in each page.
-	 * @param integer The number of the page to initially load into the list.
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param mixed $parameter = null The object used to set the parameters in the SQL.
+	 * @param integer $pageSize = 10 The maximum number of objects to store in each page.
+	 * @param integer $page = 0 The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedList($statementName, $parameter = null, $pageSize = 10, $page = 0)

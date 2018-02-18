@@ -357,10 +357,10 @@ class TSimpleDateFormatter
 
 	/**
 	 * Gets integer from part of a string, allows integers of any length.
-	 * @param string string to retrieve the integer from.
-	 * @param int starting position
-	 * @param int minimum integer length
-	 * @param int maximum integer length
+	 * @param string $str string to retrieve the integer from.
+	 * @param int $i starting position
+	 * @param int $minlength minimum integer length
+	 * @param int $maxlength maximum integer length
 	 * @return string integer portion of the string, null otherwise
 	 */
 	private function getInteger($str, $i, $minlength, $maxlength)

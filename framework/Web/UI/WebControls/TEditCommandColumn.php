@@ -230,10 +230,10 @@ class TEditCommandColumn extends TDataGridColumn
 	/**
 	 * Creates a button and initializes its properties.
 	 * The button type is determined by {@link getButtonType ButtonType}.
-	 * @param string command name associated with the button
-	 * @param string button caption
-	 * @param boolean whether the button should cause validation
-	 * @param string the validation group that the button belongs to
+	 * @param string $commandName command name associated with the button
+	 * @param string $text button caption
+	 * @param boolean $causesValidation whether the button should cause validation
+	 * @param string $validationGroup the validation group that the button belongs to
 	 * @return mixed the newly created button.
 	 */
 	protected function createButton($commandName, $text, $causesValidation, $validationGroup)

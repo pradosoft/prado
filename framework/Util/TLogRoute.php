@@ -152,10 +152,10 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * Formats a log message given different fields.
-	 * @param string message content
-	 * @param integer message level
-	 * @param string message category
-	 * @param integer timestamp
+	 * @param string $message message content
+	 * @param integer $level message level
+	 * @param string $category message category
+	 * @param integer $time timestamp
 	 * @return string formatted message
 	 */
 	protected function formatLogMessage($message, $level, $category, $time)
