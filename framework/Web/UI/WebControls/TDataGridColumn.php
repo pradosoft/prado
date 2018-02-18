@@ -285,8 +285,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * Returns a viewstate value.
 	 *
-	 * @param string the name of the viewstate value to be returned
-	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
+	 * @param string $key the name of the viewstate value to be returned
+	 * @param mixed $defaultValue = null the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
 	protected function getViewState($key, $defaultValue = null)
@@ -519,8 +519,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * within which the token '{0}' is translated with the data value to be formated.
 	 * Otherwise, the format string and the data value are passed
 	 * as the first and second parameters in {@link sprintf}.
-	 * @param string format string
-	 * @param mixed the data to be formatted
+	 * @param string $formatString format string
+	 * @param mixed $value the data to be formatted
 	 * @return string the formatted result
 	 */
 	protected function formatDataValue($formatString, $value)

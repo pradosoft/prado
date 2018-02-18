@@ -714,8 +714,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 *
 	 * This function is mainly used in defining getter functions for control properties
 	 * that must be kept in controlstate.
-	 * @param string the name of the controlstate value to be returned
-	 * @param mixed the default value. If $key is not found in controlstate, $defaultValue will be returned
+	 * @param string $key the name of the controlstate value to be returned
+	 * @param mixed $defaultValue = null the default value. If $key is not found in controlstate, $defaultValue will be returned
 	 * @return mixed the controlstate value corresponding to $key
 	 */
 	protected function getControlState($key, $defaultValue = null)
@@ -766,8 +766,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 *
 	 * This function is very useful in defining getter functions for component properties
 	 * that must be kept in viewstate.
-	 * @param string the name of the viewstate value to be returned
-	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
+	 * @param string $key the name of the viewstate value to be returned
+	 * @param mixed $defaultValue = null the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
 	public function getViewState($key, $defaultValue = null)
@@ -1007,8 +1007,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Finds all child and grand-child controls that are of the specified type.
-	 * @param string the class name
-	 * @param boolean whether the type comparison is strict or not. If false, controls of the parent classes of the specified class will also be returned.
+	 * @param string $type the class name
+	 * @param boolean $strict = true whether the type comparison is strict or not. If false, controls of the parent classes of the specified class will also be returned.
 	 * @return array list of controls found
 	 */
 	public function findControlsByType($type, $strict = true)

@@ -103,8 +103,8 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Returns a single column from the next row of a result set.
-	 * @param string class name of the object to be created and populated
-	 * @param array list of column names whose values are to be passed as parameters in the constructor of the class being created
+	 * @param string $className class name of the object to be created and populated
+	 * @param array $fields list of column names whose values are to be passed as parameters in the constructor of the class being created
 	 * @return mixed|false the populated object, false if no more row of data available
 	 */
 	public function readObject($className, $fields)

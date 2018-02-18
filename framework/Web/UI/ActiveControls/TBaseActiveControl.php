@@ -70,8 +70,8 @@ class TBaseActiveControl extends \Prado\TComponent
 	/**
 	 * Gets an option named value. Options are used to store and retrive
 	 * named values for the base active controls.
-	 * @param string option name.
-	 * @param mixed default value.
+	 * @param string $name option name.
+	 * @param mixed $default = null default value.
 	 * @return mixed options value.
 	 */
 	protected function getOption($name, $default = null)

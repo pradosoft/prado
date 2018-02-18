@@ -29,8 +29,8 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.
-	 * @param array list of column id for potential search condition.
-	 * @param string string of keywords
+	 * @param array $fields list of column id for potential search condition.
+	 * @param string $keywords string of keywords
 	 * @return string SQL search condition matching on a set of columns.
 	 */
 	public function getSearchExpression($fields, $keywords) {

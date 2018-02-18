@@ -413,8 +413,8 @@ class TApplication extends \Prado\TComponent
 	 * Returns a global value.
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
-	 * @param string the name of the value to be returned
-	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
+	 * @param string $key the name of the value to be returned
+	 * @param mixed $defaultValue = null the default value. If $key is not found, $defaultValue will be returned
 	 * @return mixed the global value corresponding to $key
 	 */
 	public function getGlobalState($key, $defaultValue = null)

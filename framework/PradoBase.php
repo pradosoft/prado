@@ -415,8 +415,8 @@ class PradoBase
 	 * If the namespace ends with an asterisk '*', it represents a directory;
 	 * Otherwise it represents a file whose extension name is specified by the second parameter (defaults to empty).
 	 * Note, this method does not ensure the existence of the resulting file path.
-	 * @param string namespace
-	 * @param string extension to be appended if the namespace refers to a file
+	 * @param string $namespace namespace
+	 * @param string $ext = '' extension to be appended if the namespace refers to a file
 	 * @return string file path corresponding to the namespace, null if namespace is invalid
 	 */
 	public static function getPathOfNamespace($namespace, $ext = '')

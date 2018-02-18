@@ -38,8 +38,8 @@ interface IRepeatInfoUser
 	 */
 	public function getItemCount();
 	/**
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer zero-based index of the current rendering item.
+	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer $index zero-based index of the current rendering item.
 	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
 	 */
 	public function generateItemStyle($itemType, $index);

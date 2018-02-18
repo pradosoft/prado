@@ -344,8 +344,8 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Extracts the tar file to the destination directory.
 	 * N.B Tar file must not be compressed.
-	 * @param string tar file
-	 * @param string path where the contents of tar file are to be extracted
+	 * @param string $path tar file
+	 * @param string $destination path where the contents of tar file are to be extracted
 	 * @return boolean true if extract successful, false otherwise.
 	 */
 	protected function deployTarFile($path, $destination)

@@ -79,8 +79,8 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	/**
 	 * Loads hidden field data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)

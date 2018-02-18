@@ -49,8 +49,8 @@ interface IUserManager
 	public function saveUserToCookie($cookie);
 	/**
 	 * Validates if the username and password are correct.
-	 * @param string user name
-	 * @param string password
+	 * @param string $username user name
+	 * @param string $password password
 	 * @return boolean true if validation is successful, false otherwise.
 	 */
 	public function validateUser($username, $password);

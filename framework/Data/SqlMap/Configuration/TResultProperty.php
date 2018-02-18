@@ -235,8 +235,8 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Gets the value for the current property, converts to applicable type if necessary.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param array result row
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param array $row result row
 	 * @return mixed property value.
 	 */
 	public function getPropertyValue($registry, $row)
@@ -254,8 +254,8 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param mixed raw property value
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param mixed $value raw property value
 	 * @return mixed property value casted to specific type.
 	 */
 	protected function getTypedValue($registry, $value)

@@ -186,8 +186,8 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Parse the pair of values into the appropriate value type.
-	 * @param string value one
-	 * @param string second value
+	 * @param string $value1 value one
+	 * @param string $value2 second value
 	 * @return array appropriate type of the value pair, array($value1, $value2);
 	 */
 	protected function getComparisonValues($value1, $value2)

@@ -115,8 +115,8 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param array column information.
-	 * @param array foreign key details.
+	 * @param array $col column information.
+	 * @param array $foreign foreign key details.
 	 * @return TSqliteTableColumn column details.
 	 */
 	protected function processColumn($col, $foreign)
@@ -179,8 +179,8 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string column name.
-	 * @param array foreign key column names.
+	 * @param string $columnId column name.
+	 * @param array $foreign foreign key column names.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $foreign)

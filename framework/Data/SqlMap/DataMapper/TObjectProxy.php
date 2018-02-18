@@ -37,8 +37,8 @@ class TObjectProxy
 	/**
 	 * Relay the method call to the handler object (if able to be handled), otherwise
 	 * it calls the proxied object's method.
-	 * @param string method name called
-	 * @param array method arguments
+	 * @param string $method method name called
+	 * @param array $params method arguments
 	 * @return mixed method return value.
 	 */
 	public function __call($method, $params)

@@ -460,8 +460,8 @@ class TDatePicker extends TTextBox
 	 * Loads user input data. Override parent implementation, when InputMode
 	 * is DropDownList call getDateFromPostData to get date data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
@@ -480,8 +480,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Loads date from drop down list data.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return array the date selected
 	 */
 	protected function getDateFromPostData($key, $values)

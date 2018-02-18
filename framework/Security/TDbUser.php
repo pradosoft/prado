@@ -60,8 +60,8 @@ abstract class TDbUser extends TUser
 	 * Usually, this is accomplished by checking if the user database
 	 * contains this (username, password) pair.
 	 * You may use {@link getDbConnection DbConnection} to deal with database.
-	 * @param string username (case-sensitive)
-	 * @param string password
+	 * @param string $username username (case-sensitive)
+	 * @param string $password password
 	 * @return boolean whether the validation succeeds
 	 */
 	abstract public function validateUser($username, $password);

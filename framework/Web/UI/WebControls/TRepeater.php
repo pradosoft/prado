@@ -455,8 +455,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item.
 	 * This method invokes {@link createItem} to create a new repeater item.
-	 * @param integer zero-based item index.
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based item index.
+	 * @param TListItemType $itemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
@@ -499,8 +499,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * Creates a repeater item instance based on the item type and index.
-	 * @param integer zero-based item index
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based item index
+	 * @param TListItemType $itemType item type
 	 * @return TControl created repeater item
 	 */
 	protected function createItem($itemIndex, $itemType)
@@ -687,8 +687,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * repeater items and their child controls.
 	 * This method should only be used by control developers.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)

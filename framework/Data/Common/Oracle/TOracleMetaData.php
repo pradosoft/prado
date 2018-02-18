@@ -147,8 +147,8 @@ EOD;
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string table name.
+	 * @param string $schemaName table schema name
+	 * @param string $tableName table name.
 	 * @return boolean true if the table is a view.
 	 */
 	protected function getIsView($schemaName, $tableName)
@@ -242,8 +242,8 @@ EOD;
 
 	/**
 	 * Gets the primary and foreign key column details for the given table.
-	 * @param string schema name
-	 * @param string table name.
+	 * @param string $schemaName schema name
+	 * @param string $tableName table name.
 	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
@@ -324,8 +324,8 @@ EOD;
 	}
 
 	/**
-	 * @param string column name.
-	 * @param TOracleTableInfo table information.
+	 * @param string $columnId column name.
+	 * @param TOracleTableInfo $tableInfo table information.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

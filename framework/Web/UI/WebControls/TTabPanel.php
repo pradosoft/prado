@@ -336,8 +336,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)

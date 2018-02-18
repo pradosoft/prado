@@ -270,8 +270,8 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Gets the primary and foreign key column details for the given table.
-	 * @param string schema name
-	 * @param string table name.
+	 * @param string $schemaName schema name
+	 * @param string $tableName table name.
 	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
@@ -296,8 +296,8 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string database name
-	 * @param string table name
+	 * @param string $schemaName database name
+	 * @param string $tableName table name
 	 * @return array foreign relationship table name and keys.
 	 */
 	protected function getForeignConstraints($schemaName, $tableName)
@@ -354,8 +354,8 @@ EOD;
 
 	/**
 	 * Extract foreign key constraints by extracting the contraints from SHOW CREATE TABLE result.
-	 * @param string database name
-	 * @param string table name
+	 * @param string $schemaName database name
+	 * @param string $tableName table name
 	 * @return array foreign relationship table name and keys.
 	 */
 	protected function findForeignConstraints($schemaName, $tableName)
@@ -378,8 +378,8 @@ EOD;
 	}
 
 	/**
-	 * @param string column name.
-	 * @param TPgsqlTableInfo table information.
+	 * @param string $columnId column name.
+	 * @param TPgsqlTableInfo $tableInfo table information.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

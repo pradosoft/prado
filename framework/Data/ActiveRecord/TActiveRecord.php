@@ -509,8 +509,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 	/**
 	 * Delete multiple records using a criteria.
-	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TActiveRecordCriteria $criteria = null SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return int number of records deleted.
 	 */
 	public function deleteAll($criteria = null, $parameters = [])
@@ -575,8 +575,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $finder->find($criteria); //the 2nd parameter for find() is ignored.
 	 * </code>
 	 *
-	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return TActiveRecord matching record object. Null if no result is found.
 	 */
 	public function find($criteria, $parameters = [])
@@ -591,8 +591,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Same as find() but returns an array of objects.
 	 *
-	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TActiveRecordCriteria $criteria = null SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return array matching record objects. Empty array if no result is found.
 	 */
 	public function findAll($criteria = null, $parameters = [])
@@ -704,8 +704,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Find the number of records.
-	 * @param string|TActiveRecordCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TActiveRecordCriteria $criteria = null SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return int number of records.
 	 */
 	public function count($criteria = null, $parameters = [])
@@ -719,8 +719,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Returns the active record relationship handler for $RELATION with key
 	 * value equal to the $property value.
-	 * @param string relationship/property name corresponding to keys in $RELATION array.
-	 * @param array method call arguments.
+	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
+	 * @param array $args = [] method call arguments.
 	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
 	protected function getRelationHandler($name, $args = [])

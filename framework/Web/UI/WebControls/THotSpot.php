@@ -34,8 +34,8 @@ abstract class THotSpot extends \Prado\TComponent
 	 *
 	 * This function is very useful in defining getter functions for component properties
 	 * that must be kept in viewstate.
-	 * @param string the name of the viewstate value to be returned
-	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
+	 * @param string $key the name of the viewstate value to be returned
+	 * @param mixed $defaultValue = null the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
 	protected function getViewState($key, $defaultValue = null)

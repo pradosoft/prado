@@ -214,8 +214,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Processes the events bubbled from child controls.
 	 * The method handles view-related command events.
-	 * @param TControl sender of the event
-	 * @param mixed event parameter
+	 * @param TControl $sender sender of the event
+	 * @param mixed $param event parameter
 	 * @return boolean whether this event is handled
 	 */
 	public function bubbleEvent($sender, $param)

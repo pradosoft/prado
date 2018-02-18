@@ -83,8 +83,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Updates the table with new data.
-	 * @param array date for update.
-	 * @param TSqlCriteria update conditions and parameters.
+	 * @param array $data date for update.
+	 * @param TSqlCriteria $criteria update conditions and parameters.
 	 * @return integer number of records affected.
 	 */
 	public function update($data, $criteria)
@@ -97,8 +97,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $this->onExecuteCommand($command, $command->execute());
 	}
 	/**
-	 * @param array update for update
-	 * @param array primary key-value name pairs.
+	 * @param array $data update for update
+	 * @param array $keys primary key-value name pairs.
 	 * @return integer number of records affected.
 	 */
 	public function updateByPk($data, $keys)
@@ -387,8 +387,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Calculates the AND/OR condition from dynamic method substrings using
 	 * table meta data, allows for any AND-OR combinations.
-	 * @param string dynamic method name
-	 * @param string dynamic method search criteria
+	 * @param string $method dynamic method name
+	 * @param string $condition dynamic method search criteria
 	 * @return array search condition substrings
 	 */
 	protected function extractMatchingConditions($method, $condition)

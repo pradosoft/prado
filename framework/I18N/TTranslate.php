@@ -231,8 +231,8 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Translates the text with subsititution.
-	 * @param string text for translation
-	 * @param array list of substitutions
+	 * @param string $text text for translation
+	 * @param array $subs list of substitutions
 	 * @return string translated text
 	 */
 	protected function translateText($text, $subs)

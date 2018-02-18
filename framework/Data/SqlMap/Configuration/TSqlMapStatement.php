@@ -283,8 +283,8 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of result class.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param array result data.
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param array $row result data.
 	 * @return mixed result object.
 	 */
 	public function createInstanceOfResultClass($registry, $row)

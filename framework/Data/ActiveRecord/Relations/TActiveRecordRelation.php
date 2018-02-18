@@ -70,8 +70,8 @@ abstract class TActiveRecordRelation
 	 *
 	 * Multiple relationship calls can be chain together.
 	 *
-	 * @param string method name called
-	 * @param array method arguments
+	 * @param string $method method name called
+	 * @param array $args method arguments
 	 * @return mixed TActiveRecord or array of TActiveRecord results depending on the method called.
 	 */
 	public function __call($method, $args)
@@ -164,8 +164,8 @@ abstract class TActiveRecordRelation
 	}
 
 	/**
-	 * @param mixed object or array to be hashed
-	 * @param array name of property for hashing the properties.
+	 * @param mixed $obj object or array to be hashed
+	 * @param array $properties name of property for hashing the properties.
 	 * @return string object hash using crc32 and serialize.
 	 */
 	protected function getObjectHash($obj, $properties)
@@ -178,8 +178,8 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
-	 * @param array field names
-	 * @param array foreign key index values.
+	 * @param array $fields field names
+	 * @param array $indexValues foreign key index values.
 	 * @return TActiveRecord[] foreign objects.
 	 */
 	protected function findForeignObjects($fields, $indexValues)
@@ -190,8 +190,8 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Obtain the foreign key index values from the results.
-	 * @param array property names
-	 * @param array TActiveRecord results
+	 * @param array $keys property names
+	 * @param array $results TActiveRecord results
 	 * @return array foreign key index values.
 	 */
 	protected function getIndexValues($keys, $results)

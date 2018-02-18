@@ -273,8 +273,8 @@ class TPriorityMap extends TMap
 	/**
 	 * This changes an item's priority.  Specify the item and the new priority.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the key
-	 * @param numeric|null the priority.  default: null, filled in with the default priority numeric.
+	 * @param mixed $key the key
+	 * @param numeric|null $priority = null the priority.  default: null, filled in with the default priority numeric.
 	 * @return numeric old priority of the item
 	 */
 	public function setPriorityAt($key, $priority = null)

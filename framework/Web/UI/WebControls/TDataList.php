@@ -908,8 +908,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -1067,8 +1067,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Returns a style used for rendering items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer index of the item being rendered
+	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer $index index of the item being rendered
 	 * @return TStyle item style
 	 */
 	public function generateItemStyle($itemType, $index)
@@ -1100,8 +1100,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param TListItemType item type
-	 * @param integer item index
+	 * @param TListItemType $itemType item type
+	 * @param integer $index item index
 	 * @return TControl data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
@@ -1129,8 +1129,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Creates a datalist item.
 	 * This method invokes {@link createItem} to create a new datalist item.
-	 * @param integer zero-based item index.
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based item index.
+	 * @param TListItemType $itemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
@@ -1202,8 +1202,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Creates a datalist item instance based on the item type and index.
-	 * @param integer zero-based item index
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based item index
+	 * @param TListItemType $itemType item type
 	 * @return TControl created datalist item
 	 */
 	protected function createItem($itemIndex, $itemType)

@@ -56,8 +56,8 @@ class TOracleTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed default value if information array value is null
+	 * @param string $name information array key name
+	 * @param mixed $default = null default value if information array value is null
 	 * @return mixed information array value.
 	 */
 	public function getInfo($name, $default = null)

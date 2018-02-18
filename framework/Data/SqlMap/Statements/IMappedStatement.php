@@ -50,8 +50,8 @@ interface IMappedStatement
 	/**
 	 * Execute an update statement. Also used for delete statement. Return the
 	 * number of row effected.
-	 * @param IDbConnection database connection to execute the query
-	 * @param mixed The object used to set the parameters in the SQL.
+	 * @param IDbConnection $connection database connection to execute the query
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @return integer The number of row effected.
 	 */
 	public function executeUpdate($connection, $parameter);

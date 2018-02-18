@@ -180,8 +180,8 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Result sub-mappings using the discriminiator column.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param array row data.
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param array $row row data.
 	 * @return TResultMap result sub-map.
 	 */
 	public function resolveSubMap($registry, $row)

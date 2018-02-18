@@ -109,8 +109,8 @@ class ChoiceFormat
 
 	/**
 	 * Determine if the given number belongs to a given set
-	 * @param float the number to test.
-	 * @param string the set, in set notation.
+	 * @param float $number the number to test.
+	 * @param string $set the set, in set notation.
 	 * @return boolean true if number is in the set, false otherwise.
 	 */
 	public function isValid($number, $set)
@@ -207,8 +207,8 @@ class ChoiceFormat
 	/**
 	 * For the choice string, and a number, find and return the
 	 * string that satisfied the set within the choices.
-	 * @param string the choices string.
-	 * @param float the number to test.
+	 * @param string $string the choices string.
+	 * @param float $number the number to test.
 	 * @return string the choosen string.
 	 */
 	public function format($string, $number)

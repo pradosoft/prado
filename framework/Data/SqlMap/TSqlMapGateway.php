@@ -223,8 +223,8 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input data for the
 	 * UPDATE values as well as the WHERE clause parameter(s).
 	 *
-	 * @param string The name of the statement to execute.
-	 * @param mixed The parameter object.
+	 * @param string $statementName The name of the statement to execute.
+	 * @param mixed $parameter = null The parameter object.
 	 * @return integer The number of rows effected.
 	 */
 	public function update($statementName, $parameter = null)
@@ -235,8 +235,8 @@ class TSqlMapGateway extends \Prado\TComponent
 
 	/**
 	 * Executes a Sql DELETE statement.  Delete returns the number of rows effected.
-	 * @param string The name of the statement to execute.
-	 * @param mixed The parameter object.
+	 * @param string $statementName The name of the statement to execute.
+	 * @param mixed $parameter = null The parameter object.
 	 * @return integer The number of rows effected.
 	 */
 	public function delete($statementName, $parameter = null)

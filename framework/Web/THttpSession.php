@@ -434,8 +434,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session open handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session save path
-	 * @param string session name
+	 * @param string $savePath session save path
+	 * @param string $sessionName session name
 	 * @return boolean whether session is opened successfully
 	 */
 	public function _open($savePath, $sessionName)
@@ -467,8 +467,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session write handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session ID
-	 * @param string session data
+	 * @param string $id session ID
+	 * @param string $data session data
 	 * @return boolean whether session write is successful
 	 */
 	public function _write($id, $data)

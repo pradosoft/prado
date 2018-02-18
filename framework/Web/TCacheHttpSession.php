@@ -105,8 +105,8 @@ class TCacheHttpSession extends THttpSession
 
 	/**
 	 * Session write handler.
-	 * @param string session ID
-	 * @param string session data
+	 * @param string $id session ID
+	 * @param string $data session data
 	 * @return boolean whether session write is successful
 	 */
 	public function _write($id, $data)

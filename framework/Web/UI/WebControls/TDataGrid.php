@@ -681,8 +681,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)

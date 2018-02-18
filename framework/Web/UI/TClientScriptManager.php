@@ -405,8 +405,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string the unique ID of the container control
-	 * @param string the unique ID of the button control
+	 * @param string $panelID the unique ID of the container control
+	 * @param string $buttonID the unique ID of the button control
 	 * @return array default button options.
 	 */
 	protected function getDefaultButtonOptions($panelID, $buttonID)

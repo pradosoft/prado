@@ -333,8 +333,8 @@ class TErrorHandler extends \Prado\TModule
 	 * %%Version%% : the version information of the Web server.
 	 * %%Time%% : the time the exception occurs at
 	 *
-	 * @param integer status code (such as 404, 500, etc.)
-	 * @param Exception the exception to be displayed
+	 * @param integer $statusCode status code (such as 404, 500, etc.)
+	 * @param Exception $exception the exception to be displayed
 	 * @return string the template content
 	 */
 	protected function getErrorTemplate($statusCode, $exception)

@@ -85,8 +85,8 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * Converts the value to given type using PHP's settype() function.
-	 * @param string PHP primative type.
-	 * @param mixed value to be casted
+	 * @param string $type PHP primative type.
+	 * @param mixed $value value to be casted
 	 * @return mixed type casted value.
 	 */
 	public function convertToType($type, $value)

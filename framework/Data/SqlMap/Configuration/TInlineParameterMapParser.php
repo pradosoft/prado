@@ -33,8 +33,8 @@ class TInlineParameterMapParser
 
 	/**
 	 * Parse the sql text for inline parameters.
-	 * @param string sql text
-	 * @param array file and node details for exception message.
+	 * @param string $sqlText sql text
+	 * @param array $scope file and node details for exception message.
 	 * @return array 'sql' and 'parameters' name value pairs.
 	 */
 	public function parse($sqlText, $scope)

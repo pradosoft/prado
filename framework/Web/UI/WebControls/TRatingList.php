@@ -300,8 +300,8 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param string rating style name
-	 * @param string rating image file extension, default is '.gif'
+	 * @param string $style rating style name
+	 * @param string $fileExt = '.gif' rating image file extension, default is '.gif'
 	 * @return array URL of publish the rating images
 	 */
 	protected function publishImages($style, $fileExt = '.gif')

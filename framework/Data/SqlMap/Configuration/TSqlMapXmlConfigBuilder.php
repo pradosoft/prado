@@ -65,8 +65,8 @@ abstract class TSqlMapXmlConfigBuilder
 	}
 	/**
 	 * Gets the filename relative to the basefile.
-	 * @param string base filename
-	 * @param string relative filename
+	 * @param string $basefile base filename
+	 * @param string $resource relative filename
 	 * @return string absolute filename.
 	 */
 	protected function getAbsoluteFilePath($basefile, $resource)

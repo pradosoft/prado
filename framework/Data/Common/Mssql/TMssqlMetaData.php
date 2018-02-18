@@ -249,8 +249,8 @@ EOD;
 	}
 
 	/**
-	 * @param string column name.
-	 * @param TPgsqlTableInfo table information.
+	 * @param string $columnId column name.
+	 * @param TPgsqlTableInfo $tableInfo table information.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

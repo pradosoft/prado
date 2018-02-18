@@ -425,8 +425,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Execute an insert statement. Fill the parameter object with the ouput
 	 * parameters if any, also could return the insert generated key.
-	 * @param IDbConnection database connection
-	 * @param mixed The parameter object used to fill the statement.
+	 * @param IDbConnection $connection database connection
+	 * @param mixed $parameter The parameter object used to fill the statement.
 	 * @return string the insert generated key.
 	 */
 	public function executeInsert($connection, $parameter)
@@ -447,8 +447,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the insert generated ID before executing an insert statement.
-	 * @param IDbConnection database connection
-	 * @param mixed insert statement parameter.
+	 * @param IDbConnection $connection database connection
+	 * @param mixed $parameter insert statement parameter.
 	 * @return string new insert ID if pre-select key statement was executed, null otherwise.
 	 */
 	protected function getPreGeneratedSelectKey($connection, $parameter)
@@ -463,8 +463,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the inserted row ID after executing an insert statement.
-	 * @param IDbConnection database connection
-	 * @param mixed insert statement parameter.
+	 * @param IDbConnection $connection database connection
+	 * @param mixed $parameter insert statement parameter.
 	 * @return string last insert ID, null otherwise.
 	 */
 	protected function getPostGeneratedSelectKey($connection, $parameter)
@@ -497,8 +497,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Execute an update statement. Also used for delete statement.
 	 * Return the number of rows effected.
-	 * @param IDbConnection database connection
-	 * @param mixed The object used to set the parameters in the SQL.
+	 * @param IDbConnection $connection database connection
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @return integer The number of rows effected.
 	 */
 	public function executeUpdate($connection, $parameter)
@@ -602,8 +602,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply the result to a TList or an array.
-	 * @param array a result set row retrieved from the database
-	 * @param object result object, array or list
+	 * @param array $row a result set row retrieved from the database
+	 * @param object $resultObject result object, array or list
 	 * @return object result filled with data.
 	 */
 	protected function fillResultArrayList($row, $resultObject)
@@ -619,8 +619,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Apply the result to an object.
-	 * @param array a result set row retrieved from the database
-	 * @param object result object, array or list
+	 * @param array $row a result set row retrieved from the database
+	 * @param object $resultObject result object, array or list
 	 * @return object result filled with data.
 	 */
 	protected function fillResultObjectProperty($row, $resultObject)
@@ -722,8 +722,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the result 'group by' groupping key for each row.
-	 * @param TResultMap result mapping details.
-	 * @param array a result set row retrieved from the database
+	 * @param TResultMap $resultMap result mapping details.
+	 * @param array $row a result set row retrieved from the database
 	 * @return string groupping key.
 	 */
 	protected function getResultMapGroupKey($resultMap, $row)
@@ -783,8 +783,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Converts the first array value to scalar value of given type.
-	 * @param array list of results
-	 * @param string scalar type.
+	 * @param array $result list of results
+	 * @param string $type scalar type.
 	 * @return mixed scalar value.
 	 */
 	protected function getScalarResult($result, $type)

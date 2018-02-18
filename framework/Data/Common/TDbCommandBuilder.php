@@ -101,8 +101,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string SQL string without existing ordering.
-	 * @param array pairs of column names as key and direction as value.
+	 * @param string $sql SQL string without existing ordering.
+	 * @param array $ordering pairs of column names as key and direction as value.
 	 * @return string modified SQL applied with ORDER BY.
 	 */
 	public function applyOrdering($sql, $ordering)
@@ -129,8 +129,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Computes the SQL condition for search a set of column using regular expression
 	 * (or LIKE, depending on database implementation) to match a string of
 	 * keywords (default matches all keywords).
-	 * @param array list of column id for potential search condition.
-	 * @param string string of keywords
+	 * @param array $fields list of column id for potential search condition.
+	 * @param string $keywords string of keywords
 	 * @return string SQL search condition matching on a set of columns.
 	 */
 	public function getSearchExpression($fields, $keywords)
@@ -147,8 +147,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string column name.
-	 * @param array keywords
+	 * @param string $column column name.
+	 * @param array $words keywords
 	 * @return string search condition for all words in one column.
 	 */
 	protected function getSearchCondition($column, $words)
@@ -343,8 +343,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Creates a delete command for the table described in {@link setTableInfo TableInfo}.
 	 * The conditions for delete is given by the $where argument and the parameters
 	 * for the condition is given by $parameters.
-	 * @param string delete condition.
-	 * @param array delete parameters.
+	 * @param string $where delete condition.
+	 * @param array $parameters = [] delete parameters.
 	 * @return TDbCommand delete command.
 	 */
 	public function createDeleteCommand($where, $parameters = [])
@@ -415,8 +415,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Create a name-value or position-value if $position=true binding strings.
-	 * @param array data for binding.
-	 * @param boolean true to bind as position values.
+	 * @param array $values data for binding.
+	 * @param boolean $position = false true to bind as position values.
 	 * @return string update column names with corresponding binding substrings.
 	 */
 	protected function getColumnBindings($values, $position = false)

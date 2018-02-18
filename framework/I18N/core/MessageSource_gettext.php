@@ -268,8 +268,8 @@ class MessageSource_gettext extends MessageSource
 
 	/**
 	 * Delete a particular message from the specified catalogue.
-	 * @param string the source message to delete.
-	 * @param string the catalogue to delete from.
+	 * @param string $message the source message to delete.
+	 * @param string $catalogue = 'messages' the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages')

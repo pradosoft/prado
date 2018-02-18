@@ -85,8 +85,8 @@ class TPropertyAccess
 	}
 
 	/**
-	 * @param mixed object or array
-	 * @param string property path.
+	 * @param mixed $object object or array
+	 * @param string $path property path.
 	 * @return boolean true if property path is valid
 	 */
 	public static function has($object, $path)

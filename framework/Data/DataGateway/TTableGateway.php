@@ -185,8 +185,8 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Execute arbituary sql command with binding parameters.
-	 * @param string SQL query string.
-	 * @param array binding parameters, positional or named.
+	 * @param string $sql SQL query string.
+	 * @param array $parameters = [] binding parameters, positional or named.
 	 * @return array query results.
 	 */
 	public function findBySql($sql, $parameters = [])
@@ -198,8 +198,8 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Execute arbituary sql command with binding parameters.
-	 * @param string SQL query string.
-	 * @param array binding parameters, positional or named.
+	 * @param string $sql SQL query string.
+	 * @param array $parameters = [] binding parameters, positional or named.
 	 * @return TDbDataReader query results.
 	 */
 	public function findAllBySql($sql, $parameters = [])
@@ -222,8 +222,8 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->find($criteria); //the 2nd parameter for find() is ignored.
 	 * </code>
 	 *
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return array matching record object.
 	 */
 	public function find($criteria, $parameters = [])
@@ -235,8 +235,8 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Accepts same parameters as find(), but returns TDbDataReader instead.
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria = null SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return TDbDataReader matching records.
 	 */
 	public function findAll($criteria = null, $parameters = [])
@@ -297,8 +297,8 @@ class TTableGateway extends \Prado\TComponent
 	 * <code>
 	 * $table->delete('age > ? AND location = ?', $age, $location);
 	 * </code>
-	 * @param string delete condition.
-	 * @param array condition parameters.
+	 * @param string $criteria delete condition.
+	 * @param array $parameters = [] condition parameters.
 	 * @return integer number of records deleted.
 	 */
 	public function deleteAll($criteria, $parameters = [])
@@ -350,8 +350,8 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Find the number of records.
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria = null SQL condition or criteria object.
+	 * @param mixed $parameters = [] parameter values.
 	 * @return int number of records.
 	 */
 	public function count($criteria = null, $parameters = [])
