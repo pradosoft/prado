@@ -313,9 +313,9 @@ class TAssetManager extends \Prado\TModule
 	 * The MD5 file is published when the tar contents are successfully
 	 * extracted to the assets directory. The presence of the MD5 file
 	 * as published asset assumes that the tar file has already been extracted.
-	 * @param string tar filename
-	 * @param string MD5 checksum for the corresponding tar file.
-	 * @param boolean Wether or not to check the time stamp of the file for publishing. Defaults to false.
+	 * @param string $tarfile tar filename
+	 * @param string $md5sum MD5 checksum for the corresponding tar file.
+	 * @param boolean $checkTimestamp = false Wether or not to check the time stamp of the file for publishing. Defaults to false.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)

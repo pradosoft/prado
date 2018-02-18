@@ -147,9 +147,9 @@ class TEtcdCache extends TCache
 	 * Stores a value identified by a key in cache.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
@@ -164,9 +164,9 @@ class TEtcdCache extends TCache
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
@@ -203,9 +203,9 @@ class TEtcdCache extends TCache
    * URL, setting the cURL options and adding additional request parameters.
    * The etcd always returns a JSON string which is decoded and returned to
    * the calling method.
-   * @param string the HTTP method for the request (GET,PUT,DELETE)
-   * @param string the the key to perform the action on (includes the directory)
-   * @param array the additional post data to send with the request
+   * @param string $method the HTTP method for the request (GET,PUT,DELETE)
+   * @param string $key the the key to perform the action on (includes the directory)
+   * @param array $value = [] the additional post data to send with the request
    * @return \stdClass the response from the etcd instance
    */
   protected function request($method, $key, $value = []) {

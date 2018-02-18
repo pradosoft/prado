@@ -652,9 +652,9 @@ class PradoBase
 	 * Converts a variable into a string representation.
 	 * This method achieves the similar functionality as var_dump and print_r
 	 * but is more robust when handling complex objects such as PRADO controls.
-	 * @param mixed variable to be dumped
-	 * @param integer maximum depth that the dumper should go into the variable. Defaults to 10.
-	 * @param boolean whether to syntax highlight the output. Defaults to false.
+	 * @param mixed $var variable to be dumped
+	 * @param integer $depth = 10 maximum depth that the dumper should go into the variable. Defaults to 10.
+	 * @param boolean $highlight = false whether to syntax highlight the output. Defaults to false.
 	 * @return string the string representation of the variable
 	 */
 	public static function varDump($var, $depth = 10, $highlight = false)

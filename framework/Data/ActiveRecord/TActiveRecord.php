@@ -691,9 +691,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 *
 	 * This method is to be used by the relationship handler.
 	 *
-	 * @param TActiveRecordCriteria additional criteria
-	 * @param array field names to match with "(fields) IN (values)" sql clause.
-	 * @param array matching field values.
+	 * @param TActiveRecordCriteria $criteria additional criteria
+	 * @param array $fields field names to match with "(fields) IN (values)" sql clause.
+	 * @param array $values matching field values.
 	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
 	public function findAllByIndex($criteria, $fields, $values)
@@ -888,9 +888,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Create a new TSqlCriteria object from a string $criteria. The $args
 	 * are additional parameters and are used in place of the $parameters
 	 * if $parameters is not an array and $args is an arrary.
-	 * @param string|TSqlCriteria sql criteria
-	 * @param mixed parameters passed by the user.
-	 * @param array additional parameters obtained from function_get_args().
+	 * @param string|TSqlCriteria $criteria sql criteria
+	 * @param mixed $parameters parameters passed by the user.
+	 * @param array $args = [] additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
 	protected function getRecordCriteria($criteria, $parameters, $args = [])

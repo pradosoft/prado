@@ -25,9 +25,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TAuthorizationRuleCollection extends \Prado\Collections\TList
 {
 	/**
-	 * @param IUser the user to be authorized
-	 * @param string verb, can be empty, 'post' or 'get'.
-	 * @param string the request IP address
+	 * @param IUser $user the user to be authorized
+	 * @param string $verb verb, can be empty, 'post' or 'get'.
+	 * @param string $ip the request IP address
 	 * @return boolean whether the user is allowed
 	 */
 	public function isUserAllowed($user, $verb, $ip)

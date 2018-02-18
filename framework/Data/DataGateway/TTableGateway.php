@@ -371,9 +371,9 @@ class TTableGateway extends \Prado\TComponent
 	 * <code>
 	 * $gateway->update($data, 'age > ? AND location = ?', $age, $location);
 	 * </code>
-	 * @param array new record data.
-	 * @param string update condition
-	 * @param array additional binding name-value pairs.
+	 * @param array $data new record data.
+	 * @param string $criteria update condition
+	 * @param array $parameters = [] additional binding name-value pairs.
 	 * @return integer number of records updated.
 	 */
 	public function update($data, $criteria, $parameters = [])
@@ -407,9 +407,9 @@ class TTableGateway extends \Prado\TComponent
 	 * Create a new TSqlCriteria object from a string $criteria. The $args
 	 * are additional parameters and are used in place of the $parameters
 	 * if $parameters is not an array and $args is an arrary.
-	 * @param string|TSqlCriteria sql criteria
-	 * @param mixed parameters passed by the user.
-	 * @param array additional parameters obtained from function_get_args().
+	 * @param string|TSqlCriteria $criteria sql criteria
+	 * @param mixed $parameters parameters passed by the user.
+	 * @param array $args additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
 	protected function getCriteria($criteria, $parameters, $args)

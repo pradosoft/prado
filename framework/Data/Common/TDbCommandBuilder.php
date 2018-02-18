@@ -86,9 +86,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * Alters the sql to apply $limit and $offset. Default implementation is applicable
 	 * for PostgreSQL, MySQL and SQLite.
-	 * @param string SQL query string.
-	 * @param integer maximum number of rows, -1 to ignore limit.
-	 * @param integer row offset, -1 to ignore offset.
+	 * @param string $sql SQL query string.
+	 * @param integer $limit = -1 maximum number of rows, -1 to ignore limit.
+	 * @param integer $offset = -1 row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
@@ -377,9 +377,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * Creates an update command for the table described in {@link setTableInfo TableInfo} for the given data.
 	 * Each array key in the $data array must correspond to the column name to be updated with the corresponding array value.
-	 * @param array name-value pairs of data to be updated.
-	 * @param string update condition.
-	 * @param array update parameters.
+	 * @param array $data name-value pairs of data to be updated.
+	 * @param string $where update condition.
+	 * @param array $parameters = [] update parameters.
 	 * @return TDbCommand update command.
 	 */
 	public function createUpdateCommand($data, $where, $parameters = [])

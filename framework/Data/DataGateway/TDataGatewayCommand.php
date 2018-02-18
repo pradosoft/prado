@@ -367,9 +367,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string __call method name
-	 * @param string criteria conditions
-	 * @param array method arguments
+	 * @param string $method __call method name
+	 * @param string $condition criteria conditions
+	 * @param array $args method arguments
 	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)

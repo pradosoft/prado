@@ -475,9 +475,9 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item and performs databinding.
 	 * This method invokes {@link createItem} to create a new repeater item.
-	 * @param integer zero-based item index.
-	 * @param TListItemType item type
-	 * @param mixed data to be associated with the item
+	 * @param integer $itemIndex zero-based item index.
+	 * @param TListItemType $itemType item type
+	 * @param mixed $dataItem data to be associated with the item
 	 * @return TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)

@@ -267,9 +267,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	/**
 	 * SQL inner join for M-N relationship via association table.
-	 * @param array foreign table column key names.
-	 * @param array source table index values.
-	 * @param array source table column names.
+	 * @param array $foreignKeys foreign table column key names.
+	 * @param array $indexValues source table index values.
+	 * @param array $sourceKeys source table column names.
 	 * @return string inner join condition for M-N relationship via association table.
 	 */
 	protected function getAssociationJoin($foreignKeys, $indexValues, $sourceKeys)

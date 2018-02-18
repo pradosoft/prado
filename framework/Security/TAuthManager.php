@@ -409,9 +409,9 @@ class TAuthManager extends \Prado\TModule
 	 * Logs in a user with username and password.
 	 * The username and password will be used to validate if login is successful.
 	 * If yes, a user object will be created for the application.
-	 * @param string username
-	 * @param string password
-	 * @param integer number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
+	 * @param string $username username
+	 * @param string $password password
+	 * @param integer $expire = 0 number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
 	 * @return boolean if login is successful
 	 */
 	public function login($username, $password, $expire = 0)

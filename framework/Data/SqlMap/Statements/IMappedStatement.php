@@ -72,9 +72,9 @@ interface IMappedStatement
 	/**
 	 * Executes an SQL statement that returns a single row as an object
 	 * of the type of the <tt>$result</tt> passed in as a parameter.
-	 * @param IDbConnection database connection to execute the query
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param object The result object.
+	 * @param IDbConnection $connection database connection to execute the query
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param object $result = null The result object.
 	 * @return object result.
 	 */
 	public function executeQueryForObject($connection, $parameter, $result = null);

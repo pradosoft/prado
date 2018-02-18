@@ -213,9 +213,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * in {@link set()} already. So only the implementation of data storage
 	 * is needed.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	abstract protected function setValue($key, $value, $expire);
@@ -227,9 +227,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * in {@link add()} already. So only the implementation of data storage
 	 * is needed.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
 	abstract protected function addValue($key, $value, $expire);

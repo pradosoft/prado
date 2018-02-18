@@ -479,9 +479,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Execute the select key statement, used to obtain last insert ID.
-	 * @param IDbConnection database connection
-	 * @param mixed insert statement parameter
-	 * @param TSqlMapSelectKey select key statement
+	 * @param IDbConnection $connection database connection
+	 * @param mixed $parameter insert statement parameter
+	 * @param TSqlMapSelectKey $selectKey select key statement
 	 * @return string last insert ID.
 	 */
 	protected function executeSelectKey($connection, $parameter, $selectKey)
@@ -579,9 +579,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Fill the result using ResultClass, will creates new result object if required.
-	 * @param string result object class name
-	 * @param array a result set row retrieved from the database
-	 * @param object the result object, will create if necessary.
+	 * @param string $resultClass result object class name
+	 * @param array $row a result set row retrieved from the database
+	 * @param object $resultObject the result object, will create if necessary.
 	 * @return object result object filled with data
 	 */
 	protected function fillResultClass($resultClass, $row, $resultObject)
@@ -738,9 +738,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Fill the result map using default settings. If <tt>$resultMap</tt> is null
 	 * the result object returned will be guessed from <tt>$resultObject</tt>.
-	 * @param TResultMap result mapping details.
-	 * @param array a result set row retrieved from the database
-	 * @param object the result object
+	 * @param TResultMap $resultMap result mapping details.
+	 * @param array $row a result set row retrieved from the database
+	 * @param object $resultObject the result object
 	 * @return mixed the result object filled with data.
 	 */
 	protected function fillDefaultResultMap($resultMap, $row, $resultObject)
@@ -762,9 +762,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Retrieve the result map as an array.
-	 * @param TResultMap result mapping details.
-	 * @param array a result set row retrieved from the database
-	 * @param object the result object
+	 * @param TResultMap $resultMap result mapping details.
+	 * @param array $row a result set row retrieved from the database
+	 * @param object $resultObject the result object
 	 * @return array array list of result objects.
 	 */
 	protected function fillArrayResultMap($resultMap, $row, $resultObject)
@@ -885,9 +885,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Finds in the post select property the SQL statement primary selection keys.
-	 * @param TResultMap result mapping details
-	 * @param TResultProperty result property
-	 * @param array current row data.
+	 * @param TResultMap $resultMap result mapping details
+	 * @param TResultProperty $property result property
+	 * @param array $row current row data.
 	 * @return array list of primary key values.
 	 */
 	protected function getPostSelectKeys($resultMap, $property, $row)

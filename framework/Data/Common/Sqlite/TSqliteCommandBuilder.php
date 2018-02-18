@@ -27,9 +27,9 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 {
 	/**
 	 * Alters the sql to apply $limit and $offset.
-	 * @param string SQL query string.
-	 * @param integer maximum number of rows, -1 to ignore limit.
-	 * @param integer row offset, -1 to ignore offset.
+	 * @param string $sql SQL query string.
+	 * @param integer $limit = -1 maximum number of rows, -1 to ignore limit.
+	 * @param integer $offset = -1 row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)

@@ -64,9 +64,9 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input
 	 * data for the WHERE clause parameter(s) of the SELECT statement.
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param mixed An object of the type to be returned.
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param mixed $parameter = null The object used to set the parameters in the SQL.
+	 * @param mixed $result = null An object of the type to be returned.
 	 * @return object A single result object populated with the result set data.
 	 */
 	public function queryForObject($statementName, $parameter = null, $result = null)

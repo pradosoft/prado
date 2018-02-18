@@ -1149,9 +1149,9 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Creates a datalist item and performs databinding.
 	 * This method invokes {@link createItem} to create a new datalist item.
-	 * @param integer zero-based item index.
-	 * @param TListItemType item type
-	 * @param mixed data to be associated with the item
+	 * @param integer $itemIndex zero-based item index.
+	 * @param TListItemType $itemType item type
+	 * @param mixed $dataItem data to be associated with the item
 	 * @return TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
