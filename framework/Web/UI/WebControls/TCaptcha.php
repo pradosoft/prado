@@ -461,7 +461,7 @@ class TCaptcha extends TImage
 	/**
 	 * Converts a hash string into a string with characters consisting of alphanumeric characters.
 	 * @param string $hex the hexadecimal representation of the hash string
-	 * @param string $alphabet = '' the alphabet used to represent the converted string. If empty, it means '234578adefhijmnrtwyABDEFGHIJLMNQRTWY', which excludes those confusing characters.
+	 * @param string $alphabet the alphabet used to represent the converted string. If empty, it means '234578adefhijmnrtwyABDEFGHIJLMNQRTWY', which excludes those confusing characters.
 	 * @return string the converted string
 	 */
 	protected function hash2string($hex, $alphabet = '')

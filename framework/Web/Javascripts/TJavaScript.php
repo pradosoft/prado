@@ -243,8 +243,8 @@ class TJavaScript
 	 * Decodes a javascript string into PHP variable.
 	 * This method invokes json_decode to perform the decoding.
 	 * @param string $value string to be decoded
-	 * @param bool $assoc = false whether to convert returned objects to associative arrays
-	 * @param int $depth = 512 recursion depth
+	 * @param bool $assoc whether to convert returned objects to associative arrays
+	 * @param int $depth recursion depth
 	 * @return mixed decoded variable
 	 */
 	public static function jsonDecode($value, $assoc = false, $depth = 512)

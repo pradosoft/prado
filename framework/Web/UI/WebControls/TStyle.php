@@ -68,7 +68,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TStyle $style = null style to copy from
+	 * @param TStyle $style style to copy from
 	 */
 	public function __construct($style = null)
 	{

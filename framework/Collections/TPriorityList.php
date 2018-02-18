@@ -247,7 +247,7 @@ class TPriorityList extends TList
 	/**
 	 * Returns the item at an index within a priority
 	 * @param integer $index the index into the list of items at priority
-	 * @param numeric $priority = null the priority which to index.  no parameter or null will result in the default priority
+	 * @param numeric $priority the priority which to index.  no parameter or null will result in the default priority
 	 * @return mixed the element at the offset, false if no element is found at the offset
 	 */
 	public function itemAtIndexInPriority($index, $priority = null)

@@ -60,7 +60,7 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Constructor, create a new SqlMap manager.
 	 * @param TDbConnection database connection
-	 * @param string $connection = null configuration file.
+	 * @param string $connection configuration file.
 	 */
 	public function __construct($connection = null)
 	{

@@ -284,7 +284,7 @@ class TGlobalization extends \Prado\TModule
 	 * </pre>
 	 * Note that you still need to verify the existance of these files.
 	 * @param string $file filename
-	 * @param string $culture = null culture string, null to use current culture
+	 * @param string $culture culture string, null to use current culture
 	 * @return array list of possible localized resource files.
 	 */
 	public function getLocalizedResource($file, $culture = null)

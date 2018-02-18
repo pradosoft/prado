@@ -149,7 +149,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method may go recursively into subdirectories if
 	 * {@link setRecursiveCheck RecursiveCheck} is set true.
 	 * @param string $directory the directory name
-	 * @param int $level = 0 level of the recursion
+	 * @param int $level level of the recursion
 	 * @return array list of file modification time indexed by the file path
 	 */
 	protected function generateTimestamps($directory, $level = 0)

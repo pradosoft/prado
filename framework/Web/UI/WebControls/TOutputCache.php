@@ -145,7 +145,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by setting up
 	 * the stack of the output cache in the page.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer = null the naming container control
+	 * @param TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{

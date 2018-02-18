@@ -286,7 +286,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Returns a viewstate value.
 	 *
 	 * @param string $key the name of the viewstate value to be returned
-	 * @param mixed $defaultValue = null the default value. If $key is not found in viewstate, $defaultValue will be returned
+	 * @param mixed $defaultValue the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
 	protected function getViewState($key, $defaultValue = null)

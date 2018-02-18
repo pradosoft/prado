@@ -414,7 +414,7 @@ class TApplication extends \Prado\TComponent
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
 	 * @param string $key the name of the value to be returned
-	 * @param mixed $defaultValue = null the default value. If $key is not found, $defaultValue will be returned
+	 * @param mixed $defaultValue the default value. If $key is not found, $defaultValue will be returned
 	 * @return mixed the global value corresponding to $key
 	 */
 	public function getGlobalState($key, $defaultValue = null)
@@ -1224,7 +1224,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Flushes output to client side.
-	 * @param boolean $continueBuffering = true whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushOutput($continueBuffering = true)
 	{

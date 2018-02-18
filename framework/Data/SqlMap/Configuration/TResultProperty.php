@@ -59,7 +59,7 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Gets the containing result map ID.
-	 * @param TResultMap $resultMap = null containing result map.
+	 * @param TResultMap $resultMap containing result map.
 	 */
 	public function __construct($resultMap = null)
 	{

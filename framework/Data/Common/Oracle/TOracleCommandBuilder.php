@@ -72,8 +72,8 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	/**
 	 * Overrides parent implementation to use Oracle way of get paginated RecordSet instead of using LIMIT sql clause.
 	 * @param string $sql SQL query string.
-	 * @param integer $limit = -1 maximum number of rows, -1 to ignore limit.
-	 * @param integer $offset = -1 row offset, -1 to ignore offset.
+	 * @param integer $limit maximum number of rows, -1 to ignore limit.
+	 * @param integer $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset in Oracle way.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1) {

@@ -57,7 +57,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Configure the TSqlMapManager using the given xml file.
-	 * @param string $filename = null SqlMap configuration xml file.
+	 * @param string $filename SqlMap configuration xml file.
 	 */
 	public function configure($filename = null)
 	{

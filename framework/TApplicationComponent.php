@@ -93,7 +93,7 @@ class TApplicationComponent extends \Prado\TComponent
 	 * because the asset path will be relative to the directory containing the child class file.
 	 *
 	 * @param string $assetPath path of the asset that is relative to the directory containing the specified class file.
-	 * @param string $className = null name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
+	 * @param string $className name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
 	 * @return string URL to the asset path.
 	 */
 	public function publishAsset($assetPath, $className = null)

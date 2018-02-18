@@ -269,7 +269,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	 * Create a new instance of a given type.
 	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param string $type result class name.
-	 * @param array $row = null result data.
+	 * @param array $row result data.
 	 * @return mixed result object.
 	 */
 	protected function createInstanceOf($registry, $type, $row = null)

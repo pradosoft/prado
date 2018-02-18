@@ -125,7 +125,7 @@ class NumberFormatInfo
 	 * Set the pattern for a specific number pattern. The validate patterns
 	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
 	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
-	 * @param int $type = NumberFormatInfo::DECIMAL pattern type.
+	 * @param int $type pattern type.
 	 */
 	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{

@@ -416,7 +416,7 @@ class PradoBase
 	 * Otherwise it represents a file whose extension name is specified by the second parameter (defaults to empty).
 	 * Note, this method does not ensure the existence of the resulting file path.
 	 * @param string $namespace namespace
-	 * @param string $ext = '' extension to be appended if the namespace refers to a file
+	 * @param string $ext extension to be appended if the namespace refers to a file
 	 * @return string file path corresponding to the namespace, null if namespace is invalid
 	 */
 	public static function getPathOfNamespace($namespace, $ext = '')
@@ -653,8 +653,8 @@ class PradoBase
 	 * This method achieves the similar functionality as var_dump and print_r
 	 * but is more robust when handling complex objects such as PRADO controls.
 	 * @param mixed $var variable to be dumped
-	 * @param integer $depth = 10 maximum depth that the dumper should go into the variable. Defaults to 10.
-	 * @param boolean $highlight = false whether to syntax highlight the output. Defaults to false.
+	 * @param integer $depth maximum depth that the dumper should go into the variable. Defaults to 10.
+	 * @param boolean $highlight whether to syntax highlight the output. Defaults to false.
 	 * @return string the string representation of the variable
 	 */
 	public static function varDump($var, $depth = 10, $highlight = false)

@@ -87,8 +87,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Alters the sql to apply $limit and $offset. Default implementation is applicable
 	 * for PostgreSQL, MySQL and SQLite.
 	 * @param string $sql SQL query string.
-	 * @param integer $limit = -1 maximum number of rows, -1 to ignore limit.
-	 * @param integer $offset = -1 row offset, -1 to ignore offset.
+	 * @param integer $limit maximum number of rows, -1 to ignore limit.
+	 * @param integer $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
@@ -344,7 +344,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * The conditions for delete is given by the $where argument and the parameters
 	 * for the condition is given by $parameters.
 	 * @param string $where delete condition.
-	 * @param array $parameters = [] delete parameters.
+	 * @param array $parameters delete parameters.
 	 * @return TDbCommand delete command.
 	 */
 	public function createDeleteCommand($where, $parameters = [])
@@ -379,7 +379,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Each array key in the $data array must correspond to the column name to be updated with the corresponding array value.
 	 * @param array $data name-value pairs of data to be updated.
 	 * @param string $where update condition.
-	 * @param array $parameters = [] update parameters.
+	 * @param array $parameters update parameters.
 	 * @return TDbCommand update command.
 	 */
 	public function createUpdateCommand($data, $where, $parameters = [])
@@ -416,7 +416,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * Create a name-value or position-value if $position=true binding strings.
 	 * @param array $values data for binding.
-	 * @param boolean $position = false true to bind as position values.
+	 * @param boolean $position true to bind as position values.
 	 * @return string update column names with corresponding binding substrings.
 	 */
 	protected function getColumnBindings($values, $position = false)

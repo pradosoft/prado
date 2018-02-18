@@ -250,7 +250,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Delete a particular message from the specified catalogue.
 	 * @param string $message the source message to delete.
-	 * @param string $catalogue = 'messages' the catalogue to delete from.
+	 * @param string $catalogue the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages')
@@ -275,7 +275,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string $text the source string.
 	 * @param string $target the new translation string.
 	 * @param string $comments comments
-	 * @param string $catalogue = 'messages' the catalogue of the translation.
+	 * @param string $catalogue the catalogue of the translation.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages')

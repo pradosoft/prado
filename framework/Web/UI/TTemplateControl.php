@@ -219,7 +219,7 @@ class TTemplateControl extends TCompositeControl
 	 * by ensuring child controls are created first,
 	 * and if master class is set, master will be applied.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer = null the naming container control
+	 * @param TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{

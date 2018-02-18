@@ -105,7 +105,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 
 	/**
 	 * Initialize the cache implementation, sets the actual cache contain if supplied.
-	 * @param ISqLMapCache $cache = null cache implementation instance.
+	 * @param ISqLMapCache $cache cache implementation instance.
 	 */
 	public function initialize($cache = null)
 	{

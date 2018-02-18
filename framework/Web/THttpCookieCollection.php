@@ -37,7 +37,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param mixed $owner = null owner of this collection.
+	 * @param mixed $owner owner of this collection.
 	 */
 	public function __construct($owner = null)
 	{

@@ -313,7 +313,7 @@ class DateFormat
 	 * "yy" will return the last two digits of year.
 	 * "yyyy" will return the full integer year.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'yyyy' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string year
 	 */
 	protected function getYear($date, $pattern = 'yyyy')
@@ -336,7 +336,7 @@ class DateFormat
 	 * "MMM" will return the abrreviated month name, e.g. "Jan"
 	 * "MMMM" will return the month name, e.g. "January"
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'M' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string month name
 	 */
 	protected function getMonth($date, $pattern = 'M')
@@ -363,7 +363,7 @@ class DateFormat
 	 * "EEE" will return the abrreviated day of the week, e.g. "Mon"
 	 * "EEEE" will return the day of the week, e.g. "Monday"
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'EEEE' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string day of the week.
 	 */
 	protected function getDayInWeek($date, $pattern = 'EEEE')
@@ -388,7 +388,7 @@ class DateFormat
 	 * Get the day of the month.
 	 * "d" for non-padding, "dd" will always return 2 characters.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'd' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string day of the month
 	 */
 	protected function getDay($date, $pattern = 'd')
@@ -409,7 +409,7 @@ class DateFormat
 	 * Get the era. i.e. in gregorian, year > 0 is AD, else BC.
 	 * @todo How to support multiple Eras?, e.g. Japanese.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'G' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string era
 	 */
 	protected function getEra($date, $pattern = 'G')
@@ -428,7 +428,7 @@ class DateFormat
 	 * Get the hours in 24 hour format, i.e. [0-23].
 	 * "H" for non-padding, "HH" will always return 2 characters.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'H' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string hours in 24 hour format.
 	 */
 	protected function getHour24($date, $pattern = 'H')
@@ -447,7 +447,7 @@ class DateFormat
 	/**
 	 * Get the AM/PM designator, 12 noon is PM, 12 midnight is AM.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'a' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string AM or PM designator
 	 */
 	protected function getAMPM($date, $pattern = 'a')
@@ -464,7 +464,7 @@ class DateFormat
 	 * Get the hours in 12 hour format.
 	 * "h" for non-padding, "hh" will always return 2 characters.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'h' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string hours in 12 hour format.
 	 */
 	protected function getHour12($date, $pattern = 'h')
@@ -484,7 +484,7 @@ class DateFormat
 	 * Get the minutes.
 	 * "m" for non-padding, "mm" will always return 2 characters.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'm' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string minutes.
 	 */
 	protected function getMinutes($date, $pattern = 'm')
@@ -504,7 +504,7 @@ class DateFormat
 	 * Get the seconds.
 	 * "s" for non-padding, "ss" will always return 2 characters.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 's' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string seconds
 	 */
 	protected function getSeconds($date, $pattern = 's')
@@ -524,7 +524,7 @@ class DateFormat
 	 * Get the timezone from the server machine.
 	 * @todo How to get the timezone for a different region?
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'z' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return string time zone
 	 */
 	protected function getTimeZone($date, $pattern = 'z')
@@ -538,7 +538,7 @@ class DateFormat
 	/**
 	 * Get the day in the year, e.g. [1-366]
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'D' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return int hours in AM/PM format.
 	 */
 	protected function getDayInYear($date, $pattern = 'D')
@@ -552,7 +552,7 @@ class DateFormat
 	/**
 	 * Get day in the month.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'FF' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return int day in month
 	 */
 	protected function getDayInMonth($date, $pattern = 'FF')
@@ -570,7 +570,7 @@ class DateFormat
 	/**
 	 * Get the week in the year.
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'w' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return int week in year
 	 */
 	protected function getWeekInYear($date, $pattern = 'w')
@@ -599,7 +599,7 @@ class DateFormat
 	/**
 	 * Get the hours [1-24].
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'k' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return int hours [1-24]
 	 */
 	protected function getHourInDay($date, $pattern = 'k')
@@ -613,7 +613,7 @@ class DateFormat
 	/**
 	 * Get the hours in AM/PM format, e.g [1-12]
 	 * @param array $date getdate format.
-	 * @param string $pattern = 'K' a pattern.
+	 * @param string $pattern a pattern.
 	 * @return int hours in AM/PM format.
 	 */
 	protected function getHourInAMPM($date, $pattern = 'K')

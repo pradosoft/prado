@@ -173,7 +173,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Renders a string and appends a newline to it.
-	 * @param string $str = '' string to be rendered
+	 * @param string $str string to be rendered
 	 */
 	public function writeLine($str = '')
 	{

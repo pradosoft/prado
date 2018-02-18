@@ -313,8 +313,8 @@ class CultureInfo
 	 * entry, the currency for AUD, the other currency data are stored
 	 * in the "en" data file. Thus to retrieve all the data regarding
 	 * currency for "en_AU", you need to use findInfo("Currencies,true);.
-	 * @param string $path = '/' the data you want to find.
-	 * @param boolean $merge = false merge the data from its parents.
+	 * @param string $path the data you want to find.
+	 * @param boolean $merge merge the data from its parents.
 	 * @return mixed the specific ICU data.
 	 */
 	protected function findInfo($path = '/', $merge = false)
@@ -341,7 +341,7 @@ class CultureInfo
 	 * slash "/" separated path. e.g to find $info['hello']['world'],
 	 * the path "hello/world" will return the corresponding value.
 	 * @param array $info the array for search
-	 * @param string $path = '/' slash "/" separated array path.
+	 * @param string $path slash "/" separated array path.
 	 * @return mixed the value array using the path
 	 */
 	private function searchArray($info, $path = '/')

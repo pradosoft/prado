@@ -490,7 +490,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@link flush} instead.
-	 * @param boolean $continueBuffering = true whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
@@ -710,7 +710,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Creates a new instance of HTML writer.
 	 * If the type of the HTML writer is not supplied, {@link getHtmlWriterType HtmlWriterType} will be assumed.
-	 * @param string $type = null type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 * @param string $type type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
 	 */
 	public function createHtmlWriter($type = null)
 	{

@@ -75,7 +75,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the lowest cardinal index of the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
-	 * @param boolean $includeDisabled = true whether to look for disabled items also
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
 	public function findIndexByValue($value, $includeDisabled = true)
@@ -94,7 +94,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the lowest cardinal index of the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
-	 * @param boolean $includeDisabled = true whether to look for disabled items also
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
 	public function findIndexByText($text, $includeDisabled = true)
@@ -113,7 +113,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
-	 * @param boolean $includeDisabled = true whether to look for disabled items also
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
 	public function findItemByValue($value, $includeDisabled = true)
@@ -127,7 +127,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
-	 * @param boolean $includeDisabled = true whether to look for disabled items also
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
 	public function findItemByText($text, $includeDisabled = true)

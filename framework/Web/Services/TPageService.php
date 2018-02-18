@@ -538,9 +538,9 @@ class TPageService extends \Prado\TService
 	/**
 	 * Constructs a URL with specified page path and GET parameters.
 	 * @param string $pagePath page path
-	 * @param array $getParams = null list of GET parameters, null if no GET parameters required
-	 * @param boolean $encodeAmpersand = true whether to encode the ampersand in URL, defaults to true.
-	 * @param boolean $encodeGetItems = true whether to encode the GET parameters (their names and values), defaults to true.
+	 * @param array $getParams list of GET parameters, null if no GET parameters required
+	 * @param boolean $encodeAmpersand whether to encode the ampersand in URL, defaults to true.
+	 * @param boolean $encodeGetItems whether to encode the GET parameters (their names and values), defaults to true.
 	 * @return string URL for the page and GET parameters
 	 */
 	public function constructUrl($pagePath, $getParams = null, $encodeAmpersand = true, $encodeGetItems = true)

@@ -315,7 +315,7 @@ class TAssetManager extends \Prado\TModule
 	 * as published asset assumes that the tar file has already been extracted.
 	 * @param string $tarfile tar filename
 	 * @param string $md5sum MD5 checksum for the corresponding tar file.
-	 * @param boolean $checkTimestamp = false Wether or not to check the time stamp of the file for publishing. Defaults to false.
+	 * @param boolean $checkTimestamp Wether or not to check the time stamp of the file for publishing. Defaults to false.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)

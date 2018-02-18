@@ -205,7 +205,7 @@ class TEtcdCache extends TCache
    * the calling method.
    * @param string $method the HTTP method for the request (GET,PUT,DELETE)
    * @param string $key the the key to perform the action on (includes the directory)
-   * @param array $value = [] the additional post data to send with the request
+   * @param array $value the additional post data to send with the request
    * @return \stdClass the response from the etcd instance
    */
   protected function request($method, $key, $value = []) {

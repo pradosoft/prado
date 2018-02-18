@@ -27,7 +27,7 @@ class TCompositeControl extends TControl implements INamingContainer
 	 * This method overrides the parent implementation
 	 * by ensuring child controls are created first.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer = null the naming container control
+	 * @param TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{

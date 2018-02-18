@@ -482,7 +482,7 @@ class TPage extends TTemplateControl
 	 * Performs input validation.
 	 * This method will invoke the registered validators to perform the actual validation.
 	 * If validation group is specified, only the validators in that group will be invoked.
-	 * @param string $validationGroup = null validation group. If null, all validators will perform validation.
+	 * @param string $validationGroup validation group. If null, all validators will perform validation.
 	 */
 	public function validate($validationGroup = null)
 	{

@@ -41,7 +41,7 @@ interface IMappedStatement
 	 * @param IDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
-	 * @param string $valueProperty = null The property of the result object to be used as the value (or null)
+	 * @param string $valueProperty The property of the result object to be used as the value (or null)
 	 * @return TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
 	 */
 	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null);
@@ -74,7 +74,7 @@ interface IMappedStatement
 	 * of the type of the <tt>$result</tt> passed in as a parameter.
 	 * @param IDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
-	 * @param object $result = null The result object.
+	 * @param object $result The result object.
 	 * @return object result.
 	 */
 	public function executeQueryForObject($connection, $parameter, $result = null);

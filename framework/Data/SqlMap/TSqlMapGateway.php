@@ -65,8 +65,8 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * data for the WHERE clause parameter(s) of the SELECT statement.
 	 *
 	 * @param string $statementName The name of the sql statement to execute.
-	 * @param mixed $parameter = null The object used to set the parameters in the SQL.
-	 * @param mixed $result = null An object of the type to be returned.
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param mixed $result An object of the type to be returned.
 	 * @return object A single result object populated with the result set data.
 	 */
 	public function queryForObject($statementName, $parameter = null, $result = null)
@@ -122,9 +122,9 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * TPagedList that can be used to automatically scroll through results
 	 * from a database table.
 	 * @param string $statementName The name of the sql statement to execute.
-	 * @param mixed $parameter = null The object used to set the parameters in the SQL.
-	 * @param integer $pageSize = 10 The maximum number of objects to store in each page.
-	 * @param integer $page = 0 The number of the page to initially load into the list.
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param integer $pageSize The maximum number of objects to store in each page.
+	 * @param integer $page The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedList($statementName, $parameter = null, $pageSize = 10, $page = 0)
@@ -224,7 +224,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * UPDATE values as well as the WHERE clause parameter(s).
 	 *
 	 * @param string $statementName The name of the statement to execute.
-	 * @param mixed $parameter = null The parameter object.
+	 * @param mixed $parameter The parameter object.
 	 * @return integer The number of rows effected.
 	 */
 	public function update($statementName, $parameter = null)
@@ -236,7 +236,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	/**
 	 * Executes a Sql DELETE statement.  Delete returns the number of rows effected.
 	 * @param string $statementName The name of the statement to execute.
-	 * @param mixed $parameter = null The parameter object.
+	 * @param mixed $parameter The parameter object.
 	 * @return integer The number of rows effected.
 	 */
 	public function delete($statementName, $parameter = null)
