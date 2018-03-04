@@ -112,7 +112,7 @@ class TRadioButton extends TCheckBox
 	public function loadPostData($key, $values)
 	{
 		$uniqueGroupName = $this->getUniqueGroupName();
-		$value = isset($values[$uniqueGroupName])?$values[$uniqueGroupName]:null;
+		$value = isset($values[$uniqueGroupName]) ? $values[$uniqueGroupName] : null;
 		if($value !== null && $value === $this->getValueAttribute())
 		{
 			if(!$this->getChecked())

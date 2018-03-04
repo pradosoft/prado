@@ -180,7 +180,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if(isset($_SERVER['REQUEST_URI']))
 			$this->_requestUri = $_SERVER['REQUEST_URI'];
 		else  // TBD: in this case, SCRIPT_NAME need to be escaped
-			$this->_requestUri = $_SERVER['SCRIPT_NAME'] . (empty($_SERVER['QUERY_STRING'])?'':'?' . $_SERVER['QUERY_STRING']);
+			$this->_requestUri = $_SERVER['SCRIPT_NAME'] . (empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING']);
 
 		if($this->_cgiFix & self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO']))
 			$this->_pathInfo = substr($_SERVER['ORIG_PATH_INFO'], strlen($_SERVER['SCRIPT_NAME']));
@@ -214,7 +214,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data)?array_map([$this,'stripSlashes'], $data):stripslashes($data);
+		return is_array($data) ? array_map([$this,'stripSlashes'], $data) : stripslashes($data);
 	}
 
 	/**
@@ -225,7 +225,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if($this->_url === null)
 		{
 			$secure = $this->getIsSecureConnection();
-			$url = $secure?'https://':'http://';
+			$url = $secure ? 'https://' : 'http://';
 			if(empty($_SERVER['HTTP_HOST']))
 			{
 				$url .= $_SERVER['SERVER_NAME'];
@@ -402,7 +402,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getRequestType()
 	{
-		return isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:null;
+		return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null;
 	}
 
 	/**
@@ -441,7 +441,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getQueryString()
 	{
-		return isset($_SERVER['QUERY_STRING'])?$_SERVER['QUERY_STRING']:null;
+		return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null;
 	}
 
 	/**
@@ -449,7 +449,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getHttpProtocolVersion()
 	{
-		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:null;
+		return isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : null;
 	}
 
 	/**
@@ -496,7 +496,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getBaseUrl($forceSecureConnection = null)
 	{
 		$url = $this->getUrl();
-		$scheme = ($forceSecureConnection)?"https": (($forceSecureConnection === null)?$url->getScheme():'http');
+		$scheme = ($forceSecureConnection) ? "https" : (($forceSecureConnection === null) ? $url->getScheme() : 'http');
 		$host = $url->getHost();
 		if (($port = $url->getPort())) $host .= ':' . $port;
 		return $scheme . '://' . $host;
@@ -510,7 +510,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if($this->_cgiFix & self::CGIFIX__SCRIPT_NAME && isset($_SERVER['ORIG_SCRIPT_NAME']))
 			return $_SERVER['ORIG_SCRIPT_NAME'];
 
-		return isset($_SERVER['SCRIPT_NAME'])?$_SERVER['SCRIPT_NAME']:null;
+		return isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : null;
 	}
 
 	/**
@@ -530,7 +530,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getApplicationFilePath()
 	{
-		return realpath(isset($_SERVER['SCRIPT_FILENAME'])?$_SERVER['SCRIPT_FILENAME']:null);
+		return realpath(isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : null);
 	}
 
 	/**
@@ -538,7 +538,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerName()
 	{
-		return isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:null;
+		return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
 	}
 
 	/**
@@ -546,7 +546,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerPort()
 	{
-		return isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:null;
+		return isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
 	}
 
 	/**
@@ -554,7 +554,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUrlReferrer()
 	{
-		return isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:null;
+		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
 	}
 
 	/**
@@ -563,7 +563,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerSoftware()
 	{
-		return isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:null;
+		return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
 	}
 
 	/**
@@ -587,7 +587,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserAgent()
 	{
-		return isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
+		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 	}
 
 	/**
@@ -595,7 +595,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHostAddress()
 	{
-		return isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:null;
+		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
 	}
 
 	/**
@@ -603,7 +603,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHost()
 	{
-		return isset($_SERVER['REMOTE_HOST'])?$_SERVER['REMOTE_HOST']:null;
+		return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
 	}
 
 	/**
@@ -612,7 +612,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getAcceptTypes()
 	{
 		// TBD: break it into array??
-		return isset($_SERVER['HTTP_ACCEPT'])?$_SERVER['HTTP_ACCEPT']:null;
+		return isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
 	}
 
 	/**
@@ -736,7 +736,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 				$this->_cookieOnly = (int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
 		$url = $this->getUrlManagerModule()->constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
 		if(defined('SID') && SID != '' && !$this->_cookieOnly)
-			return $url . (strpos($url, '?') === false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
+			return $url . (strpos($url, '?') === false ? '?' : ($encodeAmpersand ? '&amp;' : '&')) . SID;
 		else
 			return $url;
 	}

@@ -67,7 +67,7 @@ class TUrlManager extends \Prado\TModule
 	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
 		$url = $serviceID . '=' . urlencode($serviceParam);
-		$amp = $encodeAmpersand?'&amp;':'&';
+		$amp = $encodeAmpersand ? '&amp;' : '&';
 		$request = $this->getRequest();
 		if(is_array($getItems) || $getItems instanceof \Traversable)
 		{

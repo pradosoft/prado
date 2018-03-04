@@ -91,7 +91,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBackColor()
 	{
-		return isset($this->_fields['background-color'])?$this->_fields['background-color']:'';
+		return isset($this->_fields['background-color']) ? $this->_fields['background-color'] : '';
 	}
 
 	/**
@@ -110,7 +110,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderColor()
 	{
-		return isset($this->_fields['border-color'])?$this->_fields['border-color']:'';
+		return isset($this->_fields['border-color']) ? $this->_fields['border-color'] : '';
 	}
 
 	/**
@@ -129,7 +129,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderStyle()
 	{
-		return isset($this->_fields['border-style'])?$this->_fields['border-style']:'';
+		return isset($this->_fields['border-style']) ? $this->_fields['border-style'] : '';
 	}
 
 	/**
@@ -149,7 +149,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderWidth()
 	{
-		return isset($this->_fields['border-width'])?$this->_fields['border-width']:'';
+		return isset($this->_fields['border-width']) ? $this->_fields['border-width'] : '';
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getCssClass()
 	{
-		return $this->_class === null?'':$this->_class;
+		return $this->_class === null ? '' : $this->_class;
 	}
 
 	/**
@@ -241,7 +241,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getForeColor()
 	{
-		return isset($this->_fields['color'])?$this->_fields['color']:'';
+		return isset($this->_fields['color']) ? $this->_fields['color'] : '';
 	}
 
 	/**
@@ -260,7 +260,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getHeight()
 	{
-		return isset($this->_fields['height'])?$this->_fields['height']:'';
+		return isset($this->_fields['height']) ? $this->_fields['height'] : '';
 	}
 
 	/**
@@ -279,7 +279,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getCustomStyle()
 	{
-		return $this->_customStyle === null?'':$this->_customStyle;
+		return $this->_customStyle === null ? '' : $this->_customStyle;
 	}
 
 	/**
@@ -297,7 +297,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getStyleField($name)
 	{
-		return isset($this->_fields[$name])?$this->_fields[$name]:'';
+		return isset($this->_fields[$name]) ? $this->_fields[$name] : '';
 	}
 
 	/**
@@ -333,7 +333,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getWidth()
 	{
-		return isset($this->_fields['width'])?$this->_fields['width']:'';
+		return isset($this->_fields['width']) ? $this->_fields['width'] : '';
 	}
 
 	/**

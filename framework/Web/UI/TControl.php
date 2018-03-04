@@ -237,7 +237,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getAdapter()
 	{
-		return isset($this->_rf[self::RF_ADAPTER])?$this->_rf[self::RF_ADAPTER]:null;
+		return isset($this->_rf[self::RF_ADAPTER]) ? $this->_rf[self::RF_ADAPTER] : null;
 	}
 
 	/**
@@ -449,7 +449,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getSkinID()
 	{
-		return isset($this->_rf[self::RF_SKIN_ID])?$this->_rf[self::RF_SKIN_ID]:'';
+		return isset($this->_rf[self::RF_SKIN_ID]) ? $this->_rf[self::RF_SKIN_ID] : '';
 	}
 
 	/**
@@ -482,7 +482,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		if($this->_flags & self::IS_DISABLE_THEMING)
 			return false;
 		else
-			return $this->_parent?$this->_parent->getEnableTheming():true;
+			return $this->_parent ? $this->_parent->getEnableTheming() : true;
 	}
 
 	/**
@@ -546,7 +546,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function createControlCollection()
 	{
-		return $this->getAllowChildControls()?new TControlCollection($this):new TEmptyControlCollection($this);
+		return $this->getAllowChildControls() ? new TControlCollection($this) : new TEmptyControlCollection($this);
 	}
 
 	/**
@@ -720,7 +720,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function getControlState($key, $defaultValue = null)
 	{
-		return isset($this->_rf[self::RF_CONTROLSTATE][$key])?$this->_rf[self::RF_CONTROLSTATE][$key]:$defaultValue;
+		return isset($this->_rf[self::RF_CONTROLSTATE][$key]) ? $this->_rf[self::RF_CONTROLSTATE][$key] : $defaultValue;
 	}
 
 	/**
@@ -773,7 +773,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function getViewState($key, $defaultValue = null)
 	{
 		if(isset($this->_viewState[$key]))
-			return $this->_viewState[$key] !== null?$this->_viewState[$key]:$defaultValue;
+			return $this->_viewState[$key] !== null ? $this->_viewState[$key] : $defaultValue;
 		elseif(isset($this->_tempState[$key]))
 		{
 			if(is_object($this->_tempState[$key]) && $this->_trackViewState)
@@ -984,7 +984,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function findControl($id)
 	{
 		$id = strtr($id, '.', self::ID_SEPARATOR);
-		$container = ($this instanceof INamingContainer)?$this:$this->getNamingContainer();
+		$container = ($this instanceof INamingContainer) ? $this : $this->getNamingContainer();
 		if(!$container || !$container->getHasControls())
 			return null;
 		if(!isset($container->_rf[self::RF_NAMED_CONTROLS]))
@@ -993,7 +993,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			$container->fillNameTable($container, $container->_rf[self::RF_CONTROLS]);
 		}
 		if(($pos = strpos($id, self::ID_SEPARATOR)) === false)
-			return isset($container->_rf[self::RF_NAMED_CONTROLS][$id])?$container->_rf[self::RF_NAMED_CONTROLS][$id]:null;
+			return isset($container->_rf[self::RF_NAMED_CONTROLS][$id]) ? $container->_rf[self::RF_NAMED_CONTROLS][$id] : null;
 		else
 		{
 			$cid = substr($id, 0, $pos);
@@ -1147,7 +1147,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getRegisteredObject($name)
 	{
-		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name])?$this->_rf[self::RF_NAMED_OBJECTS][$name]:null;
+		return isset($this->_rf[self::RF_NAMED_OBJECTS][$name]) ? $this->_rf[self::RF_NAMED_OBJECTS][$name] : null;
 	}
 
 	/**
@@ -1207,7 +1207,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			$control->_parent->getControls()->remove($control);
 		$control->_parent = $this;
 		$control->_page = $this->getPage();
-		$namingContainer = ($this instanceof INamingContainer)?$this:$this->_namingContainer;
+		$namingContainer = ($this instanceof INamingContainer) ? $this : $this->_namingContainer;
 		if($namingContainer)
 		{
 			$control->_namingContainer = $namingContainer;
@@ -1486,7 +1486,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function broadcastEvent($name, $sender, $param)
 	{
-		$rootControl = (($page = $this->getPage()) === null)?$this:$page;
+		$rootControl = (($page = $this->getPage()) === null) ? $this : $page;
 		$rootControl->broadcastEventInternal($name, $sender, new TBroadcastEventParameter($name, $param));
 	}
 

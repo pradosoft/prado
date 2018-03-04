@@ -144,7 +144,7 @@ class TJavaScript
 		if(is_string($value))
 			return self::quoteString($value);
 		elseif(is_bool($value))
-			return $value?'true':'false';
+			return $value ? 'true' : 'false';
 		elseif(is_array($value))
 		{
 			$results = '';

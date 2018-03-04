@@ -53,7 +53,7 @@ displayToken($token, $fontSize, $theme);
 function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
 {
 	$token = substr(hash2string(md5($publicKey . $privateKey), $alphabet) . hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
-	return $caseSensitive?$token:strtoupper($token);
+	return $caseSensitive ? $token : strtoupper($token);
 }
 
 function hash2string($hex, $alphabet)

@@ -262,7 +262,7 @@ class NumberFormatInfo
 		$groupPos2 = false;
 		$groupSize1 = false;
 		$groupSize2 = false;
-		$decimalPoints = is_int($decimalPos)?-1:false;
+		$decimalPoints = is_int($decimalPos) ? -1 : false;
 
 		$info['negPref'] = $this->data['NumberElements'][6];
 		$info['negPost'] = '';

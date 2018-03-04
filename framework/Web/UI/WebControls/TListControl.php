@@ -441,7 +441,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getItemCount()
 	{
-		return $this->_items?$this->_items->getCount():0;
+		return $this->_items ? $this->_items->getCount() : 0;
 	}
 
 	/**
@@ -580,7 +580,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function getSelectedValue()
 	{
 		$index = $this->getSelectedIndex();
-		return $index >= 0?$this->getItems()->itemAt($index)->getValue():'';
+		return $index >= 0 ? $this->getItems()->itemAt($index)->getValue() : '';
 	}
 
 	/**

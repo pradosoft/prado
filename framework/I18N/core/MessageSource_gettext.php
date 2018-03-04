@@ -139,7 +139,7 @@ class MessageSource_gettext extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $catalogue . $this->dataSeparator .
 								$variant . $this->dataExt;
 			}
@@ -168,7 +168,7 @@ class MessageSource_gettext extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
 		}
@@ -380,7 +380,7 @@ class MessageSource_gettext extends MessageSource
 	 */
 	protected function getCatalogues($dir = null, $variant = null)
 	{
-		$dir = $dir?$dir:$this->source;
+		$dir = $dir ? $dir : $this->source;
 		$files = scandir($dir);
 
 		$catalogue = [];

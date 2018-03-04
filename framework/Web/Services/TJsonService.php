@@ -117,7 +117,7 @@ class TJsonService extends \Prado\TService
 					$service = Prado::createComponent($serviceConfig['class']);
 					if($service instanceof TJsonResponse)
 					{
-						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:[];
+						$properties = isset($serviceConfig['properties']) ? $serviceConfig['properties'] : [];
 						$this->createJsonResponse($service, $properties, $serviceConfig);
 					}
 					else

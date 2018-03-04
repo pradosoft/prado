@@ -125,7 +125,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getText()
 	{
-		return $this->_text === ''?$this->_value:$this->_text;
+		return $this->_text === '' ? $this->_value : $this->_text;
 	}
 
 	/**
@@ -141,7 +141,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getValue()
 	{
-		return $this->_value === ''?$this->_text:$this->_value;
+		return $this->_value === '' ? $this->_text : $this->_value;
 	}
 
 	/**
@@ -176,7 +176,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function hasAttribute($name)
 	{
-		return $this->_attributes?$this->_attributes->contains($name):false;
+		return $this->_attributes ? $this->_attributes->contains($name) : false;
 	}
 
 	/**
@@ -184,7 +184,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		return $this->_attributes?$this->_attributes->itemAt($name):null;
+		return $this->_attributes ? $this->_attributes->itemAt($name) : null;
 	}
 
 	/**
@@ -203,7 +203,7 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function removeAttribute($name)
 	{
-		return $this->_attributes?$this->_attributes->remove($name):null;
+		return $this->_attributes ? $this->_attributes->remove($name) : null;
 	}
 }
 

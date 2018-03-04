@@ -42,7 +42,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	protected function getTagName()
 	{
-		return ($this->getForControl() === '')?'span':'label';
+		return ($this->getForControl() === '') ? 'span' : 'label';
 	}
 
 	/**

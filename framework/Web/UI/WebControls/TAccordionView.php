@@ -145,7 +145,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 		{
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
-			$style = $this->getActive()?$this->getParent()->getActiveHeaderStyle():$this->getParent()->getHeaderStyle();
+			$style = $this->getActive() ? $this->getParent()->getActiveHeaderStyle() : $this->getParent()->getHeaderStyle();
 
 			$style->addAttributesToRender($writer);
 

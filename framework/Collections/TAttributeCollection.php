@@ -66,7 +66,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function __get($name)
 	{
-		return $this->contains($name)?$this->itemAt($name):parent::__get($name);
+		return $this->contains($name) ? $this->itemAt($name) : parent::__get($name);
 	}
 
 	/**
@@ -106,7 +106,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function itemAt($key)
 	{
-		return parent::itemAt($this->_caseSensitive?$key:strtolower($key));
+		return parent::itemAt($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 
@@ -118,7 +118,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function add($key, $value)
 	{
-		parent::add($this->_caseSensitive?$key:strtolower($key), $value);
+		parent::add($this->_caseSensitive ? $key : strtolower($key), $value);
 	}
 
 	/**
@@ -129,7 +129,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function remove($key)
 	{
-		return parent::remove($this->_caseSensitive?$key:strtolower($key));
+		return parent::remove($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 	/**
@@ -140,7 +140,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function contains($key)
 	{
-		return parent::contains($this->_caseSensitive?$key:strtolower($key));
+		return parent::contains($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 	/**

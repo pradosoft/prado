@@ -544,12 +544,12 @@ class TUrlMappingPattern extends \Prado\TComponent
 		{
 			if ($this->_urlFormat === THttpRequestUrlFormat::Path && $this->getIsWildCardPattern()) {
 				foreach ($extra as $name => $value)
-					$url .= '/' . $name . $this->_separator . ($encodeGetItems?rawurlencode($value):$value);
+					$url .= '/' . $name . $this->_separator . ($encodeGetItems ? rawurlencode($value) : $value);
 				return $url;
 			}
 
 			$url2 = '';
-			$amp = $encodeAmpersand?'&amp;':'&';
+			$amp = $encodeAmpersand ? '&amp;' : '&';
 			if($encodeGetItems)
 			{
 				foreach($extra as $name => $value)

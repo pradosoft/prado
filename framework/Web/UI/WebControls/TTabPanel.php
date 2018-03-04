@@ -218,7 +218,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function getCssClass()
 	{
 		$cssClass = parent::getCssClass();
-		return $cssClass === ''?'tab-panel':$cssClass;
+		return $cssClass === '' ? 'tab-panel' : $cssClass;
 	}
 
 	/**

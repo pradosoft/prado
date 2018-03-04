@@ -88,13 +88,13 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 		if(!$this->getEnabled(true))
 			return false;
 		$this->ensureDataBound();
-		$selections = isset($values[$key])?$values[$key]:null;
+		$selections = isset($values[$key]) ? $values[$key] : null;
 		if($selections !== null)
 		{
 			$items = $this->getItems();
 			if($this->getSelectionMode() === TListSelectionMode::Single)
 			{
-				$selection = is_array($selections)?$selections[0]:$selections;
+				$selection = is_array($selections) ? $selections[0] : $selections;
 				$index = $items->findIndexByValue($selection, false);
 				if($this->getSelectedIndex() !== $index)
 				{

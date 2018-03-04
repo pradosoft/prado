@@ -350,7 +350,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$writer->addAttribute('id', $this->getClientID());
 		if ($this->getCssClass() === '')
 		{
-			$class = ($this->getDirection() == TSliderDirection::Horizontal)?'HorizontalSlider':'VerticalSlider';
+			$class = ($this->getDirection() == TSliderDirection::Horizontal) ? 'HorizontalSlider' : 'VerticalSlider';
 			$writer->addAttribute('class', 'Slider ' . $class);
 		}
 

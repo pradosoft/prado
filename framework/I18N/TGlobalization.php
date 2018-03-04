@@ -82,11 +82,11 @@ class TGlobalization extends \Prado\TModule
 		if($config !== null)
 		{
 			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-				$translation = isset($config['translate'])?$config['translate']:null;
+				$translation = isset($config['translate']) ? $config['translate'] : null;
 			else
 			{
 				$t = $config->getElementByTagName('translation');
-				$translation = ($t)?$t->getAttributes():null;
+				$translation = ($t) ? $t->getAttributes() : null;
 			}
 			if($translation)
 				$this->setTranslationConfiguration($translation);

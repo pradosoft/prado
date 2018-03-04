@@ -265,7 +265,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getItemCount()
 	{
-		return $this->_items?$this->_items->getCount():0;
+		return $this->_items ? $this->_items->getCount() : 0;
 	}
 
 	/**
@@ -533,7 +533,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			{
 				$item = $items->itemAt($current);
 				if($item->getItemType() !== TListItemType::EditItem)
-					$item->setItemType($current % 2?TListItemType::AlternatingItem:TListItemType::Item);
+					$item->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
 			}
 			if($value >= 0 && $value < $itemCount)
 			{
@@ -582,7 +582,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			$items = $this->getItems();
 			$itemCount = $items->getCount();
 			if($current >= 0 && $current < $itemCount)
-				$items->itemAt($current)->setItemType($current % 2?TListItemType::AlternatingItem:TListItemType::Item);
+				$items->itemAt($current)->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
 			if($value >= 0 && $value < $itemCount)
 				$items->itemAt($value)->setItemType(TListItemType::EditItem);
 		}
@@ -1020,7 +1020,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 		$index = 0;
 		$allowPaging = $this->getAllowPaging() && ($data instanceof TPagedDataSource);
-		$dsIndex = $allowPaging?$data->getFirstIndexInPage():0;
+		$dsIndex = $allowPaging ? $data->getFirstIndexInPage() : 0;
 		$this->setViewState('DataSourceIndex', $dsIndex, 0);
 		if($columns->getCount())
 		{
@@ -1321,7 +1321,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		$pageCount = $this->getPageCount();
 		$pageIndex = $this->getCurrentPageIndex() + 1;
 		$maxButtonCount = $style->getPageButtonCount();
-		$buttonCount = $maxButtonCount > $pageCount?$pageCount:$maxButtonCount;
+		$buttonCount = $maxButtonCount > $pageCount ? $pageCount : $maxButtonCount;
 		$startPageIndex = 1;
 		$endPageIndex = $buttonCount;
 		if($pageIndex > $endPageIndex)

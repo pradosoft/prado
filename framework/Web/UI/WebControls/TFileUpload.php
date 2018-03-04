@@ -146,7 +146,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getFileName($index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->getFileName():'';
+	  return isset($this->_files[$index]) ? $this->_files[$index]->getFileName() : '';
 	}
 
 	/**
@@ -156,7 +156,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getFileSize($index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->getFileSize():0;
+	  return isset($this->_files[$index]) ? $this->_files[$index]->getFileSize() : 0;
 	}
 
 	/**
@@ -167,7 +167,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getFileType($index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->getFileType():'';
+	  return isset($this->_files[$index]) ? $this->_files[$index]->getFileType() : '';
 	}
 
 	/**
@@ -178,7 +178,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getLocalName($index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->getLocalName():'';
+	  return isset($this->_files[$index]) ? $this->_files[$index]->getLocalName() : '';
 	}
 
 	/**
@@ -190,7 +190,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getErrorCode($index = 0)
 	{
-		return isset($this->_files[$index])?$this->_files[$index]->getErrorCode():UPLOAD_ERR_NO_FILE;
+		return isset($this->_files[$index]) ? $this->_files[$index]->getErrorCode() : UPLOAD_ERR_NO_FILE;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getHasFile($index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->getHasFile():false;
+	  return isset($this->_files[$index]) ? $this->_files[$index]->getHasFile() : false;
 	}
 
 	/**
@@ -226,7 +226,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
 	{
-	  return isset($this->_files[$index])?$this->_files[$index]->saveAs($fileName, $deleteTempFile):false;
+	  return isset($this->_files[$index]) ? $this->_files[$index]->saveAs($fileName, $deleteTempFile) : false;
 	}
 
 	/**

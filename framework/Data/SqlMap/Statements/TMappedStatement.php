@@ -176,8 +176,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		if($max > -1 || $skip > -1)
 		{
-			$maxStr = $max > 0?' LIMIT ' . $max:'';
-			$skipStr = $skip > 0?' OFFSET ' . $skip:'';
+			$maxStr = $max > 0 ? ' LIMIT ' . $max : '';
+			$skipStr = $skip > 0 ? ' OFFSET ' . $skip : '';
 			$command->setText($command->getText() . $maxStr . $skipStr);
 		}
 		$connection->setActive(true);

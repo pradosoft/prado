@@ -208,8 +208,8 @@ class TRepeatInfo extends \Prado\TComponent
 		$tableLayout = ($this->_repeatLayout === TRepeatLayout::Table);
 		$hasSeparators = $user->getHasSeparators();
 		$itemCount = $user->getItemCount();
-		$columns = $this->_repeatColumns === 0?$itemCount:$this->_repeatColumns;
-		$totalColumns = $hasSeparators?$columns + $columns:$columns;
+		$columns = $this->_repeatColumns === 0 ? $itemCount : $this->_repeatColumns;
+		$totalColumns = $hasSeparators ? $columns + $columns : $columns;
 		$needBreak = $columns < $itemCount;
 
 		if($user->getHasHeader())
@@ -244,7 +244,7 @@ class TRepeatInfo extends \Prado\TComponent
 				{
 					$restColumns = $columns - $column;
 					if($hasSeparators)
-						$restColumns = $restColumns?$restColumns + $restColumns + 1:1;
+						$restColumns = $restColumns ? $restColumns + $restColumns + 1 : 1;
 					for($j = 0;$j < $restColumns;++$j)
 						$writer->write("<td></td>\n");
 				}
@@ -305,7 +305,7 @@ class TRepeatInfo extends \Prado\TComponent
 			if(($lastColumns = $itemCount % $columns) == 0)
 				$lastColumns = $columns;
 		}
-		$totalColumns = $hasSeparators?$columns + $columns:$columns;
+		$totalColumns = $hasSeparators ? $columns + $columns : $columns;
 
 		if($user->getHasHeader())
 			$this->renderHeader($writer, $user, $tableLayout, $totalColumns, false);

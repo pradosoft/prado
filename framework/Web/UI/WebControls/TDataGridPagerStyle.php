@@ -69,7 +69,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getMode()
 	{
-		return $this->_mode === null?TDataGridPagerMode::NextPrev : $this->_mode;
+		return $this->_mode === null ? TDataGridPagerMode::NextPrev : $this->_mode;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType === null?TDataGridPagerButtonType::LinkButton:$this->_buttonType;
+		return $this->_buttonType === null ? TDataGridPagerButtonType::LinkButton : $this->_buttonType;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getNextPageText()
 	{
-		return $this->_nextText === null?'>':$this->_nextText;
+		return $this->_nextText === null ? '>' : $this->_nextText;
 	}
 
 	/**
@@ -117,7 +117,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPrevPageText()
 	{
-		return $this->_prevText === null?'<':$this->_prevText;
+		return $this->_prevText === null ? '<' : $this->_prevText;
 	}
 
 	/**
@@ -133,7 +133,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getFirstPageText()
 	{
-		return $this->_firstText === null?'<<':$this->_firstText;
+		return $this->_firstText === null ? '<<' : $this->_firstText;
 	}
 
 	/**
@@ -149,7 +149,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getLastPageText()
 	{
-		return $this->_lastText === null?'>>':$this->_lastText;
+		return $this->_lastText === null ? '>>' : $this->_lastText;
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPageButtonCount()
 	{
-		return $this->_buttonCount === null?10:$this->_buttonCount;
+		return $this->_buttonCount === null ? 10 : $this->_buttonCount;
 	}
 
 	/**
@@ -184,7 +184,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getPosition()
 	{
-		return $this->_position === null?TDataGridPagerPosition::Bottom:$this->_position;
+		return $this->_position === null ? TDataGridPagerPosition::Bottom : $this->_position;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function getVisible()
 	{
-		return $this->_visible === null?true:$this->_visible;
+		return $this->_visible === null ? true : $this->_visible;
 	}
 
 	/**

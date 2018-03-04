@@ -577,7 +577,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		$pageCount = $this->getPageCount();
 		$pageIndex = $this->getCurrentPageIndex() + 1;
 		$maxButtonCount = $this->getPageButtonCount();
-		$buttonCount = $maxButtonCount > $pageCount?$pageCount:$maxButtonCount;
+		$buttonCount = $maxButtonCount > $pageCount ? $pageCount : $maxButtonCount;
 		$startPageIndex = 1;
 		$endPageIndex = $buttonCount;
 		if($pageIndex > $endPageIndex)

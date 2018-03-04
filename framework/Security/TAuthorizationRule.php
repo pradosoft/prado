@@ -207,7 +207,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	public function isUserAllowed(IUser $user, $verb, $ip)
 	{
 		if($this->isVerbMatched($verb) && $this->isIpMatched($ip) && $this->isUserMatched($user) && $this->isRoleMatched($user))
-			return ($this->_action === 'allow')?1:-1;
+			return ($this->_action === 'allow') ? 1 : -1;
 		else
 			return 0;
 	}

@@ -197,7 +197,7 @@ class ChoiceFormat
 		for($i = 0; $i < $n; $i++)
 		{
 			$len = strlen($offset[$i][0]);
-			$begin = $i == 0? $len : $offset[$i][1] + $len;
+			$begin = $i == 0 ? $len : $offset[$i][1] + $len;
 			$end = $i == $n - 1 ? strlen($string) : $offset[$i + 1][1];
 			$strings[] = substr($string, $begin, $end - $begin);
 		}

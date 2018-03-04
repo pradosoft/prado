@@ -94,7 +94,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 */
 	public function getTableInfo($tableName = null)
 	{
-		$key = $tableName === null?$this->getDbConnection()->getConnectionString():$tableName;
+		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
 		if(!isset($this->_tableInfoCache[$key]))
 		{
 			$class = $this->getTableInfoClass();

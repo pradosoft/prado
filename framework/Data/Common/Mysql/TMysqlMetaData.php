@@ -263,7 +263,7 @@ class TMysqlMetaData extends TDbMetaData
 		}
 		catch(TDbException $e)
 		{
-			$table = $schemaName === null?$tableName:$schemaName . '.' . $tableName;
+			$table = $schemaName === null ? $tableName : $schemaName . '.' . $tableName;
 			throw new TDbException('dbcommon_invalid_table_name', $table, $e->getMessage());
 		}
 	}

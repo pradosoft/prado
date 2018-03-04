@@ -96,7 +96,7 @@ class TCallChain extends TList implements IDynamicMethods
 	{
 		$args = func_get_args();
 		if($this->getCount() === 0)
-			return isset($args[0])?$args[0]:null;
+			return isset($args[0]) ? $args[0] : null;
 
 		if(!$this->_iterator)
 		{

@@ -150,10 +150,10 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		{
 			foreach($config['users'] as $user)
 			{
-				$name = trim(strtolower(isset($user['name'])?$user['name']:''));
-				$password = isset($user['password'])?$user['password']:'';
+				$name = trim(strtolower(isset($user['name']) ? $user['name'] : ''));
+				$password = isset($user['password']) ? $user['password'] : '';
 				$this->_users[$name] = $password;
-				$roles = isset($user['roles'])?$user['roles']:'';
+				$roles = isset($user['roles']) ? $user['roles'] : '';
 				if($roles !== '')
 				{
 					foreach(explode(',', $roles) as $role)
@@ -168,8 +168,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		{
 			foreach($config['roles'] as $role)
 			{
-				$name = isset($role['name'])?$role['name']:'';
-				$users = isset($role['users'])?$role['users']:'';
+				$name = isset($role['name']) ? $role['name'] : '';
+				$users = isset($role['users']) ? $role['users'] : '';
 				foreach(explode(',', $users) as $user)
 				{
 					if(($user = trim($user)) !== '')

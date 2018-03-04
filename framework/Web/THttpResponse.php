@@ -372,7 +372,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$clientFileName = basename($clientFileName);
 
 		if($fileSize === null || $fileSize < 0)
-			$fileSize = ($content === null?filesize($fileName):strlen($content));
+			$fileSize = ($content === null ? filesize($fileName) : strlen($content));
 
 		$this->sendHttpHeader();
 		if(is_array($headers))
@@ -552,7 +552,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function sendContentTypeHeader()
 	{
-		$contentType = $this->_contentType === null?self::DEFAULT_CONTENTTYPE:$this->_contentType;
+		$contentType = $this->_contentType === null ? self::DEFAULT_CONTENTTYPE : $this->_contentType;
 		$charset = $this->getCharset();
 		if($charset === false) {
 			$this->appendHeader('Content-Type: ' . $contentType);
@@ -577,7 +577,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function getContents()
 	{
 		Prado::trace("Retrieving output", 'Prado\Web\THttpResponse');
-		return $this->_bufferOutput?ob_get_contents():'';
+		return $this->_bufferOutput ? ob_get_contents() : '';
 	}
 
 	/**

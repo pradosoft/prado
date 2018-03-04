@@ -1009,7 +1009,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$className = get_class($this);
 		$property = strtolower($property);
-		return isset(self::$_relations[$className][$property])?self::$_relations[$className][$property]:null;
+		return isset(self::$_relations[$className][$property]) ? self::$_relations[$className][$property] : null;
 	}
 
 	/**

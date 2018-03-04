@@ -208,7 +208,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getCssClass()
 	{
 		$cssClass = parent::getCssClass();
-			return $cssClass === ''?'accordion':$cssClass;
+			return $cssClass === '' ? 'accordion' : $cssClass;
 	}
 
 	/**
@@ -491,7 +491,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			$options['maxHeight'] = $viewheight;
 		$views = [];
 		foreach($this->getViews() as $view)
-			$views[$view->getClientID()] = $view->getVisible() ? '1': '0';
+			$views[$view->getClientID()] = $view->getVisible() ? '1' : '0';
 		$options['Views'] = $views;
 
 		return $options;

@@ -200,7 +200,7 @@ class TPageConfiguration extends \Prado\TComponent
 			$rules = [];
 			foreach($config['authorization'] as $authorization)
 			{
-				$patterns = isset($authorization['pages'])?$authorization['pages']:'';
+				$patterns = isset($authorization['pages']) ? $authorization['pages'] : '';
 				$ruleApplies = false;
 				if(empty($patterns) || trim($patterns) === '*') // null or empty string
 					$ruleApplies = true;
@@ -231,11 +231,11 @@ class TPageConfiguration extends \Prado\TComponent
 				}
 				if($ruleApplies)
 				{
-					$action = isset($authorization['action'])?$authorization['action']:'';
-					$users = isset($authorization['users'])?$authorization['users']:'';
-					$roles = isset($authorization['roles'])?$authorization['roles']:'';
-					$verb = isset($authorization['verb'])?$authorization['verb']:'';
-					$ips = isset($authorization['ips'])?$authorization['ips']:'';
+					$action = isset($authorization['action']) ? $authorization['action'] : '';
+					$users = isset($authorization['users']) ? $authorization['users'] : '';
+					$roles = isset($authorization['roles']) ? $authorization['roles'] : '';
+					$verb = isset($authorization['verb']) ? $authorization['verb'] : '';
+					$ips = isset($authorization['ips']) ? $authorization['ips'] : '';
 					$rules[] = new TAuthorizationRule($action, $users, $roles, $verb, $ips);
 				}
 			}
@@ -258,7 +258,7 @@ class TPageConfiguration extends \Prado\TComponent
 					unset($page['properties']);
 				}
 				$matching = false;
-				$id = ($configPagePath === '')?$id:$configPagePath . '.' . $id;
+				$id = ($configPagePath === '') ? $id : $configPagePath . '.' . $id;
 				if(strcasecmp($id, $this->_pagePath) === 0)
 					$matching = true;
 				elseif($id[strlen($id) - 1] === '*') // try wildcard matching
@@ -273,7 +273,7 @@ class TPageConfiguration extends \Prado\TComponent
 		{
 			foreach($config['includes'] as $include)
 			{
-				$when = isset($include['when'])?true:false;
+				$when = isset($include['when']) ? true : false;
 				if(!isset($include['file']))
 					throw new TConfigurationException('pageserviceconf_includefile_required');
 				$filePath = $include['file'];
@@ -346,7 +346,7 @@ class TPageConfiguration extends \Prado\TComponent
 				if(empty($id))
 					throw new TConfigurationException('pageserviceconf_page_invalid', $configPath);
 				$matching = false;
-				$id = ($configPagePath === '')?$id:$configPagePath . '.' . $id;
+				$id = ($configPagePath === '') ? $id : $configPagePath . '.' . $id;
 				if(strcasecmp($id, $this->_pagePath) === 0)
 					$matching = true;
 				elseif($id[strlen($id) - 1] === '*') // try wildcard matching

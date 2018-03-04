@@ -446,8 +446,8 @@ class TTarFileExtractor
 		// ----- Check the directory availability and create it if necessary
 		elseif (($v_result
 				 = $this->_dirCheck(($v_header['typeflag'] == "5"
-									?$v_header['filename']
-									:dirname($v_header['filename'])))) != 1) {
+									? $v_header['filename']
+									: dirname($v_header['filename'])))) != 1) {
 			$this->_error('Unable to create path for ' . $v_header['filename']);
 			return false;
 		}

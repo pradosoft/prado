@@ -480,7 +480,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 				if(is_array($value))
 					$list->add($value);
 				else
-					$list->add([$value,is_string($key)?$key:$value]);
+					$list->add([$value,is_string($key) ? $key : $value]);
 			}
 			return $list;
 		}

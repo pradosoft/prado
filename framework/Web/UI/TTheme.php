@@ -152,7 +152,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						elseif($skin[0] !== -1)
 							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
 						$type = $skin[1];
-						$id = isset($skin[2]['skinid'])?$skin[2]['skinid']:0;
+						$id = isset($skin[2]['skinid']) ? $skin[2]['skinid'] : 0;
 						unset($skin[2]['skinid']);
 						if(isset($this->_skins[$type][$id]))
 							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));

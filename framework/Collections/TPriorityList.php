@@ -241,7 +241,7 @@ class TPriorityList extends TList
 			$priority = $this->getDefaultPriority();
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		return isset($this->_d[$priority])?$this->_d[$priority]:null;
+		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
 	}
 
 	/**
@@ -256,8 +256,8 @@ class TPriorityList extends TList
 			$priority = $this->getDefaultPriority();
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		return !isset($this->_d[$priority])?false:(
-				isset($this->_d[$priority][$index])?$this->_d[$priority][$index]:false
+		return !isset($this->_d[$priority]) ? false : (
+				isset($this->_d[$priority][$index]) ? $this->_d[$priority][$index] : false
 			);
 	}
 
@@ -498,8 +498,8 @@ class TPriorityList extends TList
 		foreach($this->_d as $priority => $items) {
 			if(($index = array_search($item, $items, true)) !== false) {
 				$absindex += $index;
-				return $withindex?[$priority,$index,$absindex,
-						'priority' => $priority,'index' => $index,'absindex' => $absindex]:$priority;
+				return $withindex ? [$priority,$index,$absindex,
+						'priority' => $priority,'index' => $index,'absindex' => $absindex] : $priority;
 			} else
 				$absindex += count($items);
 		}
@@ -527,8 +527,8 @@ class TPriorityList extends TList
 			if($index >= ($c = count($items)))
 				$index -= $c;
 			else
-				return $withindex?[$priority,$index,$absindex,
-						'priority' => $priority,'index' => $index,'absindex' => $absindex]:$priority;
+				return $withindex ? [$priority,$index,$absindex,
+						'priority' => $priority,'index' => $index,'absindex' => $absindex] : $priority;
 		}
 		return false;
 	}

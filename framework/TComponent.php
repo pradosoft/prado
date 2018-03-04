@@ -569,7 +569,7 @@ class TComponent
 		{
 			if($this instanceof IDynamicMethods)
 				return $this->__dycall($method, $args);
-			return isset($args[0])?$args[0]:null;
+			return isset($args[0]) ? $args[0] : null;
 		}
 
 		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
@@ -1407,7 +1407,7 @@ class TComponent
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		$param = new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
 		self::$_um[$class] = [$name => $param] + self::$_um[$class];
-		$behaviorObject = is_string($behavior)?new $behavior:$behavior;
+		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 	}
 
@@ -1438,7 +1438,7 @@ class TComponent
 		$param = self::$_um[$class][$name];
 		$behavior = $param->getBehavior();
 		unset(self::$_um[$class][$name]);
-		$behaviorObject = is_string($behavior)?new $behavior:$behavior;
+		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 	}
 
@@ -1451,7 +1451,7 @@ class TComponent
 	 */
 	public function asa($behaviorname)
 	{
-		return isset($this->_m[$behaviorname])?$this->_m[$behaviorname]:null;
+		return isset($this->_m[$behaviorname]) ? $this->_m[$behaviorname] : null;
 	}
 
 	/**
@@ -1524,7 +1524,7 @@ class TComponent
 				if($behavior instanceof TClassBehaviorEventParameter)
 					$this->detachBehavior($behavior->getName(), $behavior->getPriority());
 				else
-					$this->detachBehavior(is_string($behavior)?$behavior:$name);
+					$this->detachBehavior(is_string($behavior) ? $behavior : $name);
 		}
 	}
 

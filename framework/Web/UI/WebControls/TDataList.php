@@ -198,7 +198,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 */
 	public function getItemCount()
 	{
-		return $this->_items?$this->_items->getCount():0;
+		return $this->_items ? $this->_items->getCount() : 0;
 	}
 
 	/**
@@ -690,7 +690,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			{
 				$item = $items->itemAt($current);
 				if(($item instanceof IItemDataRenderer) && $item->getItemType() !== TListItemType::EditItem)
-					$item->setItemType($current % 2?TListItemType::AlternatingItem : TListItemType::Item);
+					$item->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
 			}
 			if($value >= 0 && $value < $itemCount)
 			{
@@ -755,7 +755,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			$items = $this->getItems();
 			$itemCount = $items->getCount();
 			if($current >= 0 && $current < $itemCount)
-				$items->itemAt($current)->setItemType($current % 2?TListItemType::AlternatingItem : TListItemType::Item);
+				$items->itemAt($current)->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
 			if($value >= 0 && $value < $itemCount)
 				$items->itemAt($value)->setItemType(TListItemType::EditItem);
 		}
@@ -1108,7 +1108,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	{
 		switch($itemType)
 		{
-			case TListItemType::Item:
+			case TListItemType::Item :
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
 			case TListItemType::EditItem:
@@ -1345,7 +1345,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		{
 			$controls = $this->getControls();
 			$count = $controls->getCount();
-			for($i = $this->_header?2:1;$i < $count;$i += 2)
+			for($i = $this->_header ? 2 : 1;$i < $count;$i += 2)
 			{
 				if(($separator = $controls->itemAt($i)) instanceof IStyleable)
 					$separator->getStyle()->mergeWith($separatorStyle);
@@ -1411,7 +1411,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				elseif($i === $selectedIndex)
 					$itemType = TListItemType::SelectedItem;
 				else
-					$itemType = $i % 2?TListItemType::AlternatingItem : TListItemType::Item;
+					$itemType = $i % 2 ? TListItemType::AlternatingItem : TListItemType::Item;
 				$items->add($this->createItemInternal($i, $itemType));
 			}
 			$this->_footer = $this->createItemInternal(-1, TListItemType::Footer);
@@ -1453,7 +1453,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			elseif($itemIndex === $selectedIndex)
 				$itemType = TListItemType::SelectedItem;
 			else
-				$itemType = $itemIndex % 2?TListItemType::AlternatingItem : TListItemType::Item;
+				$itemType = $itemIndex % 2 ? TListItemType::AlternatingItem : TListItemType::Item;
 			$items->add($this->createItemWithDataInternal($itemIndex, $itemType, $dataItem));
 			$itemIndex++;
 		}

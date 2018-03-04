@@ -151,7 +151,7 @@ class MessageSource_Database extends MessageSource
 		{
 			if(isset($variants[$i]{0}))
 			{
-				$variant .= ($variant)?'_' . $variants[$i]:$variants[$i];
+				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $catalogue . '.' . $variant;
 			}
 		}

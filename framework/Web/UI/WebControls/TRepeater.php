@@ -631,7 +631,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 			{
 				if($hasSeparator && $i > 0)
 					$this->createItemInternal($i - 1, TListItemType::Separator);
-				$itemType = $i % 2 == 0?TListItemType::Item : TListItemType::AlternatingItem;
+				$itemType = $i % 2 == 0 ? TListItemType::Item : TListItemType::AlternatingItem;
 				$items->add($this->createItemInternal($i, $itemType, false, null));
 			}
 			$this->_footer = $this->createItemInternal(-1, TListItemType::Footer);
@@ -668,7 +668,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 				$this->_header = $this->createItemWithDataInternal(-1, TListItemType::Header, null);
 			if($hasSeparator && $itemIndex > 0)
 				$this->createItemWithDataInternal($itemIndex - 1, TListItemType::Separator, null);
-			$itemType = $itemIndex % 2 == 0?TListItemType::Item : TListItemType::AlternatingItem;
+			$itemType = $itemIndex % 2 == 0 ? TListItemType::Item : TListItemType::AlternatingItem;
 			$items->add($this->createItemWithDataInternal($itemIndex, $itemType, $dataItem));
 			$itemIndex++;
 		}

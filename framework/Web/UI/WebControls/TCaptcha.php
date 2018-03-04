@@ -340,7 +340,7 @@ class TCaptcha extends TImage
 			$this->regenerateToken();
 			return false;
 		}
-		return ($this->getToken() === ($this->getCaseSensitive()?$input:strtoupper($input)));
+		return ($this->getToken() === ($this->getCaseSensitive() ? $input : strtoupper($input)));
 	}
 
 	/**
@@ -397,7 +397,7 @@ class TCaptcha extends TImage
 			$randomSeed = (int)(microtime(true) * 1000000);
 			$this->setViewState('RandomSeed', $randomSeed);
 		}
-		$options['randomSeed'] = $this->getChangingTokenBackground()?0:$randomSeed;
+		$options['randomSeed'] = $this->getChangingTokenBackground() ? 0 : $randomSeed;
 		$str = serialize($options);
 		return base64_encode(md5($privateKey . $str) . $str);
 	}
@@ -455,7 +455,7 @@ class TCaptcha extends TImage
 	protected function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
 	{
 		$token = substr($this->hash2string(md5($publicKey . $privateKey), $alphabet) . $this->hash2string(md5($privateKey . $publicKey), $alphabet), 0, $tokenLength);
-		return $caseSensitive?$token:strtoupper($token);
+		return $caseSensitive ? $token : strtoupper($token);
 	}
 
 	/**

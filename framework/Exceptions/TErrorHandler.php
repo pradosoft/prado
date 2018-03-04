@@ -195,7 +195,7 @@ class TErrorHandler extends \Prado\TModule
 
 		$content = $this->getErrorTemplate($statusCode, $exception);
 
-		$serverAdmin = isset($_SERVER['SERVER_ADMIN'])?$_SERVER['SERVER_ADMIN']:'';
+		$serverAdmin = isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : '';
 
 		$isDebug = $this->getApplication()->getMode() === TApplicationMode::Debug;
 
@@ -262,7 +262,7 @@ class TErrorHandler extends \Prado\TModule
 		if($exception instanceof TTemplateException)
 		{
 			$fileName = $exception->getTemplateFile();
-			$lines = empty($fileName)?explode("\n", $exception->getTemplateSource()):@file($fileName);
+			$lines = empty($fileName) ? explode("\n", $exception->getTemplateSource()) : @file($fileName);
 			$source = $this->getSourceCode($lines, $exception->getLineNumber());
 			if($fileName === '')
 				$fileName = '---embedded template---';
@@ -425,8 +425,8 @@ class TErrorHandler extends \Prado\TModule
 
 	private function getSourceCode($lines, $errorLine)
 	{
-		$beginLine = $errorLine - self::SOURCE_LINES >= 0?$errorLine - self::SOURCE_LINES:0;
-		$endLine = $errorLine + self::SOURCE_LINES <= count($lines)?$errorLine + self::SOURCE_LINES:count($lines);
+		$beginLine = $errorLine - self::SOURCE_LINES >= 0 ? $errorLine - self::SOURCE_LINES : 0;
+		$endLine = $errorLine + self::SOURCE_LINES <= count($lines) ? $errorLine + self::SOURCE_LINES : count($lines);
 
 		$source = '';
 		for($i = $beginLine;$i < $endLine;++$i)

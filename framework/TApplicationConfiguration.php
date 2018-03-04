@@ -403,7 +403,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	{
 		foreach($includeNode as $include)
 		{
-			$when = isset($include['when'])?true:false;
+			$when = isset($include['when']) ? true : false;
 			if(!isset($include['file']))
 				throw new TConfigurationException('appconfig_includefile_required');
 			$filePath = $include['file'];

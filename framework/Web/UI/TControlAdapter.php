@@ -50,7 +50,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	 */
 	public function getPage()
 	{
-		return $this->_control?$this->_control->getPage():null;
+		return $this->_control ? $this->_control->getPage() : null;
 	}
 
 	/**

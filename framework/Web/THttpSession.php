@@ -407,7 +407,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			$value = TPropertyValue::ensureBoolean($value);
 			if ($value && $this->getCookieMode() == THttpSessionCookieMode::Only)
 					throw new TInvalidOperationException('httpsession_transid_cookieonly');
-			ini_set('session.use_trans_sid', $value?'1':'0');
+			ini_set('session.use_trans_sid', $value ? '1' : '0');
 		}
 	}
 

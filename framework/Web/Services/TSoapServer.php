@@ -75,7 +75,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if(($provider = $this->getProvider()) !== null)
 		{
 			Prado::using($provider);
-			$providerClass = ($pos = strrpos($provider, '.')) !== false?substr($provider, $pos + 1):$provider;
+			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
 			$this->guessMethodCallRequested($providerClass);
 			$server = $this->createServer();
 			$server->setClass($providerClass, $this);
@@ -190,7 +190,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 		if($this->_wsdlUri === '')
 		{
 			$provider = $this->getProvider();
-			$providerClass = ($pos = strrpos($provider, '.')) !== false?substr($provider, $pos + 1):$provider;
+			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
 			Prado::using($provider);
 			if($this->getApplication()->getMode() === TApplicationMode::Performance && ($cache = $this->getApplication()->getCache()) !== null)
 			{

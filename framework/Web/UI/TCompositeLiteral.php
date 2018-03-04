@@ -79,7 +79,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function evaluateDynamicContent()
 	{
-		$context = $this->_container === null?$this:$this->_container;
+		$context = $this->_container === null ? $this : $this->_container;
 		foreach($this->_expressions as $id => $expression)
 			$this->_items[$id] = $context->evaluateExpression($expression);
 		foreach($this->_statements as $id => $statement)
@@ -92,7 +92,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function dataBind()
 	{
-		$context = $this->_container === null?$this:$this->_container;
+		$context = $this->_container === null ? $this : $this->_container;
 		foreach($this->_bindings as $id => $binding)
 			$this->_items[$id] = $context->evaluateExpression($binding);
 	}

@@ -49,7 +49,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	public function getRegularExpression()
 	{
 		$regex = parent::getRegularExpression();
-		return $regex === ''?self::EMAIL_REGEXP:$regex;
+		return $regex === '' ? self::EMAIL_REGEXP : $regex;
 	}
 
 	/**
@@ -68,7 +68,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 				if(($pos = strpos($value, '@')) !== false)
 				{
 					$domain = substr($value, $pos + 1);
-					return $domain === ''?false:checkdnsrr($domain, 'MX');
+					return $domain === '' ? false : checkdnsrr($domain, 'MX');
 				}
 				else
 					return false;

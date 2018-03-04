@@ -177,7 +177,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->_backImageUrl === null?'':$this->_backImageUrl;
+		return $this->_backImageUrl === null ? '' : $this->_backImageUrl;
 	}
 
 	/**
@@ -194,7 +194,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign === null?THorizontalAlign::NotSet:$this->_horizontalAlign;
+		return $this->_horizontalAlign === null ? THorizontalAlign::NotSet : $this->_horizontalAlign;
 	}
 
 	/**
@@ -211,7 +211,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getCellPadding()
 	{
-		return $this->_cellPadding === null?-1:$this->_cellPadding;
+		return $this->_cellPadding === null ? -1 : $this->_cellPadding;
 	}
 
 	/**
@@ -229,7 +229,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getCellSpacing()
 	{
-		return $this->_cellSpacing === null?-1:$this->_cellSpacing;
+		return $this->_cellSpacing === null ? -1 : $this->_cellSpacing;
 	}
 
 	/**
@@ -247,7 +247,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getGridLines()
 	{
-		return $this->_gridLines === null?TTableGridLines::None:$this->_gridLines;
+		return $this->_gridLines === null ? TTableGridLines::None : $this->_gridLines;
 	}
 
 	/**
@@ -265,7 +265,7 @@ class TTableStyle extends TStyle
 	 */
 	public function getBorderCollapse()
 	{
-		return $this->_borderCollapse === null?false:$this->_borderCollapse;
+		return $this->_borderCollapse === null ? false : $this->_borderCollapse;
 	}
 
 	/**

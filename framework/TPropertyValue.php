@@ -80,7 +80,7 @@ class TPropertyValue
 		if (TJavaScript::isJsLiteral($value))
 			return $value;
 		if (is_bool($value))
-			return $value?'true':'false';
+			return $value ? 'true' : 'false';
 		else
 			return (string)$value;
 	}
@@ -126,7 +126,7 @@ class TPropertyValue
 				return $array;
 			}
 			else
-				return $len > 0?[$value]:[];
+				return $len > 0 ? [$value] : [];
 		}
 		else
 			return (array)$value;
@@ -190,6 +190,6 @@ class TPropertyValue
 	 */
 	public static function ensureNullIfEmpty($value)
 	{
-		return empty($value)?null:$value;
+		return empty($value) ? null : $value;
 	}
 }

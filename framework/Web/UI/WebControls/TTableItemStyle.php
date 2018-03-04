@@ -130,7 +130,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign === null?THorizontalAlign::NotSet:$this->_horizontalAlign;
+		return $this->_horizontalAlign === null ? THorizontalAlign::NotSet : $this->_horizontalAlign;
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getVerticalAlign()
 	{
-		return $this->_verticalAlign === null?TVerticalAlign::NotSet:$this->_verticalAlign;
+		return $this->_verticalAlign === null ? TVerticalAlign::NotSet : $this->_verticalAlign;
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap === null?true:$this->_wrap;
+		return $this->_wrap === null ? true : $this->_wrap;
 	}
 
 	/**

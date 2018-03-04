@@ -81,7 +81,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function getTagName()
 	{
-		return ($this->getTextMode() === 'MultiLine')?'textarea':'input';
+		return ($this->getTextMode() === 'MultiLine') ? 'textarea' : 'input';
 	}
 
 	/**

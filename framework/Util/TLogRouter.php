@@ -100,7 +100,7 @@ class TLogRouter extends \Prado\TModule
 			{
 				foreach($config['routes'] as $route)
 				{
-					$properties = isset($route['properties'])?$route['properties']:[];
+					$properties = isset($route['properties']) ? $route['properties'] : [];
 					if(!isset($route['class']))
 						throw new TConfigurationException('logrouter_routeclass_required');
 					$route = Prado::createComponent($route['class']);

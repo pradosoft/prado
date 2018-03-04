@@ -127,7 +127,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 					if(is_array($data))
 					{
 						$param = new TOutputCacheCheckDependencyEventParameter;
-						$param->setCacheTime(isset($data[3])?$data[3]:0);
+						$param->setCacheTime(isset($data[3]) ? $data[3] : 0);
 						$this->onCheckDependency($param);
 						$this->_dataCached = $param->getIsValid();
 					}

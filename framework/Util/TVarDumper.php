@@ -62,7 +62,7 @@ class TVarDumper
 		switch(gettype($var))
 		{
 			case 'boolean':
-				self::$_output .= $var?'true':'false';
+				self::$_output .= $var ? 'true' : 'false';
 				break;
 			case 'integer':
 				self::$_output .= "$var";

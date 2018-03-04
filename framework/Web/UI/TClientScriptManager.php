@@ -385,7 +385,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function registerDefaultButton($panel, $button)
 	{
-		$panelID = is_string($panel)?$panel:$panel->getUniqueID();
+		$panelID = is_string($panel) ? $panel : $panel->getUniqueID();
 
 		if(is_string($button))
 			$buttonID = $button;

@@ -544,7 +544,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setTheme($value)
 	{
-		$this->_theme = empty($value)?null:$value;
+		$this->_theme = empty($value) ? null : $value;
 	}
 
 
@@ -564,7 +564,7 @@ class TPage extends TTemplateControl
 	 */
 	public function setStyleSheetTheme($value)
 	{
-		$this->_styleSheet = empty($value)?null:$value;
+		$this->_styleSheet = empty($value) ? null : $value;
 	}
 
 	/**
@@ -807,7 +807,7 @@ class TPage extends TTemplateControl
 	 */
 	public function registerRequiresPostData($control)
 	{
-		$id = is_string($control)?$control:$control->getUniqueID();
+		$id = is_string($control) ? $control : $control->getUniqueID();
 		$this->_controlsRegisteredForPostData[$id] = true;
 		$params = func_get_args();
 		foreach($this->getCachingStack() as $item)

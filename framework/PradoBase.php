@@ -155,7 +155,7 @@ class PradoBase
 	 */
 	public static function poweredByPrado($logoType = 0)
 	{
-		$logoName = $logoType == 1?'powered2':'powered';
+		$logoName = $logoType == 1 ? 'powered2' : 'powered';
 		if(self::$_application !== null)
 		{
 			$am = self::$_application->getAssetManager();
@@ -447,7 +447,7 @@ class PradoBase
 	 */
 	public static function getPathOfAlias($alias)
 	{
-		return isset(self::$_aliases[$alias])?self::$_aliases[$alias]:null;
+		return isset(self::$_aliases[$alias]) ? self::$_aliases[$alias] : null;
 	}
 
 	protected static function getPathAliases()
@@ -561,7 +561,7 @@ class PradoBase
 				foreach(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
 				{
 					$array = explode(';q=', trim($language));
-					$languages[trim($array[0])] = isset($array[1])?(float)$array[1]:1.0;
+					$languages[trim($array[0])] = isset($array[1]) ? (float)$array[1] : 1.0;
 				}
 				arsort($languages);
 				$languages = array_keys($languages);
@@ -685,7 +685,7 @@ class PradoBase
 			return strtr($text, $params);
 
 		if ($catalogue === null)
-			$catalogue = isset($config['catalogue'])?$config['catalogue']:'messages';
+			$catalogue = isset($config['catalogue']) ? $config['catalogue'] : 'messages';
 
 		Translation::init($catalogue);
 

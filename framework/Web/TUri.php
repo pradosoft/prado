@@ -95,14 +95,14 @@ class TUri extends \Prado\TComponent
 		if(($ret = @parse_url($uri)) !== false)
 		{
 			// decoding???
-			$this->_scheme = isset($ret['scheme'])?$ret['scheme']:'';
-			$this->_host = isset($ret['host'])?$ret['host']:'';
-			$this->_port = isset($ret['port'])?$ret['port']:'';
-			$this->_user = isset($ret['user'])?$ret['user']:'';
-			$this->_pass = isset($ret['pass'])?$ret['pass']:'';
-			$this->_path = isset($ret['path'])?$ret['path']:'';
-			$this->_query = isset($ret['query'])?$ret['query']:'';
-			$this->_fragment = isset($ret['fragment'])?$ret['fragment']:'';
+			$this->_scheme = isset($ret['scheme']) ? $ret['scheme'] : '';
+			$this->_host = isset($ret['host']) ? $ret['host'] : '';
+			$this->_port = isset($ret['port']) ? $ret['port'] : '';
+			$this->_user = isset($ret['user']) ? $ret['user'] : '';
+			$this->_pass = isset($ret['pass']) ? $ret['pass'] : '';
+			$this->_path = isset($ret['path']) ? $ret['path'] : '';
+			$this->_query = isset($ret['query']) ? $ret['query'] : '';
+			$this->_fragment = isset($ret['fragment']) ? $ret['fragment'] : '';
 			$this->_uri = $uri;
 		}
 		else

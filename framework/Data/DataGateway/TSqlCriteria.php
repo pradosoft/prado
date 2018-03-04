@@ -223,7 +223,7 @@ class TSqlCriteria extends \Prado\TComponent
 			foreach(explode(',', $value) as $orderBy)
 			{
 				$vs = explode(' ', trim($orderBy));
-				$orderBys[$vs[0]] = isset($vs[1])?$vs[1]:'asc';
+				$orderBys[$vs[0]] = isset($vs[1]) ? $vs[1] : 'asc';
 			}
 			$this->_ordersBy->copyFrom($orderBys);
 		}

@@ -40,7 +40,7 @@ class TTableHeaderCell extends TTableCell
 	{
 		parent::addAttributesToRender($writer);
 		if(($scope = $this->getScope()) !== TTableHeaderScope::NotSet)
-			$writer->addAttribute('scope', $scope === TTableHeaderScope::Row?'row':'col');
+			$writer->addAttribute('scope', $scope === TTableHeaderScope::Row ? 'row' : 'col');
 		if(($text = $this->getAbbreviatedText()) !== '')
 			$writer->addAttribute('abbr', $text);
 		if(($text = $this->getCategoryText()) !== '')

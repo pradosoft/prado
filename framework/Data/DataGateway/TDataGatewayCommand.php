@@ -270,7 +270,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		{
 			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
 			$criteria[] = $column . ' = :' . $key;
-			$bindings[$key] = isset($values[$key])?$values[$key]:$values[$i++];
+			$bindings[$key] = isset($values[$key]) ? $values[$key] : $values[$i++];
 		}
 		return [implode(' AND ', $criteria), $bindings];
 	}

@@ -105,7 +105,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->_backImageUrl === null?'':$this->_backImageUrl;
+		return $this->_backImageUrl === null ? '' : $this->_backImageUrl;
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getDirection()
 	{
-		return $this->_direction === null?TContentDirection::NotSet:$this->_direction;
+		return $this->_direction === null ? TContentDirection::NotSet : $this->_direction;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap === null?true:$this->_wrap;
+		return $this->_wrap === null ? true : $this->_wrap;
 	}
 
 	/**
@@ -155,7 +155,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign === null?THorizontalAlign::NotSet:$this->_horizontalAlign;
+		return $this->_horizontalAlign === null ? THorizontalAlign::NotSet : $this->_horizontalAlign;
 	}
 
 	/**
@@ -172,7 +172,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function getScrollBars()
 	{
-		return $this->_scrollBars === null?TScrollBars::None:$this->_scrollBars;
+		return $this->_scrollBars === null ? TScrollBars::None : $this->_scrollBars;
 	}
 
 	/**

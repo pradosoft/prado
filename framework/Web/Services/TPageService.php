@@ -256,7 +256,7 @@ class TPageService extends \Prado\TService
 						if($fileName === 0) // application config file
 						{
 							$appConfigFile = $application->getConfigurationFile();
-							$currentTimestamp[0] = $appConfigFile === null?0:@filemtime($appConfigFile);
+							$currentTimestamp[0] = $appConfigFile === null ? 0 : @filemtime($appConfigFile);
 							if($currentTimestamp[0] > $timestamp || ($timestamp > 0 && !$currentTimestamp[0]))
 								$configCached = false;
 						}
@@ -284,7 +284,7 @@ class TPageService extends \Prado\TService
 					$configPath .= DIRECTORY_SEPARATOR . $path;
 				}
 				$appConfigFile = $application->getConfigurationFile();
-				$currentTimestamp[0] = $appConfigFile === null?0:@filemtime($appConfigFile);
+				$currentTimestamp[0] = $appConfigFile === null ? 0 : @filemtime($appConfigFile);
 			}
 			if(!$configCached)
 			{

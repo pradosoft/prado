@@ -206,8 +206,8 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToString()
 	{
-		$version = empty($this->_version)?' version="1.0"':' version="' . $this->_version . '"';
-		$encoding = empty($this->_encoding)?'':' encoding="' . $this->_encoding . '"';
+		$version = empty($this->_version) ? ' version="1.0"' : ' version="' . $this->_version . '"';
+		$encoding = empty($this->_encoding) ? '' : ' encoding="' . $this->_encoding . '"';
 		return "<?xml{$version}{$encoding}?>\n" . $this->toString(0);
 	}
 

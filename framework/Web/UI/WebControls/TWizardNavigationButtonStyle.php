@@ -90,7 +90,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getImageUrl()
 	{
-		return $this->_imageUrl === null?'':$this->_imageUrl;
+		return $this->_imageUrl === null ? '' : $this->_imageUrl;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonText()
 	{
-		return $this->_buttonText === null?'':$this->_buttonText;
+		return $this->_buttonText === null ? '' : $this->_buttonText;
 	}
 
 	/**
@@ -122,7 +122,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType === null? TWizardNavigationButtonType::Button :$this->_buttonType;
+		return $this->_buttonType === null ? TWizardNavigationButtonType::Button : $this->_buttonType;
 	}
 
 	/**
