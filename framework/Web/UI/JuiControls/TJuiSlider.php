@@ -17,7 +17,6 @@ use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
-
 /**
  * TJuiSlider class.
  *
@@ -66,7 +65,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidget()
 	{
-	  return 'slider';
+		return 'slider';
 	}
 
 	/**
@@ -74,7 +73,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -83,10 +82,9 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}

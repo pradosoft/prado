@@ -68,11 +68,10 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getPdoType()
 	{
-		switch($this->getPHPType())
-		{
+		switch ($this->getPHPType()) {
 			case 'boolean': return PDO::PARAM_BOOL;
 			case 'integer': return PDO::PARAM_INT;
-			case 'string' : return PDO::PARAM_STR;
+			case 'string': return PDO::PARAM_STR;
 		}
 		return PDO::PARAM_STR;
 	}
@@ -151,8 +150,7 @@ class TDbTableColumn extends \Prado\TComponent
 
 	public function getMaxiumNumericConstraint()
 	{
-		if(($precision = $this->getNumericPrecision()) !== null)
-		{
+		if (($precision = $this->getNumericPrecision()) !== null) {
 			$scale = $this->getNumericScale();
 			return $scale === null ? pow(10, $precision) : pow(10, $precision - $scale);
 		}
@@ -198,4 +196,3 @@ class TDbTableColumn extends \Prado\TComponent
 		return false;
 	}
 }
-

@@ -40,8 +40,7 @@ class TSqlMapFifoCache extends TSqlMapCache
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
-		if($this->_keyList->getCount() > $this->_cacheSize)
-		{
+		if ($this->_keyList->getCount() > $this->_cacheSize) {
 			$oldestKey = $this->_keyList->removeAt(0);
 			$this->_cache->remove($oldestKey);
 		}

@@ -60,22 +60,19 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function init($xml)
 	{
-		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-		{
-			if(isset($xml['database']) && is_array($xml['database']))
-			{
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+			if (isset($xml['database']) && is_array($xml['database'])) {
 				$db = $this->getDbConnection();
-				foreach($xml['database'] as $name => $value)
+				foreach ($xml['database'] as $name => $value) {
 					$db->setSubProperty($name, $value);
+				}
 			}
-		}
-		else
-		{
-			if($prop = $xml->getElementByTagName('database'))
-			{
+		} else {
+			if ($prop = $xml->getElementByTagName('database')) {
 				$db = $this->getDbConnection();
-				foreach($prop->getAttributes() as $name => $value)
+				foreach ($prop->getAttributes() as $name => $value) {
 					$db->setSubproperty($name, $value);
+				}
 			}
 		}
 	}
@@ -107,12 +104,12 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn === null)
-		{
-			if($this->_connID !== '')
+		if ($this->_conn === null) {
+			if ($this->_connID !== '') {
 				$this->_conn = $this->findConnectionByID($this->getConnectionID());
-			else
+			} else {
 				$this->_conn = Prado::createComponent($this->getConnectionClass());
+			}
 		}
 		return $this->_conn;
 	}
@@ -145,8 +142,9 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function setConnectionClass($value)
 	{
-		if($this->_conn !== null)
+		if ($this->_conn !== null) {
 			throw new TConfigurationException('datasource_dbconnection_exists', $value);
+		}
 		$this->_connClass = $value;
 	}
 
@@ -159,11 +157,12 @@ class TDataSourceConfig extends \Prado\TModule
 	protected function findConnectionByID($id)
 	{
 		$conn = $this->getApplication()->getModule($id);
-		if($conn instanceof TDbConnection)
+		if ($conn instanceof TDbConnection) {
 			return $conn;
-		elseif($conn instanceof TDataSourceConfig)
+		} elseif ($conn instanceof TDataSourceConfig) {
 			return $conn->getDbConnection();
-		else
+		} else {
 			throw new TConfigurationException('datasource_dbconnection_invalid', $id);
+		}
 	}
 }

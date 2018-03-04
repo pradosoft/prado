@@ -37,20 +37,18 @@ abstract class TDbUser extends TUser
 	 */
 	public function getDbConnection()
 	{
-		if($this->_connection === null)
-		{
+		if ($this->_connection === null) {
 			$userManager = $this->getManager();
-			if($userManager instanceof TDbUserManager)
-			{
+			if ($userManager instanceof TDbUserManager) {
 				$connection = $userManager->getDbConnection();
-				if($connection instanceof TDbConnection)
-				{
+				if ($connection instanceof TDbConnection) {
 					$connection->setActive(true);
 					$this->_connection = $connection;
 				}
 			}
-			if($this->_connection === null)
+			if ($this->_connection === null) {
 				throw new TConfigurationException('dbuser_dbconnection_invalid');
+			}
 		}
 		return $this->_connection;
 	}

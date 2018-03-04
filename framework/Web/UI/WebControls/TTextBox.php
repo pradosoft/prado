@@ -109,23 +109,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if(($uid = $this->getUniqueID()) !== '')
+		if (($uid = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uid);
-		if(($textMode = $this->getTextMode()) === TTextBoxMode::MultiLine)
-		{
-			if(($rows = $this->getRows()) <= 0)
+		}
+		if (($textMode = $this->getTextMode()) === TTextBoxMode::MultiLine) {
+			if (($rows = $this->getRows()) <= 0) {
 				$rows = self::DEFAULT_ROWS;
-			if(($cols = $this->getColumns()) <= 0)
+			}
+			if (($cols = $this->getColumns()) <= 0) {
 				$cols = self::DEFAULT_COLUMNS;
+			}
 			$writer->addAttribute('rows', "$rows");
 			$writer->addAttribute('cols', "$cols");
-			if(!$this->getWrap())
+			if (!$this->getWrap()) {
 				$writer->addAttribute('wrap', 'off');
-		}
-		else
-		{
-			switch($textMode)
-			{
+			}
+		} else {
+			switch ($textMode) {
 				case TTextBoxMode::Password:
 					$writer->addAttribute('type', 'password');
 					break;
@@ -174,44 +174,47 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 					break;
 			}
 
-			if(($text = $this->getText()) !== '' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
+			if (($text = $this->getText()) !== '' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword())) {
 				$writer->addAttribute('value', $text);
+			}
 
-			if(($act = $this->getAutoCompleteType()) !== 'None')
-			{
-				if($act === 'Disabled')
+			if (($act = $this->getAutoCompleteType()) !== 'None') {
+				if ($act === 'Disabled') {
 					$writer->addAttribute('autocomplete', 'off');
-				elseif($act === 'Search')
+				} elseif ($act === 'Search') {
 					$writer->addAttribute('vcard_name', 'search');
-				elseif($act === 'HomeCountryRegion')
+				} elseif ($act === 'HomeCountryRegion') {
 					$writer->addAttribute('vcard_name', 'HomeCountry');
-				elseif($act === 'BusinessCountryRegion')
+				} elseif ($act === 'BusinessCountryRegion') {
 					$writer->addAttribute('vcard_name', 'BusinessCountry');
-				else
-				{
-					if(strpos($act, 'Business') === 0)
+				} else {
+					if (strpos($act, 'Business') === 0) {
 						$act = 'Business' . '.' . substr($act, 8);
-					elseif(strpos($act, 'Home') === 0)
+					} elseif (strpos($act, 'Home') === 0) {
 						$act = 'Home' . '.' . substr($act, 4);
+					}
 					$writer->addAttribute('vcard_name', 'vCard.' . $act);
 				}
 			}
 
-			if(($cols = $this->getColumns()) > 0)
+			if (($cols = $this->getColumns()) > 0) {
 				$writer->addAttribute('size', "$cols");
-			if(($maxLength = $this->getMaxLength()) > 0)
+			}
+			if (($maxLength = $this->getMaxLength()) > 0) {
 				$writer->addAttribute('maxlength', "$maxLength");
+			}
 		}
-		if($this->getReadOnly())
+		if ($this->getReadOnly()) {
 			$writer->addAttribute('readonly', 'readonly');
+		}
 		$isEnabled = $this->getEnabled(true);
-		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
+		if (!$isEnabled && $this->getEnabled()) {  // in this case parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
-		if($isEnabled
+		}
+		if ($isEnabled
 			&& $this->getEnableClientScript()
 			&& ($this->getAutoPostBack() || $textMode === TTextBoxMode::SingleLine)
-			&& $page->getClientSupportsJavaScript())
-		{
+			&& $page->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 		parent::addAttributesToRender($writer);
@@ -262,15 +265,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function loadPostData($key, $values)
 	{
 		$value = $values[$key];
-		if($this->getAutoTrim())
+		if ($this->getAutoTrim()) {
 			$value = trim($value);
-		if(!$this->getReadOnly() && $this->getText() !== $value)
-		{
+		}
+		if (!$this->getReadOnly() && $this->getText() !== $value) {
 			$this->setText($value);
 			return $this->_dataChanged = true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -332,8 +335,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onTextChanged(null);
 	}
 
@@ -343,8 +347,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getTextMode() === 'MultiLine')
+		if ($this->getTextMode() === 'MultiLine') {
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
+		}
 	}
 
 	/**
@@ -355,8 +360,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if($this->getTextMode() === 'MultiLine')
+		if ($this->getTextMode() === 'MultiLine') {
 			$writer->write("\n");
+		}
 	}
 
 	/**
@@ -562,8 +568,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getSafeText()
 	{
-		if($this->_safeText === null)
+		if ($this->_safeText === null) {
 			$this->_safeText = $this->getSafeTextParser()->purify($this->getText());
+		}
 		return $this->_safeText;
 	}
 
@@ -572,8 +579,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function getSafeTextParser()
 	{
-		if(!self::$_safeTextParser)
+		if (!self::$_safeTextParser) {
 			self::$_safeTextParser = new \HTMLPurifier($this->getConfig());
+		}
 		return self::$_safeTextParser;
 	}
 
@@ -634,7 +642,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)
 	{
-	  $this->setViewState('Config', $value, null);
+		$this->setViewState('Config', $value, null);
 	}
 
 	/**
@@ -642,7 +650,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getConfig()
 	{
-	  $config = $this->getViewState('Config', null);
-	  return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
+		$config = $this->getViewState('Config', null);
+		return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
 	}
 }

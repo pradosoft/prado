@@ -44,8 +44,9 @@ class TSqlMapApplicationCache implements ICache
 	protected function getKeyListId()
 	{
 		$id = 'keyList';
-		if ($this->_cacheModel instanceof TSqlMapCacheModel)
-				$id .= '_' . $this->_cacheModel->getId();
+		if ($this->_cacheModel instanceof TSqlMapCacheModel) {
+			$id .= '_' . $this->_cacheModel->getId();
+		}
 		return $id;
 	}
 	/**
@@ -54,8 +55,7 @@ class TSqlMapApplicationCache implements ICache
 	 */
 	protected function getKeyList()
 	{
-		if (($keyList = $this->getCache()->get($this->getKeyListId())) === false)
-		{
+		if (($keyList = $this->getCache()->get($this->getKeyListId())) === false) {
 			$keyList = new TList();
 			$this->getCache()->set($this->getKeyListId(), $keyList);
 		}
@@ -85,8 +85,7 @@ class TSqlMapApplicationCache implements ICache
 	{
 		$keyList = $this->getKeyList();
 		$cache = $this->getCache();
-		foreach ($keyList as $key)
-		{
+		foreach ($keyList as $key) {
 			$cache->delete($key);
 		}
 		// Remove the old keylist
@@ -99,12 +98,10 @@ class TSqlMapApplicationCache implements ICache
 	public function get($key)
 	{
 		$result = $this->getCache()->get($key);
-		if ($result === false)
-		{
+		if ($result === false) {
 			// if the key has not been found in cache (e.g expired), remove from keylist
 			$keyList = $this->getKeyList();
-			if ($keyList->contains($key))
-			{
+			if ($keyList->contains($key)) {
 				$keyList->remove($key);
 				$this->setKeyList($keyList);
 			}
@@ -121,8 +118,7 @@ class TSqlMapApplicationCache implements ICache
 	{
 		$this->getCache()->set($key, $value, $expire, $dependency);
 		$keyList = $this->getKeyList();
-		if (!$keyList->contains($key))
-		{
+		if (!$keyList->contains($key)) {
 			$keyList->add($key);
 			$this->setKeyList($keyList);
 		}

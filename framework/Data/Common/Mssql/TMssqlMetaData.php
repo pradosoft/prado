@@ -18,7 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-
 /**
  * TMssqlMetaData loads MSSQL database table and column information.
  *
@@ -84,27 +83,32 @@ class TMssqlMetaData extends TDbMetaData
 									WHERE t.table_name = c.table_name
 										AND t.table_name = :table
 EOD;
-		if($schemaName !== null)
+		if ($schemaName !== null) {
 			$sql .= ' AND t.table_schema = :schema';
-		if($catalogName !== null)
+		}
+		if ($catalogName !== null) {
 			$sql .= ' AND t.table_catalog = :catalog';
+		}
 
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		if($schemaName !== null)
+		if ($schemaName !== null) {
 			$command->bindValue(':schema', $schemaName);
-		if($catalogName !== null)
+		}
+		if ($catalogName !== null) {
 			$command->bindValue(':catalog', $catalogName);
+		}
 
 		$tableInfo = null;
-		foreach($command->query() as $col)
-		{
-			if($tableInfo === null)
+		foreach ($command->query() as $col) {
+			if ($tableInfo === null) {
 				$tableInfo = $this->createNewTableInfo($col);
+			}
 			$this->processColumn($tableInfo, $col);
 		}
-		if($tableInfo === null)
+		if ($tableInfo === null) {
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
+		}
 		return $tableInfo;
 	}
 
@@ -116,12 +120,15 @@ EOD;
 	{
 		//remove possible delimiters
 		$result = explode('.', preg_replace('/\[|\]|"/', '', $table));
-		if(count($result) === 1)
+		if (count($result) === 1) {
 			return [null,null,$result[0]];
-		if(count($result) === 2)
+		}
+		if (count($result) === 2) {
 			return [null,$result[0],$result[1]];
-		if(count($result) > 2)
+		}
+		if (count($result) > 2) {
 			return [$result[0],$result[1],$result[2]];
+		}
 	}
 
 	/**
@@ -135,25 +142,33 @@ EOD;
 		$info['ColumnName'] = "[$columnId]"; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = intval($col['ORDINAL_POSITION']) - 1; //zero-based index
-		if($col['IS_NULLABLE'] !== 'NO')
+		if ($col['IS_NULLABLE'] !== 'NO') {
 			$info['AllowNull'] = true;
-		if($col['COLUMN_DEFAULT'] !== null)
+		}
+		if ($col['COLUMN_DEFAULT'] !== null) {
 			$info['DefaultValue'] = $col['COLUMN_DEFAULT'];
+		}
 
-		if(in_array($columnId, $tableInfo->getPrimaryKeys()))
+		if (in_array($columnId, $tableInfo->getPrimaryKeys())) {
 			$info['IsPrimaryKey'] = true;
-		if($this->isForeignKeyColumn($columnId, $tableInfo))
+		}
+		if ($this->isForeignKeyColumn($columnId, $tableInfo)) {
 			$info['IsForeignKey'] = true;
+		}
 
-		if($col['IsIdentity'] === '1')
+		if ($col['IsIdentity'] === '1') {
 			$info['AutoIncrement'] = true;
+		}
 		$info['DbType'] = $col['DATA_TYPE'];
-		if($col['CHARACTER_MAXIMUM_LENGTH'] !== null)
+		if ($col['CHARACTER_MAXIMUM_LENGTH'] !== null) {
 			$info['ColumnSize'] = intval($col['CHARACTER_MAXIMUM_LENGTH']);
-		if($col['NUMERIC_PRECISION'] !== null)
+		}
+		if ($col['NUMERIC_PRECISION'] !== null) {
 			$info['NumericPrecision'] = intval($col['NUMERIC_PRECISION']);
-		if($col['NUMERIC_SCALE'] !== null)
+		}
+		if ($col['NUMERIC_SCALE'] !== null) {
 			$info['NumericScale'] = intval($col['NUMERIC_SCALE']);
+		}
 		$tableInfo->Columns[$columnId] = new TMssqlTableColumn($info);
 	}
 
@@ -167,8 +182,9 @@ EOD;
 		$info['CatalogName'] = $col['TABLE_CATALOG'];
 		$info['SchemaName'] = $col['TABLE_SCHEMA'];
 		$info['TableName'] = $col['TABLE_NAME'];
-		if($col['TABLE_TYPE'] === 'VIEW')
+		if ($col['TABLE_TYPE'] === 'VIEW') {
 			$info['IsView'] = true;
+		}
 		list($primary, $foreign) = $this->getConstraintKeys($col);
 		$class = $this->getTableInfoClass();
 		return new $class($info, $primary, $foreign);
@@ -196,8 +212,9 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$primary = [];
-		foreach($command->query()->readAll() as $field)
+		foreach ($command->query()->readAll() as $field) {
 			$primary[] = $field['field_name'];
+		}
 		$foreign = $this->getForeignConstraints($col);
 		return [$primary,$foreign];
 	}
@@ -240,8 +257,7 @@ EOD;
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$fkeys = [];
 		$catalogSchema = "[{$col['TABLE_CATALOG']}].[{$col['TABLE_SCHEMA']}]";
-		foreach($command->query() as $info)
-		{
+		foreach ($command->query() as $info) {
 			$fkeys[$info['FK_CONSTRAINT_NAME']]['keys'][$info['FK_COLUMN_NAME']] = $info['UQ_COLUMN_NAME'];
 			$fkeys[$info['FK_CONSTRAINT_NAME']]['table'] = $info['UQ_TABLE_NAME'];
 		}
@@ -255,23 +271,23 @@ EOD;
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)
 	{
-		foreach($tableInfo->getForeignKeys() as $fk)
-		{
-			if(in_array($columnId, array_keys($fk['keys'])))
+		foreach ($tableInfo->getForeignKeys() as $fk) {
+			if (in_array($columnId, array_keys($fk['keys']))) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-		/**
-		 * Returns all table names in the database.
-		 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
-		 * If not empty, the returned table names will be prefixed with the schema name.
-		 * @return array all table names in the database.
-		 */
+	/**
+	 * Returns all table names in the database.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
 	public function findTableNames($schema = 'dbo')
 	{
-				$condition = "TABLE_TYPE='BASE TABLE'";
+		$condition = "TABLE_TYPE='BASE TABLE'";
 		$sql = <<<EOD
 SELECT TABLE_NAME, TABLE_SCHEMA FROM [INFORMATION_SCHEMA].[TABLES]
 WHERE TABLE_SCHEMA=:schema AND $condition
@@ -280,15 +296,14 @@ EOD;
 		$command->bindParam(":schema", $schema);
 		$rows = $command->queryAll();
 		$names = [];
-		foreach ($rows as $row)
-		{
-			if ($schema == self::DEFAULT_SCHEMA)
+		foreach ($rows as $row) {
+			if ($schema == self::DEFAULT_SCHEMA) {
 				$names[] = $row['TABLE_NAME'];
-			else
+			} else {
 				$names[] = $schema . '.' . $row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'];
+			}
 		}
 
 		return $names;
 	}
 }
-

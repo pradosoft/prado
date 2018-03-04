@@ -43,8 +43,9 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	 */
 	protected function setFunction($name, $code)
 	{
-		if(!TJavaScript::isJsLiteral($code))
+		if (!TJavaScript::isJsLiteral($code)) {
 			$code = TJavaScript::quoteJsLiteral($this->ensureFunction($code));
+		}
 		$this->setOption($name, $code);
 	}
 
@@ -53,10 +54,11 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	 */
 	protected function getOption($name)
 	{
-		if ($this->_options)
+		if ($this->_options) {
 			return $this->_options->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -73,8 +75,9 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	 */
 	public function getOptions()
 	{
-		if (!$this->_options)
+		if (!$this->_options) {
 			$this->_options = new TMap;
+		}
 		return $this->_options;
 	}
 

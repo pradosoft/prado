@@ -112,14 +112,10 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function prepare()
 	{
-		if($this->_statement == null)
-		{
-			try
-			{
+		if ($this->_statement == null) {
+			try {
 				$this->_statement = $this->getConnection()->getPdoInstance()->prepare($this->getText());
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				throw new TDbException('dbcommand_prepare_failed', $e->getMessage(), $this->getText());
 			}
 		}
@@ -149,12 +145,13 @@ class TDbCommand extends \Prado\TComponent
 	public function bindParameter($name, &$value, $dataType = null, $length = null)
 	{
 		$this->prepare();
-		if($dataType === null)
+		if ($dataType === null) {
 			$this->_statement->bindParam($name, $value);
-		elseif($length === null)
+		} elseif ($length === null) {
 			$this->_statement->bindParam($name, $value, $dataType);
-		else
+		} else {
 			$this->_statement->bindParam($name, $value, $dataType, $length);
+		}
 	}
 
 	/**
@@ -170,10 +167,11 @@ class TDbCommand extends \Prado\TComponent
 	public function bindValue($name, $value, $dataType = null)
 	{
 		$this->prepare();
-		if($dataType === null)
+		if ($dataType === null) {
 			$this->_statement->bindValue($name, $value);
-		else
+		} else {
 			$this->_statement->bindValue($name, $value, $dataType);
+		}
 	}
 
 	/**
@@ -185,20 +183,16 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function execute()
 	{
-		try
-		{
+		try {
 			// Do not trace because it will remain even in Performance mode
 			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
-			{
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 				return $this->_statement->rowCount();
-			}
-			else
+			} else {
 				return $this->getConnection()->getPdoInstance()->exec($this->getText());
-		}
-		catch(Exception $e)
-		{
+			}
+		} catch (Exception $e) {
 			throw new TDbException('dbcommand_execute_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
@@ -222,17 +216,15 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function query()
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
+			} else {
 				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
 			return new TDbDataReader($this);
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
@@ -247,19 +239,17 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function queryRow($fetchAssociative = true)
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
+			} else {
 				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
 			$result = $this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 			$this->_statement->closeCursor();
 			return $result;
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
@@ -273,22 +263,21 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function queryScalar()
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
+			} else {
 				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
 			$result = $this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
-			if(is_resource($result) && get_resource_type($result) === 'stream')
+			if (is_resource($result) && get_resource_type($result) === 'stream') {
 				return stream_get_contents($result);
-			else
+			} else {
 				return $result;
-		}
-		catch(Exception $e)
-		{
+			}
+		} catch (Exception $e) {
 			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
@@ -305,9 +294,9 @@ class TDbCommand extends \Prado\TComponent
 	{
 		$rows = $this->query()->readAll();
 		$column = [];
-		foreach($rows as $row)
+		foreach ($rows as $row) {
 			$column[] = current($row);
+		}
 		return $column;
 	}
 }
-

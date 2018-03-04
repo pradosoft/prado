@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TSqliteCommandBuilder provides specifics methods to create limit/offset query commands
  * for Sqlite database.
@@ -36,14 +35,12 @@ class TSqliteCommandBuilder extends TDbCommandBuilder
 	{
 		$limit = $limit !== null ? intval($limit) : -1;
 		$offset = $offset !== null ? intval($offset) : -1;
-		if($limit > 0 || $offset > 0)
-		{
+		if ($limit > 0 || $offset > 0) {
 			$limitStr = ' LIMIT ' . $limit;
 			$offsetStr = $offset >= 0 ? ' OFFSET ' . $offset : '';
 			return $sql . $limitStr . $offsetStr;
-		}
-		else
+		} else {
 			return $sql;
+		}
 	}
 }
-

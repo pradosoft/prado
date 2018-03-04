@@ -55,8 +55,9 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function __construct($data = null)
 	{
-		if($data !== null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 	}
 
 	/**
@@ -75,17 +76,15 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
+		if (is_array($data) || ($data instanceof \Traversable)) {
 			$this->clear();
-			foreach($data as $item)
-			{
+			foreach ($data as $item) {
 				$this->_d[] = $item;
 				++$this->_c;
 			}
-		}
-		elseif($data !== null)
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('stack_data_not_iterable');
+		}
 	}
 
 	/**
@@ -114,10 +113,11 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function peek()
 	{
-		if($this->_c === 0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('stack_empty');
-		else
+		} else {
 			return $this->_d[$this->_c - 1];
+		}
 	}
 
 	/**
@@ -127,10 +127,9 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function pop()
 	{
-		if($this->_c === 0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('stack_empty');
-		else
-		{
+		} else {
 			--$this->_c;
 			return array_pop($this->_d);
 		}

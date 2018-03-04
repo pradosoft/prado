@@ -139,10 +139,11 @@ class CultureInfo
 	public function __get($name)
 	{
 		$getProperty = 'get' . $name;
-		if(in_array($getProperty, $this->properties))
+		if (in_array($getProperty, $this->properties)) {
 			return $this->$getProperty();
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' does not exists.');
+		}
 	}
 
 	/**
@@ -152,10 +153,11 @@ class CultureInfo
 	public function __set($name, $value)
 	{
 		$setProperty = 'set' . $name;
-		if(in_array($setProperty, $this->properties))
+		if (in_array($setProperty, $this->properties)) {
 			$this->$setProperty($value);
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' can not be set.');
+		}
 	}
 
 
@@ -171,8 +173,9 @@ class CultureInfo
 	{
 		$this->properties = get_class_methods($this);
 
-		if(empty($culture))
+		if (empty($culture)) {
 			$culture = 'en';
+		}
 
 		$this->dataDir = $this->dataDir();
 		$this->dataFileExt = $this->fileExt();
@@ -209,8 +212,9 @@ class CultureInfo
 	public static function getInstance($culture)
 	{
 		static $instances = [];
-		if(!isset($instances[$culture]))
+		if (!isset($instances[$culture])) {
 			$instances[$culture] = new CultureInfo($culture);
+		}
 		return $instances[$culture];
 	}
 
@@ -222,8 +226,9 @@ class CultureInfo
 	 */
 	public static function validCulture($culture)
 	{
-		if(preg_match('/^[_\\w]+$/', $culture))
+		if (preg_match('/^[_\\w]+$/', $culture)) {
 			return is_file(self::dataDir() . $culture . self::fileExt());
+		}
 
 		return false;
 	}
@@ -235,10 +240,10 @@ class CultureInfo
 	 */
 	protected function setCulture($culture)
 	{
-		if(!empty($culture))
-		{
-			if (!preg_match('/^[_\\w]+$/', $culture))
+		if (!empty($culture)) {
+			if (!preg_match('/^[_\\w]+$/', $culture)) {
 				throw new Exception('Invalid culture supplied: ' . $culture);
+			}
 		}
 
 		$this->culture = $culture;
@@ -255,28 +260,27 @@ class CultureInfo
 
 		$files = [$current_part];
 
-		for($i = 1, $k = count($file_parts); $i < $k; ++$i)
-		{
+		for ($i = 1, $k = count($file_parts); $i < $k; ++$i) {
 			$current_part .= '_' . $file_parts[$i];
 			$files[] = $current_part;
 		}
 
-		foreach($files as $file)
-		{
+		foreach ($files as $file) {
 			$filename = $this->dataDir . $file . $this->dataFileExt;
 
-			if(is_file($filename) == false)
+			if (is_file($filename) == false) {
 				throw new Exception('Data file for "' . $file . '" was not found.');
+			}
 
-			if(in_array($filename, $this->dataFiles) === false)
-			{
+			if (in_array($filename, $this->dataFiles) === false) {
 				array_unshift($this->dataFiles, $file);
 
 				$data = &$this->getData($filename);
 				$this->data[$file] = &$data;
 
-				if(isset($data['__ALIAS']))
+				if (isset($data['__ALIAS'])) {
 					$this->loadCultureData($data['__ALIAS'][0]);
+				}
 				unset($data);
 			}
 		}
@@ -294,8 +298,7 @@ class CultureInfo
 		static $data = [];
 		static $files = [];
 
-		if(!in_array($filename, $files))
-		{
+		if (!in_array($filename, $files)) {
 			$data[$filename] = unserialize(file_get_contents($filename));
 			$files[] = $filename;
 		}
@@ -320,16 +323,15 @@ class CultureInfo
 	protected function findInfo($path = '/', $merge = false)
 	{
 		$result = [];
-		foreach($this->dataFiles as $section)
-		{
+		foreach ($this->dataFiles as $section) {
 			$info = $this->searchArray($this->data[$section], $path);
 
-			if($info)
-			{
-				if($merge)
+			if ($info) {
+				if ($merge) {
 					$result = array_merge($info, $result);
-				else
+				} else {
 					return $info;
+				}
 			}
 		}
 
@@ -350,13 +352,13 @@ class CultureInfo
 
 		$array = $info;
 
-		for($i = 0, $k = count($index); $i < $k; ++$i)
-		{
+		for ($i = 0, $k = count($index); $i < $k; ++$i) {
 			$value = $index[$i];
-			if($i < $k - 1 && isset($array[$value]))
+			if ($i < $k - 1 && isset($array[$value])) {
 				$array = $array[$value];
-			elseif ($i == $k - 1 && isset($array[$value]))
+			} elseif ($i == $k - 1 && isset($array[$value])) {
 				return $array[$value];
+			}
 		}
 	}
 
@@ -377,8 +379,7 @@ class CultureInfo
 	 */
 	public function getDateTimeFormat()
 	{
-		if($this->dateTimeFormat === null)
-		{
+		if ($this->dateTimeFormat === null) {
 			$calendar = $this->getCalendar();
 			$info = $this->findInfo("calendar/{$calendar}", true);
 			$this->setDateTimeFormat(new DateTimeFormatInfo($info));
@@ -418,10 +419,11 @@ class CultureInfo
 		$reg = substr($this->culture, 3, 2);
 		$language = $this->findInfo("Languages/{$lang}");
 		$region = $this->findInfo("Countries/{$reg}");
-		if($region)
+		if ($region) {
 			return $language[0] . ' (' . $region[0] . ')';
-		else
+		} else {
 			return $language[0];
+		}
 	}
 
 	/**
@@ -437,14 +439,16 @@ class CultureInfo
 		$culture = $this->getInvariantCulture();
 
 		$language = $culture->findInfo("Languages/{$lang}");
-		if(count($language) == 0)
+		if (count($language) == 0) {
 			return $this->culture;
+		}
 
 		$region = $culture->findInfo("Countries/{$reg}");
-		if($region)
+		if ($region) {
 			return $language[0] . ' (' . $region[0] . ')';
-		else
+		} else {
 			return $language[0];
+		}
 	}
 
 	/**
@@ -457,8 +461,9 @@ class CultureInfo
 	public static function getInvariantCulture()
 	{
 		static $invariant;
-		if($invariant === null)
+		if ($invariant === null) {
 			$invariant = new CultureInfo();
+		}
 		return $invariant;
 	}
 
@@ -480,8 +485,7 @@ class CultureInfo
 	 */
 	public function getNumberFormat()
 	{
-		if($this->numberFormat === null)
-		{
+		if ($this->numberFormat === null) {
 			$elements = $this->findInfo('NumberElements');
 			$patterns = $this->findInfo('NumberPatterns');
 			$currencies = $this->getCurrencies();
@@ -510,11 +514,12 @@ class CultureInfo
 	 */
 	public function getParent()
 	{
-		if(strlen($this->culture) == 2)
+		if (strlen($this->culture) == 2) {
 			return $this->getInvariantCulture();
+		}
 
 		$lang = substr($this->culture, 0, 2);
-			return new CultureInfo($lang);
+		return new CultureInfo($lang);
 	}
 
 	/**
@@ -535,32 +540,30 @@ class CultureInfo
 		$neutral = [];
 		$specific = [];
 
-		while (false !== ($entry = $dir->read()))
-		{
-			if(is_file($dataDir . $entry)
+		while (false !== ($entry = $dir->read())) {
+			if (is_file($dataDir . $entry)
 				&& substr($entry, -4) == $dataExt
-				&& $entry != 'root' . $dataExt)
-			{
+				&& $entry != 'root' . $dataExt) {
 				$culture = substr($entry, 0, -4);
-				if(strlen($culture) == 2)
+				if (strlen($culture) == 2) {
 					$neutral[] = $culture;
-				else
+				} else {
 					$specific[] = $culture;
+				}
 			}
 		}
 		$dir->close();
 
-		switch($type)
-		{
-			case CultureInfo::ALL :
+		switch ($type) {
+			case CultureInfo::ALL:
 				$all = array_merge($neutral, $specific);
 				sort($all);
 				return $all;
 				break;
-			case CultureInfo::NEUTRAL :
+			case CultureInfo::NEUTRAL:
 				return $neutral;
 				break;
-			case CultureInfo::SPECIFIC :
+			case CultureInfo::SPECIFIC:
 				return $specific;
 				break;
 		}
@@ -575,12 +578,12 @@ class CultureInfo
 	 */
 	private function simplify($array)
 	{
-		for($i = 0, $k = count($array); $i < $k; ++$i)
-		{
+		for ($i = 0, $k = count($array); $i < $k; ++$i) {
 			$key = key($array);
-			if(is_array($array[$key])
-				&& count($array[$key]) == 1)
+			if (is_array($array[$key])
+				&& count($array[$key]) == 1) {
 				$array[$key] = $array[$key][0];
+			}
 			next($array);
 		}
 		return $array;
@@ -631,4 +634,3 @@ class CultureInfo
 		return $this->simplify($this->findInfo('zoneStrings', true));
 	}
 }
-

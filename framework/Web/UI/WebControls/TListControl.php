@@ -131,19 +131,18 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if($this->getIsMultiSelect())
+		if ($this->getIsMultiSelect()) {
 			$writer->addAttribute('multiple', 'multiple');
-		if($this->getEnabled(true))
-		{
-			if($this->getAutoPostBack()
+		}
+		if ($this->getEnabled(true)) {
+			if ($this->getAutoPostBack()
 				&& $this->getEnableClientScript()
-				&& $page->getClientSupportsJavaScript())
-			{
+				&& $page->getClientSupportsJavaScript()) {
 				$this->renderClientControlScript($writer);
 			}
-		}
-		elseif($this->getEnabled())
+		} elseif ($this->getEnabled()) {
 			$writer->addAttribute('disabled', 'disabled');
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -187,11 +186,9 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function addParsedObject($object)
 	{
 		// Do not add items from template if items are loaded from viewstate
-		if(!$this->_stateLoaded && ($object instanceof TListItem))
-		{
+		if (!$this->_stateLoaded && ($object instanceof TListItem)) {
 			$index = $this->getItems()->add($object);
-			if(($this->_cachedSelectedValue !== null && $this->_cachedSelectedValue === $object->getValue()) || ($this->_cachedSelectedIndex === $index))
-			{
+			if (($this->_cachedSelectedValue !== null && $this->_cachedSelectedValue === $object->getValue()) || ($this->_cachedSelectedIndex === $index)) {
 				$object->setSelected(true);
 				$this->_cachedSelectedValue = null;
 				$this->_cachedSelectedIndex = -1;
@@ -208,29 +205,29 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	protected function performDataBinding($data)
 	{
 		$items = $this->getItems();
-		if(!$this->getAppendDataBoundItems())
+		if (!$this->getAppendDataBoundItems()) {
 			$items->clear();
+		}
 		$textField = $this->getDataTextField();
-		if($textField === '')
+		if ($textField === '') {
 			$textField = 0;
+		}
 		$valueField = $this->getDataValueField();
-		if($valueField === '')
+		if ($valueField === '') {
 			$valueField = 1;
+		}
 		$textFormat = $this->getDataTextFormatString();
 		$groupField = $this->getDataGroupField();
-		foreach($data as $key => $object)
-		{
+		foreach ($data as $key => $object) {
 			$item = $items->createListItem();
-			if(is_array($object) || is_object($object))
-			{
+			if (is_array($object) || is_object($object)) {
 				$text = TDataFieldAccessor::getDataFieldValue($object, $textField);
 				$value = TDataFieldAccessor::getDataFieldValue($object, $valueField);
 				$item->setValue($value);
-				if($groupField !== '')
+				if ($groupField !== '') {
 					$item->setAttribute('Group', TDataFieldAccessor::getDataFieldValue($object, $groupField));
-			}
-			else
-			{
+				}
+			} else {
 				$text = $object;
 				$item->setValue("$key");
 			}
@@ -238,23 +235,16 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		}
 		// SelectedValue or SelectedIndex may be set before databinding
 		// so we make them be effective now
-		if($this->_cachedSelectedValue !== null)
-		{
+		if ($this->_cachedSelectedValue !== null) {
 			$this->setSelectedValue($this->_cachedSelectedValue);
 			$this->resetCachedSelections();
-		}
-		elseif($this->_cachedSelectedIndex !== -1)
-		{
+		} elseif ($this->_cachedSelectedIndex !== -1) {
 			$this->setSelectedIndex($this->_cachedSelectedIndex);
 			$this->resetCachedSelections();
-		}
-		elseif($this->_cachedSelectedValues !== null)
-		{
+		} elseif ($this->_cachedSelectedValues !== null) {
 			$this->setSelectedValues($this->_cachedSelectedValues);
 			$this->resetCachedSelections();
-		}
-		elseif($this->_cachedSelectedIndices !== null)
-		{
+		} elseif ($this->_cachedSelectedIndices !== null) {
 			$this->setSelectedIndices($this->_cachedSelectedIndices);
 			$this->resetCachedSelections();
 		}
@@ -285,10 +275,11 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function saveState()
 	{
 		parent::saveState();
-		if($this->_items)
+		if ($this->_items) {
 			$this->setViewState('Items', $this->_items->saveState(), null);
-		else
+		} else {
 			$this->clearViewState('Items');
+		}
 	}
 
 	/**
@@ -299,8 +290,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		parent::loadState();
 		$this->_stateLoaded = true;
-		if(!$this->getIsDataBound())
-		{
+		if (!$this->getIsDataBound()) {
 			$this->_items = $this->createListItemCollection();
 			$this->_items->loadState($this->getViewState('Items', null));
 		}
@@ -457,8 +447,9 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getItems()
 	{
-		if(!$this->_items)
+		if (!$this->_items) {
 			$this->_items = $this->createListItemCollection();
+		}
 		return $this->_items;
 	}
 
@@ -467,12 +458,13 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getSelectedIndex()
 	{
-		if($this->_items)
-		{
+		if ($this->_items) {
 			$n = $this->_items->getCount();
-			for($i = 0;$i < $n;++$i)
-				if($this->_items->itemAt($i)->getSelected())
+			for ($i = 0;$i < $n;++$i) {
+				if ($this->_items->itemAt($i)->getSelected()) {
 					return $i;
+				}
+			}
 		}
 		return -1;
 	}
@@ -482,17 +474,19 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setSelectedIndex($index)
 	{
-		if(($index = TPropertyValue::ensureInteger($index)) < 0)
+		if (($index = TPropertyValue::ensureInteger($index)) < 0) {
 			$index = -1;
-		if($this->_items)
-		{
+		}
+		if ($this->_items) {
 			$this->clearSelection();
-			if($index >= 0 && $index < $this->_items->getCount())
+			if ($index >= 0 && $index < $this->_items->getCount()) {
 				$this->_items->itemAt($index)->setSelected(true);
+			}
 		}
 		$this->_cachedSelectedIndex = $index;
-		if($this->getAdapter() instanceof IListControlAdapter)
+		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedIndex($index);
+		}
 	}
 
 	/**
@@ -501,12 +495,13 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function getSelectedIndices()
 	{
 		$selections = [];
-		if($this->_items)
-		{
+		if ($this->_items) {
 			$n = $this->_items->getCount();
-			for($i = 0;$i < $n;++$i)
-				if($this->_items->itemAt($i)->getSelected())
+			for ($i = 0;$i < $n;++$i) {
+				if ($this->_items->itemAt($i)->getSelected()) {
 					$selections[] = $i;
+				}
+			}
 		}
 		return $selections;
 	}
@@ -516,25 +511,24 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setSelectedIndices($indices)
 	{
-		if($this->getIsMultiSelect())
-		{
-			if($this->_items)
-			{
+		if ($this->getIsMultiSelect()) {
+			if ($this->_items) {
 				$this->clearSelection();
 				$n = $this->_items->getCount();
-				foreach($indices as $index)
-				{
-					if($index >= 0 && $index < $n)
+				foreach ($indices as $index) {
+					if ($index >= 0 && $index < $n) {
 						$this->_items->itemAt($index)->setSelected(true);
+					}
 				}
 			}
 			$this->_cachedSelectedIndices = $indices;
-		}
-		else
+		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
+		}
 
-		if($this->getAdapter() instanceof IListControlAdapter)
+		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedIndices($indices);
+		}
 	}
 
 	/**
@@ -542,10 +536,11 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function getSelectedItem()
 	{
-		if(($index = $this->getSelectedIndex()) >= 0)
+		if (($index = $this->getSelectedIndex()) >= 0) {
 			return $this->_items->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -591,21 +586,20 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setSelectedValue($value)
 	{
-		if($this->_items)
-		{
-			if($value === null)
+		if ($this->_items) {
+			if ($value === null) {
 				$this->clearSelection();
-			elseif(($item = $this->_items->findItemByValue($value)) !== null)
-			{
+			} elseif (($item = $this->_items->findItemByValue($value)) !== null) {
 				$this->clearSelection();
 				$item->setSelected(true);
-			}
-			else
+			} else {
 				$this->clearSelection();
+			}
 		}
 		$this->_cachedSelectedValue = $value;
-		if($this->getAdapter() instanceof IListControlAdapter)
+		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedValue($value);
+		}
 	}
 
 
@@ -615,12 +609,11 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function getSelectedValues()
 	{
 		$values = [];
-		if($this->_items)
-		{
-			foreach($this->_items as $item)
-			{
-				if($item->getSelected())
+		if ($this->_items) {
+			foreach ($this->_items as $item) {
+				if ($item->getSelected()) {
 					$values[] = $item->getValue();
+				}
 			}
 		}
 		return $values;
@@ -631,27 +624,27 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setSelectedValues($values)
 	{
-		if($this->getIsMultiSelect())
-		{
-			if($this->_items)
-			{
+		if ($this->getIsMultiSelect()) {
+			if ($this->_items) {
 				$this->clearSelection();
 				$lookup = [];
-				foreach($this->_items as $item)
+				foreach ($this->_items as $item) {
 					$lookup[$item->getValue()] = $item;
-				foreach($values as $value)
-				{
-					if(isset($lookup["$value"]))
+				}
+				foreach ($values as $value) {
+					if (isset($lookup["$value"])) {
 						$lookup["$value"]->setSelected(true);
+					}
 				}
 			}
 			$this->_cachedSelectedValues = $values;
-		}
-		else
+		} else {
 			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
+		}
 
-		if($this->getAdapter() instanceof IListControlAdapter)
+		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->setSelectedValues($values);
+		}
 	}
 
 	/**
@@ -675,14 +668,15 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function clearSelection()
 	{
-		if($this->_items)
-		{
-			foreach($this->_items as $item)
+		if ($this->_items) {
+			foreach ($this->_items as $item) {
 				$item->setSelected(false);
+			}
 		}
 
-		if($this->getAdapter() instanceof IListControlAdapter)
+		if ($this->getAdapter() instanceof IListControlAdapter) {
 			$this->getAdapter()->clearSelection();
+		}
 	}
 
 	/**
@@ -771,10 +765,10 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$text = $this->getPromptText();
 		$value = $this->getPromptValue();
-		if($value === '')
+		if ($value === '') {
 			$value = $text;
-		if($value !== '')
-		{
+		}
+		if ($value !== '') {
 			$writer->addAttribute('value', $value);
 			$writer->renderBeginTag('option');
 			$writer->write(THttpUtility::htmlEncode($text));
@@ -792,44 +786,37 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$this->renderPrompt($writer);
 
-		if($this->_items)
-		{
+		if ($this->_items) {
 			$writer->writeLine();
 			$previousGroup = null;
-			foreach($this->_items as $item)
-			{
-				if($item->getEnabled())
-				{
-					if($item->getHasAttributes())
-					{
+			foreach ($this->_items as $item) {
+				if ($item->getEnabled()) {
+					if ($item->getHasAttributes()) {
 						$group = $item->getAttributes()->remove('Group');
-						if($group !== $previousGroup)
-						{
-							if($previousGroup !== null)
-							{
+						if ($group !== $previousGroup) {
+							if ($previousGroup !== null) {
 								$writer->renderEndTag();
 								$writer->writeLine();
 								$previousGroup = null;
 							}
-							if($group !== null)
-							{
+							if ($group !== null) {
 								$writer->addAttribute('label', $group);
 								$writer->renderBeginTag('optgroup');
 								$writer->writeLine();
 								$previousGroup = $group;
 							}
 						}
-						foreach($item->getAttributes() as $name => $value)
+						foreach ($item->getAttributes() as $name => $value) {
 							$writer->addAttribute($name, $value);
-					}
-					elseif($previousGroup !== null)
-					{
+						}
+					} elseif ($previousGroup !== null) {
 						$writer->renderEndTag();
 						$writer->writeLine();
 						$previousGroup = null;
 					}
-					if($item->getSelected())
+					if ($item->getSelected()) {
 						$writer->addAttribute('selected', 'selected');
+					}
 					$writer->addAttribute('value', $item->getValue());
 					$writer->renderBeginTag('option');
 					$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -837,8 +824,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 					$writer->writeLine();
 				}
 			}
-			if($previousGroup !== null)
-			{
+			if ($previousGroup !== null) {
 				$writer->renderEndTag();
 				$writer->writeLine();
 			}
@@ -859,23 +845,20 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	protected function formatDataValue($formatString, $value)
 	{
-		if($formatString === '')
+		if ($formatString === '') {
 			return TPropertyValue::ensureString($value);
-		elseif($formatString[0] === '#')
-		{
+		} elseif ($formatString[0] === '#') {
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
-			try
-			{
-				if(eval("\$result=$expression;") === false)
+			try {
+				if (eval("\$result=$expression;") === false) {
 					throw new Exception('');
+				}
 				return $result;
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				throw new TInvalidDataValueException('listcontrol_expression_invalid', get_class($this), $expression, $e->getMessage());
 			}
-		}
-		else
+		} else {
 			return sprintf($formatString, $value);
+		}
 	}
 }

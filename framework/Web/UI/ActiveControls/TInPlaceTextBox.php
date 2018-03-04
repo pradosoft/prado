@@ -16,7 +16,6 @@ use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TWebControl;
 
-
 /**
  * TInPlaceTextBox Class
  *
@@ -82,8 +81,9 @@ class TInPlaceTextBox extends TActiveTextBox
 	{
 		$value = TPropertyValue::ensureBoolean($value);
 		$this->setViewState('DisplayTextBox', $value, false);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->callClientFunction('setDisplayTextBox', $value);
+		}
 	}
 
 	/**
@@ -128,9 +128,12 @@ class TInPlaceTextBox extends TActiveTextBox
 	protected function getExternalControlID()
 	{
 		$extID = $this->getEditTriggerControlID();
-		if($extID === null) return '';
-		if(($control = $this->findControl($extID)) !== null)
+		if ($extID === null) {
+			return '';
+		}
+		if (($control = $this->findControl($extID)) !== null) {
 			return $control->getClientID();
+		}
 		return $extID;
 	}
 
@@ -141,12 +144,12 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function setText($value)
 	{
-		if(TTextBox::getText() === $value)
+		if (TTextBox::getText() === $value) {
 			return;
+		}
 
 		TTextBox::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$client->update($this->getLabelClientID(), $value);
 			$client->setValue($this, $value);
@@ -158,15 +161,15 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * @param boolean $value value
 	 * @since 3.1.2
 	 */
-	public function setReadOnly ($value)
+	public function setReadOnly($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		if(TTextBox::getReadOnly() === $value)
+		if (TTextBox::getReadOnly() === $value) {
 			return;
+		}
 
 		TTextBox::setReadOnly($value);
-		if ($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->callClientFunction('setReadOnly', $value);
 		}
 	}
@@ -185,10 +188,11 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	public function renderContents($writer)
 	{
-		if(($text = $this->getText()) === '')
+		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write($text);
+		}
 	}
 
 	/**
@@ -209,8 +213,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	public function onCallback($param)
 	{
 		$action = $param->getCallbackParameter();
-		if(is_array($action) && $action[0] === '__InlineEditor_loadExternalText__')
-		{
+		if (is_array($action) && $action[0] === '__InlineEditor_loadExternalText__') {
 			$parameter = new TCallbackEventParameter($this->getResponse(), $action[1]);
 			$this->onLoadingText($parameter);
 		}
@@ -229,19 +232,17 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
 		$options['Columns'] = $this->getColumns();
-		if($this->getTextMode() === 'MultiLine')
-		{
+		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
 			$options['Wrap'] = $this->getWrap() == false ? '' : true;
-		}
-		else
-		{
+		} else {
 			$length = $this->getMaxLength();
 			$options['MaxLength'] = $length > 0 ? $length : '';
 		}
 
-		if($this->hasEventHandler('OnLoadingText'))
+		if ($this->hasEventHandler('OnLoadingText')) {
 			$options['LoadTextOnEdit'] = true;
+		}
 
 		$options['ReadOnly'] = $this->getReadOnly();
 		return $options;
@@ -275,7 +276,9 @@ class TInPlaceTextBox extends TActiveTextBox
 		TWebControl::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getLabelClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**

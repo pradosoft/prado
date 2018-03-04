@@ -45,4 +45,3 @@ class TShellApplication extends TApplication
 		$this->initApplication();
 	}
 }
-

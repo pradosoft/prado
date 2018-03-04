@@ -125,10 +125,11 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function loadFromFile($file)
 	{
-		if(($str = @file_get_contents($file)) !== false)
+		if (($str = @file_get_contents($file)) !== false) {
 			return $this->loadFromString($str);
-		else
+		} else {
 			throw new TIOException('xmldocument_file_read_failed', $file);
+		}
 	}
 
 	/**
@@ -141,8 +142,9 @@ class TXmlDocument extends TXmlElement
 	{
 		// TODO: since PHP 5.1, we can get parsing errors and throw them as exception
 		$doc = new \DOMDocument();
-		if($doc->loadXML($string) === false)
+		if ($doc->loadXML($string) === false) {
 			return false;
+		}
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->xmlVersion);
@@ -156,29 +158,30 @@ class TXmlDocument extends TXmlElement
 		$attributes->clear();
 
 		static $bSimpleXml;
-		if($bSimpleXml === null)
+		if ($bSimpleXml === null) {
 			$bSimpleXml = (boolean)function_exists('simplexml_load_string');
+		}
 
-		if($bSimpleXml)
-		{
+		if ($bSimpleXml) {
 			$simpleDoc = simplexml_load_string($string);
 			$docNamespaces = $simpleDoc->getDocNamespaces(false);
 			$simpleDoc = null;
-			foreach($docNamespaces as $prefix => $uri)
-			{
-				if($prefix === '')
+			foreach ($docNamespaces as $prefix => $uri) {
+				if ($prefix === '') {
 					$attributes->add('xmlns', $uri);
-				else
+				} else {
 					$attributes->add('xmlns:' . $prefix, $uri);
+				}
 			}
 		}
 
-		foreach($element->attributes as $name => $attr)
+		foreach ($element->attributes as $name => $attr) {
 			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
-		foreach($element->childNodes as $child)
-		{
-			if($child instanceof \DOMElement)
+		}
+		foreach ($element->childNodes as $child) {
+			if ($child instanceof \DOMElement) {
 				$elements->add($this->buildElement($child));
+			}
 		}
 
 		return true;
@@ -191,13 +194,12 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToFile($file)
 	{
-		if(($fw = fopen($file, 'w')) !== false)
-		{
+		if (($fw = fopen($file, 'w')) !== false) {
 			fwrite($fw, $this->saveToString());
 			fclose($fw);
-		}
-		else
+		} else {
 			throw new TIOException('xmldocument_file_write_failed', $file);
+		}
 	}
 
 	/**
@@ -240,13 +242,14 @@ class TXmlDocument extends TXmlElement
 	{
 		$element = new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
-		foreach($node->attributes as $name => $attr)
+		foreach ($node->attributes as $name => $attr) {
 			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
+		}
 
-		foreach($node->childNodes as $child)
-		{
-			if($child instanceof \DOMElement)
+		foreach ($node->childNodes as $child) {
+			if ($child instanceof \DOMElement) {
 				$element->getElements()->add($this->buildElement($child));
+			}
 		}
 		return $element;
 	}

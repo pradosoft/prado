@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TMultiView;
 
-
 /**
  * TActiveMultiView class.
  *
@@ -68,13 +67,14 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	 */
 	public function render($writer)
 	{
-		if($this->getHasPreRendered()) {
+		if ($this->getHasPreRendered()) {
 			$this->renderMultiView($writer);
-			if($this->getActiveControl()->canUpdateClientSide())
+			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer);
-		}
-		else
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
+		}
 	}
 
 	/**
@@ -97,8 +97,9 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	public function setActiveViewIndex($value)
 	{
 		parent::setActiveViewIndex($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
@@ -108,7 +109,8 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	public function setActiveView($value)
 	{
 		parent::setActiveView($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
+		}
 	}
 }

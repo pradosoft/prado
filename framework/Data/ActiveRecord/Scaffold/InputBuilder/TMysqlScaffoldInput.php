@@ -12,14 +12,12 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
-
 class TMysqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
 		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
-		switch($dbtype)
-		{
+		switch ($dbtype) {
 			case 'date':
 				return $this->createDateControl($container, $column, $record);
 			case 'blob': case 'tinyblob': case 'mediumblob': case 'longblob':
@@ -31,7 +29,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 				return $this->createIntegerControl($container, $column, $record);
 			case 'decimal': case 'double': case 'float':
 				return $this->createFloatControl($container, $column, $record);
-			case 'time' :
+			case 'time':
 				return $this->createTimeControl($container, $column, $record);
 			case 'datetime': case 'timestamp':
 				return $this->createDateTimeControl($container, $column, $record);
@@ -47,8 +45,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 	protected function getControlValue($container, $column, $record)
 	{
 		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
-		switch($dbtype)
-		{
+		switch ($dbtype) {
 			case 'date':
 				return $container->findControl(self::DEFAULT_ID)->getDate();
 			case 'year':
@@ -70,18 +67,19 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function createIntegerControl($container, $column, $record)
 	{
-		if($column->getColumnSize() == 1)
+		if ($column->getColumnSize() == 1) {
 			return $this->createBooleanControl($container, $column, $record);
-		else
+		} else {
 			parent::createIntegerControl($container, $column, $record);
+		}
 	}
 
 	protected function getIntBooleanValue($container, $column, $record)
 	{
-		if($column->getColumnSize() == 1)
+		if ($column->getColumnSize() == 1) {
 			return (int)$container->findControl(self::DEFAULT_ID)->getChecked();
-		else
+		} else {
 			return $this->getDefaultControlValue($container, $column, $record);
+		}
 	}
 }
-

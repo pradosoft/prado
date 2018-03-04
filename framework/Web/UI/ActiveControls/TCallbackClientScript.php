@@ -98,15 +98,16 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function callClientFunction($function, $params = [])
 	{
-		if(!is_array($params))
+		if (!is_array($params)) {
 			$params = [$params];
+		}
 
-		if(count($params) > 0)
-		{
-			if ($params[0] instanceof ISurroundable)
+		if (count($params) > 0) {
+			if ($params[0] instanceof ISurroundable) {
 				$params[0] = $params[0]->getSurroundingTagID();
-			elseif($params[0] instanceof TControl)
+			} elseif ($params[0] instanceof TControl) {
 				$params[0] = $params[0]->getClientID();
+			}
 		}
 		$this->_actions->add([$function => $params]);
 	}
@@ -119,13 +120,15 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function jQuery($element, $method, $params = [])
 	{
-		if ($element instanceof ISurroundable)
+		if ($element instanceof ISurroundable) {
 			$element = $element->getSurroundingTagID();
-		elseif($element instanceof TControl)
+		} elseif ($element instanceof TControl) {
 			$element = $element->getClientID();
+		}
 
-		if(!is_array($params))
+		if (!is_array($params)) {
 			$params = [$params];
+		}
 
 		$this->_actions->add(['Prado.Element.j' => [$element, $method, $params]]);
 	}
@@ -158,26 +161,41 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function select($control, $method = 'Value', $value = null, $type = null)
 	{
-		$method = TPropertyValue::ensureEnum($method,
-				'Value', 'Index', 'Clear', 'Indices', 'Values', 'All', 'Invert');
+		$method = TPropertyValue::ensureEnum(
+			$method,
+				'Value',
+			'Index',
+			'Clear',
+			'Indices',
+			'Values',
+			'All',
+			'Invert'
+		);
 		$type = ($type === null) ? $this->getSelectionControlType($control) : $type;
 		$total = $this->getSelectionControlIsListType($control) ? $control->getItemCount() : 1;
 
 		// pass the ID to avoid getting the surrounding elements (ISurroundable)
-		if($control instanceof TControl)
+		if ($control instanceof TControl) {
 			$control = $control->getClientID();
+		}
 
-		$this->callClientFunction('Prado.Element.select',
-				[$control, $type . $method, $value, $total]);
+		$this->callClientFunction(
+			'Prado.Element.select',
+				[$control, $type . $method, $value, $total]
+		);
 	}
 
 	private function getSelectionControlType($control)
 	{
-		if(is_string($control)) return 'check';
-		if($control instanceof TCheckBoxList)
+		if (is_string($control)) {
 			return 'check';
-		if($control instanceof TCheckBox)
+		}
+		if ($control instanceof TCheckBoxList) {
 			return 'check';
+		}
+		if ($control instanceof TCheckBox) {
+			return 'check';
+		}
 		return 'select';
 	}
 
@@ -225,8 +243,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	public function setAttribute($control, $name, $value)
 	{
 		// Attributes should be applied on Surrounding tag, except for 'disabled' attribute
-		if ($control instanceof ISurroundable && strtolower($name) !== 'disabled')
+		if ($control instanceof ISurroundable && strtolower($name) !== 'disabled') {
 			$control = $control->getSurroundingTagID();
+		}
 		$this->callClientFunction('Prado.Element.setAttribute', [$control, $name, $value]);
 	}
 
@@ -238,24 +257,25 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	public function setListItems($control, $items)
 	{
 		$options = [];
-		if($control instanceof TListControl)
-		{
+		if ($control instanceof TListControl) {
 			$promptText = $control->getPromptText();
 			$promptValue = $control->getPromptValue();
 
-			if($promptValue === '')
+			if ($promptValue === '') {
 				$promptValue = $promptText;
+			}
 
-			if($promptValue !== '')
+			if ($promptValue !== '') {
 				$options[] = [$promptText, $promptValue];
+			}
 		}
 
-		foreach($items as $item)
-		{
-			if($item->getHasAttributes())
+		foreach ($items as $item) {
+			if ($item->getHasAttributes()) {
 				$options[] = [$item->getText(),$item->getValue(), $item->getAttributes()->itemAt('Group')];
-			else
+			} else {
 				$options[] = [$item->getText(),$item->getValue()];
+			}
 		}
 		$this->callClientFunction('Prado.Element.setOptions', [$control, $options]);
 	}
@@ -286,8 +306,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function toggle($element, $effect = null, $options = [])
 	{
-		switch(strtolower($effect))
-		{
+		switch (strtolower($effect)) {
 			case 'fade':
 				$method = 'fadeToggle';
 				break;
@@ -297,8 +316,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			default:
 				$method = 'toggle';
 				// avoid fancy effect by default
-				if(!array_key_exists('duration', $options))
+				if (!array_key_exists('duration', $options)) {
 					$options['duration'] = 0;
+				}
 				break;
 		}
 		$this->jQuery($element, $method, $options);
@@ -431,18 +451,15 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	protected function replace($element, $content, $self)
 	{
-		if($content instanceof TControl)
-		{
+		if ($content instanceof TControl) {
 			$boundary = $this->getRenderedContentBoundary($content);
 			$content = null;
-		}
-		elseif($content instanceof THtmlWriter)
-		{
+		} elseif ($content instanceof THtmlWriter) {
 			$boundary = $this->getResponseContentBoundary($content);
 			$content = null;
-		}
-		else
+		} else {
 			$boundary = null;
+		}
 
 		$this->callClientFunction('Prado.Element.replace', [$element, $content, $boundary, $self]);
 	}
@@ -465,8 +482,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function evaluateScript($writer)
 	{
-		if($writer instanceof THtmlWriter)
-		{
+		if ($writer instanceof THtmlWriter) {
 			$boundary = $this->getResponseContentBoundary($writer);
 			$content = null;
 		} else {
@@ -485,12 +501,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function appendScriptBlock($content)
 	{
-		if($content instanceof TControl)
-		{
+		if ($content instanceof TControl) {
 			$boundary = $this->getRenderedContentBoundary($content);
-		}
-		elseif($content instanceof THtmlWriter)
-		{
+		} elseif ($content instanceof THtmlWriter) {
 			$boundary = $this->getResponseContentBoundary($content);
 		}
 
@@ -519,10 +532,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	private function getResponseContentBoundary($html)
 	{
-		if($html instanceof THtmlWriter)
-		{
-			if($html->getWriter() instanceof TCallbackResponseWriter)
+		if ($html instanceof THtmlWriter) {
+			if ($html->getWriter() instanceof TCallbackResponseWriter) {
 				return $html->getWriter()->getBoundary();
+			}
 		}
 		return null;
 	}
@@ -832,6 +845,4 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 		$options['percent'] = 0;
 		$this->scale($element, $options);
 	}
-
 }
-

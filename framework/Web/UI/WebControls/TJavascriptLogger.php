@@ -90,4 +90,3 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 		$writer->write("{$usage} {$link} {$info}");
 	}
 }
-

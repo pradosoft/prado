@@ -59,76 +59,84 @@ class TEtcdCache extends TCache
   /**
    * @var string the etcd host
    */
-  protected $_host = 'localhost';
+	protected $_host = 'localhost';
 
-  /**
-   * @var integer the etcd port
-   */
-  protected $_port = 2379;
+	/**
+	 * @var integer the etcd port
+	 */
+	protected $_port = 2379;
 
-  /**
-   * @var string the directory to store values in
-   */
-  protected $_dir = 'pradocache';
+	/**
+	 * @var string the directory to store values in
+	 */
+	protected $_dir = 'pradocache';
 
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement $config configuration for this module, can be null
-    * @throws TConfigurationException if cURL extension is not installed
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if cURL extension is not installed
+	 */
 	public function init($config)
 	{
-		if (!function_exists('curl_version')) throw new TConfigurationException('curl_extension_required');
+		if (!function_exists('curl_version')) {
+			throw new TConfigurationException('curl_extension_required');
+		}
 		parent::init($config);
 	}
 
-  /**
-   * Gets the host the etcd instance is running on, defaults to 'localhost'.
-   * @return string the etcd host
-   */
-	public function getHost() {
-	  return $this->_host;
+	/**
+	 * Gets the host the etcd instance is running on, defaults to 'localhost'.
+	 * @return string the etcd host
+	 */
+	public function getHost()
+	{
+		return $this->_host;
 	}
 
 	/**
 	 * Sets the host the etcd instance is running on.
 	 * @param string $value the etcd host
 	 */
-	public function setHost($value) {
-	$this->_host = TPropertyValue::ensureString($value);
+	public function setHost($value)
+	{
+		$this->_host = TPropertyValue::ensureString($value);
 	}
 
-  /**
-   * Gets the port the etcd instance is running on, defaults to 2379.
-   * @return integer the etcd port
-   */
-	public function getPort() {
-	  return $this->_port;
+	/**
+	 * Gets the port the etcd instance is running on, defaults to 2379.
+	 * @return integer the etcd port
+	 */
+	public function getPort()
+	{
+		return $this->_port;
 	}
 
 	/**
 	 * Sets the port the etcd instance is running on.
 	 * @param integer $value the etcd port
 	 */
-	public function setPort($value) {
-	$this->_port = TPropertyValue::ensureInteger($value);
+	public function setPort($value)
+	{
+		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
-  /**
-   * Sets the directory to store values in, defaults to 'pradocache'.
-   * @return string the directory to store values in
-   */
-	public function getDir() {
-	  return $this->_dir;
+	/**
+	 * Sets the directory to store values in, defaults to 'pradocache'.
+	 * @return string the directory to store values in
+	 */
+	public function getDir()
+	{
+		return $this->_dir;
 	}
 
 	/**
 	 * Gets the directory to store values in.
 	 * @param string $value the directory to store values in
 	 */
-	public function setDir($value) {
-	$this->_dir = TPropertyValue::ensureString($value);
+	public function setDir($value)
+	{
+		$this->_dir = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -140,7 +148,7 @@ class TEtcdCache extends TCache
 	protected function getValue($key)
 	{
 		$result = $this->request('GET', $this->_dir . '/' . $key);
-	return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
+		return property_exists($result, 'errorCode') ? false : unserialize($result->node->value);
 	}
 
 	/**
@@ -154,10 +162,12 @@ class TEtcdCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-	$value = ['value' => serialize($value)];
-	if ($expire > 0) $value['ttl'] = $expire;
+		$value = ['value' => serialize($value)];
+		if ($expire > 0) {
+			$value['ttl'] = $expire;
+		}
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
-	return !property_exists($result, 'errorCode');
+		return !property_exists($result, 'errorCode');
 	}
 
 	/**
@@ -171,10 +181,12 @@ class TEtcdCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-	$value = ['value' => serialize($value), 'prevExist' => 'false'];
-	if ($expire > 0) $value['ttl'] = $expire;
+		$value = ['value' => serialize($value), 'prevExist' => 'false'];
+		if ($expire > 0) {
+			$value['ttl'] = $expire;
+		}
 		$result = $this->request('PUT', $this->_dir . '/' . $key, $value);
-	return !property_exists($result, 'errorCode');
+		return !property_exists($result, 'errorCode');
 	}
 
 	/**
@@ -186,7 +198,7 @@ class TEtcdCache extends TCache
 	protected function deleteValue($key)
 	{
 		$this->request('DELETE', $this->_dir . '/' . $key);
-	return true;
+		return true;
 	}
 
 	/**
@@ -195,30 +207,30 @@ class TEtcdCache extends TCache
 	 */
 	public function flush()
 	{
-	 $this->request('DELETE', $this->_dir . '?recursive=true');
+		$this->request('DELETE', $this->_dir . '?recursive=true');
 	}
 
-  /**
-   * This method does the actual cURL request by generating the method specific
-   * URL, setting the cURL options and adding additional request parameters.
-   * The etcd always returns a JSON string which is decoded and returned to
-   * the calling method.
-   * @param string $method the HTTP method for the request (GET,PUT,DELETE)
-   * @param string $key the the key to perform the action on (includes the directory)
-   * @param array $value the additional post data to send with the request
-   * @return \stdClass the response from the etcd instance
-   */
-  protected function request($method, $key, $value = []) {
-	$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
-	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-	curl_setopt($curl, CURLOPT_HEADER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
-	$response = curl_exec($curl);
-	curl_close($curl);
-	return json_decode($response);
-  }
-
+	/**
+	 * This method does the actual cURL request by generating the method specific
+	 * URL, setting the cURL options and adding additional request parameters.
+	 * The etcd always returns a JSON string which is decoded and returned to
+	 * the calling method.
+	 * @param string $method the HTTP method for the request (GET,PUT,DELETE)
+	 * @param string $key the the key to perform the action on (includes the directory)
+	 * @param array $value the additional post data to send with the request
+	 * @return \stdClass the response from the etcd instance
+	 */
+	protected function request($method, $key, $value = [])
+	{
+		$curl = curl_init("http://{$this->_host}:{$this->_port}/v2/keys/{$key}");
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+		curl_setopt($curl, CURLOPT_HEADER, false);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($value));
+		$response = curl_exec($curl);
+		curl_close($curl);
+		return json_decode($response);
+	}
 }

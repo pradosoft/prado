@@ -151,22 +151,23 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value = $this->getValidationValue($this->getValidationTarget())) === '')
+		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
-
-		if(($controlToCompare = $this->getControlToCompare()) !== '')
-		{
-			if(($control2 = $this->findControl($controlToCompare)) === null)
-				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
-			if(($value2 = $this->getValidationValue($control2)) === '')
-				return false;
 		}
-		else
+
+		if (($controlToCompare = $this->getControlToCompare()) !== '') {
+			if (($control2 = $this->findControl($controlToCompare)) === null) {
+				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
+			}
+			if (($value2 = $this->getValidationValue($control2)) === '') {
+				return false;
+			}
+		} else {
 			$value2 = $this->getValueToCompare();
+		}
 
 		$values = $this->getComparisonValues($value, $value2);
-		switch($this->getOperator())
-		{
+		switch ($this->getOperator()) {
 			case TValidationCompareOperator::Equal:
 				return $values[0] == $values[1];
 			case TValidationCompareOperator::NotEqual:
@@ -192,21 +193,19 @@ class TCompareValidator extends TBaseValidator
 	 */
 	protected function getComparisonValues($value1, $value2)
 	{
-		switch($this->getDataType())
-		{
+		switch ($this->getDataType()) {
 			case TValidationDataType::Integer:
 				return [intval($value1), intval($value2)];
 			case TValidationDataType::Float:
 				return [floatval($value1), floatval($value2)];
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
-				if($dateFormat !== '')
-				{
+				if ($dateFormat !== '') {
 					$formatter = new TSimpleDateFormatter($dateFormat);
 					return [$formatter->parse($value1), $formatter->parse($value2)];
-				}
-				else
+				} else {
 					return [strtotime($value1), strtotime($value2)];
+				}
 		}
 		return [$value1, $value2];
 	}
@@ -218,18 +217,21 @@ class TCompareValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		if(($name = $this->getControlToCompare()) !== '')
-		{
-			if(($control = $this->findControl($name)) !== null)
+		if (($name = $this->getControlToCompare()) !== '') {
+			if (($control = $this->findControl($name)) !== null) {
 				$options['ControlToCompare'] = $control->getClientID();
+			}
 		}
-		if(($value = $this->getValueToCompare()) !== '')
+		if (($value = $this->getValueToCompare()) !== '') {
 			$options['ValueToCompare'] = $value;
-		if(($operator = $this->getOperator()) !== TValidationCompareOperator::Equal)
+		}
+		if (($operator = $this->getOperator()) !== TValidationCompareOperator::Equal) {
 			$options['Operator'] = $operator;
+		}
 		$options['DataType'] = $this->getDataType();
-		if(($dateFormat = $this->getDateFormat()) !== '')
+		if (($dateFormat = $this->getDateFormat()) !== '') {
 			$options['DateFormat'] = $dateFormat;
+		}
 		return $options;
 	}
 }

@@ -14,7 +14,6 @@ namespace Prado\Data\ActiveRecord;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Prado;
 
-
 /**
  * Search criteria for Active Record.
  *
@@ -36,6 +35,4 @@ use Prado\Prado;
  */
 class TActiveRecordCriteria extends TSqlCriteria
 {
-
 }
-

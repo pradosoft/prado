@@ -57,10 +57,12 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_d === [])
+		if ($this->_d === []) {
 			$exprops[] = "\0Prado\Collections\TMap\0_d";
-		if ($this->_r === false)
+		}
+		if ($this->_r === false) {
 			$exprops[] = "\0Prado\Collections\TMap\0_r";
+		}
 	}
 
 	/**
@@ -72,8 +74,9 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
-		if($data !== null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 		$this->setReadOnly($readOnly);
 	}
 
@@ -149,10 +152,11 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function add($key, $value)
 	{
-		if(!$this->_r)
+		if (!$this->_r) {
 			$this->_d[$key] = $value;
-		else
+		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -163,19 +167,17 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function remove($key)
 	{
-		if(!$this->_r)
-		{
-			if(isset($this->_d[$key]) || array_key_exists($key, $this->_d))
-			{
+		if (!$this->_r) {
+			if (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) {
 				$value = $this->_d[$key];
 				unset($this->_d[$key]);
 				return $value;
-			}
-			else
+			} else {
 				return null;
-		}
-		else
+			}
+		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -183,8 +185,9 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function clear()
 	{
-		foreach(array_keys($this->_d) as $key)
+		foreach (array_keys($this->_d) as $key) {
 			$this->remove($key);
+		}
 	}
 
 	/**
@@ -212,15 +215,16 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || $data instanceof Traversable)
-		{
-			if($this->getCount() > 0)
+		if (is_array($data) || $data instanceof Traversable) {
+			if ($this->getCount() > 0) {
 				$this->clear();
-			foreach($data as $key => $value)
+			}
+			foreach ($data as $key => $value) {
 				$this->add($key, $value);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**
@@ -231,13 +235,13 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function mergeWith($data)
 	{
-		if(is_array($data) || $data instanceof Traversable)
-		{
-			foreach($data as $key => $value)
+		if (is_array($data) || $data instanceof Traversable) {
+			foreach ($data as $key => $value) {
 				$this->add($key, $value);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**

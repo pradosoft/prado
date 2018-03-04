@@ -273,8 +273,9 @@ class TCallbackClientSide extends TClientSideOptions
 	 */
 	public function setPostBackTarget($value)
 	{
-		if($value instanceof TControl)
+		if ($value instanceof TControl) {
 			$value = $value->getUniqueID();
+		}
 		$this->setOption('EventTarget', $value);
 	}
 
@@ -294,4 +295,3 @@ class TCallbackClientSide extends TClientSideOptions
 		$this->setOption('EventParameter', $value);
 	}
 }
-

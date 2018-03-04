@@ -45,5 +45,6 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-interface IClassBehavior extends IBaseBehavior {
+interface IClassBehavior extends IBaseBehavior
+{
 }

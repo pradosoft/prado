@@ -23,7 +23,8 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-interface IBaseBehavior {
+interface IBaseBehavior
+{
 	/**
 	 * Attaches the behavior object to the component.
 	 * @param CComponent $component the component that this behavior is to be attached to.

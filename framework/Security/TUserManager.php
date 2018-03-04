@@ -111,15 +111,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	public function init($config)
 	{
 		$this->loadUserData($config);
-		if($this->_userFile !== null)
-		{
-			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-			{
+		if ($this->_userFile !== null) {
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$userFile = include $this->_userFile;
 				$this->loadUserDataFromPhp($userFile);
-			}
-			else
-			{
+			} else {
 				$dom = new TXmlDocument;
 				$dom->loadFromFile($this->_userFile);
 				$this->loadUserDataFromXml($dom);
@@ -134,10 +130,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private function loadUserData($config)
 	{
-		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			$this->loadUserDataFromPhp($config);
-		else
+		} else {
 			$this->loadUserDataFromXml($config);
+		}
 	}
 
 	/**
@@ -146,34 +143,29 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private function loadUserDataFromPhp($config)
 	{
-		if(isset($config['users']) && is_array($config['users']))
-		{
-			foreach($config['users'] as $user)
-			{
+		if (isset($config['users']) && is_array($config['users'])) {
+			foreach ($config['users'] as $user) {
 				$name = trim(strtolower(isset($user['name']) ? $user['name'] : ''));
 				$password = isset($user['password']) ? $user['password'] : '';
 				$this->_users[$name] = $password;
 				$roles = isset($user['roles']) ? $user['roles'] : '';
-				if($roles !== '')
-				{
-					foreach(explode(',', $roles) as $role)
-					{
-						if(($role = trim($role)) !== '')
+				if ($roles !== '') {
+					foreach (explode(',', $roles) as $role) {
+						if (($role = trim($role)) !== '') {
 							$this->_roles[$name][] = $role;
+						}
 					}
 				}
 			}
 		}
-		if(isset($config['roles']) && is_array($config['roles']))
-		{
-			foreach($config['roles'] as $role)
-			{
+		if (isset($config['roles']) && is_array($config['roles'])) {
+			foreach ($config['roles'] as $role) {
 				$name = isset($role['name']) ? $role['name'] : '';
 				$users = isset($role['users']) ? $role['users'] : '';
-				foreach(explode(',', $users) as $user)
-				{
-					if(($user = trim($user)) !== '')
+				foreach (explode(',', $users) as $user) {
+					if (($user = trim($user)) !== '') {
 						$this->_roles[strtolower($user)][] = $name;
+					}
 				}
 			}
 		}
@@ -185,25 +177,22 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private function loadUserDataFromXml($xmlNode)
 	{
-		foreach($xmlNode->getElementsByTagName('user') as $node)
-		{
+		foreach ($xmlNode->getElementsByTagName('user') as $node) {
 			$name = trim(strtolower($node->getAttribute('name')));
 			$this->_users[$name] = $node->getAttribute('password');
-			if(($roles = trim($node->getAttribute('roles'))) !== '')
-			{
-				foreach(explode(',', $roles) as $role)
-				{
-					if(($role = trim($role)) !== '')
+			if (($roles = trim($node->getAttribute('roles'))) !== '') {
+				foreach (explode(',', $roles) as $role) {
+					if (($role = trim($role)) !== '') {
 						$this->_roles[$name][] = $role;
+					}
 				}
 			}
 		}
-		foreach($xmlNode->getElementsByTagName('role') as $node)
-		{
-			foreach(explode(',', $node->getAttribute('users')) as $user)
-			{
-				if(($user = trim($user)) !== '')
+		foreach ($xmlNode->getElementsByTagName('role') as $node) {
+			foreach (explode(',', $node->getAttribute('users')) as $user) {
+				if (($user = trim($user)) !== '') {
 					$this->_roles[strtolower($user)][] = $node->getAttribute('name');
+				}
 			}
 		}
 	}
@@ -248,10 +237,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setUserFile($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
-		elseif(($this->_userFile = Prado::getPathOfNamespace($value, self::USER_FILE_EXT)) === null || !is_file($this->_userFile))
+		} elseif (($this->_userFile = Prado::getPathOfNamespace($value, self::USER_FILE_EXT)) === null || !is_file($this->_userFile)) {
 			throw new TConfigurationException('usermanager_userfile_invalid', $value);
+		}
 	}
 
 	/**
@@ -294,10 +284,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function validateUser($username, $password)
 	{
-		if($this->_passwordMode === TUserManagerPasswordMode::MD5)
+		if ($this->_passwordMode === TUserManagerPasswordMode::MD5) {
 			$password = md5($password);
-		elseif($this->_passwordMode === TUserManagerPasswordMode::SHA1)
+		} elseif ($this->_passwordMode === TUserManagerPasswordMode::SHA1) {
 			$password = sha1($password);
+		}
 		$username = strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username] === $password);
 	}
@@ -309,26 +300,23 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getUser($username = null)
 	{
-		if($username === null)
-		{
+		if ($username === null) {
 			$user = new TUser($this);
 			$user->setIsGuest(true);
 			return $user;
-		}
-		else
-		{
+		} else {
 			$username = strtolower($username);
-			if(isset($this->_users[$username]))
-			{
+			if (isset($this->_users[$username])) {
 				$user = new TUser($this);
 				$user->setName($username);
 				$user->setIsGuest(false);
-				if(isset($this->_roles[$username]))
+				if (isset($this->_roles[$username])) {
 					$user->setRoles($this->_roles[$username]);
+				}
 				return $user;
-			}
-			else
+			} else {
 				return null;
+			}
 		}
 	}
 
@@ -340,14 +328,13 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getUserFromCookie($cookie)
 	{
-		if(($data = $cookie->getValue()) !== '')
-		{
+		if (($data = $cookie->getValue()) !== '') {
 			$data = unserialize($data);
-			if(is_array($data) && count($data) === 2)
-			{
+			if (is_array($data) && count($data) === 2) {
 				list($username, $token) = $data;
-				if(isset($this->_users[$username]) && $token === md5($username . $this->_users[$username]))
+				if (isset($this->_users[$username]) && $token === md5($username . $this->_users[$username])) {
 					return $this->getUser($username);
+				}
 			}
 		}
 		return null;
@@ -362,8 +349,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	{
 		$user = $this->getApplication()->getUser();
 		$username = strtolower($user->getName());
-		if(isset($this->_users[$username]))
-		{
+		if (isset($this->_users[$username])) {
 			$data = [$username,md5($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}

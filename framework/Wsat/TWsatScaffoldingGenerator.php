@@ -13,7 +13,6 @@ namespace Prado\Wsat;
 
 use Prado\Prado;
 
-
 class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 {
 
@@ -49,8 +48,7 @@ class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 	// <editor-fold defaultstate="collapsed" desc="Page Generation">
 	public function generate($tableName, $viewType)
 	{
-		switch ($viewType)
-		{
+		switch ($viewType) {
 			default:
 			case self::LIST_TYPE:
 				$unitName = "list" . ucfirst($tableName);
@@ -90,22 +88,18 @@ EOD;
 	{
 		$code = "";
 		$tableInfo = $this->_dbMetaData->getTableInfo($tableName);
-		switch ($type)
-		{
+		switch ($type) {
 			case self::LIST_TYPE:
 				break;
 			case self::ADD_TYPE:
-				foreach ($tableInfo->getColumns() as $colField => $colMetadata)
-				{
-					if (!$colMetadata->IsPrimaryKey && !$colMetadata->IsForeignKey)
-					{
+				foreach ($tableInfo->getColumns() as $colField => $colMetadata) {
+					if (!$colMetadata->IsPrimaryKey && !$colMetadata->IsForeignKey) {
 						$code .= $this->generateControl($colMetadata);
 						$code .= $this->generateValidators($colMetadata);
 						$code .= "\n";
 					}
 				}
-				foreach ($tableInfo->getForeignKeys() as $colField => $colMetadata)
-				{
+				foreach ($tableInfo->getForeignKeys() as $colField => $colMetadata) {
 					$colField = $this->eq($colMetadata["table"]);
 					$code .= "\t<com:TTextBox ID=$colField />\n";
 					$code .= "\n";
@@ -122,8 +116,7 @@ EOD;
 	private function generateControl($colMetadata)
 	{
 		$controlType = "TTextBox";
-		switch ($colMetadata->DbType)
-		{
+		switch ($colMetadata->DbType) {
 
 		}
 		$controlId = $colMetadata->ColumnId;
@@ -134,14 +127,13 @@ EOD;
 	{
 		$controlId = $colMetadata->ColumnId;
 		$code = "";
-		if (!$colMetadata->AllowNull)
-		{
+		if (!$colMetadata->AllowNull) {
 			$code .= "\t<com:TRequiredFieldValidator ControlToValidate=$controlId ValidationGroup=\"addGroup\" Text=\"Field $controlId is required.\" Display=\"Dynamic\" />\n";
 		}
 		return $code;
 	}
 
-// </editor-fold>
+	// </editor-fold>
 	//---------------------------------------------------------------------
 	// <editor-fold defaultstate="collapsed" desc="Code Behind Generation">
 	private function generateClass($classname)
@@ -161,5 +153,5 @@ class $classname extends TPage
 EOD;
 	}
 
-// </editor-fold>
+	// </editor-fold>
 }

@@ -34,8 +34,9 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setStartRowIndex($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = 0;
+		}
 		$this->_startRowIndex = $value;
 	}
 
@@ -46,8 +47,9 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setMaximumRows($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = 0;
+		}
 		$this->_maximumRows = $value;
 	}
 
@@ -68,8 +70,9 @@ class TDataSourceSelectParameters extends \Prado\TComponent
 
 	public function setTotalRowCount($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = 0;
+		}
 		$this->_totalRowCount = $value;
 	}
 }

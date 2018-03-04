@@ -40,7 +40,8 @@ class TEmptyControlCollection extends TControlCollection
 	 */
 	public function insertAt($index, $item)
 	{
-		if(!is_string($item))  // string is possible if property tag is used. we simply ignore it in this case
-			parent::insertAt($index, $item);  // this will generate an exception in parent implementation
+		if (!is_string($item)) {  // string is possible if property tag is used. we simply ignore it in this case
+			parent::insertAt($index, $item);
+		}  // this will generate an exception in parent implementation
 	}
 }

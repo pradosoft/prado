@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\TControl;
 
-
 /**
  * TCallback component class.
  *
@@ -83,8 +82,9 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		if($this->getActiveControl()->canCauseValidation())
+		if ($this->getActiveControl()->canCauseValidation()) {
 			$this->getPage()->validate($this->getActiveControl()->getValidationGroup());
+		}
 		$this->onCallback($param);
 	}
 
@@ -100,4 +100,3 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
 }
-

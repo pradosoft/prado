@@ -148,8 +148,9 @@ class TDiscriminator extends \Prado\TComponent
 	 */
 	public function getSubMap($value)
 	{
-		if(isset($this->_resultMaps[$value]))
+		if (isset($this->_resultMaps[$value])) {
 			return $this->_resultMaps[$value];
+		}
 	}
 
 	/**
@@ -172,8 +173,7 @@ class TDiscriminator extends \Prado\TComponent
 	 */
 	public function initialize($manager)
 	{
-		foreach($this->_subMaps as $subMap)
-		{
+		foreach ($this->_subMaps as $subMap) {
 			$this->_resultMaps[$subMap->getValue()] =
 				$manager->getResultMap($subMap->getResultMapping());
 		}

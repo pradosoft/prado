@@ -52,10 +52,12 @@ class TReCaptchaValidator extends TBaseValidator
 	protected function getCaptchaControl()
 	{
 		$control = $this->getValidationTarget();
-		if (!$control)
+		if (!$control) {
 			throw new Exception('No target control specified for TReCaptchaValidator');
-		if (!($control instanceof TReCaptcha))
+		}
+		if (!($control instanceof TReCaptcha)) {
 			throw new Exception('TReCaptchaValidator only works with TReCaptcha controls');
+		}
 		return $control;
 	}
 
@@ -76,8 +78,7 @@ class TReCaptchaValidator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
-		if (null === $this->_isvalid)
-		{
+		if (null === $this->_isvalid) {
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
@@ -96,22 +97,20 @@ class TReCaptchaValidator extends TBaseValidator
 		$cs->registerHiddenField($this->getClientID() . '_1', $value);
 		
 		// update validator display
-		if ($control = $this->getValidationTarget())
-		{
+		if ($control = $this->getValidationTarget()) {
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			// check if we need to request a new captcha too
-			if ($this->Page->IsCallback)
-			{
-				if ($control->getVisible(true))
-					if (null !== $this->_isvalid)
-					{
+			if ($this->Page->IsCallback) {
+				if ($control->getVisible(true)) {
+					if (null !== $this->_isvalid) {
 						// if the response has been tested and we reach the pre-render phase
 						// then we need to regenerate the token, because it won't test positive
 						// anymore, even if solves correctly
 
 						$control->regenerateToken();
 					}
+				}
 			}
 
 			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ', [
@@ -133,5 +132,4 @@ class TReCaptchaValidator extends TBaseValidator
 			]));
 		}
 	}
-
 }

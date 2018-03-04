@@ -84,8 +84,9 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function setMinSelection($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
+		}
 		$this->setViewState('MinSelection', $value, -1);
 	}
 
@@ -102,8 +103,9 @@ class TListControlValidator extends TBaseValidator
 	 */
 	public function setMaxSelection($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			$value = -1;
+		}
 		$this->setViewState('MaxSelection', $value, -1);
 	}
 
@@ -141,25 +143,27 @@ class TListControlValidator extends TBaseValidator
 		$required = $this->getRequiredValues();
 
 		//if required, check the values
-		if(!empty($required))
-		{
-			if($count < count($required))
+		if (!empty($required)) {
+			if ($count < count($required)) {
 				return false;
-			foreach($required as $require)
+			}
+			foreach ($required as $require) {
 				$exists = $exists && in_array($require, $values);
+			}
 		}
 
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
 
-		if($min !== -1 && $max !== -1)
+		if ($min !== -1 && $max !== -1) {
 			return $exists && $count >= $min && $count <= $max;
-		elseif($min === -1 && $max !== -1)
+		} elseif ($min === -1 && $max !== -1) {
 			return $exists && $count <= $max;
-		elseif($min !== -1 && $max === -1)
+		} elseif ($min !== -1 && $max === -1) {
 			return $exists && $count >= $min;
-		else
+		} else {
 			return $exists;
+		}
 	}
 
 	/**
@@ -171,10 +175,10 @@ class TListControlValidator extends TBaseValidator
 		$values = [];
 
 		//get the data
-		foreach($control->getItems() as $item)
-		{
-			if($item->getSelected())
+		foreach ($control->getItems() as $item) {
+			if ($item->getSelected()) {
 				$values[] = $item->getValue();
+			}
 		}
 		return $values;
 	}
@@ -186,8 +190,9 @@ class TListControlValidator extends TBaseValidator
 	{
 		$required = [];
 		$string = $this->getRequiredSelections();
-		if(!empty($string))
+		if (!empty($string)) {
 			$required = preg_split('/,\s*/', $string);
+		}
 		return $required;
 	}
 
@@ -200,22 +205,27 @@ class TListControlValidator extends TBaseValidator
 		$options = parent::getClientScriptOptions();
 		$control = $this->getValidationTarget();
 
-		if(!$control instanceof TListControl)
-		{
+		if (!$control instanceof TListControl) {
 			throw new TConfigurationException(
 				'listcontrolvalidator_invalid_control',
-				$this->getID(), $this->getControlToValidate(), get_class($control));
+				$this->getID(),
+				$this->getControlToValidate(),
+				get_class($control)
+			);
 		}
 
 		$min = $this->getMinSelection();
 		$max = $this->getMaxSelection();
-		if($min !== -1)
+		if ($min !== -1) {
 			$options['Min'] = $min;
-		if($max !== -1)
+		}
+		if ($max !== -1) {
 			$options['Max'] = $max;
+		}
 		$required = $this->getRequiredSelections();
-		if(strlen($required) > 0)
+		if (strlen($required) > 0) {
 			$options['Required'] = $required;
+		}
 		$options['TotalItems'] = $control->getItemCount();
 
 		return $options;

@@ -82,8 +82,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setReadOnly($value)
 	{
-		if(parent::getReadOnly() === $value)
+		if (parent::getReadOnly() === $value) {
 			return;
+		}
 
 		parent::setReadOnly($value);
 		$value = $this->getReadOnly();
@@ -95,8 +96,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setRating($value)
 	{
-		if(parent::getRating() === $value)
+		if (parent::getRating() === $value) {
 			return;
+		}
 
 		parent::setRating($value);
 		$value = $this->getRating();
@@ -110,8 +112,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	protected function callClientFunction($func, $value)
 	{
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$code = 'Prado.Registry[\'' . $this->ClientID . '\'].' . $func . '(' . $value . ')';
 			$client->evaluateScript($code, [$value]);
@@ -123,8 +124,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function setCaption($value)
 	{
-		if(parent::getCaption() === $value)
+		if (parent::getCaption() === $value) {
 			return;
+		}
 
 		parent::setCaption($value);
 		// if it's an active control, this should not be needed.
@@ -139,7 +141,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	{
 		parent::addAttributesToRender($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
@@ -152,4 +156,3 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 		return 'Prado.WebUI.TActiveRatingList';
 	}
 }
-

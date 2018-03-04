@@ -77,40 +77,51 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$this->_document = $document;
 
 		static $bCacheDependencies;
-		if($bCacheDependencies === null)
-			$bCacheDependencies = true; //Prado::getApplication()->getMode() !== TApplicationMode::Performance;
+		if ($bCacheDependencies === null) {
+			$bCacheDependencies = true;
+		} //Prado::getApplication()->getMode() !== TApplicationMode::Performance;
 
-		if($bCacheDependencies)
+		if ($bCacheDependencies) {
 			$this->_manager->getCacheDependencies()
 					->getDependencies()
 					->add(new TFileCacheDependency($filename));
+		}
 
-		foreach($document->xpath('//resultMap') as $node)
+		foreach ($document->xpath('//resultMap') as $node) {
 			$this->loadResultMap($node);
+		}
 
-		foreach($document->xpath('//parameterMap') as $node)
+		foreach ($document->xpath('//parameterMap') as $node) {
 			$this->loadParameterMap($node);
+		}
 
-		foreach($document->xpath('//statement') as $node)
+		foreach ($document->xpath('//statement') as $node) {
 			$this->loadStatementTag($node);
+		}
 
-		foreach($document->xpath('//select') as $node)
+		foreach ($document->xpath('//select') as $node) {
 			$this->loadSelectTag($node);
+		}
 
-		foreach($document->xpath('//insert') as $node)
+		foreach ($document->xpath('//insert') as $node) {
 			$this->loadInsertTag($node);
+		}
 
-		foreach($document->xpath('//update') as $node)
+		foreach ($document->xpath('//update') as $node) {
 			$this->loadUpdateTag($node);
+		}
 
-		foreach($document->xpath('//delete') as $node)
+		foreach ($document->xpath('//delete') as $node) {
 			$this->loadDeleteTag($node);
+		}
 
-		foreach($document->xpath('//procedure') as $node)
+		foreach ($document->xpath('//procedure') as $node) {
 			$this->loadProcedureTag($node);
+		}
 
-		foreach($document->xpath('//cacheModel') as $node)
-				$this->loadCacheModel($node);
+		foreach ($document->xpath('//cacheModel') as $node) {
+			$this->loadCacheModel($node);
+		}
 
 		$this->registerCacheTriggers();
 	}
@@ -124,26 +135,31 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$resultMap = $this->createResultMap($node);
 
 		//find extended result map.
-		if(strlen($extendMap = $resultMap->getExtends()) > 0)
-		{
-			if(!$this->_manager->getResultMaps()->contains($extendMap))
-			{
+		if (strlen($extendMap = $resultMap->getExtends()) > 0) {
+			if (!$this->_manager->getResultMaps()->contains($extendMap)) {
 				$extendNode = $this->getElementByIdValue($this->_document, 'resultMap', $extendMap);
-				if($extendNode !== null)
+				if ($extendNode !== null) {
 					$this->loadResultMap($extendNode);
+				}
 			}
 
-			if(!$this->_manager->getResultMaps()->contains($extendMap))
+			if (!$this->_manager->getResultMaps()->contains($extendMap)) {
 				throw new TSqlMapConfigurationException(
-					'sqlmap_unable_to_find_parent_result_map', $node, $this->_configFile, $extendMap);
+					'sqlmap_unable_to_find_parent_result_map',
+					$node,
+					$this->_configFile,
+					$extendMap
+				);
+			}
 
 			$superMap = $this->_manager->getResultMap($extendMap);
 			$resultMap->getColumns()->mergeWith($superMap->getColumns());
 		}
 
 		//add the result map
-		if(!$this->_manager->getResultMaps()->contains($resultMap->getID()))
+		if (!$this->_manager->getResultMaps()->contains($resultMap->getID())) {
 			$this->_manager->addResultMap($resultMap);
+		}
 	}
 
 	/**
@@ -158,8 +174,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$this->setObjectPropFromNode($resultMap, $node);
 
 		//result nodes
-		foreach($node->result as $result)
-		{
+		foreach ($node->result as $result) {
 			$property = new TResultProperty($resultMap);
 			$this->setObjectPropFromNode($property, $result);
 			$resultMap->addResultProperty($property);
@@ -167,25 +182,29 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 		//create the discriminator
 		$discriminator = null;
-		if(isset($node->discriminator))
-		{
+		if (isset($node->discriminator)) {
 			$discriminator = new TDiscriminator();
 			$this->setObjectPropFromNode($discriminator, $node->discriminator);
 			$discriminator->initMapping($resultMap);
 		}
 
-		foreach($node->xpath('subMap') as $subMapNode)
-		{
-			if($discriminator === null)
+		foreach ($node->xpath('subMap') as $subMapNode) {
+			if ($discriminator === null) {
 				throw new TSqlMapConfigurationException(
-					'sqlmap_undefined_discriminator', $node, $this->_configFile, $subMapNode);
+					'sqlmap_undefined_discriminator',
+					$node,
+					$this->_configFile,
+					$subMapNode
+				);
+			}
 			$subMap = new TSubMap;
 			$this->setObjectPropFromNode($subMap, $subMapNode);
 			$discriminator->addSubMap($subMap);
 		}
 
-		if($discriminator !== null)
+		if ($discriminator !== null) {
 			$resultMap->setDiscriminator($discriminator);
+		}
 
 		return $resultMap;
 	}
@@ -199,22 +218,27 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$parameterMap = $this->createParameterMap($node);
 
-		if(strlen($extendMap = $parameterMap->getExtends()) > 0)
-		{
-			if(!$this->_manager->getParameterMaps()->contains($extendMap))
-			{
+		if (strlen($extendMap = $parameterMap->getExtends()) > 0) {
+			if (!$this->_manager->getParameterMaps()->contains($extendMap)) {
 				$extendNode = $this->getElementByIdValue($this->_document, 'parameterMap', $extendMap);
-				if($extendNode !== null)
+				if ($extendNode !== null) {
 					$this->loadParameterMap($extendNode);
+				}
 			}
 
-			if(!$this->_manager->getParameterMaps()->contains($extendMap))
+			if (!$this->_manager->getParameterMaps()->contains($extendMap)) {
 				throw new TSqlMapConfigurationException(
-					'sqlmap_unable_to_find_parent_parameter_map', $node, $this->_configFile, $extendMap);
+					'sqlmap_unable_to_find_parent_parameter_map',
+					$node,
+					$this->_configFile,
+					$extendMap
+				);
+			}
 			$superMap = $this->_manager->getParameterMap($extendMap);
 			$index = 0;
-			foreach($superMap->getPropertyNames() as $propertyName)
+			foreach ($superMap->getPropertyNames() as $propertyName) {
 				$parameterMap->insertProperty($index++, $superMap->getProperty($propertyName));
+			}
 		}
 		$this->_manager->addParameterMap($parameterMap);
 	}
@@ -228,8 +252,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$parameterMap = new TParameterMap();
 		$this->setObjectPropFromNode($parameterMap, $node);
-		foreach($node->parameter as $parameter)
-		{
+		foreach ($node->parameter as $parameter) {
 			$property = new TParameterProperty();
 			$this->setObjectPropFromNode($property, $parameter);
 			$parameterMap->addProperty($property);
@@ -259,14 +282,18 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function processSqlStatement($statement, $node)
 	{
 		$commandText = (string)$node;
-		if(strlen($extend = $statement->getExtends()) > 0)
-		{
+		if (strlen($extend = $statement->getExtends()) > 0) {
 			$superNode = $this->getElementByIdValue($this->_document, '*', $extend);
-			if($superNode !== null)
+			if ($superNode !== null) {
 				$commandText = (string)$superNode . $commandText;
-			else
+			} else {
 				throw new TSqlMapConfigurationException(
-						'sqlmap_unable_to_find_parent_sql', $extend, $this->_configFile, $node);
+						'sqlmap_unable_to_find_parent_sql',
+					$extend,
+					$this->_configFile,
+					$node
+				);
+			}
 		}
 		//$commandText = $this->_xmlConfig->replaceProperties($commandText);
 		$statement->initialize($this->_manager);
@@ -285,19 +312,18 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$scope['node'] = $node;
 
 		$sqlStatement = preg_replace(self::ESCAPED_INLINE_SYMBOL_REGEXP, self::INLINE_PLACEHOLDER, $sqlStatement);
-		if($statement->parameterMap() === null)
-		{
+		if ($statement->parameterMap() === null) {
 			// Build a Parametermap with the inline parameters.
 			// if they exist. Then delete inline infos from sqltext.
 			$parameterParser = new TInlineParameterMapParser;
 			$sqlText = $parameterParser->parse($sqlStatement, $scope);
-			if(count($sqlText['parameters']) > 0)
-			{
+			if (count($sqlText['parameters']) > 0) {
 				$map = new TParameterMap();
 				$map->setID($statement->getID() . '-InLineParameterMap');
 				$statement->setInlineParameterMap($map);
-				foreach($sqlText['parameters'] as $property)
+				foreach ($sqlText['parameters'] as $property) {
 					$map->addProperty($property);
+				}
 			}
 			$sqlStatement = $sqlText['sql'];
 		}
@@ -318,13 +344,12 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$simpleDynamic = new TSimpleDynamicParser;
 		$sqlStatement = preg_replace(self::ESCAPED_SIMPLE_MARK_REGEXP, self::SIMPLE_PLACEHOLDER, $sqlStatement);
 		$dynamics = $simpleDynamic->parse($sqlStatement);
-		if(count($dynamics['parameters']) > 0)
-		{
+		if (count($dynamics['parameters']) > 0) {
 			$sql = new TSimpleDynamicSql($dynamics['parameters']);
 			$sqlStatement = $dynamics['sql'];
-		}
-		else
+		} else {
 			$sql = new TStaticSql();
+		}
 		$sqlStatement = preg_replace('/' . self::SIMPLE_PLACEHOLDER . '/', self::SIMPLE_MARK, $sqlStatement);
 		$sql->buildPreparedStatement($statement, $sqlStatement);
 		$statement->setSqlText($sql);
@@ -340,8 +365,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$this->setObjectPropFromNode($select, $node);
 		$this->processSqlStatement($select, $node);
 		$mappedStatement = new TMappedStatement($this->_manager, $select);
-		if(strlen($select->getCacheModel()) > 0)
+		if (strlen($select->getCacheModel()) > 0) {
 			$mappedStatement = new TCachingStatement($mappedStatement);
+		}
 
 		$this->_manager->addMappedStatement($mappedStatement);
 	}
@@ -367,8 +393,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$insert = new TSqlMapInsert;
 		$this->setObjectPropFromNode($insert, $node);
-		if(isset($node->selectKey))
+		if (isset($node->selectKey)) {
 			$this->loadSelectKeyTag($insert, $node->selectKey);
+		}
 		return $insert;
 	}
 
@@ -432,23 +459,28 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$cacheModel = new TSqlMapCacheModel;
 		$properties = ['id','implementation'];
-		foreach($node->attributes() as $name => $value)
-		{
-			if(in_array(strtolower($name), $properties))
+		foreach ($node->attributes() as $name => $value) {
+			if (in_array(strtolower($name), $properties)) {
 				$cacheModel->{'set' . $name}((string)$value);
+			}
 		}
 		$cache = Prado::createComponent($cacheModel->getImplementationClass(), $cacheModel);
 		$this->setObjectPropFromNode($cache, $node, $properties);
 
-		foreach($node->xpath('property') as $propertyNode)
-		{
+		foreach ($node->xpath('property') as $propertyNode) {
 			$name = $propertyNode->attributes()->name;
-			if($name === null || $name === '') continue;
+			if ($name === null || $name === '') {
+				continue;
+			}
 
 			$value = $propertyNode->attributes()->value;
-			if($value === null || $value === '') continue;
+			if ($value === null || $value === '') {
+				continue;
+			}
 
-			if(!TPropertyAccess::has($cache, $name)) continue;
+			if (!TPropertyAccess::has($cache, $name)) {
+				continue;
+			}
 
 			TPropertyAccess::set($cache, $name, $value);
 		}
@@ -457,8 +489,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 		$cacheModel->initialize($cache);
 		$this->_manager->addCacheModel($cacheModel);
-		foreach($node->xpath('flushOnExecute') as $flush)
+		foreach ($node->xpath('flushOnExecute') as $flush) {
 			$this->loadFlushOnCache($cacheModel, $node, $flush);
+		}
 	}
 
 	/**
@@ -469,12 +502,12 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function loadFlushInterval($cacheModel, $node)
 	{
 		$flushInterval = $node->xpath('flushInterval');
-		if($flushInterval === null || count($flushInterval) === 0) return;
+		if ($flushInterval === null || count($flushInterval) === 0) {
+			return;
+		}
 		$duration = 0;
-		foreach($flushInterval[0]->attributes() as $name => $value)
-		{
-			switch(strToLower($name))
-			{
+		foreach ($flushInterval[0]->attributes() as $name => $value) {
+			switch (strToLower($name)) {
 				case 'seconds':
 					$duration += (integer)$value;
 				break;
@@ -504,12 +537,13 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function loadFlushOnCache($cacheModel, $parent, $node)
 	{
 		$id = $cacheModel->getID();
-		if(!isset($this->_FlushOnExecuteStatements[$id]))
+		if (!isset($this->_FlushOnExecuteStatements[$id])) {
 			$this->_FlushOnExecuteStatements[$id] = [];
-		foreach($node->attributes() as $name => $value)
-		{
-			if(strtolower($name) === 'statement')
+		}
+		foreach ($node->attributes() as $name => $value) {
+			if (strtolower($name) === 'statement') {
 				$this->_FlushOnExecuteStatements[$id][] = (string)$value;
+			}
 		}
 	}
 
@@ -518,11 +552,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function registerCacheTriggers()
 	{
-		foreach($this->_FlushOnExecuteStatements as $cacheID => $statementIDs)
-		{
+		foreach ($this->_FlushOnExecuteStatements as $cacheID => $statementIDs) {
 			$cacheModel = $this->_manager->getCacheModel($cacheID);
-			foreach($statementIDs as $statementID)
-			{
+			foreach ($statementIDs as $statementID) {
 				$statement = $this->_manager->getMappedStatement($statementID);
 				$cacheModel->registerTriggerStatement($statement);
 			}

@@ -75,4 +75,3 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 		return $purifier->purify($text);
 	}
 }
-

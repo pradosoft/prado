@@ -49,8 +49,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function getClientSide()
 	{
-		if(($client = $this->getOption('ClientSide')) === null)
-		{
+		if (($client = $this->getOption('ClientSide')) === null) {
 			$client = $this->createClientSide();
 			$this->setOption('ClientSide', $client);
 		}
@@ -63,11 +62,14 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function setClientSide($client)
 	{
-		if($this->getOption('ClientSide') === null)
+		if ($this->getOption('ClientSide') === null) {
 			$this->setOption('ClientSide', $client);
-		else
+		} else {
 			throw new TConfigurationException(
-				'active_controls_client_side_exists', $this->getControl()->getID());
+				'active_controls_client_side_exists',
+				$this->getControl()->getID()
+			);
+		}
 	}
 
 	/**
@@ -108,26 +110,24 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	protected function getDefaultClientSideOptions()
 	{
-		if(($id = $this->getCallbackOptions()) !== '')
-		{
-			if(($pos = strrpos($id, '.')) !== false)
-			{
+		if (($id = $this->getCallbackOptions()) !== '') {
+			if (($pos = strrpos($id, '.')) !== false) {
 				$control = $this->getControl()->getSubProperty(substr($id, 0, $pos));
 				$newid = substr($id, $pos + 1);
-				if ($control !== null)
+				if ($control !== null) {
 					$control = $control->$newid;
-			}
-			else
-			{
+				}
+			} else {
 				// TCheckBoxList overrides findControl() with a fake implementation
 				// but accepts a second parameter to use the standard one
 				$control = $this->getControl()->findControl($id, true);
 			}
 
-			if($control instanceof TCallbackOptions)
+			if ($control instanceof TCallbackOptions) {
 				return $control->getClientSide()->getOptions()->toArray();
-			else
+			} else {
 				throw new TConfigurationException('callback_invalid_callback_options', $this->getControl()->getID(), $id);
+			}
 		}
 
 		return [];
@@ -175,13 +175,12 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	public function canCauseValidation()
 	{
-		if($this->getCausesValidation())
-		{
+		if ($this->getCausesValidation()) {
 			$group = $this->getValidationGroup();
 			return $this->getPage()->getValidators($group)->getCount() > 0;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -213,8 +212,9 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['CallbackParameter'] = $this->getCallbackParameter();
 		// needed for TCallback
-		if(!isset($options['EventTarget']))
+		if (!isset($options['EventTarget'])) {
 			$options['EventTarget'] = $this->getControl()->getUniqueID();
+		}
 		return $options;
 	}
 
@@ -230,14 +230,16 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	public function registerCallbackClientScript($class, $options = null)
 	{
 		$cs = $this->getPage()->getClientScript();
-		if(is_array($options))
+		if (is_array($options)) {
 			$options = array_merge($this->getClientSideOptions(), $options);
-		else
+		} else {
 			$options = $this->getClientSideOptions();
+		}
 
 		//remove true as default to save bytes
-		if($options['CausesValidation'] === true)
+		if ($options['CausesValidation'] === true) {
 			$options['CausesValidation'] = '';
+		}
 		$cs->registerCallbackControl($class, $options);
 	}
 

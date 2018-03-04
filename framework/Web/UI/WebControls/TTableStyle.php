@@ -58,18 +58,24 @@ class TTableStyle extends TStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_backImageUrl === null)
+		if ($this->_backImageUrl === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_backImageUrl";
-		if ($this->_horizontalAlign === null)
+		}
+		if ($this->_horizontalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_horizontalAlign";
-		if ($this->_cellPadding === null)
+		}
+		if ($this->_cellPadding === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellPadding";
-		if ($this->_cellSpacing === null)
+		}
+		if ($this->_cellSpacing === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellSpacing";
-		if ($this->_gridLines === null)
+		}
+		if ($this->_gridLines === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_gridLines";
-		if ($this->_borderCollapse === null)
+		}
+		if ($this->_borderCollapse === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_borderCollapse";
+		}
 	}
 
 	/**
@@ -96,20 +102,25 @@ class TTableStyle extends TStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TTableStyle)
-		{
-			if($style->_backImageUrl !== null)
+		if ($style instanceof TTableStyle) {
+			if ($style->_backImageUrl !== null) {
 				$this->_backImageUrl = $style->_backImageUrl;
-			if($style->_horizontalAlign !== null)
+			}
+			if ($style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($style->_cellPadding !== null)
+			}
+			if ($style->_cellPadding !== null) {
 				$this->_cellPadding = $style->_cellPadding;
-			if($style->_cellSpacing !== null)
+			}
+			if ($style->_cellSpacing !== null) {
 				$this->_cellSpacing = $style->_cellSpacing;
-			if($style->_gridLines !== null)
+			}
+			if ($style->_gridLines !== null) {
 				$this->_gridLines = $style->_gridLines;
-			if($style->_borderCollapse !== null)
+			}
+			if ($style->_borderCollapse !== null) {
 				$this->_borderCollapse = $style->_borderCollapse;
+			}
 		}
 	}
 
@@ -122,20 +133,25 @@ class TTableStyle extends TStyle
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TTableStyle)
-		{
-			if($this->_backImageUrl === null && $style->_backImageUrl !== null)
+		if ($style instanceof TTableStyle) {
+			if ($this->_backImageUrl === null && $style->_backImageUrl !== null) {
 				$this->_backImageUrl = $style->_backImageUrl;
-			if($this->_horizontalAlign === null && $style->_horizontalAlign !== null)
+			}
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($this->_cellPadding === null && $style->_cellPadding !== null)
+			}
+			if ($this->_cellPadding === null && $style->_cellPadding !== null) {
 				$this->_cellPadding = $style->_cellPadding;
-			if($this->_cellSpacing === null && $style->_cellSpacing !== null)
+			}
+			if ($this->_cellSpacing === null && $style->_cellSpacing !== null) {
 				$this->_cellSpacing = $style->_cellSpacing;
-			if($this->_gridLines === null && $style->_gridLines !== null)
+			}
+			if ($this->_gridLines === null && $style->_gridLines !== null) {
 				$this->_gridLines = $style->_gridLines;
-			if($this->_borderCollapse === null && $style->_borderCollapse !== null)
+			}
+			if ($this->_borderCollapse === null && $style->_borderCollapse !== null) {
 				$this->_borderCollapse = $style->_borderCollapse;
+			}
 		}
 	}
 
@@ -147,26 +163,30 @@ class TTableStyle extends TStyle
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(($url = trim($this->getBackImageUrl())) !== '')
+		if (($url = trim($this->getBackImageUrl())) !== '') {
 			$writer->addStyleAttribute('background-image', 'url(' . $url . ')');
+		}
 
-		if(($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet)
+		if (($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
 			$writer->addStyleAttribute('text-align', strtolower($horizontalAlign));
+		}
 
-		if(($cellPadding = $this->getCellPadding()) >= 0)
+		if (($cellPadding = $this->getCellPadding()) >= 0) {
 			$writer->addAttribute('cellpadding', "$cellPadding");
+		}
 
-		if(($cellSpacing = $this->getCellSpacing()) >= 0)
+		if (($cellSpacing = $this->getCellSpacing()) >= 0) {
 			$writer->addAttribute('cellspacing', "$cellSpacing");
+		}
 
-		if($this->getBorderCollapse())
+		if ($this->getBorderCollapse()) {
 			$writer->addStyleAttribute('border-collapse', 'collapse');
+		}
 
-		switch($this->getGridLines())
-		{
-			case TTableGridLines::Horizontal : $writer->addAttribute('rules', 'rows'); break;
-			case TTableGridLines::Vertical : $writer->addAttribute('rules', 'cols'); break;
-			case TTableGridLines::Both : $writer->addAttribute('rules', 'all'); break;
+		switch ($this->getGridLines()) {
+			case TTableGridLines::Horizontal: $writer->addAttribute('rules', 'rows'); break;
+			case TTableGridLines::Vertical: $writer->addAttribute('rules', 'cols'); break;
+			case TTableGridLines::Both: $writer->addAttribute('rules', 'all'); break;
 		}
 
 		parent::addAttributesToRender($writer);
@@ -220,8 +240,9 @@ class TTableStyle extends TStyle
 	 */
 	public function setCellPadding($value)
 	{
-		if(($this->_cellPadding = TPropertyValue::ensureInteger($value)) < -1)
+		if (($this->_cellPadding = TPropertyValue::ensureInteger($value)) < -1) {
 			throw new TInvalidDataValueException('tablestyle_cellpadding_invalid');
+		}
 	}
 
 	/**
@@ -238,8 +259,9 @@ class TTableStyle extends TStyle
 	 */
 	public function setCellSpacing($value)
 	{
-		if(($this->_cellSpacing = TPropertyValue::ensureInteger($value)) < -1)
+		if (($this->_cellSpacing = TPropertyValue::ensureInteger($value)) < -1) {
 			throw new TInvalidDataValueException('tablestyle_cellspacing_invalid');
+		}
 	}
 
 	/**

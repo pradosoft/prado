@@ -27,17 +27,19 @@ class TReadOnlyDataSource extends TDataSourceControl
 
 	public function __construct($dataSource, $dataMember)
 	{
-		if(!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof \Traversable))
+		if (!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof \Traversable)) {
 			throw new TInvalidDataTypeException('readonlydatasource_datasource_invalid');
+		}
 		$this->_dataSource = $dataSource;
 		$this->_dataMember = $dataMember;
 	}
 
 	public function getView($viewName)
 	{
-		if($this->_dataSource instanceof IDataSource)
+		if ($this->_dataSource instanceof IDataSource) {
 			return $this->_dataSource->getView($viewName);
-		else
+		} else {
 			return new TReadOnlyDataSourceView($this, $this->_dataMember, $this->_dataSource);
+		}
 	}
 }

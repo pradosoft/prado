@@ -55,10 +55,11 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getCellSpacing()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellSpacing();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -74,10 +75,11 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getCellPadding()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellPadding();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -93,10 +95,11 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return THorizontalAlign::NotSet;
+		}
 	}
 
 	/**
@@ -112,10 +115,11 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getGridLines()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getGridLines();
-		else
+		} else {
 			return TTableGridLines::None;
+		}
 	}
 
 	/**
@@ -149,8 +153,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeys()
 	{
-		if(($dataKeys = $this->getViewState('DataKeys', null)) === null)
-		{
+		if (($dataKeys = $this->getViewState('DataKeys', null)) === null) {
 			$dataKeys = new TList;
 			$this->setViewState('DataKeys', $dataKeys, null);
 		}
@@ -184,4 +187,3 @@ abstract class TBaseDataList extends TDataBoundControl
 		$this->raiseEvent('OnSelectedIndexChanged', $this, $param);
 	}
 }
-

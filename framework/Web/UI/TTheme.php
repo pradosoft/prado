@@ -89,37 +89,32 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_name = basename($themePath);
 		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
-		if(($cache = $this->getApplication()->getCache()) !== null)
-		{
+		if (($cache = $this->getApplication()->getCache()) !== null) {
 			$array = $cache->get(self::THEME_CACHE_PREFIX . $themePath);
-			if(is_array($array))
-			{
+			if (is_array($array)) {
 				list($skins, $cssFiles, $jsFiles, $timestamp) = $array;
-				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
-				{
-					if(($dir = opendir($themePath)) === false)
+				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
+					if (($dir = opendir($themePath)) === false) {
 						throw new TIOException('theme_path_inexistent', $themePath);
+					}
 					$cacheValid = true;
-					while(($file = readdir($dir)) !== false)
-					{
-						if($file === '.' || $file === '..')
+					while (($file = readdir($dir)) !== false) {
+						if ($file === '.' || $file === '..') {
 							continue;
-						elseif(basename($file, '.css') !== $file)
+						} elseif (basename($file, '.css') !== $file) {
 							$this->_cssFiles[] = $themeUrl . '/' . $file;
-						elseif(basename($file, '.js') !== $file)
+						} elseif (basename($file, '.js') !== $file) {
 							$this->_jsFiles[] = $themeUrl . '/' . $file;
-						elseif(basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp)
-						{
+						} elseif (basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp) {
 							$cacheValid = false;
 							break;
 						}
 					}
 					closedir($dir);
-					if($cacheValid)
+					if ($cacheValid) {
 						$this->_skins = $skins;
-				}
-				else
-				{
+					}
+				} else {
 					$cacheValid = true;
 					$this->_cssFiles = $cssFiles;
 					$this->_jsFiles = $jsFiles;
@@ -127,35 +122,34 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				}
 			}
 		}
-		if(!$cacheValid)
-		{
+		if (!$cacheValid) {
 			$this->_cssFiles = [];
 			$this->_jsFiles = [];
 			$this->_skins = [];
-			if(($dir = opendir($themePath)) === false)
+			if (($dir = opendir($themePath)) === false) {
 				throw new TIOException('theme_path_inexistent', $themePath);
-			while(($file = readdir($dir)) !== false)
-			{
-				if($file === '.' || $file === '..')
+			}
+			while (($file = readdir($dir)) !== false) {
+				if ($file === '.' || $file === '..') {
 					continue;
-				elseif(basename($file, '.css') !== $file)
+				} elseif (basename($file, '.css') !== $file) {
 					$this->_cssFiles[] = $themeUrl . '/' . $file;
-				elseif(basename($file, '.js') !== $file)
+				} elseif (basename($file, '.js') !== $file) {
 					$this->_jsFiles[] = $themeUrl . '/' . $file;
-				elseif(basename($file, self::SKIN_FILE_EXT) !== $file)
-				{
+				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file) {
 					$template = new TTemplate(file_get_contents($themePath . '/' . $file), $themePath, $themePath . '/' . $file);
-					foreach($template->getItems() as $skin)
-					{
-						if(!isset($skin[2]))  // a text string, ignored
+					foreach ($template->getItems() as $skin) {
+						if (!isset($skin[2])) {  // a text string, ignored
 							continue;
-						elseif($skin[0] !== -1)
+						} elseif ($skin[0] !== -1) {
 							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
+						}
 						$type = $skin[1];
 						$id = isset($skin[2]['skinid']) ? $skin[2]['skinid'] : 0;
 						unset($skin[2]['skinid']);
-						if(isset($this->_skins[$type][$id]))
+						if (isset($this->_skins[$type][$id])) {
 							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));
+						}
 						/*
 						foreach($skin[2] as $name=>$value)
 						{
@@ -170,8 +164,9 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			closedir($dir);
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
-			if($cache !== null)
+			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins,$this->_cssFiles,$this->_jsFiles,time()]);
+			}
 		}
 	}
 
@@ -251,17 +246,14 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	public function applySkin($control)
 	{
 		$type = get_class($control);
-		if(($id = $control->getSkinID()) === '')
+		if (($id = $control->getSkinID()) === '') {
 			$id = 0;
-		if(isset($this->_skins[$type][$id]))
-		{
-			foreach($this->_skins[$type][$id] as $name => $value)
-			{
+		}
+		if (isset($this->_skins[$type][$id])) {
+			foreach ($this->_skins[$type][$id] as $name => $value) {
 				Prado::trace("Applying skin $name to $type", 'Prado\Web\UI\TThemeManager');
-				if(is_array($value))
-				{
-					switch($value[0])
-					{
+				if (is_array($value)) {
+					switch ($value[0]) {
 						case TTemplate::CONFIG_EXPRESSION:
 							$value = $this->evaluateExpression($value[1]);
 							break;
@@ -285,31 +277,27 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 							break;
 					}
 				}
-				if(!is_array($value))
-				{
-					if(strpos($name, '.') === false)	// is simple property or custom attribute
-					{
-						if($control->hasProperty($name))
-						{
-							if($control->canSetProperty($name))
-							{
+				if (!is_array($value)) {
+					if (strpos($name, '.') === false) {	// is simple property or custom attribute
+						if ($control->hasProperty($name)) {
+							if ($control->canSetProperty($name)) {
 								$setter = 'set' . $name;
 								$control->$setter($value);
-							}
-							else
+							} else {
 								throw new TConfigurationException('theme_property_readonly', $type, $name);
-						}
-						else
+							}
+						} else {
 							throw new TConfigurationException('theme_property_undefined', $type, $name);
-					}
-					else	// complex property
+						}
+					} else {	// complex property
 						$control->setSubProperty($name, $value);
+					}
 				}
 			}
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**

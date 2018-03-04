@@ -49,22 +49,25 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TAPCCache extends TCache
 {
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement $config configuration for this module, can be null
-    * @throws TConfigurationException if apc extension is not installed or not started, check your php.ini
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if apc extension is not installed or not started, check your php.ini
+	 */
 	public function init($config)
 	{
-		if(!extension_loaded('apc'))
+		if (!extension_loaded('apc')) {
 			throw new TConfigurationException('apccache_extension_required');
+		}
 
-		if(ini_get('apc.enabled') == false)
+		if (ini_get('apc.enabled') == false) {
 			throw new TConfigurationException('apccache_extension_not_enabled');
+		}
 
-		if(substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false)
+		if (substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false) {
 			throw new TConfigurationException('apccache_extension_not_enabled_cli');
+		}
 
 		parent::init($config);
 	}
@@ -128,4 +131,3 @@ class TAPCCache extends TCache
 		return apc_clear_cache('user');
 	}
 }
-

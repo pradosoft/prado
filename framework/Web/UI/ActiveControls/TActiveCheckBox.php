@@ -18,7 +18,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TCheckBox;
 
-
 /**
  * TActiveCheckBox class.
  *
@@ -93,13 +92,17 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update(
-				$this->getDefaultLabelID(), $value);
+				$this->getDefaultLabelID(),
+				$value
+			);
+		}
 	}
 
 	/**
@@ -111,12 +114,14 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	public function setChecked($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		if(parent::getChecked() === $value)
+		if (parent::getChecked() === $value) {
 			return;
+		}
 
 		parent::setChecked($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->check($this, $value);
+		}
 	}
 
 	/**
@@ -140,9 +145,12 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
 		parent::renderInputTag($writer, $clientID, $onclick);
-		if ($this->getAutoPostBack())
+		if ($this->getAutoPostBack()) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
+		}
 	}
 
 	/**
@@ -181,10 +189,10 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 */
 	protected function getDefaultLabelID()
 	{
-		if($attributes = $this->getViewState('LabelAttributes', null))
+		if ($attributes = $this->getViewState('LabelAttributes', null)) {
 			return TCheckBox::getLabelAttributes()->itemAt('id');
-		else
+		} else {
 			return $this->getClientID() . '_label';
+		}
 	}
 }
-

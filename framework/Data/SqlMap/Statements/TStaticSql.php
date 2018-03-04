@@ -33,4 +33,3 @@ class TStaticSql extends \Prado\TComponent
 		return $this->_preparedStatement;
 	}
 }
-

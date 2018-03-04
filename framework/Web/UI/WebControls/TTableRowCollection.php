@@ -34,9 +34,10 @@ class TTableRowCollection extends \Prado\Web\UI\TControlCollection
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TTableRow)
+		if ($item instanceof TTableRow) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('tablerowcollection_tablerow_required');
+		}
 	}
 }

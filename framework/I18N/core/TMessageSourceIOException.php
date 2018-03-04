@@ -28,5 +28,4 @@ use Prado\Exceptions\TException;
  */
 class TMessageSourceIOException extends TException
 {
-
 }

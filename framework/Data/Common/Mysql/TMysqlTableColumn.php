@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mysql;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a Mysql database table.
  *
@@ -40,12 +39,13 @@ class TMysqlTableColumn extends TDbTableColumn
 	public function getPHPType()
 	{
 		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($this->getDbType())));
-		if($dbtype === 'tinyint' && $this->getColumnSize() === 1)
+		if ($dbtype === 'tinyint' && $this->getColumnSize() === 1) {
 			return 'boolean';
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
+		}
+		foreach (self::$types as $type => $dbtypes) {
+			if (in_array($dbtype, $dbtypes)) {
 				return $type;
+			}
 		}
 		return 'string';
 	}
@@ -71,4 +71,3 @@ class TMysqlTableColumn extends TDbTableColumn
 		return $this->getInfo('DbTypeValues');
 	}
 }
-

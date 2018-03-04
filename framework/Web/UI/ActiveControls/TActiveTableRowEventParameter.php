@@ -53,5 +53,4 @@ class TActiveTableRowEventParameter extends TCallbackEventParameter
 	{
 		return $this->_selectedRowIndex;
 	}
-
 }

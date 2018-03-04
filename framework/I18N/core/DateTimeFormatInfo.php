@@ -99,10 +99,11 @@ class DateTimeFormatInfo
 	public function __get($name)
 	{
 		$getProperty = 'get' . $name;
-		if(in_array($getProperty, $this->properties))
+		if (in_array($getProperty, $this->properties)) {
 			return $this->$getProperty();
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' does not exists.');
+		}
 	}
 
 	/**
@@ -112,10 +113,11 @@ class DateTimeFormatInfo
 	public function __set($name, $value)
 	{
 		$setProperty = 'set' . $name;
-		if(in_array($setProperty, $this->properties))
+		if (in_array($setProperty, $this->properties)) {
 			$this->$setProperty($value);
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' can not be set.');
+		}
 	}
 
 	/**
@@ -131,8 +133,9 @@ class DateTimeFormatInfo
 	{
 		$this->properties = get_class_methods($this);
 
-		if(empty($data))
+		if (empty($data)) {
 			throw new Exception('Please provide the ICU data to initialize.');
+		}
 
 		$this->data = $data;
 	}
@@ -154,8 +157,7 @@ class DateTimeFormatInfo
 	public static function getInvariantInfo()
 	{
 		static $invariant;
-		if($invariant === null)
-		{
+		if ($invariant === null) {
 			$culture = CultureInfo::getInvariantCulture();
 			$invariant = $culture->getDateTimeFormat();
 		}
@@ -170,19 +172,15 @@ class DateTimeFormatInfo
 	 */
 	public static function getInstance($culture = null)
 	{
-
-		if ($culture instanceof CultureInfo)
+		if ($culture instanceof CultureInfo) {
 			return $culture->getDateTimeFormat();
-		   elseif(is_string($culture))
-		   {
-			   $cultureInfo = CultureInfo::getInstance($culture);
-			   return $cultureInfo->getDateTimeFormat();
-		   }
-		   else
-		   {
+		} elseif (is_string($culture)) {
+			$cultureInfo = CultureInfo::getInstance($culture);
+			return $cultureInfo->getDateTimeFormat();
+		} else {
 			$cultureInfo = CultureInfo::getInvariantCulture();
 			return $cultureInfo->getDateTimeFormat();
-		   }
+		}
 	}
 
 	/**
@@ -294,10 +292,11 @@ class DateTimeFormatInfo
 	 */
 	public function getAbbreviatedMonthNames()
 	{
-		if (isset($this->data['monthNames']['format']['abbreviated']))
+		if (isset($this->data['monthNames']['format']['abbreviated'])) {
 			return $this->data['monthNames']['format']['abbreviated'];
-		else
+		} else {
 			return $this->data['monthNames']['format']['wide'];
+		}
 	}
 
 	/**
@@ -514,5 +513,4 @@ class DateTimeFormatInfo
 		$pattern = $this->getDateTimeOrderPattern();
 		return str_replace(['{0}','{1}'], [$time, $date], $pattern);
 	}
-
 }

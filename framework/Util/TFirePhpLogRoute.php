@@ -36,10 +36,11 @@ class TFirePhpLogRoute extends TLogRoute
 
 	public function processLogs($logs)
 	{
-		if(empty($logs) || $this->getApplication()->getMode() === 'Performance')
+		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
 			return;
+		}
 
-		if(headers_sent()) {
+		if (headers_sent()) {
 			echo '
 				<div style="width:100%; background-color:darkred; color:#FFF; padding:2px">
 					TFirePhpLogRoute.GroupLabel "<i>' . $this -> getGroupLabel() . '</i>" -
@@ -58,19 +59,15 @@ class TFirePhpLogRoute extends TLogRoute
 
 		$first = $logs[0][3];
 		$c = count($logs);
-		for($i = 0,$n = $c;$i < $n;++$i)
-		{
+		for ($i = 0,$n = $c;$i < $n;++$i) {
 			$message = $logs[$i][0];
 			$level = $logs[$i][1];
 			$category = $logs[$i][2];
 
-			if ($i < $n - 1)
-			{
+			if ($i < $n - 1) {
 				$delta = $logs[$i + 1][3] - $logs[$i][3];
 				$total = $logs[$i + 1][3] - $first;
-			}
-			else
-			{
+			} else {
 				$delta = '?';
 				$total = $logs[$i][3] - $first;
 			}
@@ -89,8 +86,7 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	protected static function translateLogLevel($level)
 	{
-		switch($level)
-		{
+		switch ($level) {
 			case TLogger::INFO:
 				return FirePHP::INFO;
 			case TLogger::DEBUG:
@@ -112,8 +108,9 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	public function getGroupLabel()
 	{
-		if($this->_groupLabel === null)
+		if ($this->_groupLabel === null) {
 			$this->_groupLabel = self::DEFAULT_LABEL;
+		}
 
 		return $this->_groupLabel;
 	}

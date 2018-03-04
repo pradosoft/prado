@@ -113,18 +113,16 @@ class TRadioButton extends TCheckBox
 	{
 		$uniqueGroupName = $this->getUniqueGroupName();
 		$value = isset($values[$uniqueGroupName]) ? $values[$uniqueGroupName] : null;
-		if($value !== null && $value === $this->getValueAttribute())
-		{
-			if(!$this->getChecked())
-			{
+		if ($value !== null && $value === $this->getValueAttribute()) {
+			if (!$this->getChecked()) {
 				$this->setChecked(true);
 				return true;
-			}
-			else
+			} else {
 				return false;
-		}
-		elseif($this->getChecked())
+			}
+		} elseif ($this->getChecked()) {
 			$this->setChecked(false);
+		}
 		return false;
 	}
 
@@ -153,23 +151,22 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getUniqueGroupName()
 	{
-		if(($groupName = $this->getViewState('UniqueGroupName', '')) !== '')
+		if (($groupName = $this->getViewState('UniqueGroupName', '')) !== '') {
 			return $groupName;
-		elseif(($uniqueID = $this->getUniqueID()) !== $this->_previousUniqueID || $this->_uniqueGroupName === null)
-		{
+		} elseif (($uniqueID = $this->getUniqueID()) !== $this->_previousUniqueID || $this->_uniqueGroupName === null) {
 			$groupName = $this->getGroupName();
 			$this->_previousUniqueID = $uniqueID;
-			if($uniqueID !== '')
-			{
-				if(($pos = strrpos($uniqueID, \Prado\Web\UI\TControl::ID_SEPARATOR)) !== false)
-				{
-					if($groupName !== '')
+			if ($uniqueID !== '') {
+				if (($pos = strrpos($uniqueID, \Prado\Web\UI\TControl::ID_SEPARATOR)) !== false) {
+					if ($groupName !== '') {
 						$groupName = substr($uniqueID, 0, $pos + 1) . $groupName;
-					elseif($this->getNamingContainer() instanceof TRadioButtonList)
+					} elseif ($this->getNamingContainer() instanceof TRadioButtonList) {
 						$groupName = substr($uniqueID, 0, $pos);
+					}
 				}
-				if($groupName === '')
+				if ($groupName === '') {
 					$groupName = $uniqueID;
+				}
 			}
 			$this->_uniqueGroupName = $groupName;
 		}
@@ -207,10 +204,10 @@ class TRadioButton extends TCheckBox
 	{
 		$group = $this->getUniqueGroupName();
 		$buttons = [];
-		foreach(self::$_activeButtons as $control)
-		{
-			if($control->getUniqueGroupName() === $group)
+		foreach (self::$_activeButtons as $control) {
+			if ($control->getUniqueGroupName() === $group) {
 				$buttons[] = $control;
+			}
 		}
 		return $buttons;
 	}
@@ -220,10 +217,11 @@ class TRadioButton extends TCheckBox
 	 */
 	protected function getValueAttribute()
 	{
-		if(($value = parent::getValueAttribute()) === '')
+		if (($value = parent::getValueAttribute()) === '') {
 			return $this->getUniqueID();
-		else
+		} else {
 			return $value;
+		}
 	}
 
 	/**
@@ -250,33 +248,39 @@ class TRadioButton extends TCheckBox
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		if($clientID !== '')
+		if ($clientID !== '') {
 			$writer->addAttribute('id', $clientID);
+		}
 		$writer->addAttribute('type', 'radio');
 		$writer->addAttribute('name', $this->getUniqueGroupName());
 		$writer->addAttribute('value', $this->getValueAttribute());
-		if(!empty($onclick))
+		if (!empty($onclick)) {
 			$writer->addAttribute('onclick', $onclick);
-		if($this->getChecked())
+		}
+		if ($this->getChecked()) {
 			$writer->addAttribute('checked', 'checked');
-		if(!$this->getEnabled(true))
+		}
+		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
+		}
 
 		$page = $this->getPage();
-		if($this->getEnabled(true)
+		if ($this->getEnabled(true)
 			&& $this->getEnableClientScript()
 			&& $this->getAutoPostBack()
-			&& $page->getClientSupportsJavaScript())
-		{
+			&& $page->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 
-		if(($accesskey = $this->getAccessKey()) !== '')
+		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
-		if(($tabindex = $this->getTabIndex()) > 0)
+		}
+		if (($tabindex = $this->getTabIndex()) > 0) {
 			$writer->addAttribute('tabindex', "$tabindex");
-		if($attributes = $this->getViewState('InputAttributes', null))
+		}
+		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			$writer->addAttributes($attributes);
+		}
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
@@ -300,4 +304,3 @@ class TRadioButton extends TCheckBox
 		return 'Prado.WebUI.TRadioButton';
 	}
 }
-

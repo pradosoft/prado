@@ -106,12 +106,11 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
 			$this->raiseBubbleEvent($this, new TRepeaterCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 }

@@ -48,16 +48,17 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TEACache extends TCache
 {
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement $config configuration for this module, can be null
-    * @throws TConfigurationException if eaccelerator extension is not installed or not started, check your php.ini
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if eaccelerator extension is not installed or not started, check your php.ini
+	 */
 	public function init($config)
 	{
-		if(!function_exists('eaccelerator_get'))
+		if (!function_exists('eaccelerator_get')) {
 			throw new TConfigurationException('eacceleratorcache_extension_required');
+		}
 		parent::init($config);
 	}
 
@@ -122,8 +123,9 @@ class TEACache extends TCache
 		eaccelerator_gc();
 		// now, remove leftover cache-keys
 		$keys = eaccelerator_list_keys();
-		foreach($keys as $key)
+		foreach ($keys as $key) {
 			$this->deleteValue(substr($key['name'], 1));
+		}
 		return true;
 	}
 }

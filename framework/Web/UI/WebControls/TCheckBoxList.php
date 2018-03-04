@@ -76,8 +76,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function findControl($id, $real = false)
 	{
-		if ($real === true)
+		if ($real === true) {
 			return parent::findControl($id);
+		}
 		return $this;
 	}
 
@@ -121,8 +122,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	protected function getRepeatInfo()
 	{
-		if(($repeatInfo = $this->getViewState('RepeatInfo', null)) === null)
-		{
+		if (($repeatInfo = $this->getViewState('RepeatInfo', null)) === null) {
 			$repeatInfo = new TRepeatInfo;
 			$this->setViewState('RepeatInfo', $repeatInfo, null);
 		}
@@ -182,10 +182,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function getCellSpacing()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellSpacing();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -202,10 +203,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function getCellPadding()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellPadding();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -258,15 +260,13 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		// and it's a callback,
 		// and we can update clientside,
 		// then update the 'disabled' attribute of the items.
-		if(($this instanceof IActiveControl) &&
+		if (($this instanceof IActiveControl) &&
 				$this->getPage()->getIsCallBack() &&
-				$this->getActiveControl()->canUpdateClientSide())
-		{
+				$this->getActiveControl()->canUpdateClientSide()) {
 			$items = $this->getItems();
 			$cs = $this->getPage()->getCallbackClient();
 			$baseClientID = $this->getClientID() . '_c';
-			foreach($items as $index => $item)
-			{
+			foreach ($items as $index => $item) {
 				$cs->setAttribute($baseClientID . $index, 'disabled', $value);
 			}
 		}
@@ -296,10 +296,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	{
 		$repeatedControl = $this->_repeatedControl;
 		$item = $this->getItems()->itemAt($index);
-		if($item->getHasAttributes())
+		if ($item->getHasAttributes()) {
 			$repeatedControl->getAttributes()->copyFrom($item->getAttributes());
-		elseif($repeatedControl->getHasAttributes())
+		} elseif ($repeatedControl->getHasAttributes()) {
 			$repeatedControl->getAttributes()->clear();
+		}
 		$repeatedControl->setID("c$index");
 		$repeatedControl->setText($item->getText());
 		$repeatedControl->setChecked($item->getSelected());
@@ -318,21 +319,16 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function loadPostData($key, $values)
 	{
-		if($this->getEnabled(true))
-		{
+		if ($this->getEnabled(true)) {
 			$index = (int)substr($key, strlen($this->getUniqueID()) + 2);
 			$this->ensureDataBound();
-			if($index >= 0 && $index < $this->getItemCount())
-			{
+			if ($index >= 0 && $index < $this->getItemCount()) {
 				$item = $this->getItems()->itemAt($index);
-				if($item->getEnabled())
-				{
+				if ($item->getEnabled()) {
 					$checked = isset($values[$key]);
-					if($item->getSelected() !== $checked)
-					{
+					if ($item->getSelected() !== $checked) {
 						$item->setSelected($checked);
-						if(!$this->_changedEventRaised)
-						{
+						if (!$this->_changedEventRaised) {
 							$this->_changedEventRaised = true;
 							return $this->_dataChanged = true;
 						}
@@ -352,8 +348,9 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onSelectedIndexChanged(null);
 	}
 
@@ -370,8 +367,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$this->_repeatedControl->setValidationGroup($this->getValidationGroup());
 		$page = $this->getPage();
 		$n = $this->getItemCount();
-		for($i = 0;$i < $n;++$i)
-		{
+		for ($i = 0;$i < $n;++$i) {
 			$this->_repeatedControl->setID("c$i");
 			$page->registerRequiresPostData($this->_repeatedControl);
 		}
@@ -382,7 +378,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 *
 	 *@return boolean true if we need a span
 	 */
-	protected function getSpanNeeded ()
+	protected function getSpanNeeded()
 	{
 		return $this->getRepeatLayout() === TRepeatLayout::Raw;
 	}
@@ -394,13 +390,11 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function render($writer)
 	{
-	  if ($needSpan = $this->getSpanNeeded())
-	  {
-		$writer->addAttribute('id', $this->getClientId());
-		$writer->renderBeginTag('span');
-	  }
-		if($this->getItemCount() > 0)
-		{
+		if ($needSpan = $this->getSpanNeeded()) {
+			$writer->addAttribute('id', $this->getClientId());
+			$writer->renderBeginTag('span');
+		}
+		if ($this->getItemCount() > 0) {
 			$this->_isEnabled = $this->getEnabled(true);
 			$repeatInfo = $this->getRepeatInfo();
 			$accessKey = $this->getAccessKey();
@@ -415,15 +409,15 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 			$this->setAccessKey($accessKey);
 			$this->setTabIndex($tabIndex);
 		}
-		if ($needSpan)
-		  $writer->renderEndTag();
+		if ($needSpan) {
+			$writer->renderEndTag();
+		}
 
 		//checkbox skipped the client control script in addAttributesToRender
-		if($this->getEnabled(true)
+		if ($this->getEnabled(true)
 			&& $this->getEnableClientScript()
 			&& $this->getAutoPostBack()
-			&& $this->getPage()->getClientSupportsJavaScript())
-		{
+			&& $this->getPage()->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 	}
@@ -488,5 +482,4 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$options['ItemCount'] = $this->getItemCount();
 		return $options;
 	}
-
 }

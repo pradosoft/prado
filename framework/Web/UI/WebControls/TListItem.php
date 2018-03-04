@@ -76,16 +76,21 @@ class TListItem extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_attributes === null)
+		if ($this->_attributes === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_attributes";
-		if($this->_text === '')
+		}
+		if ($this->_text === '') {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_text";
-		if($this->_value === '')
+		}
+		if ($this->_value === '') {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_value";
-		if ($this->_enabled === true)
+		}
+		if ($this->_enabled === true) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_enabled";
-		if ($this->_selected === false)
+		}
+		if ($this->_selected === false) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_selected";
+		}
 	}
 
 	/**
@@ -157,8 +162,9 @@ class TListItem extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if(!$this->_attributes)
+		if (!$this->_attributes) {
 			$this->_attributes = new TAttributeCollection;
+		}
 		return $this->_attributes;
 	}
 
@@ -206,4 +212,3 @@ class TListItem extends \Prado\TComponent
 		return $this->_attributes ? $this->_attributes->remove($name) : null;
 	}
 }
-

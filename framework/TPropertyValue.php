@@ -62,10 +62,11 @@ class TPropertyValue
 	 */
 	public static function ensureBoolean($value)
 	{
-		if (is_string($value))
+		if (is_string($value)) {
 			return strcasecmp($value, 'true') == 0 || $value != 0;
-		else
+		} else {
 			return (boolean)$value;
+		}
 	}
 
 	/**
@@ -77,12 +78,14 @@ class TPropertyValue
 	 */
 	public static function ensureString($value)
 	{
-		if (TJavaScript::isJsLiteral($value))
+		if (TJavaScript::isJsLiteral($value)) {
 			return $value;
-		if (is_bool($value))
+		}
+		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
-		else
+		} else {
 			return (string)$value;
+		}
 	}
 
 	/**
@@ -116,20 +119,18 @@ class TPropertyValue
 	 */
 	public static function ensureArray($value)
 	{
-		if(is_string($value))
-		{
+		if (is_string($value)) {
 			$value = trim($value);
 			$len = strlen($value);
-			if ($len >= 2 && $value[0] == '(' && $value[$len - 1] == ')')
-			{
+			if ($len >= 2 && $value[0] == '(' && $value[$len - 1] == ')') {
 				eval('$array=array' . $value . ';');
 				return $array;
-			}
-			else
+			} else {
 				return $len > 0 ? [$value] : [];
-		}
-		else
+			}
+		} else {
 			return (array)$value;
+		}
 	}
 
 	/**
@@ -161,26 +162,28 @@ class TPropertyValue
 	public static function ensureEnum($value, $enums)
 	{
 		static $types = [];
-		if(func_num_args() === 2 && is_string($enums))
-		{
-			if(!isset($types[$enums]))
+		if (func_num_args() === 2 && is_string($enums)) {
+			if (!isset($types[$enums])) {
 				$types[$enums] = new \ReflectionClass($enums);
-			if($types[$enums]->hasConstant($value))
+			}
+			if ($types[$enums]->hasConstant($value)) {
 				return $value;
-			else
+			} else {
 				throw new TInvalidDataValueException(
-					'propertyvalue_enumvalue_invalid', $value,
-						implode(' | ', $types[$enums]->getConstants()));
-		}
-		elseif(!is_array($enums))
-		{
+					'propertyvalue_enumvalue_invalid',
+					$value,
+						implode(' | ', $types[$enums]->getConstants())
+				);
+			}
+		} elseif (!is_array($enums)) {
 			$enums = func_get_args();
 			array_shift($enums);
 		}
-		if(in_array($value, $enums, true))
+		if (in_array($value, $enums, true)) {
 			return $value;
-		else
+		} else {
 			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $value, implode(' | ', $enums));
+		}
 	}
 
 	/**

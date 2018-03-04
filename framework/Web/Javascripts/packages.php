@@ -137,4 +137,3 @@ $dependencies = [
 ];
 
 return [$folders, $packages, $dependencies];
-

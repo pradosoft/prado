@@ -66,8 +66,9 @@ class TTranslateParameter extends TControl
 	 */
 	public function getKey()
 	{
-		if(empty($this->key))
+		if (empty($this->key)) {
 			throw new TException('The Key property must be specified.');
+		}
 		return $this->key;
 	}
 
@@ -114,12 +115,12 @@ class TTranslateParameter extends TControl
 	public function getParameter()
 	{
 		$value = $this->getValue();
-		if(strlen($value) > 0)
+		if (strlen($value) > 0) {
 			return $value;
+		}
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 		$this->renderControl($htmlWriter);
 		return $this->getTrim() ?
 			trim($htmlWriter->flush()) : $htmlWriter->flush();
 	}
 }
-

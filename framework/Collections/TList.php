@@ -67,8 +67,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
-		if($data !== null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 		$this->setReadOnly($readOnly);
 	}
 
@@ -125,10 +126,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function itemAt($index)
 	{
-		if($index >= 0 && $index < $this->_c)
+		if ($index >= 0 && $index < $this->_c) {
 			return $this->_d[$index];
-		else
+		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
+		}
 	}
 
 	/**
@@ -154,20 +156,18 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertAt($index, $item)
 	{
-		if(!$this->_r)
-		{
-			if($index === $this->_c)
+		if (!$this->_r) {
+			if ($index === $this->_c) {
 				$this->_d[$this->_c++] = $item;
-			elseif($index >= 0 && $index < $this->_c)
-			{
+			} elseif ($index >= 0 && $index < $this->_c) {
 				array_splice($this->_d, $index, 0, [$item]);
 				$this->_c++;
-			}
-			else
+			} else {
 				throw new TInvalidDataValueException('list_index_invalid', $index);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -181,18 +181,16 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function remove($item)
 	{
-		if(!$this->_r)
-		{
-			if(($index = $this->indexOf($item)) >= 0)
-			{
+		if (!$this->_r) {
+			if (($index = $this->indexOf($item)) >= 0) {
 				$this->removeAt($index);
 				return $index;
-			}
-			else
+			} else {
 				throw new TInvalidDataValueException('list_item_inexistent');
-		}
-		else
+			}
+		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -204,25 +202,22 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function removeAt($index)
 	{
-		if(!$this->_r)
-		{
-			if($index >= 0 && $index < $this->_c)
-			{
+		if (!$this->_r) {
+			if ($index >= 0 && $index < $this->_c) {
 				$this->_c--;
-				if($index === $this->_c)
+				if ($index === $this->_c) {
 					return array_pop($this->_d);
-				else
-				{
+				} else {
 					$item = $this->_d[$index];
 					array_splice($this->_d, $index, 1);
 					return $item;
 				}
-			}
-			else
+			} else {
 				throw new TInvalidDataValueException('list_index_invalid', $index);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -231,8 +226,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function clear()
 	{
-		for($i = $this->_c - 1;$i >= 0;--$i)
+		for ($i = $this->_c - 1;$i >= 0;--$i) {
 			$this->removeAt($i);
+		}
 	}
 
 	/**
@@ -250,10 +246,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function indexOf($item)
 	{
-		if(($index = array_search($item, $this->_d, true)) === false)
+		if (($index = array_search($item, $this->_d, true)) === false) {
 			return -1;
-		else
+		} else {
 			return $index;
+		}
 	}
 
 	/**
@@ -267,17 +264,17 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertBefore($baseitem, $item)
 	{
-		if(!$this->_r)
-		{
-			if(($index = $this->indexOf($baseitem)) == -1)
+		if (!$this->_r) {
+			if (($index = $this->indexOf($baseitem)) == -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
+			}
 
 			$this->insertAt($index, $item);
 
 			return $index;
-		}
-		else
+		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -291,17 +288,17 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertAfter($baseitem, $item)
 	{
-		if(!$this->_r)
-		{
-			if(($index = $this->indexOf($baseitem)) == -1)
+		if (!$this->_r) {
+			if (($index = $this->indexOf($baseitem)) == -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
+			}
 
 			$this->insertAt($index + 1, $item);
 
 			return $index + 1;
-		}
-		else
+		} else {
 			throw new TInvalidOperationException('list_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -320,15 +317,16 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
-			if($this->_c > 0)
+		if (is_array($data) || ($data instanceof \Traversable)) {
+			if ($this->_c > 0) {
 				$this->clear();
-			foreach($data as $item)
+			}
+			foreach ($data as $item) {
 				$this->add($item);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		}
 	}
 
 	/**
@@ -339,13 +337,13 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function mergeWith($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
-			foreach($data as $item)
+		if (is_array($data) || ($data instanceof \Traversable)) {
+			foreach ($data as $item) {
 				$this->add($item);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		}
 	}
 
 	/**
@@ -379,10 +377,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function offsetSet($offset, $item)
 	{
-		if($offset === null || $offset === $this->_c)
+		if ($offset === null || $offset === $this->_c) {
 			$this->insertAt($this->_c, $item);
-		else
-		{
+		} else {
 			$this->removeAt($offset);
 			$this->insertAt($offset, $item);
 		}

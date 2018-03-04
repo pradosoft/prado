@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Mysql;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TMysqlCommandBuilder implements default TDbCommandBuilder
  *
@@ -25,4 +24,3 @@ use Prado\Prado;
 class TMysqlCommandBuilder extends TDbCommandBuilder
 {
 }
-

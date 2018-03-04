@@ -70,20 +70,13 @@ class TXmlRpcProtocol extends TRpcProtocol
 	 */
 	public function callMethod($requestPayload)
 	{
-		try
-		{
+		try {
 			return xmlrpc_server_call_method($this->_xmlrpcServer, $requestPayload, null);
-		}
-		catch(TRpcException $e)
-		{
+		} catch (TRpcException $e) {
 			return $this->createErrorResponse($e);
-		}
-		catch(THttpException $e)
-		{
+		} catch (THttpException $e) {
 			throw $e;
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			return $this->createErrorResponse(new TRpcException('An internal error occured'));
 		}
 	}

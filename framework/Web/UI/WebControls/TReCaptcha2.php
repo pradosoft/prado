@@ -111,10 +111,8 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$captchas = $this->Page->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
-		foreach ($captchas as $captcha)
-		{
-			if ($this->getClientID() == $captcha->ClientID)
-			{
+		foreach ($captchas as $captcha) {
+			if ($this->getClientID() == $captcha->ClientID) {
 				$responseFieldName .= ($cont > 0) ? '-' . $cont : '';
 			}
 			$cont++;
@@ -271,10 +269,18 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$options['onCallback'] = $this->hasEventHandler('OnCallback');
 		$options['onCallbackExpired'] = $this->hasEventHandler('OnCallbackExpired');
 		$options['options']['sitekey'] = $this->getSiteKey();
-		if ($theme = $this->getTheme()) $options['options']['theme'] = $theme;
-		if ($type = $this->getType()) $options['options']['type'] = $type;
-		if ($size = $this->getSize()) $options['options']['size'] = $size;
-		if ($tabIndex = $this->getTabIndex()) $options['options']['tabindex'] = $tabIndex;
+		if ($theme = $this->getTheme()) {
+			$options['options']['theme'] = $theme;
+		}
+		if ($type = $this->getType()) {
+			$options['options']['type'] = $type;
+		}
+		if ($size = $this->getSize()) {
+			$options['options']['size'] = $size;
+		}
+		if ($tabIndex = $this->getTabIndex()) {
+			$options['options']['tabindex'] = $tabIndex;
+		}
 
 		return $options;
 	}
@@ -292,8 +298,9 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	public function validate()
 	{
 		$value = $this->getValidationPropertyValue();
-		if($value === null || empty($value))
+		if ($value === null || empty($value)) {
 			return false;
+		}
 
 		return true;
 	}
@@ -305,10 +312,12 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		parent::onPreRender($param);
 
-		if("" == $this->getSiteKey())
+		if ("" == $this->getSiteKey()) {
 			throw new TConfigurationException('recaptcha_publickey_unknown');
-		if("" == $this->getSecretKey())
+		}
+		if ("" == $this->getSecretKey()) {
 			throw new TConfigurationException('recaptcha_privatekey_unknown');
+		}
 
 		// need to register captcha fields so they will be sent postback
 		$this->Page->registerRequiresPostData($this->getResponseFieldName());
@@ -322,30 +331,25 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	public function raiseCallbackEvent($param)
 	{
 		$params = $param->getCallbackParameter();
-		if ($params instanceof stdClass)
-		{
+		if ($params instanceof stdClass) {
 			$callback = property_exists($params, 'onCallback');
 			$callbackExpired = property_exists($params, 'onCallbackExpired');
 
-			if ($callback)
-			{
+			if ($callback) {
 				$this->WidgetId = $params->widgetId;
 				$this->Response = $params->response;
 				$this->Page->CallbackClient->jQuery($params->responseField, 'text', [$params->response]);
 
-				if ($params->onCallback)
-				{
+				if ($params->onCallback) {
 					$this->onCallback($param);
 				}
 			}
 
-			if ($callbackExpired)
-			{
+			if ($callbackExpired) {
 				$this->Response = '';
 				$this->reset();
 
-				if ($params->onCallbackExpired)
-				{
+				if ($params->onCallbackExpired) {
 					$this->onCallbackExpired($param);
 				}
 			}

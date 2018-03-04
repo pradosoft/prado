@@ -91,8 +91,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setIsGuest($value)
 	{
-		if($isGuest = TPropertyValue::ensureBoolean($value))
-		{
+		if ($isGuest = TPropertyValue::ensureBoolean($value)) {
 			$this->setName($this->_manager->getGuestName());
 			$this->setRoles([]);
 		}
@@ -112,15 +111,14 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setRoles($value)
 	{
-		if(is_array($value))
+		if (is_array($value)) {
 			$this->setState('Roles', $value, []);
-		else
-		{
+		} else {
 			$roles = [];
-			foreach(explode(',', $value) as $role)
-			{
-				if(($role = trim($role)) !== '')
+			foreach (explode(',', $value) as $role) {
+				if (($role = trim($role)) !== '') {
 					$roles[] = $role;
+				}
 			}
 			$this->setState('Roles', $roles, []);
 		}
@@ -132,9 +130,11 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function isInRole($role)
 	{
-		foreach($this->getRoles() as $r)
-			if(strcasecmp($role, $r) === 0)
+		foreach ($this->getRoles() as $r) {
+			if (strcasecmp($role, $r) === 0) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -152,10 +152,12 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function loadFromString($data)
 	{
-		if(!empty($data))
+		if (!empty($data)) {
 			$this->_state = unserialize($data);
-		if(!is_array($this->_state))
+		}
+		if (!is_array($this->_state)) {
 			$this->_state = [];
+		}
 		return $this;
 	}
 
@@ -193,10 +195,11 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	protected function setState($key, $value, $defaultValue = null)
 	{
-		if($value === $defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_state[$key]);
-		else
+		} else {
 			$this->_state[$key] = $value;
+		}
 		$this->_stateChanged = true;
 	}
 
@@ -216,4 +219,3 @@ class TUser extends \Prado\TComponent implements IUser
 		$this->_stateChanged = TPropertyValue::ensureBoolean($value);
 	}
 }
-

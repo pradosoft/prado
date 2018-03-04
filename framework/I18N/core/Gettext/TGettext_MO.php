@@ -187,8 +187,7 @@ class TGettext_MO extends TGettext
 
 		//unpack returns a reference????
 		$unpacked = unpack('c', $this->_read(4));
-		switch ($magic = array_shift($unpacked))
-		{
+		switch ($magic = array_shift($unpacked)) {
 			case -34:
 				$be = false;
 			break;

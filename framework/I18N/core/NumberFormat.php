@@ -90,15 +90,16 @@ class NumberFormat
 	 */
 	public function __construct($formatInfo = null)
 	{
-		if($formatInfo === null)
+		if ($formatInfo === null) {
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
-		elseif($formatInfo instanceof CultureInfo)
+		} elseif ($formatInfo instanceof CultureInfo) {
 			$this->formatInfo = $formatInfo->NumberFormat;
-		elseif($formatInfo instanceof NumberFormatInfo)
+		} elseif ($formatInfo instanceof NumberFormatInfo) {
 			$this->formatInfo = $formatInfo;
-		else
+		} else {
 			$this->formatInfo =
 				NumberFormatInfo::getInstance($formatInfo);
+		}
 	}
 
 	/**
@@ -120,33 +121,36 @@ class NumberFormat
 
 		$this->setPattern($pattern);
 
-		if(strtolower($pattern) == 'p')
+		if (strtolower($pattern) == 'p') {
 			$number = $number * 100;
+		}
 
 		$string = (string)$number;
 
 		$decimal = $this->formatDecimal($string);
 		$integer = $this->formatInteger(abs($number));
 
-		if(strlen($decimal) > 0)
+		if (strlen($decimal) > 0) {
 			$result = $integer . $decimal;
-		else
+		} else {
 			$result = $integer;
+		}
 
 		//get the suffix
-		if($number >= 0)
+		if ($number >= 0) {
 			$suffix = $this->formatInfo->PositivePattern;
-		elseif($number < 0)
+		} elseif ($number < 0) {
 			$suffix = $this->formatInfo->NegativePattern;
-		else
+		} else {
 			$suffix = ["",""];
+		}
 
 		//append and prepend suffix
 		$result = $suffix[0] . $result . $suffix[1];
 
 		//replace currency sign
 		$symbol = @$this->formatInfo->getCurrencySymbol($currency);
-		if($symbol === null) {
+		if ($symbol === null) {
 			$symbol = $currency;
 		}
 
@@ -168,11 +172,13 @@ class NumberFormat
 
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		//if not decimal digits, assume 0 decimal points.
-		if(is_int($decimalDigits) && $decimalDigits > 0)
+		if (is_int($decimalDigits) && $decimalDigits > 0) {
 			$string = (string)round(floatval($string), $decimalDigits);
+		}
 		$dp = strpos($string, '.');
-		if(is_int($dp))
+		if (is_int($dp)) {
 			$string = substr($string, 0, $dp);
+		}
 		$integer = '';
 
 		$digitSize = $this->formatInfo->getDigitSize();
@@ -189,33 +195,23 @@ class NumberFormat
 		$multiGroup = is_int($groupSize[1]);
 		$count = 0;
 
-		if(is_int($groupSize[0]))
-		{
+		if (is_int($groupSize[0])) {
 			//now for the integer groupings
-			for($i = 0; $i < $len; $i++)
-			{
+			for ($i = 0; $i < $len; $i++) {
 				$char = $string{$len - $i - 1};
 
-				if($multiGroup && $count == 0)
-				{
-					if($i != 0 && $i % $groupSize[0] == 0)
-					{
+				if ($multiGroup && $count == 0) {
+					if ($i != 0 && $i % $groupSize[0] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
-				}
-				elseif($multiGroup && $count >= 1)
-				{
-					if($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0)
-					{
+				} elseif ($multiGroup && $count >= 1) {
+					if ($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
-				}
-				else
-				{
-					if($i != 0 && $i % $groupSize[0] == 0)
-					{
+				} else {
+					if ($i != 0 && $i % $groupSize[0] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
@@ -223,9 +219,9 @@ class NumberFormat
 
 				$integer = $char . $integer;
 			}
-		}
-		else
+		} else {
 			$integer = $string;
+		}
 
 		return $integer;
 	}
@@ -245,33 +241,27 @@ class NumberFormat
 
 		//do the correct rounding here
 		//$string = round(floatval($string), $decimalDigits);
-		if(is_int($dp))
-		{
-			if($decimalDigits == -1)
-			{
+		if (is_int($dp)) {
+			if ($decimalDigits == -1) {
 				$decimal = substr($string, $dp + 1);
-			}
-			elseif(is_int($decimalDigits))
-			{
+			} elseif (is_int($decimalDigits)) {
 				$float = round((float)$string, $decimalDigits);
-				if(strpos((string)$float, '.') === false)
-				{
+				if (strpos((string)$float, '.') === false) {
 					$decimal = str_pad($decimal, $decimalDigits, '0');
-				}
-				else
-				{
+				} else {
 					$decimal = substr($float, strpos($float, '.') + 1);
-					if(strlen($decimal) < $decimalDigits)
+					if (strlen($decimal) < $decimalDigits) {
 						$decimal = str_pad($decimal, $decimalDigits, '0');
+					}
 				}
-			}
-			else
+			} else {
 				return $decimal;
+			}
 
 			return $decimalSeparator . $decimal;
-		}
-		elseif ($decimalDigits > 0)
+		} elseif ($decimalDigits > 0) {
 			return $decimalSeparator . str_pad($decimal, $decimalDigits, '0');
+		}
 
 		return $decimal;
 	}
@@ -284,8 +274,7 @@ class NumberFormat
 	 */
 	protected function setPattern($pattern)
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'c':
 			case 'C':
 				$this->formatInfo->setPattern(NumberFormatInfo::CURRENCY);
@@ -308,4 +297,3 @@ class NumberFormat
 		}
 	}
 }
-

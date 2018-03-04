@@ -311,8 +311,7 @@ class THtmlArea extends TTextBox
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getEnableVisualEdit() && $this->getEnabled(true))
-		{
+		if ($this->getEnableVisualEdit() && $this->getEnabled(true)) {
 			$writer->addAttribute('id', $this->getClientID());
 			$this->registerEditorClientScript($writer);
 		}
@@ -377,8 +376,9 @@ class THtmlArea extends TTextBox
 	{
 		$tarfile = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.tar');
 		$md5sum = Prado::getPathOfNamespace('Vendor.pradosoft.prado-tinymce3.tiny_mce', '.md5');
-		if($tarfile === null || $md5sum === null)
+		if ($tarfile === null || $md5sum === null) {
 			throw new TConfigurationException('htmlarea_tarfile_invalid');
+		}
 		$url = $this->getApplication()->getAssetManager()->publishTarFile($tarfile, $md5sum);
 		$this->copyCustomPlugins($url);
 		return $url;
@@ -386,13 +386,13 @@ class THtmlArea extends TTextBox
 
 	protected function copyCustomPlugins($url)
 	{
-		if($plugins = $this->getCustomPluginPath())
-		{
+		if ($plugins = $this->getCustomPluginPath()) {
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
 			$dest = $assets->getBasePath() . '/' . basename($url) . '/tiny_mce/plugins/' . basename($path);
-			if(!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance)
+			if (!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				$assets->copyDirectory($path, $dest);
+			}
 		}
 	}
 
@@ -418,8 +418,9 @@ class THtmlArea extends TTextBox
 		$options['theme_advanced_toolbar_align'] = 'left';
 		$options['theme_advanced_path_location'] = 'bottom';
 		$options['extended_valid_elements'] = 'a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]';
-		if($this->getReadOnly())
+		if ($this->getReadOnly()) {
 			$options['readonly'] = true;
+		}
 
 		$options = array_merge($options, $this->parseEditorOptions($this->getOptions()));
 		return $options;
@@ -433,17 +434,16 @@ class THtmlArea extends TTextBox
 	{
 		$options = [];
 		$substrings = preg_split('/,\s*\n|\n/', trim($string));
-		foreach($substrings as $bits)
-		{
+		foreach ($substrings as $bits) {
 			$option = explode(":", $bits, 2);
 
-			if(count($option) == 2)
-			{
+			if (count($option) == 2) {
 				$value = trim(trim($option[1]), "'\"");
-				if (($s = strtolower($value)) === 'false')
+				if (($s = strtolower($value)) === 'false') {
 					$value = false;
-				elseif ($s === 'true')
+				} elseif ($s === 'true') {
 					$value = true;
+				}
 				$options[trim($option[0])] = $value;
 			}
 		}
@@ -456,16 +456,18 @@ class THtmlArea extends TTextBox
 	protected function getLanguageSuffix($culture)
 	{
 		$app = $this->getApplication()->getGlobalization();
-		if(empty($culture) && ($app !== null))
+		if (empty($culture) && ($app !== null)) {
 			$culture = $app->getCulture();
+		}
 		$variants = [];
-		if($app !== null)
+		if ($app !== null) {
 			$variants = $app->getCultureVariants($culture);
+		}
 
-		foreach($variants as $variant)
-		{
-			if(isset(self::$_langs[$variant]))
+		foreach ($variants as $variant) {
+			if (isset(self::$_langs[$variant])) {
 				return self::$_langs[$variant];
+			}
 		}
 
 		return 'en';

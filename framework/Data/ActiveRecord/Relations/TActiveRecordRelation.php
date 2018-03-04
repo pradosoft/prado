@@ -18,7 +18,6 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
-
 /**
  * Base class for active record relationships.
  *
@@ -80,16 +79,17 @@ abstract class TActiveRecordRelation
 
 		$results = call_user_func_array([$this->getSourceRecord(),$method], $args);
 		$validArray = is_array($results) && count($results) > 0;
-		if($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord)
-		{
+		if ($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord) {
 			$this->collectForeignObjects($results);
-			while($obj = array_pop($stack))
+			while ($obj = array_pop($stack)) {
 				$obj->collectForeignObjects($results);
-		}
-		elseif($results instanceof TActiveRecordRelation)
-			$stack[] = $this; //call it later
-		elseif($results === null || !$validArray)
+			}
+		} elseif ($results instanceof TActiveRecordRelation) {
+			$stack[] = $this;
+		} //call it later
+		elseif ($results === null || !$validArray) {
 			$stack = [];
+		}
 		return $results;
 	}
 
@@ -118,25 +118,28 @@ abstract class TActiveRecordRelation
 		$matchingTableName = strtolower($recordTableInfo->getTableName());
 		$matchingFullTableName = strtolower($recordTableInfo->getTableFullName());
 		$tableInfo = $from;
-		if($from instanceof TActiveRecord)
+		if ($from instanceof TActiveRecord) {
 			$tableInfo = $gateway->getRecordTableInfo($from);
+		}
 		//find first non-empty FK
-		foreach($tableInfo->getForeignKeys() as $fkeys)
-		{
+		foreach ($tableInfo->getForeignKeys() as $fkeys) {
 			$fkTable = strtolower($fkeys['table']);
-			if($fkTable === $matchingTableName || $fkTable === $matchingFullTableName)
-			{
+			if ($fkTable === $matchingTableName || $fkTable === $matchingFullTableName) {
 				$hasFkField = !$loose && $this->getContext()->hasFkField();
 				$key = $hasFkField ? $this->getFkFields($fkeys['keys']) : $fkeys['keys'];
-				if(!empty($key))
+				if (!empty($key)) {
 					return $key;
+				}
 			}
 		}
 
 		//none found
 		$matching = $gateway->getRecordTableInfo($matchesRecord)->getTableFullName();
-		throw new TActiveRecordException('ar_relations_missing_fk',
-			$tableInfo->getTableFullName(), $matching);
+		throw new TActiveRecordException(
+			'ar_relations_missing_fk',
+			$tableInfo->getTableFullName(),
+			$matching
+		);
 	}
 
 	/**
@@ -155,10 +158,10 @@ abstract class TActiveRecordRelation
 		$matching = [];
 		preg_match_all('/\s*(\S+\.)?([\w-]+)\s*/', $this->getContext()->getFkField(), $matching);
 		$fields = [];
-		foreach($fkeys as $fkName => $field)
-		{
-			if(in_array($fkName, $matching[2]))
+		foreach ($fkeys as $fkName => $field) {
+			if (in_array($fkName, $matching[2])) {
 				$fields[$fkName] = $field;
+			}
 		}
 		return $fields;
 	}
@@ -171,8 +174,9 @@ abstract class TActiveRecordRelation
 	protected function getObjectHash($obj, $properties)
 	{
 		$ids = [];
-		foreach($properties as $property)
+		foreach ($properties as $property) {
 			$ids[] = is_object($obj) ? (string)$obj->getColumnValue($property) : (string)$obj[$property];
+		}
 		return serialize($ids);
 	}
 
@@ -196,14 +200,15 @@ abstract class TActiveRecordRelation
 	 */
 	protected function getIndexValues($keys, $results)
 	{
-		if(!is_array($results) && !$results instanceof \ArrayAccess)
+		if (!is_array($results) && !$results instanceof \ArrayAccess) {
 			$results = [$results];
+		}
 		$values = [];
-		foreach($results as $result)
-		{
+		foreach ($results as $result) {
 			$value = [];
-			foreach($keys as $name)
+			foreach ($keys as $name) {
 				$value[] = $result->getColumnValue($name);
+			}
 			$values[] = $value;
 		}
 		return $values;
@@ -219,8 +224,9 @@ abstract class TActiveRecordRelation
 	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
 	{
 		$collections = [];
-		foreach($fkObjects as $fkObject)
+		foreach ($fkObjects as $fkObject) {
 			$collections[$this->getObjectHash($fkObject, $fields)][] = $fkObject;
+		}
 		$this->setResultCollection($results, $collections, $properties);
 	}
 
@@ -232,13 +238,13 @@ abstract class TActiveRecordRelation
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
-		if(is_array($results) || $results instanceof \ArrayAccess)
-		{
-			for($i = 0,$k = count($results);$i < $k;$i++)
+		if (is_array($results) || $results instanceof \ArrayAccess) {
+			for ($i = 0,$k = count($results);$i < $k;$i++) {
 				$this->setObjectProperty($results[$i], $properties, $collections);
-		}
-		else
+			}
+		} else {
 			$this->setObjectProperty($results, $properties, $collections);
+		}
 	}
 
 	/**
@@ -254,4 +260,3 @@ abstract class TActiveRecordRelation
 		$source->$prop = isset($collections[$hash]) ? $collections[$hash] : [];
 	}
 }
-

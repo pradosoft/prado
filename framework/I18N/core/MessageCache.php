@@ -43,14 +43,18 @@ class MessageCache
 	{
 		$cacheDir = $cacheDir . '/';
 
-		if(!is_dir($cacheDir))
+		if (!is_dir($cacheDir)) {
 			throw new Exception(
 				'The cache directory ' . $cacheDir . ' does not exists.' .
-				'The cache directory must be writable by the server.');
-		if(!is_writable($cacheDir))
+				'The cache directory must be writable by the server.'
+			);
+		}
+		if (!is_writable($cacheDir)) {
 			throw new Exception(
 				'The cache directory ' . $cacheDir . ' must be writable ' .
-				'by the server.');
+				'by the server.'
+			);
+		}
 
 		$options = [
 			'cacheDir' => $cacheDir,
@@ -117,14 +121,16 @@ class MessageCache
 
 		$cache = $this->cache->getCacheFile();
 
-		if(is_file($cache) == false)
+		if (is_file($cache) == false) {
 			return false;
+		}
 
 
 		$lastmodified = (int)$lastmodified;
 
-		if($lastmodified <= 0 || $lastmodified > filemtime($cache))
+		if ($lastmodified <= 0 || $lastmodified > filemtime($cache)) {
 			return false;
+		}
 
 		//echo '@@ Cache hit: "'.$ID.'" : "'.$group.'"';
 		//echo "<br>\n";
@@ -167,6 +173,4 @@ class MessageCache
 	{
 		$this->cache->clean();
 	}
-
 }
-

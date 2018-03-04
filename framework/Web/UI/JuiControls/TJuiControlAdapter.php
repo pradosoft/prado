@@ -86,8 +86,9 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	{
 		$url = $this->getAssetUrl(self::CSS_PATH . '/' . $this->getJuiBaseStyle() . '/' . $file);
 		$cs = $this->getPage()->getClientScript();
-		if(!$cs->isStyleSheetFileRegistered($url))
+		if (!$cs->isStyleSheetFileRegistered($url)) {
 			$cs->registerStyleSheetFile($url, $url);
+		}
 		return $url;
 	}
 
@@ -100,5 +101,4 @@ class TJuiControlAdapter extends TActiveControlAdapter
 		parent::loadState();
 		$this->getControl()->getOptions()->setControl($this->getControl());
 	}
-
 }

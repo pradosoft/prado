@@ -61,11 +61,13 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function init($config)
 	{
-		if($this->_userClass === '')
+		if ($this->_userClass === '') {
 			throw new TConfigurationException('dbusermanager_userclass_required');
+		}
 		$this->_userFactory = Prado::createComponent($this->_userClass, $this);
-		if(!($this->_userFactory instanceof TDbUser))
+		if (!($this->_userFactory instanceof TDbUser)) {
 			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
+		}
 	}
 
 	/**
@@ -118,14 +120,13 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getUser($username = null)
 	{
-		if($username === null)
-		{
+		if ($username === null) {
 			$user = Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
 			return $user;
-		}
-		else
+		} else {
 			return $this->_userFactory->createUser($username);
+		}
 	}
 
 	/**
@@ -152,8 +153,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn === null)
-		{
+		if ($this->_conn === null) {
 			$this->_conn = $this->createDbConnection($this->_connID);
 			$this->_conn->setActive(true);
 		}
@@ -168,16 +168,16 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	protected function createDbConnection($connectionID)
 	{
-		if($connectionID !== '')
-		{
+		if ($connectionID !== '') {
 			$conn = $this->getApplication()->getModule($connectionID);
-			if($conn instanceof TDataSourceConfig)
+			if ($conn instanceof TDataSourceConfig) {
 				return $conn->getDbConnection();
-			else
+			} else {
 				throw new TConfigurationException('dbusermanager_connectionid_invalid', $connectionID);
-		}
-		else
+			}
+		} else {
 			throw new TConfigurationException('dbusermanager_connectionid_required');
+		}
 	}
 
 	/**
@@ -199,7 +199,8 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	public function saveUserToCookie($cookie)
 	{
 		$user = $this->getApplication()->getUser();
-		if($user instanceof TDbUser)
+		if ($user instanceof TDbUser) {
 			$user->saveUserToCookie($cookie);
+		}
 	}
 }

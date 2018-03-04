@@ -79,4 +79,3 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 		$this->_itemIndex = TPropertyValue::ensureInteger($value);
 	}
 }
-

@@ -67,8 +67,9 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public function __destruct()
 	{
-		if($this->_db !== null)
+		if ($this->_db !== null) {
 			$this->_db->setActive(false);
+		}
 	}
 
 	/**
@@ -84,17 +85,15 @@ class TDbLogRoute extends TLogRoute
 		$db->setActive(true);
 
 		$sql = 'SELECT * FROM ' . $this->_logTable . ' WHERE 0=1';
-		try
-		{
+		try {
 			$db->createCommand($sql)->query()->close();
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			// DB table not exists
-			if($this->_autoCreate)
+			if ($this->_autoCreate) {
 				$this->createDbTable();
-			else
+			} else {
 				throw new TConfigurationException('db_logtable_inexistent', $this->_logTable);
+			}
 		}
 
 		parent::init($config);
@@ -108,8 +107,7 @@ class TDbLogRoute extends TLogRoute
 	{
 		$sql = 'INSERT INTO ' . $this->_logTable . '(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
 		$command = $this->getDbConnection()->createCommand($sql);
-		foreach($logs as $log)
-		{
+		foreach ($logs as $log) {
 			$command->bindValue(':message', $log[0]);
 			$command->bindValue(':level', $log[1]);
 			$command->bindValue(':category', $log[2]);
@@ -127,8 +125,9 @@ class TDbLogRoute extends TLogRoute
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
-		if($driver === 'mysql')
+		if ($driver === 'mysql') {
 			$autoidAttributes = 'AUTO_INCREMENT';
+		}
 
 		$sql = 'CREATE TABLE ' . $this->_logTable . ' (
 			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
@@ -147,16 +146,14 @@ class TDbLogRoute extends TLogRoute
 	 */
 	protected function createDbConnection()
 	{
-		if($this->_connID !== '')
-		{
+		if ($this->_connID !== '') {
 			$config = $this->getApplication()->getModule($this->_connID);
-			if($config instanceof TDataSourceConfig)
+			if ($config instanceof TDataSourceConfig) {
 				return $config->getDbConnection();
-			else
+			} else {
 				throw new TConfigurationException('dblogroute_connectionid_invalid', $this->_connID);
-		}
-		else
-		{
+			}
+		} else {
 			$db = new TDbConnection;
 			// default to SQLite3 database
 			$dbFile = $this->getApplication()->getRuntimePath() . '/sqlite3.log';
@@ -170,8 +167,9 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public function getDbConnection()
 	{
-		if($this->_db === null)
+		if ($this->_db === null) {
 			$this->_db = $this->createDbConnection();
+		}
 		return $this->_db;
 	}
 
@@ -233,5 +231,4 @@ class TDbLogRoute extends TLogRoute
 	{
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
-
 }

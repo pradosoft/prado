@@ -16,6 +16,7 @@
 namespace Prado;
 
 use Prado\Exceptions\TInvalidDataTypeException;
+
 /**
  * TComponentReflection class.
  *
@@ -47,12 +48,13 @@ class TComponentReflection extends \Prado\TComponent
 	 */
 	public function __construct($component)
 	{
-		if(is_string($component) && class_exists($component, false))
+		if (is_string($component) && class_exists($component, false)) {
 			$this->_className = $component;
-		elseif(is_object($component))
+		} elseif (is_object($component)) {
 			$this->_className = get_class($component);
-		else
+		} else {
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
+		}
 		$this->reflect();
 	}
 
@@ -78,29 +80,25 @@ class TComponentReflection extends \Prado\TComponent
 		$events = [];
 		$methods = [];
 		$isComponent = is_subclass_of($this->_className, 'TComponent') || strcasecmp($this->_className, 'TComponent') === 0;
-		foreach($class->getMethods() as $method)
-		{
-			if($method->isPublic() || $method->isProtected())
-			{
+		foreach ($class->getMethods() as $method) {
+			if ($method->isPublic() || $method->isProtected()) {
 				$methodName = $method->getName();
-				if(!$method->isStatic() && $isComponent)
-				{
-					if($this->isPropertyMethod($method))
+				if (!$method->isStatic() && $isComponent) {
+					if ($this->isPropertyMethod($method)) {
 						$properties[substr($methodName, 3)] = $method;
-					elseif($this->isEventMethod($method))
-					{
+					} elseif ($this->isEventMethod($method)) {
 						$methodName[0] = 'O';
 						$events[$methodName] = $method;
 					}
 				}
-				if(strncmp($methodName, '__', 2) !== 0)
+				if (strncmp($methodName, '__', 2) !== 0) {
 					$methods[$methodName] = $method;
+				}
 			}
 		}
 		$reserved = [];
 		ksort($properties);
-		foreach($properties as $name => $method)
-		{
+		foreach ($properties as $name => $method) {
 			$this->_properties[$name] = [
 				'type' => $this->determinePropertyType($method),
 				'readonly' => !$class->hasMethod('set' . $name),
@@ -112,8 +110,7 @@ class TComponentReflection extends \Prado\TComponent
 			$reserved['set' . strtolower($name)] = 1;
 		}
 		ksort($events);
-		foreach($events as $name => $method)
-		{
+		foreach ($events as $name => $method) {
 			$this->_events[$name] = [
 				'class' => $method->getDeclaringClass()->getName(),
 				'protected' => $method->isProtected(),
@@ -122,15 +119,15 @@ class TComponentReflection extends \Prado\TComponent
 			$reserved[strtolower($name)] = 1;
 		}
 		ksort($methods);
-		foreach($methods as $name => $method)
-		{
-			if(!isset($reserved[strtolower($name)]))
+		foreach ($methods as $name => $method) {
+			if (!isset($reserved[strtolower($name)])) {
 				$this->_methods[$name] = [
 					'class' => $method->getDeclaringClass()->getName(),
 					'protected' => $method->isProtected(),
 					'static' => $method->isStatic(),
 					'comments' => $method->getDocComment()
 				];
+			}
 		}
 	}
 
@@ -142,10 +139,11 @@ class TComponentReflection extends \Prado\TComponent
 	protected function determinePropertyType($method)
 	{
 		$comment = $method->getDocComment();
-		if(preg_match('/@return\\s+(.*?)\\s+/', $comment, $matches))
+		if (preg_match('/@return\\s+(.*?)\\s+/', $comment, $matches)) {
 			return $matches[1];
-		else
+		} else {
 			return '{unknown}';
+		}
 	}
 
 	/**

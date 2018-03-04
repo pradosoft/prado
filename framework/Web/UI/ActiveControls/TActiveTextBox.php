@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TTextBox;
 
-
 /**
  * TActiveTextBox class.
  *
@@ -66,12 +65,14 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
+		}
 	}
 
 	/**
@@ -124,7 +125,8 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 }
-

@@ -32,18 +32,17 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 */
 	public function isUserAllowed($user, $verb, $ip)
 	{
-		if($user instanceof IUser)
-		{
+		if ($user instanceof IUser) {
 			$verb = strtolower(trim($verb));
-			foreach($this as $rule)
-			{
-				if(($decision = $rule->isUserAllowed($user, $verb, $ip)) !== 0)
+			foreach ($this as $rule) {
+				if (($decision = $rule->isUserAllowed($user, $verb, $ip)) !== 0) {
 					return ($decision > 0);
+				}
 			}
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -56,9 +55,10 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TAuthorizationRule)
+		if ($item instanceof TAuthorizationRule) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
+		}
 	}
 }

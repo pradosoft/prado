@@ -91,8 +91,9 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	public function getErrorTemplatePath()
 	{
-		if($this->_templatePath === null)
+		if ($this->_templatePath === null) {
 			$this->_templatePath = Prado::getFrameworkPath() . '/Exceptions/templates';
+		}
 		return $this->_templatePath;
 	}
 
@@ -104,10 +105,11 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	public function setErrorTemplatePath($value)
 	{
-		if(($templatePath = Prado::getPathOfNamespace($value)) !== null && is_dir($templatePath))
+		if (($templatePath = Prado::getPathOfNamespace($value)) !== null && is_dir($templatePath)) {
 			$this->_templatePath = $templatePath;
-		else
+		} else {
 			throw new TConfigurationException('errorhandler_errortemplatepath_invalid', $value);
+		}
 	}
 
 	/**
@@ -128,21 +130,23 @@ class TErrorHandler extends \Prado\TModule
 		restore_error_handler();
 		restore_exception_handler();
 		// ensure that we do not enter infinite loop of error handling
-		if($handling)
+		if ($handling) {
 			$this->handleRecursiveError($param);
-		else
-		{
+		} else {
 			$handling = true;
-			if(($response = $this->getResponse()) !== null)
+			if (($response = $this->getResponse()) !== null) {
 				$response->clear();
-			if(!headers_sent())
+			}
+			if (!headers_sent()) {
 				header('Content-Type: text/html; charset=UTF-8');
-			if($param instanceof THttpException)
+			}
+			if ($param instanceof THttpException) {
 				$this->handleExternalError($param->getStatusCode(), $param);
-			elseif($this->getApplication()->getMode() === TApplicationMode::Debug)
+			} elseif ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 				$this->displayException($param);
-			else
+			} else {
 				$this->handleExternalError(500, $param);
+			}
 		}
 	}
 
@@ -156,26 +160,26 @@ class TErrorHandler extends \Prado\TModule
 	protected static function hideSecurityRelated($value, $exception = null)
 	{
 		$aRpl = [];
-		if($exception !== null && $exception instanceof \Exception)
-		{
-			if($exception instanceof TPhpFatalErrorException &&
-				function_exists('xdebug_get_function_stack'))
-			{
+		if ($exception !== null && $exception instanceof \Exception) {
+			if ($exception instanceof TPhpFatalErrorException &&
+				function_exists('xdebug_get_function_stack')) {
 				$aTrace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
 			} else {
 				$aTrace = $exception->getTrace();
 			}
 
-			foreach($aTrace as $item)
-			{
-				if(isset($item['file']))
+			foreach ($aTrace as $item) {
+				if (isset($item['file'])) {
 					$aRpl[dirname($item['file']) . DIRECTORY_SEPARATOR] = '<hidden>' . DIRECTORY_SEPARATOR;
+				}
 			}
 		}
 		$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
 		$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
 		$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
-		if(isset($aRpl[DIRECTORY_SEPARATOR])) unset($aRpl[DIRECTORY_SEPARATOR]);
+		if (isset($aRpl[DIRECTORY_SEPARATOR])) {
+			unset($aRpl[DIRECTORY_SEPARATOR]);
+		}
 		$aRpl = array_reverse($aRpl, true);
 
 		return str_replace(array_keys($aRpl), $aRpl, $value);
@@ -190,8 +194,9 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function handleExternalError($statusCode, $exception)
 	{
-		if(!($exception instanceof THttpException))
+		if (!($exception instanceof THttpException)) {
 			error_log($exception->__toString());
+		}
 
 		$content = $this->getErrorTemplate($statusCode, $exception);
 
@@ -200,10 +205,9 @@ class TErrorHandler extends \Prado\TModule
 		$isDebug = $this->getApplication()->getMode() === TApplicationMode::Debug;
 
 		$errorMessage = $exception->getMessage();
-		if($isDebug)
+		if ($isDebug) {
 			$version = $_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
-		else
-		{
+		} else {
 			$version = '';
 			$errorMessage = self::hideSecurityRelated($errorMessage, $exception);
 		}
@@ -229,15 +233,12 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function handleRecursiveError($exception)
 	{
-		if($this->getApplication()->getMode() === TApplicationMode::Debug)
-		{
+		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			echo "<html><head><title>Recursive Error</title></head>\n";
 			echo "<body><h1>Recursive Error</h1>\n";
 			echo "<pre>" . $exception->__toString() . "</pre>\n";
 			echo "</body></html>";
-		}
-		else
-		{
+		} else {
 			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
 			header('HTTP/1.0 500 Internal Error');
 		}
@@ -252,41 +253,36 @@ class TErrorHandler extends \Prado\TModule
 	 */
 	protected function displayException($exception)
 	{
-		if(php_sapi_name() === 'cli')
-		{
+		if (php_sapi_name() === 'cli') {
 			echo $exception->getMessage() . "\n";
 			echo $this->getExactTraceAsString($exception);
 			return;
 		}
 
-		if($exception instanceof TTemplateException)
-		{
+		if ($exception instanceof TTemplateException) {
 			$fileName = $exception->getTemplateFile();
 			$lines = empty($fileName) ? explode("\n", $exception->getTemplateSource()) : @file($fileName);
 			$source = $this->getSourceCode($lines, $exception->getLineNumber());
-			if($fileName === '')
+			if ($fileName === '') {
 				$fileName = '---embedded template---';
+			}
 			$errorLine = $exception->getLineNumber();
-		}
-		else
-		{
-			if(($trace = $this->getExactTrace($exception)) !== null)
-			{
+		} else {
+			if (($trace = $this->getExactTrace($exception)) !== null) {
 				$fileName = $trace['file'];
 				$errorLine = $trace['line'];
-			}
-			else
-			{
+			} else {
 				$fileName = $exception->getFile();
 				$errorLine = $exception->getLine();
 			}
 			$source = $this->getSourceCode(@file($fileName), $errorLine);
 		}
 
-		if($this->getApplication()->getMode() === TApplicationMode::Debug)
+		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			$version = $_SERVER['SERVER_SOFTWARE'] . ' <a href="https://github.com/pradosoft/prado">PRADO</a>/' . Prado::getVersion();
-		else
+		} else {
 			$version = '';
+		}
 
 		$tokens = [
 			'%%ErrorType%%' => get_class($exception),
@@ -314,10 +310,12 @@ class TErrorHandler extends \Prado\TModule
 	{
 		$lang = Prado::getPreferredLanguage();
 		$exceptionFile = Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '-' . $lang . '.html';
-		if(!is_file($exceptionFile))
+		if (!is_file($exceptionFile)) {
 			$exceptionFile = Prado::getFrameworkPath() . '/Exceptions/templates/' . self::EXCEPTION_FILE_NAME . '.html';
-		if(($content = @file_get_contents($exceptionFile)) === false)
+		}
+		if (($content = @file_get_contents($exceptionFile)) === false) {
 			die("Unable to open exception template file '$exceptionFile'.");
+		}
 		return $content;
 	}
 
@@ -341,25 +339,26 @@ class TErrorHandler extends \Prado\TModule
 	{
 		$base = $this->getErrorTemplatePath() . DIRECTORY_SEPARATOR . self::ERROR_FILE_NAME;
 		$lang = Prado::getPreferredLanguage();
-		if(is_file("$base$statusCode-$lang.html"))
+		if (is_file("$base$statusCode-$lang.html")) {
 			$errorFile = "$base$statusCode-$lang.html";
-		elseif(is_file("$base$statusCode.html"))
+		} elseif (is_file("$base$statusCode.html")) {
 			$errorFile = "$base$statusCode.html";
-		elseif(is_file("$base-$lang.html"))
+		} elseif (is_file("$base-$lang.html")) {
 			$errorFile = "$base-$lang.html";
-		else
+		} else {
 			$errorFile = "$base.html";
-		if(($content = @file_get_contents($errorFile)) === false)
+		}
+		if (($content = @file_get_contents($errorFile)) === false) {
 			die("Unable to open error template file '$errorFile'.");
+		}
 		return $content;
 	}
 
 	private function getExactTrace($exception)
 	{
 		$result = null;
-		if($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack'))
-		{
+		if ($exception instanceof TPhpFatalErrorException &&
+			function_exists('xdebug_get_function_stack')) {
 			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
 		} else {
 			$trace = $exception->getTrace();
@@ -367,38 +366,40 @@ class TErrorHandler extends \Prado\TModule
 
 		// if PHP exception, we want to show the 2nd stack level context
 		// because the 1st stack level is of little use (it's in error handler)
-		if($exception instanceof TPhpErrorException) {
-			if(isset($trace[0]['file']))
+		if ($exception instanceof TPhpErrorException) {
+			if (isset($trace[0]['file'])) {
 				$result = $trace[0];
-			elseif(isset($trace[1]))
+			} elseif (isset($trace[1])) {
 				$result = $trace[1];
-		} elseif($exception instanceof TInvalidOperationException) {
+			}
+		} elseif ($exception instanceof TInvalidOperationException) {
 			// in case of getter or setter error, find out the exact file and row
-			if(($result = $this->getPropertyAccessTrace($trace, '__get')) === null)
+			if (($result = $this->getPropertyAccessTrace($trace, '__get')) === null) {
 				$result = $this->getPropertyAccessTrace($trace, '__set');
+			}
 		}
-		if($result !== null && strpos($result['file'], ': eval()\'d code') !== false)
+		if ($result !== null && strpos($result['file'], ': eval()\'d code') !== false) {
 			return null;
+		}
 
 		return $result;
 	}
 
 	private function getExactTraceAsString($exception)
 	{
-		if($exception instanceof TPhpFatalErrorException &&
-			function_exists('xdebug_get_function_stack'))
-		{
+		if ($exception instanceof TPhpFatalErrorException &&
+			function_exists('xdebug_get_function_stack')) {
 			$trace = array_slice(array_reverse(xdebug_get_function_stack()), self::FATAL_ERROR_TRACE_DROP_LINES, -1);
 			$txt = '';
 			$row = 0;
 
 			// try to mimic Exception::getTraceAsString()
-			foreach($trace as $line)
-			{
-				if(array_key_exists('function', $line))
+			foreach ($trace as $line) {
+				if (array_key_exists('function', $line)) {
 					$func = $line['function'] . '(' . implode(',', $line['params']) . ')';
-				else
+				} else {
 					$func = 'unknown';
+				}
 
 				$txt .= '#' . $row . ' ' . $line['file'] . '(' . $line['line'] . '): ' . $func . "\n";
 				$row++;
@@ -413,12 +414,12 @@ class TErrorHandler extends \Prado\TModule
 	private function getPropertyAccessTrace($trace, $pattern)
 	{
 		$result = null;
-		foreach($trace as $t)
-		{
-			if(isset($t['function']) && $t['function'] === $pattern)
+		foreach ($trace as $t) {
+			if (isset($t['function']) && $t['function'] === $pattern) {
 				$result = $t;
-			else
+			} else {
 				break;
+			}
 		}
 		return $result;
 	}
@@ -429,35 +430,34 @@ class TErrorHandler extends \Prado\TModule
 		$endLine = $errorLine + self::SOURCE_LINES <= count($lines) ? $errorLine + self::SOURCE_LINES : count($lines);
 
 		$source = '';
-		for($i = $beginLine;$i < $endLine;++$i)
-		{
-			if($i === $errorLine - 1)
-			{
+		for ($i = $beginLine;$i < $endLine;++$i) {
+			if ($i === $errorLine - 1) {
 				$line = htmlspecialchars(sprintf("%04d: %s", $i + 1, str_replace("\t", '    ', $lines[$i])));
 				$source .= "<div class=\"error\">" . $line . "</div>";
-			}
-			else
+			} else {
 				$source .= htmlspecialchars(sprintf("%04d: %s", $i + 1, str_replace("\t", '    ', $lines[$i])));
+			}
 		}
 		return $source;
 	}
 
-	private function addLink($message) {
+	private function addLink($message)
+	{
 		if (null !== ($class = $this->getErrorClassNameSpace($message))) {
 			return str_replace($class['name'], '<a href="' . $class['url'] . '" target="_blank">' . $class['name'] . '</a>', $message);
 		}
 		return $message;
 	}
 
-	private function getErrorClassNameSpace($message) {
+	private function getErrorClassNameSpace($message)
+	{
 		$matches = [];
 		preg_match('/\b(T[A-Z]\w+)\b/', $message, $matches);
 		if (is_array($matches) && count($matches) > 0) {
 			$class = $matches[0];
 			try {
 				$function = new \ReflectionClass($class);
-			}
-			catch (\Exception $e) {
+			} catch (\Exception $e) {
 				return null;
 			}
 			$classname = $function->getNamespaceName();
@@ -468,6 +468,4 @@ class TErrorHandler extends \Prado\TModule
 		}
 		return null;
 	}
-
 }
-

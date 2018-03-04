@@ -245,8 +245,8 @@ class TCache_Lite
 									'writeControl',
 									'readControl',
 									'readControlType'];
-		foreach($options as $key => $value) {
-			if(in_array($key, $availableOptions)) {
+		foreach ($options as $key => $value) {
+			if (in_array($key, $availableOptions)) {
 				$property = '_' . $key;
 				$this->$property = $value;
 			}
@@ -275,7 +275,8 @@ class TCache_Lite
 				if (isset($this->_memoryCachingArray[$this->_file])) {
 					if ($this->_automaticSerialization) {
 						return unserialize(
-									$this->_memoryCachingArray[$this->_file]);
+									$this->_memoryCachingArray[$this->_file]
+						);
 					} else {
 						return $this->_memoryCachingArray[$this->_file];
 					}
@@ -401,7 +402,7 @@ class TCache_Lite
 				if (is_file($file)) {
 					if (strpos($file, $motif, 0)) {
 						if (!@unlink($file)) {
-			 $this->raiseError('Cache_Lite : Unable to remove cache !', -3);
+							$this->raiseError('Cache_Lite : Unable to remove cache !', -3);
 							return false;
 						}
 					}
@@ -411,12 +412,12 @@ class TCache_Lite
 		return true;
 	}
 
-		/**
-		 * Set a new life time
-		 *
-		 * @param int $newLifeTime $newLifeTime new life time (in seconds)
-		 * @access public
-		 */
+	/**
+	 * Set a new life time
+	 *
+	 * @param int $newLifeTime $newLifeTime new life time (in seconds)
+	 * @access public
+	 */
 	public function setLifeTime($newLifeTime)
 	{
 		$this->_lifeTime = $newLifeTime;
@@ -443,12 +444,13 @@ class TCache_Lite
 	 *
 	 * @access public
 	 */
-	public function getMemoryCachingState($id, $group = 'default',
-									$doNotTestCacheValidity = false)
-	{
+	public function getMemoryCachingState(
+		$id,
+		$group = 'default',
+									$doNotTestCacheValidity = false
+	) {
 		if ($this->_caching) {
-			if ($data = $this->get($id, $group, $doNotTestCacheValidity))
-			{
+			if ($data = $this->get($id, $group, $doNotTestCacheValidity)) {
 				$array = unserialize($data);
 				$this->_memoryCachingCounter = $array['counter'];
 				$this->_memoryCachingArray = $array['array'];
@@ -463,7 +465,8 @@ class TCache_Lite
 	 *
 	 * @return int last modification time
 	 */
-	public function lastModified() {
+	public function lastModified()
+	{
 		return filemtime($this->cache->_file);
 	}
 
@@ -480,7 +483,7 @@ class TCache_Lite
 	 */
 	public function raiseError($msg, $code)
 	{
-	   throw new Exception($msg);
+		throw new Exception($msg);
 	}
 
 	// --- Private methods ---
@@ -531,7 +534,9 @@ class TCache_Lite
 	public function _read()
 	{
 		$fp = @fopen($this->_file, "rb");
-		if ($this->_fileLocking) @flock($fp, LOCK_SH);
+		if ($this->_fileLocking) {
+			@flock($fp, LOCK_SH);
+		}
 		if ($fp) {
 			// because the filesize can be cached by PHP itself...
 			clearstatcache();
@@ -541,7 +546,9 @@ class TCache_Lite
 				$length = $length - 32;
 			}
 			$data = @fread($fp, $length);
-			if ($this->_fileLocking) @flock($fp, LOCK_UN);
+			if ($this->_fileLocking) {
+				@flock($fp, LOCK_UN);
+			}
 			@fclose($fp);
 			if ($this->_readControl) {
 				$hashData = $this->_hash($data, $this->_readControlType);
@@ -567,13 +574,17 @@ class TCache_Lite
 	{
 		$fp = @fopen($this->_file, "wb");
 		if ($fp) {
-			if ($this->_fileLocking) @flock($fp, LOCK_EX);
+			if ($this->_fileLocking) {
+				@flock($fp, LOCK_EX);
+			}
 			if ($this->_readControl) {
 				@fwrite($fp, $this->_hash($data, $this->_readControlType), 32);
 			}
 			$len = strlen($data);
 			@fwrite($fp, $data, $len);
-			if ($this->_fileLocking) @flock($fp, LOCK_UN);
+			if ($this->_fileLocking) {
+				@flock($fp, LOCK_UN);
+			}
 			@fclose($fp);
 			return true;
 		}
@@ -607,17 +618,15 @@ class TCache_Lite
 	public function _hash($data, $controlType)
 	{
 		switch ($controlType) {
-		case 'md5':
-			return md5($data);
-		case 'crc32':
-			return sprintf('% 32d', crc32($data));
-		case 'strlen':
-			return sprintf('% 32d', strlen($data));
-		default:
-			$this->raiseError('Unknown controlType ! ' .
-			'(available values are only \'md5\', \'crc32\', \'strlen\')', -5);
+			case 'md5':
+				return md5($data);
+			case 'crc32':
+				return sprintf('% 32d', crc32($data));
+			case 'strlen':
+				return sprintf('% 32d', strlen($data));
+			default:
+				$this->raiseError('Unknown controlType ! ' .
+				'(available values are only \'md5\', \'crc32\', \'strlen\')', -5);
 		}
 	}
-
 }
-

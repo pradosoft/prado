@@ -151,7 +151,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * @return boolean wether to display a progress indicator or not. Defaults to true.
 	 */
-	public function getProgressIndicator ()
+	public function getProgressIndicator()
 	{
 		return $this->getViewState('ProgressIndicator', true);
 	}
@@ -159,7 +159,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * @param boolean $value wether to display a progress indicator or not. Defaults to true.
 	 */
-	public function setProgressIndicator ($value)
+	public function setProgressIndicator($value)
 	{
 		$this->setViewState('ProgressIndicator', TPropertyValue::ensureBoolean($value), true);
 	}
@@ -297,13 +297,12 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function loadPostData($key, $values)
 	{
 		$value = (float)$values[$this->getClientID() . '_1'];
-		if($this->getValue() !== $value)
-		{
+		if ($this->getValue() !== $value) {
 			$this->setValue($value);
 			return $this->_dataChanged = true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -319,8 +318,9 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientScript === null)
+		if ($this->_clientScript === null) {
 			$this->_clientScript = $this->createClientScript();
+		}
 		return $this->_clientScript;
 	}
 
@@ -335,7 +335,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * @return string the HTML tag name for slider. Defaults to div.
 	 */
-	public function getTagName ()
+	public function getTagName()
 	{
 		return "div";
 	}
@@ -348,12 +348,10 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->getCssClass() === '')
-		{
+		if ($this->getCssClass() === '') {
 			$class = ($this->getDirection() == TSliderDirection::Horizontal) ? 'HorizontalSlider' : 'VerticalSlider';
 			$writer->addAttribute('class', 'Slider ' . $class);
 		}
-
 	}
 
 	/**
@@ -366,8 +364,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$writer->addAttribute('id', $this->getClientID() . '_track');
 		$writer->renderBeginTag('div');
 		// Render the 'Progress Indicator'
-		if ($this->getProgressIndicator())
-		{
+		if ($this->getProgressIndicator()) {
 			$writer->addAttribute('class', 'Progress');
 			$writer->addAttribute('id', $this->getClientID() . '_progress');
 			$writer->renderBeginTag('div');
@@ -403,12 +400,11 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method is invoked right before the control rendering, if the control is visible.
 	 * @param mixed $param event parameter
 	 */
-	public function onPreRender ($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
 		$this->registerStyleSheet();
 		$this->registerSliderClientScript();
-
 	}
 
 	/**
@@ -418,8 +414,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function registerStyleSheet()
 	{
-		if(($url = $this->getCssUrl()) === '')
-		{
+		if (($url = $this->getCssUrl()) === '') {
 			$manager = $this->getApplication()->getAssetManager();
 			// publish the assets
 			$url = $manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
@@ -463,36 +458,43 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$options['sliderValue'] = $this->getValue();
 		$options['disabled'] = !$this->getEnabled();
 		$values = $this->getValues();
-		if (!empty($values))
-		{
+		if (!empty($values)) {
 			// Values are provided. Check if min/max are present in them
-			if (!in_array($minValue, $values)) $values[] = $minValue;
-			if (!in_array($maxValue, $values)) $values[] = $maxValue;
-			// Remove all values outsize the range [min..max]
-			foreach ($values as $idx => $value)
-			{
-				if ($value < $minValue) unset($values[$idx]);
-				if ($value > $maxValue) unset($values[$idx]);
+			if (!in_array($minValue, $values)) {
+				$values[] = $minValue;
 			}
-		}
-		else
-		{
+			if (!in_array($maxValue, $values)) {
+				$values[] = $maxValue;
+			}
+			// Remove all values outsize the range [min..max]
+			foreach ($values as $idx => $value) {
+				if ($value < $minValue) {
+					unset($values[$idx]);
+				}
+				if ($value > $maxValue) {
+					unset($values[$idx]);
+				}
+			}
+		} else {
 			// Values are not provided, generate automatically using stepsize
 			$step = $this->getStepSize();
 			// We want at most self::MAX_STEPS values, so, change the step if necessary
-			if (($maxValue - $minValue) / $step > self::MAX_STEPS)
-			{
+			if (($maxValue - $minValue) / $step > self::MAX_STEPS) {
 				$step = ($maxValue - $minValue) / self::MAX_STEPS;
 			}
 			$values = [];
-			for ($i = $minValue;$i <= $maxValue;$i += $step)
+			for ($i = $minValue;$i <= $maxValue;$i += $step) {
 				$values[] = $i;
+			}
 			// Add max if it's not in the array because of step
-			if (!in_array($maxValue, $values)) $values[] = $maxValue;
+			if (!in_array($maxValue, $values)) {
+				$values[] = $maxValue;
+			}
 		}
 		$options['values'] = $values;
-		if($this->_clientScript !== null)
+		if ($this->_clientScript !== null) {
 			$options = array_merge($options, $this->_clientScript->getOptions()->toArray());
+		}
 		return $options;
 	}
 }

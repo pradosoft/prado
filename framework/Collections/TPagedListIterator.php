@@ -41,10 +41,11 @@ class TPagedListIterator implements \Iterator
 		$this->_list = $list;
 		$this->_index = 0;
 		$this->_startIndex = $startIndex;
-		if($startIndex + $count > $list->getCount())
+		if ($startIndex + $count > $list->getCount()) {
 			$this->_count = $list->getCount() - $startIndex;
-		else
+		} else {
 			$this->_count = $count;
+		}
 	}
 
 	/**

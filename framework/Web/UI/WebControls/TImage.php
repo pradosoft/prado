@@ -43,10 +43,12 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	{
 		$writer->addAttribute('src', $this->getImageUrl());
 		$writer->addAttribute('alt', $this->getAlternateText());
-		if(($desc = $this->getDescriptionUrl()) !== '')
+		if (($desc = $this->getDescriptionUrl()) !== '') {
 			$writer->addAttribute('longdesc', $desc);
-		if(($align = $this->getImageAlign()) !== '')
+		}
+		if (($align = $this->getImageAlign()) !== '') {
 			$writer->addAttribute('align', $align);
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -154,4 +156,3 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 		$this->setViewState('DescriptionUrl', $value, '');
 	}
 }
-

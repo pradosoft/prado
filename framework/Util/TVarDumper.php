@@ -48,19 +48,17 @@ class TVarDumper
 		self::$_objects = [];
 		self::$_depth = $depth;
 		self::dumpInternal($var, 0);
-		if($highlight)
-		{
+		if ($highlight) {
 			$result = highlight_string("<?php\n" . self::$_output, true);
 			return preg_replace('/&lt;\\?php<br \\/>/', '', $result, 1);
-		}
-		else
+		} else {
 			return self::$_output;
+		}
 	}
 
 	private static function dumpInternal($var, $level)
 	{
-		switch(gettype($var))
-		{
+		switch (gettype($var)) {
 			case 'boolean':
 				self::$_output .= $var ? 'true' : 'false';
 				break;
@@ -83,17 +81,15 @@ class TVarDumper
 				self::$_output .= '{unknown}';
 				break;
 			case 'array':
-				if(self::$_depth <= $level)
+				if (self::$_depth <= $level) {
 					self::$_output .= 'array(...)';
-				elseif(empty($var))
+				} elseif (empty($var)) {
 					self::$_output .= 'array()';
-				else
-				{
+				} else {
 					$keys = array_keys($var);
 					$spaces = str_repeat(' ', $level * 4);
 					self::$_output .= "array\n" . $spaces . '(';
-					foreach($keys as $key)
-					{
+					foreach ($keys as $key) {
 						self::$_output .= "\n" . $spaces . "    [$key] => ";
 						self::$_output .= self::dumpInternal($var[$key], $level + 1);
 					}
@@ -101,20 +97,18 @@ class TVarDumper
 				}
 				break;
 			case 'object':
-				if(($id = array_search($var, self::$_objects, true)) !== false)
+				if (($id = array_search($var, self::$_objects, true)) !== false) {
 					self::$_output .= get_class($var) . '#' . ($id + 1) . '(...)';
-				elseif(self::$_depth <= $level)
+				} elseif (self::$_depth <= $level) {
 					self::$_output .= get_class($var) . '(...)';
-				else
-				{
+				} else {
 					$id = array_push(self::$_objects, $var);
 					$className = get_class($var);
 					$members = (array)$var;
 					$keys = array_keys($members);
 					$spaces = str_repeat(' ', $level * 4);
 					self::$_output .= "$className#$id\n" . $spaces . '(';
-					foreach($keys as $key)
-					{
+					foreach ($keys as $key) {
 						$keyDisplay = strtr(trim($key), ["\0" => ':']);
 						self::$_output .= "\n" . $spaces . "    [$keyDisplay] => ";
 						self::$_output .= self::dumpInternal($members[$key], $level + 1);
@@ -125,4 +119,3 @@ class TVarDumper
 		}
 	}
 }
-

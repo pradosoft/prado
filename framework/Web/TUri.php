@@ -92,8 +92,7 @@ class TUri extends \Prado\TComponent
 	 */
 	public function __construct($uri)
 	{
-		if(($ret = @parse_url($uri)) !== false)
-		{
+		if (($ret = @parse_url($uri)) !== false) {
 			// decoding???
 			$this->_scheme = isset($ret['scheme']) ? $ret['scheme'] : '';
 			$this->_host = isset($ret['host']) ? $ret['host'] : '';
@@ -104,9 +103,7 @@ class TUri extends \Prado\TComponent
 			$this->_query = isset($ret['query']) ? $ret['query'] : '';
 			$this->_fragment = isset($ret['fragment']) ? $ret['fragment'] : '';
 			$this->_uri = $uri;
-		}
-		else
-		{
+		} else {
 			throw new TInvalidDataValueException('uri_format_invalid', $uri);
 		}
 	}

@@ -64,8 +64,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = $conn->getDriverName();
-		switch(strtolower($driver))
-		{
+		switch (strtolower($driver)) {
 			case 'pgsql':
 				return new TPgsqlMetaData($conn);
 			case 'mysqli':
@@ -95,8 +94,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	public function getTableInfo($tableName = null)
 	{
 		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
-		if(!isset($this->_tableInfoCache[$key]))
-		{
+		if (!isset($this->_tableInfoCache[$key])) {
 			$class = $this->getTableInfoClass();
 			$tableInfo = $tableName === null ? new $class : $this->createTableInfo($tableName);
 			$this->_tableInfoCache[$key] = $tableInfo;
@@ -143,11 +141,13 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$rgt = $lft = isset($args[1]) ? $args[1] : '';
 		$rgt = isset($args[2]) ? $args[2] : $rgt;
 
-		if(strpos($name, '.') === false)
+		if (strpos($name, '.') === false) {
 			return $lft . $name . $rgt;
+		}
 		$names = explode('.', $name);
-		foreach($names as &$n)
+		foreach ($names as &$n) {
 			$n = $lft . $n . $rgt;
+		}
 		return implode('.', $names);
 	}
 
@@ -183,14 +183,13 @@ abstract class TDbMetaData extends \Prado\TComponent
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
 
-		/**
-		 * Returns all table names in the database.
-		 * This method should be overridden by child classes in order to support this feature
-		 * because the default implementation simply throws an exception.
-		 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
-		 * If not empty, the returned table names will be prefixed with the schema name.
-		 * @return array all table names in the database.
-		 */
+	/**
+	 * Returns all table names in the database.
+	 * This method should be overridden by child classes in order to support this feature
+	 * because the default implementation simply throws an exception.
+	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+	 * If not empty, the returned table names will be prefixed with the schema name.
+	 * @return array all table names in the database.
+	 */
 	abstract public function findTableNames($schema = '');
 }
-

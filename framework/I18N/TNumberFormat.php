@@ -18,7 +18,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\I18N\core\NumberFormat;
 use Prado\Prado;
 
-
 /**
  * Get the parent control class.
  */
@@ -173,8 +172,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	{
 		$type = strtolower($type);
 
-		switch($type)
-		{
+		switch ($type) {
 			case 'decimal':
 				$this->setViewState('Type', 'd', ''); break;
 			case 'currency':
@@ -186,7 +184,6 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 			default:
 				throw new TInvalidDataValueException('numberformat_type_invalid', $type);
 		}
-
 	}
 
 	/**
@@ -217,31 +214,38 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	{
 		$value = $this->getValue();
 		$defaultText = $this->getDefaultText();
-		if(empty($value) && !empty($defaultText))
+		if (empty($value) && !empty($defaultText)) {
 			return $this->getDefaultText();
+		}
 
 		$app = $this->getApplication()->getGlobalization();
 		//initialized the default class wide formatter
-		if(self::$formatter === null)
+		if (self::$formatter === null) {
 			self::$formatter = new NumberFormat($app->getCulture());
+		}
 
 		$pattern = strlen($this->getPattern()) > 0
 						? $this->getPattern() : $this->getType();
 
 		$culture = $this->getCulture();
 		//return the specific cultural formatted number
-		if(!empty($culture) && $app->getCulture() != $culture)
-		{
+		if (!empty($culture) && $app->getCulture() != $culture) {
 			$formatter = new NumberFormat($culture);
-			return $formatter->format($this->getValue(),$pattern,
+			return $formatter->format(
+				$this->getValue(),
+				$pattern,
 									  $this->getCurrency(),
-									  $this->getCharset());
+									  $this->getCharset()
+			);
 		}
 
 		//return the application wide culture formatted number.
-		return self::$formatter->format($this->getValue(),$pattern,
+		return self::$formatter->format(
+			$this->getValue(),
+			$pattern,
 										$this->getCurrency(),
-										$this->getCharset());
+										$this->getCharset()
+		);
 	}
 
 	public function render($writer)
@@ -249,4 +253,3 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 		$writer->write($this->getFormattedValue());
 	}
 }
-

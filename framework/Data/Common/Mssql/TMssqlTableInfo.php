@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TMssqlTableInfo class provides additional table information for Mssql database.
  *
@@ -61,4 +60,3 @@ class TMssqlTableInfo extends TDbTableInfo
 		return new TMssqlCommandBuilder($connection, $this);
 	}
 }
-

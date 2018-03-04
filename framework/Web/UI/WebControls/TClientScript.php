@@ -111,10 +111,10 @@ class TClientScript extends \Prado\Web\UI\TControl
 		parent::onPreRender($param);
 		$scripts = preg_split('/,|\s+/', $this->getPradoScripts());
 		$cs = $this->getPage()->getClientScript();
-		foreach($scripts as $script)
-		{
-			if(($script = trim($script)) !== '')
+		foreach ($scripts as $script) {
+			if (($script = trim($script)) !== '') {
 				$cs->registerPradoScript($script);
+			}
 		}
 	}
 
@@ -126,8 +126,9 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if ($this->getFlushScriptFiles())
+		if ($this->getFlushScriptFiles()) {
 			$this->getPage()->getClientScript()->flushScriptFiles($writer, $this);
+		}
 		$this->renderCustomScriptFile($writer);
 		$this->renderCustomScript($writer);
 	}
@@ -138,8 +139,9 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
-		if(($scriptUrl = $this->getScriptUrl()) !== '')
+		if (($scriptUrl = $this->getScriptUrl()) !== '') {
 			$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
+		}
 	}
 
 	/**
@@ -148,12 +150,10 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 */
 	protected function renderCustomScript($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$writer->write("<script type=\"text/javascript\">\n/*<![CDATA[*/\n");
 			$this->renderChildren($writer);
 			$writer->write("\n/*]]>*/\n</script>\n");
 		}
 	}
 }
-

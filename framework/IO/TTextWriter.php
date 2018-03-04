@@ -56,4 +56,3 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		$this->write($str . "\n");
 	}
 }
-

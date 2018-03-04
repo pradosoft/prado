@@ -131,10 +131,11 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($this->_attributes !== null)
+		if ($this->_attributes !== null) {
 			return $this->_attributes->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -151,8 +152,9 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElements()
 	{
-		if(!$this->_elements)
+		if (!$this->_elements) {
 			$this->_elements = new TXmlElementList($this);
+		}
 		return $this->_elements;
 	}
 
@@ -161,8 +163,9 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if(!$this->_attributes)
+		if (!$this->_attributes) {
 			$this->_attributes = new TMap;
+		}
 		return $this->_attributes;
 	}
 
@@ -171,11 +174,12 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElementByTagName($tagName)
 	{
-		if($this->_elements)
-		{
-			foreach($this->_elements as $element)
-				if($element->_tagName === $tagName)
+		if ($this->_elements) {
+			foreach ($this->_elements as $element) {
+				if ($element->_tagName === $tagName) {
 					return $element;
+				}
+			}
 		}
 		return null;
 	}
@@ -186,11 +190,12 @@ class TXmlElement extends \Prado\TComponent
 	public function getElementsByTagName($tagName)
 	{
 		$list = new TList;
-		if($this->_elements)
-		{
-			foreach($this->_elements as $element)
-				if($element->_tagName === $tagName)
+		if ($this->_elements) {
+			foreach ($this->_elements as $element) {
+				if ($element->_tagName === $tagName) {
 					$list->add($element);
+				}
+			}
 		}
 		return $list;
 	}
@@ -201,30 +206,26 @@ class TXmlElement extends \Prado\TComponent
 	public function toString($indent = 0)
 	{
 		$attr = '';
-		if($this->_attributes !== null)
-		{
-			foreach($this->_attributes as $name => $value)
-			{
+		if ($this->_attributes !== null) {
+			foreach ($this->_attributes as $name => $value) {
 				$value = $this->xmlEncode($value);
 				$attr .= " $name=\"$value\"";
 			}
 		}
 		$prefix = str_repeat(' ', $indent * 4);
-		if($this->getHasElement())
-		{
+		if ($this->getHasElement()) {
 			$str = $prefix . "<{$this->_tagName}$attr>\n";
-			foreach($this->getElements() as $element)
+			foreach ($this->getElements() as $element) {
 				$str .= $element->toString($indent + 1) . "\n";
+			}
 			$str .= $prefix . "</{$this->_tagName}>";
 			return $str;
-		}
-		elseif(($value = $this->getValue()) !== '')
-		{
+		} elseif (($value = $this->getValue()) !== '') {
 			$value = $this->xmlEncode($value);
 			return $prefix . "<{$this->_tagName}$attr>$value</{$this->_tagName}>";
-		}
-		else
+		} else {
 			return $prefix . "<{$this->_tagName}$attr />";
+		}
 	}
 
 	/**

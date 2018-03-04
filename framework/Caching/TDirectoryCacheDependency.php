@@ -63,8 +63,9 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function setDirectory($directory)
 	{
-		if(($path = realpath($directory)) === false || !is_dir($path))
+		if (($path = realpath($directory)) === false || !is_dir($path)) {
 			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
+		}
 		$this->_directory = $path;
 		$this->_timestamps = $this->generateTimestamps($path);
 	}
@@ -154,21 +155,21 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	protected function generateTimestamps($directory, $level = 0)
 	{
-		if(($dir = opendir($directory)) === false)
+		if (($dir = opendir($directory)) === false) {
 			throw new TIOException('directorycachedependency_directory_invalid', $directory);
+		}
 		$timestamps = [];
-		while(($file = readdir($dir)) !== false)
-		{
+		while (($file = readdir($dir)) !== false) {
 			$path = $directory . DIRECTORY_SEPARATOR . $file;
-			if($file === '.' || $file === '..')
+			if ($file === '.' || $file === '..') {
 				continue;
-			elseif(is_dir($path))
-			{
-				if(($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path))
+			} elseif (is_dir($path)) {
+				if (($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path)) {
 					$timestamps = array_merge($this->generateTimestamps($path, $level + 1));
-			}
-			elseif($this->validateFile($path))
+				}
+			} elseif ($this->validateFile($path)) {
 				$timestamps[$path] = filemtime($path);
+			}
 		}
 		closedir($dir);
 		return $timestamps;

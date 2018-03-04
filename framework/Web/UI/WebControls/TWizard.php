@@ -183,8 +183,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TWizardStep)
+		if ($object instanceof TWizardStep) {
 			$this->getWizardSteps()->add($object);
+		}
 	}
 
 	/**
@@ -201,8 +202,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setActiveStep($step)
 	{
-		if(($index = $this->getWizardSteps()->indexOf($step)) < 0)
+		if (($index = $this->getWizardSteps()->indexOf($step)) < 0) {
 			throw new TInvalidOperationException('wizard_step_invalid');
+		}
 		$this->setActiveStepIndex($index);
 	}
 
@@ -221,12 +223,10 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		$value = TPropertyValue::ensureInteger($value);
 		$multiView = $this->getMultiView();
-		if($multiView->getActiveViewIndex() !== $value)
-		{
+		if ($multiView->getActiveViewIndex() !== $value) {
 			$multiView->setActiveViewIndex($value);
 			$this->_activeStepIndexSet = true;
-			if($this->_sideBarDataList !== null && $this->getSideBarTemplate() !== null)
-			{
+			if ($this->_sideBarDataList !== null && $this->getSideBarTemplate() !== null) {
 				$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 				$this->_sideBarDataList->dataBind();
 			}
@@ -238,8 +238,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getWizardSteps()
 	{
-		if($this->_wizardSteps === null)
+		if ($this->_wizardSteps === null) {
 			$this->_wizardSteps = new TWizardStepCollection($this);
+		}
 		return $this->_wizardSteps;
 	}
 
@@ -416,8 +417,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getSideBarButtonStyle()
 	{
-		if(($style = $this->getViewState('SideBarButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('SideBarButtonStyle', null)) === null) {
 			$style = new TStyle;
 			$this->setViewState('SideBarButtonStyle', $style, null);
 		}
@@ -429,8 +429,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getNavigationButtonStyle()
 	{
-		if(($style = $this->getViewState('NavigationButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('NavigationButtonStyle', null)) === null) {
 			$style = new TStyle;
 			$this->setViewState('NavigationButtonStyle', $style, null);
 		}
@@ -442,8 +441,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getStartNextButtonStyle()
 	{
-		if(($style = $this->getViewState('StartNextButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('StartNextButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Next');
 			$this->setViewState('StartNextButtonStyle', $style, null);
@@ -456,8 +454,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getStepNextButtonStyle()
 	{
-		if(($style = $this->getViewState('StepNextButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('StepNextButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Next');
 			$this->setViewState('StepNextButtonStyle', $style, null);
@@ -470,8 +467,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getStepPreviousButtonStyle()
 	{
-		if(($style = $this->getViewState('StepPreviousButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('StepPreviousButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Previous');
 			$this->setViewState('StepPreviousButtonStyle', $style, null);
@@ -484,8 +480,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getFinishCompleteButtonStyle()
 	{
-		if(($style = $this->getViewState('FinishCompleteButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('FinishCompleteButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Complete');
 			$this->setViewState('FinishCompleteButtonStyle', $style, null);
@@ -498,8 +493,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getFinishPreviousButtonStyle()
 	{
-		if(($style = $this->getViewState('FinishPreviousButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('FinishPreviousButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Previous');
 			$this->setViewState('FinishPreviousButtonStyle', $style, null);
@@ -512,8 +506,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getCancelButtonStyle()
 	{
-		if(($style = $this->getViewState('CancelButtonStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('CancelButtonStyle', null)) === null) {
 			$style = new TWizardNavigationButtonStyle;
 			$style->setButtonText('Cancel');
 			$this->setViewState('CancelButtonStyle', $style, null);
@@ -526,8 +519,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getSideBarStyle()
 	{
-		if(($style = $this->getViewState('SideBarStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('SideBarStyle', null)) === null) {
 			$style = new TPanelStyle;
 			$this->setViewState('SideBarStyle', $style, null);
 		}
@@ -539,8 +531,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getHeaderStyle()
 	{
-		if(($style = $this->getViewState('HeaderStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
 			$style = new TPanelStyle;
 			$this->setViewState('HeaderStyle', $style, null);
 		}
@@ -552,8 +543,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getStepStyle()
 	{
-		if(($style = $this->getViewState('StepStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('StepStyle', null)) === null) {
 			$style = new TPanelStyle;
 			$this->setViewState('StepStyle', $style, null);
 		}
@@ -565,8 +555,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getNavigationStyle()
 	{
-		if(($style = $this->getViewState('NavigationStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('NavigationStyle', null)) === null) {
 			$style = new TPanelStyle;
 			$this->setViewState('NavigationStyle', $style, null);
 		}
@@ -659,8 +648,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function onCancelButtonClick($param)
 	{
 		$this->raiseEvent('OnCancelButtonClick', $this, $param);
-		if(($url = $this->getCancelDestinationUrl()) !== '')
+		if (($url = $this->getCancelDestinationUrl()) !== '') {
 			$this->getResponse()->redirect($url);
+		}
 	}
 
 	/**
@@ -672,8 +662,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function onCompleteButtonClick($param)
 	{
 		$this->raiseEvent('OnCompleteButtonClick', $this, $param);
-		if(($url = $this->getFinishDestinationUrl()) !== '')
+		if (($url = $this->getFinishDestinationUrl()) !== '') {
 			$this->getResponse()->redirect($url);
+		}
 	}
 
 	/**
@@ -715,8 +706,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function getMultiView()
 	{
-		if($this->_multiView === null)
-		{
+		if ($this->_multiView === null) {
 			$this->_multiView = new TMultiView;
 			$this->_multiView->setID('WizardMultiView');
 			$this->_multiView->attachEventHandler('OnActiveViewChanged', [$this,'onActiveStepChanged']);
@@ -733,8 +723,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function addedWizardStep($step)
 	{
-		if(($wizard = $step->getWizard()) !== null)
+		if (($wizard = $step->getWizard()) !== null) {
 			$wizard->getWizardSteps()->remove($step);
+		}
 		$step->setWizard($this);
 		$this->wizardStepsChanged();
 	}
@@ -761,8 +752,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		parent::onInit($param);
 		$this->ensureChildControls();
 		$this->setEnsureId(true);
-		if($this->getActiveStepIndex() < 0 && $this->getWizardSteps()->getCount() > 0)
+		if ($this->getActiveStepIndex() < 0 && $this->getWizardSteps()->getCount() > 0) {
 			$this->setActiveStepIndex(0);
+		}
 	}
 
 	/**
@@ -773,8 +765,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		$index = $this->getActiveStepIndex();
 		$history = $this->getHistory();
-		if(!$history->getCount() || $history->peek() !== $index)
+		if (!$history->getCount() || $history->peek() !== $index) {
 			$history->push($index);
+		}
 	}
 
 	/**
@@ -782,8 +775,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function requiresControlsRecreation()
 	{
-		if($this->getChildControlsCreated())
+		if ($this->getChildControlsCreated()) {
 			$this->setChildControlsCreated(false);
+		}
 	}
 
 	/**
@@ -793,10 +787,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function render($writer)
 	{
 		$this->ensureChildControls();
-		if($this->getHasControls())
-		{
-			if($this->getUseDefaultLayout())
-			{
+		if ($this->getHasControls()) {
+			if ($this->getUseDefaultLayout()) {
 				$this->applyControlProperties();
 				$this->renderBeginTag($writer);
 				$writer->write("\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" width=\"100%\">\n<tr><td width=\"1\" valign=\"top\">\n");
@@ -807,9 +799,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$this->_navigation->renderControl($writer);
 				$writer->write("\n</td></tr></table>\n");
 				$this->renderEndTag($writer);
-			}
-			else
-			{
+			} else {
 				$this->applyControlProperties();
 				$this->renderBeginTag($writer);
 				$this->_sideBar->renderControl($writer);
@@ -837,10 +827,10 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function applyHeaderProperties()
 	{
-		if(($style = $this->getViewState('HeaderStyle', null)) !== null)
+		if (($style = $this->getViewState('HeaderStyle', null)) !== null) {
 			$this->_header->getStyle()->mergeWith($style);
-		if($this->getHeaderTemplate() === null)
-		{
+		}
+		if ($this->getHeaderTemplate() === null) {
 			$this->_header->getControls()->clear();
 			$this->_header->getControls()->add($this->getHeaderText());
 		}
@@ -852,22 +842,21 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function applySideBarProperties()
 	{
 		$this->_sideBar->setVisible($this->getShowSideBar());
-		if($this->_sideBarDataList !== null && $this->getShowSideBar())
-		{
+		if ($this->_sideBarDataList !== null && $this->getShowSideBar()) {
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 			$this->_sideBarDataList->dataBind();
-			if(($style = $this->getViewState('SideBarButtonStyle', null)) !== null)
-			{
-				foreach($this->_sideBarDataList->getItems() as $item)
-				{
-					if(($button = $item->findControl('SideBarButton')) !== null)
+			if (($style = $this->getViewState('SideBarButtonStyle', null)) !== null) {
+				foreach ($this->_sideBarDataList->getItems() as $item) {
+					if (($button = $item->findControl('SideBarButton')) !== null) {
 						$button->getStyle()->mergeWith($style);
+					}
 				}
 			}
 		}
-		if(($style = $this->getViewState('SideBarStyle', null)) !== null)
+		if (($style = $this->getViewState('SideBarStyle', null)) !== null) {
 			$this->_sideBar->getStyle()->mergeWith($style);
+		}
 	}
 
 	/**
@@ -875,8 +864,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function applyStepContentProperties()
 	{
-		if(($style = $this->getViewState('StepStyle', null)) !== null)
+		if (($style = $this->getViewState('StepStyle', null)) !== null) {
 			$this->_stepContent->getStyle()->mergeWith($style);
+		}
 	}
 
 	/**
@@ -888,32 +878,27 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$activeStep = $this->getActiveStep();
 		$activeStepIndex = $this->getActiveStepIndex();
 
-		if(!$this->_navigation)
+		if (!$this->_navigation) {
 			return;
-		elseif($activeStepIndex < 0 || $activeStepIndex >= $wizardSteps->getCount())
-		{
+		} elseif ($activeStepIndex < 0 || $activeStepIndex >= $wizardSteps->getCount()) {
 			$this->_navigation->setVisible(false);
 			return;
 		}
 
 		// set visibility of different types of navigation panel
 		$showStandard = true;
-		foreach($wizardSteps as $step)
-		{
-			if(($step instanceof TTemplatedWizardStep) && ($container = $step->getNavigationContainer()) !== null)
-			{
-				if($activeStep === $step)
-				{
+		foreach ($wizardSteps as $step) {
+			if (($step instanceof TTemplatedWizardStep) && ($container = $step->getNavigationContainer()) !== null) {
+				if ($activeStep === $step) {
 					$container->setVisible(true);
 					$showStandard = false;
-				}
-				else
+				} else {
 					$container->setVisible(false);
+				}
 			}
 		}
 		$activeStepType = $this->getStepType($activeStep);
-		if($activeStepType === TWizardStepType::Complete)
-		{
+		if ($activeStepType === TWizardStepType::Complete) {
 			$this->_sideBar->setVisible(false);
 			$this->_header->setVisible(false);
 		}
@@ -921,80 +906,82 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$this->_stepNavigation->setVisible($showStandard && $activeStepType === TWizardStepType::Step);
 		$this->_finishNavigation->setVisible($showStandard && $activeStepType === TWizardStepType::Finish);
 
-		if(($navigationStyle = $this->getViewState('NavigationStyle', null)) !== null)
+		if (($navigationStyle = $this->getViewState('NavigationStyle', null)) !== null) {
 			$this->_navigation->getStyle()->mergeWith($navigationStyle);
+		}
 
 		$displayCancelButton = $this->getShowCancelButton();
 		$cancelButtonStyle = $this->getCancelButtonStyle();
 		$buttonStyle = $this->getViewState('NavigationButtonStyle', null);
-		if($buttonStyle !== null)
+		if ($buttonStyle !== null) {
 			$cancelButtonStyle->mergeWith($buttonStyle);
+		}
 
 		// apply styles to start navigation buttons
-		if(($cancelButton = $this->_startNavigation->getCancelButton()) !== null)
-		{
+		if (($cancelButton = $this->_startNavigation->getCancelButton()) !== null) {
 			$cancelButton->setVisible($displayCancelButton);
 			$cancelButtonStyle->apply($cancelButton);
 		}
-		if(($button = $this->_startNavigation->getNextButton()) !== null)
-		{
+		if (($button = $this->_startNavigation->getNextButton()) !== null) {
 			$button->setVisible(true);
 			$style = $this->getStartNextButtonStyle();
-			if($buttonStyle !== null)
+			if ($buttonStyle !== null) {
 				$style->mergeWith($buttonStyle);
+			}
 			$style->apply($button);
-			if($activeStepType === TWizardStepType::Start)
+			if ($activeStepType === TWizardStepType::Start) {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+			}
 		}
 
 		// apply styles to finish navigation buttons
-		if(($cancelButton = $this->_finishNavigation->getCancelButton()) !== null)
-		{
+		if (($cancelButton = $this->_finishNavigation->getCancelButton()) !== null) {
 			$cancelButton->setVisible($displayCancelButton);
 			$cancelButtonStyle->apply($cancelButton);
 		}
-		if(($button = $this->_finishNavigation->getPreviousButton()) !== null)
-		{
+		if (($button = $this->_finishNavigation->getPreviousButton()) !== null) {
 			$button->setVisible($this->allowNavigationToPreviousStep());
 			$style = $this->getFinishPreviousButtonStyle();
-			if($buttonStyle !== null)
+			if ($buttonStyle !== null) {
 				$style->mergeWith($buttonStyle);
+			}
 			$style->apply($button);
 		}
-		if(($button = $this->_finishNavigation->getCompleteButton()) !== null)
-		{
+		if (($button = $this->_finishNavigation->getCompleteButton()) !== null) {
 			$button->setVisible(true);
 			$style = $this->getFinishCompleteButtonStyle();
-			if($buttonStyle !== null)
+			if ($buttonStyle !== null) {
 				$style->mergeWith($buttonStyle);
+			}
 			$style->apply($button);
-			if($activeStepType === TWizardStepType::Finish)
+			if ($activeStepType === TWizardStepType::Finish) {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+			}
 		}
 
 		// apply styles to step navigation buttons
-		if(($cancelButton = $this->_stepNavigation->getCancelButton()) !== null)
-		{
+		if (($cancelButton = $this->_stepNavigation->getCancelButton()) !== null) {
 			$cancelButton->setVisible($displayCancelButton);
 			$cancelButtonStyle->apply($cancelButton);
 		}
-		if(($button = $this->_stepNavigation->getPreviousButton()) !== null)
-		{
+		if (($button = $this->_stepNavigation->getPreviousButton()) !== null) {
 			$button->setVisible($this->allowNavigationToPreviousStep());
 			$style = $this->getStepPreviousButtonStyle();
-			if($buttonStyle !== null)
+			if ($buttonStyle !== null) {
 				$style->mergeWith($buttonStyle);
+			}
 			$style->apply($button);
 		}
-		if(($button = $this->_stepNavigation->getNextButton()) !== null)
-		{
+		if (($button = $this->_stepNavigation->getNextButton()) !== null) {
 			$button->setVisible(true);
 			$style = $this->getStepNextButtonStyle();
-			if($buttonStyle !== null)
+			if ($buttonStyle !== null) {
 				$style->mergeWith($buttonStyle);
+			}
 			$style->apply($button);
-			if($activeStepType === TWizardStepType::Step)
+			if ($activeStepType === TWizardStepType::Step) {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+			}
 		}
 	}
 
@@ -1003,8 +990,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function getHistory()
 	{
-		if(($history = $this->getControlState('History', null)) === null)
-		{
+		if (($history = $this->getControlState('History', null)) === null) {
 			$history = new TStack;
 			$this->setControlState('History', $history);
 		}
@@ -1017,26 +1003,25 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function getStepType($wizardStep)
 	{
-		if(($type = $wizardStep->getStepType()) === TWizardStepType::Auto)
-		{
+		if (($type = $wizardStep->getStepType()) === TWizardStepType::Auto) {
 			$steps = $this->getWizardSteps();
-			if(($index = $steps->indexOf($wizardStep)) >= 0)
-			{
+			if (($index = $steps->indexOf($wizardStep)) >= 0) {
 				$stepCount = $steps->getCount();
-				if($stepCount === 1 || ($index < $stepCount - 1 && $steps->itemAt($index + 1)->getStepType() === TWizardStepType::Complete))
+				if ($stepCount === 1 || ($index < $stepCount - 1 && $steps->itemAt($index + 1)->getStepType() === TWizardStepType::Complete)) {
 					return TWizardStepType::Finish;
-				elseif($index === 0)
+				} elseif ($index === 0) {
 					return TWizardStepType::Start;
-				elseif($index === $stepCount - 1)
+				} elseif ($index === $stepCount - 1) {
 					return TWizardStepType::Finish;
-				else
+				} else {
 					return TWizardStepType::Step;
-			}
-			else
+				}
+			} else {
 				return $type;
-		}
-		else
+			}
+		} else {
 			return $type;
+		}
 	}
 
 	/**
@@ -1074,10 +1059,11 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function createHeader()
 	{
 		$this->_header = new TPanel;
-		if(($template = $this->getHeaderTemplate()) !== null)
+		if (($template = $this->getHeaderTemplate()) !== null) {
 			$template->instantiateIn($this->_header);
-		else
+		} else {
 			$this->_header->getControls()->add($this->getHeaderText());
+		}
 		$this->getControls()->add($this->_header);
 	}
 
@@ -1086,25 +1072,22 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createSideBar()
 	{
-		if($this->getShowSideBar())
-		{
-			if(($template = $this->getSideBarTemplate()) === null)
+		if ($this->getShowSideBar()) {
+			if (($template = $this->getSideBarTemplate()) === null) {
 				$template = new TWizardSideBarTemplate;
+			}
 			$this->_sideBar = new TPanel;
 			$template->instantiateIn($this->_sideBar);
 			$this->getControls()->add($this->_sideBar);
 
-			if(($this->_sideBarDataList = $this->_sideBar->findControl(self::ID_SIDEBAR_LIST)) !== null)
-			{
+			if (($this->_sideBarDataList = $this->_sideBar->findControl(self::ID_SIDEBAR_LIST)) !== null) {
 				$this->_sideBarDataList->attachEventHandler('OnItemCommand', [$this,'dataListItemCommand']);
 				$this->_sideBarDataList->attachEventHandler('OnItemDataBound', [$this,'dataListItemDataBound']);
 				$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 				$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 				$this->_sideBarDataList->dataBind();
 			}
-		}
-		else
-		{
+		} else {
 			$this->_sideBar = new TPanel;
 			$this->getControls()->add($this->_sideBar);
 		}
@@ -1120,8 +1103,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function dataListItemCommand($sender, $param)
 	{
 		$item = $param->getItem();
-		if($param->getCommandName() === self::CMD_MOVETO)
-		{
+		if ($param->getCommandName() === self::CMD_MOVETO) {
 			$stepIndex = $this->getActiveStepIndex();
 			$newStepIndex = TPropertyValue::ensureInteger($param->getCommandParameter());
 			$navParam = new TWizardNavigationEventParameter($stepIndex);
@@ -1130,19 +1112,20 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			// if the button clicked causes validation which fails,
 			// by default we will cancel navigation to the new step
 			$button = $param->getCommandSource();
-			if(($button instanceof \Prado\Web\UI\IButtonControl) && $button->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid())
+			if (($button instanceof \Prado\Web\UI\IButtonControl) && $button->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid()) {
 				$navParam->setCancelNavigation(true);
+			}
 
 			$this->_activeStepIndexSet = false;
 			$this->onSideBarButtonClick($navParam);
 			$this->_cancelNavigation = $navParam->getCancelNavigation();
-			if(!$this->_cancelNavigation)
-			{
-				if(!$this->_activeStepIndexSet && $this->allowNavigationToStep($newStepIndex))
+			if (!$this->_cancelNavigation) {
+				if (!$this->_activeStepIndexSet && $this->allowNavigationToStep($newStepIndex)) {
 					$this->setActiveStepIndex($newStepIndex);
-			}
-			else
+				}
+			} else {
 				$this->setActiveStepIndex($stepIndex);
+			}
 		}
 	}
 
@@ -1157,17 +1140,17 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		$item = $param->getItem();
 		$itemType = $item->getItemType();
-		if($itemType === 'Item' || $itemType === 'AlternatingItem' || $itemType === 'SelectedItem' || $itemType === 'EditItem')
-		{
-			if(($button = $item->findControl(self::ID_SIDEBAR_BUTTON)) !== null)
-			{
+		if ($itemType === 'Item' || $itemType === 'AlternatingItem' || $itemType === 'SelectedItem' || $itemType === 'EditItem') {
+			if (($button = $item->findControl(self::ID_SIDEBAR_BUTTON)) !== null) {
 				$step = $item->getData();
-				if(($this->getStepType($step) === TWizardStepType::Complete))
+				if (($this->getStepType($step) === TWizardStepType::Complete)) {
 					$button->setEnabled(false);
-				if(($title = $step->getTitle()) !== '')
+				}
+				if (($title = $step->getTitle()) !== '') {
 					$button->setText($title);
-				else
+				} else {
 					$button->setText($step->getID(false));
+				}
 				$index = $this->getWizardSteps()->indexOf($step);
 				$button->setCommandName(self::CMD_MOVETO);
 				$button->setCommandParameter("$index");
@@ -1180,17 +1163,18 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createStepContent()
 	{
-		foreach($this->getWizardSteps() as $step)
-		{
-			if($step instanceof TTemplatedWizardStep)
+		foreach ($this->getWizardSteps() as $step) {
+			if ($step instanceof TTemplatedWizardStep) {
 				$step->ensureChildControls();
+			}
 		}
 		$multiView = $this->getMultiView();
 		$this->_stepContent = new TPanel;
 		$this->_stepContent->getControls()->add($multiView);
 		$this->getControls()->add($this->_stepContent);
-		if($multiView->getViews()->getCount())
+		if ($multiView->getViews()->getCount()) {
 			$multiView->setActiveViewIndex(0);
+		}
 	}
 
 	/**
@@ -1201,13 +1185,12 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$this->_navigation = new TPanel;
 		$this->getControls()->add($this->_navigation);
 		$controls = $this->_navigation->getControls();
-		foreach($this->getWizardSteps() as $step)
-		{
-			if($step instanceof TTemplatedWizardStep)
-			{
+		foreach ($this->getWizardSteps() as $step) {
+			if ($step instanceof TTemplatedWizardStep) {
 				$step->instantiateNavigationTemplate();
-				if(($panel = $step->getNavigationContainer()) !== null)
+				if (($panel = $step->getNavigationContainer()) !== null) {
 					$controls->add($panel);
+				}
 			}
 		}
 		$this->_startNavigation = $this->createStartNavigation();
@@ -1223,8 +1206,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createStartNavigation()
 	{
-		if(($template = $this->getStartNavigationTemplate()) === null)
+		if (($template = $this->getStartNavigationTemplate()) === null) {
 			$template = new TWizardStartNavigationTemplate($this);
+		}
 		$navigation = new TWizardNavigationContainer;
 		$template->instantiateIn($navigation);
 		return $navigation;
@@ -1235,8 +1219,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createStepNavigation()
 	{
-		if(($template = $this->getStepNavigationTemplate()) === null)
+		if (($template = $this->getStepNavigationTemplate()) === null) {
 			$template = new TWizardStepNavigationTemplate($this);
+		}
 		$navigation = new TWizardNavigationContainer;
 		$template->instantiateIn($navigation);
 		return $navigation;
@@ -1247,8 +1232,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createFinishNavigation()
 	{
-		if(($template = $this->getFinishNavigationTemplate()) === null)
+		if (($template = $this->getFinishNavigationTemplate()) === null) {
 			$template = new TWizardFinishNavigationTemplate($this);
+		}
 		$navigation = new TWizardNavigationContainer;
 		$template->instantiateIn($navigation);
 		return $navigation;
@@ -1260,8 +1246,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function wizardStepsChanged()
 	{
-		if($this->_sideBarDataList !== null)
-		{
+		if ($this->_sideBarDataList !== null) {
 			$this->_sideBarDataList->setDataSource($this->getWizardSteps());
 			$this->_sideBarDataList->setSelectedItemIndex($this->getActiveStepIndex());
 			$this->_sideBarDataList->dataBind();
@@ -1276,30 +1261,26 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function getPreviousStepIndex($popStack)
 	{
 		$history = $this->getHistory();
-		if($history->getCount() >= 0)
-		{
+		if ($history->getCount() >= 0) {
 			$activeStepIndex = $this->getActiveStepIndex();
 			$previousStepIndex = -1;
-			if($popStack)
-			{
+			if ($popStack) {
 				$previousStepIndex = $history->pop();
-				if($activeStepIndex === $previousStepIndex && $history->getCount() > 0)
+				if ($activeStepIndex === $previousStepIndex && $history->getCount() > 0) {
 					$previousStepIndex = $history->pop();
-			}
-			else
-			{
+				}
+			} else {
 				$previousStepIndex = $history->peek();
-				if($activeStepIndex === $previousStepIndex && $history->getCount() > 1)
-				{
+				if ($activeStepIndex === $previousStepIndex && $history->getCount() > 1) {
 					$saveIndex = $history->pop();
 					$previousStepIndex = $history->peek();
 					$history->push($saveIndex);
 				}
 			}
 			return $activeStepIndex === $previousStepIndex ? -1 : $previousStepIndex;
-		}
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -1307,10 +1288,11 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function allowNavigationToPreviousStep()
 	{
-		if(($index = $this->getPreviousStepIndex(false)) !== -1)
+		if (($index = $this->getPreviousStepIndex(false)) !== -1) {
 			return $this->getWizardSteps()->itemAt($index)->getAllowReturn();
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -1319,10 +1301,11 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function allowNavigationToStep($index)
 	{
-		if($this->getHistory()->contains($index))
+		if ($this->getHistory()->contains($index)) {
 			return $this->getWizardSteps()->itemAt($index)->getAllowReturn();
-		else
+		} else {
 			return true;
+		}
 	}
 
 	/**
@@ -1335,11 +1318,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
 			$command = $param->getCommandName();
-			if(strcasecmp($command, self::CMD_CANCEL) === 0)
-			{
+			if (strcasecmp($command, self::CMD_CANCEL) === 0) {
 				$this->onCancelButtonClick($param);
 				return true;
 			}
@@ -1347,78 +1328,77 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			$type = $this->getStepType($this->getActiveStep());
 			$index = $this->getActiveStepIndex();
 			$navParam = new TWizardNavigationEventParameter($index);
-			if(($sender instanceof \Prado\Web\UI\IButtonControl) && $sender->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid())
+			if (($sender instanceof \Prado\Web\UI\IButtonControl) && $sender->getCausesValidation() && ($page = $this->getPage()) !== null && !$page->getIsValid()) {
 				$navParam->setCancelNavigation(true);
+			}
 
 			$handled = false;
 			$movePrev = false;
 			$this->_activeStepIndexSet = false;
 
-			if(strcasecmp($command, self::CMD_NEXT) === 0)
-			{
-				if($type !== TWizardStepType::Start && $type !== TWizardStepType::Step)
+			if (strcasecmp($command, self::CMD_NEXT) === 0) {
+				if ($type !== TWizardStepType::Start && $type !== TWizardStepType::Step) {
 					throw new TInvalidDataValueException('wizard_command_invalid', self::CMD_NEXT);
-				if($index < $this->getWizardSteps()->getCount() - 1)
+				}
+				if ($index < $this->getWizardSteps()->getCount() - 1) {
 					$navParam->setNextStepIndex($index + 1);
+				}
 				$this->onNextButtonClick($navParam);
 				$handled = true;
-			}
-			elseif(strcasecmp($command, self::CMD_PREVIOUS) === 0)
-			{
-				if($type !== TWizardStepType::Finish && $type !== TWizardStepType::Step)
+			} elseif (strcasecmp($command, self::CMD_PREVIOUS) === 0) {
+				if ($type !== TWizardStepType::Finish && $type !== TWizardStepType::Step) {
 					throw new TInvalidDataValueException('wizard_command_invalid', self::CMD_PREVIOUS);
+				}
 				$movePrev = true;
-				if(($prevIndex = $this->getPreviousStepIndex(false)) >= 0)
+				if (($prevIndex = $this->getPreviousStepIndex(false)) >= 0) {
 					$navParam->setNextStepIndex($prevIndex);
+				}
 				$this->onPreviousButtonClick($navParam);
 				$handled = true;
-			}
-			elseif(strcasecmp($command, self::CMD_COMPLETE) === 0)
-			{
-				if($type !== TWizardStepType::Finish)
+			} elseif (strcasecmp($command, self::CMD_COMPLETE) === 0) {
+				if ($type !== TWizardStepType::Finish) {
 					throw new TInvalidDataValueException('wizard_command_invalid', self::CMD_COMPLETE);
-				if($index < $this->getWizardSteps()->getCount() - 1)
+				}
+				if ($index < $this->getWizardSteps()->getCount() - 1) {
 					$navParam->setNextStepIndex($index + 1);
+				}
 				$this->onCompleteButtonClick($navParam);
 				$handled = true;
-			}
-			elseif(strcasecmp($command, self::CMD_MOVETO) === 0)
-			{
-				if($this->_cancelNavigation)  // may be set in onSideBarButtonClick
+			} elseif (strcasecmp($command, self::CMD_MOVETO) === 0) {
+				if ($this->_cancelNavigation) {  // may be set in onSideBarButtonClick
 					$navParam->setCancelNavigation(true);
+				}
 				$requestedStep = $param->getCommandParameter();
-				if (!is_numeric($requestedStep))
-				{
+				if (!is_numeric($requestedStep)) {
 					$requestedIndex = -1;
-					foreach ($this->getWizardSteps() as $index => $step)
-						if ($step->getId() === $requestedStep)
-						{
+					foreach ($this->getWizardSteps() as $index => $step) {
+						if ($step->getId() === $requestedStep) {
 							$requestedIndex = $index;
 							break;
 						}
-					if ($requestedIndex < 0)
+					}
+					if ($requestedIndex < 0) {
 						throw new TConfigurationException('wizard_step_invalid');
-				}
-				else
+					}
+				} else {
 					$requestedIndex = TPropertyValue::ensureInteger($requestedStep);
+				}
 				$navParam->setNextStepIndex($requestedIndex);
 				$handled = true;
 			}
 
-			if($handled)
-			{
-				if(!$navParam->getCancelNavigation())
-				{
+			if ($handled) {
+				if (!$navParam->getCancelNavigation()) {
 					$nextStepIndex = $navParam->getNextStepIndex();
-					if(!$this->_activeStepIndexSet && $this->allowNavigationToStep($nextStepIndex))
-					{
-						if($movePrev)
-							$this->getPreviousStepIndex(true);  // pop out the previous move from history
+					if (!$this->_activeStepIndexSet && $this->allowNavigationToStep($nextStepIndex)) {
+						if ($movePrev) {
+							$this->getPreviousStepIndex(true);
+						}  // pop out the previous move from history
 						$this->setActiveStepIndex($nextStepIndex);
 					}
-				}
-				else
+				} else {
 					$this->setActiveStepIndex($index);
+				}
 				return true;
 			}
 		}

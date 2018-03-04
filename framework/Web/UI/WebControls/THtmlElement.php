@@ -53,7 +53,8 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	 *	This is the default tag when no other is specified
 	 * @return string the default tag
 	 */
-	public function getDefaultTagName() {
+	public function getDefaultTagName()
+	{
 		return 'span';
 	}
 
@@ -61,7 +62,8 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	 * This tells you if this TagName has deviated from the original
 	 * @return boolean true if TagName has deviated from the default.
 	 */
-	public function getIsMutated() {
+	public function getIsMutated()
+	{
 		return $this->_tagName !== null && $this->_tagName != $this->getDefaultTagName();
 	}
 }

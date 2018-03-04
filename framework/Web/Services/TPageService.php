@@ -174,8 +174,9 @@ class TPageService extends \Prado\TService
 	protected function initPageContext($pageConfig)
 	{
 		$application = $this->getApplication();
-		foreach($pageConfig->getApplicationConfigurations() as $appConfig)
+		foreach ($pageConfig->getApplicationConfigurations() as $appConfig) {
 			$application->applyConfiguration($appConfig);
+		}
 
 		$this->applyConfiguration($pageConfig);
 	}
@@ -191,21 +192,20 @@ class TPageService extends \Prado\TService
 		$this->getApplication()->getAuthorizationRules()->mergeWith($config->getRules());
 		$pagePath = $this->getRequestedPagePath();
 		// external configurations
-		foreach($config->getExternalConfigurations() as $filePath => $params)
-		{
+		foreach ($config->getExternalConfigurations() as $filePath => $params) {
 			list($configPagePath, $condition) = $params;
-			if($condition !== true)
+			if ($condition !== true) {
 				$condition = $this->evaluateExpression($condition);
-			if($condition)
-			{
-				if(($path = Prado::getPathOfNamespace($filePath, Prado::getApplication()->getConfigurationFileExt())) === null || !is_file($path))
+			}
+			if ($condition) {
+				if (($path = Prado::getPathOfNamespace($filePath, Prado::getApplication()->getConfigurationFileExt())) === null || !is_file($path)) {
 					throw new TConfigurationException('pageservice_includefile_invalid', $filePath);
+				}
 				$c = new TPageConfiguration($pagePath);
 				$c->loadFromFile($path, $configPagePath);
 				$this->applyConfiguration($c);
 			}
 		}
-
 	}
 
 	/**
@@ -215,8 +215,9 @@ class TPageService extends \Prado\TService
 	protected function determineRequestedPagePath()
 	{
 		$pagePath = $this->getRequest()->getServiceParameter();
-		if(empty($pagePath))
+		if (empty($pagePath)) {
 			$pagePath = $this->getDefaultPage();
+		}
 		return $pagePath;
 	}
 
@@ -229,56 +230,46 @@ class TPageService extends \Prado\TService
 	{
 		$application = $this->getApplication();
 		$pagePath = $this->getRequestedPagePath();
-		if(($cache = $application->getCache()) === null)
-		{
+		if (($cache = $application->getCache()) === null) {
 			$pageConfig = new TPageConfiguration($pagePath);
-			if($config !== null)
-			{
-				if($application->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
+			if ($config !== null) {
+				if ($application->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 					$pageConfig->loadPageConfigurationFromPhp($config, $application->getBasePath(), '');
-				else
+				} else {
 					$pageConfig->loadPageConfigurationFromXml($config, $application->getBasePath(), '');
+				}
 			}
 			$pageConfig->loadFromFiles($this->getBasePath());
-		}
-		else
-		{
+		} else {
 			$configCached = true;
 			$currentTimestamp = [];
 			$arr = $cache->get(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath);
-			if(is_array($arr))
-			{
+			if (is_array($arr)) {
 				list($pageConfig, $timestamps) = $arr;
-				if($application->getMode() !== TApplicationMode::Performance)
-				{
-					foreach($timestamps as $fileName => $timestamp)
-					{
-						if($fileName === 0) // application config file
-						{
+				if ($application->getMode() !== TApplicationMode::Performance) {
+					foreach ($timestamps as $fileName => $timestamp) {
+						if ($fileName === 0) { // application config file
 							$appConfigFile = $application->getConfigurationFile();
 							$currentTimestamp[0] = $appConfigFile === null ? 0 : @filemtime($appConfigFile);
-							if($currentTimestamp[0] > $timestamp || ($timestamp > 0 && !$currentTimestamp[0]))
+							if ($currentTimestamp[0] > $timestamp || ($timestamp > 0 && !$currentTimestamp[0])) {
 								$configCached = false;
-						}
-						else
-						{
+							}
+						} else {
 							$currentTimestamp[$fileName] = @filemtime($fileName);
-							if($currentTimestamp[$fileName] > $timestamp || ($timestamp > 0 && !$currentTimestamp[$fileName]))
+							if ($currentTimestamp[$fileName] > $timestamp || ($timestamp > 0 && !$currentTimestamp[$fileName])) {
 								$configCached = false;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
+			} else {
 				$configCached = false;
 				$paths = explode('.', $pagePath);
 				$configPath = $this->getBasePath();
 				$fileName = $this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP
 					? self::CONFIG_FILE_PHP
 					: self::CONFIG_FILE_XML;
-				foreach($paths as $path)
-				{
+				foreach ($paths as $path) {
 					$configFile = $configPath . DIRECTORY_SEPARATOR . $fileName;
 					$currentTimestamp[$configFile] = @filemtime($configFile);
 					$configPath .= DIRECTORY_SEPARATOR . $path;
@@ -286,15 +277,14 @@ class TPageService extends \Prado\TService
 				$appConfigFile = $application->getConfigurationFile();
 				$currentTimestamp[0] = $appConfigFile === null ? 0 : @filemtime($appConfigFile);
 			}
-			if(!$configCached)
-			{
+			if (!$configCached) {
 				$pageConfig = new TPageConfiguration($pagePath);
-				if($config !== null)
-				{
-					if($application->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
+				if ($config !== null) {
+					if ($application->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 						$pageConfig->loadPageConfigurationFromPhp($config, $application->getBasePath(), '');
-					else
+					} else {
 						$pageConfig->loadPageConfigurationFromXml($config, $application->getBasePath(), '');
+					}
 				}
 				$pageConfig->loadFromFiles($this->getBasePath());
 				$cache->set(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath, [$pageConfig,$currentTimestamp]);
@@ -308,8 +298,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getTemplateManager()
 	{
-		if(!$this->_templateManager)
-		{
+		if (!$this->_templateManager) {
 			$this->_templateManager = new TTemplateManager;
 			$this->_templateManager->init(null);
 		}
@@ -329,8 +318,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function getThemeManager()
 	{
-		if(!$this->_themeManager)
-		{
+		if (!$this->_themeManager) {
 			$this->_themeManager = new TThemeManager;
 			$this->_themeManager->init(null);
 		}
@@ -350,11 +338,11 @@ class TPageService extends \Prado\TService
 	 */
 	public function getRequestedPagePath()
 	{
-		if($this->_pagePath === null)
-		{
+		if ($this->_pagePath === null) {
 			$this->_pagePath = strtr($this->determineRequestedPagePath(), '/\\', '..');
-			if(empty($this->_pagePath))
+			if (empty($this->_pagePath)) {
 				throw new THttpException(404, 'pageservice_page_required');
+			}
 		}
 		return $this->_pagePath;
 	}
@@ -381,10 +369,11 @@ class TPageService extends \Prado\TService
 	 */
 	public function setDefaultPage($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('pageservice_defaultpage_unchangeable');
-		else
+		} else {
 			$this->_defaultPage = $value;
+		}
 	}
 
 	/**
@@ -400,14 +389,13 @@ class TPageService extends \Prado\TService
 	 */
 	public function getBasePath()
 	{
-		if($this->_basePath === null)
-		{
+		if ($this->_basePath === null) {
 			$basePath = $this->getApplication()->getBasePath() . DIRECTORY_SEPARATOR . self::DEFAULT_BASEPATH;
-			if(($this->_basePath = realpath($basePath)) === false || !is_dir($this->_basePath))
-			{
+			if (($this->_basePath = realpath($basePath)) === false || !is_dir($this->_basePath)) {
 				$basePath = $this->getApplication()->getBasePath() . DIRECTORY_SEPARATOR . self::FALLBACK_BASEPATH;
-				if(($this->_basePath = realpath($basePath)) === false || !is_dir($this->_basePath))
+				if (($this->_basePath = realpath($basePath)) === false || !is_dir($this->_basePath)) {
 					throw new TConfigurationException('pageservice_basepath_invalid', $basePath);
+				}
 			}
 		}
 		return $this->_basePath;
@@ -419,10 +407,11 @@ class TPageService extends \Prado\TService
 	 */
 	public function setBasePath($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
-		elseif(($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path))
+		} elseif (($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path)) {
 			throw new TConfigurationException('pageservice_basepath_invalid', $value);
+		}
 		$this->_basePath = realpath($path);
 	}
 
@@ -489,36 +478,39 @@ class TPageService extends \Prado\TService
 		$hasTemplateFile = is_file($path . self::PAGE_FILE_EXT);
 		$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
 
-		if(!$hasTemplateFile && !$hasClassFile)
+		if (!$hasTemplateFile && !$hasClassFile) {
 			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+		}
 
-		if($hasClassFile)
-		{
+		if ($hasClassFile) {
 			$className = basename($path);
 			$namespacedClassName = static::PAGE_NAMESPACE_PREFIX . str_replace('.', '\\', $pagePath);
 
-			if(!class_exists($className, false) && !class_exists($namespacedClassName, false))
+			if (!class_exists($className, false) && !class_exists($namespacedClassName, false)) {
 				include_once($path . Prado::CLASS_FILE_EXT);
+			}
 
-			if(!class_exists($className, false))
+			if (!class_exists($className, false)) {
 				$className = $namespacedClassName;
-		}
-		else
-		{
+			}
+		} else {
 			$className = $this->getBasePageClass();
 			Prado::using($className);
-			if(($pos = strrpos($className, '.')) !== false)
+			if (($pos = strrpos($className, '.')) !== false) {
 				$className = substr($className, $pos + 1);
+			}
 		}
 
-		if($className !== '\Prado\Web\UI\TPage' && !is_subclass_of($className, '\Prado\Web\UI\TPage'))
+		if ($className !== '\Prado\Web\UI\TPage' && !is_subclass_of($className, '\Prado\Web\UI\TPage')) {
 			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+		}
 
 		$page = Prado::createComponent($className);
 		$page->setPagePath($pagePath);
 
-		if($hasTemplateFile)
+		if ($hasTemplateFile) {
 			$page->setTemplate($this->getTemplateManager()->getTemplateByFileName($path . self::PAGE_FILE_EXT));
+		}
 
 		return $page;
 	}
@@ -530,8 +522,9 @@ class TPageService extends \Prado\TService
 	 */
 	protected function runPage($page, $properties)
 	{
-		foreach($properties as $name => $value)
+		foreach ($properties as $name => $value) {
 			$page->setSubProperty($name, $value);
+		}
 		$page->run($this->getResponse()->createHtmlWriter());
 	}
 

@@ -89,8 +89,9 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function setID($value)
 	{
-		if(!preg_match(TControl::ID_FORMAT, $value))
+		if (!preg_match(TControl::ID_FORMAT, $value)) {
 			throw new TInvalidDataValueException('datagridcolumn_id_invalid', get_class($this), $value);
+		}
 		$this->_id = $value;
 	}
 
@@ -156,8 +157,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function getHeaderStyle($createStyle = true)
 	{
-		if(($style = $this->getViewState('HeaderStyle', null)) === null && $createStyle)
-		{
+		if (($style = $this->getViewState('HeaderStyle', null)) === null && $createStyle) {
 			$style = new TTableItemStyle;
 			$this->setViewState('HeaderStyle', $style, null);
 		}
@@ -210,8 +210,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function getFooterStyle($createStyle = true)
 	{
-		if(($style = $this->getViewState('FooterStyle', null)) === null && $createStyle)
-		{
+		if (($style = $this->getViewState('FooterStyle', null)) === null && $createStyle) {
 			$style = new TTableItemStyle;
 			$this->setViewState('FooterStyle', $style, null);
 		}
@@ -224,8 +223,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function getItemStyle($createStyle = true)
 	{
-		if(($style = $this->getViewState('ItemStyle', null)) === null && $createStyle)
-		{
+		if (($style = $this->getViewState('ItemStyle', null)) === null && $createStyle) {
 			$style = new TTableItemStyle;
 			$this->setViewState('ItemStyle', $style, null);
 		}
@@ -304,10 +302,11 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
-		if($value === $defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_viewState[$key]);
-		else
+		} else {
 			$this->_viewState[$key] = $value;
+		}
 	}
 
 	/**
@@ -384,10 +383,11 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Header)
+		if ($itemType === TListItemType::Header) {
 			$this->initializeHeaderCell($cell, $columnIndex);
-		elseif($itemType === TListItemType::Footer)
+		} elseif ($itemType === TListItemType::Footer) {
 			$this->initializeFooterCell($cell, $columnIndex);
+		}
 	}
 
 	/**
@@ -419,61 +419,52 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	{
 		$text = $this->getHeaderText();
 
-		if(($classPath = $this->getHeaderRenderer()) !== '')
-		{
+		if (($classPath = $this->getHeaderRenderer()) !== '') {
 			$control = Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
-			if($control instanceof \Prado\IDataRenderer)
-			{
-				if($control instanceof IItemDataRenderer)
-				{
+			if ($control instanceof \Prado\IDataRenderer) {
+				if ($control instanceof IItemDataRenderer) {
 					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
 				$control->setData($text);
 			}
-		}
-		elseif($this->getAllowSorting())
-		{
+		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
-			if(($url = $this->getHeaderImageUrl()) !== '')
-			{
+			if (($url = $this->getHeaderImageUrl()) !== '') {
 				$button = new TImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
-				if($text !== '')
+				if ($text !== '') {
 					$button->setAlternateText($text);
+				}
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			elseif($text !== '')
-			{
+			} elseif ($text !== '') {
 				$button = new TLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			else
+			} else {
 				$cell->setText('&nbsp;');
-		}
-		else
-		{
-			if(($url = $this->getHeaderImageUrl()) !== '')
-			{
+			}
+		} else {
+			if (($url = $this->getHeaderImageUrl()) !== '') {
 				$image = new TImage;
 				$image->setImageUrl($url);
-				if($text !== '')
+				if ($text !== '') {
 					$image->setAlternateText($text);
+				}
 				$cell->getControls()->add($image);
-			}
-			elseif($text !== '')
+			} elseif ($text !== '') {
 				$cell->setText($text);
-			else
+			} else {
 				$cell->setText('&nbsp;');
+			}
 		}
 	}
 
@@ -490,25 +481,22 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	protected function initializeFooterCell($cell, $columnIndex)
 	{
 		$text = $this->getFooterText();
-		if(($classPath = $this->getFooterRenderer()) !== '')
-		{
+		if (($classPath = $this->getFooterRenderer()) !== '') {
 			$control = Prado::createComponent($classPath);
 			$cell->getControls()->add($control);
-			if($control instanceof \Prado\IDataRenderer)
-			{
-				if($control instanceof IItemDataRenderer)
-				{
+			if ($control instanceof \Prado\IDataRenderer) {
+				if ($control instanceof IItemDataRenderer) {
 					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
 				$control->setData($text);
 			}
-		}
-		elseif($text !== '')
+		} elseif ($text !== '') {
 			$cell->setText($text);
-		else
+		} else {
 			$cell->setText('&nbsp;');
+		}
 	}
 
 	/**
@@ -525,23 +513,20 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function formatDataValue($formatString, $value)
 	{
-		if($formatString === '')
+		if ($formatString === '') {
 			return TPropertyValue::ensureString($value);
-		elseif($formatString[0] === '#')
-		{
+		} elseif ($formatString[0] === '#') {
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
-			try
-			{
-				if(eval("\$result=$expression;") === false)
+			try {
+				if (eval("\$result=$expression;") === false) {
 					throw new Exception('');
+				}
 				return $result;
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', get_class($this), $expression, $e->getMessage());
 			}
-		}
-		else
+		} else {
 			return sprintf($formatString, $value);
+		}
 	}
 }

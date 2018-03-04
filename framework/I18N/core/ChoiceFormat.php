@@ -117,10 +117,11 @@ class ChoiceFormat
 	{
 		$n = preg_match_all($this->validate, $set, $matches, PREG_SET_ORDER);
 
-		if($n < 3) throw new Exception("Invalid set \"{$set}\"");
+		if ($n < 3) {
+			throw new Exception("Invalid set \"{$set}\"");
+		}
 
-		if(preg_match('/\{\s*n:([^\}]+)\}/', $set, $def))
-		{
+		if (preg_match('/\{\s*n:([^\}]+)\}/', $set, $def)) {
 			return $this->isValidSetNotation($number, $def[1]);
 		}
 
@@ -129,39 +130,43 @@ class ChoiceFormat
 
 		$i = 0;
 		$elements = [];
-		foreach($matches as $match)
-		{
+		foreach ($matches as $match) {
 			$string = $match[0];
-			if($i != 0 && $i != $n - 1 && $string !== ',')
-			{
-				if($string == '-Inf')
+			if ($i != 0 && $i != $n - 1 && $string !== ',') {
+				if ($string == '-Inf') {
 					$elements[] = -1 * $this->inf;
-				elseif ($string == '+Inf' || $string == 'Inf')
+				} elseif ($string == '+Inf' || $string == 'Inf') {
 					$elements[] = $this->inf;
-				else
+				} else {
 					$elements[] = floatval($string);
+				}
 			}
 			$i++;
 		}
 		$total = count($elements);
 		$number = floatval($number);
 
-		if($leftBracket == '{' && $rightBracket == '}')
+		if ($leftBracket == '{' && $rightBracket == '}') {
 			return in_array($number, $elements);
+		}
 
 		$left = false;
-		if($leftBracket == '[')
+		if ($leftBracket == '[') {
 			$left = $number >= $elements[0];
-		elseif ($leftBracket == '(')
+		} elseif ($leftBracket == '(') {
 			$left = $number > $elements[0];
+		}
 
 		$right = false;
-		if($rightBracket == ']')
+		if ($rightBracket == ']') {
 			$right = $number <= $elements[$total - 1];
-		elseif($rightBracket == ')')
+		} elseif ($rightBracket == ')') {
 			$right = $number < $elements[$total - 1];
+		}
 
-		if($left && $right) return true;
+		if ($left && $right) {
+			return true;
+		}
 
 		return false;
 	}
@@ -169,13 +174,10 @@ class ChoiceFormat
 	protected function isValidSetNotation($number, $set)
 	{
 		$str = '$result = ' . str_replace('n', '$number', $set) . ';';
-		try
-		{
+		try {
 			eval($str);
 			return $result;
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			return false;
 		}
 	}
@@ -190,12 +192,12 @@ class ChoiceFormat
 	{
 		$n = preg_match_all($this->parse, $string, $matches, PREG_OFFSET_CAPTURE);
 		$sets = [];
-		foreach($matches[1] as $match)
+		foreach ($matches[1] as $match) {
 			$sets[] = $match[0];
+		}
 		$offset = $matches[0];
 		$strings = [];
-		for($i = 0; $i < $n; $i++)
-		{
+		for ($i = 0; $i < $n; $i++) {
 			$len = strlen($offset[$i][0]);
 			$begin = $i == 0 ? $len : $offset[$i][1] + $len;
 			$end = $i == $n - 1 ? strlen($string) : $offset[$i + 1][1];
@@ -215,12 +217,11 @@ class ChoiceFormat
 	{
 		list($sets, $strings) = $this->parse($string);
 		$total = count($sets);
-		for($i = 0; $i < $total; $i++)
-		{
-			if($this->isValid($number, $sets[$i]))
+		for ($i = 0; $i < $total; $i++) {
+			if ($this->isValid($number, $sets[$i])) {
 				return $strings[$i];
+			}
 		}
 		return false;
 	}
 }
-

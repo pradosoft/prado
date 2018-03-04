@@ -35,4 +35,3 @@ class TCompositeControl extends TControl implements INamingContainer
 		parent::initRecursive($namingContainer);
 	}
 }
-

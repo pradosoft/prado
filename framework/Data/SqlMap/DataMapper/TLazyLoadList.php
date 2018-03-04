@@ -59,8 +59,9 @@ class TLazyLoadList
 		$statement = $mappedStatement->getStatement();
 		$registry = $mappedStatement->getManager()->getTypeHandlers();
 		$list = $statement->createInstanceOfListClass($registry);
-		if(!is_object($list))
+		if (!is_object($list)) {
 			throw new TSqlMapExecutionException('sqlmap_invalid_lazyload_list', $statement->getID());
+		}
 		return new TObjectProxy($handler, $list);
 	}
 
@@ -79,8 +80,7 @@ class TLazyLoadList
 	 */
 	protected function fetchListData()
 	{
-		if($this->_loaded == false)
-		{
+		if ($this->_loaded == false) {
 			$this->_innerList = $this->_statement->executeQueryForList($this->_connection, $this->_param);
 			$this->_loaded = true;
 			//replace the target property with real list
@@ -96,8 +96,9 @@ class TLazyLoadList
 	public function hasMethod($method)
 	{
 		$this->fetchListData();
-		if(is_object($this->_innerList))
+		if (is_object($this->_innerList)) {
 			return in_array($method, get_class_methods($this->_innerList));
+		}
 		return false;
 	}
 }

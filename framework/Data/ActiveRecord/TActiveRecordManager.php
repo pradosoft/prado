@@ -14,7 +14,6 @@ namespace Prado\Data\ActiveRecord;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TActiveRecordManager provides the default DB connection,
  * default active record gateway, and table meta data inspector.
@@ -96,10 +95,11 @@ class TActiveRecordManager extends \Prado\TComponent
 	public static function getInstance($self = null)
 	{
 		static $instance;
-		if($self !== null)
+		if ($self !== null) {
 			$instance = $self;
-		elseif($instance === null)
+		} elseif ($instance === null) {
 			$instance = new self;
+		}
 		return $instance;
 	}
 
@@ -108,7 +108,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	 */
 	public function getRecordGateway()
 	{
-		if($this->_gateway === null) {
+		if ($this->_gateway === null) {
 			$this->_gateway = $this->createRecordGateway();
 		}
 		return $this->_gateway;

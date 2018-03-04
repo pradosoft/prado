@@ -77,8 +77,9 @@ class TDropDownListColumn extends TDataGridColumn
 	{
 		parent::loadState($state);
 		$this->_stateLoaded = true;
-		if(!$this->_dataBound)
+		if (!$this->_dataBound) {
 			$this->_listControl->getItems()->loadState($this->getViewState('Items', null));
+		}
 	}
 
 	/**
@@ -100,8 +101,7 @@ class TDropDownListColumn extends TDataGridColumn
 	public function addParsedObject($object)
 	{
 		// Do not add items from template if items are loaded from viewstate
-		if(!$this->_stateLoaded && ($object instanceof TListItem))
-		{
+		if (!$this->_stateLoaded && ($object instanceof TListItem)) {
 			$object->setSelected(false);
 			$index = $this->_listControl->getItems()->add($object);
 		}
@@ -254,33 +254,31 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if(!$this->_dataBound && $this->_listControl->getDataSource() !== null)
-		{
+		if (!$this->_dataBound && $this->_listControl->getDataSource() !== null) {
 			$this->_listControl->setDataTextField($this->getListTextField());
 			$this->_listControl->setDataValueField($this->getListValueField());
 			$this->_listControl->setDataTextFormatString($this->getListTextFormatString());
 			$this->_listControl->dataBind();
 			$this->_dataBound = true;
 		}
-		switch($itemType)
-		{
+		switch ($itemType) {
 			case TListItemType::EditItem:
-				if(!$this->getReadOnly())
-				{
+				if (!$this->getReadOnly()) {
 					$listControl = clone $this->_listControl;
 					$cell->getControls()->add($listControl);
 					$cell->registerObject('DropDownList', $listControl);
 					$control = $listControl;
-				}
-				else
+				} else {
 					$control = $cell;
+				}
 				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
-				if($this->getDataTextField() !== '' || $this->getDataValueField() !== '')
+				if ($this->getDataTextField() !== '' || $this->getDataValueField() !== '') {
 					$cell->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+				}
 				break;
 			default:
 				parent::initializeCell($cell, $columnIndex, $itemType);
@@ -297,24 +295,25 @@ class TDropDownListColumn extends TDataGridColumn
 	{
 		$item = $sender->getNamingContainer();
 		$data = $item->getData();
-		if(($valueField = $this->getDataValueField()) !== '')
+		if (($valueField = $this->getDataValueField()) !== '') {
 			$value = $this->getDataFieldValue($data, $valueField);
-		else
+		} else {
 			$value = '';
-		if(($textField = $this->getDataTextField()) !== '')
-		{
+		}
+		if (($textField = $this->getDataTextField()) !== '') {
 			$text = $this->getDataFieldValue($data, $textField);
-			if($valueField === '')
+			if ($valueField === '') {
 				$value = $text;
+			}
 			$formatString = $this->getDataTextFormatString();
 			$text = $this->formatDataValue($formatString, $text);
-		}
-		else
+		} else {
 			$text = $value;
-		if($sender instanceof TTableCell)
+		}
+		if ($sender instanceof TTableCell) {
 			$sender->setText($text);
-		elseif($sender instanceof TDropDownList)
+		} elseif ($sender instanceof TDropDownList) {
 			$sender->setSelectedValue($value);
+		}
 	}
 }
-

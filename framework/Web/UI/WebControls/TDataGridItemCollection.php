@@ -38,9 +38,10 @@ class TDataGridItemCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TDataGridItem)
+		if ($item instanceof TDataGridItem) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('datagriditemcollection_datagriditem_required');
+		}
 	}
 }

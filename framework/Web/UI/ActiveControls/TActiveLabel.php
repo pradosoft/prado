@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLabel;
 
-
 /**
  * TActiveLabel class
  *
@@ -59,12 +58,14 @@ class TActiveLabel extends TLabel implements IActiveControl
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
@@ -75,12 +76,12 @@ class TActiveLabel extends TLabel implements IActiveControl
 	 */
 	public function setForControl($value)
 	{
-		if(parent::getForControl() === $value)
+		if (parent::getForControl() === $value) {
 			return;
+		}
 
 		parent::setForControl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$id = $this->findControl($value)->getClientID();
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);
 		}
@@ -90,9 +91,9 @@ class TActiveLabel extends TLabel implements IActiveControl
 	 * Adds attribute id to the renderer.
 	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
-	protected function addAttributesToRender($writer) {
+	protected function addAttributesToRender($writer)
+	{
 		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 }
-

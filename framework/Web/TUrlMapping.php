@@ -107,16 +107,16 @@ class TUrlMapping extends TUrlManager
 	public function init($config)
 	{
 		parent::init($config);
-		if($this->getRequest()->getRequestResolved())
+		if ($this->getRequest()->getRequestResolved()) {
 			throw new TConfigurationException('urlmapping_global_required');
-		if($this->_configFile !== null)
+		}
+		if ($this->_configFile !== null) {
 			$this->loadConfigFile();
+		}
 		$this->loadUrlMappings($config);
-		if($this->_urlPrefix === '')
-		{
+		if ($this->_urlPrefix === '') {
 			$request = $this->getRequest();
-			if($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath)
-			{
+			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
 				$this->_urlPrefix = dirname($request->getApplicationUrl());
 			} else {
 				$this->_urlPrefix = $request->getApplicationUrl();
@@ -131,22 +131,18 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected function loadConfigFile()
 	{
-		if(is_file($this->_configFile))
-		{
-			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-			{
+		if (is_file($this->_configFile)) {
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$config = include $this->_configFile;
 				$this->loadUrlMappings($dom);
-			}
-			else
-			{
+			} else {
 				$dom = new TXmlDocument;
 				$dom->loadFromFile($this->_configFile);
 				$this->loadUrlMappings($dom);
 			}
-		}
-		else
+		} else {
 			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
+		}
 	}
 
 	/**
@@ -207,8 +203,9 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null)
+		if (($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null) {
 			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
+		}
 	}
 
 	/**
@@ -241,25 +238,20 @@ class TUrlMapping extends TUrlManager
 	{
 		$defaultClass = $this->getDefaultMappingClass();
 
-		if(is_array($config))
-		{
-			if(isset($config['urls']) && is_array($config['urls']))
-			{
-				foreach($config['urls'] as $url)
-				{
+		if (is_array($config)) {
+			if (isset($config['urls']) && is_array($config['urls'])) {
+				foreach ($config['urls'] as $url) {
 					$class = isset($url['class']) ? $url['class'] : $defaultClass;
 					$properties = isset($url['properties']) ? $url['properties'] : [];
 					$this->buildUrlMapping($class, $properties, $url);
 				}
 			}
-		}
-		else
-		{
-			foreach($config->getElementsByTagName('url') as $url)
-			{
+		} else {
+			foreach ($config->getElementsByTagName('url') as $url) {
 				$properties = $url->getAttributes();
-				if(($class = $properties->remove('class')) === null)
+				if (($class = $properties->remove('class')) === null) {
 					$class = $defaultClass;
+				}
 				$this->buildUrlMapping($class, $properties, $url);
 			}
 		}
@@ -268,23 +260,30 @@ class TUrlMapping extends TUrlManager
 	private function buildUrlMapping($class, $properties, $url)
 	{
 		$pattern = Prado::createComponent($class, $this);
-		if(!($pattern instanceof TUrlMappingPattern))
+		if (!($pattern instanceof TUrlMappingPattern)) {
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
-		foreach($properties as $name => $value)
+		}
+		foreach ($properties as $name => $value) {
 			$pattern->setSubproperty($name, $value);
+		}
 
-		if($url instanceof TXmlElement) {
+		if ($url instanceof TXmlElement) {
 			$text = $url -> getValue();
-			if($text) {
+			if ($text) {
 				$text = preg_replace('/(\s+)/S', '', $text);
-				if(($regExp = $pattern->getRegularExpression()) !== '')
-				trigger_error(sPrintF('%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
+				if (($regExp = $pattern->getRegularExpression()) !== '') {
+					trigger_error(
+					sPrintF(
+					'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
 				get_class($pattern),
 				$regExp,
 				$pattern->getServiceID(),
 				$pattern->getServiceParameter(),
-				$text),
-				E_USER_NOTICE);
+				$text
+				),
+				E_USER_NOTICE
+				);
+				}
 				$pattern->setRegularExpression($text);
 			}
 		}
@@ -307,20 +306,19 @@ class TUrlMapping extends TUrlManager
 	public function parseUrl()
 	{
 		$request = $this->getRequest();
-		foreach($this->_patterns as $pattern)
-		{
+		foreach ($this->_patterns as $pattern) {
 			$matches = $pattern->getPatternMatches($request);
-			if(count($matches) > 0)
-			{
+			if (count($matches) > 0) {
 				$this->_matched = $pattern;
 				$params = [];
-				foreach($matches as $key => $value)
-				{
-					if(is_string($key))
+				foreach ($matches as $key => $value) {
+					if (is_string($key)) {
 						$params[$key] = $value;
+					}
 				}
-				if (!$pattern->getIsWildCardPattern())
+				if (!$pattern->getIsWildCardPattern()) {
 					$params[$pattern->getServiceID()] = $pattern->getServiceParameter();
+				}
 				return $params;
 			}
 		}
@@ -353,27 +351,22 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if($this->_customUrl)
-		{
-			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
+		if ($this->_customUrl) {
+			if (!(is_array($getItems) || ($getItems instanceof \Traversable))) {
 				$getItems = [];
+			}
 			$key = $serviceID . ':' . $serviceParam;
 			$wildCardKey = ($pos = strrpos($serviceParam, '.')) !== false ?
 				$serviceID . ':' . substr($serviceParam, 0, $pos) . '.*' : $serviceID . ':*';
-			if(isset($this->_constructRules[$key]))
-			{
-				foreach($this->_constructRules[$key] as $rule)
-				{
-					if($rule->supportCustomUrl($getItems))
+			if (isset($this->_constructRules[$key])) {
+				foreach ($this->_constructRules[$key] as $rule) {
+					if ($rule->supportCustomUrl($getItems)) {
 						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
+					}
 				}
-			}
-			elseif(isset($this->_constructRules[$wildCardKey]))
-			{
-				foreach($this->_constructRules[$wildCardKey] as $rule)
-				{
-					if($rule->supportCustomUrl($getItems))
-					{
+			} elseif (isset($this->_constructRules[$wildCardKey])) {
+				foreach ($this->_constructRules[$wildCardKey] as $rule) {
+					if ($rule->supportCustomUrl($getItems)) {
 						$getItems['*'] = $pos ? substr($serviceParam, $pos + 1) : $serviceParam;
 						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
 					}

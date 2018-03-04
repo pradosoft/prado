@@ -15,7 +15,6 @@ namespace Prado\Data\Common\Oracle;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands
  * for Oracle database.
@@ -24,7 +23,8 @@ use Prado\Prado;
  * @package Prado\Data\Common\Oracle
  * @since 3.1
  */
-class TOracleCommandBuilder extends TDbCommandBuilder {
+class TOracleCommandBuilder extends TDbCommandBuilder
+{
 
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
@@ -33,11 +33,13 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	 * @param string $keywords string of keywords
 	 * @return string SQL search condition matching on a set of columns.
 	 */
-	public function getSearchExpression($fields, $keywords) {
+	public function getSearchExpression($fields, $keywords)
+	{
 		$columns = [];
 		foreach ($fields as $field) {
-			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
+			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field))) {
 				$columns[] = $field;
+			}
 		}
 		return parent :: getSearchExpression($columns, $keywords);
 	}
@@ -45,7 +47,8 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
 	 */
-	protected function isSearchableColumn($column) {
+	protected function isSearchableColumn($column)
+	{
 		$type = strtolower($column->getDbType());
 		return $type === 'character varying' || $type === 'varchar2' || $type === 'character' || $type === 'char' || $type === 'text';
 	}
@@ -76,9 +79,11 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 	 * @param integer $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset in Oracle way.
 	 */
-	public function applyLimitOffset($sql, $limit = -1, $offset = -1) {
-		if ((int) $limit <= 0 && (int) $offset <= 0)
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
+	{
+		if ((int) $limit <= 0 && (int) $offset <= 0) {
 			return $sql;
+		}
 
 		$pradoNUMLIN = 'pradoNUMLIN';
 		$fieldsALIAS = 'xyz';
@@ -89,8 +94,9 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		$nfimDoSelect = (strpos($sql, 'FROM') !== false ? strpos($sql, 'FROM') : $nfimDaSQL);
 
 		$WhereInSubSelect = "";
-		if(strpos($sql, 'WHERE') !== false)
+		if (strpos($sql, 'WHERE') !== false) {
 			$WhereInSubSelect = "WHERE " . substr($sql, strpos($sql, 'WHERE') + 5, $nfimDoWhere - $niniDoWhere);
+		}
 
 		$sORDERBY = '';
 		if (stripos($sql, 'ORDER') !== false) {
@@ -118,17 +124,19 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 				foreach ($arr as $field) {
 					$field = strtolower($field);
 					$existAS = str_ireplace(' as ', '-as-', $field);
-					if (strpos($existAS, '-as-') === false)
+					if (strpos($existAS, '-as-') === false) {
 						$aliasedFields .= "{$fieldsALIAS}." . trim($field) . ", ";
-					else
+					} else {
 						$aliasedFields .= "{$field}, ";
+					}
 				}
 				$aliasedFields = trim($aliasedFields);
 				$aliasedFields = substr($aliasedFields, 0, strlen($aliasedFields) - 1);
 			}
 		}
-		if ($aliasedFields == ', ')
+		if ($aliasedFields == ', ') {
 			$aliasedFields = " , $fieldsALIAS.* ";
+		}
 
 		/* ************************
 		$newSql = " SELECT $fields FROM ".
@@ -141,8 +149,9 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		$offset = (int)$offset;
 		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
-		if (empty($sORDERBY))
+		if (empty($sORDERBY)) {
 			$sORDERBY = "ROWNUM";
+		}
 
 		$newSql = " SELECT $fields FROM " .
 					"(					" .
@@ -153,5 +162,4 @@ class TOracleCommandBuilder extends TDbCommandBuilder {
 		//echo $newSql."\n<br>\n";
 		return $newSql;
 	}
-
 }

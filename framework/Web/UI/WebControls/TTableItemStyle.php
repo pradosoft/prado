@@ -45,12 +45,15 @@ class TTableItemStyle extends TStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_horizontalAlign === null)
+		if ($this->_horizontalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_horizontalAlign";
-		if ($this->_verticalAlign === null)
+		}
+		if ($this->_verticalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_verticalAlign";
-		if ($this->_wrap === null)
+		}
+		if ($this->_wrap === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_wrap";
+		}
 	}
 
 	/**
@@ -75,14 +78,16 @@ class TTableItemStyle extends TStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TTableItemStyle)
-		{
-			if($this->_verticalAlign === null && $style->_verticalAlign !== null)
+		if ($style instanceof TTableItemStyle) {
+			if ($this->_verticalAlign === null && $style->_verticalAlign !== null) {
 				$this->_verticalAlign = $style->_verticalAlign;
-			if($this->_horizontalAlign === null && $style->_horizontalAlign !== null)
+			}
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($this->_wrap === null && $style->_wrap !== null)
+			}
+			if ($this->_wrap === null && $style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
@@ -95,14 +100,16 @@ class TTableItemStyle extends TStyle
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TTableItemStyle)
-		{
-			if($style->_verticalAlign !== null)
+		if ($style instanceof TTableItemStyle) {
+			if ($style->_verticalAlign !== null) {
 				$this->_verticalAlign = $style->_verticalAlign;
-			if($style->_horizontalAlign !== null)
+			}
+			if ($style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($style->_wrap !== null)
+			}
+			if ($style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
@@ -113,14 +120,17 @@ class TTableItemStyle extends TStyle
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(!$this->getWrap())
+		if (!$this->getWrap()) {
 			$writer->addStyleAttribute('white-space', 'nowrap');
+		}
 
-		if(($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet)
+		if (($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
 			$writer->addAttribute('align', strtolower($horizontalAlign));
+		}
 
-		if(($verticalAlign = $this->getVerticalAlign()) !== TVerticalAlign::NotSet)
+		if (($verticalAlign = $this->getVerticalAlign()) !== TVerticalAlign::NotSet) {
 			$writer->addAttribute('valign', strtolower($verticalAlign));
+		}
 
 		parent::addAttributesToRender($writer);
 	}

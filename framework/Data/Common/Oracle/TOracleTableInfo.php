@@ -112,8 +112,9 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getColumn($name)
 	{
-		if(($column = $this->_columns->itemAt($name)) !== null)
+		if (($column = $this->_columns->itemAt($name)) !== null) {
 			return $column;
+		}
 		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
 
@@ -123,8 +124,9 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
-		foreach($this->getColumns() as $column)
+		foreach ($this->getColumns() as $column) {
 			$names[] = $column->getColumnName();
+		}
 		return $names;
 	}
 
@@ -149,13 +151,12 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getLowerCaseColumnNames()
 	{
-		if($this->_lowercase === null)
-		{
+		if ($this->_lowercase === null) {
 			$this->_lowercase = [];
-			foreach($this->getColumns()->getKeys() as $key)
+			foreach ($this->getColumns()->getKeys() as $key) {
 				$this->_lowercase[strtolower($key)] = $key;
+			}
 		}
 		return $this->_lowercase;
 	}
 }
-

@@ -68,7 +68,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function setMode($value)
 	{
-	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
 	}
 
 	/**
@@ -76,7 +76,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getMode()
 	{
-	   return $this->getViewState('Mode', TColorPickerMode::Basic);
+		return $this->getViewState('Mode', TColorPickerMode::Basic);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function setColorPickerStyle($value)
 	{
-	   $this->setViewState('ColorStyle', $value, 'default');
+		$this->setViewState('ColorStyle', $value, 'default');
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getColorPickerStyle()
 	{
-	   return $this->getViewState('ColorStyle', 'default');
+		return $this->getViewState('ColorStyle', 'default');
 	}
 
 	/**
@@ -132,8 +132,9 @@ class TColorPicker extends TTextBox
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientSide === null)
+		if ($this->_clientSide === null) {
 			$this->_clientSide = $this->createClientSide();
+		}
 		return $this->_clientSide;
 	}
 
@@ -154,11 +155,13 @@ class TColorPicker extends TTextBox
 		$options = parent::getPostBackOptions();
 		$options['ClassName'] = $this->getCssClass();
 		$options['ShowColorPicker'] = $this->getShowColorPicker();
-		if($options['ShowColorPicker'])
-		{
+		if ($options['ShowColorPicker']) {
 			$mode = $this->getMode();
-			if($mode == TColorPickerMode::Full) $options['Mode'] = $mode;
-			elseif($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
+			if ($mode == TColorPickerMode::Full) {
+				$options['Mode'] = $mode;
+			} elseif ($mode == TColorPickerMode::Simple) {
+				$options['Palette'] = 'Tiny';
+			}
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
@@ -199,8 +202,9 @@ class TColorPicker extends TTextBox
 		$cs->registerEndScript($key, $code);
 		$cs->registerPradoScript("colorpicker");
 		$url = $this->getAssetUrl($this->getColorPickerStyle() . '.css');
-		if(!$cs->isStyleSheetFileRegistered($url))
+		if (!$cs->isStyleSheetFileRegistered($url)) {
 			$cs->registerStyleSheetFile($url, $url);
+		}
 	}
 
 	/**
@@ -219,8 +223,9 @@ class TColorPicker extends TTextBox
 
 		$writer->addAttribute('id', $this->getClientID() . '_button');
 		$writer->addAttribute('src', $this->getAssetUrl('button.gif'));
-		if($color !== '')
+		if ($color !== '') {
 			$writer->addAttribute('style', "background-color:{$color};");
+		}
 		$writer->addAttribute('width', '20');
 		$writer->addAttribute('height', '20');
 		$writer->addAttribute('alt', '');

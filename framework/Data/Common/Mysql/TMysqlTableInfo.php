@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mysql;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TMysqlTableInfo class provides additional table information for MySQL database.
  *
@@ -40,10 +39,11 @@ class TMysqlTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		if(($schema = $this->getSchemaName()) !== null)
+		if (($schema = $this->getSchemaName()) !== null) {
 			return '`' . $schema . '`.`' . $this->getTableName() . '`';
-		else
+		} else {
 			return '`' . $this->getTableName() . '`';
+		}
 	}
 
 	/**
@@ -55,4 +55,3 @@ class TMysqlTableInfo extends TDbTableInfo
 		return new TMysqlCommandBuilder($connection, $this);
 	}
 }
-

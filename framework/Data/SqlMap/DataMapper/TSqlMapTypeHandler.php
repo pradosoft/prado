@@ -50,10 +50,11 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 
 	public function getType()
 	{
-		if($this->_type === null)
+		if ($this->_type === null) {
 			return get_class($this);
-		else
+		} else {
 			return $this->_type;
+		}
 	}
 
 	public function setType($value)

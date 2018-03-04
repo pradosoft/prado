@@ -52,10 +52,9 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style = $this->getViewState('Style', null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style;
-		else
-		{
+		} else {
 			$style = $this->createStyle();
 			$this->setViewState('Style', $style, null);
 			return $style;
@@ -79,13 +78,12 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
 			$this->raiseBubbleEvent($this, new TDataListCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -108,8 +106,9 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($style = $this->getViewState('Style', null))
+		if ($style = $this->getViewState('Style', null)) {
 			$style->addAttributesToRender($writer);
+		}
 	}
 
 	/**
@@ -124,14 +123,13 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function render($writer)
 	{
-		if($this->getTagName() !== '')
-		{
+		if ($this->getTagName() !== '') {
 			$this->renderBeginTag($writer);
 			$this->renderContents($writer);
 			$this->renderEndTag($writer);
-		}
-		else
+		} else {
 			$this->renderContents($writer);
+		}
 	}
 
 	/**
@@ -166,4 +164,3 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 		$writer->renderEndTag();
 	}
 }
-

@@ -119,16 +119,14 @@ class TSoapService extends \Prado\TService
 	 */
 	public function init($config)
 	{
-		if($this->_configFile !== null)
-		{
-			if(is_file($this->_configFile))
-			{
+		if ($this->_configFile !== null) {
+			if (is_file($this->_configFile)) {
 				$dom = new TXmlDocument;
 				$dom->loadFromFile($this->_configFile);
 				$this->loadConfig($dom);
-			}
-			else
+			} else {
 				throw new TConfigurationException('soapservice_configfile_invalid', $this->_configFile);
+			}
 		}
 		$this->loadConfig($config);
 
@@ -145,16 +143,16 @@ class TSoapService extends \Prado\TService
 	protected function resolveRequest()
 	{
 		$serverID = $this->getRequest()->getServiceParameter();
-		if(($pos = strrpos($serverID, '.wsdl')) === strlen($serverID) - 5)
-		{
+		if (($pos = strrpos($serverID, '.wsdl')) === strlen($serverID) - 5) {
 			$serverID = substr($serverID, 0, $pos);
 			$this->_wsdlRequest = true;
-		}
-		else
+		} else {
 			$this->_wsdlRequest = false;
+		}
 		$this->_serverID = $serverID;
-		if(!isset($this->_servers[$serverID]))
+		if (!isset($this->_servers[$serverID])) {
 			throw new THttpException(400, 'soapservice_request_invalid', $serverID);
+		}
 	}
 
 	/**
@@ -164,28 +162,25 @@ class TSoapService extends \Prado\TService
 	 */
 	private function loadConfig($config)
 	{
-		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-		{
-			if(is_array($config))
-			{
-				foreach($config['soap'] as $id => $server)
-				{
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+			if (is_array($config)) {
+				foreach ($config['soap'] as $id => $server) {
 					$properties = isset($server['properties']) ? $server['properties'] : [];
-					if(isset($this->_servers[$id]))
+					if (isset($this->_servers[$id])) {
 						throw new TConfigurationException('soapservice_serverid_duplicated', $id);
+					}
 					$this->_servers[$id] = $properties;
 				}
 			}
-		}
-		else
-		{
-			foreach($config->getElementsByTagName('soap') as $serverXML)
-			{
+		} else {
+			foreach ($config->getElementsByTagName('soap') as $serverXML) {
 				$properties = $serverXML->getAttributes();
-				if(($id = $properties->remove('id')) === null)
+				if (($id = $properties->remove('id')) === null) {
 					throw new TConfigurationException('soapservice_serverid_required');
-				if(isset($this->_servers[$id]))
+				}
+				if (isset($this->_servers[$id])) {
 					throw new TConfigurationException('soapservice_serverid_duplicated', $id);
+				}
 				$this->_servers[$id] = $properties;
 			}
 		}
@@ -206,8 +201,9 @@ class TSoapService extends \Prado\TService
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile = Prado::getPathOfNamespace($value, Prado::getApplication()->getConfigurationFileExt())) === null)
+		if (($this->_configFile = Prado::getPathOfNamespace($value, Prado::getApplication()->getConfigurationFileExt())) === null) {
 			throw new TConfigurationException('soapservice_configfile_invalid', $value);
+		}
 	}
 
 	/**
@@ -249,20 +245,24 @@ class TSoapService extends \Prado\TService
 	{
 		$properties = $this->_servers[$this->_serverID];
 		$serverClass = null;
-		if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP && isset($config['class']))
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP && isset($config['class'])) {
 			$serverClass = $config['class'];
-		elseif($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML)
+		} elseif ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML) {
 			$serverClass = $properties->remove('class');
-		if($serverClass === null)
+		}
+		if ($serverClass === null) {
 			$serverClass = self::DEFAULT_SOAP_SERVER;
+		}
 		Prado::using($serverClass);
 		$className = ($pos = strrpos($serverClass, '.')) !== false ? substr($serverClass, $pos + 1) : $serverClass;
-		if($className !== self::DEFAULT_SOAP_SERVER && !is_subclass_of($className, self::DEFAULT_SOAP_SERVER))
+		if ($className !== self::DEFAULT_SOAP_SERVER && !is_subclass_of($className, self::DEFAULT_SOAP_SERVER)) {
 			throw new TConfigurationException('soapservice_server_invalid', $serverClass);
+		}
 		$server = new $className;
 		$server->setID($this->_serverID);
-		foreach($properties as $name => $value)
+		foreach ($properties as $name => $value) {
 			$server->setSubproperty($name, $value);
+		}
 		return $server;
 	}
 
@@ -278,15 +278,12 @@ class TSoapService extends \Prado\TService
 		$server = $this->createServer();
 		$this->getResponse()->setContentType('text/xml');
 		$this->getResponse()->setCharset($server->getEncoding());
-		if($this->getIsWsdlRequest())
-		{
+		if ($this->getIsWsdlRequest()) {
 			// server WSDL file
 			Prado::trace("Generating WSDL", 'Prado\Web\Services\TSoapService');
 			$this->getResponse()->clear();
 			$this->getResponse()->write($server->getWsdl());
-		}
-		else
-		{
+		} else {
 			// provide SOAP service
 			Prado::trace("Handling SOAP request", 'Prado\Web\Services\TSoapService');
 			$server->run();

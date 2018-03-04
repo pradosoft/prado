@@ -66,15 +66,15 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getTemplate()
 	{
-		if($this->_localTemplate === null)
-		{
+		if ($this->_localTemplate === null) {
 			$class = get_class($this);
-			if(!isset(self::$_template[$class]))
+			if (!isset(self::$_template[$class])) {
 				self::$_template[$class] = $this->loadTemplate();
+			}
 			return self::$_template[$class];
-		}
-		else
+		} else {
 			return $this->_localTemplate;
+		}
 	}
 
 	/**
@@ -95,10 +95,11 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getIsSourceTemplateControl()
 	{
-		if(($template = $this->getTemplate()) !== null)
+		if (($template = $this->getTemplate()) !== null) {
 			return $template->getIsSourceTemplate();
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -106,10 +107,11 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function getTemplateDirectory()
 	{
-		if(($template = $this->getTemplate()) !== null)
+		if (($template = $this->getTemplate()) !== null) {
 			return $template->getContextPath();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
@@ -130,14 +132,13 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function createChildControls()
 	{
-		if($tpl = $this->getTemplate())
-		{
-			foreach($tpl->getDirective() as $name => $value)
-			{
-				if(is_string($value))
+		if ($tpl = $this->getTemplate()) {
+			foreach ($tpl->getDirective() as $name => $value) {
+				if (is_string($value)) {
 					$this->setSubProperty($name, $value);
-				else
+				} else {
 					throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
+				}
 			}
 			$tpl->instantiateIn($this);
 		}
@@ -150,10 +151,11 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function registerContent($id, TContent $object)
 	{
-		if(isset($this->_contents[$id]))
+		if (isset($this->_contents[$id])) {
 			throw new TConfigurationException('templatecontrol_contentid_duplicated', $id);
-		else
+		} else {
 			$this->_contents[$id] = $object;
+		}
 	}
 
 	/**
@@ -164,10 +166,11 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function registerContentPlaceHolder($id, TContentPlaceHolder $object)
 	{
-		if(isset($this->_placeholders[$id]))
+		if (isset($this->_placeholders[$id])) {
 			throw new TConfigurationException('templatecontrol_placeholderid_duplicated', $id);
-		else
+		} else {
 			$this->_placeholders[$id] = $object;
+		}
 	}
 
 	/**
@@ -202,15 +205,14 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function injectContent($id, $content)
 	{
-		if(isset($this->_placeholders[$id]))
-		{
+		if (isset($this->_placeholders[$id])) {
 			$placeholder = $this->_placeholders[$id];
 			$controls = $placeholder->getParent()->getControls();
 			$loc = $controls->remove($placeholder);
 			$controls->insertAt($loc, $content);
-		}
-		else
+		} else {
 			throw new TConfigurationException('templatecontrol_placeholder_inexistent', $id);
+		}
 	}
 
 	/**
@@ -224,107 +226,98 @@ class TTemplateControl extends TCompositeControl
 	protected function initRecursive($namingContainer = null)
 	{
 		$this->ensureChildControls();
-		if($this->_masterClass !== '')
-		{
+		if ($this->_masterClass !== '') {
 			$master = Prado::createComponent($this->_masterClass);
-			if(!($master instanceof TTemplateControl))
+			if (!($master instanceof TTemplateControl)) {
 				throw new TInvalidDataValueException('templatecontrol_mastercontrol_invalid');
+			}
 			$this->_master = $master;
 			$this->getControls()->clear();
 			$this->getControls()->add($master);
 			$master->ensureChildControls();
-			foreach($this->_contents as $id => $content)
+			foreach ($this->_contents as $id => $content) {
 				$master->injectContent($id, $content);
-		}
-		elseif(!empty($this->_contents))
+			}
+		} elseif (!empty($this->_contents)) {
 			throw new TConfigurationException('templatecontrol_mastercontrol_required', get_class($this));
+		}
 		parent::initRecursive($namingContainer);
 	}
 
-		/**
-		 * Function to update view controls with data in a given AR object.
-		 * View controls and AR object need to have the same name in IDs and Attrs respectively.
-		 * @param TActiveRecord $arObj
-		 * @param Boolean $throwExceptions Wheter or not to throw exceptions
-		 * @author Daniel Sampedro <darthdaniel85@gmail.com>
-		 */
-		public function tryToUpdateView($arObj, $throwExceptions = false)
-		{
-				$objAttrs = get_class_vars(get_class($arObj));
-				foreach (array_keys($objAttrs) as $key)
-				{
-						try
-						{
-								if ($key != "RELATIONS")
-								{
-										$control = $this->{$key};
-										if ($control instanceof TTextBox)
-												$control->Text = $arObj->{$key};
-										elseif ($control instanceof TCheckBox)
-												$control->Checked = (boolean) $arObj->{$key};
-										elseif ($control instanceof TDatePicker)
-												$control->Date = $arObj->{$key};
-								}
-								else
-								{
-										foreach ($objAttrs["RELATIONS"] as $relKey => $relValues)
-										{
-												$relControl = $this->{$relKey};
-												switch ($relValues[0])
-												{
+	/**
+	 * Function to update view controls with data in a given AR object.
+	 * View controls and AR object need to have the same name in IDs and Attrs respectively.
+	 * @param TActiveRecord $arObj
+	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
+	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
+	 */
+	public function tryToUpdateView($arObj, $throwExceptions = false)
+	{
+		$objAttrs = get_class_vars(get_class($arObj));
+		foreach (array_keys($objAttrs) as $key) {
+			try {
+				if ($key != "RELATIONS") {
+					$control = $this->{$key};
+					if ($control instanceof TTextBox) {
+						$control->Text = $arObj->{$key};
+					} elseif ($control instanceof TCheckBox) {
+						$control->Checked = (boolean) $arObj->{$key};
+					} elseif ($control instanceof TDatePicker) {
+						$control->Date = $arObj->{$key};
+					}
+				} else {
+					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
+						$relControl = $this->{$relKey};
+						switch ($relValues[0]) {
 														case TActiveRecord::BELONGS_TO:
 														case TActiveRecord::HAS_ONE:
 																$relControl->Text = $arObj->{$relKey};
 																break;
 														case TActiveRecord::HAS_MANY:
-																if ($relControl instanceof TListControl)
-																{
-																		$relControl->DataSource = $arObj->{$relKey};
-																		$relControl->dataBind();
+																if ($relControl instanceof TListControl) {
+																	$relControl->DataSource = $arObj->{$relKey};
+																	$relControl->dataBind();
 																}
 																break;
 												}
-										}
-										break;
-								}
-						}
-						catch (Exception $ex)
-						{
-								if ($throwExceptions)
-										throw $ex;
-						}
+					}
+					break;
 				}
+			} catch (Exception $ex) {
+				if ($throwExceptions) {
+					throw $ex;
+				}
+			}
 		}
+	}
 
-		/**
-		 * Function to try to update an AR object with data in view controls.
-		 * @param TActiveRecord $arObj
-		 * @param Boolean $throwExceptions Wheter or not to throw exceptions
-		 * @author Daniel Sampedro <darthdaniel85@gmail.com>
-		 */
-		public function tryToUpdateAR($arObj, $throwExceptions = false)
-		{
-				$objAttrs = get_class_vars(get_class($arObj));
-				foreach (array_keys($objAttrs) as $key)
-				{
-						try
-						{
-								if ($key == "RELATIONS")
-										break;
-								$control = $this->{$key};
-								if ($control instanceof TTextBox)
-										$arObj->{$key} = $control->Text;
-								elseif ($control instanceof TCheckBox)
-										$arObj->{$key} = $control->Checked;
-								elseif ($control instanceof TDatePicker)
-										$arObj->{$key} = $control->Date;
-						}
-						catch (Exception $ex)
-						{
-								if ($throwExceptions)
-										throw $ex;
-						}
+	/**
+	 * Function to try to update an AR object with data in view controls.
+	 * @param TActiveRecord $arObj
+	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
+	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
+	 */
+	public function tryToUpdateAR($arObj, $throwExceptions = false)
+	{
+		$objAttrs = get_class_vars(get_class($arObj));
+		foreach (array_keys($objAttrs) as $key) {
+			try {
+				if ($key == "RELATIONS") {
+					break;
 				}
+				$control = $this->{$key};
+				if ($control instanceof TTextBox) {
+					$arObj->{$key} = $control->Text;
+				} elseif ($control instanceof TCheckBox) {
+					$arObj->{$key} = $control->Checked;
+				} elseif ($control instanceof TDatePicker) {
+					$arObj->{$key} = $control->Date;
+				}
+			} catch (Exception $ex) {
+				if ($throwExceptions) {
+					throw $ex;
+				}
+			}
 		}
+	}
 }
-

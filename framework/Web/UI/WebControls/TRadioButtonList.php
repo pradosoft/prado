@@ -57,14 +57,11 @@ class TRadioButtonList extends TCheckBoxList
 		$value = isset($values[$key]) ? $values[$key] : '';
 		$oldSelection = $this->getSelectedIndex();
 		$this->ensureDataBound();
-		foreach($this->getItems() as $index => $item)
-		{
-			if($item->getEnabled() && $item->getValue() === $value)
-			{
-				if($index === $oldSelection)
+		foreach ($this->getItems() as $index => $item) {
+			if ($item->getEnabled() && $item->getValue() === $value) {
+				if ($index === $oldSelection) {
 					return false;
-				else
-				{
+				} else {
 					$this->setSelectedIndex($index);
 					return true;
 				}

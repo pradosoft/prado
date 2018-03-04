@@ -55,10 +55,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
-		if($value === $defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_viewState[$key]);
-		else
+		} else {
 			$this->_viewState[$key] = $value;
+		}
 	}
 
 	/**
@@ -221,10 +222,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHasAttributes()
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->getCount() > 0;
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -235,10 +237,9 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes;
-		else
-		{
+		} else {
 			$attributes = new TAttributeCollection;
 			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
@@ -250,10 +251,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function hasAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->contains($name);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -261,10 +263,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -284,10 +287,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function removeAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->remove($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -298,27 +302,30 @@ abstract class THotSpot extends \Prado\TComponent
 	{
 		$writer->addAttribute('shape', $this->getShape());
 		$writer->addAttribute('coords', $this->getCoordinates());
-		if(($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet)
+		if (($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet) {
 			$mode = THotSpotMode::Navigate;
-		if($mode === THotSpotMode::Navigate)
-		{
-			$writer->addAttribute('href', $this->getNavigateUrl());
-			if(($target = $this->getTarget()) !== '')
-				$writer->addAttribute('target', $target);
 		}
-		elseif($mode === THotSpotMode::Inactive)
+		if ($mode === THotSpotMode::Navigate) {
+			$writer->addAttribute('href', $this->getNavigateUrl());
+			if (($target = $this->getTarget()) !== '') {
+				$writer->addAttribute('target', $target);
+			}
+		} elseif ($mode === THotSpotMode::Inactive) {
 			$writer->addAttribute('nohref', 'true');
+		}
 		$text = $this->getAlternateText();
 		$writer->addAttribute('title', $text);
 		$writer->addAttribute('alt', $text);
-		if(($accessKey = $this->getAccessKey()) !== '')
+		if (($accessKey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accessKey);
-		if(($tabIndex = $this->getTabIndex()) !== 0)
+		}
+		if (($tabIndex = $this->getTabIndex()) !== 0) {
 			$writer->addAttribute('tabindex', "$tabIndex");
-		if($this->getHasAttributes())
-		{
-			foreach($this->getAttributes() as $name => $value)
+		}
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
 				$writer->addAttribute($name, $value);
+			}
 		}
 		$writer->renderBeginTag('area');
 		$writer->renderEndTag();

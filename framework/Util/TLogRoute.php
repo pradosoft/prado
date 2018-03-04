@@ -90,17 +90,16 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function setLevels($levels)
 	{
-		if(is_int($levels))
+		if (is_int($levels)) {
 			$this->_levels = $levels;
-		else
-		{
+		} else {
 			$this->_levels = null;
 			$levels = strtolower($levels);
-			foreach(explode(',', $levels) as $level)
-			{
+			foreach (explode(',', $levels) as $level) {
 				$level = trim($level);
-				if(isset(self::$_levelValues[$level]))
+				if (isset(self::$_levelValues[$level])) {
 					$this->_levels |= self::$_levelValues[$level];
+				}
 			}
 		}
 	}
@@ -119,15 +118,14 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function setCategories($categories)
 	{
-		if(is_array($categories))
+		if (is_array($categories)) {
 			$this->_categories = $categories;
-		else
-		{
+		} else {
 			$this->_categories = null;
-			foreach(explode(',', $categories) as $category)
-			{
-				if(($category = trim($category)) !== '')
+			foreach (explode(',', $categories) as $category) {
+				if (($category = trim($category)) !== '') {
 					$this->_categories[] = $category;
+				}
 			}
 		}
 	}
@@ -170,8 +168,9 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	public function collectLogs(TLogger $logger)
 	{
 		$logs = $logger->getLogs($this->getLevels(), $this->getCategories());
-		if(!empty($logs))
+		if (!empty($logs)) {
 			$this->processLogs($logs);
+		}
 	}
 
 	/**

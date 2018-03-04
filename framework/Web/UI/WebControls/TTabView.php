@@ -53,8 +53,9 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
+		if (!$this->getActive() && $this->getPage()->getClientSupportsJavaScript()) {
 			$this->getStyle()->setStyleField('display', 'none');
+		}
 
 		$this->getStyle()->mergeWith($this->getParent()->getViewStyle());
 
@@ -137,10 +138,11 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text = $this->getText()) !== '')
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
-		elseif($this->getHasControls())
+		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
+		}
 	}
 
 	/**
@@ -149,8 +151,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderTab($writer)
 	{
-		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
-		{
+		if ($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript()) {
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
 			$style = $this->getActive() ? $this->getParent()->getActiveTabStyle() : $this->getParent()->getTabStyle();
@@ -171,10 +172,12 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function renderTabContent($writer)
 	{
-		if(($url = $this->getNavigateUrl()) === '')
+		if (($url = $this->getNavigateUrl()) === '') {
 			$url = 'javascript://';
-		if(($caption = $this->getCaption()) === '')
+		}
+		if (($caption = $this->getCaption()) === '') {
 			$caption = '&nbsp;';
+		}
 		$writer->write("<a href=\"{$url}\">{$caption}</a>");
 	}
 }

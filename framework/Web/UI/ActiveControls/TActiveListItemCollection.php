@@ -94,8 +94,9 @@ class TActiveListItemCollection extends TListItemCollection
 	public function insertAt($index, $value)
 	{
 		parent::insertAt($index, $value);
-		if($this->canUpdateClientSide())
+		if ($this->canUpdateClientSide()) {
 			$this->_hasChanged = true;
+		}
 	}
 
 	/**
@@ -105,7 +106,8 @@ class TActiveListItemCollection extends TListItemCollection
 	public function removeAt($index)
 	{
 		parent::removeAt($index);
-		if($this->canUpdateClientSide())
+		if ($this->canUpdateClientSide()) {
 			$this->_hasChanged = true;
+		}
 	}
 }

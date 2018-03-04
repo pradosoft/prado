@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-
 /**
  * TTranslate class.
  *
@@ -146,10 +145,9 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameters()
 	{
-		if($parameters = $this->getViewState('Parameters', null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters;
-		else
-		{
+		} else {
 			$parameters = new TAttributeCollection;
 			$parameters->setCaseSensitive(true);
 			$this->setViewState('Parameters', $parameters, null);
@@ -162,10 +160,11 @@ class TTranslate extends TI18NControl
 	 */
 	public function hasParameter($name)
 	{
-		if($parameters = $this->getViewState('Parameters', null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->contains($name);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -173,10 +172,11 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameter($name)
 	{
-		if($parameters = $this->getViewState('Parameters', null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -195,10 +195,11 @@ class TTranslate extends TI18NControl
 	 */
 	public function removeParameter($name)
 	{
-		if($parameters = $this->getViewState('Parameters', null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->remove($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -208,23 +209,26 @@ class TTranslate extends TI18NControl
 	{
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 		$subs = [];
-		foreach($this->getParameters() as $key => $value)
+		foreach ($this->getParameters() as $key => $value) {
 			$subs['{' . $key . '}'] = $value;
-		foreach($this->getControls() as $control)
-		{
-			if($control instanceof TTranslateParameter)
+		}
+		foreach ($this->getControls() as $control) {
+			if ($control instanceof TTranslateParameter) {
 				$subs['{' . $control->getKey() . '}'] = $control->getParameter();
-			elseif($control instanceof TControl)
+			} elseif ($control instanceof TControl) {
 				$control->render($htmlWriter);
-			elseif(is_string($control))
+			} elseif (is_string($control)) {
 				$htmlWriter->write($control);
+			}
 		}
 
 		$text = $this->getText();
-		if(strlen($text) == 0)
+		if (strlen($text) == 0) {
 			$text = $htmlWriter->flush();
-		if($this->getTrim())
+		}
+		if ($this->getTrim()) {
 			$text = trim($text);
+		}
 
 		$writer->write($this->translateText($text, $subs));
 	}
@@ -240,21 +244,30 @@ class TTranslate extends TI18NControl
 		$app = $this->getApplication()->getGlobalization();
 
 		//no translation handler provided
-		if(($config = $app->getTranslationConfiguration()) === null)
+		if (($config = $app->getTranslationConfiguration()) === null) {
 			return strtr($text, $subs);
+		}
 
 		$catalogue = $this->getCatalogue();
-		if(empty($catalogue) && isset($config['catalogue']))
+		if (empty($catalogue) && isset($config['catalogue'])) {
 			$catalogue = $config['catalogue'];
-		if (empty($catalogue)) $catalogue = 'messages';
+		}
+		if (empty($catalogue)) {
+			$catalogue = 'messages';
+		}
 		Translation::init($catalogue);
 
 		$key = $this->getKey();
-		if(!empty($key)) $text = $key;
+		if (!empty($key)) {
+			$text = $key;
+		}
 
 		//translate it
-		return Translation::formatter($catalogue)->format($text,
-										$subs, $catalogue, $this->getCharset());
+		return Translation::formatter($catalogue)->format(
+			$text,
+										$subs,
+			$catalogue,
+			$this->getCharset()
+		);
 	}
 }
-

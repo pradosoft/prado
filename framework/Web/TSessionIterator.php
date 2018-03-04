@@ -78,11 +78,9 @@ class TSessionIterator implements \Iterator
 	 */
 	public function next()
 	{
-		do
-		{
+		do {
 			$this->_key = next($this->_keys);
-		}
-		while(!isset($_SESSION[$this->_key]) && $this->_key !== false);
+		} while (!isset($_SESSION[$this->_key]) && $this->_key !== false);
 	}
 
 	/**

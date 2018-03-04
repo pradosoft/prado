@@ -61,10 +61,11 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TView)
+		if ($object instanceof TView) {
 			$this->getControls()->add($object);
-		elseif(!is_string($object))
+		} elseif (!is_string($object)) {
 			throw new TConfigurationException('multiview_view_required');
+		}
 	}
 
 	/**
@@ -81,10 +82,11 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function getActiveViewIndex()
 	{
-		if($this->_cachedActiveViewIndex > -1)
+		if ($this->_cachedActiveViewIndex > -1) {
 			return $this->_cachedActiveViewIndex;
-		else
+		} else {
 			return $this->getControlState('ActiveViewIndex', -1);
+		}
 	}
 
 	/**
@@ -93,21 +95,22 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function setActiveViewIndex($value)
 	{
-		if(($index = TPropertyValue::ensureInteger($value)) < 0)
+		if (($index = TPropertyValue::ensureInteger($value)) < 0) {
 			$index = -1;
+		}
 		$views = $this->getViews();
 		$count = $views->getCount();
-		if($count === 0 && $this->getControlStage() < TControl::CS_CHILD_INITIALIZED)
+		if ($count === 0 && $this->getControlStage() < TControl::CS_CHILD_INITIALIZED) {
 			$this->_cachedActiveViewIndex = $index;
-		elseif($index < $count)
-		{
+		} elseif ($index < $count) {
 			$this->setControlState('ActiveViewIndex', $index, -1);
 			$this->_cachedActiveViewIndex = -1;
-			if($index >= 0)
+			if ($index >= 0) {
 				$this->activateView($views->itemAt($index), true);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidDataValueException('multiview_activeviewindex_invalid', $index);
+		}
 	}
 
 	/**
@@ -118,13 +121,16 @@ class TMultiView extends \Prado\Web\UI\TControl
 	{
 		$index = $this->getActiveViewIndex();
 		$views = $this->getViews();
-		if($index >= $views->getCount())
+		if ($index >= $views->getCount()) {
 			throw new TInvalidDataValueException('multiview_activeviewindex_invalid', $index);
-		if($index < 0)
+		}
+		if ($index < 0) {
 			return null;
+		}
 		$view = $views->itemAt($index);
-		if(!$view->getActive())
+		if (!$view->getActive()) {
 			$this->activateView($view, false);
+		}
 		return $view;
 	}
 
@@ -134,10 +140,11 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function setActiveView($view)
 	{
-		if(($index = $this->getViews()->indexOf($view)) >= 0)
+		if (($index = $this->getViews()->indexOf($view)) >= 0) {
 			$this->setActiveViewIndex($index);
-		else
+		} else {
 			throw new TInvalidOperationException('multiview_view_inexistent');
+		}
 	}
 
 	/**
@@ -148,25 +155,22 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	protected function activateView($view, $triggerViewChangedEvent = true)
 	{
-		if($view->getActive())
+		if ($view->getActive()) {
 			return;
+		}
 		$triggerEvent = $triggerViewChangedEvent && ($this->getControlStage() >= \Prado\Web\UI\TControl::CS_STATE_LOADED || ($this->getPage() && !$this->getPage()->getIsPostBack()));
-		foreach($this->getViews() as $v)
-		{
-			if($v === $view)
-			{
+		foreach ($this->getViews() as $v) {
+			if ($v === $view) {
 				$view->setActive(true);
-				if($triggerEvent)
-				{
+				if ($triggerEvent) {
 					$view->onActivate(null);
 					$this->onActiveViewChanged(null);
 				}
-			}
-			elseif($v->getActive())
-			{
+			} elseif ($v->getActive()) {
 				$v->setActive(false);
-				if($triggerEvent)
+				if ($triggerEvent) {
 					$v->onDeactivate(null);
+				}
 			}
 		}
 	}
@@ -197,8 +201,9 @@ class TMultiView extends \Prado\Web\UI\TControl
 	public function onInit($param)
 	{
 		parent::onInit($param);
-		if($this->_cachedActiveViewIndex >= 0)
+		if ($this->_cachedActiveViewIndex >= 0) {
 			$this->setActiveViewIndex($this->_cachedActiveViewIndex);
+		}
 	}
 
 	/**
@@ -220,29 +225,28 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if(!$this->_ignoreBubbleEvents && ($param instanceof \Prado\Web\UI\TCommandEventParameter))
-		{
-			switch($param->getCommandName())
-			{
+		if (!$this->_ignoreBubbleEvents && ($param instanceof \Prado\Web\UI\TCommandEventParameter)) {
+			switch ($param->getCommandName()) {
 				case self::CMD_NEXTVIEW:
-					if(($index = $this->getActiveViewIndex()) < $this->getViews()->getCount() - 1)
+					if (($index = $this->getActiveViewIndex()) < $this->getViews()->getCount() - 1) {
 						$this->setActiveViewIndex($index + 1);
-					else
+					} else {
 						$this->setActiveViewIndex(-1);
+					}
 					return true;
 				case self::CMD_PREVIOUSVIEW:
-					if(($index = $this->getActiveViewIndex()) >= 0)
+					if (($index = $this->getActiveViewIndex()) >= 0) {
 						$this->setActiveViewIndex($index - 1);
+					}
 					return true;
 				case self::CMD_SWITCHVIEWID:
 					$view = $this->findControl($viewID = $param->getCommandParameter());
-					if($view !== null && $view->getParent() === $this)
-					{
+					if ($view !== null && $view->getParent() === $this) {
 						$this->setActiveView($view);
 						return true;
-					}
-					else
+					} else {
 						throw new TInvalidDataValueException('multiview_viewid_invalid', $viewID);
+					}
 					break;
 				case self::CMD_SWITCHVIEWINDEX:
 					$index = TPropertyValue::ensureInteger($param->getCommandParameter());
@@ -269,7 +273,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if(($view = $this->getActiveView()) !== null)
+		if (($view = $this->getActiveView()) !== null) {
 			$view->renderControl($writer);
+		}
 	}
 }

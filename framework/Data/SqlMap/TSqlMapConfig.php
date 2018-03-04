@@ -17,7 +17,6 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\TPropertyValue;
 
-
 /**
  * TSqlMapConfig module configuration class.
  *
@@ -52,7 +51,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	public function clearCache()
 	{
 		$cache = $this->getApplication()->getCache();
-		if($cache !== null) {
+		if ($cache !== null) {
 			$cache->delete($this->getCacheKey());
 		}
 	}
@@ -65,17 +64,15 @@ class TSqlMapConfig extends TDataSourceConfig
 	 * @return TSqlMapManager SqlMap manager instance
 	 * @since 3.1.7
 	 */
-	public function getSqlMapManager() {
-		if(($manager = $this->loadCachedSqlMapManager()) === null)
-		{
+	public function getSqlMapManager()
+	{
+		if (($manager = $this->loadCachedSqlMapManager()) === null) {
 			$manager = new TSqlMapManager($this->getDbConnection());
-			if(strlen($file = $this->getConfigFile()) > 0)
-			{
+			if (strlen($file = $this->getConfigFile()) > 0) {
 				$manager->configureXml($file);
 				$this->cacheSqlMapManager($manager);
 			}
-		}
-		elseif($this->getConnectionID() !== '') {
+		} elseif ($this->getConnectionID() !== '') {
 			$manager->setDbConnection($this->getDbConnection());
 		}
 		return $manager;
@@ -87,13 +84,13 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	protected function cacheSqlMapManager($manager)
 	{
-		if($this->getEnableCache())
-		{
+		if ($this->getEnableCache()) {
 			$cache = $this->getApplication()->getCache();
-			if($cache !== null) {
+			if ($cache !== null) {
 				$dependencies = null;
-				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
+				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
 					$dependencies = $manager->getCacheDependencies();
+				}
 				return $cache->set($this->getCacheKey(), $manager, 0, $dependencies);
 			}
 		}
@@ -106,14 +103,13 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	protected function loadCachedSqlMapManager()
 	{
-		if($this->getEnableCache())
-		{
+		if ($this->getEnableCache()) {
 			$cache = $this->getApplication()->getCache();
-			if($cache !== null)
-			{
+			if ($cache !== null) {
 				$manager = $cache->get($this->getCacheKey());
-				if($manager instanceof TSqlMapManager)
+				if ($manager instanceof TSqlMapManager) {
 					return $manager;
+				}
 			}
 		}
 		return null;
@@ -134,15 +130,15 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	public function setConfigFile($value)
 	{
-		if(is_file($value))
+		if (is_file($value)) {
 			$this->_configFile = $value;
-		else
-		{
+		} else {
 			$file = Prado::getPathOfNamespace($value, self::CONFIG_FILE_EXT);
-			if($file === null || !is_file($file))
+			if ($file === null || !is_file($file)) {
 				throw new TConfigurationException('sqlmap_configfile_invalid', $value);
-			else
+			} else {
 				$this->_configFile = $file;
+			}
 		}
 	}
 
@@ -177,8 +173,9 @@ class TSqlMapConfig extends TDataSourceConfig
 	 */
 	public function getClient()
 	{
-		if($this->_sqlmap === null)
+		if ($this->_sqlmap === null) {
 			$this->_sqlmap = $this->createSqlMapGateway();
+		}
 		return $this->_sqlmap;
 	}
 }

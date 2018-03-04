@@ -53,8 +53,9 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function __construct($condition = null, $parameters = [])
 	{
-		if(!is_array($parameters) && func_num_args() > 1)
+		if (!is_array($parameters) && func_num_args() > 1) {
 			$parameters = array_slice(func_get_args(), 1);
+		}
 		$this->_parameters = new TAttributeCollection;
 		$this->_parameters->setCaseSensitive(true);
 		$this->_parameters->copyFrom((array)$parameters);
@@ -131,7 +132,7 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function setCondition($value)
 	{
-		if(empty($value)) {
+		if (empty($value)) {
 			// reset the condition
 			$this->_condition = null;
 			return;
@@ -143,20 +144,20 @@ class TSqlCriteria extends \Prado\TComponent
 		//    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 		// See: http://dev.mysql.com/doc/refman/5.0/en/select.html
 
-		if(preg_match('/ORDER\s+BY\s+(.*?)(?=LIMIT)|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
+		if (preg_match('/ORDER\s+BY\s+(.*?)(?=LIMIT)|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
 			// condition contains ORDER BY
 			$value = str_replace($matches[0], '', $value);
-			if(strlen($matches[1]) > 0) {
+			if (strlen($matches[1]) > 0) {
 				$this->setOrdersBy($matches[1]);
-			} elseif(strlen($matches[2]) > 0) {
+			} elseif (strlen($matches[2]) > 0) {
 				$this->setOrdersBy($matches[2]);
 			}
 		}
 
-		if(preg_match('/LIMIT\s+([\d\s,]+)/i', $value, $matches) > 0) {
+		if (preg_match('/LIMIT\s+([\d\s,]+)/i', $value, $matches) > 0) {
 			// condition contains limit
 			$value = str_replace($matches[0], '', $value); // remove limit from query
-			if(strpos($matches[1], ',')) { // both offset and limit given
+			if (strpos($matches[1], ',')) { // both offset and limit given
 				list($offset, $limit) = explode(',', $matches[1]);
 				$this->_limit = (int)$limit;
 				$this->_offset = (int)$offset;
@@ -165,7 +166,7 @@ class TSqlCriteria extends \Prado\TComponent
 			}
 		}
 
-		if(preg_match('/OFFSET\s+(\d+)/i', $value, $matches) > 0) {
+		if (preg_match('/OFFSET\s+(\d+)/i', $value, $matches) > 0) {
 			// condition contains offset
 			$value = str_replace($matches[0], '', $value); // remove offset from query
 			$this->_offset = (int)$matches[1]; // set offset in criteria
@@ -187,8 +188,9 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function setParameters($value)
 	{
-		if(!(is_array($value) || $value instanceof \ArrayAccess))
+		if (!(is_array($value) || $value instanceof \ArrayAccess)) {
 			throw new TException('value must be array or \ArrayAccess');
+		}
 		$this->_parameters->copyFrom($value);
 	}
 
@@ -197,8 +199,9 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function getIsNamedParameters()
 	{
-		foreach($this->getParameters() as $k => $v)
+		foreach ($this->getParameters() as $k => $v) {
 			return is_string($k);
+		}
 	}
 
 	/**
@@ -214,14 +217,12 @@ class TSqlCriteria extends \Prado\TComponent
 	 */
 	public function setOrdersBy($value)
 	{
-		if(is_array($value) || $value instanceof Traversable)
+		if (is_array($value) || $value instanceof Traversable) {
 			$this->_ordersBy->copyFrom($value);
-		else
-		{
+		} else {
 			$value = trim(preg_replace('/\s+/', ' ', (string)$value));
 			$orderBys = [];
-			foreach(explode(',', $value) as $orderBy)
-			{
+			foreach (explode(',', $value) as $orderBy) {
 				$vs = explode(' ', trim($orderBy));
 				$orderBys[$vs[0]] = isset($vs[1]) ? $vs[1] : 'asc';
 			}
@@ -267,22 +268,29 @@ class TSqlCriteria extends \Prado\TComponent
 	public function __toString()
 	{
 		$str = '';
-		if(strlen((string)$this->getCondition()) > 0)
+		if (strlen((string)$this->getCondition()) > 0) {
 			$str .= '"' . (string)$this->getCondition() . '"';
+		}
 		$params = [];
-		foreach($this->getParameters() as $k => $v)
+		foreach ($this->getParameters() as $k => $v) {
 			$params[] = "{$k} => ${v}";
-		if(count($params) > 0)
+		}
+		if (count($params) > 0) {
 			$str .= ', "' . implode(', ', $params) . '"';
+		}
 		$orders = [];
-		foreach($this->getOrdersBy() as $k => $v)
+		foreach ($this->getOrdersBy() as $k => $v) {
 			$orders[] = "{$k} => ${v}";
-		if(count($orders) > 0)
+		}
+		if (count($orders) > 0) {
 			$str .= ', "' . implode(', ', $orders) . '"';
-		if($this->_limit !== null)
+		}
+		if ($this->_limit !== null) {
 			$str .= ', ' . $this->_limit;
-		if($this->_offset !== null)
+		}
+		if ($this->_offset !== null) {
 			$str .= ', ' . $this->_offset;
+		}
 		return $str;
 	}
 }

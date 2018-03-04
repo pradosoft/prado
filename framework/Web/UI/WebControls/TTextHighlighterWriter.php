@@ -34,8 +34,7 @@ class TTextHighlighterWriter extends \Prado\Web\UI\THtmlWriter
 	 */
 	public function write($str)
 	{
-		if($this->firstLine)
-		{
+		if ($this->firstLine) {
 			$this->firstLine = false;
 			$this->_writer->write(THttpUtility::htmlEncode(ltrim($str)));
 		} else {

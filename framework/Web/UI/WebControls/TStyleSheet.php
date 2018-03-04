@@ -104,14 +104,15 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 		$cs = $this->getPage()->getClientScript();
 
 		$styles = preg_split('/,|\s+/', $this->getPradoStyles());
-		foreach($styles as $style)
-		{
-			if(($style = trim($style)) !== '')
+		foreach ($styles as $style) {
+			if (($style = trim($style)) !== '') {
 				$cs->registerPradoStyle($style);
+			}
 		}
 
-		if(($url = $this->getStyleSheetUrl()) !== '')
+		if (($url = $this->getStyleSheetUrl()) !== '') {
 			$cs->registerStyleSheetFile($url, $url, $this->getMediaType());
+		}
 	}
 
 	/**
@@ -121,12 +122,10 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n");
 			$this->renderChildren($writer);
 			$writer->write("\n/*]]>*/\n</style>\n");
 		}
 	}
 }
-

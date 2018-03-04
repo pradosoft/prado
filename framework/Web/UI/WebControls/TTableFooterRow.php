@@ -41,4 +41,3 @@ class TTableFooterRow extends TTableRow
 		throw new TInvalidOperationException('tablefooterrow_tablesection_readonly');
 	}
 }
-

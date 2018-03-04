@@ -59,4 +59,3 @@ class THttpUtility
 		return strtr($s, self::$_stripTable);
 	}
 }
-

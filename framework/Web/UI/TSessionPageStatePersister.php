@@ -85,10 +85,11 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function setHistorySize($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) > 0)
+		if (($value = TPropertyValue::ensureInteger($value)) > 0) {
 			$this->_historySize = $value;
-		else
+		} else {
 			throw new TInvalidDataValueException('sessionpagestatepersister_historysize_invalid');
+		}
 	}
 	/**
 	 * Saves state in session.
@@ -102,11 +103,11 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 		$timestamp = (string)microtime(true);
 		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
-		if(($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null)
+		if (($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null) {
 			$queue = [];
+		}
 		$queue[] = $key;
-		if(count($queue) > $this->getHistorySize())
-		{
+		if (count($queue) > $this->getHistorySize()) {
 			$expiredKey = array_shift($queue);
 			$session->remove($expiredKey);
 		}
@@ -121,15 +122,14 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	 */
 	public function load()
 	{
-		if(($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null)
-		{
+		if (($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null) {
 			$session = $this->_page->getSession();
 			$session->open();
 			$key = self::STATE_SESSION_KEY . $timestamp;
-			if(($data = $session->itemAt($key)) !== null)
+			if (($data = $session->itemAt($key)) !== null) {
 				return unserialize($data);
+			}
 		}
 		throw new THttpException(400, 'sessionpagestatepersister_pagestate_corrupted');
 	}
 }
-

@@ -45,32 +45,30 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem)
-		{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			$checkBox = new TActiveCheckBox;
-			if($this->getReadOnly() || $itemType !== TListItemType::EditItem)
+			if ($this->getReadOnly() || $itemType !== TListItemType::EditItem) {
 				$checkBox->setEnabled(false);
+			}
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
 			$cell->registerObject('CheckBox', $checkBox);
-			if($this->getDataField() !== '')
+			if ($this->getDataField() !== '') {
 				$checkBox->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
-		}
-		else
+			}
+		} else {
 			parent::initializeCell($cell, $columnIndex, $itemType);
+		}
 	}
 
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text = $this->getHeaderText();
 
-		if(($classPath = $this->getHeaderRenderer()) !== '')
-		{
+		if (($classPath = $this->getHeaderRenderer()) !== '') {
 			$control = Prado::createComponent($classPath);
-			if($control instanceof \Prado\IDataRenderer)
-			{
-				if($control instanceof IItemDataRenderer)
-				{
+			if ($control instanceof \Prado\IDataRenderer) {
+				if ($control instanceof IItemDataRenderer) {
 					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
@@ -78,47 +76,41 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 				$control->setData($text);
 			}
 			$cell->getControls()->add($control);
-		}
-		elseif($this->getAllowSorting())
-		{
+		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
-			if(($url = $this->getHeaderImageUrl()) !== '')
-			{
+			if (($url = $this->getHeaderImageUrl()) !== '') {
 				$button = new TActiveImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
-				if($text !== '')
+				if ($text !== '') {
 					$button->setAlternateText($text);
+				}
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			elseif($text !== '')
-			{
+			} elseif ($text !== '') {
 				$button = new TActiveLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			else
+			} else {
 				$cell->setText('&nbsp;');
-		}
-		else
-		{
-			if(($url = $this->getHeaderImageUrl()) !== '')
-			{
+			}
+		} else {
+			if (($url = $this->getHeaderImageUrl()) !== '') {
 				$image = new TActiveImage;
 				$image->setImageUrl($url);
-				if($text !== '')
+				if ($text !== '') {
 					$image->setAlternateText($text);
+				}
 				$cell->getControls()->add($image);
-			}
-			elseif($text !== '')
+			} elseif ($text !== '') {
 				$cell->setText($text);
-			else
+			} else {
 				$cell->setText('&nbsp;');
+			}
 		}
 	}
 }

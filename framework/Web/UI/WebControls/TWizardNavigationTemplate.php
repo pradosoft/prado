@@ -62,8 +62,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 */
 	protected function createNavigationButton($buttonStyle, $causesValidation, $commandName)
 	{
-		switch($buttonStyle->getButtonType())
-		{
+		switch ($buttonStyle->getButtonType()) {
 			case TWizardNavigationButtonType::Button:
 				$button = new TButton;
 				break;

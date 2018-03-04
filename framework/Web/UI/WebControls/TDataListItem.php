@@ -133,12 +133,11 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
 			$this->raiseBubbleEvent($this, new TDataListCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 }

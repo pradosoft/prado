@@ -89,8 +89,7 @@ class TCallbackPageStateTracker
 	 */
 	public function trackChanges()
 	{
-		foreach($this->_states as $name => $value)
-		{
+		foreach ($this->_states as $name => $value) {
 			$obj = $this->_control->getViewState($name);
 			$this->_existingState[$name] = is_object($obj) ? clone($obj) : $obj;
 		}
@@ -102,15 +101,14 @@ class TCallbackPageStateTracker
 	protected function getChanges()
 	{
 		$changes = [];
-		foreach($this->_states as $name => $details)
-		{
+		foreach ($this->_states as $name => $details) {
 			$new = $this->_control->getViewState($name);
 			$old = $this->_existingState[$name];
-			if($new !== $old)
-			{
+			if ($new !== $old) {
 				$diff = new $details[0]($new, $old, $this->_nullObject);
-				if(($change = $diff->getDifference()) !== $this->_nullObject)
+				if (($change = $diff->getDifference()) !== $this->_nullObject) {
 					$changes[] = [$details[1],[$change]];
+				}
 			}
 		}
 		return $changes;
@@ -121,8 +119,9 @@ class TCallbackPageStateTracker
 	 */
 	public function respondToChanges()
 	{
-		foreach($this->getChanges() as $change)
+		foreach ($this->getChanges() as $change) {
 			call_user_func_array($change[0], $change[1]);
+		}
 	}
 
 	/**
@@ -167,10 +166,11 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateVisible($visible)
 	{
-		if($visible === false)
+		if ($visible === false) {
 			$this->client()->replaceContent($this->_control, "<span id=\"" . $this->_control->getClientID() . "\" style=\"display:none\" ></span>");
-		else
+		} else {
 			$this->client()->replaceContent($this->_control, $this->_control);
+		}
 	}
 
 	/**
@@ -188,10 +188,12 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateStyle($style)
 	{
-		if($style['CssClass'] !== null)
+		if ($style['CssClass'] !== null) {
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
-		if(is_array($style['Style']) && count($style['Style']) > 0)
+		}
+		if (is_array($style['Style']) && count($style['Style']) > 0) {
 			$this->client()->setStyle($this->_control, $style['Style']);
+		}
 	}
 
 	/**
@@ -200,7 +202,8 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateAttributes($attributes)
 	{
-		foreach($attributes as $name => $value)
+		foreach ($attributes as $name => $value) {
 			$this->client()->setAttribute($this->_control, $name, $value);
+		}
 	}
 }

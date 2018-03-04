@@ -83,8 +83,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTabView)
+		if ($object instanceof TTabView) {
 			$this->getControls()->add($object);
+		}
 	}
 
 	/**
@@ -137,33 +138,29 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$activeView = null;
 		$views = $this->getViews();
-		if(($id = $this->getActiveViewID()) !== '')
-		{
-			if(($index = $views->findIndexByID($id)) >= 0)
+		if (($id = $this->getActiveViewID()) !== '') {
+			if (($index = $views->findIndexByID($id)) >= 0) {
 				$activeView = $views->itemAt($index);
-			else
+			} else {
 				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid', $id);
-		}
-		elseif(($index = $this->getActiveViewIndex()) >= 0)
-		{
-			if($index < $views->getCount())
+			}
+		} elseif (($index = $this->getActiveViewIndex()) >= 0) {
+			if ($index < $views->getCount()) {
 				$activeView = $views->itemAt($index);
-			else
+			} else {
 				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid', $index);
-		}
-		else
-		{
-			foreach($views as $index => $view)
-			{
-				if($view->getActive())
-				{
+			}
+		} else {
+			foreach ($views as $index => $view) {
+				if ($view->getActive()) {
 					$activeView = $view;
 					break;
 				}
 			}
 		}
-		if($activeView !== null)
+		if ($activeView !== null) {
 			$this->activateView($activeView);
+		}
 		return $activeView;
 	}
 
@@ -173,10 +170,11 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function setActiveView($view)
 	{
-		if($this->getViews()->indexOf($view) >= 0)
+		if ($this->getViews()->indexOf($view) >= 0) {
 			$this->activateView($view);
-		else
+		} else {
 			throw new TInvalidOperationException('tabpanel_view_inexistent');
+		}
 	}
 
 	/**
@@ -242,8 +240,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getViewStyle()
 	{
-		if(($style = $this->getViewState('ViewStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('ViewStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('tab-view');
 			$this->setViewState('ViewStyle', $style, null);
@@ -272,8 +269,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getTabStyle()
 	{
-		if(($style = $this->getViewState('TabStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('TabStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('tab-normal');
 			$this->setViewState('TabStyle', $style, null);
@@ -302,8 +298,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveTabStyle()
 	{
-		if(($style = $this->getViewState('ActiveTabStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('ActiveTabStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('tab-active');
 			$this->setViewState('ActiveTabStyle', $style, null);
@@ -320,16 +315,14 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$this->setActiveViewIndex(-1);
 		$this->setActiveViewID('');
-		foreach($this->getViews() as $index => $v)
-		{
-			if($view === $v)
-			{
+		foreach ($this->getViews() as $index => $v) {
+			if ($view === $v) {
 				$this->setActiveViewIndex($index);
 				$this->setActiveViewID($view->getID(false));
 				$view->setActive(true);
-			}
-			else
+			} else {
 				$v->setActive(false);
+			}
 		}
 	}
 
@@ -342,12 +335,10 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function loadPostData($key, $values)
 	{
-		if(($index = $values[$this->getClientID() . '_1']) !== null)
-		{
+		if (($index = $values[$this->getClientID() . '_1']) !== null) {
 			$index = (int)$index;
 			$currentIndex = $this->getActiveViewIndex();
-			if($currentIndex !== $index)
-			{
+			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
 				$this->setActiveViewIndex($index);
 				return $this->_dataChanged = true;
@@ -414,15 +405,15 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$url = $this->getCssUrl();
 
-		if($url === '') {
+		if ($url === '') {
 			return;
 		}
 
-		if($url === 'default') {
+		if ($url === 'default') {
 			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'tabpanel.css');
 		}
 
-		if($url !== '') {
+		if ($url !== '') {
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
@@ -441,8 +432,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$cs->registerEndScript("prado:$id", $code);
 		// ensure an item is always active and visible
 		$index = $this->getActiveViewIndex();
-		if(!$this->getViews()->itemAt($index)->Visible)
+		if (!$this->getViews()->itemAt($index)->Visible) {
 			$index = 0;
+		}
 		$cs->registerHiddenField($id . '_1', $index);
 	}
 
@@ -466,8 +458,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$options['NormalCssClass'] = $this->getTabCssClass();
 		$viewIDs = [];
 		$viewVis = [];
-		foreach($this->getViews() as $view)
-		{
+		foreach ($this->getViews() as $view) {
 			$viewIDs[] = $view->getClientID();
 			$viewVis[] = $view->getVisible();
 		}
@@ -508,18 +499,15 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function renderContents($writer)
 	{
 		$views = $this->getViews();
-		if($views->getCount() > 0)
-		{
+		if ($views->getCount() > 0) {
 			$writer->writeLine();
 			// render tab bar
-			foreach($views as $view)
-			{
+			foreach ($views as $view) {
 				$view->renderTab($writer);
 				$writer->writeLine();
 			}
 			// render tab views
-			foreach($views as $view)
-			{
+			foreach ($views as $view) {
 				$view->renderControl($writer);
 				$writer->writeLine();
 			}

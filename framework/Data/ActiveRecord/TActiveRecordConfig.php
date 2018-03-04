@@ -15,7 +15,6 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TActiveRecordConfig module configuration class.
  *
@@ -112,8 +111,9 @@ class TActiveRecordConfig extends TDataSourceConfig
 	{
 		parent::init($xml);
 		$manager = $this -> getManager();
-		if($this->getEnableCache())
+		if ($this->getEnableCache()) {
 			$manager->setCache($this->getApplication()->getCache());
+		}
 		$manager->setDbConnection($this->getDbConnection());
 		$manager->setInvalidFinderResult($this->getInvalidFinderResult());
 		$manager->setGatewayClass($this->getGatewayClass());
@@ -122,9 +122,11 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * @return TActiveRecordManager
 	 */
-	public function getManager() {
-		if($this->_manager === null)
+	public function getManager()
+	{
+		if ($this->_manager === null) {
 			$this->_manager = Prado::createComponent($this -> getManagerClass());
+		}
 		return TActiveRecordManager::getInstance($this->_manager);
 	}
 

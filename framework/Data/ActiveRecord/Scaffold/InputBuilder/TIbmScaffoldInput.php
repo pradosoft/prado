@@ -13,13 +13,11 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
-
 class TIbmScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'date':
 				return $this->createDateControl($container, $column, $record);
 			case 'time':
@@ -39,8 +37,7 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'date':
 				return $container->findControl(self::DEFAULT_ID)->getDate();
 			case 'time':
@@ -52,4 +49,3 @@ class TIbmScaffoldInput extends TScaffoldInputCommon
 		}
 	}
 }
-

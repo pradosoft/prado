@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TPanel;
 
-
 /**
  * TActivePanel is the TPanel active control counterpart.
  *
@@ -63,7 +62,8 @@ class TActivePanel extends TPanel implements IActiveControl
 	 * Adds attribute id to the renderer.
 	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
-	protected function addAttributesToRender($writer) {
+	protected function addAttributesToRender($writer)
+	{
 		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
@@ -77,26 +77,21 @@ class TActivePanel extends TPanel implements IActiveControl
 	 */
 	public function render($writer)
 	{
-		if($this->getHasPreRendered())
-		{
+		if ($this->getHasPreRendered()) {
 			parent::render($writer);
-			if($this->getActiveControl()->canUpdateClientSide())
+			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
-		}
-		else
-		{
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
-			if ($this->getHasControls())
-			{
+			if ($this->getHasControls()) {
 				// If we update a TActivePanel on callback,
 				// We shouldn't update all childs, because the whole content will be replaced by
 				// the parent
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control)
-				{
-						$control->getActiveControl()->setEnableUpdate(false);
+				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
+					$control->getActiveControl()->setEnableUpdate(false);
 				}
 			}
 		}
 	}
 }
-

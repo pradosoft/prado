@@ -15,7 +15,6 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TDbTransaction class.
  *
@@ -64,13 +63,12 @@ class TDbTransaction extends \Prado\TComponent
 	 */
 	public function commit()
 	{
-		if($this->_active && $this->_connection->getActive())
-		{
+		if ($this->_active && $this->_connection->getActive()) {
 			$this->_connection->getPdoInstance()->commit();
 			$this->_active = false;
-		}
-		else
+		} else {
 			throw new TDbException('dbtransaction_transaction_inactive');
+		}
 	}
 
 	/**
@@ -79,13 +77,12 @@ class TDbTransaction extends \Prado\TComponent
 	 */
 	public function rollback()
 	{
-		if($this->_active && $this->_connection->getActive())
-		{
+		if ($this->_active && $this->_connection->getActive()) {
 			$this->_connection->getPdoInstance()->rollBack();
 			$this->_active = false;
-		}
-		else
+		} else {
 			throw new TDbException('dbtransaction_transaction_inactive');
+		}
 	}
 
 	/**
@@ -112,4 +109,3 @@ class TDbTransaction extends \Prado\TComponent
 		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 }
-

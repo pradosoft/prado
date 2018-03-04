@@ -130,11 +130,11 @@ class MessageFormat
 	 */
 	protected function loadCatalogue($catalogue)
 	{
-		if(in_array($catalogue, $this->catagloues))
+		if (in_array($catalogue, $this->catagloues)) {
 			return;
+		}
 
-		if($this->source->load($catalogue))
-		{
+		if ($this->source->load($catalogue)) {
 			$this->messages[$catalogue] = $this->source->read();
 			$this->catagloues[] = $catalogue;
 		}
@@ -155,11 +155,14 @@ class MessageFormat
 	 */
 	public function format($string, $args = [], $catalogue = null, $charset = null)
 	{
-		if(empty($charset)) $charset = $this->getCharset();
+		if (empty($charset)) {
+			$charset = $this->getCharset();
+		}
 
 		//force args as UTF-8
-		foreach($args as $k => $v)
+		foreach ($args as $k => $v) {
 			$args[$k] = I18N_toUTF8($v, $charset);
+		}
 		$s = $this->formatString(I18N_toUTF8($string, $charset), $args, $catalogue);
 		return I18N_toEncoding($s, $charset);
 	}
@@ -174,43 +177,39 @@ class MessageFormat
 	 */
 	protected function formatString($string, $args = [], $catalogue = null)
 	{
-		if(empty($catalogue))
-		{
-			if(empty($this->Catalogue))
+		if (empty($catalogue)) {
+			if (empty($this->Catalogue)) {
 				$catalogue = 'messages';
-			else
+			} else {
 				$catalogue = $this->Catalogue;
+			}
 		}
 
 		$this->loadCatalogue($catalogue);
 
-		if(empty($args))
+		if (empty($args)) {
 			$args = [];
+		}
 
-		foreach($this->messages[$catalogue] as $variant)
-		{
+		foreach ($this->messages[$catalogue] as $variant) {
 			// foreach of the translation units
-			foreach($variant as $source => $result)
-			{
+			foreach ($variant as $source => $result) {
 				// we found it, so return the target translation
-				if($source == $string)
-				{
+				if ($source == $string) {
 					//check if it contains only strings.
-					if(is_string($result))
+					if (is_string($result)) {
 						$target = $result;
-					else
-					{
+					} else {
 						$target = $result[0];
 					}
 					//found, but untranslated
-					if(empty($target))
-					{
+					if (empty($target)) {
 						return 	$this->postscript[0] .
 								strtr($string, $args) .
 								$this->postscript[1];
-					}
-					else
+					} else {
 						return strtr($target, $args);
+					}
 				}
 			}
 		}
@@ -240,11 +239,9 @@ class MessageFormat
 	 */
 	public function setUntranslatedPS($postscript)
 	{
-		if(is_array($postscript) && count($postscript) >= 2)
-		{
+		if (is_array($postscript) && count($postscript) >= 2) {
 			$this->postscript[0] = $postscript[0];
 			$this->postscript[1] = $postscript[1];
 		}
 	}
 }
-

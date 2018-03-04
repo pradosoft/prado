@@ -63,10 +63,11 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 		$this->_itemIndex = $itemIndex;
 		$this->_dataSourceIndex = $dataSourceIndex;
 		$this->setItemType($itemType);
-		if($itemType === TListItemType::Header)
+		if ($itemType === TListItemType::Header) {
 			$this->setTableSection(TTableRowSection::Header);
-		elseif($itemType === TListItemType::Footer)
+		} elseif ($itemType === TListItemType::Footer) {
 			$this->setTableSection(TTableRowSection::Footer);
+		}
 	}
 
 	/**
@@ -128,12 +129,11 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
 			$this->raiseBubbleEvent($this, new TDataGridCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 }

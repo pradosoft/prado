@@ -107,34 +107,31 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 	private function determineCacheability()
 	{
-		if(!$this->_cacheChecked)
-		{
+		if (!$this->_cacheChecked) {
 			$this->_cacheChecked = true;
-			if($this->_duration > 0 && ($this->_cachePostBack || !$this->getPage()->getIsPostBack()))
-			{
-				if($this->_cacheModuleID !== '')
-				{
+			if ($this->_duration > 0 && ($this->_cachePostBack || !$this->getPage()->getIsPostBack())) {
+				if ($this->_cacheModuleID !== '') {
 					$this->_cache = $this->getApplication()->getModule($this->_cacheModuleID);
-					if(!($this->_cache instanceof ICache))
+					if (!($this->_cache instanceof ICache)) {
 						throw new TConfigurationException('outputcache_cachemoduleid_invalid', $this->_cacheModuleID);
-				}
-				else
+					}
+				} else {
 					$this->_cache = $this->getApplication()->getCache();
-				if($this->_cache !== null)
-				{
+				}
+				if ($this->_cache !== null) {
 					$this->_cacheAvailable = true;
 					$data = $this->_cache->get($this->getCacheKey());
-					if(is_array($data))
-					{
+					if (is_array($data)) {
 						$param = new TOutputCacheCheckDependencyEventParameter;
 						$param->setCacheTime(isset($data[3]) ? $data[3] : 0);
 						$this->onCheckDependency($param);
 						$this->_dataCached = $param->getIsValid();
-					}
-					else
+					} else {
 						$this->_dataCached = false;
-					if($this->_dataCached)
+					}
+					if ($this->_dataCached) {
 						list($this->_contents, $this->_state, $this->_actions, $this->_cacheTime) = $data;
+					}
 				}
 			}
 		}
@@ -149,15 +146,14 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
-		if($this->_cacheAvailable && !$this->_dataCached)
-		{
+		if ($this->_cacheAvailable && !$this->_dataCached) {
 			$stack = $this->getPage()->getCachingStack();
 			$stack->push($this);
 			parent::initRecursive($namingContainer);
 			$stack->pop();
-		}
-		else
+		} else {
 			parent::initRecursive($namingContainer);
+		}
 	}
 
 	/**
@@ -170,17 +166,15 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function loadRecursive()
 	{
-		if($this->_cacheAvailable && !$this->_dataCached)
-		{
+		if ($this->_cacheAvailable && !$this->_dataCached) {
 			$stack = $this->getPage()->getCachingStack();
 			$stack->push($this);
 			parent::loadRecursive();
 			$stack->pop();
-		}
-		else
-		{
-			if($this->_dataCached)
+		} else {
+			if ($this->_dataCached) {
 				$this->performActions();
+			}
 			parent::loadRecursive();
 		}
 	}
@@ -189,14 +183,14 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	{
 		$page = $this->getPage();
 		$cs = $page->getClientScript();
-		foreach($this->_actions as $action)
-		{
-			if($action[0] === 'Page.ClientScript')
+		foreach ($this->_actions as $action) {
+			if ($action[0] === 'Page.ClientScript') {
 				call_user_func_array([$cs,$action[1]], $action[2]);
-			elseif($action[0] === 'Page')
+			} elseif ($action[0] === 'Page') {
 				call_user_func_array([$page,$action[1]], $action[2]);
-			else
+			} else {
 				call_user_func_array([$this->getSubProperty($action[0]),$action[1]], $action[2]);
+			}
 		}
 	}
 
@@ -209,15 +203,14 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function preRenderRecursive()
 	{
-		if($this->_cacheAvailable && !$this->_dataCached)
-		{
+		if ($this->_cacheAvailable && !$this->_dataCached) {
 			$stack = $this->getPage()->getCachingStack();
 			$stack->push($this);
 			parent::preRenderRecursive();
 			$stack->pop();
-		}
-		else
+		} else {
 			parent::preRenderRecursive();
+		}
 	}
 
 	/**
@@ -244,10 +237,9 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function &saveStateRecursive($needViewState = true)
 	{
-		if($this->_dataCached)
+		if ($this->_dataCached) {
 			return $this->_state;
-		else
-		{
+		} else {
 			$st = parent::saveStateRecursive($needViewState);
 			// serialization is needed to avoid undefined classes when loading state
 			$this->_state = serialize($st);
@@ -271,8 +263,9 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 	public function getCacheKey()
 	{
-		if($this->_cacheKey === null)
+		if ($this->_cacheKey === null) {
 			$this->_cacheKey = $this->calculateCacheKey();
+		}
 		return $this->_cacheKey;
 	}
 
@@ -289,14 +282,13 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	protected function calculateCacheKey()
 	{
 		$key = $this->getBaseCacheKey();
-		if($this->_varyBySession)
+		if ($this->_varyBySession) {
 			$key .= $this->getSession()->getSessionID();
-		if($this->_varyByParam !== '')
-		{
+		}
+		if ($this->_varyByParam !== '') {
 			$params = [];
 			$request = $this->getRequest();
-			foreach(explode(',', $this->_varyByParam) as $name)
-			{
+			foreach (explode(',', $this->_varyByParam) as $name) {
 				$name = trim($name);
 				$params[$name] = $request->itemAt($name);
 			}
@@ -387,8 +379,9 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	public function setDuration($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 0)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
 			throw new TInvalidDataValueException('outputcache_duration_invalid', get_class($this));
+		}
 		$this->_duration = $value;
 	}
 
@@ -481,10 +474,9 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	public function render($writer)
 	{
-		if($this->_dataCached)
+		if ($this->_dataCached) {
 			$writer->write($this->_contents);
-		elseif($this->_cacheAvailable)
-		{
+		} elseif ($this->_cacheAvailable) {
 			$textwriter = new TTextWriter();
 			$multiwriter = new TOutputCacheTextWriterMulti([$writer->getWriter(),$textwriter]);
 			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $multiwriter);
@@ -497,8 +489,8 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 			$content = $textwriter->flush();
 			$data = [$content,$this->_state,$this->_actions,time()];
 			$this->_cache->set($this->getCacheKey(), $data, $this->getDuration(), $this->getCacheDependency());
-		}
-		else
+		} else {
 			parent::render($writer);
+		}
 	}
 }

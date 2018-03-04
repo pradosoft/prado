@@ -76,10 +76,10 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function getLastInsertID()
 	{
-		foreach($this->getTableInfo()->getColumns() as $column)
-		{
-			if($column->hasSequence())
+		foreach ($this->getTableInfo()->getColumns() as $column) {
+			if ($column->hasSequence()) {
 				return $this->getDbConnection()->getLastInsertID($column->getSequenceName());
+			}
 		}
 	}
 
@@ -108,10 +108,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	public function applyOrdering($sql, $ordering)
 	{
 		$orders = [];
-		foreach($ordering as $name => $direction)
-		{
+		foreach ($ordering as $name => $direction) {
 			$direction = strtolower($direction) == 'desc' ? 'DESC' : 'ASC';
-			if(false !== strpos($name, '(') && false !== strpos($name, ')')) {
+			if (false !== strpos($name, '(') && false !== strpos($name, ')')) {
 				// key is a function (bad practice, but we need to handle it)
 				$key = $name;
 			} else {
@@ -120,8 +119,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 			}
 			$orders[] = $key . ' ' . $direction;
 		}
-		if(count($orders) > 0)
+		if (count($orders) > 0) {
 			$sql .= ' ORDER BY ' . implode(', ', $orders);
+		}
 		return $sql;
 	}
 
@@ -135,11 +135,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function getSearchExpression($fields, $keywords)
 	{
-		if(strlen(trim($keywords)) == 0) return '';
+		if (strlen(trim($keywords)) == 0) {
+			return '';
+		}
 		$words = preg_split('/\s/u', $keywords);
 		$conditions = [];
-		foreach($fields as $field)
-		{
+		foreach ($fields as $field) {
 			$column = $this->getTableInfo()->getColumn($field)->getColumnName();
 			$conditions[] = $this->getSearchCondition($column, $words);
 		}
@@ -154,8 +155,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	protected function getSearchCondition($column, $words)
 	{
 		$conditions = [];
-		foreach($words as $word)
+		foreach ($words as $word) {
 			$conditions[] = $column . ' LIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+		}
 		return '(' . implode(' AND ', $conditions) . ')';
 	}
 
@@ -198,94 +200,98 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @todo add support for table aliasing
 	 * @todo add support for quoting of column aliasing
 	 */
-	public function getSelectFieldList($data = '*') {
-		if(is_scalar($data)) {
+	public function getSelectFieldList($data = '*')
+	{
+		if (is_scalar($data)) {
 			$tmp = explode(',', $data);
 			$result = [];
-			foreach($tmp as $v)
+			foreach ($tmp as $v) {
 				$result[] = trim($v);
+			}
 			return $result;
 		}
 
 		$bHasWildcard = false;
 		$result = [];
-		if(is_array($data) || $data instanceof Traversable) {
+		if (is_array($data) || $data instanceof Traversable) {
 			$columns = $this->getTableInfo()->getColumns();
-			foreach($data as $key => $value) {
-				if($key === '*' || $value === '*') {
+			foreach ($data as $key => $value) {
+				if ($key === '*' || $value === '*') {
 					$bHasWildcard = true;
 					continue;
 				}
 
-				if(strToUpper($key) === 'NULL') {
+				if (strToUpper($key) === 'NULL') {
 					$result[] = 'NULL';
 					continue;
 				}
 
-				if(strpos($key, '(') !== false && strpos($key, ')') !== false) {
+				if (strpos($key, '(') !== false && strpos($key, ')') !== false) {
 					$result[] = $key;
 					continue;
 				}
 
-				if(stripos($key, 'AS') !== false) {
+				if (stripos($key, 'AS') !== false) {
 					$result[] = $key;
 					continue;
 				}
 
-				if(stripos($value, 'AS') !== false) {
+				if (stripos($value, 'AS') !== false) {
 					$result[] = $value;
 					continue;
 				}
 
 				$v = isset($columns[$value]);
 				$k = isset($columns[$key]);
-				if(is_int($key) && $v) {
+				if (is_int($key) && $v) {
 					$key = $value;
 					$k = $v;
 				}
 
-				if(strToUpper($value) === 'NULL') {
-					if($k)
+				if (strToUpper($value) === 'NULL') {
+					if ($k) {
 						$result[] = 'NULL AS ' . $columns[$key]->getColumnName();
-					else
+					} else {
 						$result[] = 'NULL' . (is_string($key) ? (' AS ' . (string)$key) : '');
+					}
 					continue;
 				}
 
-				if(strpos($value, '(') !== false && strpos($value, ')') !== false) {
-					if($k)
+				if (strpos($value, '(') !== false && strpos($value, ')') !== false) {
+					if ($k) {
 						$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
-					else
+					} else {
 						$result[] = $value . (is_string($key) ? (' AS ' . (string)$key) : '');
+					}
 					continue;
 				}
 
-				if($v && $key == $value) {
+				if ($v && $key == $value) {
 					$result[] = $columns[$value]->getColumnName();
 					continue;
 				}
 
-				if($k && $value == null) {
+				if ($k && $value == null) {
 					$result[] = $columns[$key]->getColumnName();
 					continue;
 				}
 
-				if(is_string($key) && $v) {
+				if (is_string($key) && $v) {
 					$result[] = $columns[$value]->getColumnName() . ' AS ' . $key;
 					continue;
 				}
 
-				if(is_numeric($value) && $k) {
+				if (is_numeric($value) && $k) {
 					$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
 					continue;
 				}
 
-				if(is_string($value) && $k) {
+				if (is_string($value) && $k) {
 					$result[] = $this->getDbConnection()->quoteString($value) . ' AS ' . $columns[$key]->getColumnName();
 					continue;
 				}
 
-				if(!$v && !$k && is_int($key)) {
+				if (!$v && !$k && is_int($key)) {
 					$result[] = is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value);
 					continue;
 				}
@@ -294,8 +300,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 			}
 		}
 
-		if($data === null || count($result) == 0 || $bHasWildcard)
+		if ($data === null || count($result) == 0 || $bHasWildcard) {
 			$result = $result = array_merge($this->getTableInfo()->getColumnNames(), $result);
+		}
 
 		return $result;
 	}
@@ -312,17 +319,20 @@ class TDbCommandBuilder extends \Prado\TComponent
 		$table = $this->getTableInfo()->getTableFullName();
 		$fields = implode(', ', $this -> getSelectFieldList($select));
 		$sql = "SELECT {$fields} FROM {$table}";
-		if(!empty($where))
+		if (!empty($where)) {
 			$sql .= " WHERE {$where}";
+		}
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
 	public function applyCriterias($sql, $parameters = [], $ordering = [], $limit = -1, $offset = -1)
 	{
-		if(count($ordering) > 0)
+		if (count($ordering) > 0) {
 			$sql = $this->applyOrdering($sql, $ordering);
-		if($limit >= 0 || $offset >= 0)
+		}
+		if ($limit >= 0 || $offset >= 0) {
 			$sql = $this->applyLimitOffset($sql, $limit, $offset);
+		}
 		$command = $this->createCommand($sql);
 		$this->bindArrayValues($command, $parameters);
 		return $command;
@@ -350,8 +360,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	public function createDeleteCommand($where, $parameters = [])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		if (!empty($where))
+		if (!empty($where)) {
 			$where = ' WHERE ' . $where;
+		}
 		$command = $this->createCommand("DELETE FROM {$table}" . $where);
 		$this->bindArrayValues($command, $parameters);
 		return $command;
@@ -385,13 +396,15 @@ class TDbCommandBuilder extends \Prado\TComponent
 	public function createUpdateCommand($data, $where, $parameters = [])
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		if($this->hasIntegerKey($parameters))
+		if ($this->hasIntegerKey($parameters)) {
 			$fields = implode(', ', $this->getColumnBindings($data, true));
-		else
+		} else {
 			$fields = implode(', ', $this->getColumnBindings($data));
+		}
 
-		if (!empty($where))
+		if (!empty($where)) {
 			$where = ' WHERE ' . $where;
+		}
 		$command = $this->createCommand("UPDATE {$table} SET {$fields}" . $where);
 		$this->bindArrayValues($command, array_merge($data, $parameters));
 		return $command;
@@ -404,9 +417,9 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	protected function getInsertFieldBindings($values)
 	{
-		$fields = []; $bindings = [];
-		foreach(array_keys($values) as $name)
-		{
+		$fields = [];
+		$bindings = [];
+		foreach (array_keys($values) as $name) {
 			$fields[] = $this->getTableInfo()->getColumn($name)->getColumnName();
 			$bindings[] = ':' . $name;
 		}
@@ -422,8 +435,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	protected function getColumnBindings($values, $position = false)
 	{
 		$bindings = [];
-		foreach(array_keys($values) as $name)
-		{
+		foreach (array_keys($values) as $name) {
 			$column = $this->getTableInfo()->getColumn($name)->getColumnName();
 			$bindings[] = $position ? $column . ' = ?' : $column . ' = :' . $name;
 		}
@@ -447,13 +459,13 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function bindColumnValues($command, $values)
 	{
-		foreach($values as $name => $value)
-		{
+		foreach ($values as $name => $value) {
 			$column = $this->getTableInfo()->getColumn($name);
-			if($value === null && $column->getAllowNull())
+			if ($value === null && $column->getAllowNull()) {
 				$command->bindValue(':' . $name, null, PDO::PARAM_NULL);
-			else
+			} else {
 				$command->bindValue(':' . $name, $value, $column->getPdoType());
+			}
 		}
 	}
 
@@ -463,16 +475,13 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function bindArrayValues($command, $values)
 	{
-		if($this->hasIntegerKey($values))
-		{
+		if ($this->hasIntegerKey($values)) {
 			$values = array_values($values);
-			for($i = 0, $max = count($values); $i < $max; $i++)
+			for ($i = 0, $max = count($values); $i < $max; $i++) {
 				$command->bindValue($i + 1, $values[$i], $this->getPdoType($values[$i]));
-		}
-		else
-		{
-			foreach($values as $name => $value)
-			{
+			}
+		} else {
+			foreach ($values as $name => $value) {
 				$prop = $name[0] === ':' ? $name : ':' . $name;
 				$command->bindValue($prop, $value, $this->getPdoType($value));
 			}
@@ -485,12 +494,11 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public static function getPdoType($value)
 	{
-		switch(gettype($value))
-		{
+		switch (gettype($value)) {
 			case 'boolean': return PDO::PARAM_BOOL;
 			case 'integer': return PDO::PARAM_INT;
-			case 'string' : return PDO::PARAM_STR;
-			case 'NULL'   : return PDO::PARAM_NULL;
+			case 'string': return PDO::PARAM_STR;
+			case 'NULL': return PDO::PARAM_NULL;
 		}
 	}
 
@@ -499,10 +507,10 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	protected function hasIntegerKey($array)
 	{
-		foreach($array as $k => $v)
-		{
-			if(gettype($k) === 'integer')
+		foreach ($array as $k => $v) {
+			if (gettype($k) === 'integer') {
 				return true;
+			}
 		}
 		return false;
 	}

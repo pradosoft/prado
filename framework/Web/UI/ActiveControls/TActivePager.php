@@ -22,7 +22,6 @@ use Prado\Web\UI\WebControls\TPagerButtonType;
 use Prado\Web\UI\WebControls\TPagerMode;
 use Prado\Web\UI\WebControls\TWebControl;
 
-
 /**
  * TActivePager is the active control counter part of TPager.
  *
@@ -125,36 +124,31 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
-		if($buttonType === TPagerButtonType::LinkButton)
-		{
-			if($enabled)
+		if ($buttonType === TPagerButtonType::LinkButton) {
+			if ($enabled) {
 				$button = new TActiveLinkButton;
-			else
-			{
+			} else {
 				$button = new TLabel;
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
-		}
-		elseif($buttonType === TPagerButtonType::ImageButton)
-		{
+		} elseif ($buttonType === TPagerButtonType::ImageButton) {
 			$button = new TActiveImageButton;
 			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
-			if($enabled)
+			if ($enabled) {
 				$button->Visible = true;
-			else
+			} else {
 				$button->Visible = false;
-		}
-		else
-		{
+			}
+		} else {
 			$button = new TActiveButton;
-			if(!$enabled)
+			if (!$enabled) {
 				$button->setEnabled(false);
+			}
 		}
 
-		if($buttonType === TPagerButtonType::ImageButton)
-		{
+		if ($buttonType === TPagerButtonType::ImageButton) {
 			$button->ImageUrl = $text;
 		}
 
@@ -179,15 +173,13 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param mixed $sender
 	 * @param TCallbackEventParameter $param
 	 */
-	public function handleCallback ($sender, $param)
+	public function handleCallback($sender, $param)
 	{
 		// Update all the buttons pagers attached to the same control.
 		// Dropdown pagers doesn't need to be re-rendered.
 		$controlToPaginate = $this->getControlToPaginate();
-		foreach ($this->getNamingContainer()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false) as $control)
-		{
-			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate() === $controlToPaginate)
-			{
+		foreach ($this->getNamingContainer()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false) as $control) {
+			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate() === $controlToPaginate) {
 				$control->render($param->getNewWriter());
 				// FIXME : With some very fast machine, the getNewWriter() consecutive calls are in the same microsecond, resulting
 				// of getting the same boundaries in ajax response. Wait 1 microsecond to avoid this.
@@ -198,19 +190,16 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$this->onCallback($param);
 	}
 
-	public function render ($writer)
+	public function render($writer)
 	{
-		if($this->getHasPreRendered())
-		{
+		if ($this->getHasPreRendered()) {
 			$this->setDisplay(($this->getPageCount() == 1) ? TDisplayStyle::None : TDisplayStyle::Dynamic);
 			TWebControl::render($writer);
-			if($this->getActiveControl()->canUpdateClientSide())
+			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
-		}
-		else
-		{
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
 }
-

@@ -87,24 +87,23 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	protected function evaluateDataTypeCheck($value)
 	{
-		if($value == '')
+		if ($value == '') {
 			return true;
+		}
 
-		switch($this->getDataType())
-		{
+		switch ($this->getDataType()) {
 			case TValidationDataType::Integer:
 				return preg_match('/^[-+]?[0-9]+$/', trim($value));
 			case TValidationDataType::Float:
 				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
-				if(strlen($dateFormat))
-				{
+				if (strlen($dateFormat)) {
 					$formatter = new TSimpleDateFormatter($dateFormat);
 					return $formatter->isValidDate($value);
-				}
-				else
+				} else {
 					return strtotime($value) > 0;
+				}
 		}
 		return true;
 	}
@@ -117,8 +116,9 @@ class TDataTypeValidator extends TBaseValidator
 	{
 		$options = parent::getClientScriptOptions();
 		$options['DataType'] = $this->getDataType();
-		if(($dateFormat = $this->getDateFormat()) !== '')
+		if (($dateFormat = $this->getDateFormat()) !== '') {
 			$options['DateFormat'] = $dateFormat;
+		}
 		return $options;
 	}
 
@@ -131,10 +131,10 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value = $this->getValidationValue($this->getValidationTarget())) === '')
+		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
+		}
 
 		return $this->evaluateDataTypeCheck($value);
 	}
 }
-

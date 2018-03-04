@@ -128,17 +128,20 @@ abstract class MessageSource implements IMessageSource
 	{
 		$types = ['XLIFF','PHP','gettext','Database'];
 
-		if(empty($filename) && !in_array($type, $types))
+		if (empty($filename) && !in_array($type, $types)) {
 			throw new Exception('Invalid type "' . $type . '", valid types are ' .
 				implode(', ', $types));
+		}
 
 		$class = 'MessageSource_' . $type;
 
-		if(empty($filename))
+		if (empty($filename)) {
 			$filename = dirname(__FILE__) . '/' . $class . '.php';
+		}
 
-		if(is_file($filename) == false)
+		if (is_file($filename) == false) {
 			throw new Exception("File $filename not found");
+		}
 
 		include_once $filename;
 
@@ -172,34 +175,35 @@ abstract class MessageSource implements IMessageSource
 
 		$this->messages = [];
 
-		foreach($variants as $variant)
-		{
+		foreach ($variants as $variant) {
 			$source = $this->getSource($variant);
 
-			if($this->isValidSource($source) == false) continue;
+			if ($this->isValidSource($source) == false) {
+				continue;
+			}
 
 			$loadData = true;
 
-			if($this->cache)
-			{
-				$data = $this->cache->get($variant,
-					$this->culture, $this->getLastModified($source));
+			if ($this->cache) {
+				$data = $this->cache->get(
+					$variant,
+					$this->culture,
+					$this->getLastModified($source)
+				);
 
-				if(is_array($data))
-				{
+				if (is_array($data)) {
 					$this->messages[$variant] = $data;
 					$loadData = false;
 				}
 				unset($data);
 			}
-			if($loadData)
-			{
+			if ($loadData) {
 				$data = &$this->loadData($source);
-				if(is_array($data))
-				{
+				if (is_array($data)) {
 					$this->messages[$variant] = $data;
-					if($this->cache)
+					if ($this->cache) {
 						$this->cache->save($data, $variant, $this->culture);
+					}
 				}
 				unset($data);
 			}
@@ -243,8 +247,9 @@ abstract class MessageSource implements IMessageSource
 	 */
 	public function append($message)
 	{
-		if(!in_array($message, $this->untranslated))
+		if (!in_array($message, $this->untranslated)) {
 			$this->untranslated[] = $message;
+		}
 	}
 
 	/**

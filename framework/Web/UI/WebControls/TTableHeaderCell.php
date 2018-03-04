@@ -39,12 +39,15 @@ class TTableHeaderCell extends TTableCell
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($scope = $this->getScope()) !== TTableHeaderScope::NotSet)
+		if (($scope = $this->getScope()) !== TTableHeaderScope::NotSet) {
 			$writer->addAttribute('scope', $scope === TTableHeaderScope::Row ? 'row' : 'col');
-		if(($text = $this->getAbbreviatedText()) !== '')
+		}
+		if (($text = $this->getAbbreviatedText()) !== '') {
 			$writer->addAttribute('abbr', $text);
-		if(($text = $this->getCategoryText()) !== '')
+		}
+		if (($text = $this->getCategoryText()) !== '') {
 			$writer->addAttribute('axis', $text);
+		}
 	}
 
 	/**

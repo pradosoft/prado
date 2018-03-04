@@ -34,8 +34,9 @@ class TJavaScript
 	public static function renderScriptFiles($files)
 	{
 		$str = '';
-		foreach($files as $file)
+		foreach ($files as $file) {
 			$str .= self::renderScriptFile($file);
+		}
 		return $str;
 	}
 
@@ -56,10 +57,11 @@ class TJavaScript
 	 */
 	public static function renderScriptBlocks($scripts)
 	{
-		if(count($scripts))
+		if (count($scripts)) {
 			return "<script type=\"text/javascript\">\n/*<![CDATA[*/\n" . implode("\n", $scripts) . "\n/*]]>*/\n</script>\n";
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
@@ -69,10 +71,11 @@ class TJavaScript
 	 */
 	public static function renderScriptBlocksCallback($scripts)
 	{
-		if(count($scripts))
+		if (count($scripts)) {
 			return implode("\n", $scripts) . "\n";
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
@@ -103,10 +106,11 @@ class TJavaScript
 	 */
 	public static function quoteJsLiteral($js)
 	{
-		if($js instanceof TJavaScriptLiteral)
+		if ($js instanceof TJavaScriptLiteral) {
 			return $js;
-		else
+		} else {
 			return new TJavaScriptLiteral($js);
+		}
 	}
 
 	/**
@@ -141,46 +145,37 @@ class TJavaScript
 	 */
 	public static function encode($value, $toMap = true, $encodeEmptyStrings = false)
 	{
-		if(is_string($value))
+		if (is_string($value)) {
 			return self::quoteString($value);
-		elseif(is_bool($value))
+		} elseif (is_bool($value)) {
 			return $value ? 'true' : 'false';
-		elseif(is_array($value))
-		{
+		} elseif (is_array($value)) {
 			$results = '';
-			if(($n = count($value)) > 0 && array_keys($value) !== range(0, $n - 1))
-			{
-				foreach($value as $k => $v)
-				{
-					if($v !== '' || $encodeEmptyStrings)
-					{
-						if($results !== '')
+			if (($n = count($value)) > 0 && array_keys($value) !== range(0, $n - 1)) {
+				foreach ($value as $k => $v) {
+					if ($v !== '' || $encodeEmptyStrings) {
+						if ($results !== '') {
 							$results .= ',';
+						}
 						$results .= "'$k':" . self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '{' . $results . '}';
-			}
-			else
-			{
-				foreach($value as $v)
-				{
-					if($v !== '' || $encodeEmptyStrings)
-					{
-						if($results !== '')
+			} else {
+				foreach ($value as $v) {
+					if ($v !== '' || $encodeEmptyStrings) {
+						if ($results !== '') {
 							$results .= ',';
+						}
 						$results .= self::encode($v, $toMap, $encodeEmptyStrings);
 					}
 				}
 				return '[' . $results . ']';
 			}
-		}
-		elseif(is_int($value))
+		} elseif (is_int($value)) {
 			return "$value";
-		elseif(is_float($value))
-		{
-			switch($value)
-			{
+		} elseif (is_float($value)) {
+			switch ($value) {
 				case -INF:
 					return 'Number.NEGATIVE_INFINITY';
 					break;
@@ -189,22 +184,24 @@ class TJavaScript
 					break;
 				default:
 					$locale = localeConv();
-					if($locale['decimal_point'] == '.')
+					if ($locale['decimal_point'] == '.') {
 						return "$value";
-					else
+					} else {
 						return str_replace($locale['decimal_point'], '.', "$value");
+					}
 					break;
 			}
-		}
-		elseif(is_object($value))
-			if ($value instanceof TJavaScriptLiteral)
+		} elseif (is_object($value)) {
+			if ($value instanceof TJavaScriptLiteral) {
 				return $value->toJavaScriptLiteral();
-			else
+			} else {
 				return self::encode(get_object_vars($value), $toMap);
-		elseif($value === null)
+			}
+		} elseif ($value === null) {
 			return 'null';
-		else
+		} else {
 			return '';
+		}
 	}
 	/**
 	 * Encodes a PHP variable into javascript string.
@@ -229,13 +226,14 @@ class TJavaScript
 	 * @param string|array|mixed $value
 	 * @param string $sourceEncoding
 	 */
-	private static function convertToUtf8(&$value, $sourceEncoding) {
-		if(is_string($value))
+	private static function convertToUtf8(&$value, $sourceEncoding)
+	{
+		if (is_string($value)) {
 			$value = iconv($sourceEncoding, 'UTF-8', $value);
-		elseif (is_array($value))
-		{
-			foreach($value as &$element)
+		} elseif (is_array($value)) {
+			foreach ($value as &$element) {
 				self::convertToUtf8($element, $sourceEncoding);
+			}
 		}
 	}
 
@@ -256,8 +254,7 @@ class TJavaScript
 
 	private static function checkJsonError()
 	{
-		switch ($err = json_last_error())
-		{
+		switch ($err = json_last_error()) {
 			case JSON_ERROR_NONE:
 				return;
 				break;
@@ -294,4 +291,3 @@ class TJavaScript
 		return \JSMin\JSMin::minify($code);
 	}
 }
-

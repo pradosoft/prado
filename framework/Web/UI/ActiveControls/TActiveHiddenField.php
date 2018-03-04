@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\THiddenField;
 
-
 /**
  * TActiveHiddenField class
  *
@@ -60,12 +59,14 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	 */
 	public function setValue($value)
 	{
-		if(parent::getValue() === $value)
+		if (parent::getValue() === $value) {
 			return;
+		}
 
 		parent::setValue($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
+		}
 	}
 
 	/**
@@ -118,7 +119,8 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 }
-

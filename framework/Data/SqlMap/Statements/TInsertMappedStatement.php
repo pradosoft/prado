@@ -22,30 +22,52 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
  */
 class TInsertMappedStatement extends TMappedStatement
 {
-	public function executeQueryForMap($connection, $parameter,
-								$keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null)
-	{
+	public function executeQueryForMap(
+		$connection,
+		$parameter,
+								$keyProperty,
+		$valueProperty = null,
+		$skip = -1,
+		$max = -1,
+		$delegate = null
+	) {
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_map', get_class($this), $this->getID());
+				'sqlmap_cannot_execute_query_for_map',
+			get_class($this),
+			$this->getID()
+		);
 	}
 
 	public function executeUpdate($connection, $parameter)
 	{
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_update', get_class($this), $this->getID());
+				'sqlmap_cannot_execute_update',
+			get_class($this),
+			$this->getID()
+		);
 	}
 
-	public function executeQueryForList($connection, $parameter, $result = null,
-										$skip = -1, $max = -1, $delegate = null)
-	{
+	public function executeQueryForList(
+		$connection,
+		$parameter,
+		$result = null,
+										$skip = -1,
+		$max = -1,
+		$delegate = null
+	) {
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_list', get_class($this), $this->getID());
+				'sqlmap_cannot_execute_query_for_list',
+			get_class($this),
+			$this->getID()
+		);
 	}
 
 	public function executeQueryForObject($connection, $parameter, $result = null)
 	{
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_object', get_class($this), $this->getID());
+				'sqlmap_cannot_execute_query_for_object',
+			get_class($this),
+			$this->getID()
+		);
 	}
 }
-

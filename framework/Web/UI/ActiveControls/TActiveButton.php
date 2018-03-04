@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TButton;
 
-
 /**
  * TActiveButton is the active control counter part to TButton.
  *
@@ -98,12 +97,14 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);
+		}
 	}
 
 	/**
@@ -123,7 +124,9 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
@@ -134,4 +137,3 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 		return 'Prado.WebUI.TActiveButton';
 	}
 }
-

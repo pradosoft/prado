@@ -43,8 +43,9 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTableCell)
+		if ($object instanceof TTableCell) {
 			$this->getCells()->add($object);
+		}
 	}
 
 	/**
@@ -80,10 +81,11 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
@@ -101,10 +103,11 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getVerticalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getVerticalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
@@ -139,11 +142,9 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$writer->writeLine();
-			foreach($this->getControls() as $cell)
-			{
+			foreach ($this->getControls() as $cell) {
 				$cell->renderControl($writer);
 				$writer->writeLine();
 			}

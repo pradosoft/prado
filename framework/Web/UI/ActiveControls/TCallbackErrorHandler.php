@@ -40,8 +40,7 @@ class TCallbackErrorHandler extends TErrorHandler
 	 */
 	protected function displayException($exception)
 	{
-		if($this->getApplication()->getMode() === TApplicationMode::Debug)
-		{
+		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);
 			// avoid error on non-utf8 strings
@@ -55,14 +54,13 @@ class TCallbackErrorHandler extends TErrorHandler
 			// avoid exception loop if headers have already been sent
 			try {
 				$response->setStatusCode(500, 'Internal Server Error');
-			} catch (Exception $e) { }
+			} catch (Exception $e) {
+			}
 
 			$content = $response->createHtmlWriter();
 			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_ERROR_HEADER);
 			$content->write($trace);
-		}
-		else
-		{
+		} else {
 			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
 			header('HTTP/1.0 500 Internal Server Error', true, 500);
 		}
@@ -79,12 +77,10 @@ class TCallbackErrorHandler extends TErrorHandler
 		$data['file'] = $exception->getFile();
 		$data['line'] = $exception->getLine();
 		$data['trace'] = $exception->getTrace();
-		if($exception instanceof TPhpErrorException)
-		{
+		if ($exception instanceof TPhpErrorException) {
 			// if PHP exception, we want to show the 2nd stack level context
 			// because the 1st stack level is of little use (it's in error handler)
-			if(isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line']))
-			{
+			if (isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line'])) {
 				$data['file'] = $trace[0]['file'];
 				$data['line'] = $trace[0]['line'];
 			}

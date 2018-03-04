@@ -53,4 +53,3 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 		$this->_id = $value;
 	}
 }
-

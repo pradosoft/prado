@@ -140,4 +140,3 @@ class TControlAdapter extends \Prado\TApplicationComponent
 		$this->_control->renderChildren($writer);
 	}
 }
-

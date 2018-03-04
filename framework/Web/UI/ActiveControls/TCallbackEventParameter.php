@@ -86,4 +86,3 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 		return $this->_response->getAdapter()->getResponseData();
 	}
 }
-

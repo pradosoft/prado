@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TMssqlCommandBuilder provides specifics methods to create limit/offset query commands
  * for MSSQL servers.
@@ -31,10 +30,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	public function getLastInsertID()
 	{
-		foreach($this->getTableInfo()->getColumns() as $column)
-		{
-			if($column->hasSequence())
-			{
+		foreach ($this->getTableInfo()->getColumns() as $column) {
+			if ($column->hasSequence()) {
 				$command = $this->getDbConnection()->createCommand('SELECT @@Identity');
 				return intval($command->queryScalar());
 			}
@@ -85,10 +82,11 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	{
 		$limit = $limit !== null ? intval($limit) : -1;
 		$offset = $offset !== null ? intval($offset) : -1;
-		if ($limit > 0 && $offset <= 0) //just limit
+		if ($limit > 0 && $offset <= 0) { //just limit
 			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
-		elseif($limit > 0 && $offset > 0)
+		} elseif ($limit > 0 && $offset > 0) {
 			$sql = $this->rewriteLimitOffsetSql($sql, $limit, $offset);
+		}
 		return $sql;
 	}
 
@@ -120,27 +118,24 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function findOrdering($sql)
 	{
-		if(!preg_match('/ORDER BY/i', $sql))
+		if (!preg_match('/ORDER BY/i', $sql)) {
 			return [];
+		}
 		$matches = [];
 		$ordering = [];
 		preg_match_all('/(ORDER BY)[\s"\[](.*)(ASC|DESC)?(?:[\s"\[]|$|COMPUTE|FOR)/i', $sql, $matches);
-		if(count($matches) > 1 && count($matches[2]) > 0)
-		{
+		if (count($matches) > 1 && count($matches[2]) > 0) {
 			$parts = explode(',', $matches[2][0]);
-			foreach($parts as $part)
-			{
+			foreach ($parts as $part) {
 				$subs = [];
-				if(preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs))
-				{
-					if(count($subs) > 1 && count($subs[2]) > 0)
-					{
+				if (preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs)) {
+					if (count($subs) > 1 && count($subs[2]) > 0) {
 						$ordering[$subs[1][0]] = $subs[2][0];
 					}
 					//else what?
-				}
-				else
+				} else {
 					$ordering[trim($part)] = 'ASC';
+				}
 			}
 		}
 		return $ordering;
@@ -152,11 +147,11 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function joinOrdering($orders)
 	{
-		if(count($orders) > 0)
-		{
+		if (count($orders) > 0) {
 			$str = [];
-			foreach($orders as $column => $direction)
+			foreach ($orders as $column => $direction) {
 				$str[] = $column . ' ' . $direction;
+			}
 			return 'ORDER BY ' . implode(', ', $str);
 		}
 	}
@@ -167,9 +162,9 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function reverseDirection($orders)
 	{
-		foreach($orders as $column => $direction)
+		foreach ($orders as $column => $direction) {
 			$orders[$column] = strtolower(trim($direction)) === 'desc' ? 'ASC' : 'DESC';
+		}
 		return $orders;
 	}
 }
-

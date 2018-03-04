@@ -20,5 +20,4 @@ namespace Prado\Data\ActiveRecord\Exceptions;
  */
 class TActiveRecordConfigurationException extends TActiveRecordException
 {
-
 }

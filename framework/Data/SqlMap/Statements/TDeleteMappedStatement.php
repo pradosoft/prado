@@ -21,4 +21,3 @@ namespace Prado\Data\SqlMap\Statements;
 class TDeleteMappedStatement extends TUpdateMappedStatement
 {
 }
-

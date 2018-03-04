@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Pgsql;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TPgsqlCommandBuilder provides specifics methods to create limit/offset query commands
  * for Pgsql database.
@@ -35,10 +34,10 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	public function getSearchExpression($fields, $keywords)
 	{
 		$columns = [];
-		foreach($fields as $field)
-		{
-			if($this->isSearchableColumn($this->getTableInfo()->getColumn($field)))
+		foreach ($fields as $field) {
+			if ($this->isSearchableColumn($this->getTableInfo()->getColumn($field))) {
 				$columns[] = $field;
+			}
 		}
 		return parent::getSearchExpression($columns, $keywords);
 	}
@@ -62,10 +61,9 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	protected function getSearchCondition($column, $words)
 	{
 		$conditions = [];
-		foreach($words as $word)
+		foreach ($words as $word) {
 			$conditions[] = $column . ' ILIKE ' . $this->getDbConnection()->quoteString('%' . $word . '%');
+		}
 		return '(' . implode(' AND ', $conditions) . ')';
 	}
-
 }
-

@@ -75,15 +75,14 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function loadPostData($key, $values)
 	{
-		if(!$this->getEnabled(true))
+		if (!$this->getEnabled(true)) {
 			return false;
+		}
 		$this->ensureDataBound();
 		$selection = isset($values[$key]) ? $values[$key] : null;
-		if($selection !== null)
-		{
+		if ($selection !== null) {
 			$index = $this->getItems()->findIndexByValue($selection, false);
-			if($this->getSelectedIndex() !== $index)
-			{
+			if ($this->getSelectedIndex() !== $index) {
 				$this->setSelectedIndex($index);
 				return $this->_dataChanged = true;
 			}
@@ -100,8 +99,9 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onSelectedIndexChanged(null);
 	}
 

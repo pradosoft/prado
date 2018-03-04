@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TDropDownList;
 
-
 /**
  * TActiveDropDownList class.
  *
@@ -107,9 +106,12 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->getAutoPostBack())
+		if ($this->getAutoPostBack()) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
+		}
 	}
 
 	/**
@@ -144,4 +146,3 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 		$this->getAdapter()->updateListItems();
 	}
 }
-

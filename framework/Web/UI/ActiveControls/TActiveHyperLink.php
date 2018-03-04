@@ -56,12 +56,14 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
@@ -70,12 +72,12 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setImageUrl($value)
 	{
-		if(parent::getImageUrl() === $value)
+		if (parent::getImageUrl() === $value) {
 			return;
+		}
 
 		parent::setImageUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $value !== '')
-		{
+		if ($this->getActiveControl()->canUpdateClientSide() && $value !== '') {
 			$textWriter = new TTextWriter;
 			$renderer = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $textWriter);
 			$this->createImage($value)->renderControl($renderer);
@@ -89,12 +91,12 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setNavigateUrl($value)
 	{
-		if(parent::getNavigateUrl() === $value)
+		if (parent::getNavigateUrl() === $value) {
 			return;
+		}
 
 		parent::setNavigateUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			//replace &amp; with & and urldecode the url (setting the href using javascript is literal)
 			$url = urldecode(str_replace('&amp;', '&', $value));
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $url);
@@ -107,12 +109,13 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	 */
 	public function setTarget($value)
 	{
-		if(parent::getTarget() === $value)
+		if (parent::getTarget() === $value) {
 			return;
+		}
 
 		parent::setTarget($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'target', $value);
+		}
 	}
 }
-

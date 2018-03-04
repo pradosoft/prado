@@ -59,17 +59,20 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 		$uniqueID = $this->getUniqueID();
 		$this->getPage()->ensureRenderInForm($this);
 		$writer->addAttribute('type', 'hidden');
-		if($uniqueID !== '')
+		if ($uniqueID !== '') {
 			$writer->addAttribute('name', $uniqueID);
-		if($this->getID() !== '')
+		}
+		if ($this->getID() !== '') {
 			$writer->addAttribute('id', $this->getClientID());
-		if(($value = $this->getValue()) !== '')
+		}
+		if (($value = $this->getValue()) !== '') {
 			$writer->addAttribute('value', $value);
+		}
 
-		if($this->getHasAttributes())
-		{
-			foreach($this->getAttributes() as $name => $value)
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
 				$writer->addAttribute($name, $value);
+			}
 		}
 
 		$writer->renderBeginTag('input');
@@ -86,10 +89,9 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	public function loadPostData($key, $values)
 	{
 		$value = $values[$key];
-		if($value === $this->getValue())
+		if ($value === $this->getValue()) {
 			return false;
-		else
-		{
+		} else {
 			$this->setValue($value);
 			return $this->_dataChanged = true;
 		}
@@ -224,4 +226,3 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 		throw new TNotSupportedException('hiddenfield_skinid_unsupported');
 	}
 }
-

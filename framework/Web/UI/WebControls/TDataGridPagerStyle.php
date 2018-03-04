@@ -44,24 +44,33 @@ class TDataGridPagerStyle extends TPanelStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_mode === null)
+		if ($this->_mode === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_mode";
-		if ($this->_nextText === null)
+		}
+		if ($this->_nextText === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_nextText";
-		if ($this->_prevText === null)
+		}
+		if ($this->_prevText === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_prevText";
-		if ($this->_firstText === null)
+		}
+		if ($this->_firstText === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_firstText";
-		if ($this->_lastText === null)
+		}
+		if ($this->_lastText === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_lastText";
-		if ($this->_buttonCount === null)
+		}
+		if ($this->_buttonCount === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonCount";
-		if ($this->_position === null)
+		}
+		if ($this->_position === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_position";
-		if ($this->_visible === null)
+		}
+		if ($this->_visible === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_visible";
-		if ($this->_buttonType === null)
+		}
+		if ($this->_buttonType === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TDataGridPagerStyle\0_buttonType";
+		}
 	}
 
 	/**
@@ -174,8 +183,9 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setPageButtonCount($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) < 1)
+		if (($value = TPropertyValue::ensureInteger($value)) < 1) {
 			throw new TInvalidDataValueException('datagridpagerstyle_pagebuttoncount_invalid');
+		}
 		$this->_buttonCount = $value;
 	}
 
@@ -235,22 +245,28 @@ class TDataGridPagerStyle extends TPanelStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TDataGridPagerStyle)
-		{
-			if($style->_visible !== null)
+		if ($style instanceof TDataGridPagerStyle) {
+			if ($style->_visible !== null) {
 				$this->_visible = $style->_visible;
-			if($style->_position !== null)
+			}
+			if ($style->_position !== null) {
 				$this->_position = $style->_position;
-			if($style->_buttonCount !== null)
+			}
+			if ($style->_buttonCount !== null) {
 				$this->_buttonCount = $style->_buttonCount;
-			if($style->_prevText !== null)
+			}
+			if ($style->_prevText !== null) {
 				$this->_prevText = $style->_prevText;
-			if($style->_nextText !== null)
+			}
+			if ($style->_nextText !== null) {
 				$this->_nextText = $style->_nextText;
-			if($style->_mode !== null)
+			}
+			if ($style->_mode !== null) {
 				$this->_mode = $style->_mode;
-			if($style->_buttonType !== null)
+			}
+			if ($style->_buttonType !== null) {
 				$this->_buttonType = $style->_buttonType;
+			}
 		}
 	}
 
@@ -263,23 +279,28 @@ class TDataGridPagerStyle extends TPanelStyle
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TDataGridPagerStyle)
-		{
-			if($this->_visible === null)
+		if ($style instanceof TDataGridPagerStyle) {
+			if ($this->_visible === null) {
 				$this->_visible = $style->_visible;
-			if($this->_position === null)
+			}
+			if ($this->_position === null) {
 				$this->_position = $style->_position;
-			if($this->_buttonCount === null)
+			}
+			if ($this->_buttonCount === null) {
 				$this->_buttonCount = $style->_buttonCount;
-			if($this->_prevText === null)
+			}
+			if ($this->_prevText === null) {
 				$this->_prevText = $style->_prevText;
-			if($this->_nextText === null)
+			}
+			if ($this->_nextText === null) {
 				$this->_nextText = $style->_nextText;
-			if($this->_mode === null)
+			}
+			if ($this->_mode === null) {
 				$this->_mode = $style->_mode;
-			if($this->_buttonType === null)
+			}
+			if ($this->_buttonType === null) {
 				$this->_buttonType = $style->_buttonType;
+			}
 		}
 	}
 }
-

@@ -112,10 +112,11 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function setEditItemTemplate($value)
 	{
-		if($value instanceof ITemplate || $value === null)
+		if ($value instanceof ITemplate || $value === null) {
 			$this->_editItemTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('templatecolumn_template_required', 'EditItemTemplate');
+		}
 	}
 
 	/**
@@ -132,10 +133,11 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function setItemTemplate($value)
 	{
-		if($value instanceof ITemplate || $value === null)
+		if ($value instanceof ITemplate || $value === null) {
 			$this->_itemTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('templatecolumn_template_required', 'ItemTemplate');
+		}
 	}
 
 	/**
@@ -152,10 +154,11 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function setHeaderTemplate($value)
 	{
-		if($value instanceof ITemplate || $value === null)
+		if ($value instanceof ITemplate || $value === null) {
 			$this->_headerTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('templatecolumn_template_required', 'HeaderTemplate');
+		}
 	}
 
 	/**
@@ -172,10 +175,11 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function setFooterTemplate($value)
 	{
-		if($value instanceof ITemplate || $value === null)
+		if ($value instanceof ITemplate || $value === null) {
 			$this->_footerTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('templatecolumn_template_required', 'FooterTemplate');
+		}
 	}
 
 	/**
@@ -189,55 +193,47 @@ class TTemplateColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem)
-		{
-			if($itemType === TListItemType::EditItem)
-			{
-				if(($classPath = $this->getEditItemRenderer()) === '' && ($template = $this->_editItemTemplate) === null)
-				{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
+			if ($itemType === TListItemType::EditItem) {
+				if (($classPath = $this->getEditItemRenderer()) === '' && ($template = $this->_editItemTemplate) === null) {
 					$classPath = $this->getItemRenderer();
 					$template = $this->_itemTemplate;
 				}
-			}
-			else
-			{
+			} else {
 				$template = $this->_itemTemplate;
 				$classPath = $this->getItemRenderer();
 			}
-			if($classPath !== '')
-			{
+			if ($classPath !== '') {
 				$control = Prado::createComponent($classPath);
 				$cell->getControls()->add($control);
-				if($control instanceof IItemDataRenderer)
-				{
+				if ($control instanceof IItemDataRenderer) {
 					$control->setItemIndex($cell->getParent()->getItemIndex());
 					$control->setItemType($itemType);
 				}
-				if($control instanceof \Prado\IDataRenderer)
+				if ($control instanceof \Prado\IDataRenderer) {
 					$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
-			}
-			elseif($template !== null)
+				}
+			} elseif ($template !== null) {
 				$template->instantiateIn($cell);
-			elseif($itemType !== TListItemType::EditItem)
+			} elseif ($itemType !== TListItemType::EditItem) {
 				$cell->setText('&nbsp;');
-		}
-		elseif($itemType === TListItemType::Header)
-		{
-			if(($classPath = $this->getHeaderRenderer()) !== '')
+			}
+		} elseif ($itemType === TListItemType::Header) {
+			if (($classPath = $this->getHeaderRenderer()) !== '') {
 				$this->initializeHeaderCell($cell, $columnIndex);
-			elseif($this->_headerTemplate !== null)
+			} elseif ($this->_headerTemplate !== null) {
 				$this->_headerTemplate->instantiateIn($cell);
-			else
+			} else {
 				$this->initializeHeaderCell($cell, $columnIndex);
-		}
-		elseif($itemType === TListItemType::Footer)
-		{
-			if(($classPath = $this->getFooterRenderer()) !== '')
+			}
+		} elseif ($itemType === TListItemType::Footer) {
+			if (($classPath = $this->getFooterRenderer()) !== '') {
 				$this->initializeFooterCell($cell, $columnIndex);
-			elseif($this->_footerTemplate !== null)
+			} elseif ($this->_footerTemplate !== null) {
 				$this->_footerTemplate->instantiateIn($cell);
-			else
+			} else {
 				$this->initializeFooterCell($cell, $columnIndex);
+			}
 		}
 	}
 
@@ -252,4 +248,3 @@ class TTemplateColumn extends TDataGridColumn
 		$sender->setData($item->getData());
 	}
 }
-

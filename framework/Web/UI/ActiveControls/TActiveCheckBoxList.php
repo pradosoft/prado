@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TCheckBoxList;
 
-
 /**
  * TActiveCheckBoxList class.
  *
@@ -72,9 +71,9 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 * updated later.
 	 *@return boolean always true
 	 */
-	protected function getSpanNeeded ()
+	protected function getSpanNeeded()
 	{
-	  return true;
+		return true;
 	}
 
 	/**
@@ -126,12 +125,13 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if($this->getEnableClientScript()
+		if ($this->getEnableClientScript()
 			&& $this->getAutoPostBack()
-			&& $this->getPage()->getClientSupportsJavaScript())
-		{
-		  $this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			&& $this->getPage()->getClientSupportsJavaScript()) {
+			$this->getActiveControl()->registerCallbackClientScript(
+			$this->getClientClassName(),
+		  	$this->getPostBackOptions()
+		  );
 		}
 	}
 

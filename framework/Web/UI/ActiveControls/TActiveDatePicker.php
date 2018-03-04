@@ -34,7 +34,7 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.3
  */
-class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, IActiveControl
+class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IActiveControl
 {
 
 	/**
@@ -87,7 +87,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
-	public function getActiveControl(){
+	public function getActiveControl()
+	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
@@ -95,23 +96,23 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * Client-side Text property can only be updated after the OnLoad stage.
 	 * @param string $value text content for the textbox
 	 */
-	public function setText($value){
-		if(parent::getText() === $value)
+	public function setText($value)
+	{
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()){
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
-			if ($this->getInputMode() == TDatePickerInputMode::DropDownList)
-			{
+			if ($this->getInputMode() == TDatePickerInputMode::DropDownList) {
 				$dt = new \DateTime;
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id = $this->getClientID();
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n') - 1, 'select');
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'year', 'Value', $dt->format('Y'), 'select');
-
 			}
 		}
 	}
@@ -122,7 +123,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
-	public function raiseCallbackEvent($param){
+	public function raiseCallbackEvent($param)
+	{
 		$this->onCallback($param);
 	}
 
@@ -133,7 +135,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
-	public function onCallback($param){
+	public function onCallback($param)
+	{
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
 
@@ -150,8 +153,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
-		{
+		if (!$cs->isEndScriptRegistered('TDatePicker.spacer')) {
 			$spacer = $this->getAssetUrl('spacer.gif');
 			$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
 			$cs->registerEndScript('TDatePicker.spacer', $code);

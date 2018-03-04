@@ -81,8 +81,9 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTableRow)
+		if ($object instanceof TTableRow) {
 			$this->getRows()->add($object);
+		}
 	}
 
 	/**
@@ -103,14 +104,13 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::addAttributesToRender($writer);
 		$border = 0;
-		if($this->getHasStyle())
-		{
-			if($this->getGridLines() !== TTableGridLines::None)
-			{
-				if(($border = $this->getBorderWidth()) === '')
+		if ($this->getHasStyle()) {
+			if ($this->getGridLines() !== TTableGridLines::None) {
+				if (($border = $this->getBorderWidth()) === '') {
 					$border = 1;
-				else
+				} else {
 					$border = (int)$border;
+				}
 			}
 		}
 		$writer->addAttribute('border', "$border");
@@ -171,10 +171,11 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCellSpacing()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellSpacing();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -190,10 +191,11 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCellPadding()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellPadding();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
@@ -209,10 +211,11 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return THorizontalAlign::NotSet;
+		}
 	}
 
 	/**
@@ -228,10 +231,11 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getGridLines()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getGridLines();
-		else
+		} else {
 			return TTableGridLines::None;
+		}
 	}
 
 	/**
@@ -247,10 +251,11 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getBackImageUrl()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getBackImageUrl();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
@@ -269,10 +274,10 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($caption = $this->getCaption()) !== '')
-		{
-			if(($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet)
+		if (($caption = $this->getCaption()) !== '') {
+			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
 				$writer->addAttribute('align', strtolower($align));
+			}
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();
@@ -285,62 +290,52 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$renderTableSection = false;
-			foreach($this->getControls() as $row)
-			{
-				if($row->getTableSection() !== TTableRowSection::Body)
-				{
+			foreach ($this->getControls() as $row) {
+				if ($row->getTableSection() !== TTableRowSection::Body) {
 					$renderTableSection = true;
 					break;
 				}
 			}
-			if($renderTableSection)
-			{
+			if ($renderTableSection) {
 				$currentSection = TTableRowSection::Header;
 				$writer->writeLine();
-				foreach($this->getControls() as $index => $row)
-				{
-					if(($section = $row->getTableSection()) === $currentSection)
-					{
-						if($index === 0 && $currentSection === TTableRowSection::Header)
+				foreach ($this->getControls() as $index => $row) {
+					if (($section = $row->getTableSection()) === $currentSection) {
+						if ($index === 0 && $currentSection === TTableRowSection::Header) {
 							$writer->renderBeginTag('thead');
-					}
-					else
-					{
-						if($currentSection === TTableRowSection::Header)
-						{
-							if($index > 0)
+						}
+					} else {
+						if ($currentSection === TTableRowSection::Header) {
+							if ($index > 0) {
 								$writer->renderEndTag();
-							if($section === TTableRowSection::Body)
+							}
+							if ($section === TTableRowSection::Body) {
 								$writer->renderBeginTag('tbody');
-							else
+							} else {
 								$writer->renderBeginTag('tfoot');
+							}
 							$currentSection = $section;
-						}
-						elseif($currentSection === TTableRowSection::Body)
-						{
+						} elseif ($currentSection === TTableRowSection::Body) {
 							$writer->renderEndTag();
-							if($section === TTableRowSection::Footer)
+							if ($section === TTableRowSection::Footer) {
 								$writer->renderBeginTag('tfoot');
-							else
+							} else {
 								throw new TConfigurationException('table_tablesection_outoforder');
+							}
 							$currentSection = $section;
-						}
-						else // Footer
+						} else { // Footer
 							throw new TConfigurationException('table_tablesection_outoforder');
+						}
 					}
 					$row->renderControl($writer);
 					$writer->writeLine();
 				}
 				$writer->renderEndTag();
-			}
-			else
-			{
+			} else {
 				$writer->writeLine();
-				foreach($this->getControls() as $row)
-				{
+				foreach ($this->getControls() as $row) {
 					$row->renderControl($writer);
 					$writer->writeLine();
 				}

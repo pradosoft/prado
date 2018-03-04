@@ -84,8 +84,8 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function getValidationKey()
 	{
-		if(null === $this->_validationKey) {
-			if(null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
+		if (null === $this->_validationKey) {
+			if (null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
 				$this->_validationKey = $this->generateRandomKey();
 				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY, $this->_validationKey, null, true);
 			}
@@ -99,8 +99,9 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function setValidationKey($value)
 	{
-		if('' === $value)
+		if ('' === $value) {
 			throw new TInvalidDataValueException('securitymanager_validationkey_invalid');
+		}
 
 		$this->_validationKey = $value;
 	}
@@ -111,8 +112,8 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function getEncryptionKey()
 	{
-		if(null === $this->_encryptionKey) {
-			if(null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
+		if (null === $this->_encryptionKey) {
+			if (null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
 				$this->_encryptionKey = $this->generateRandomKey();
 				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null, true);
 			}
@@ -126,8 +127,9 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function setEncryptionKey($value)
 	{
-		if('' === $value)
+		if ('' === $value) {
 			throw new TInvalidDataValueException('securitymanager_encryptionkey_invalid');
+		}
 
 		$this->_encryptionKey = $value;
 	}
@@ -148,8 +150,9 @@ class TSecurityManager extends \Prado\TModule
 	public function setHashAlgorithm($value)
 	{
 		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
-		if(!in_array($this->_hashAlgorithm, hash_algos()))
+		if (!in_array($this->_hashAlgorithm, hash_algos())) {
 			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
+		}
 	}
 
 	/**
@@ -167,8 +170,9 @@ class TSecurityManager extends \Prado\TModule
 	public function setCryptAlgorithm($value)
 	{
 		$this->_cryptAlgorithm = TPropertyValue::ensureString($value);
-		if(!in_array($this->_hashAlgorithm, openssl_get_cipher_methods()))
+		if (!in_array($this->_hashAlgorithm, openssl_get_cipher_methods())) {
 			throw new TInvalidDataValueException('securitymanager_crypt_algorithm_invalid');
+		}
 	}
 
 	/**
@@ -179,14 +183,13 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function encrypt($data)
 	{
-		if(extension_loaded('openssl'))
-		{
+		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
 			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
-		}
-		else
+		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
+		}
 	}
 
 	/**
@@ -197,14 +200,13 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function decrypt($data)
 	{
-		if(extension_loaded('openssl'))
-		{
+		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = $this->substr($data, 0, openssl_cipher_iv_length($this->_cryptAlgorithm));
 			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, null, $iv);
-		}
-		else
+		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
+		}
 	}
 
 	/**
@@ -229,8 +231,9 @@ class TSecurityManager extends \Prado\TModule
 	{
 		$len = $this->strlen($this->computeHMAC('test'));
 
-		if($this->strlen($data) < $len)
+		if ($this->strlen($data) < $len) {
 			return false;
+		}
 
 		$hmac = $this->substr($data, 0, $len);
 		$data2 = $this->substr($data, $len, $this->strlen($data));

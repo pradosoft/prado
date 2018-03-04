@@ -61,14 +61,15 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function init($config)
 	{
-		if($this->_prefix === null)
+		if ($this->_prefix === null) {
 			$this->_prefix = $this->getApplication()->getUniqueID();
-		if($this->_primary)
-		{
-			if($this->getApplication()->getCache() === null)
+		}
+		if ($this->_primary) {
+			if ($this->getApplication()->getCache() === null) {
 				$this->getApplication()->setCache($this);
-			else
+			} else {
 				throw new TConfigurationException('cache_primary_duplicated', get_class($this));
+			}
 		}
 	}
 
@@ -124,12 +125,13 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function get($id)
 	{
-		if(($data = $this->getValue($this->generateUniqueKey($id))) !== false)
-		{
-			if(!is_array($data))
+		if (($data = $this->getValue($this->generateUniqueKey($id))) !== false) {
+			if (!is_array($data)) {
 				return false;
-			if(!($data[1] instanceof ICacheDependency) || !$data[1]->getHasChanged())
+			}
+			if (!($data[1] instanceof ICacheDependency) || !$data[1]->getHasChanged()) {
 				return $data[0];
+			}
 		}
 		return false;
 	}
@@ -148,10 +150,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null)
 	{
-		if(empty($value) && $expire === 0)
+		if (empty($value) && $expire === 0) {
 			$this->delete($id);
-		else
-		{
+		} else {
 			$data = [$value,$dependency];
 			return $this->setValue($this->generateUniqueKey($id), $data, $expire);
 		}
@@ -168,8 +169,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{
-		if(empty($value) && $expire === 0)
+		if (empty($value) && $expire === 0) {
 			return false;
+		}
 		$data = [$value,$dependency];
 		return $this->addValue($this->generateUniqueKey($id), $data, $expire);
 	}

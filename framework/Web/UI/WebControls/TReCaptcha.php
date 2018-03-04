@@ -167,12 +167,15 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getClientSideOptions()
 	{
 		$options = [];
-		if ($theme = $this->getThemeName())
+		if ($theme = $this->getThemeName()) {
 			$options['theme'] = $theme;
-		if ($lang = $this->getLanguage())
+		}
+		if ($lang = $this->getLanguage()) {
 			$options['lang'] = $lang;
-		if ($trans = $this->getCustomTranslations())
+		}
+		if ($trans = $this->getCustomTranslations()) {
 			$options['custom_translations'] = $trans;
+		}
 		return $options;
 	}
 
@@ -184,8 +187,9 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			and
 			($response = @$_POST[$this->getResponseFieldName()])
 			  )
-				   )
-		   return false;
+				   ) {
+			return false;
+		}
 
 		return $this->recaptcha_check_answer(
 			$this->getPrivateKey(),
@@ -203,10 +207,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		parent::onPreRender($param);
 
-		if("" == $this->getPublicKey())
+		if ("" == $this->getPublicKey()) {
 			throw new TConfigurationException('recaptcha_publickey_unknown');
-		if("" == $this->getPrivateKey())
+		}
+		if ("" == $this->getPrivateKey()) {
 			throw new TConfigurationException('recaptcha_privatekey_unknown');
+		}
 
 		// need to register captcha fields so they will be sent back also in callbacks
 		$page = $this->getPage();
@@ -224,8 +230,9 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		// if we're in a callback, then schedule re-rendering of the control
 		// if not, don't do anything, because a new challenge will be rendered anyway
-		if ($this->Page->IsCallback)
+		if ($this->Page->IsCallback) {
 			$this->Page->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
+		}
 	}
 
 	public function renderContents($writer)
@@ -236,31 +243,28 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$divid = $id . '_1_recaptchadiv';
 		$writer->write('<div id="' . htmlspecialchars($divid) . '">');
 
-		if (!$this->Page->IsCallback)
-			{
-				$writer->write(TJavaScript::renderScriptBlock(
+		if (!$this->Page->IsCallback) {
+			$writer->write(TJavaScript::renderScriptBlock(
 					'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
 				));
 
-				$html = $this->recaptcha_get_html($this->getPublicKey());
-				/*
-				reCAPTCHA currently does not support multiple validations per page
-				$html = str_replace(
-					array(self::ChallengeFieldName,self::ResponseFieldName),
-					array($this->getChallengeFieldName(),$this->getResponseFieldName()),
-					$html
-				);
-				*/
-				$writer->write($html);
+			$html = $this->recaptcha_get_html($this->getPublicKey());
+			/*
+			reCAPTCHA currently does not support multiple validations per page
+			$html = str_replace(
+				array(self::ChallengeFieldName,self::ResponseFieldName),
+				array($this->getChallengeFieldName(),$this->getResponseFieldName()),
+				$html
+			);
+			*/
+			$writer->write($html);
 
-				$cs->registerEndScript('ReCaptcha::EventScript', 'jQuery(document).ready(function() { ' . $readyscript . '; } );');
-			}
-		else
-			{
-				$options = $this->getClientSideOptions();
-				$options['callback'] = new TJavaScriptLiteral('function() { ' . $readyscript . '; ' . $this->getCallbackScript() . '; }');
-				$cs->registerScriptFile('ReCaptcha::AjaxScript', self::RECAPTCHA_JS);
-				$cs->registerEndScript('ReCaptcha::CreateScript::' . $id, implode(' ', [
+			$cs->registerEndScript('ReCaptcha::EventScript', 'jQuery(document).ready(function() { ' . $readyscript . '; } );');
+		} else {
+			$options = $this->getClientSideOptions();
+			$options['callback'] = new TJavaScriptLiteral('function() { ' . $readyscript . '; ' . $this->getCallbackScript() . '; }');
+			$cs->registerScriptFile('ReCaptcha::AjaxScript', self::RECAPTCHA_JS);
+			$cs->registerEndScript('ReCaptcha::CreateScript::' . $id, implode(' ', [
 					'if (!jQuery(' . TJavaScript::quoteString('#' . $this->getResponseFieldName()) . '))',
 					'{',
 					'Recaptcha.destroy();',
@@ -271,7 +275,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 					');',
 					'}',
 				]));
-			}
+		}
 
 		$writer->write('</div>');
 	}
@@ -290,8 +294,9 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$server = $use_ssl ? self::RECAPTCHA_API_SECURE_SERVER : $server = self::RECAPTCHA_API_SERVER;
 		$errorpart = '';
-		if ($error)
+		if ($error) {
 			$errorpart = "&amp;error=" . $error;
+		}
 
 		return '<script type="text/javascript" src="' . $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>
 		<noscript>
@@ -306,10 +311,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * @param $data $data - array of string elements to be encoded
 	 * @return string - encoded request
 	 */
-	private function recaptcha_qsencode ($data) {
+	private function recaptcha_qsencode($data)
+	{
 		$req = "";
-		foreach ($data as $key => $value)
+		foreach ($data as $key => $value) {
 			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
+		}
 
 		// Cut the last '&'
 		$req = substr($req, 0, strlen($req) - 1);
@@ -337,13 +344,15 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$http_request .= $req;
 
 		$response = '';
-		if(false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
+		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10))) {
 			die('Could not open socket');
+		}
 
 		fwrite($fs, $http_request);
 
-		while (!feof($fs))
-			$response .= fgets($fs, 1160); // One TCP-IP packet
+		while (!feof($fs)) {
+			$response .= fgets($fs, 1160);
+		} // One TCP-IP packet
 		fclose($fs);
 		$response = explode("\r\n\r\n", $response, 2);
 
@@ -362,10 +371,13 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	private function recaptcha_check_answer($privkey, $remoteip, $challenge, $response, $extra_params = [])
 	{
 		//discard spam submissions
-		if ($challenge == null || strlen($challenge) == 0 || $response == null || strlen($response) == 0)
+		if ($challenge == null || strlen($challenge) == 0 || $response == null || strlen($response) == 0) {
 			return false;
+		}
 
-		$response = $this->recaptcha_http_post(self::RECAPTCHA_VERIFY_SERVER, "/recaptcha/api/verify",
+		$response = $this->recaptcha_http_post(
+			self::RECAPTCHA_VERIFY_SERVER,
+			"/recaptcha/api/verify",
 		[
 			'privatekey' => $privkey,
 			'remoteip' => $remoteip,
@@ -376,9 +388,10 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 		$answers = explode("\n", $response [1]);
 
-		if (trim($answers [0]) == 'true')
+		if (trim($answers [0]) == 'true') {
 			return true;
-		else
+		} else {
 			return false;
+		}
 	}
 }

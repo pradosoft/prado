@@ -16,7 +16,6 @@ use Prado\Data\ActiveRecord\TActiveRecordManager;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Prado;
 
-
 class TWsatBaseGenerator
 {
 
@@ -33,8 +32,9 @@ class TWsatBaseGenerator
 
 	public function __construct()
 	{
-		if (!class_exists("TActiveRecordManager", false))
+		if (!class_exists("TActiveRecordManager", false)) {
 			throw new Exception("You need to enable the ActiveRecord module in your application configuration file.");
+		}
 		$ar_manager = TActiveRecordManager::getInstance();
 		$_conn = $ar_manager->getDbConnection();
 		$_conn->Active = true;
@@ -44,17 +44,18 @@ class TWsatBaseGenerator
 	public function setOpFile($op_file_namespace)
 	{
 		$op_file = Prado::getPathOfNamespace($op_file_namespace);
-		if (empty($op_file))
+		if (empty($op_file)) {
 			throw new Exception("You need to fix your output folder namespace.");
-		if (!is_dir($op_file))
+		}
+		if (!is_dir($op_file)) {
 			mkdir($op_file, 0777, true);
+		}
 		$this->_opFile = $op_file;
 	}
 
 	public function renderAllTablesInformation()
 	{
-		foreach ($this->getAllTableNames() as $table_name)
-		{
+		foreach ($this->getAllTableNames() as $table_name) {
 			echo $table_name . "<br>";
 			$tableInfo = $this->_dbMetaData->getTableInfo($table_name);
 			echo "Table info:" . "<br>";
@@ -68,8 +69,9 @@ class TWsatBaseGenerator
 	{
 		$tableNames = $this->_dbMetaData->findTableNames();
 		$index = array_search('pradocache', $tableNames);
-		if ($index)
+		if ($index) {
 			array_splice($tableNames, $index, 1);
+		}
 		return $tableNames;
 	}
 

@@ -16,7 +16,6 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  */
 use Prado\Prado;
 
-
 /**
  * TScaffoldView is a composite control consisting of TScaffoldListView
  * with a TScaffoldSearch. In addition, it will display a TScaffoldEditView
@@ -92,8 +91,7 @@ class TScaffoldView extends TScaffoldBase
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		switch(strtolower($param->getCommandName()))
-		{
+		switch (strtolower($param->getCommandName())) {
 			case 'edit':
 				return $this->showEditView($sender, $param);
 			case 'new':
@@ -138,4 +136,3 @@ class TScaffoldView extends TScaffoldBase
 		$this->showEditView($sender, $param);
 	}
 }
-

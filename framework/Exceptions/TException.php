@@ -55,8 +55,9 @@ class TException extends \Exception
 		array_shift($args);
 		$n = count($args);
 		$tokens = [];
-		for($i = 0;$i < $n;++$i)
+		for ($i = 0;$i < $n;++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+		}
 		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
@@ -70,12 +71,9 @@ class TException extends \Exception
 		$msgFile = $this->getErrorMessageFile();
 
 		// Cache messages
-		if (!isset(self::$_messageCache[$msgFile]))
-		{
-			if(($entries = @file($msgFile)) !== false)
-			{
-				foreach($entries as $entry)
-				{
+		if (!isset(self::$_messageCache[$msgFile])) {
+			if (($entries = @file($msgFile)) !== false) {
+				foreach ($entries as $entry) {
 					list($code, $message) = array_merge(explode('=', $entry, 2), [ '' ]);
 					self::$_messageCache[$msgFile][trim($code)] = trim($message);
 				}
@@ -91,8 +89,9 @@ class TException extends \Exception
 	{
 		$lang = Prado::getPreferredLanguage();
 		$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . $lang . '.txt';
-		if(!is_file($msgFile))
+		if (!is_file($msgFile)) {
 			$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages.txt';
+		}
 		return $msgFile;
 	}
 

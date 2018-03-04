@@ -117,6 +117,4 @@ interface IMessageSource
 	 * @return string culture identifier.
 	 */
 	public function getCulture();
-
 }
-

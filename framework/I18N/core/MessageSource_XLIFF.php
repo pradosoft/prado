@@ -69,7 +69,7 @@ class MessageSource_XLIFF extends MessageSource
 	protected function &loadData($filename)
 	{
 		//load it.
-		if(false === ($XML = simplexml_load_file($filename))) {
+		if (false === ($XML = simplexml_load_file($filename))) {
 			return false;
 		}
 
@@ -77,8 +77,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$translations = [];
 
-		foreach($translationUnit as $unit)
-		{
+		foreach ($translationUnit as $unit) {
 			$source = (string)$unit->source;
 			$translations[$source][] = (string)$unit->target;
 			$translations[$source][] = (string)$unit['id'];
@@ -132,10 +131,8 @@ class MessageSource_XLIFF extends MessageSource
 		$catalogues = [$source];
 		$variant = null;
 
-		for($i = 0, $k = count($variants); $i < $k; ++$i)
-		{
-			if(isset($variants[$i]{0}))
-			{
+		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
+			if (isset($variants[$i]{0})) {
 				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $catalogue . $this->dataSeparator . $variant . $this->dataExt;
 			}
@@ -145,8 +142,7 @@ class MessageSource_XLIFF extends MessageSource
 		$catalogues = array_merge($byDir, array_reverse($catalogues));
 		$files = [];
 
-		foreach($catalogues as $file)
-		{
+		foreach ($catalogues as $file) {
 			$files[] = $file;
 			$files[] = preg_replace('/\.xml$/', '.xlf', $file);
 		}
@@ -167,10 +163,8 @@ class MessageSource_XLIFF extends MessageSource
 		$catalogues = [];
 		$variant = null;
 
-		for($i = 0, $k = count($variants); $i < $k; ++$i)
-		{
-			if(isset($variants[$i]{0}))
-			{
+		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
+			if (isset($variants[$i]{0})) {
 				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
@@ -202,9 +196,8 @@ class MessageSource_XLIFF extends MessageSource
 		$files = scandir($dir);
 		$catalogue = [];
 
-		foreach($files as $file)
-		{
-			if(is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
+		foreach ($files as $file) {
+			if (is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
 				$catalogue = array_merge(
 					$catalogue,
 					$this->getCatalogues($dir . '/' . $file, $file)
@@ -212,15 +205,13 @@ class MessageSource_XLIFF extends MessageSource
 			}
 
 			$pos = strpos($file, $this->dataExt);
-			if($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt)
-			{
+			if ($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt) {
 				$name = substr($file, 0, $pos);
 				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
 
-				if(is_int($dot))
-				{
+				if (is_int($dot)) {
 					$culture = substr($name, $dot + 1, strlen($name));
 					$cat = substr($name, 0, $dot);
 				}
@@ -244,14 +235,13 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	private function getVariants($catalogue = 'messages')
 	{
-		if($catalogue === null) {
+		if ($catalogue === null) {
 			$catalogue = 'messages';
 		}
 
-		foreach($this->getCatalogueList($catalogue) as $variant)
-		{
+		foreach ($this->getCatalogueList($catalogue) as $variant) {
 			$file = $this->getSource($variant);
-			if(is_file($file)) {
+			if (is_file($file)) {
 				return [$variant, $file];
 			}
 		}
@@ -268,19 +258,19 @@ class MessageSource_XLIFF extends MessageSource
 	public function save($catalogue = 'messages')
 	{
 		$messages = $this->untranslated;
-		if(count($messages) <= 0) {
+		if (count($messages) <= 0) {
 			return false;
 		}
 
 		$variants = $this->getVariants($catalogue);
 
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			list($variant, $filename) = $this->createMessageTemplate($catalogue);
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
 		}
 
@@ -293,15 +283,14 @@ class MessageSource_XLIFF extends MessageSource
 		$body = $xpath->query('//body')->item(0);
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
-		if(($last = $lastNodes->item(0)) !== null) {
+		if (($last = $lastNodes->item(0)) !== null) {
 			$count = (int)$last->getAttribute('id');
 		} else {
 			$count = 0;
 		}
 
 		//for each message add it to the XML file using DOM
-		foreach($messages as $message)
-		{
+		foreach ($messages as $message) {
 			$unit = $dom->createElement('trans-unit');
 			$unit->setAttribute('id', ++$count);
 
@@ -328,7 +317,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		//save it and clear the cache for this variant
 		$dom->save($filename);
-		if(!empty($this->cache)) {
+		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);
 		}
 
@@ -347,13 +336,13 @@ class MessageSource_XLIFF extends MessageSource
 	{
 		$variants = $this->getVariants($catalogue);
 
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			return false;
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to update file {$filename}, file must be writable.");
 		}
 
@@ -365,34 +354,29 @@ class MessageSource_XLIFF extends MessageSource
 		$units = $xpath->query('//trans-unit');
 
 		//for each of the existin units
-		foreach($units as $unit)
-		{
+		foreach ($units as $unit) {
 			$found = false;
 			$targetted = false;
 			$commented = false;
 
 			//in each unit, need to find the source, target and comment nodes
 			//it will assume that the source is before the target.
-			foreach($unit->childNodes as $node)
-			{
+			foreach ($unit->childNodes as $node) {
 				//source node
-				if($node->nodeName == 'source' && $node->firstChild->wholeText == $text) {
+				if ($node->nodeName == 'source' && $node->firstChild->wholeText == $text) {
 					$found = true;
 				}
 
 				//found source, get the target and notes
-				if($found)
-				{
+				if ($found) {
 					//set the new translated string
-					if($node->nodeName == 'target')
-					{
+					if ($node->nodeName == 'target') {
 						$node->nodeValue = $target;
 						$targetted = true;
 					}
 
 					//set the notes
-					if(!empty($comments) && $node->nodeName == 'note')
-					{
+					if (!empty($comments) && $node->nodeName == 'note') {
 						$node->nodeValue = $comments;
 						$commented = true;
 					}
@@ -400,17 +384,17 @@ class MessageSource_XLIFF extends MessageSource
 			}
 
 			//append a target
-			if($found && !$targetted) {
+			if ($found && !$targetted) {
 				$unit->appendChild($dom->createElement('target', $target));
 			}
 
 			//append a note
-			if($found && !$commented && !empty($comments)) {
+			if ($found && !$commented && !empty($comments)) {
 				$unit->appendChild($dom->createElement('note', $comments));
 			}
 
 			//finished searching
-			if($found) {
+			if ($found) {
 				break;
 			}
 		}
@@ -418,9 +402,8 @@ class MessageSource_XLIFF extends MessageSource
 		$fileNode = $xpath->query('//file')->item(0);
 		$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
 
-		if($dom->save($filename) > 0)
-		{
-			if(!empty($this->cache)) {
+		if ($dom->save($filename) > 0) {
+			if (!empty($this->cache)) {
 				$this->cache->clean($variant, $this->culture);
 			}
 
@@ -439,13 +422,13 @@ class MessageSource_XLIFF extends MessageSource
 	public function delete($message, $catalogue = 'messages')
 	{
 		$variants = $this->getVariants($catalogue);
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			return false;
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
 		}
 
@@ -457,22 +440,19 @@ class MessageSource_XLIFF extends MessageSource
 		$units = $xpath->query('//trans-unit');
 
 		//for each of the existin units
-		foreach($units as $unit)
-		{
+		foreach ($units as $unit) {
 			//in each unit, need to find the source, target and comment nodes
 			//it will assume that the source is before the target.
-			foreach($unit->childNodes as $node)
-			{
+			foreach ($unit->childNodes as $node) {
 				//source node
-				if($node->nodeName == 'source' && $node->firstChild->wholeText == $message)
-				{
+				if ($node->nodeName == 'source' && $node->firstChild->wholeText == $message) {
 					//we found it, remove and save the xml file.
 					$unit->parentNode->removeChild($unit);
 					$fileNode = $xpath->query('//file')->item(0);
 					$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
 
-					if(false !== $dom->save($filename)) {
-						if(!empty($this->cache)) {
+					if (false !== $dom->save($filename)) {
+						if (!empty($this->cache)) {
 							$this->cache->clean($variant, $this->culture);
 						}
 						return true;
@@ -488,7 +468,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	protected function createMessageTemplate($catalogue)
 	{
-		if($catalogue === null) {
+		if ($catalogue === null) {
 			$catalogue = 'messages';
 		}
 
@@ -497,12 +477,12 @@ class MessageSource_XLIFF extends MessageSource
 		$file = $this->getSource($variant);
 		$dir = dirname($file);
 
-		if(!is_dir($dir)) {
+		if (!is_dir($dir)) {
 			@mkdir($dir);
 			@chmod($dir, PRADO_CHMOD);
 		}
 
-		if(!is_dir($dir)) {
+		if (!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");
 		}
 

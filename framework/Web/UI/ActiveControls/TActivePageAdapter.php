@@ -21,7 +21,6 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\TControlAdapter;
 use Prado\Web\UI\TPage;
 
-
 /**
  * TActivePageAdapter class.
  *
@@ -120,8 +119,9 @@ class TActivePageAdapter extends TControlAdapter
 	public function registerControlToRender($control, $writer)
 	{
 		$id = $control->getUniqueID();
-		if(!isset($this->_controlsToRender[$id]))
+		if (!isset($this->_controlsToRender[$id])) {
 			$this->_controlsToRender[$id] = [$control,$writer];
+		}
 	}
 
 	/**
@@ -139,10 +139,11 @@ class TActivePageAdapter extends TControlAdapter
 	public function renderCallbackResponse($writer)
 	{
 		Prado::trace("ActivePage renderCallbackResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
-		if(($url = $this->getResponse()->getAdapter()->getRedirectedUrl()) === null)
+		if (($url = $this->getResponse()->getAdapter()->getRedirectedUrl()) === null) {
 			$this->renderResponse($writer);
-		else
+		} else {
 			$this->redirect($url);
+		}
 	}
 
 	/**
@@ -164,17 +165,16 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		Prado::trace("ActivePage renderResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
 		//renders all the defered render() calls.
-		foreach($this->_controlsToRender as $rid => $forRender)
+		foreach ($this->_controlsToRender as $rid => $forRender) {
 			$forRender[0]->render($forRender[1]);
+		}
 
 		$response = $this->getResponse();
 
 		//send response data in header
-		if($response->getHasAdapter())
-		{
+		if ($response->getHasAdapter()) {
 			$responseData = $response->getAdapter()->getResponseData();
-			if($responseData !== null)
-			{
+			if ($responseData !== null) {
 				$data = TJavaScript::jsonEncode($responseData);
 
 				$this->appendContentPart($response, self::CALLBACK_DATA_HEADER, $data);
@@ -182,10 +182,8 @@ class TActivePageAdapter extends TControlAdapter
 		}
 
 		//sends page state in header
-		if(($handler = $this->getCallbackEventTarget()) !== null)
-		{
-			if($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate())
-			{
+		if (($handler = $this->getCallbackEventTarget()) !== null) {
+			if ($handler->getActiveControl()->getClientSide()->getEnablePageStateUpdate()) {
 				$pagestate = $this->getPage()->getClientState();
 				$this->appendContentPart($response, self::CALLBACK_PAGESTATE_HEADER, $pagestate);
 			}
@@ -195,8 +193,7 @@ class TActivePageAdapter extends TControlAdapter
 		$writer->write(" ");
 
 		//output the end javascript
-		if($this->getPage()->getClientScript()->hasEndScripts())
-		{
+		if ($this->getPage()->getClientScript()->hasEndScripts()) {
 			$writer = $response->createHtmlWriter();
 			$this->getPage()->getClientScript()->renderEndScriptsCallback($writer);
 			$this->getPage()->getCallbackClient()->evaluateScript($writer);
@@ -212,23 +209,27 @@ class TActivePageAdapter extends TControlAdapter
 
 		// collect all stylesheet file references
 		$stylesheets = $cs->getStyleSheetUrls();
-		if (count($stylesheets) > 0)
-		$this->appendContentPart($response, self::CALLBACK_STYLESHEETLIST_HEADER, TJavaScript::jsonEncode($stylesheets));
+		if (count($stylesheets) > 0) {
+			$this->appendContentPart($response, self::CALLBACK_STYLESHEETLIST_HEADER, TJavaScript::jsonEncode($stylesheets));
+		}
 
 		// collect all stylesheet snippets references
 		$stylesheets = $cs->getStyleSheetCodes();
-		if (count($stylesheets) > 0)
-		$this->appendContentPart($response, self::CALLBACK_STYLESHEET_HEADER, TJavaScript::jsonEncode($stylesheets));
+		if (count($stylesheets) > 0) {
+			$this->appendContentPart($response, self::CALLBACK_STYLESHEET_HEADER, TJavaScript::jsonEncode($stylesheets));
+		}
 
 		// collect all script file references
 		$scripts = $cs->getScriptUrls();
-		if (count($scripts) > 0)
-		$this->appendContentPart($response, self::CALLBACK_SCRIPTLIST_HEADER, TJavaScript::jsonEncode($scripts));
+		if (count($scripts) > 0) {
+			$this->appendContentPart($response, self::CALLBACK_SCRIPTLIST_HEADER, TJavaScript::jsonEncode($scripts));
+		}
 
 		// collect all hidden field references
 		$fields = $cs->getHiddenFields();
-		if (count($fields) > 0)
-		$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
+		if (count($fields) > 0) {
+			$this->appendContentPart($response, self::CALLBACK_HIDDENFIELDLIST_HEADER, TJavaScript::jsonEncode($fields));
+		}
 	}
 
 	/**
@@ -249,25 +250,21 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private function raiseCallbackEvent()
 	{
-		 if(($callbackHandler = $this->getCallbackEventTarget()) !== null)
-		 {
-			if($callbackHandler instanceof ICallbackEventHandler)
-			{
+		if (($callbackHandler = $this->getCallbackEventTarget()) !== null) {
+			if ($callbackHandler instanceof ICallbackEventHandler) {
 				$param = $this->getCallbackEventParameter();
 				$result = new TCallbackEventParameter($this->getResponse(), $param);
 				$callbackHandler->raiseCallbackEvent($result);
-			}
-			else
-			{
+			} else {
 				throw new TInvalidCallbackException(
-					'callback_invalid_handler', $callbackHandler->getUniqueID());
+					'callback_invalid_handler',
+					$callbackHandler->getUniqueID()
+				);
 			}
-		 }
-		 else
-		 {
+		} else {
 			$target = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
 			throw new TInvalidCallbackException('callback_invalid_target', $target);
-		 }
+		}
 	}
 
 	/**
@@ -276,11 +273,11 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackEventTarget()
 	{
-		if($this->_callbackEventTarget === null)
-		{
+		if ($this->_callbackEventTarget === null) {
 			$eventTarget = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_TARGET);
-			if(!empty($eventTarget))
+			if (!empty($eventTarget)) {
 				$this->_callbackEventTarget = $this->getPage()->findControl($eventTarget);
+			}
 		}
 		return $this->_callbackEventTarget;
 	}
@@ -300,8 +297,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackEventParameter()
 	{
-		if($this->_callbackEventParameter === null)
-		{
+		if ($this->_callbackEventParameter === null) {
 			$param = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
 			$this->_callbackEventParameter = $param;
 		}
@@ -323,8 +319,9 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function getCallbackClientHandler()
 	{
-		if($this->_callbackClient === null)
+		if ($this->_callbackClient === null) {
 			$this->_callbackClient = new TCallbackClientScript;
+		}
 		return $this->_callbackClient;
 	}
 }

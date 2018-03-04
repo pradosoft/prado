@@ -81,8 +81,9 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{
-		if(($_handler = constant('TRpcClientTypesEnumerable::' . strtoupper($type))) === null)
+		if (($_handler = constant('TRpcClientTypesEnumerable::' . strtoupper($type))) === null) {
 			throw new TApplicationException('rpcclient_unsupported_handler');
+		}
 
 		return new $_handler($serverUrl, $isNotification);
 	}
@@ -111,8 +112,9 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	protected function performRequest($serverUrl, $payload, $mimeType)
 	{
-		if(($_response = @file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false)
+		if (($_response = @file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false) {
 			throw new TRpcClientRequestException('Request failed ("' . $http_response_header[0] . '")');
+		}
 
 		return $_response;
 	}

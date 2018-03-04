@@ -59,10 +59,11 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
@@ -80,10 +81,11 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getVerticalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getVerticalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
@@ -135,10 +137,11 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getWrap()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getWrap();
-		else
+		} else {
 			return true;
+		}
 	}
 
 	/**
@@ -201,10 +204,12 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($colspan = $this->getColumnSpan()) > 0)
+		if (($colspan = $this->getColumnSpan()) > 0) {
 			$writer->addAttribute('colspan', "$colspan");
-		if(($rowspan = $this->getRowSpan()) > 0)
+		}
+		if (($rowspan = $this->getRowSpan()) > 0) {
 			$writer->addAttribute('rowspan', "$rowspan");
+		}
 	}
 
 	/**
@@ -213,12 +218,12 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function renderContents($writer)
 	{
-		if(($text = $this->getText()) !== '')
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
-		elseif($this->getHasControls())
+		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write('&nbsp;');
+		}
 	}
 }
-

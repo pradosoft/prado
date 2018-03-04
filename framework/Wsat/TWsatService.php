@@ -43,47 +43,48 @@ use Prado\Web\UI\TThemeManager;
  */
 class TWsatService extends TPageService
 {
-		const PAGE_NAMESPACE_PREFIX = 'Prado\\Wsat\\pages\\';
-		private $_pass = '';
+	const PAGE_NAMESPACE_PREFIX = 'Prado\\Wsat\\pages\\';
+	private $_pass = '';
 
-		public function init($config)
-		{
-				if ($this->getApplication()->getMode() === TApplicationMode::Performance || $this->getApplication()->getMode() === TApplicationMode::Normal)
-						throw new TInvalidOperationException("You should not use Prado WSAT in any of the production modes.");
-
-				if (empty($this->_pass))
-						throw new TConfigurationException("You need to specify the Password attribute.");
-
-				$this->setDefaultPage("TWsatHome");
-				$this->_startThemeManager();
-				parent::init($config);
+	public function init($config)
+	{
+		if ($this->getApplication()->getMode() === TApplicationMode::Performance || $this->getApplication()->getMode() === TApplicationMode::Normal) {
+			throw new TInvalidOperationException("You should not use Prado WSAT in any of the production modes.");
 		}
 
-		public function getBasePath()
-		{
-				$basePath = Prado::getPathOfNamespace("System.Wsat.pages");
-				return realpath($basePath);
+		if (empty($this->_pass)) {
+			throw new TConfigurationException("You need to specify the Password attribute.");
 		}
 
-		private function _startThemeManager()
-		{
-				$themeManager = new TThemeManager;
-				$themeManager->BasePath = "System.Wsat.themes";
-				$url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('System.Wsat'));
-				$themeManager->BaseUrl = "$url/themes";
+		$this->setDefaultPage("TWsatHome");
+		$this->_startThemeManager();
+		parent::init($config);
+	}
 
-				$themeManager->init(null);
-				$this->setThemeManager($themeManager);
-		}
+	public function getBasePath()
+	{
+		$basePath = Prado::getPathOfNamespace("System.Wsat.pages");
+		return realpath($basePath);
+	}
 
-		public function getPassword()
-		{
-				return $this->_pass;
-		}
+	private function _startThemeManager()
+	{
+		$themeManager = new TThemeManager;
+		$themeManager->BasePath = "System.Wsat.themes";
+		$url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('System.Wsat'));
+		$themeManager->BaseUrl = "$url/themes";
 
-		public function setPassword($_pass)
-		{
-				$this->_pass = $_pass;
-		}
+		$themeManager->init(null);
+		$this->setThemeManager($themeManager);
+	}
 
+	public function getPassword()
+	{
+		return $this->_pass;
+	}
+
+	public function setPassword($_pass)
+	{
+		$this->_pass = $_pass;
+	}
 }

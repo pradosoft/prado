@@ -49,14 +49,13 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TWizardStep)
-		{
+		if ($item instanceof TWizardStep) {
 			parent::insertAt($index, $item);
 			$this->_wizard->getMultiView()->getViews()->insertAt($index, $item);
 			$this->_wizard->addedWizardStep($item);
-		}
-		else
+		} else {
 			throw new TInvalidDataTypeException('wizardstepcollection_wizardstep_required');
+		}
 	}
 
 	/**

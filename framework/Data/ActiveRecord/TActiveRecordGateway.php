@@ -72,24 +72,29 @@ class TActiveRecordGateway extends \Prado\TComponent
 	protected function getRecordTableName(TActiveRecord $record)
 	{
 		$class = new ReflectionClass($record);
-		if($class->hasConstant(self::TABLE_CONST))
-		{
+		if ($class->hasConstant(self::TABLE_CONST)) {
 			$value = $class->getConstant(self::TABLE_CONST);
-			if(empty($value))
-				throw new TActiveRecordException('ar_invalid_tablename_property',
-					get_class($record), self::TABLE_CONST);
+			if (empty($value)) {
+				throw new TActiveRecordException(
+					'ar_invalid_tablename_property',
+					get_class($record),
+					self::TABLE_CONST
+				);
+			}
 			return $value;
-		}
-		elseif ($class->hasMethod(self::TABLE_METHOD))
-		{
+		} elseif ($class->hasMethod(self::TABLE_METHOD)) {
 			$value = $record->{self::TABLE_METHOD}();
-			if(empty($value))
-				throw new TActiveRecordException('ar_invalid_tablename_method',
-					get_class($record), self::TABLE_METHOD);
+			if (empty($value)) {
+				throw new TActiveRecordException(
+					'ar_invalid_tablename_method',
+					get_class($record),
+					self::TABLE_METHOD
+				);
+			}
 			return $value;
-		}
-		else
+		} else {
 			return strtolower(get_class($record));
+		}
 	}
 
 	/**
@@ -113,23 +118,22 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$connStr = $connection->getConnectionString();
 		$key = $connStr . $tableName;
-		if(!isset($this->_tables[$key]))
-		{
+		if (!isset($this->_tables[$key])) {
 			//call this first to ensure that unserializing the cache
 			//will find the correct driver dependent classes.
-			if(!isset($this->_meta[$connStr]))
-			{
+			if (!isset($this->_meta[$connStr])) {
 				$this->_meta[$connStr] = TDbMetaData::getInstance($connection);
 			}
 
 			$tableInfo = null;
-			if(($cache = $this->getManager()->getCache()) !== null)
+			if (($cache = $this->getManager()->getCache()) !== null) {
 				$tableInfo = $cache->get($key);
-			if(empty($tableInfo))
-			{
+			}
+			if (empty($tableInfo)) {
 				$tableInfo = $this->_meta[$connStr]->getTableInfo($tableName);
-				if($cache !== null)
+				if ($cache !== null) {
 					$cache->set($key, $tableInfo);
+				}
 			}
 			$this->_tables[$key] = $tableInfo;
 		}
@@ -145,14 +149,12 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$conn = $record->getDbConnection();
 		$connStr = $conn->getConnectionString();
 		$tableInfo = $this->getRecordTableInfo($record);
-		if(!isset($this->_commandBuilders[$connStr]))
-		{
+		if (!isset($this->_commandBuilders[$connStr])) {
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
 			$command = new TDataGatewayCommand($builder);
 			$command->OnCreateCommand[] = [$this, 'onCreateCommand'];
 			$command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
 			$this->_commandBuilders[$connStr] = $command;
-
 		}
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
 		$this->_currentRecord = $record;
@@ -172,8 +174,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function onCreateCommand($sender, $param)
 	{
 		$this->raiseEvent('OnCreateCommand', $this, $param);
-		if($this->_currentRecord !== null)
+		if ($this->_currentRecord !== null) {
 			$this->_currentRecord->onCreateCommand($param);
+		}
 	}
 
 	/**
@@ -190,8 +193,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function onExecuteCommand($sender, $param)
 	{
 		$this->raiseEvent('OnExecuteCommand', $this, $param);
-		if($this->_currentRecord !== null)
+		if ($this->_currentRecord !== null) {
 			$this->_currentRecord->onExecuteCommand($param);
+		}
 	}
 
 	/**
@@ -280,8 +284,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		//$this->updateAssociatedRecords($record,true);
 		$result = $this->getCommand($record)->insert($this->getInsertValues($record));
-		if($result)
+		if ($result) {
 			$this->updatePostInsert($record);
+		}
 		//$this->updateAssociatedRecords($record);
 		return $result;
 	}
@@ -294,10 +299,10 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$command = $this->getCommand($record);
 		$tableInfo = $command->getTableInfo();
-		foreach($tableInfo->getColumns() as $name => $column)
-		{
-			if($column->hasSequence())
+		foreach ($tableInfo->getColumns() as $name => $column) {
+			if ($column->hasSequence()) {
 				$record->setColumnValue($name, $command->getLastInsertID($column->getSequenceName()));
+			}
 		}
 	}
 
@@ -309,19 +314,22 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
-		foreach($tableInfo->getColumns() as $name => $column)
-		{
-			if($column->getIsExcluded())
+		foreach ($tableInfo->getColumns() as $name => $column) {
+			if ($column->getIsExcluded()) {
 				continue;
-			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value === null && !$column->hasSequence() && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
-			{
-				throw new TActiveRecordException(
-					'ar_value_must_not_be_null', get_class($record),
-					$tableInfo->getTableFullName(), $name);
 			}
-			if($value !== null)
+			$value = $record->getColumnValue($name);
+			if (!$column->getAllowNull() && $value === null && !$column->hasSequence() && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE)) {
+				throw new TActiveRecordException(
+					'ar_value_must_not_be_null',
+					get_class($record),
+					$tableInfo->getTableFullName(),
+					$name
+				);
+			}
+			if ($value !== null) {
 				$values[$name] = $value;
+			}
 		}
 		return $values;
 	}
@@ -345,21 +353,24 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$values = [];
 		$tableInfo = $this->getCommand($record)->getTableInfo();
 		$primary = [];
-		foreach($tableInfo->getColumns() as $name => $column)
-		{
-			if($column->getIsExcluded())
+		foreach ($tableInfo->getColumns() as $name => $column) {
+			if ($column->getIsExcluded()) {
 				continue;
-			$value = $record->getColumnValue($name);
-			if(!$column->getAllowNull() && $value === null && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE))
-			{
-				throw new TActiveRecordException(
-					'ar_value_must_not_be_null', get_class($record),
-					$tableInfo->getTableFullName(), $name);
 			}
-			if($column->getIsPrimaryKey())
+			$value = $record->getColumnValue($name);
+			if (!$column->getAllowNull() && $value === null && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE)) {
+				throw new TActiveRecordException(
+					'ar_value_must_not_be_null',
+					get_class($record),
+					$tableInfo->getTableFullName(),
+					$name
+				);
+			}
+			if ($column->getIsPrimaryKey()) {
 				$primary[$name] = $value;
-			else
+			} else {
 				$values[$name] = $value;
+			}
 		}
 		return [$values,$primary];
 	}
@@ -384,10 +395,10 @@ class TActiveRecordGateway extends \Prado\TComponent
 	{
 		$tableInfo = $this->getCommand($record)->getTableInfo();
 		$primary = [];
-		foreach($tableInfo->getColumns() as $name => $column)
-		{
-			if($column->getIsPrimaryKey())
+		foreach ($tableInfo->getColumns() as $name => $column) {
+			if ($column->getIsPrimaryKey()) {
 				$primary[$name] = $record->getColumnValue($name);
+			}
 		}
 		return $primary;
 	}
@@ -422,12 +433,12 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	protected function raiseCommandEvent($event, $command, $record, $criteria)
 	{
-		if(!($criteria instanceof TSqlCriteria))
+		if (!($criteria instanceof TSqlCriteria)) {
 			$criteria = new TActiveRecordCriteria(null, $criteria);
+		}
 		$param = new TActiveRecordEventParameter($command, $record, $criteria);
 		$manager = $record->getRecordManager();
 		$manager->{$event}($param);
 		$record->{$event}($param);
 	}
 }
-

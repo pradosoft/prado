@@ -33,9 +33,10 @@ class THotSpotCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof THotSpot)
+		if ($item instanceof THotSpot) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('hotspotcollection_hotspot_required');
+		}
 	}
 }

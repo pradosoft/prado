@@ -19,7 +19,6 @@ use Prado\Prado;
 use Prado\Web\UI\WebControls\TTable;
 use Prado\Web\UI\WebControls\TTableRow;
 
-
 /**
  * TActiveTableRow class.
  *
@@ -117,12 +116,12 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if ($param instanceof TActiveTableCellEventParameter)
-		{
+		if ($param instanceof TActiveTableCellEventParameter) {
 			$this->raiseCallbackEvent($param);
 			return true;
+		} else {
+			return false;
 		}
-		else return false;
 	}
 
 	/**
@@ -147,8 +146,9 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->hasEventHandler('OnRowSelected'))
+		if ($this->hasEventHandler('OnRowSelected')) {
 			$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(), $this->getPostBackOptions());
+		}
 	}
 
 	/**
@@ -160,21 +160,19 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered())
-		{
+		if ($this->getHasPreRendered()) {
 			parent::render($writer);
-			if ($this->getActiveControl()->canUpdateClientSide())
+			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
-		}
-		else
-		{
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 			// If we update a TActiveTableRow on callback, we shouldn't update all childs,
 			// because the whole content will be replaced by the parent.
-			if ($this->getHasControls())
-			{
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control)
+			if ($this->getHasControls()) {
+				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
 					$control->getActiveControl()->setEnableUpdate(false);
+				}
 			}
 		}
 	}
@@ -199,8 +197,11 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 */
 	public function getRowIndex()
 	{
-		foreach ($this->getTable()->getRows() as $key => $row)
-			if ($row == $this) return $key;
+		foreach ($this->getTable()->getRows() as $key => $row) {
+			if ($row == $this) {
+				return $key;
+			}
+		}
 		throw new TConfigurationException('tactivetablerow_control_notincollection', get_class($this), $this->getUniqueID());
 	}
 
@@ -211,17 +212,17 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 */
 	public function getTable()
 	{
-		if ($this->_table === null)
-		{
+		if ($this->_table === null) {
 			$table = $this->getParent();
-			while (!($table instanceof TTable) && $table !== null)
-			{
+			while (!($table instanceof TTable) && $table !== null) {
 				$table = $table->getParent();
 			}
-			if ($table instanceof TTable) $this->_table = $table;
-			else throw new TConfigurationException('tactivetablerow_control_outoftable', get_class($this), $this->getUniqueID());
+			if ($table instanceof TTable) {
+				$this->_table = $table;
+			} else {
+				throw new TConfigurationException('tactivetablerow_control_outoftable', get_class($this), $this->getUniqueID());
+			}
 		}
 		return $this->_table;
 	}
-
 }

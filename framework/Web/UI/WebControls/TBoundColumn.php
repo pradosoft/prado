@@ -164,60 +164,48 @@ class TBoundColumn extends TDataGridColumn
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		$item = $cell->getParent();
-		switch($itemType)
-		{
+		switch ($itemType) {
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
-				if(($classPath = $this->getItemRenderer()) !== '')
-				{
+				if (($classPath = $this->getItemRenderer()) !== '') {
 					$control = Prado::createComponent($classPath);
-					if($control instanceof IItemDataRenderer)
-					{
+					if ($control instanceof IItemDataRenderer) {
 						$control->setItemIndex($item->getItemIndex());
 						$control->setItemType($item->getItemType());
 					}
 					$cell->getControls()->add($control);
-				}
-				else
+				} else {
 					$control = $cell;
+				}
 				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
 			case TListItemType::EditItem:
-				if(!$this->getReadOnly())
-				{
-					if(($classPath = $this->getEditItemRenderer()) !== '')
-					{
+				if (!$this->getReadOnly()) {
+					if (($classPath = $this->getEditItemRenderer()) !== '') {
 						$control = Prado::createComponent($classPath);
-						if($control instanceof IItemDataRenderer)
-						{
+						if ($control instanceof IItemDataRenderer) {
 							$control->setItemIndex($item->getItemIndex());
 							$control->setItemType($item->getItemType());
 						}
 						$cell->getControls()->add($control);
 						$cell->registerObject('EditControl', $control);
-					}
-					else
-					{
+					} else {
 						$control = new TTextBox;
 						$cell->getControls()->add($control);
 						$cell->registerObject('TextBox', $control);
 					}
-				}
-				else
-				{
-					if(($classPath = $this->getItemRenderer()) !== '')
-					{
+				} else {
+					if (($classPath = $this->getItemRenderer()) !== '') {
 						$control = Prado::createComponent($classPath);
-						if($control instanceof IItemDataRenderer)
-						{
+						if ($control instanceof IItemDataRenderer) {
 							$control->setItemIndex($item->getItemIndex());
 							$control->setItemType($item->getItemType());
 						}
 						$cell->getControls()->add($control);
-					}
-					else
+					} else {
 						$control = $cell;
+					}
 				}
 				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
 				break;
@@ -237,11 +225,11 @@ class TBoundColumn extends TDataGridColumn
 		$item = $sender->getNamingContainer();
 		$data = $item->getData();
 		$formatString = $this->getDataFormatString();
-		if(($field = $this->getDataField()) !== '')
+		if (($field = $this->getDataField()) !== '') {
 			$value = $this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
-		else
+		} else {
 			$value = $this->formatDataValue($formatString, $data);
+		}
 		$sender->setData($value);
 	}
 }
-

@@ -74,22 +74,23 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		if($this->_charset === null)
+		if ($this->_charset === null) {
 			$this->_charset = $this->getDefaultCharset();
-		if($this->_culture === null)
+		}
+		if ($this->_culture === null) {
 			$this->_culture = $this->getDefaultCulture();
+		}
 
-		if($config !== null)
-		{
-			if($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
+		if ($config !== null) {
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$translation = isset($config['translate']) ? $config['translate'] : null;
-			else
-			{
+			} else {
 				$t = $config->getElementByTagName('translation');
 				$translation = ($t) ? $t->getAttributes() : null;
 			}
-			if($translation)
+			if ($translation) {
 				$this->setTranslationConfiguration($translation);
+			}
 		}
 		$this->getApplication()->setGlobalization($this);
 	}
@@ -200,37 +201,34 @@ class TGlobalization extends \Prado\TModule
 	 */
 	protected function setTranslationConfiguration($config)
 	{
-		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext' || $config['type'] == 'PHP')
-		{
-			if($config['source'])
-			{
+		if ($config['type'] == 'XLIFF' || $config['type'] == 'gettext' || $config['type'] == 'PHP') {
+			if ($config['source']) {
 				$config['source'] = Prado::getPathOfNamespace($config['source']);
-				if(!is_dir($config['source']))
-				{
-					if(@mkdir($config['source']) === false)
-					throw new TConfigurationException('globalization_source_path_failed',
-						$config['source']);
+				if (!is_dir($config['source'])) {
+					if (@mkdir($config['source']) === false) {
+						throw new TConfigurationException(
+						'globalization_source_path_failed',
+						$config['source']
+					);
+					}
 					chmod($config['source'], PRADO_CHMOD); //make it deletable
 				}
-			}
-			else
-			{
+			} else {
 				throw new TConfigurationException("invalid source dir '{$config['source']}'");
 			}
 		}
-		if(isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache']))
-		{
+		if (isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache'])) {
 			$config['cache'] = $this->getApplication()->getRunTimePath() . '/i18n';
-			if(!is_dir($config['cache']))
-			{
-				if(@mkdir($config['cache']) === false)
-					throw new TConfigurationException('globalization_cache_path_failed',
-						$config['cache']);
+			if (!is_dir($config['cache'])) {
+				if (@mkdir($config['cache']) === false) {
+					throw new TConfigurationException(
+						'globalization_cache_path_failed',
+						$config['cache']
+					);
+				}
 				chmod($config['cache'], PRADO_CHMOD); //make it deletable
 			}
-		}
-		else
-		{
+		} else {
 			unset($config['cache']);
 		}
 		$this->_translation = $config;
@@ -260,11 +258,14 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function getCultureVariants($culture = null)
 	{
-		if($culture === null) $culture = $this->getCulture();
+		if ($culture === null) {
+			$culture = $this->getCulture();
+		}
 		$variants = explode('_', $culture);
 		$result = [];
-		for(; count($variants) > 0; array_pop($variants))
+		for (; count($variants) > 0; array_pop($variants)) {
 			$result[] = implode('_', $variants);
+		}
 		return $result;
 	}
 
@@ -292,13 +293,14 @@ class TGlobalization extends \Prado\TModule
 		$files = [];
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
-		foreach($variants as $variant)
+		foreach ($variants as $variant) {
 			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $variant . DIRECTORY_SEPARATOR . $path['basename'];
+		}
 		$filename = substr($path['basename'], 0, strrpos($path['basename'], '.'));
-		foreach($variants as $variant)
+		foreach ($variants as $variant) {
 			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $filename . '.' . $variant . '.' . $path['extension'];
+		}
 		$files[] = $file;
 		return $files;
 	}
-
 }

@@ -105,19 +105,21 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 		$writer->addAttribute('type', strtolower($this->getButtonType()));
-		if(($uniqueID = $this->getUniqueID()) !== '')
+		if (($uniqueID = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uniqueID);
-		if($this->getButtonTag() === TButtonTag::Button)
-		  $this->addParsedObject($this->getText());
-		else
-		  $writer->addAttribute('value', $this->getText());
-		if($this->getEnabled(true))
-		{
-			if($this->getEnableClientScript() && $this->needPostBackScript())
-				$this->renderClientControlScript($writer);
 		}
-		elseif($this->getEnabled()) // in this case, parent will not render 'disabled'
+		if ($this->getButtonTag() === TButtonTag::Button) {
+			$this->addParsedObject($this->getText());
+		} else {
+			$writer->addAttribute('value', $this->getText());
+		}
+		if ($this->getEnabled(true)) {
+			if ($this->getEnableClientScript() && $this->needPostBackScript()) {
+				$this->renderClientControlScript($writer);
+			}
+		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
+		}
 
 		parent::addAttributesToRender($writer);
 	}
@@ -146,13 +148,12 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function canCauseValidation()
 	{
-		if($this->getCausesValidation())
-		{
+		if ($this->getCausesValidation()) {
 			$group = $this->getValidationGroup();
 			return $this->getPage()->getValidators($group)->getCount() > 0;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -204,8 +205,9 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getButtonTag() === TButtonTag::Button)
+		if ($this->getButtonTag() === TButtonTag::Button) {
 			parent::renderContents($writer);
+		}
 	}
 
 	/**
@@ -244,8 +246,9 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onClick(null);
 		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}

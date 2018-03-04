@@ -56,8 +56,8 @@ class TStatements extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if($this->_s !== '')
+		if ($this->_s !== '') {
 			$writer->write($this->evaluateStatements($this->_s));
+		}
 	}
 }
-

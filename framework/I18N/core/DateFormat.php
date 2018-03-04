@@ -94,14 +94,15 @@ class DateFormat
 	 */
 	public function __construct($formatInfo = null)
 	{
-		if($formatInfo === null)
+		if ($formatInfo === null) {
 			$this->formatInfo = DateTimeFormatInfo::getInvariantInfo();
-		elseif($formatInfo instanceof CultureInfo)
+		} elseif ($formatInfo instanceof CultureInfo) {
 			$this->formatInfo = $formatInfo->DateTimeFormat;
-		elseif($formatInfo instanceof DateTimeFormatInfo)
+		} elseif ($formatInfo instanceof DateTimeFormatInfo) {
 			$this->formatInfo = $formatInfo;
-		else
+		} else {
 			$this->formatInfo = DateTimeFormatInfo::getInstance($formatInfo);
+		}
 
 		$this->methods = get_class_methods($this);
 	}
@@ -113,13 +114,15 @@ class DateFormat
 	 */
 	public function format($time, $pattern = 'F', $charset = 'UTF-8')
 	{
-		if (is_numeric($time)) //assumes unix epoch
+		if (is_numeric($time)) { //assumes unix epoch
 			$time = floatval($time);
-		elseif(is_string($time))
+		} elseif (is_string($time)) {
 			$time = @strtotime($time);
+		}
 
-		if($pattern === null)
+		if ($pattern === null) {
 			$pattern = 'F';
+		}
 
 		$date = new \DateTime;
 		$date->setTimestamp($time);
@@ -128,33 +131,25 @@ class DateFormat
 
 		$tokens = $this->getTokens($pattern);
 
-		for($i = 0, $k = count($tokens); $i < $k; ++$i)
-		{
+		for ($i = 0, $k = count($tokens); $i < $k; ++$i) {
 			$pattern = $tokens[$i];
-			if($pattern{0} == "'"
-				&& $pattern{strlen($pattern) - 1} == "'")
-			{
+			if ($pattern{0} == "'"
+				&& $pattern{strlen($pattern) - 1} == "'") {
 				$sub = preg_replace('/(^\')|(\'$)/', '', $pattern);
 				$tokens[$i] = str_replace('``````', '\'', $sub);
-			}
-			elseif($pattern == '``````')
-			{
+			} elseif ($pattern == '``````') {
 				$tokens[$i] = '\'';
-			}
-			else
-			{
+			} else {
 				$function = $this->getFunctionName($pattern);
-				if($function != null)
-				{
+				if ($function != null) {
 					$fName = 'get' . $function;
-					if(in_array($fName, $this->methods))
-					{
+					if (in_array($fName, $this->methods)) {
 						$rs = $this->$fName($date, $pattern);
 						$tokens[$i] = $rs;
-					}
-					else
+					} else {
 						throw new
 						Exception('function ' . $function . ' not found.');
+					}
 				}
 			}
 		}
@@ -169,8 +164,9 @@ class DateFormat
 	 */
 	protected function getFunctionName($token)
 	{
-		if(isset($this->tokens[$token{0}]))
+		if (isset($this->tokens[$token{0}])) {
 			return $this->tokens[$token{0}];
+		}
 	}
 
 	/**
@@ -186,15 +182,14 @@ class DateFormat
 	 */
 	protected function getPattern($pattern)
 	{
-		if(is_array($pattern) && count($pattern) == 2)
-		{
+		if (is_array($pattern) && count($pattern) == 2) {
 			return $this->formatInfo->formatDateTime(
 							$this->getPattern($pattern[0]),
-							$this->getPattern($pattern[1]));
+							$this->getPattern($pattern[1])
+			);
 		}
 
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'd':
 				return $this->formatInfo->ShortDatePattern;
 				break;
@@ -222,22 +217,26 @@ class DateFormat
 			case 'f':
 				return $this->formatInfo->formatDateTime(
 					$this->formatInfo->LongDatePattern,
-					$this->formatInfo->ShortTimePattern);
+					$this->formatInfo->ShortTimePattern
+				);
 				break;
 			case 'F':
 				return $this->formatInfo->formatDateTime(
 					$this->formatInfo->LongDatePattern,
-					$this->formatInfo->LongTimePattern);
+					$this->formatInfo->LongTimePattern
+				);
 				break;
 			case 'g':
 				return $this->formatInfo->formatDateTime(
 					$this->formatInfo->ShortDatePattern,
-					$this->formatInfo->ShortTimePattern);
+					$this->formatInfo->ShortTimePattern
+				);
 				break;
 			case 'G':
 				return $this->formatInfo->formatDateTime(
 					$this->formatInfo->ShortDatePattern,
-					$this->formatInfo->LongTimePattern);
+					$this->formatInfo->LongTimePattern
+				);
 				break;
 			case 'M':
 			case 'm':
@@ -260,7 +259,7 @@ class DateFormat
 			case 'y':
 				return 'yyyy MMMM';
 				break;
-			default :
+			default:
 				return $pattern;
 		}
 	}
@@ -282,27 +281,23 @@ class DateFormat
 		$text = false;
 		$pattern = preg_replace("/''/", '``````', $pattern);
 
-		for($i = 0; $i < strlen($pattern); $i++)
-		{
-			if($char == null || $pattern{$i} == $char || $text)
-			{
+		for ($i = 0; $i < strlen($pattern); $i++) {
+			if ($char == null || $pattern{$i} == $char || $text) {
 				$token .= $pattern{$i};
-			}
-			else
-			{
+			} else {
 				$tokens[] = str_replace("", "'", $token);
 				$token = $pattern{$i};
 			}
 
-			if($pattern{$i} == "'" && $text == false)
+			if ($pattern{$i} == "'" && $text == false) {
 				$text = true;
-			elseif($text && $pattern{$i} == "'" && $char == "'")
+			} elseif ($text && $pattern{$i} == "'" && $char == "'") {
 				$text = true;
-			elseif($text && $char != "'" && $pattern{$i} == "'")
+			} elseif ($text && $char != "'" && $pattern{$i} == "'") {
 				$text = false;
+			}
 
 			$char = $pattern{$i};
-
 		}
 		$tokens[] = $token;
 		return $tokens;
@@ -318,8 +313,7 @@ class DateFormat
 	 */
 	protected function getYear($date, $pattern = 'yyyy')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'yy':
 				return $date->format('y');
 			case 'yyyy':
@@ -341,8 +335,7 @@ class DateFormat
 	 */
 	protected function getMonth($date, $pattern = 'M')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'M':
 				return $date->format('n');
 			case 'MM':
@@ -369,8 +362,7 @@ class DateFormat
 	protected function getDayInWeek($date, $pattern = 'EEEE')
 	{
 		$day = $date->format('w');
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'E':
 				return $day;
 			case 'EE':
@@ -393,8 +385,7 @@ class DateFormat
 	 */
 	protected function getDay($date, $pattern = 'd')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'd':
 				return $date->format('j');
 			case 'dd':
@@ -414,14 +405,16 @@ class DateFormat
 	 */
 	protected function getEra($date, $pattern = 'G')
 	{
-		if($pattern != 'G')
+		if ($pattern != 'G') {
 			throw new Exception('The pattern for era is "G".');
+		}
 
 		$year = $date->format('Y');
-		if($year > 0)
+		if ($year > 0) {
 			return $this->formatInfo->getEra(1);
-		else
+		} else {
 			return $this->formatInfo->getEra(0);
+		}
 	}
 
 	/**
@@ -433,8 +426,7 @@ class DateFormat
 	 */
 	protected function getHour24($date, $pattern = 'H')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'H':
 				return $date->format('G');
 			case 'HH':
@@ -452,8 +444,9 @@ class DateFormat
 	 */
 	protected function getAMPM($date, $pattern = 'a')
 	{
-		if($pattern != 'a')
+		if ($pattern != 'a') {
 			throw new Exception('The pattern for AM/PM marker is "a".');
+		}
 
 		$hour = $date->format('G');
 		$ampm = (int)($hour / 12);
@@ -469,8 +462,7 @@ class DateFormat
 	 */
 	protected function getHour12($date, $pattern = 'h')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'h':
 				return $date->format('g');
 			case 'hh':
@@ -489,8 +481,7 @@ class DateFormat
 	 */
 	protected function getMinutes($date, $pattern = 'm')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'm':
 				return (int) $date->format('i');
 			case 'mm':
@@ -509,8 +500,7 @@ class DateFormat
 	 */
 	protected function getSeconds($date, $pattern = 's')
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 's':
 				return (int) $date->format('s');
 			case 'ss':
@@ -529,8 +519,9 @@ class DateFormat
 	 */
 	protected function getTimeZone($date, $pattern = 'z')
 	{
-		if($pattern != 'z')
+		if ($pattern != 'z') {
 			throw new Exception('The pattern for time zone is "z".');
+		}
 
 		return $date->format('T');
 	}
@@ -543,8 +534,9 @@ class DateFormat
 	 */
 	protected function getDayInYear($date, $pattern = 'D')
 	{
-		if($pattern != 'D')
+		if ($pattern != 'D') {
 			throw new Exception('The pattern for day in year is "D".');
+		}
 
 		return $date->format('z');
 	}
@@ -575,8 +567,9 @@ class DateFormat
 	 */
 	protected function getWeekInYear($date, $pattern = 'w')
 	{
-		if($pattern != 'w')
+		if ($pattern != 'w') {
 			throw new Exception('The pattern for week in year is "w".');
+		}
 
 		return $date->format('W');
 	}
@@ -588,8 +581,9 @@ class DateFormat
 	 */
 	protected function getWeekInMonth($date, $pattern = 'W')
 	{
-		if($pattern != 'W')
+		if ($pattern != 'W') {
 			throw new Exception('The pattern for week in month is "W".');
+		}
 
 		$firstInMonth = clone($date);
 		$firstInMonth->setDate($firstInMonth->format('Y'), $firstInMonth->format('m'), 1);
@@ -604,8 +598,9 @@ class DateFormat
 	 */
 	protected function getHourInDay($date, $pattern = 'k')
 	{
-		if($pattern != 'k')
+		if ($pattern != 'k') {
 			throw new Exception('The pattern for hour in day is "k".');
+		}
 
 		return $date->format('G') + 1;
 	}
@@ -618,8 +613,9 @@ class DateFormat
 	 */
 	protected function getHourInAMPM($date, $pattern = 'K')
 	{
-		if($pattern != 'K')
+		if ($pattern != 'K') {
 			throw new Exception('The pattern for hour in AM/PM is "K".');
+		}
 
 		return $date->format('g') + 1;
 	}

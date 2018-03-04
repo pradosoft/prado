@@ -89,7 +89,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * TActiveControlAdapter. If you override this class, be sure to set the
 	 * adapter appropriately by, for example, by calling this constructor.
 	 */
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
@@ -114,15 +115,15 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 */
 	public function onFileUpload($param)
 	{
-		if ($this->_flag->getValue() && $this->getPage()->getIsPostBack() && $param == $this->_target->getUniqueID()){
-		  $params = new TActiveFileUploadCallbackParams;
-		  // save the files so that they will persist past the end of this return.
-		  foreach ($this->getFiles() as $file) {
-			  $localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
-			  $file->saveAs($localName);
-			  $file->setLocalName($localName);
-			  $params->files[] = $file->toArray();
-		  }
+		if ($this->_flag->getValue() && $this->getPage()->getIsPostBack() && $param == $this->_target->getUniqueID()) {
+			$params = new TActiveFileUploadCallbackParams;
+			// save the files so that they will persist past the end of this return.
+			foreach ($this->getFiles() as $file) {
+				$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
+				$file->saveAs($localName);
+				$file->setLocalName($localName);
+				$params->files[] = $file->toArray();
+			}
 
 			// return some javascript to display a completion status.
 			echo "<script language='Javascript'>
@@ -146,7 +147,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @return string the path where the uploaded file will be stored temporarily, in namespace format
 	 * default "Application.runtime.*"
 	 */
-	public function getTempPath(){
+	public function getTempPath()
+	{
 		return $this->getViewState('TempPath', 'Application.runtime.*');
 	}
 
@@ -154,7 +156,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @param string $value the path where the uploaded file will be stored temporarily in namespace format
 	 * default "Application.runtime.*"
 	 */
-	public function setTempPath($value){
+	public function setTempPath($value)
+	{
 		$this->setViewState('TempPath', $value, 'Application.runtime.*');
 	}
 
@@ -162,7 +165,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @return boolean a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
-	public function getAutoPostBack(){
+	public function getAutoPostBack()
+	{
 		return $this->getViewState('AutoPostBack', true);
 	}
 
@@ -170,28 +174,33 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @param boolean $value a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
-	public function setAutoPostBack($value){
+	public function setAutoPostBack($value)
+	{
 		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
 	 * @return string A chuck of javascript that will need to be called if {{@link getAutoPostBack AutoPostBack} is set to false}
 	 */
-	public function getCallbackJavascript(){
+	public function getCallbackJavascript()
+	{
 		return "Prado.WebUI.TActiveFileUpload.fileChanged(\"{$this->getClientID()}\")";
 	}
 
 	/**
 	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
 	 */
-	public function onInit($sender){
+	public function onInit($sender)
+	{
 		parent::onInit($sender);
 
-		if (!Prado::getApplication()->getCache())
-		  if (!Prado::getApplication()->getSecurityManager())
-			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+		if (!Prado::getApplication()->getCache()) {
+			if (!Prado::getApplication()->getSecurityManager()) {
+				throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+			}
+		}
 
-		if (!is_writable(Prado::getPathOfNamespace($this->getTempPath()))){
+		if (!is_writable(Prado::getPathOfNamespace($this->getTempPath()))) {
 			throw new TInvalidDataValueException("activefileupload_temppath_invalid", $this->getTempPath());
 		}
 	}
@@ -203,19 +212,18 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
-	public function raiseCallbackEvent($param){
+	public function raiseCallbackEvent($param)
+	{
 		$cp = $param->getCallbackParameter();
-		if ($key = $cp->targetID == $this->_target->getUniqueID()){
-
+		if ($key = $cp->targetID == $this->_target->getUniqueID()) {
 			$params = $this->popParamsByToken($cp->callbackToken);
-	  foreach($params->files as $index => $file)
-	  {
-			$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
-			$_FILES[$key]['size'][$index] = intval($file['fileSize']);
-			$_FILES[$key]['type'][$index] = $file['fileType'];
-			$_FILES[$key]['error'][$index] = intval($file['errorCode']);
-			$_FILES[$key]['tmp_name'][$index] = $file['localName'];
-	  }
+			foreach ($params->files as $index => $file) {
+				$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
+				$_FILES[$key]['size'][$index] = intval($file['fileSize']);
+				$_FILES[$key]['type'][$index] = $file['fileType'];
+				$_FILES[$key]['error'][$index] = intval($file['errorCode']);
+				$_FILES[$key]['tmp_name'][$index] = $file['localName'];
+			}
 			$this->loadPostData($key, null);
 
 			$this->raiseEvent('OnFileUpload', $this, $param);
@@ -234,39 +242,33 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	protected function pushParamsAndGetToken(TActiveFileUploadCallbackParams $params)
 	{
-		if ($cache = Prado::getApplication()->getCache())
-			{
-				// this is the most secure method, file info can't be forged from client side, no matter what
-				$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000 * 1000, 9999 * 1000));
-				$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
-			}
-		elseif ($mgr = Prado::getApplication()->getSecurityManager())
-			{
-				// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
-				$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
-			}
-		else
+		if ($cache = Prado::getApplication()->getCache()) {
+			// this is the most secure method, file info can't be forged from client side, no matter what
+			$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000 * 1000, 9999 * 1000));
+			$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
+		} elseif ($mgr = Prado::getApplication()->getSecurityManager()) {
+			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
+			$token = urlencode(base64_encode($mgr->encrypt(serialize($params))));
+		} else {
 			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+		}
 
 		return $token;
 	}
 
 	protected function popParamsByToken($token)
 	{
-		if ($cache = Prado::getApplication()->getCache())
-			{
-				$v = $cache->get($token);
-				assert($v != '');
-				$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
-				$params = unserialize($v);
-			}
-		elseif ($mgr = Prado::getApplication()->getSecurityManager())
-			{
-				$v = $mgr->decrypt(base64_decode(urldecode($token)));
-				$params = unserialize($v);
-			}
-		else
+		if ($cache = Prado::getApplication()->getCache()) {
+			$v = $cache->get($token);
+			assert($v != '');
+			$cache->delete($token); // remove it from cache so it can't be used again and won't take up space either
+			$params = unserialize($v);
+		} elseif ($mgr = Prado::getApplication()->getSecurityManager()) {
+			$v = $mgr->decrypt(base64_decode(urldecode($token)));
+			$params = unserialize($v);
+		} else {
 			throw new Exception('TActiveFileUpload needs either an application level cache or a security manager to work securely');
+		}
 
 		assert($params instanceof TActiveFileUploadCallbackParams);
 
@@ -280,16 +282,15 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		parent::onPreRender($param);
 
-		if(!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID())
-		{
-		  $params = new TActiveFileUploadCallbackParams;
-		  foreach ($this->getFiles() as $file) {
-			$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
-			$file->setLocalName($localName);
-			// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
-			$file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
-			$params->files[] = $file->toArray();
-		  }
+		if (!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID()) {
+			$params = new TActiveFileUploadCallbackParams;
+			foreach ($this->getFiles() as $file) {
+				$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
+				$file->setLocalName($localName);
+				// tricky workaround to intercept "uploaded file too big" error: real uploads happens in onFileUpload instead
+				$file->setErrorCode(UPLOAD_ERR_FORM_SIZE);
+				$params->files[] = $file->toArray();
+			}
 
 			echo "<script language='Javascript'>
           	 Options = new Object();
@@ -343,13 +344,14 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * Removes localfile on ending of the callback.
 	 */
-	public function onUnload($param){
-		if ($this->getPage()->getIsCallback())
-		{
-		  foreach($this->getFiles() as $file)
-			if($file->getHasFile() && file_exists($file->getLocalName())){
-			  unlink($file->getLocalName());
-		  }
+	public function onUnload($param)
+	{
+		if ($this->getPage()->getIsCallback()) {
+			foreach ($this->getFiles() as $file) {
+				if ($file->getHasFile() && file_exists($file->getLocalName())) {
+					unlink($file->getLocalName());
+				}
+			}
 		}
 		parent::onUnload($param);
 	}
@@ -357,7 +359,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
-	public function getActiveControl(){
+	public function getActiveControl()
+	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
@@ -373,7 +376,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * Adds ID attribute, and renders the javascript for active component.
 	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
-	public function addAttributesToRender($writer){
+	public function addAttributesToRender($writer)
+	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 
@@ -383,7 +387,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * @return string corresponding javascript class name for this control.
 	 */
-	protected function getClientClassName(){
+	protected function getClientClassName()
+	{
 		return 'Prado.WebUI.TActiveFileUpload';
 	}
 
@@ -397,7 +402,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * 					completeID => complete client ID,
 	 * 					errorID => error client ID)
 	 */
-	protected function getClientOptions(){
+	protected function getClientOptions()
+	{
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 
@@ -419,21 +425,25 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * If true, you will not be able to save the uploaded file again.
 	 * @return boolean true if the file saving is successful
 	 */
-	public function saveAs($fileName, $deleteTempFile = true, $index = 0){
-		if (($this->getErrorCode($index) === UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))){
-			if ($deleteTempFile)
+	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
+	{
+		if (($this->getErrorCode($index) === UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))) {
+			if ($deleteTempFile) {
 				return rename($this->getLocalName($index), $fileName);
-			else
+			} else {
 				return copy($this->getLocalName($index), $fileName);
-		} else
+			}
+		} else {
 			return false;
+		}
 	}
 
 	/**
 	 * @return TImage the image displayed when an upload
 	 * 		completes successfully.
 	 */
-	public function getSuccessImage(){
+	public function getSuccessImage()
+	{
 		$this->ensureChildControls();
 		return $this->_success;
 	}
@@ -442,7 +452,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @return TImage the image displayed when an upload
 	 * 		does not complete successfully.
 	 */
-	public function getErrorImage(){
+	public function getErrorImage()
+	{
 		$this->ensureChildControls();
 		return $this->_error;
 	}
@@ -451,7 +462,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @return TImage the image displayed when an upload
 	 * 		is in progress.
 	 */
-	public function getBusyImage(){
+	public function getBusyImage()
+	{
 		$this->ensureChildControls();
 		return $this->_busy;
 	}

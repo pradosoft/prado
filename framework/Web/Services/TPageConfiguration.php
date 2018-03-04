@@ -114,14 +114,14 @@ class TPageConfiguration extends \Prado\TComponent
 		$fileName = Prado::getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP
 			? TPageService::CONFIG_FILE_PHP
 			: TPageService::CONFIG_FILE_XML;
-		foreach($paths as $p)
-		{
+		foreach ($paths as $p) {
 			$this->loadFromFile($path . DIRECTORY_SEPARATOR . $fileName, $configPagePath);
 			$path .= DIRECTORY_SEPARATOR . $p;
-			if($configPagePath === '')
+			if ($configPagePath === '') {
 				$configPagePath = $p;
-			else
+			} else {
 				$configPagePath .= '.' . $p;
+			}
 		}
 		$this->loadFromFile($path . DIRECTORY_SEPARATOR . $fileName, $configPagePath);
 		$this->_rules = new TAuthorizationRuleCollection($this->_rules);
@@ -135,21 +135,20 @@ class TPageConfiguration extends \Prado\TComponent
 	public function loadFromFile($fname, $configPagePath)
 	{
 		Prado::trace("Loading page configuration file $fname", 'System.Web.Services.TPageService');
-		if(empty($fname) || !is_file($fname))
+		if (empty($fname) || !is_file($fname)) {
 			return;
+		}
 
-		if(Prado::getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP)
-		{
+		if (Prado::getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			$fcontent = include $fname;
 			$this->loadFromPhp($fcontent, dirname($fname), $configPagePath);
-		}
-		else
-		{
+		} else {
 			$dom = new TXmlDocument;
-			if($dom->loadFromFile($fname))
+			if ($dom->loadFromFile($fname)) {
 				$this->loadFromXml($dom, dirname($fname), $configPagePath);
-			else
+			} else {
 				throw new TConfigurationException('pageserviceconf_file_invalid', $fname);
+			}
 		}
 	}
 
@@ -195,33 +194,26 @@ class TPageConfiguration extends \Prado\TComponent
 	public function loadPageConfigurationFromPhp($config, $configPath, $configPagePath)
 	{
 		// authorization
-		if(isset($config['authorization']) && is_array($config['authorization']))
-		{
+		if (isset($config['authorization']) && is_array($config['authorization'])) {
 			$rules = [];
-			foreach($config['authorization'] as $authorization)
-			{
+			foreach ($config['authorization'] as $authorization) {
 				$patterns = isset($authorization['pages']) ? $authorization['pages'] : '';
 				$ruleApplies = false;
-				if(empty($patterns) || trim($patterns) === '*') // null or empty string
+				if (empty($patterns) || trim($patterns) === '*') { // null or empty string
 					$ruleApplies = true;
-				else
-				{
-					foreach(explode(',', $patterns) as $pattern)
-					{
-						if(($pattern = trim($pattern)) !== '')
-						{
+				} else {
+					foreach (explode(',', $patterns) as $pattern) {
+						if (($pattern = trim($pattern)) !== '') {
 							// we know $configPagePath and $this->_pagePath
-							if($configPagePath !== '')  // prepend the pattern with ConfigPagePath
+							if ($configPagePath !== '') {  // prepend the pattern with ConfigPagePath
 								$pattern = $configPagePath . '.' . $pattern;
-							if(strcasecmp($pattern, $this->_pagePath) === 0)
-							{
+							}
+							if (strcasecmp($pattern, $this->_pagePath) === 0) {
 								$ruleApplies = true;
 								break;
 							}
-							if($pattern[strlen($pattern) - 1] === '*') // try wildcard matching
-							{
-								if(strncasecmp($this->_pagePath, $pattern, strlen($pattern) - 1) === 0)
-								{
+							if ($pattern[strlen($pattern) - 1] === '*') { // try wildcard matching
+								if (strncasecmp($this->_pagePath, $pattern, strlen($pattern) - 1) === 0) {
 									$ruleApplies = true;
 									break;
 								}
@@ -229,8 +221,7 @@ class TPageConfiguration extends \Prado\TComponent
 						}
 					}
 				}
-				if($ruleApplies)
-				{
+				if ($ruleApplies) {
 					$action = isset($authorization['action']) ? $authorization['action'] : '';
 					$users = isset($authorization['users']) ? $authorization['users'] : '';
 					$roles = isset($authorization['roles']) ? $authorization['roles'] : '';
@@ -242,45 +233,43 @@ class TPageConfiguration extends \Prado\TComponent
 			$this->_rules = array_merge($rules, $this->_rules);
 		}
 		// pages
-		if(isset($config['pages']) && is_array($config['pages']))
-		{
-			if(isset($config['pages']['properties']))
-			{
+		if (isset($config['pages']) && is_array($config['pages'])) {
+			if (isset($config['pages']['properties'])) {
 				$this->_properties = array_merge($this->_properties, $config['pages']['properties']);
 				unset($config['pages']['properties']);
 			}
-			foreach($config['pages'] as $id => $page)
-			{
+			foreach ($config['pages'] as $id => $page) {
 				$properties = [];
-				if(isset($page['properties']))
-				{
+				if (isset($page['properties'])) {
 					$properties = $page['properties'];
 					unset($page['properties']);
 				}
 				$matching = false;
 				$id = ($configPagePath === '') ? $id : $configPagePath . '.' . $id;
-				if(strcasecmp($id, $this->_pagePath) === 0)
+				if (strcasecmp($id, $this->_pagePath) === 0) {
 					$matching = true;
-				elseif($id[strlen($id) - 1] === '*') // try wildcard matching
+				} elseif ($id[strlen($id) - 1] === '*') { // try wildcard matching
 					$matching = strncasecmp($this->_pagePath, $id, strlen($id) - 1) === 0;
-				if($matching)
+				}
+				if ($matching) {
 					$this->_properties = array_merge($this->_properties, $properties);
+				}
 			}
 		}
 
 		// external configurations
-		if(isset($config['includes']) && is_array($config['includes']))
-		{
-			foreach($config['includes'] as $include)
-			{
+		if (isset($config['includes']) && is_array($config['includes'])) {
+			foreach ($config['includes'] as $include) {
 				$when = isset($include['when']) ? true : false;
-				if(!isset($include['file']))
+				if (!isset($include['file'])) {
 					throw new TConfigurationException('pageserviceconf_includefile_required');
+				}
 				$filePath = $include['file'];
-				if(isset($this->_includes[$filePath]))
+				if (isset($this->_includes[$filePath])) {
 					$this->_includes[$filePath] = [$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
-				else
+				} else {
 					$this->_includes[$filePath] = [$configPagePath,$when];
+				}
 			}
 		}
 	}
@@ -294,33 +283,26 @@ class TPageConfiguration extends \Prado\TComponent
 	public function loadPageConfigurationFromXml($dom, $configPath, $configPagePath)
 	{
 		// authorization
-		if(($authorizationNode = $dom->getElementByTagName('authorization')) !== null)
-		{
+		if (($authorizationNode = $dom->getElementByTagName('authorization')) !== null) {
 			$rules = [];
-			foreach($authorizationNode->getElements() as $node)
-			{
+			foreach ($authorizationNode->getElements() as $node) {
 				$patterns = $node->getAttribute('pages');
 				$ruleApplies = false;
-				if(empty($patterns) || trim($patterns) === '*') // null or empty string
+				if (empty($patterns) || trim($patterns) === '*') { // null or empty string
 					$ruleApplies = true;
-				else
-				{
-					foreach(explode(',', $patterns) as $pattern)
-					{
-						if(($pattern = trim($pattern)) !== '')
-						{
+				} else {
+					foreach (explode(',', $patterns) as $pattern) {
+						if (($pattern = trim($pattern)) !== '') {
 							// we know $configPagePath and $this->_pagePath
-							if($configPagePath !== '')  // prepend the pattern with ConfigPagePath
+							if ($configPagePath !== '') {  // prepend the pattern with ConfigPagePath
 								$pattern = $configPagePath . '.' . $pattern;
-							if(strcasecmp($pattern, $this->_pagePath) === 0)
-							{
+							}
+							if (strcasecmp($pattern, $this->_pagePath) === 0) {
 								$ruleApplies = true;
 								break;
 							}
-							if($pattern[strlen($pattern) - 1] === '*') // try wildcard matching
-							{
-								if(strncasecmp($this->_pagePath, $pattern, strlen($pattern) - 1) === 0)
-								{
+							if ($pattern[strlen($pattern) - 1] === '*') { // try wildcard matching
+								if (strncasecmp($this->_pagePath, $pattern, strlen($pattern) - 1) === 0) {
 									$ruleApplies = true;
 									break;
 								}
@@ -328,45 +310,49 @@ class TPageConfiguration extends \Prado\TComponent
 						}
 					}
 				}
-				if($ruleApplies)
+				if ($ruleApplies) {
 					$rules[] = new TAuthorizationRule($node->getTagName(), $node->getAttribute('users'), $node->getAttribute('roles'), $node->getAttribute('verb'), $node->getAttribute('ips'));
+				}
 			}
 			$this->_rules = array_merge($rules, $this->_rules);
 		}
 
 		// pages
-		if(($pagesNode = $dom->getElementByTagName('pages')) !== null)
-		{
+		if (($pagesNode = $dom->getElementByTagName('pages')) !== null) {
 			$this->_properties = array_merge($this->_properties, $pagesNode->getAttributes()->toArray());
 			// at the page folder
-			foreach($pagesNode->getElementsByTagName('page') as $node)
-			{
+			foreach ($pagesNode->getElementsByTagName('page') as $node) {
 				$properties = $node->getAttributes();
 				$id = $properties->remove('id');
-				if(empty($id))
+				if (empty($id)) {
 					throw new TConfigurationException('pageserviceconf_page_invalid', $configPath);
+				}
 				$matching = false;
 				$id = ($configPagePath === '') ? $id : $configPagePath . '.' . $id;
-				if(strcasecmp($id, $this->_pagePath) === 0)
+				if (strcasecmp($id, $this->_pagePath) === 0) {
 					$matching = true;
-				elseif($id[strlen($id) - 1] === '*') // try wildcard matching
+				} elseif ($id[strlen($id) - 1] === '*') { // try wildcard matching
 					$matching = strncasecmp($this->_pagePath, $id, strlen($id) - 1) === 0;
-				if($matching)
+				}
+				if ($matching) {
 					$this->_properties = array_merge($this->_properties, $properties->toArray());
+				}
 			}
 		}
 
 		// external configurations
-		foreach($dom->getElementsByTagName('include') as $node)
-		{
-			if(($when = $node->getAttribute('when')) === null)
+		foreach ($dom->getElementsByTagName('include') as $node) {
+			if (($when = $node->getAttribute('when')) === null) {
 				$when = true;
-			if(($filePath = $node->getAttribute('file')) === null)
+			}
+			if (($filePath = $node->getAttribute('file')) === null) {
 				throw new TConfigurationException('pageserviceconf_includefile_required');
-			if(isset($this->_includes[$filePath]))
+			}
+			if (isset($this->_includes[$filePath])) {
 				$this->_includes[$filePath] = [$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
-			else
+			} else {
 				$this->_includes[$filePath] = [$configPagePath,$when];
+			}
 		}
 	}
 }

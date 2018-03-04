@@ -89,17 +89,20 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		if($this->_userManager === null)
+		if ($this->_userManager === null) {
 			throw new TConfigurationException('authmanager_usermanager_required');
-		if($this->_returnUrlVarName === null)
+		}
+		if ($this->_returnUrlVarName === null) {
 			$this->_returnUrlVarName = $this->getApplication()->getID() . ':' . self::RETURN_URL_VAR;
+		}
 		$application = $this->getApplication();
-		if(is_string($this->_userManager))
-		{
-			if(($users = $application->getModule($this->_userManager)) === null)
+		if (is_string($this->_userManager)) {
+			if (($users = $application->getModule($this->_userManager)) === null) {
 				throw new TConfigurationException('authmanager_usermanager_inexistent', $this->_userManager);
-			if(!($users instanceof IUserManager))
+			}
+			if (!($users instanceof IUserManager)) {
 				throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
+			}
 			$this->_userManager = $users;
 		}
 		$application->attachEventHandler('OnAuthentication', [$this,'doAuthentication']);
@@ -122,10 +125,12 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function setUserManager($provider)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('authmanager_usermanager_unchangeable');
-		if(!is_string($provider) && !($provider instanceof IUserManager))
+		}
+		if (!is_string($provider) && !($provider instanceof IUserManager)) {
 			throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
+		}
 		$this->_userManager = $provider;
 	}
 
@@ -160,8 +165,9 @@ class TAuthManager extends \Prado\TModule
 		$this->onAuthenticate($param);
 
 		$service = $this->getService();
-		if(($service instanceof TPageService) && $service->getRequestedPagePath() === $this->getLoginPage())
+		if (($service instanceof TPageService) && $service->getRequestedPagePath() === $this->getLoginPage()) {
 			$this->_skipAuthorization = true;
+		}
 	}
 
 	/**
@@ -173,8 +179,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function doAuthorization($sender, $param)
 	{
-		if(!$this->_skipAuthorization)
-		{
+		if (!$this->_skipAuthorization) {
 			$this->onAuthorize($param);
 		}
 	}
@@ -189,11 +194,9 @@ class TAuthManager extends \Prado\TModule
 	public function leave($sender, $param)
 	{
 		$application = $this->getApplication();
-		if($application->getResponse()->getStatusCode() === 401)
-		{
+		if ($application->getResponse()->getStatusCode() === 401) {
 			$service = $application->getService();
-			if($service instanceof TPageService)
-			{
+			if ($service instanceof TPageService) {
 				$returnUrl = $application->getRequest()->getRequestUri();
 				$this->setReturnUrl($returnUrl);
 				$url = $service->constructUrl($this->getLoginPage());
@@ -284,8 +287,9 @@ class TAuthManager extends \Prado\TModule
 		$application = $this->getApplication();
 
 		// restoring user info from session
-		if(($session = $application->getSession()) === null)
+		if (($session = $application->getSession()) === null) {
 			throw new TConfigurationException('authmanager_session_required');
+		}
 		$session->open();
 		$sessionInfo = $session->itemAt($this->getUserKey());
 		$user = $this->_userManager->getUser(null)->loadFromString($sessionInfo);
@@ -295,13 +299,10 @@ class TAuthManager extends \Prado\TModule
 		($expiretime = $session->itemAt('AuthExpireTime')) && $expiretime < time();
 
 		// try authenticating through cookie if possible
-		if($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired))
-		{
+		if ($this->getAllowAutoLogin() && ($user->getIsGuest() || $isAuthExpired)) {
 			$cookie = $this->getRequest()->getCookies()->itemAt($this->getUserKey());
-			if($cookie instanceof THttpCookie)
-			{
-				if(($user2 = $this->_userManager->getUserFromCookie($cookie)) !== null)
-				{
+			if ($cookie instanceof THttpCookie) {
+				if (($user2 = $this->_userManager->getUserFromCookie($cookie)) !== null) {
 					$user = $user2;
 					$this->updateSessionUser($user);
 					// user is restored from cookie, auth may not expire
@@ -313,14 +314,16 @@ class TAuthManager extends \Prado\TModule
 		$application->setUser($user);
 
 		// handle authentication expiration or update expiration time
-		if($isAuthExpired)
+		if ($isAuthExpired) {
 			$this->onAuthExpire($param);
-		else
+		} else {
 			$session->add('AuthExpireTime', time() + $this->_authExpire);
+		}
 
 		// event handler gets a chance to do further auth work
-		if($this->hasEventHandler('OnAuthenticate'))
+		if ($this->hasEventHandler('OnAuthenticate')) {
 			$this->raiseEvent('OnAuthenticate', $this, $application);
+		}
 	}
 
 	/**
@@ -331,8 +334,9 @@ class TAuthManager extends \Prado\TModule
 	public function onAuthExpire($param)
 	{
 		$this->logout();
-		if($this->hasEventHandler('OnAuthExpire'))
+		if ($this->hasEventHandler('OnAuthExpire')) {
 			$this->raiseEvent('OnAuthExpire', $this, $param);
+		}
 	}
 
 	/**
@@ -345,10 +349,10 @@ class TAuthManager extends \Prado\TModule
 	public function onAuthorize($param)
 	{
 		$application = $this->getApplication();
-		if($this->hasEventHandler('OnAuthorize'))
+		if ($this->hasEventHandler('OnAuthorize')) {
 			$this->raiseEvent('OnAuthorize', $this, $application);
-		if(!$application->getAuthorizationRules()->isUserAllowed($application->getUser(), $application->getRequest()->getRequestType(), $application->getRequest()->getUserHostAddress()))
-		{
+		}
+		if (!$application->getAuthorizationRules()->isUserAllowed($application->getUser(), $application->getRequest()->getRequestType(), $application->getRequest()->getUserHostAddress())) {
 			$application->getResponse()->setStatusCode(401);
 			$application->completeRequest();
 		}
@@ -360,8 +364,9 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function getUserKey()
 	{
-		if($this->_userKey === null)
+		if ($this->_userKey === null) {
 			$this->_userKey = $this->generateUserKey();
+		}
 		return $this->_userKey;
 	}
 
@@ -381,12 +386,12 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function updateSessionUser($user)
 	{
-		if(!$user->getIsGuest())
-		{
-			if(($session = $this->getSession()) === null)
+		if (!$user->getIsGuest()) {
+			if (($session = $this->getSession()) === null) {
 				throw new TConfigurationException('authmanager_session_required');
-			else
+			} else {
 				$session->add($this->getUserKey(), $user->saveToString());
+			}
 		}
 	}
 
@@ -398,8 +403,9 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function switchUser($username)
 	{
-		if(($user = $this->_userManager->getUser($username)) === null)
+		if (($user = $this->_userManager->getUser($username)) === null) {
 			return false;
+		}
 		$this->updateSessionUser($user);
 		$this->getApplication()->setUser($user);
 		return true;
@@ -416,24 +422,23 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function login($username, $password, $expire = 0)
 	{
-		if($this->_userManager->validateUser($username, $password))
-		{
-			if(($user = $this->_userManager->getUser($username)) === null)
+		if ($this->_userManager->validateUser($username, $password)) {
+			if (($user = $this->_userManager->getUser($username)) === null) {
 				return false;
+			}
 			$this->updateSessionUser($user);
 			$this->getApplication()->setUser($user);
 
-			if($expire > 0)
-			{
+			if ($expire > 0) {
 				$cookie = new THttpCookie($this->getUserKey(), '');
 				$cookie->setExpire(time() + $expire);
 				$this->_userManager->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
 			}
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -443,15 +448,14 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function logout()
 	{
-		if(($session = $this->getSession()) === null)
+		if (($session = $this->getSession()) === null) {
 			throw new TConfigurationException('authmanager_session_required');
+		}
 		$this->getApplication()->getUser()->setIsGuest(true);
 		$session->destroy();
-		if($this->getAllowAutoLogin())
-		{
+		if ($this->getAllowAutoLogin()) {
 			$cookie = new THttpCookie($this->getUserKey(), '');
 			$this->getResponse()->getCookies()->add($cookie);
 		}
 	}
 }
-

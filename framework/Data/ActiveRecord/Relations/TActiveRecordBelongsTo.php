@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
-
 /**
  * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between
  * the source objects and the related foreign object. Consider the
@@ -107,14 +106,14 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		if(isset($collections[$hash]) && count($collections[$hash]) > 0)
-		{
-			if(count($collections[$hash]) > 1)
+		if (isset($collections[$hash]) && count($collections[$hash]) > 0) {
+			if (count($collections[$hash]) > 1) {
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
+			}
 			$source->$prop = $collections[$hash][0];
-		}
-		else
+		} else {
 			$source->$prop = null;
+		}
 	}
 
 	/**
@@ -125,16 +124,15 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObject = $obj->getColumnValue($this->getContext()->getProperty());
-		if($fkObject !== null)
-		{
+		if ($fkObject !== null) {
 			$fkObject->save();
 			$source = $this->getSourceRecord();
 			$fkeys = $this->findForeignKeys($source, $fkObject);
-			foreach($fkeys as $srcKey => $fKey)
+			foreach ($fkeys as $srcKey => $fKey) {
 				$source->setColumnValue($srcKey, $fkObject->getColumnValue($fKey));
+			}
 			return true;
 		}
 		return false;
 	}
 }
-

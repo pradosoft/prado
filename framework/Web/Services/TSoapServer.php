@@ -62,8 +62,9 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function setID($id)
 	{
-		if(strrpos($this->_id, '.wsdl') === strlen($this->_id) - 5)
+		if (strrpos($this->_id, '.wsdl') === strlen($this->_id) - 5) {
 			throw new TInvalidDataValueException('soapserver_id_invalid', $id);
+		}
 		$this->_id = $id;
 	}
 
@@ -72,28 +73,26 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function run()
 	{
-		if(($provider = $this->getProvider()) !== null)
-		{
+		if (($provider = $this->getProvider()) !== null) {
 			Prado::using($provider);
 			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
 			$this->guessMethodCallRequested($providerClass);
 			$server = $this->createServer();
 			$server->setClass($providerClass, $this);
-			if($this->_persistent)
+			if ($this->_persistent) {
 				$server->setPersistence(SOAP_PERSISTENCE_SESSION);
-		}
-		else
+			}
+		} else {
 			$server = $this->createServer();
-		try
-		{
-			$server->handle();
 		}
-		catch (\Exception $e)
-		{
-			if($this->getApplication()->getMode() === TApplicationMode::Debug)
+		try {
+			$server->handle();
+		} catch (\Exception $e) {
+			if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 				$this->fault($e->getMessage(), $e->__toString());
-			else
+			} else {
 				$this->fault($e->getMessage());
+			}
 		}
 	}
 
@@ -121,10 +120,8 @@ class TSoapServer extends \Prado\TApplicationComponent
 		$namespace = $class . 'wsdl';
 		$message = file_get_contents("php://input");
 		$matches = [];
-		if(preg_match('/xmlns:([^=]+)="urn:' . $namespace . '"/', $message, $matches))
-		{
-			if(preg_match('/<' . $matches[1] . ':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method))
-			{
+		if (preg_match('/xmlns:([^=]+)="urn:' . $namespace . '"/', $message, $matches)) {
+			if (preg_match('/<' . $matches[1] . ':([a-zA-Z_]+[a-zA-Z0-9_]+)/', $message, $method)) {
 				$this->_requestedMethod = $method[1];
 			}
 		}
@@ -145,10 +142,10 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	protected function createServer()
 	{
-		if($this->_server === null)
-		{
-			if($this->getApplication()->getMode() === TApplicationMode::Debug)
+		if ($this->_server === null) {
+			if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 				ini_set("soap.wsdl_cache_enabled", 0);
+			}
 			$this->_server = new \SoapServer($this->getWsdlUri(), $this->getOptions());
 		}
 		return $this->_server;
@@ -160,20 +157,24 @@ class TSoapServer extends \Prado\TApplicationComponent
 	protected function getOptions()
 	{
 		$options = [];
-		if($this->_version === '1.1')
+		if ($this->_version === '1.1') {
 			$options['soap_version'] = SOAP_1_1;
-		elseif($this->_version === '1.2')
+		} elseif ($this->_version === '1.2') {
 			$options['soap_version'] = SOAP_1_2;
-		if(!empty($this->_actor))
+		}
+		if (!empty($this->_actor)) {
 			$options['actor'] = $this->_actor;
-		if(!empty($this->_encoding))
+		}
+		if (!empty($this->_encoding)) {
 			$options['encoding'] = $this->_encoding;
-		if(!empty($this->_uri))
+		}
+		if (!empty($this->_uri)) {
 			$options['uri'] = $this->_uri;
-		if(is_string($this->_classMap))
-		{
-			foreach(preg_split('/\s*,\s*/', $this->_classMap) as $className)
-				$options['classmap'][$className] = $className; //complex type uses the class name in the wsdl
+		}
+		if (is_string($this->_classMap)) {
+			foreach (preg_split('/\s*,\s*/', $this->_classMap) as $className) {
+				$options['classmap'][$className] = $className;
+			} //complex type uses the class name in the wsdl
 		}
 		return $options;
 	}
@@ -187,27 +188,24 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function getWsdl()
 	{
-		if($this->_wsdlUri === '')
-		{
+		if ($this->_wsdlUri === '') {
 			$provider = $this->getProvider();
 			$providerClass = ($pos = strrpos($provider, '.')) !== false ? substr($provider, $pos + 1) : $provider;
 			Prado::using($provider);
-			if($this->getApplication()->getMode() === TApplicationMode::Performance && ($cache = $this->getApplication()->getCache()) !== null)
-			{
+			if ($this->getApplication()->getMode() === TApplicationMode::Performance && ($cache = $this->getApplication()->getCache()) !== null) {
 				$wsdl = $cache->get(self::WSDL_CACHE_PREFIX . $providerClass);
-				if(is_string($wsdl))
+				if (is_string($wsdl)) {
 					return $wsdl;
+				}
 				$wsdl = WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 				$cache->set(self::WSDL_CACHE_PREFIX . $providerClass, $wsdl);
 				return $wsdl;
-			}
-			else
-			{
+			} else {
 				return WsdlGenerator::generate($providerClass, $this->getUri(), $this->getEncoding());
 			}
-		}
-		else
+		} else {
 			return file_get_contents($this->_wsdlUri);
+		}
 	}
 
 	/**
@@ -215,10 +213,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function getWsdlUri()
 	{
-		if($this->_wsdlUri === '')
+		if ($this->_wsdlUri === '') {
 			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID() . '.wsdl', false);
-		else
+		} else {
 			return $this->_wsdlUri;
+		}
 	}
 
 	/**
@@ -234,10 +233,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function getUri()
 	{
-		if($this->_uri === '')
+		if ($this->_uri === '') {
 			return $this->getRequest()->getBaseUrl() . $this->getService()->constructUrl($this->getID(), false);
-		else
+		} else {
 			return $this->_uri;
+		}
 	}
 
 	/**
@@ -278,10 +278,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function setVersion($value)
 	{
-		if($value === '1.1' || $value === '1.2' || $value === '')
+		if ($value === '1.1' || $value === '1.2' || $value === '') {
 			$this->_version = $value;
-		else
+		} else {
 			throw new TInvalidDataValueException('soapserver_version_invalid', $value);
+		}
 	}
 
 	/**

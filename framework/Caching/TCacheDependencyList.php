@@ -39,9 +39,10 @@ class TCacheDependencyList extends TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof ICacheDependency)
+		if ($item instanceof ICacheDependency) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('cachedependencylist_cachedependency_required');
+		}
 	}
 }

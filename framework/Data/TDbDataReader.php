@@ -67,10 +67,11 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function bindColumn($column, &$value, $dataType = null)
 	{
-		if($dataType === null)
+		if ($dataType === null) {
 			$this->_statement->bindColumn($column, $value);
-		else
+		} else {
 			$this->_statement->bindColumn($column, $value, $dataType);
+		}
 	}
 
 	/**
@@ -176,13 +177,12 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function rewind()
 	{
-		if($this->_index < 0)
-		{
+		if ($this->_index < 0) {
 			$this->_row = $this->_statement->fetch();
 			$this->_index = 0;
-		}
-		else
+		} else {
 			throw new TDbException('dbdatareader_rewind_invalid');
+		}
 	}
 
 	/**
@@ -225,4 +225,3 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 		return $this->_row !== false;
 	}
 }
-

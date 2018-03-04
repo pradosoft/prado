@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
  *
@@ -44,4 +43,3 @@ class TSqliteTableInfo extends TDbTableInfo
 		return "'" . $this->getTableName() . "'";
 	}
 }
-

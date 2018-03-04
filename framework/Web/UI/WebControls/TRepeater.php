@@ -291,10 +291,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setItemTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_itemTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'ItemTemplate');
+		}
 	}
 
 	/**
@@ -311,10 +312,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_alternatingItemTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'AlternatingItemTemplate');
+		}
 	}
 
 	/**
@@ -331,10 +333,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setHeaderTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_headerTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'HeaderTemplate');
+		}
 	}
 
 	/**
@@ -351,10 +354,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setFooterTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_footerTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'FooterTemplate');
+		}
 	}
 
 	/**
@@ -371,10 +375,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setEmptyTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_emptyTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'EmptyTemplate');
+		}
 	}
 
 	/**
@@ -391,10 +396,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function setSeparatorTemplate($value)
 	{
-		if($value instanceof \Prado\Web\UI\ITemplate || $value === null)
+		if ($value instanceof \Prado\Web\UI\ITemplate || $value === null) {
 			$this->_separatorTemplate = $value;
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeater_template_required', 'SeparatorTemplate');
+		}
 	}
 
 	/**
@@ -418,8 +424,9 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function getItems()
 	{
-		if(!$this->_items)
+		if (!$this->_items) {
 			$this->_items = new TRepeaterItemCollection;
+		}
 		return $this->_items;
 	}
 
@@ -444,8 +451,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function getDataKeys()
 	{
-		if(($dataKeys = $this->getViewState('DataKeys', null)) === null)
-		{
+		if (($dataKeys = $this->getViewState('DataKeys', null)) === null) {
 			$dataKeys = new TList;
 			$this->setViewState('DataKeys', $dataKeys, null);
 		}
@@ -461,15 +467,14 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
-		if(($item = $this->createItem($itemIndex, $itemType)) !== null)
-		{
+		if (($item = $this->createItem($itemIndex, $itemType)) !== null) {
 			$param = new TRepeaterItemEventParameter($item);
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);
 			return $item;
-		}
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -482,19 +487,19 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
-		if(($item = $this->createItem($itemIndex, $itemType)) !== null)
-		{
+		if (($item = $this->createItem($itemIndex, $itemType)) !== null) {
 			$param = new TRepeaterItemEventParameter($item);
-			if($item instanceof \Prado\IDataRenderer)
+			if ($item instanceof \Prado\IDataRenderer) {
 				$item->setData($dataItem);
+			}
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);
 			$item->dataBind();
 			$this->onItemDataBound($param);
 			return $item;
-		}
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -507,52 +512,46 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	{
 		$template = null;
 		$classPath = null;
-		switch($itemType)
-		{
-			case TListItemType::Item :
+		switch ($itemType) {
+			case TListItemType::Item:
 				$classPath = $this->getItemRenderer();
 				$template = $this->_itemTemplate;
 				break;
-			case TListItemType::AlternatingItem :
-				if(($classPath = $this->getAlternatingItemRenderer()) === '' && ($template = $this->_alternatingItemTemplate) === null)
-				{
+			case TListItemType::AlternatingItem:
+				if (($classPath = $this->getAlternatingItemRenderer()) === '' && ($template = $this->_alternatingItemTemplate) === null) {
 					$classPath = $this->getItemRenderer();
 					$template = $this->_itemTemplate;
 				}
 				break;
-			case TListItemType::Header :
+			case TListItemType::Header:
 				$classPath = $this->getHeaderRenderer();
 				$template = $this->_headerTemplate;
 				break;
-			case TListItemType::Footer :
+			case TListItemType::Footer:
 				$classPath = $this->getFooterRenderer();
 				$template = $this->_footerTemplate;
 				break;
-			case TListItemType::Separator :
+			case TListItemType::Separator:
 				$classPath = $this->getSeparatorRenderer();
 				$template = $this->_separatorTemplate;
 				break;
 			default:
 				throw new TInvalidDataValueException('repeater_itemtype_unknown', $itemType);
 		}
-		if($classPath !== '')
-		{
+		if ($classPath !== '') {
 			$item = Prado::createComponent($classPath);
-			if($item instanceof IItemDataRenderer)
-			{
+			if ($item instanceof IItemDataRenderer) {
 				$item->setItemIndex($itemIndex);
 				$item->setItemType($itemType);
 			}
-		}
-		elseif($template !== null)
-		{
+		} elseif ($template !== null) {
 			$item = new TRepeaterItem;
 			$item->setItemIndex($itemIndex);
 			$item->setItemType($itemType);
 			$template->instantiateIn($item);
-		}
-		else
+		} else {
 			$item = null;
+		}
 
 		return $item;
 	}
@@ -562,10 +561,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	protected function createEmptyContent()
 	{
-		if(($classPath = $this->getEmptyRenderer()) !== '')
+		if (($classPath = $this->getEmptyRenderer()) !== '') {
 			$this->getControls()->add(Prado::createComponent($classPath));
-		elseif($this->_emptyTemplate !== null)
+		} elseif ($this->_emptyTemplate !== null) {
 			$this->_emptyTemplate->instantiateIn($this);
+		}
 	}
 
 	/**
@@ -576,8 +576,9 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function render($writer)
 	{
-		if($this->_items && $this->_items->getCount() || $this->_emptyTemplate !== null || $this->getEmptyRenderer() !== '')
+		if ($this->_items && $this->_items->getCount() || $this->_emptyTemplate !== null || $this->getEmptyRenderer() !== '') {
 			$this->renderContents($writer);
+		}
 	}
 
 	/**
@@ -587,10 +588,11 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	public function saveState()
 	{
 		parent::saveState();
-		if($this->_items)
+		if ($this->_items) {
 			$this->setViewState('ItemCount', $this->_items->getCount(), 0);
-		else
+		} else {
 			$this->clearViewState('ItemCount');
+		}
 	}
 
 	/**
@@ -600,8 +602,9 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	public function loadState()
 	{
 		parent::loadState();
-		if(!$this->getIsDataBound())
+		if (!$this->getIsDataBound()) {
 			$this->restoreItemsFromViewState();
+		}
 		$this->clearViewState('ItemCount');
 	}
 
@@ -622,22 +625,21 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	protected function restoreItemsFromViewState()
 	{
 		$this->reset();
-		if(($itemCount = $this->getViewState('ItemCount', 0)) > 0)
-		{
+		if (($itemCount = $this->getViewState('ItemCount', 0)) > 0) {
 			$items = $this->getItems();
 			$hasSeparator = $this->_separatorTemplate !== null || $this->getSeparatorRenderer() !== '';
 			$this->_header = $this->createItemInternal(-1, TListItemType::Header);
-			for($i = 0;$i < $itemCount;++$i)
-			{
-				if($hasSeparator && $i > 0)
+			for ($i = 0;$i < $itemCount;++$i) {
+				if ($hasSeparator && $i > 0) {
 					$this->createItemInternal($i - 1, TListItemType::Separator);
+				}
 				$itemType = $i % 2 == 0 ? TListItemType::Item : TListItemType::AlternatingItem;
 				$items->add($this->createItemInternal($i, $itemType, false, null));
 			}
 			$this->_footer = $this->createItemInternal(-1, TListItemType::Footer);
-		}
-		else
+		} else {
 			$this->createEmptyContent();
+		}
 		$this->clearChildState();
 	}
 
@@ -658,24 +660,25 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 		$items = $this->getItems();
 		$itemIndex = 0;
 		$hasSeparator = $this->_separatorTemplate !== null || $this->getSeparatorRenderer() !== '';
-		foreach($data as $key => $dataItem)
-		{
-			if($keyField !== '')
+		foreach ($data as $key => $dataItem) {
+			if ($keyField !== '') {
 				$keys->add($this->getDataFieldValue($dataItem, $keyField));
-			else
+			} else {
 				$keys->add($key);
-			if($itemIndex === 0)
+			}
+			if ($itemIndex === 0) {
 				$this->_header = $this->createItemWithDataInternal(-1, TListItemType::Header, null);
-			if($hasSeparator && $itemIndex > 0)
+			}
+			if ($hasSeparator && $itemIndex > 0) {
 				$this->createItemWithDataInternal($itemIndex - 1, TListItemType::Separator, null);
+			}
 			$itemType = $itemIndex % 2 == 0 ? TListItemType::Item : TListItemType::AlternatingItem;
 			$items->add($this->createItemWithDataInternal($itemIndex, $itemType, $dataItem));
 			$itemIndex++;
 		}
-		if($itemIndex > 0)
+		if ($itemIndex > 0) {
 			$this->_footer = $this->createItemWithDataInternal(-1, TListItemType::Footer, null);
-		else
-		{
+		} else {
 			$this->createEmptyContent();
 			$this->dataBindChildren();
 		}
@@ -693,13 +696,12 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof TRepeaterCommandEventParameter)
-		{
+		if ($param instanceof TRepeaterCommandEventParameter) {
 			$this->onItemCommand($param);
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**

@@ -44,8 +44,7 @@ class TFastSqlMapApplicationCache implements ICache
 		$cache = $this->getCache();
 		$keyname = $this->getBaseKeyKeyName();
 		$basekey = $cache->get($keyname);
-		if (!$basekey)
-		{
+		if (!$basekey) {
 			$basekey = DxUtil::generateRandomHash(8);
 			$cache->set($keyname, $basekey);
 		}
@@ -80,8 +79,9 @@ class TFastSqlMapApplicationCache implements ICache
 
 	protected function getCache()
 	{
-		if (!$this->_cache)
+		if (!$this->_cache) {
 			$this->_cache = Prado::getApplication()->getCache();
+		}
 		return $this->_cache;
 	}
 

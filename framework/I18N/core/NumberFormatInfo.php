@@ -81,10 +81,11 @@ class NumberFormatInfo
 	public function __get($name)
 	{
 		$getProperty = 'get' . $name;
-		if(in_array($getProperty, $this->properties))
+		if (in_array($getProperty, $this->properties)) {
 			return $this->$getProperty();
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' does not exists.');
+		}
 	}
 
 	/**
@@ -94,10 +95,11 @@ class NumberFormatInfo
 	public function __set($name, $value)
 	{
 		$setProperty = 'set' . $name;
-		if(in_array($setProperty, $this->properties))
+		if (in_array($setProperty, $this->properties)) {
 			$this->$setProperty($value);
-		else
+		} else {
 			throw new Exception('Property ' . $name . ' can not be set.');
+		}
 	}
 
 	/**
@@ -113,8 +115,9 @@ class NumberFormatInfo
 	{
 		$this->properties = get_class_methods($this);
 
-		if(empty($data))
+		if (empty($data)) {
 			throw new Exception('Please provide the ICU data to initialize.');
+		}
 
 		$this->data = $data;
 
@@ -129,11 +132,12 @@ class NumberFormatInfo
 	 */
 	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{
-		if(is_int($type))
+		if (is_int($type)) {
 			$this->pattern =
 				$this->parsePattern($this->data['NumberPatterns'][$type]);
-		else
+		} else {
 			$this->pattern = $this->parsePattern($type);
+		}
 
 		$this->pattern['negInfty'] =
 			$this->data['NumberElements'][6] .
@@ -157,8 +161,7 @@ class NumberFormatInfo
 	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
 		static $invariant;
-		if($invariant === null)
-		{
+		if ($invariant === null) {
 			$culture = CultureInfo::getInvariantCulture();
 			$invariant = $culture->NumberFormat;
 			$invariant->setPattern($type);
@@ -178,29 +181,25 @@ class NumberFormatInfo
 	 * @see getPercentageInstance();
 	 * @see getScientificInstance();
 	 */
-	public static function getInstance($culture = null,
-									   $type = NumberFormatInfo::DECIMAL)
-	{
-		if ($culture instanceof CultureInfo)
-		{
+	public static function getInstance(
+		$culture = null,
+									   $type = NumberFormatInfo::DECIMAL
+	) {
+		if ($culture instanceof CultureInfo) {
 			$formatInfo = $culture->NumberFormat;
 			$formatInfo->setPattern($type);
 			return $formatInfo;
-		}
-		   elseif(is_string($culture))
-		   {
-			   $cultureInfo = new CultureInfo($culture);
-			   $formatInfo = $cultureInfo->NumberFormat;
-			   $formatInfo->setPattern($type);
-			   return $formatInfo;
-		   }
-		   else
-		   {
+		} elseif (is_string($culture)) {
+			$cultureInfo = new CultureInfo($culture);
+			$formatInfo = $cultureInfo->NumberFormat;
+			$formatInfo->setPattern($type);
+			return $formatInfo;
+		} else {
 			$cultureInfo = new CultureInfo();
-			   $formatInfo = $cultureInfo->NumberFormat;
-			   $formatInfo->setPattern($type);
-			   return $formatInfo;
-		   }
+			$formatInfo = $cultureInfo->NumberFormat;
+			$formatInfo->setPattern($type);
+			return $formatInfo;
+		}
 	}
 
 	/**
@@ -246,8 +245,9 @@ class NumberFormatInfo
 		$pattern = explode(';', $pattern);
 
 		$negative = null;
-		if(count($pattern) > 1)
+		if (count($pattern) > 1) {
 			$negative = $pattern[1];
+		}
 		$pattern = $pattern[0];
 
 		$comma = ',';
@@ -271,8 +271,7 @@ class NumberFormatInfo
 		$info['positive'] = $pattern;
 
 		//find the negative prefix and postfix
-		if($negative)
-		{
+		if ($negative) {
 			$prefixPostfix = $this->getPrePostfix($negative);
 			$info['negPref'] = $prefixPostfix[0];
 			$info['negPost'] = $prefixPostfix[1];
@@ -284,25 +283,18 @@ class NumberFormatInfo
 
 		//var_dump($pattern);
 		//var_dump($decimalPos);
-		if(is_int($groupPos1))
-		{
+		if (is_int($groupPos1)) {
 			//get the second group
 			$groupPos2 = strrpos(substr($pattern, 0, $groupPos1), $comma);
 
 			//get the number of decimal digits
-			if(is_int($decimalPos))
-			{
+			if (is_int($decimalPos)) {
 				$groupSize1 = $decimalPos - $groupPos1 - 1;
-
-			}
-			else
-			{
+			} else {
 				//no decimal point, so traverse from the back
 				//to find the groupsize 1.
-				for($i = strlen($pattern) - 1; $i >= 0; $i--)
-				{
-					if($pattern{$i} == $digit || $pattern{$i} == $hash)
-					{
+				for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+					if ($pattern{$i} == $digit || $pattern{$i} == $hash) {
 						$groupSize1 = $i - $groupPos1;
 						break;
 					}
@@ -310,27 +302,28 @@ class NumberFormatInfo
 			}
 
 			//get the second group size
-			if(is_int($groupPos2))
+			if (is_int($groupPos2)) {
 				$groupSize2 = $groupPos1 - $groupPos2 - 1;
+			}
 		}
 
-		if(is_int($decimalPos))
-		{
-			for($i = strlen($pattern) - 1; $i >= 0; $i--)
-			{
-				if($pattern{$i} == $dot) break;
-				if($pattern{$i} == $digit)
-				{
+		if (is_int($decimalPos)) {
+			for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+				if ($pattern{$i} == $dot) {
+					break;
+				}
+				if ($pattern{$i} == $digit) {
 					$decimalPoints = $i - $decimalPos;
 					break;
 				}
 			}
 		}
 
-		if(is_int($decimalPos))
+		if (is_int($decimalPos)) {
 			$digitPattern = substr($pattern, 0, $decimalPos);
-		else
+		} else {
 			$digitPattern = $pattern;
+		}
 
 		$digitPattern = preg_replace('/[^0]/', '', $digitPattern);
 
@@ -507,10 +500,11 @@ class NumberFormatInfo
 	 */
 	public function getCurrencySymbol($currency = 'USD')
 	{
-		if(isset($this->pattern['symbol']))
+		if (isset($this->pattern['symbol'])) {
 			return $this->pattern['symbol'];
-		else
+		} else {
 			return $this->data['Currencies'][$currency][0];
+		}
 	}
 
 
@@ -649,4 +643,3 @@ class NumberFormatInfo
 		$this->data['NumberElements'][8] = $value;
 	}
 }
-

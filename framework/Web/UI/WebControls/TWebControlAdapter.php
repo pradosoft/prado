@@ -68,4 +68,3 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 		$this->getControl()->renderEndTag($writer);
 	}
 }
-

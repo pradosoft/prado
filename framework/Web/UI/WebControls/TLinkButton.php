@@ -98,13 +98,12 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
 
-		if($this->getEnabled(true) && $this->getEnableClientScript())
-		{
+		if ($this->getEnabled(true) && $this->getEnableClientScript()) {
 			$this->renderLinkButtonHref($writer);
 			$this->renderClientControlScript($writer);
-		}
-		elseif($this->getEnabled()) // in this case, parent will not render 'disabled'
+		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
+		}
 	}
 
 	/**
@@ -178,10 +177,11 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function renderContents($writer)
 	{
-		if(($text = $this->getText()) === '')
+		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write($text);
+		}
 	}
 
 	/**
@@ -302,8 +302,9 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onClick(null);
 		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}
@@ -333,4 +334,3 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		$this->raiseBubbleEvent($this, $param);
 	}
 }
-

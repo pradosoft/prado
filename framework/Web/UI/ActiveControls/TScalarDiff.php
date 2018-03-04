@@ -27,10 +27,11 @@ class TScalarDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if(gettype($this->_new) === gettype($this->_old)
-			&& $this->_new === $this->_old)
+		if (gettype($this->_new) === gettype($this->_old)
+			&& $this->_new === $this->_old) {
 			return $this->_null;
-		else
+		} else {
 			return $this->_new;
+		}
 	}
 }

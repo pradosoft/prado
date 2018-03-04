@@ -22,25 +22,21 @@ use Prado\Util\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
 
-/**
- * Defines the PRADO framework installation path.
- */
-if(!defined('PRADO_DIR'))
+// Defines the PRADO framework installation path.
+if (!defined('PRADO_DIR')) {
 	define('PRADO_DIR', __DIR__);
-/**
- * Defines the default permission for writable directories and files
- */
-if(!defined('PRADO_CHMOD'))
+}
+
+// Defines the default permission for writable directories and files
+if (!defined('PRADO_CHMOD')) {
 	define('PRADO_CHMOD', 0777);
-/**
- * Defines the Composer's vendor/ path.
- */
-if(!defined('PRADO_VENDORDIR'))
-{
+}
+
+// Defines the Composer's vendor/ path.
+if (!defined('PRADO_VENDORDIR')) {
 	$reflector = new \ReflectionClass('\Composer\Autoload\ClassLoader');
 	define('PRADO_VENDORDIR', dirname(dirname($reflector->getFileName())));
 }
-
 
 /**
  * PradoBase class.
@@ -156,13 +152,12 @@ class PradoBase
 	public static function poweredByPrado($logoType = 0)
 	{
 		$logoName = $logoType == 1 ? 'powered2' : 'powered';
-		if(self::$_application !== null)
-		{
+		if (self::$_application !== null) {
 			$am = self::$_application->getAssetManager();
 			$url = $am->publishFilePath(self::getPathOfNamespace('Prado\\' . $logoName, '.gif'));
-		}
-		else
+		} else {
 			$url = 'http://pradosoft.github.io/docs/' . $logoName . '.gif';
+		}
 		return '<a title="Powered by PRADO" href="https://github.com/pradosoft/prado" target="_blank"><img src="' . $url . '" style="border-width:0px;" alt="Powered by PRADO" /></a>';
 	}
 
@@ -178,8 +173,9 @@ class PradoBase
 	 */
 	public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
 	{
-		if(error_reporting() & $errno)
+		if (error_reporting() & $errno) {
 			throw new TPhpErrorException($errno, $errstr, $errfile, $errline);
+		}
 	}
 
 	/**
@@ -191,10 +187,9 @@ class PradoBase
 	public static function phpFatalErrorHandler()
 	{
 		$error = error_get_last();
-		if($error &&
+		if ($error &&
 			TPhpErrorException::isFatalError($error) &&
-			error_reporting() & $error['type'])
-		{
+			error_reporting() & $error['type']) {
 			self::exceptionHandler(new TPhpFatalErrorException($error['type'], $error['message'], $error['file'], $error['line']));
 		}
 	}
@@ -210,12 +205,9 @@ class PradoBase
 	 */
 	public static function exceptionHandler($exception)
 	{
-		if(self::$_application !== null && ($errorHandler = self::$_application->getErrorHandler()) !== null)
-		{
+		if (self::$_application !== null && ($errorHandler = self::$_application->getErrorHandler()) !== null) {
 			$errorHandler->handleError(null, $exception);
-		}
-		else
-		{
+		} else {
 			echo $exception;
 		}
 		exit(1);
@@ -232,8 +224,9 @@ class PradoBase
 	 */
 	public static function setApplication($application)
 	{
-		if(self::$_application !== null && !defined('PRADO_TEST_RUN'))
+		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
 			throw new TInvalidOperationException('prado_application_singleton_required');
+		}
 		self::$_application = $application;
 	}
 
@@ -261,13 +254,15 @@ class PradoBase
 
 	protected static function prado3NamespaceToPhpNamespace($type)
 	{
-		if(substr($type, 0, 6) === 'System')
+		if (substr($type, 0, 6) === 'System') {
 			$type = 'Prado' . substr($type, 6);
+		}
 
-		if(false === strpos($type, '\\'))
+		if (false === strpos($type, '\\')) {
 			return str_replace('.', '\\', $type);
-		else
+		} else {
 			return $type;
+		}
 	}
 
 	/**
@@ -286,10 +281,11 @@ class PradoBase
 	public static function createComponent($requestedType)
 	{
 		$type = static::prado3NamespaceToPhpNamespace($requestedType);
-		if(!isset(self::$classExists[$type]))
+		if (!isset(self::$classExists[$type])) {
 			self::$classExists[$type] = class_exists($type, false);
+		}
 
-		if(!isset(self::$_usings[$type]) && !self::$classExists[$type]) {
+		if (!isset(self::$_usings[$type]) && !self::$classExists[$type]) {
 			static::using($type);
 			self::$classExists[$type] = class_exists($type, false);
 		}
@@ -301,13 +297,13 @@ class PradoBase
 		 * \Application\Common\MyDataModule)
 		 * Skip this if the class is inside the Prado\* namespace, since all Prado classes are now namespaced
 		 */
-		if(($pos = strrpos($type, '\\')) !== false && ($requestedType != $type) && strpos($type, 'Prado\\') !== 0)
+		if (($pos = strrpos($type, '\\')) !== false && ($requestedType != $type) && strpos($type, 'Prado\\') !== 0) {
 			$type = substr($type, $pos + 1);
+		}
 
-		if(($n = func_num_args()) > 1)
-		{
+		if (($n = func_num_args()) > 1) {
 			$args = func_get_args();
-			switch($n) {
+			switch ($n) {
 				case 2:
 					return new $type($args[1]);
 				break;
@@ -322,15 +318,16 @@ class PradoBase
 				break;
 				default:
 					$s = '$args[1]';
-					for($i = 2;$i < $n;++$i)
+					for ($i = 2;$i < $n;++$i) {
 						$s .= ",\$args[$i]";
+					}
 					eval("\$component=new $type($s);");
 					return $component;
 				break;
 			}
-		}
-		else
+		} else {
 			return new $type;
+		}
 	}
 
 	/**
@@ -346,61 +343,55 @@ class PradoBase
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
-		if(isset(self::$_usings[$namespace]) || class_exists($namespace, false))
+		if (isset(self::$_usings[$namespace]) || class_exists($namespace, false)) {
 			return;
+		}
 
-		if(array_key_exists($namespace, self::$classMap))
-		{
+		if (array_key_exists($namespace, self::$classMap)) {
 			// fast autoload a Prado3 class name
 			$phpNamespace = self::$classMap[$namespace];
-			if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
-			{
-				if(!class_exists($namespace) && !interface_exists($namespace))
+			if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
+				if (!class_exists($namespace) && !interface_exists($namespace)) {
 					class_alias($phpNamespace, $namespace);
+				}
 				return;
 			}
-		} elseif(($pos = strrpos($namespace, '\\')) === false) {
+		} elseif (($pos = strrpos($namespace, '\\')) === false) {
 			// trying to autoload an old class name
-			foreach(self::$_usings as $k => $v)
-			{
+			foreach (self::$_usings as $k => $v) {
 				$path = $v . DIRECTORY_SEPARATOR . $namespace . self::CLASS_FILE_EXT;
-				if(file_exists($path))
-				{
+				if (file_exists($path)) {
 					$phpNamespace = '\\' . $k . '\\' . $namespace;
-					if(class_exists($phpNamespace, true) || interface_exists($phpNamespace, true))
-					{
-						if(!class_exists($namespace) && !interface_exists($namespace))
+					if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
+						if (!class_exists($namespace) && !interface_exists($namespace)) {
 							class_alias($phpNamespace, $namespace);
+						}
 						return;
 					}
 				}
 			}
 
-			if($checkClassExistence && !class_exists($namespace, false) && !interface_exists($namespace, false))
+			if ($checkClassExistence && !class_exists($namespace, false) && !interface_exists($namespace, false)) {
 				throw new TInvalidOperationException('prado_component_unknown', $namespace, '');
-		} elseif(($path = self::getPathOfNamespace($namespace, self::CLASS_FILE_EXT)) !== null) {
-			$className = substr($namespace, $pos + 1);
-			if($className === '*')  // a directory
-			{
-				self::$_usings[substr($namespace, 0, $pos)] = $path;
 			}
-			else  // a file
-			{
+		} elseif (($path = self::getPathOfNamespace($namespace, self::CLASS_FILE_EXT)) !== null) {
+			$className = substr($namespace, $pos + 1);
+			if ($className === '*') {  // a directory
+				self::$_usings[substr($namespace, 0, $pos)] = $path;
+			} else {  // a file
 				//self::$_usings[$namespace]=$path;
-				if(!$checkClassExistence || (!class_exists($className, false) && !interface_exists($className, false)))
-				{
-					try
-					{
+				if (!$checkClassExistence || (!class_exists($className, false) && !interface_exists($className, false))) {
+					try {
 						include_once($path);
-						if(class_exists($namespace, false) || interface_exists($namespace, false))
+						if (class_exists($namespace, false) || interface_exists($namespace, false)) {
 							class_alias($namespace, $className);
-					}
-					catch(\Exception $e)
-					{
-						if($checkClassExistence && !class_exists($className, false))
+						}
+					} catch (\Exception $e) {
+						if ($checkClassExistence && !class_exists($className, false)) {
 							throw new TInvalidOperationException('prado_component_unknown', $className, $e->getMessage());
-						else
+						} else {
 							throw $e;
+						}
 					}
 				}
 			}
@@ -423,20 +414,22 @@ class PradoBase
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
-		if(self::CLASS_FILE_EXT === $ext || empty($ext))
-		{
-			if(isset(self::$_usings[$namespace]))
+		if (self::CLASS_FILE_EXT === $ext || empty($ext)) {
+			if (isset(self::$_usings[$namespace])) {
 				return self::$_usings[$namespace];
+			}
 
-			if(isset(self::$_aliases[$namespace]))
+			if (isset(self::$_aliases[$namespace])) {
 				return self::$_aliases[$namespace];
+			}
 		}
 
 		$segs = explode('\\', $namespace);
 		$alias = array_shift($segs);
 
-		if(null !== ($file = array_pop($segs)) && null !== ($root = self::getPathOfAlias($alias)))
+		if (null !== ($file = array_pop($segs)) && null !== ($root = self::getPathOfAlias($alias))) {
 			return rtrim($root . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segs), '/\\') . (($file === '*') ? '' : DIRECTORY_SEPARATOR . $file . $ext);
+		}
 
 		return null;
 	}
@@ -463,17 +456,17 @@ class PradoBase
 	 */
 	public static function setPathOfAlias($alias, $path)
 	{
-		if(isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN'))
+		if (isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN')) {
 			throw new TInvalidOperationException('prado_alias_redefined', $alias);
-		elseif(($rp = realpath($path)) !== false && is_dir($rp))
-		{
-			if(strpos($alias, '.') === false)
+		} elseif (($rp = realpath($path)) !== false && is_dir($rp)) {
+			if (strpos($alias, '.') === false) {
 				self::$_aliases[$alias] = $rp;
-			else
+			} else {
 				throw new TInvalidDataValueException('prado_aliasname_invalid', $alias);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidDataValueException('prado_alias_invalid', $alias, $path);
+		}
 	}
 
 	/**
@@ -486,53 +479,55 @@ class PradoBase
 	{
 		echo '<h1>Fatal Error</h1>';
 		echo '<p>' . $msg . '</p>';
-		if(!function_exists('debug_backtrace'))
+		if (!function_exists('debug_backtrace')) {
 			return;
+		}
 		echo '<h2>Debug Backtrace</h2>';
 		echo '<pre>';
 		$index = -1;
-		foreach(debug_backtrace() as $t)
-		{
+		foreach (debug_backtrace() as $t) {
 			$index++;
-			if($index == 0)  // hide the backtrace of this function
+			if ($index == 0) {  // hide the backtrace of this function
 				continue;
+			}
 			echo '#' . $index . ' ';
-			if(isset($t['file']))
+			if (isset($t['file'])) {
 				echo basename($t['file']) . ':' . $t['line'];
-			else
-				 echo '<PHP inner-code>';
+			} else {
+				echo '<PHP inner-code>';
+			}
 			echo ' -- ';
-			if(isset($t['class']))
+			if (isset($t['class'])) {
 				echo $t['class'] . $t['type'];
+			}
 			echo $t['function'] . '(';
-			if(isset($t['args']) && count($t['args']) > 0)
-			{
+			if (isset($t['args']) && count($t['args']) > 0) {
 				$count = 0;
-				foreach($t['args'] as $item)
-				{
-					if(is_string($item))
-					{
+				foreach ($t['args'] as $item) {
+					if (is_string($item)) {
 						$str = htmlentities(str_replace("\r\n", "", $item), ENT_QUOTES);
-						if (strlen($item) > 70)
+						if (strlen($item) > 70) {
 							echo "'" . substr($str, 0, 70) . "...'";
-						else
+						} else {
 							echo "'" . $str . "'";
-					}
-					elseif (is_int($item) || is_float($item))
+						}
+					} elseif (is_int($item) || is_float($item)) {
 						echo $item;
-					elseif (is_object($item))
+					} elseif (is_object($item)) {
 						echo get_class($item);
-					elseif (is_array($item))
+					} elseif (is_array($item)) {
 						echo 'array(' . count($item) . ')';
-					elseif (is_bool($item))
+					} elseif (is_bool($item)) {
 						echo $item ? 'true' : 'false';
-					elseif ($item === null)
+					} elseif ($item === null) {
 						echo 'NULL';
-					elseif (is_resource($item))
+					} elseif (is_resource($item)) {
 						echo get_resource_type($item);
+					}
 					$count++;
-					if (count($t['args']) > $count)
+					if (count($t['args']) > $count) {
 						echo ', ';
+					}
 				}
 			}
 			echo ")\n";
@@ -551,22 +546,20 @@ class PradoBase
 	public static function getUserLanguages()
 	{
 		static $languages = null;
-		if($languages === null)
-		{
-			if(!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+		if ($languages === null) {
+			if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
 				$languages[0] = 'en';
-			else
-			{
+			} else {
 				$languages = [];
-				foreach(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language)
-				{
+				foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
 					$array = explode(';q=', trim($language));
 					$languages[trim($array[0])] = isset($array[1]) ? (float)$array[1] : 1.0;
 				}
 				arsort($languages);
 				$languages = array_keys($languages);
-				if(empty($languages))
+				if (empty($languages)) {
 					$languages[0] = 'en';
+				}
 			}
 		}
 		return $languages;
@@ -579,14 +572,14 @@ class PradoBase
 	public static function getPreferredLanguage()
 	{
 		static $language = null;
-		if($language === null)
-		{
+		if ($language === null) {
 			$langs = Prado::getUserLanguages();
 			$lang = explode('-', $langs[0]);
-			if(empty($lang[0]) || !ctype_alpha($lang[0]))
+			if (empty($lang[0]) || !ctype_alpha($lang[0])) {
 				$language = 'en';
-			else
+			} else {
 				$language = $lang[0];
+			}
 		}
 		return $language;
 	}
@@ -605,17 +598,18 @@ class PradoBase
 	 */
 	public static function trace($msg, $category = 'Uncategorized', $ctl = null)
 	{
-		if(self::$_application && self::$_application->getMode() === TApplicationMode::Performance)
+		if (self::$_application && self::$_application->getMode() === TApplicationMode::Performance) {
 			return;
-		if(!self::$_application || self::$_application->getMode() === TApplicationMode::Debug)
-		{
-			$trace = debug_backtrace();
-			if(isset($trace[0]['file']) && isset($trace[0]['line']))
-				$msg .= " (line {$trace[0]['line']}, {$trace[0]['file']})";
-			$level = TLogger::DEBUG;
 		}
-		else
+		if (!self::$_application || self::$_application->getMode() === TApplicationMode::Debug) {
+			$trace = debug_backtrace();
+			if (isset($trace[0]['file']) && isset($trace[0]['line'])) {
+				$msg .= " (line {$trace[0]['line']}, {$trace[0]['file']})";
+			}
+			$level = TLogger::DEBUG;
+		} else {
 			$level = TLogger::INFO;
+		}
 		self::log($msg, $level, $category, $ctl);
 	}
 
@@ -633,8 +627,9 @@ class PradoBase
 	 */
 	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null)
 	{
-		if(self::$_logger === null)
+		if (self::$_logger === null) {
 			self::$_logger = new TLogger;
+		}
 		self::$_logger->log($msg, $level, $category, $ctl);
 	}
 
@@ -643,8 +638,9 @@ class PradoBase
 	 */
 	public static function getLogger()
 	{
-		if(self::$_logger === null)
+		if (self::$_logger === null) {
 			self::$_logger = new TLogger;
+		}
 		return self::$_logger;
 	}
 
@@ -677,15 +673,18 @@ class PradoBase
 		$app = Prado::getApplication()->getGlobalization(false);
 
 		$params = [];
-		foreach($parameters as $key => $value)
+		foreach ($parameters as $key => $value) {
 			$params['{' . $key . '}'] = $value;
+		}
 
 		//no translation handler provided
-		if($app === null || ($config = $app->getTranslationConfiguration()) === null)
+		if ($app === null || ($config = $app->getTranslationConfiguration()) === null) {
 			return strtr($text, $params);
+		}
 
-		if ($catalogue === null)
+		if ($catalogue === null) {
 			$catalogue = isset($config['catalogue']) ? $config['catalogue'] : 'messages';
+		}
 
 		Translation::init($catalogue);
 
@@ -696,8 +695,12 @@ class PradoBase
 		$defaultCharset = ($app === null) ? 'UTF-8' : $app->getDefaultCharset();
 
 		//fall back
-		if(empty($charset)) $charset = $appCharset;
-		if(empty($charset)) $charset = $defaultCharset;
+		if (empty($charset)) {
+			$charset = $appCharset;
+		}
+		if (empty($charset)) {
+			$charset = $defaultCharset;
+		}
 
 		return Translation::formatter($catalogue)->format($text, $params, $catalogue, $charset);
 	}

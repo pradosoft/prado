@@ -17,7 +17,6 @@ namespace Prado\I18N;
 use Prado\I18N\core\DateFormat;
 use Prado\Prado;
 
-
 /**
  * Get the parent control class.
  */
@@ -102,28 +101,28 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		//try the subpattern of "date time" presets
 		$subpatterns = explode(' ', $string, 2);
 		$datetime = [];
-		if(count($subpatterns) == 2)
-		{
+		if (count($subpatterns) == 2) {
 			$datetime[] = $this->getPreset($subpatterns[0]);
 			$datetime[] = $this->getPreset($subpatterns[1]);
 		}
 
 		//we have a good subpattern
-		if(count($datetime) == 2
+		if (count($datetime) == 2
 			&& strlen($datetime[0]) == 1
-			&& strlen($datetime[1]) == 1)
-		{
+			&& strlen($datetime[1]) == 1) {
 			$pattern = $datetime;
-		}
-		else //no subpattern, try the presets
+		} else { //no subpattern, try the presets
 			$pattern = $this->getPreset($string);
+		}
 
 		//no presets found, use the string as the pattern
 		//and let the DateFormat handle it.
-		if($pattern === null)
+		if ($pattern === null) {
 			$pattern = $string;
-		if (!is_array($pattern) && strlen($pattern) == 0)
+		}
+		if (!is_array($pattern) && strlen($pattern) == 0) {
 			$pattern = null;
+		}
 		return $pattern;
 	}
 
@@ -135,10 +134,10 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	protected function getPreset($string)
 	{
 		$string = strtolower($string);
-		foreach(self::$_patternPresets as $pattern => $preset)
-		{
-			if($string == $pattern)
+		foreach (self::$_patternPresets as $pattern => $preset) {
+			if ($string == $pattern) {
 				return $preset;
+			}
 		}
 	}
 
@@ -149,11 +148,11 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	public function getValue()
 	{
 		$value = $this->getViewState('Value', '');
-		if(empty($value))
-		{
+		if (empty($value)) {
 			$defaultText = $this->getDefaultText();
-			if(empty($defaultText))
+			if (empty($defaultText)) {
 				return time();
+			}
 		}
 		return $value;
 	}
@@ -221,29 +220,34 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	{
 		$value = $this->getValue();
 		$defaultText = $this->getDefaultText();
-		if(empty($value) && !empty($defaultText))
+		if (empty($value) && !empty($defaultText)) {
 			return $this->getDefaultText();
+		}
 
 		$app = $this->getApplication()->getGlobalization();
 
 		//initialized the default class wide formatter
-		if(self::$formatter === null)
+		if (self::$formatter === null) {
 			self::$formatter = new DateFormat($app->getCulture());
+		}
 
 		$culture = $this->getCulture();
 
 		//return the specific cultural formatted date time
-		if(strlen($culture) && $app->getCulture() !== $culture)
-		{
+		if (strlen($culture) && $app->getCulture() !== $culture) {
 			$formatter = new DateFormat($culture);
-			return $formatter->format($value,
+			return $formatter->format(
+				$value,
 									  $this->getPattern(),
-									  $this->getCharset());
+									  $this->getCharset()
+			);
 		}
 		//return the application wide culture formatted date time.
-		$result = self::$formatter->format($value,
+		$result = self::$formatter->format(
+			$value,
 										$this->getPattern(),
-										$this->getCharset());
+										$this->getCharset()
+		);
 		return $result;
 	}
 
@@ -251,5 +255,4 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	{
 		$writer->write($this->getFormattedDate());
 	}
-
 }

@@ -73,43 +73,41 @@ class TTemplateManager extends \Prado\TModule
 	 */
 	public function getTemplateByFileName($fileName)
 	{
-		if(($fileName = $this->getLocalizedTemplate($fileName)) !== null)
-		{
+		if (($fileName = $this->getLocalizedTemplate($fileName)) !== null) {
 			Prado::trace("Loading template $fileName", '\Prado\Web\UI\TTemplateManager');
-			if(($cache = $this->getApplication()->getCache()) === null)
+			if (($cache = $this->getApplication()->getCache()) === null) {
 				return new TTemplate(file_get_contents($fileName), dirname($fileName), $fileName);
-			else
-			{
+			} else {
 				$array = $cache->get(self::TEMPLATE_CACHE_PREFIX . $fileName);
-				if(is_array($array))
-				{
+				if (is_array($array)) {
 					list($template, $timestamps) = $array;
-					if($this->getApplication()->getMode() === TApplicationMode::Performance)
+					if ($this->getApplication()->getMode() === TApplicationMode::Performance) {
 						return $template;
+					}
 					$cacheValid = true;
-					foreach($timestamps as $tplFile => $timestamp)
-					{
-						if(!is_file($tplFile) || filemtime($tplFile) > $timestamp)
-						{
+					foreach ($timestamps as $tplFile => $timestamp) {
+						if (!is_file($tplFile) || filemtime($tplFile) > $timestamp) {
 							$cacheValid = false;
 							break;
 						}
 					}
-					if($cacheValid)
+					if ($cacheValid) {
 						return $template;
+					}
 				}
 				$template = new TTemplate(file_get_contents($fileName), dirname($fileName), $fileName);
 				$includedFiles = $template->getIncludedFiles();
 				$timestamps = [];
 				$timestamps[$fileName] = filemtime($fileName);
-				foreach($includedFiles as $includedFile)
+				foreach ($includedFiles as $includedFile) {
 					$timestamps[$includedFile] = filemtime($includedFile);
+				}
 				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName, [$template,$timestamps]);
 				return $template;
 			}
-		}
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -119,12 +117,13 @@ class TTemplateManager extends \Prado\TModule
 	 */
 	protected function getLocalizedTemplate($filename)
 	{
-		if(($app = $this->getApplication()->getGlobalization(false)) === null)
+		if (($app = $this->getApplication()->getGlobalization(false)) === null) {
 			return is_file($filename) ? $filename : null;
-		foreach($app->getLocalizedResource($filename) as $file)
-		{
-			if(($file = realpath($file)) !== false && is_file($file))
+		}
+		foreach ($app->getLocalizedResource($filename) as $file) {
+			if (($file = realpath($file)) !== false && is_file($file)) {
 				return $file;
+			}
 		}
 		return null;
 	}

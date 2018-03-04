@@ -54,5 +54,4 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 	{
 		return $this->_selectedCellIndex;
 	}
-
 }

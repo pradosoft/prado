@@ -206,14 +206,11 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem)
-		{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem) {
 			$button = $this->createButton('Edit', $this->getEditText(), false, '');
 			$cell->getControls()->add($button);
 			$cell->registerObject('EditButton', $button);
-		}
-		elseif($itemType === TListItemType::EditItem)
-		{
+		} elseif ($itemType === TListItemType::EditItem) {
 			$controls = $cell->getControls();
 			$button = $this->createButton('Update', $this->getUpdateText(), $this->getCausesValidation(), $this->getValidationGroup());
 			$controls->add($button);
@@ -222,9 +219,9 @@ class TEditCommandColumn extends TDataGridColumn
 			$button = $this->createButton('Cancel', $this->getCancelText(), false, '');
 			$controls->add($button);
 			$cell->registerObject('CancelButton', $button);
-		}
-		else
+		} else {
 			parent::initializeCell($cell, $columnIndex, $itemType);
+		}
 	}
 
 	/**
@@ -238,19 +235,19 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	protected function createButton($commandName, $text, $causesValidation, $validationGroup)
 	{
-		if($this->getButtonType() === TButtonColumnType::LinkButton)
+		if ($this->getButtonType() === TButtonColumnType::LinkButton) {
 			$button = new TLinkButton;
-		elseif($this->getButtonType() === TButtonColumnType::PushButton)
+		} elseif ($this->getButtonType() === TButtonColumnType::PushButton) {
 			$button = new TButton;
-		else	// image buttons
-		{
+		} else {	// image buttons
 			$button = new TImageButton;
-			if(strcasecmp($commandName, 'Update') === 0)
+			if (strcasecmp($commandName, 'Update') === 0) {
 				$url = $this->getUpdateImageUrl();
-			elseif(strcasecmp($commandName, 'Cancel') === 0)
+			} elseif (strcasecmp($commandName, 'Cancel') === 0) {
 				$url = $this->getCancelImageUrl();
-			else
+			} else {
 				$url = $this->getEditImageUrl();
+			}
 			$button->setImageUrl($url);
 		}
 		$button->setText($text);
@@ -260,4 +257,3 @@ class TEditCommandColumn extends TDataGridColumn
 		return $button;
 	}
 }
-

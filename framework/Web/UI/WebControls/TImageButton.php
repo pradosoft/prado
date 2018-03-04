@@ -100,15 +100,16 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 		$writer->addAttribute('type', 'image');
-		if(($uniqueID = $this->getUniqueID()) !== '')
+		if (($uniqueID = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uniqueID);
-		if($this->getEnabled(true))
-		{
-			if($this->getEnableClientScript() && $this->needPostBackScript())
-				$this->renderClientControlScript($writer);
 		}
-		elseif($this->getEnabled()) // in this case, parent will not render 'disabled'
+		if ($this->getEnabled(true)) {
+			if ($this->getEnableClientScript() && $this->needPostBackScript()) {
+				$this->renderClientControlScript($writer);
+			}
+		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
 			$writer->addAttribute('disabled', 'disabled');
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -137,13 +138,12 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	protected function canCauseValidation()
 	{
-		if($this->getCausesValidation())
-		{
+		if ($this->getCausesValidation()) {
 			$group = $this->getValidationGroup();
 			return $this->getPage()->getValidators($group)->getCount() > 0;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -195,12 +195,12 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	public function loadPostData($key, $values)
 	{
 		$uid = $this->getUniqueID();
-		if(isset($values["{$uid}_x"]) && isset($values["{$uid}_y"]))
-		{
+		if (isset($values["{$uid}_x"]) && isset($values["{$uid}_y"])) {
 			$this->_x = intval($values["{$uid}_x"]);
 			$this->_y = intval($values["{$uid}_y"]);
-			if($this->getPage()->getPostBackEventTarget() === null)
+			if ($this->getPage()->getPostBackEventTarget() === null) {
 				$this->getPage()->setPostBackEventTarget($this);
+			}
 			$this->_dataChanged = true;
 		}
 		return false;
@@ -250,8 +250,9 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onClick(new TImageClickEventParameter($this->_x, $this->_y));
 		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}

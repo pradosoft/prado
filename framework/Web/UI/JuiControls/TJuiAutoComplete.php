@@ -131,10 +131,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -237,21 +236,17 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	public function raiseCallbackEvent($param)
 	{
 		$token = $param->getCallbackParameter();
-		if(is_array($token) && count($token) == 2)
-		{
-			if($token[1] === '__TJuiAutoComplete_onSuggest__')
-			{
+		if (is_array($token) && count($token) == 2) {
+			if ($token[1] === '__TJuiAutoComplete_onSuggest__') {
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), $token[0]);
 				$this->onSuggest($parameter);
-			}
-			elseif($token[1] === '__TJuiAutoComplete_onSuggestionSelected__')
-			{
+			} elseif ($token[1] === '__TJuiAutoComplete_onSuggestionSelected__') {
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
 				$this->onSuggestionSelected($parameter);
 			}
-		}
-		elseif($this->getAutoPostBack())
+		} elseif ($this->getAutoPostBack()) {
 			parent::raiseCallbackEvent($param);
+		}
 	}
 
 	/**
@@ -293,8 +288,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	public function dataBind()
 	{
 		parent::dataBind();
-		if($this->getPage()->getIsCallback())
+		if ($this->getPage()->getIsCallback()) {
 			$this->renderSuggestions($this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
@@ -302,8 +298,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getResultPanel()
 	{
-		if($this->_resultPanel === null)
+		if ($this->_resultPanel === null) {
 			$this->_resultPanel = $this->createResultPanel();
+		}
 		return $this->_resultPanel;
 	}
 
@@ -323,8 +320,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getSuggestions()
 	{
-		if($this->_repeater === null)
+		if ($this->_repeater === null) {
 			$this->_repeater = $this->createRepeater();
+		}
 		return $this->_repeater;
 	}
 
@@ -372,13 +370,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function renderSuggestions($writer)
 	{
-		if($this->getActiveControl()->canUpdateClientSide(true))
-		{
+		if ($this->getActiveControl()->canUpdateClientSide(true)) {
 			$data = [];
 			$items = $this->getSuggestions()->getItems();
 			$writer = new TTextWriter;
-			for($i = 0; $i < $items->Count; $i++)
-			{
+			for ($i = 0; $i < $items->Count; $i++) {
 				$items->itemAt($i)->render($writer);
 				$item = $writer->flush();
 				$data[] = [ 'id' => $i, 'label' => $item];
@@ -395,16 +391,17 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	{
 		$options = $this->getOptions()->toArray();
 
-		if(strlen($separator = $this->getSeparator()))
+		if (strlen($separator = $this->getSeparator())) {
 			$options['Separators'] = $separator;
+		}
 
-		if($this->getAutoPostBack())
-		{
+		if ($this->getAutoPostBack()) {
 			$options = array_merge($options, parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
-		if(strlen($textCssClass = $this->getTextCssClass()))
+		if (strlen($textCssClass = $this->getTextCssClass())) {
 			$options['textCssClass'] = $textCssClass;
+		}
 		$options['minLength'] = $this->getMinChars();
 		$options['delay'] = $this->getFrequency() * 1000.0;
 		$options['appendTo'] = '#' . $this->getResultPanel()->getClientID();

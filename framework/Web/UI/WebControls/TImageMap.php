@@ -46,8 +46,9 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof THotSpot)
+		if ($object instanceof THotSpot) {
 			$this->getHotSpots()->add($object);
+		}
 	}
 
 	/**
@@ -58,13 +59,13 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if($this->getHotSpots()->getCount() > 0)
-		{
+		if ($this->getHotSpots()->getCount() > 0) {
 			$writer->addAttribute('usemap', '#' . self::MAP_NAME_PREFIX . $this->getClientID());
 			$writer->addAttribute('id', $this->getUniqueID());
 		}
-		if($this->getEnabled() && !$this->getEnabled(true))
+		if ($this->getEnabled() && !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
+		}
 	}
 
 	/**
@@ -77,29 +78,29 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 		$hotspots = $this->getHotSpots();
 
-		if($hotspots->getCount() > 0)
-		{
+		if ($hotspots->getCount() > 0) {
 			$clientID = $this->getClientID();
 			$cs = $this->getPage()->getClientScript();
 			$writer->writeLine();
 			$writer->addAttribute('name', self::MAP_NAME_PREFIX . $clientID);
 			$writer->renderBeginTag('map');
 			$writer->writeLine();
-			if(($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet)
+			if (($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet) {
 				$mode = THotSpotMode::Navigate;
+			}
 			$target = $this->getTarget();
 			$i = 0;
 			$options['EventTarget'] = $this->getUniqueID();
 			$options['StopEvent'] = true;
 			$cs = $this->getPage()->getClientScript();
-			foreach($hotspots as $hotspot)
-			{
-				if($hotspot->getHotSpotMode() === THotSpotMode::NotSet)
+			foreach ($hotspots as $hotspot) {
+				if ($hotspot->getHotSpotMode() === THotSpotMode::NotSet) {
 					$hotspot->setHotSpotMode($mode);
-				if($target !== '' && $hotspot->getTarget() === '')
+				}
+				if ($target !== '' && $hotspot->getTarget() === '') {
 					$hotspot->setTarget($target);
-				if($hotspot->getHotSpotMode() === THotSpotMode::PostBack)
-				{
+				}
+				if ($hotspot->getHotSpotMode() === THotSpotMode::PostBack) {
 					$id = $clientID . '_' . $i;
 					$writer->addAttribute('id', $id);
 					$writer->addAttribute('href', '#' . $id); //create unique no-op url references
@@ -136,25 +137,25 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	public function raisePostBackEvent($param)
 	{
 		$postBackValue = null;
-		if($param !== '')
-		{
+		if ($param !== '') {
 			$index = TPropertyValue::ensureInteger($param);
 			$hotspots = $this->getHotSpots();
-			if($index >= 0 && $index < $hotspots->getCount())
-			{
+			if ($index >= 0 && $index < $hotspots->getCount()) {
 				$hotspot = $hotspots->itemAt($index);
-				if(($mode = $hotspot->getHotSpotMode()) === THotSpotMode::NotSet)
+				if (($mode = $hotspot->getHotSpotMode()) === THotSpotMode::NotSet) {
 					$mode = $this->getHotSpotMode();
-				if($mode === THotSpotMode::PostBack)
-				{
+				}
+				if ($mode === THotSpotMode::PostBack) {
 					$postBackValue = $hotspot->getPostBackValue();
-					if($hotspot->getCausesValidation())
+					if ($hotspot->getCausesValidation()) {
 						$this->getPage()->validate($hotspot->getValidationGroup());
+					}
 				}
 			}
 		}
-		if($postBackValue !== null)
+		if ($postBackValue !== null) {
 			$this->onClick(new TImageMapEventParameter($postBackValue));
+		}
 	}
 
 	/**
@@ -181,8 +182,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 */
 	public function getHotSpots()
 	{
-		if(($hotspots = $this->getViewState('HotSpots', null)) === null)
-		{
+		if (($hotspots = $this->getViewState('HotSpots', null)) === null) {
 			$hotspots = new THotSpotCollection;
 			$this->setViewState('HotSpots', $hotspots);
 		}

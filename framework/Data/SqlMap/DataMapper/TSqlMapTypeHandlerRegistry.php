@@ -31,9 +31,11 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function getDbTypeHandler($dbType = 'NULL')
 	{
-		foreach($this->_typeHandlers as $handler)
-			if($handler->getDbType() === $dbType)
+		foreach ($this->_typeHandlers as $handler) {
+			if ($handler->getDbType() === $dbType) {
 				return $handler;
+			}
+		}
 	}
 
 	/**
@@ -42,8 +44,9 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function getTypeHandler($class)
 	{
-		if(isset($this->_typeHandlers[$class]))
+		if (isset($this->_typeHandlers[$class])) {
 			return $this->_typeHandlers[$class];
+		}
 	}
 
 	/**
@@ -63,10 +66,8 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function createInstanceOf($type = '')
 	{
-		if(strlen($type) > 0)
-		{
-			switch(strtolower($type))
-			{
+		if (strlen($type) > 0) {
+			switch (strtolower($type)) {
 				case 'string': return '';
 				case 'array': return [];
 				case 'float': case 'double': case 'decimal': return 0.0;
@@ -74,12 +75,13 @@ class TSqlMapTypeHandlerRegistry
 				case 'bool': case 'boolean': return false;
 			}
 
-			if(class_exists('Prado', false))
+			if (class_exists('Prado', false)) {
 				return Prado::createComponent($type);
-			elseif(class_exists($type, false)) //NO auto loading
+			} elseif (class_exists($type, false)) { //NO auto loading
 				return new $type;
-			else
+			} else {
 				throw new TSqlMapException('sqlmap_unable_to_find_class', $type);
+			}
 		}
 	}
 
@@ -91,15 +93,14 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function convertToType($type, $value)
 	{
-		switch(strtolower($type))
-		{
+		switch (strtolower($type)) {
 			case 'integer': case 'int':
 				$type = 'integer'; break;
 			case 'float': case 'double': case 'decimal':
 				$type = 'float'; break;
 			case 'boolean': case 'bool':
 				$type = 'boolean'; break;
-			case 'string' :
+			case 'string':
 				$type = 'string'; break;
 			default:
 				return $value;

@@ -64,21 +64,25 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 		$this->_configFile = $filename;
 		$document = $this->loadXmlDocument($filename, $this);
 
-		foreach($document->xpath('//property') as $property)
+		foreach ($document->xpath('//property') as $property) {
 			$this->loadGlobalProperty($property);
+		}
 
-		foreach($document->xpath('//typeHandler') as $handler)
+		foreach ($document->xpath('//typeHandler') as $handler) {
 			$this->loadTypeHandler($handler);
+		}
 
-		foreach($document->xpath('//connection[last()]') as $conn)
+		foreach ($document->xpath('//connection[last()]') as $conn) {
 			$this->loadDatabaseConnection($conn);
+		}
 
 		//try to load configuration in the current config file.
 		$mapping = new TSqlMapXmlMappingConfiguration($this);
 		$mapping->configure($filename);
 
-		foreach($document->xpath('//sqlMap') as $sqlmap)
+		foreach ($document->xpath('//sqlMap') as $sqlmap) {
 			$this->loadSqlMappingFiles($sqlmap);
+		}
 
 		$this->resolveResultMapping();
 		$this->attachCacheModels();
@@ -119,10 +123,10 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSqlMappingFiles($node)
 	{
-		if(strlen($resource = (string)$node['resource']) > 0)
-		{
-			if(strpos($resource, '${') !== false)
+		if (strlen($resource = (string)$node['resource']) > 0) {
+			if (strpos($resource, '${') !== false) {
 				$resource = $this->replaceProperties($resource);
+			}
 
 			$mapping = new TSqlMapXmlMappingConfiguration($this);
 			$filename = $this->getAbsoluteFilePath($this->_configFile, $resource);
@@ -136,23 +140,25 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	protected function resolveResultMapping()
 	{
 		$maps = $this->_manager->getResultMaps();
-		foreach($maps as $entry)
-		{
-			foreach($entry->getColumns() as $item)
-			{
+		foreach ($maps as $entry) {
+			foreach ($entry->getColumns() as $item) {
 				$resultMap = $item->getResultMapping();
-				if(strlen($resultMap) > 0)
-				{
-					if($maps->contains($resultMap))
+				if (strlen($resultMap) > 0) {
+					if ($maps->contains($resultMap)) {
 						$item->setNestedResultMap($maps[$resultMap]);
-					else
+					} else {
 						throw new TSqlMapConfigurationException(
 							'sqlmap_unable_to_find_result_mapping',
-								$resultMap, $this->_configFile, $entry->getID());
+								$resultMap,
+							$this->_configFile,
+							$entry->getID()
+						);
+					}
 				}
 			}
-			if($entry->getDiscriminator() !== null)
+			if ($entry->getDiscriminator() !== null) {
 				$entry->getDiscriminator()->initialize($this->_manager);
+			}
 		}
 	}
 
@@ -161,10 +167,8 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function attachCacheModels()
 	{
-		foreach($this->_manager->getMappedStatements() as $mappedStatement)
-		{
-			if(strlen($model = $mappedStatement->getStatement()->getCacheModel()) > 0)
-			{
+		foreach ($this->_manager->getMappedStatements() as $mappedStatement) {
+			if (strlen($model = $mappedStatement->getStatement()->getCacheModel()) > 0) {
 				$cache = $this->_manager->getCacheModel($model);
 				$mappedStatement->getStatement()->setCache($cache);
 			}
@@ -179,8 +183,9 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	public function replaceProperties($string)
 	{
-		foreach($this->_properties as $find => $replace)
+		foreach ($this->_properties as $find => $replace) {
 			$string = str_replace('${' . $find . '}', $replace, $string);
+		}
 		return $string;
 	}
 }

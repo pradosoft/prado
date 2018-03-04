@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TEventTriggeredCallback Class
  *
@@ -83,7 +82,9 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTriggerOptions());
+			$this->getClientClassName(),
+			$this->getTriggerOptions()
+		);
 	}
 
 	/**
@@ -94,4 +95,3 @@ class TEventTriggeredCallback extends TTriggeredCallback
 		return 'Prado.WebUI.TEventTriggeredCallback';
 	}
 }
-

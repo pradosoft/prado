@@ -110,18 +110,18 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function getCache()
 	{
-		if($this->_cache === null)
-		{
-			if($this->_cacheModuleID !== '')
+		if ($this->_cache === null) {
+			if ($this->_cacheModuleID !== '') {
 				$cache = Prado::getApplication()->getModule($this->_cacheModuleID);
-			else
+			} else {
 				$cache = Prado::getApplication()->getCache();
-			if($cache === null || !($cache instanceof ICache))
-			{
-				if($this->_cacheModuleID !== '')
+			}
+			if ($cache === null || !($cache instanceof ICache)) {
+				if ($this->_cacheModuleID !== '') {
 					throw new TConfigurationException('cachepagestatepersister_cachemoduleid_invalid', $this->_cacheModuleID);
-				else
+				} else {
 					throw new TConfigurationException('cachepagestatepersister_cache_required');
+				}
 			}
 			$this->_cache = $cache;
 		}
@@ -142,10 +142,11 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function setCacheTimeout($value)
 	{
-		if(($value = TPropertyValue::ensureInteger($value)) >= 0)
+		if (($value = TPropertyValue::ensureInteger($value)) >= 0) {
 			$this->_timeout = $value;
-		else
+		} else {
 			throw new TInvalidDataValueException('cachepagestatepersister_timeout_invalid');
+		}
 	}
 
 	/**
@@ -195,13 +196,12 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function load()
 	{
-		if(($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null)
-		{
+		if (($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null) {
 			$key = $this->calculateKey($timestamp);
-			if(($data = $this->getCache()->get($key)) !== false)
+			if (($data = $this->getCache()->get($key)) !== false) {
 				return $data;
+			}
 		}
 		throw new THttpException(400, 'cachepagestatepersister_pagestate_corrupted');
 	}
 }
-

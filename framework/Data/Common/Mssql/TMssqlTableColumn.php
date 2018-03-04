@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a Mssql database table.
  *
@@ -35,7 +34,6 @@ class TMssqlTableColumn extends TDbTableColumn
 	 */
 	public function getPHPType()
 	{
-
 		return 'string';
 	}
 
@@ -63,4 +61,3 @@ class TMssqlTableColumn extends TDbTableColumn
 		return strtolower($this->getDbType()) === 'timestamp';
 	}
 }
-

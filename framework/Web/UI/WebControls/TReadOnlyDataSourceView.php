@@ -28,12 +28,13 @@ class TReadOnlyDataSourceView extends TDataSourceView
 	public function __construct(IDataSource $owner, $viewName, $dataSource)
 	{
 		parent::__construct($owner, $viewName);
-		if($dataSource === null || is_array($dataSource))
+		if ($dataSource === null || is_array($dataSource)) {
 			$this->_dataSource = new TMap($dataSource);
-		elseif($dataSource instanceof \Traversable)
+		} elseif ($dataSource instanceof \Traversable) {
 			$this->_dataSource = $dataSource;
-		else
+		} else {
 			throw new TInvalidDataTypeException('readonlydatasourceview_datasource_invalid');
+		}
 	}
 
 	public function select($parameters)

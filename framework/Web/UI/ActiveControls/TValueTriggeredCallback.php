@@ -15,7 +15,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TValueTriggeredCallback Class
  *
@@ -85,8 +84,9 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	public function setDecayRate($value)
 	{
 		$decay = TPropertyValue::ensureFloat($value);
-		if($decay < 0)
+		if ($decay < 0) {
 			throw new TConfigurationException('callback_decay_be_not_negative', $this->getID());
+		}
 		$this->setViewState('Decay', $decay);
 	}
 
@@ -110,7 +110,9 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTriggerOptions());
+			$this->getClientClassName(),
+			$this->getTriggerOptions()
+		);
 	}
 
 	/**

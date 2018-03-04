@@ -18,7 +18,6 @@ use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TDbConnection class
  *
@@ -169,12 +168,12 @@ class TDbConnection extends \Prado\TComponent
 	public function setActive($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		if($value !== $this->_active)
-		{
-			if($value)
+		if ($value !== $this->_active) {
+			if ($value) {
 				$this->open();
-			else
+			} else {
 				$this->close();
+			}
 		}
 	}
 
@@ -184,21 +183,21 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	protected function open()
 	{
-		if($this->_pdo === null)
-		{
-			try
-			{
-				$this->_pdo = new PDO($this->getConnectionString(),$this->getUsername(),
-									$this->getPassword(), $this->_attributes);
+		if ($this->_pdo === null) {
+			try {
+				$this->_pdo = new PDO(
+					$this->getConnectionString(),
+					$this->getUsername(),
+									$this->getPassword(),
+					$this->_attributes
+				);
 				// This attribute is only useful for PDO::MySql driver.
 				// Ignore the warning if a driver doesn't understand this.
 				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active = true;
 				$this->setConnectionCharset();
-			}
-			catch(PDOException $e)
-			{
+			} catch (PDOException $e) {
 				throw new TDbException('dbconnection_open_failed', $e->getMessage());
 			}
 		}
@@ -221,10 +220,10 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	protected function setConnectionCharset()
 	{
-		if ($this->_charset === '' || $this->_active === false)
+		if ($this->_charset === '' || $this->_active === false) {
 			return;
-		switch ($this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME))
-		{
+		}
+		switch ($this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
 			case 'mysql':
 			case 'sqlite':
 				$stmt = $this->_pdo->prepare('SET NAMES ?');
@@ -290,7 +289,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * @return string the charset used for database connection. Defaults to emtpy string.
 	 */
-	public function getCharset ()
+	public function getCharset()
 	{
 		return $this->_charset;
 	}
@@ -298,7 +297,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * @param string $value the charset used for database connection
 	 */
-	public function setCharset ($value)
+	public function setCharset($value)
 	{
 		$this->_charset = $value;
 		$this->setConnectionCharset();
@@ -320,10 +319,11 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function createCommand($sql)
 	{
-		if($this->getActive())
+		if ($this->getActive()) {
 			return new TDbCommand($this, $sql);
-		else
+		} else {
 			throw new TDbException('dbconnection_connection_inactive');
+		}
 	}
 
 	/**
@@ -331,10 +331,10 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getCurrentTransaction()
 	{
-		if($this->_transaction !== null)
-		{
-			if($this->_transaction->getActive())
+		if ($this->_transaction !== null) {
+			if ($this->_transaction->getActive()) {
 				return $this->_transaction;
+			}
 		}
 		return null;
 	}
@@ -346,13 +346,12 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function beginTransaction()
 	{
-		if($this->getActive())
-		{
+		if ($this->getActive()) {
 			$this->_pdo->beginTransaction();
 			return $this->_transaction = Prado::createComponent($this->getTransactionClass(), $this);
-		}
-		else
+		} else {
 			throw new TDbException('dbconnection_connection_inactive');
+		}
 	}
 
 	/**
@@ -382,10 +381,11 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getLastInsertID($sequenceName = '')
 	{
-		if($this->getActive())
+		if ($this->getActive()) {
 			return $this->_pdo->lastInsertId($sequenceName);
-		else
+		} else {
 			throw new TDbException('dbconnection_connection_inactive');
+		}
 	}
 
 	/**
@@ -396,10 +396,11 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function quoteString($str)
 	{
-		if($this->getActive())
+		if ($this->getActive()) {
 			return $this->_pdo->quote($str);
-		else
+		} else {
 			throw new TDbException('dbconnection_connection_inactive');
+		}
 	}
 
 	/**
@@ -437,8 +438,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getDbMetaData()
 	{
-		if($this->_dbMeta === null)
-		{
+		if ($this->_dbMeta === null) {
 			$this->_dbMeta = TDbMetaData::getInstance($this);
 		}
 		return $this->_dbMeta;
@@ -449,8 +449,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getColumnCase()
 	{
-		switch($this->getAttribute(PDO::ATTR_CASE))
-		{
+		switch ($this->getAttribute(PDO::ATTR_CASE)) {
 			case PDO::CASE_NATURAL:
 				return TDbColumnCaseMode::Preserved;
 			case PDO::CASE_LOWER:
@@ -465,8 +464,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setColumnCase($value)
 	{
-		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode'))
-		{
+		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode')) {
 			case TDbColumnCaseMode::Preserved:
 				$value = PDO::CASE_NATURAL;
 				break;
@@ -485,8 +483,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getNullConversion()
 	{
-		switch($this->getAttribute(PDO::ATTR_ORACLE_NULLS))
-		{
+		switch ($this->getAttribute(PDO::ATTR_ORACLE_NULLS)) {
 			case PDO::NULL_NATURAL:
 				return TDbNullConversionMode::Preserved;
 			case PDO::NULL_EMPTY_STRING:
@@ -501,8 +498,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setNullConversion($value)
 	{
-		switch(TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode'))
-		{
+		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode')) {
 			case TDbNullConversionMode::Preserved:
 				$value = PDO::NULL_NATURAL;
 				break;
@@ -617,10 +613,11 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($this->getActive())
+		if ($this->getActive()) {
 			return $this->_pdo->getAttribute($name);
-		else
+		} else {
 			throw new TDbException('dbconnection_connection_inactive');
+		}
 	}
 
 	/**
@@ -631,9 +628,10 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setAttribute($name, $value)
 	{
-		if($this->_pdo instanceof PDO)
+		if ($this->_pdo instanceof PDO) {
 			$this->_pdo->setAttribute($name, $value);
-		else
+		} else {
 			$this->_attributes[$name] = $value;
+		}
 	}
 }

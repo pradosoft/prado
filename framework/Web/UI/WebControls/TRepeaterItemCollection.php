@@ -33,9 +33,10 @@ class TRepeaterItemCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof \Prado\Web\UI\TControl)
+		if ($item instanceof \Prado\Web\UI\TControl) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('repeateritemcollection_item_invalid');
+		}
 	}
 }

@@ -64,10 +64,10 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	 */
 	public function load()
 	{
-		if(($data = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null)
+		if (($data = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null) {
 			return $data;
-		else
+		} else {
 			throw new THttpException(400, 'pagestatepersister_pagestate_corrupted');
+		}
 	}
 }
-

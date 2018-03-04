@@ -45,22 +45,24 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TXCache extends TCache
 {
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement $config configuration for this module, can be null
-    * @throws TConfigurationException if xcache extension is not installed or not started, check your php.ini
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if xcache extension is not installed or not started, check your php.ini
+	 */
 	public function init($config)
 	{
-		if(!function_exists('xcache_isset'))
+		if (!function_exists('xcache_isset')) {
 			throw new TConfigurationException('xcache_extension_required');
+		}
 
 		$enabled = (int)ini_get('xcache.cacher') !== 0;
 		$var_size = (int)ini_get('xcache.var_size');
 
-		if(!($enabled && $var_size > 0))
+		if (!($enabled && $var_size > 0)) {
 			throw new TConfigurationException('xcache_extension_not_enabled');
+		}
 
 		parent::init($config);
 	}
@@ -121,12 +123,11 @@ class TXCache extends TCache
 	 */
 	public function flush()
 	{
-		for($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i++)
-		{
-			if(xcache_clear_cache(XC_TYPE_VAR, $i) === false)
+		for ($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i++) {
+			if (xcache_clear_cache(XC_TYPE_VAR, $i) === false) {
 				return false;
+			}
 		}
 		return true;
 	}
 }
-

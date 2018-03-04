@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 
-
 /**
  * TScaffoldSearch provide a simple textbox and a button that is used
  * to perform search on a TScaffoldListView with ID given by {@link setListViewID ListViewID}.
@@ -47,11 +46,11 @@ class TScaffoldSearch extends TScaffoldBase
 	 */
 	protected function getListView()
 	{
-		if($this->_list === null && ($id = $this->getListViewID()) !== null)
-		{
+		if ($this->_list === null && ($id = $this->getListViewID()) !== null) {
 			$this->_list = $this->getParent()->findControl($id);
-			if($this->_list === null)
+			if ($this->_list === null) {
 				throw new TConfigurationException('scaffold_unable_to_find_list_view', $id);
+			}
 		}
 		return $this->_list;
 	}
@@ -78,10 +77,8 @@ class TScaffoldSearch extends TScaffoldBase
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		if(strtolower($param->getCommandName()) === 'search')
-		{
-			if(($list = $this->getListView()) !== null)
-			{
+		if (strtolower($param->getCommandName()) === 'search') {
+			if (($list = $this->getListView()) !== null) {
 				$list->setSearchCondition($this->createSearchCondition());
 				return false;
 			}
@@ -96,8 +93,7 @@ class TScaffoldSearch extends TScaffoldBase
 	protected function createSearchCondition()
 	{
 		$table = $this->getTableInfo();
-		if(strlen($str = $this->getSearchText()->getText()) > 0)
-		{
+		if (strlen($str = $this->getSearchText()->getText()) > 0) {
 			$builder = $table->createCommandBuilder($this->getRecordFinder()->getDbConnection());
 			return $builder->getSearchExpression($this->getFields(), $str);
 		}
@@ -108,10 +104,11 @@ class TScaffoldSearch extends TScaffoldBase
 	 */
 	protected function getFields()
 	{
-		if(strlen(trim($str = $this->getSearchableFields())) > 0)
+		if (strlen(trim($str = $this->getSearchableFields())) > 0) {
 			$fields = preg_split('/\s*,\s*/', $str);
-		else
+		} else {
 			$fields = $this->getTableInfo()->getColumns()->getKeys();
+		}
 		return $fields;
 	}
 
@@ -149,4 +146,3 @@ class TScaffoldSearch extends TScaffoldBase
 		return $this->getRegisteredObject('_textbox');
 	}
 }
-

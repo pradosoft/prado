@@ -89,14 +89,15 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 */
 	public function setSelectionMode($value)
 	{
-		if(parent::getSelectionMode() === $value)
+		if (parent::getSelectionMode() === $value) {
 			return;
+		}
 
 		parent::setSelectionMode($value);
 		$multiple = $this->getIsMultiSelect();
-		$id = $this->getUniqueID(); $multi_id = $id . '[]';
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		$id = $this->getUniqueID();
+		$multi_id = $id . '[]';
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$client->setAttribute($this, 'multiple', $multiple ? 'multiple' : false);
 			$client->setAttribute($this, 'name', $multiple ? $multi_id : $id);
@@ -151,9 +152,11 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->getAutoPostBack())
+		if ($this->getAutoPostBack()) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
+		}
 	}
 }
-

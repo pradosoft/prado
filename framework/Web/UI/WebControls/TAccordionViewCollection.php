@@ -34,10 +34,11 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TAccordionView)
+		if ($item instanceof TAccordionView) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('tabviewcollection_tabview_required');
+		}
 	}
 
 	/**
@@ -47,10 +48,10 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 	 */
 	public function findIndexByID($id)
 	{
-		foreach($this as $index => $view)
-		{
-			if($view->getID(false) === $id)
+		foreach ($this as $index => $view) {
+			if ($view->getID(false) === $id) {
 				return $index;
+			}
 		}
 		return -1;
 	}

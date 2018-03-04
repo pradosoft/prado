@@ -52,8 +52,9 @@ class TAttributeCollection extends TMap
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_caseSensitive === false)
+		if ($this->_caseSensitive === false) {
 			$exprops[] = "\0Prado\Collections\TAttributeCollection\0_caseSensitive";
+		}
 	}
 
 	/**
@@ -179,4 +180,3 @@ class TAttributeCollection extends TMap
 		return true;
 	}
 }
-

@@ -62,12 +62,11 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TDataGridColumn)
-		{
+		if ($item instanceof TDataGridColumn) {
 			$item->setOwner($this->_o);
 			parent::insertAt($index, $item);
-		}
-		else
+		} else {
 			throw new TInvalidDataTypeException('datagridcolumncollection_datagridcolumn_required');
+		}
 	}
 }

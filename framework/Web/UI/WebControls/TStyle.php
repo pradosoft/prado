@@ -54,16 +54,21 @@ class TStyle extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_fields === [])
+		if ($this->_fields === []) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_fields";
-		if($this->_font === null)
+		}
+		if ($this->_font === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_font";
-		if($this->_class === null)
+		}
+		if ($this->_class === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_class";
-		if ($this->_customStyle === null)
+		}
+		if ($this->_customStyle === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_customStyle";
-		if ($this->_displayStyle === 'Fixed')
+		}
+		if ($this->_displayStyle === 'Fixed') {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_displayStyle";
+		}
 	}
 
 	/**
@@ -72,9 +77,10 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function __construct($style = null)
 	{
-	parent::__construct();
-		if($style !== null)
+		parent::__construct();
+		if ($style !== null) {
 			$this->copyFrom($style);
+		}
 	}
 
 	/**
@@ -82,8 +88,9 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function __clone()
 	{
-		if($this->_font !== null)
+		if ($this->_font !== null) {
 			$this->_font = clone($this->_font);
+		}
 	}
 
 	/**
@@ -99,10 +106,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setBackColor($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['background-color']);
-		else
+		} else {
 			$this->_fields['background-color'] = $value;
+		}
 	}
 
 	/**
@@ -118,10 +126,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setBorderColor($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['border-color']);
-		else
+		} else {
 			$this->_fields['border-color'] = $value;
+		}
 	}
 
 	/**
@@ -138,10 +147,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setBorderStyle($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['border-style']);
-		else
+		} else {
 			$this->_fields['border-style'] = $value;
+		}
 	}
 
 	/**
@@ -157,10 +167,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setBorderWidth($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['border-width']);
-		else
+		} else {
 			$this->_fields['border-width'] = $value;
+		}
 	}
 
 	/**
@@ -192,8 +203,9 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getFont()
 	{
-		if($this->_font === null)
+		if ($this->_font === null) {
 			$this->_font = new TFont;
+		}
 		return $this->_font;
 	}
 
@@ -211,8 +223,7 @@ class TStyle extends \Prado\TComponent
 	public function setDisplayStyle($value)
 	{
 		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDisplayStyle');
-		switch($this->_displayStyle)
-		{
+		switch ($this->_displayStyle) {
 			case TDisplayStyle::None:
 				$this->_fields['display'] = 'none';
 				break;
@@ -249,10 +260,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setForeColor($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['color']);
-		else
+		} else {
 			$this->_fields['color'] = $value;
+		}
 	}
 
 	/**
@@ -268,10 +280,11 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setHeight($value)
 	{
-		if(trim($value) === '')
+		if (trim($value) === '') {
 			unset($this->_fields['height']);
-		else
+		} else {
 			$this->_fields['height'] = $value;
+		}
 	}
 
 	/**
@@ -363,15 +376,17 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function copyFrom($style)
 	{
-		if($style instanceof TStyle)
-		{
+		if ($style instanceof TStyle) {
 			$this->_fields = array_merge($this->_fields, $style->_fields);
-			if($style->_class !== null)
+			if ($style->_class !== null) {
 				$this->_class = $style->_class;
-			if($style->_customStyle !== null)
+			}
+			if ($style->_customStyle !== null) {
 				$this->_customStyle = $style->_customStyle;
-			if($style->_font !== null)
+			}
+			if ($style->_font !== null) {
 				$this->getFont()->copyFrom($style->_font);
+			}
 		}
 	}
 
@@ -383,15 +398,17 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function mergeWith($style)
 	{
-		if($style instanceof TStyle)
-		{
+		if ($style instanceof TStyle) {
 			$this->_fields = array_merge($style->_fields, $this->_fields);
-			if($this->_class === null)
+			if ($this->_class === null) {
 				$this->_class = $style->_class;
-			if($this->_customStyle === null)
+			}
+			if ($this->_customStyle === null) {
 				$this->_customStyle = $style->_customStyle;
-			if($style->_font !== null)
+			}
+			if ($style->_font !== null) {
 				$this->getFont()->mergeWith($style->_font);
+			}
 		}
 	}
 
@@ -401,20 +418,21 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if($this->_customStyle !== null)
-		{
-			foreach(explode(';', $this->_customStyle) as $style)
-			{
+		if ($this->_customStyle !== null) {
+			foreach (explode(';', $this->_customStyle) as $style) {
 				$arr = explode(':', $style, 2);
-				if(isset($arr[1]) && trim($arr[0]) !== '')
+				if (isset($arr[1]) && trim($arr[0]) !== '') {
 					$writer->addStyleAttribute(trim($arr[0]), trim($arr[1]));
+				}
 			}
 		}
 		$writer->addStyleAttributes($this->_fields);
-		if($this->_font !== null)
+		if ($this->_font !== null) {
 			$this->_font->addAttributesToRender($writer);
-		if($this->_class !== null)
+		}
+		if ($this->_class !== null) {
 			$writer->addAttribute('class', $this->_class);
+		}
 	}
 
 	/**

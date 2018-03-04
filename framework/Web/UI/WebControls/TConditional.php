@@ -63,8 +63,9 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($this->_creatingChildren)
+		if ($this->_creatingChildren) {
 			parent::addParsedObject($object);
+		}
 	}
 
 	/**
@@ -76,21 +77,18 @@ class TConditional extends \Prado\Web\UI\TControl
 	{
 		$this->_creatingChildren = true;
 		$result = true;
-		try
-		{
+		try {
 			$result = $this->getTemplateControl()->evaluateExpression($this->_condition);
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			throw new TInvalidDataValueException('conditional_condition_invalid', $this->_condition, $e->getMessage());
 		}
-		if($result)
-		{
-			if($this->_trueTemplate)
+		if ($result) {
+			if ($this->_trueTemplate) {
 				$this->_trueTemplate->instantiateIn($this->getTemplateControl(), $this);
-		}
-		elseif($this->_falseTemplate)
+			}
+		} elseif ($this->_falseTemplate) {
 			$this->_falseTemplate->instantiateIn($this->getTemplateControl(), $this);
+		}
 		$this->_creatingChildren = false;
 	}
 
@@ -144,4 +142,3 @@ class TConditional extends \Prado\Web\UI\TControl
 		$this->_falseTemplate = $value;
 	}
 }
-

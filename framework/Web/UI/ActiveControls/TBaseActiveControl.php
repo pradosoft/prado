@@ -16,7 +16,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-
 /**
  * TBaseActiveControl class provided additional basic property for every
  * active control. An instance of TBaseActiveControl or its decendent
@@ -63,8 +62,9 @@ class TBaseActiveControl extends \Prado\TComponent
 	protected function setOption($name, $value, $default = null)
 	{
 		$value = ($value === null) ? $default : $value;
-		if($value !== null)
+		if ($value !== null) {
 			$this->_options->add($name, $value);
+		}
 	}
 
 	/**

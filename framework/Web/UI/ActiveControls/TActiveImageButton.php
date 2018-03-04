@@ -62,12 +62,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 */
 	public function setAlternateText($value)
 	{
-		if(parent::getAlternateText() === $value)
+		if (parent::getAlternateText() === $value) {
 			return;
+		}
 
 		parent::setAlternateText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'alt', $value);
+		}
 	}
 
 	/**
@@ -79,12 +81,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 */
 	public function setImageAlign($value)
 	{
-		if(parent::getImageAlign() === $value)
+		if (parent::getImageAlign() === $value) {
 			return;
+		}
 
 		parent::setImageAlign($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'align', $value);
+		}
 	}
 
 	/**
@@ -92,12 +96,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 */
 	public function setImageUrl($value)
 	{
-		if(parent::getImageUrl() === $value)
+		if (parent::getImageUrl() === $value) {
 			return;
+		}
 
 		parent::setImageUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'src', $value);
+		}
 	}
 
 	/**
@@ -105,12 +111,14 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 */
 	public function setDescriptionUrl($value)
 	{
-		if(parent::getDescriptionUrl() === $value)
+		if (parent::getDescriptionUrl() === $value) {
 			return;
+		}
 
 		parent::setDescriptionUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'longdesc', $value);
+		}
 	}
 
 	/**
@@ -157,7 +165,9 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**

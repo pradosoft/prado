@@ -17,7 +17,6 @@ namespace Prado\I18N;
 use Prado\I18N\core\ChoiceFormat;
 use Prado\Prado;
 
-
 /**
  * TChoiceFormat class.
  *
@@ -105,7 +104,8 @@ class TChoiceFormat extends TTranslate
 		$choice = new ChoiceFormat();
 		$value = $this->getValue();
 		$string = $choice->format($text, $value);
-		if($string)
+		if ($string) {
 			return strtr($string, ['{Value}' => $value]);
+		}
 	}
 }

@@ -57,15 +57,15 @@ class TXmlElementList extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TXmlElement)
-		{
+		if ($item instanceof TXmlElement) {
 			parent::insertAt($index, $item);
-			if($item->getParent() !== null)
+			if ($item->getParent() !== null) {
 				$item->getParent()->getElements()->remove($item);
+			}
 			$item->setParent($this->_o);
-		}
-		else
+		} else {
 			throw new TInvalidDataTypeException('xmlelementlist_xmlelement_required');
+		}
 	}
 
 	/**
@@ -78,8 +78,9 @@ class TXmlElementList extends \Prado\Collections\TList
 	public function removeAt($index)
 	{
 		$item = parent::removeAt($index);
-		if($item instanceof TXmlElement)
+		if ($item instanceof TXmlElement) {
 			$item->setParent(null);
+		}
 		return $item;
 	}
 }

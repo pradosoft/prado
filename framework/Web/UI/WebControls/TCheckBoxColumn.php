@@ -81,19 +81,20 @@ class TCheckBoxColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem)
-		{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			$checkBox = new TCheckBox;
-			if($this->getReadOnly() || $itemType !== TListItemType::EditItem)
+			if ($this->getReadOnly() || $itemType !== TListItemType::EditItem) {
 				$checkBox->setEnabled(false);
+			}
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
 			$cell->registerObject('CheckBox', $checkBox);
-			if($this->getDataField() !== '')
+			if ($this->getDataField() !== '') {
 				$checkBox->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
-		}
-		else
+			}
+		} else {
 			parent::initializeCell($cell, $columnIndex, $itemType);
+		}
 	}
 
 	/**
@@ -105,12 +106,13 @@ class TCheckBoxColumn extends TDataGridColumn
 	{
 		$item = $sender->getNamingContainer();
 		$data = $item->getData();
-		if(($field = $this->getDataField()) !== '')
+		if (($field = $this->getDataField()) !== '') {
 			$value = TPropertyValue::ensureBoolean($this->getDataFieldValue($data, $field));
-		else
+		} else {
 			$value = TPropertyValue::ensureBoolean($data);
-		if($sender instanceof TCheckBox)
+		}
+		if ($sender instanceof TCheckBox) {
 			$sender->setChecked($value);
+		}
 	}
 }
-

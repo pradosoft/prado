@@ -198,15 +198,15 @@ class TPage extends TTemplateControl
 
 		$this->determinePostBackMode();
 
-		if($this->getIsPostBack())
-		{
-			if($this->getIsCallback())
+		if ($this->getIsPostBack()) {
+			if ($this->getIsCallback()) {
 				$this->processCallbackRequest($writer);
-			else
+			} else {
 				$this->processPostBackRequest($writer);
-		}
-		else
+			}
+		} else {
 			$this->processNormalRequest($writer);
+		}
 
 		$this->_writer = null;
 	}
@@ -292,12 +292,12 @@ class TPage extends TTemplateControl
 
 	protected static function decodeUTF8($data, $enc)
 	{
-		if(is_array($data))
-		{
-			foreach($data as $k => $v)
+		if (is_array($data)) {
+			foreach ($data as $k => $v) {
 				$data[$k] = self::decodeUTF8($v, $enc);
+			}
 			return $data;
-		} elseif(is_string($data)) {
+		} elseif (is_string($data)) {
 			return iconv('UTF-8', $enc . '//IGNORE', $data);
 		} else {
 			return $data;
@@ -313,14 +313,17 @@ class TPage extends TTemplateControl
 		$this->setAdapter(new TActivePageAdapter($this));
 
 		$callbackEventParameter = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
-		if(strlen($callbackEventParameter) > 0)
+		if (strlen($callbackEventParameter) > 0) {
 			$this->_postData[TPage::FIELD_CALLBACK_PARAMETER] = TJavaScript::jsonDecode((string)$callbackEventParameter);
+		}
 
 		// Decode Callback postData from UTF-8 to current Charset
 		if (($g = $this->getApplication()->getGlobalization(false)) !== null &&
-			strtoupper($enc = $g->getCharset()) != 'UTF-8')
-				foreach ($this->_postData as $k => $v)
-					$this->_postData[$k] = self::decodeUTF8($v, $enc);
+			strtoupper($enc = $g->getCharset()) != 'UTF-8') {
+			foreach ($this->_postData as $k => $v) {
+				$this->_postData[$k] = self::decodeUTF8($v, $enc);
+			}
+		}
 
 		Prado::trace("Page onPreInit()", 'Prado\Web\UI\TPage');
 		$this->onPreInit(null);
@@ -350,10 +353,10 @@ class TPage extends TTemplateControl
 
 		$this->getAdapter()->processCallbackEvent($writer);
 
-/*
-		Prado::trace("Page raisePostBackEvent()",'Prado\Web\UI\TPage');
-		$this->raisePostBackEvent();
-*/
+		/*
+				Prado::trace("Page raisePostBackEvent()",'Prado\Web\UI\TPage');
+				$this->raisePostBackEvent();
+		*/
 		Prado::trace("Page onLoadComplete()", 'Prado\Web\UI\TPage');
 		$this->onLoadComplete(null);
 
@@ -367,10 +370,10 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onSaveStateComplete()", 'Prado\Web\UI\TPage');
 		$this->onSaveStateComplete(null);
 
-/*
-		Prado::trace("Page renderControl()",'Prado\Web\UI\TPage');
-		$this->renderControl($writer);
-*/
+		/*
+				Prado::trace("Page renderControl()",'Prado\Web\UI\TPage');
+				$this->renderControl($writer);
+		*/
 		$this->getAdapter()->renderCallbackResponse($writer);
 
 		Prado::trace("Page unloadRecursive()", 'Prado\Web\UI\TPage');
@@ -384,10 +387,11 @@ class TPage extends TTemplateControl
 	 */
 	public function getCallbackClient()
 	{
-		if($this->getAdapter() !== null)
+		if ($this->getAdapter() !== null) {
 			return $this->getAdapter()->getCallbackClientHandler();
-		else
+		} else {
 			return new TCallbackClientScript();
+		}
 	}
 
 	/**
@@ -450,10 +454,11 @@ class TPage extends TTemplateControl
 	 */
 	public function setForm(TForm $form)
 	{
-		if($this->_form === null)
+		if ($this->_form === null) {
 			$this->_form = $form;
-		else
+		} else {
 			throw new TInvalidOperationException('page_form_duplicated');
+		}
 	}
 
 	/**
@@ -464,16 +469,18 @@ class TPage extends TTemplateControl
 	 */
 	public function getValidators($validationGroup = null)
 	{
-		if(!$this->_validators)
+		if (!$this->_validators) {
 			$this->_validators = new TList;
-		if(empty($validationGroup) === true)
+		}
+		if (empty($validationGroup) === true) {
 			return $this->_validators;
-		else
-		{
+		} else {
 			$list = new TList;
-			foreach($this->_validators as $validator)
-				if($validator->getValidationGroup() === $validationGroup)
+			foreach ($this->_validators as $validator) {
+				if ($validator->getValidationGroup() === $validationGroup) {
 					$list->add($validator);
+				}
+			}
 			return $list;
 		}
 	}
@@ -488,19 +495,16 @@ class TPage extends TTemplateControl
 	{
 		Prado::trace("Page validate()", 'Prado\Web\UI\TPage');
 		$this->_validated = true;
-		if($this->_validators && $this->_validators->getCount())
-		{
-			if($validationGroup === null)
-			{
-				foreach($this->_validators as $validator)
+		if ($this->_validators && $this->_validators->getCount()) {
+			if ($validationGroup === null) {
+				foreach ($this->_validators as $validator) {
 					$validator->validate();
-			}
-			else
-			{
-				foreach($this->_validators as $validator)
-				{
-					if($validator->getValidationGroup() === $validationGroup)
+				}
+			} else {
+				foreach ($this->_validators as $validator) {
+					if ($validator->getValidationGroup() === $validationGroup) {
 						$validator->validate();
+					}
 				}
 			}
 		}
@@ -514,18 +518,18 @@ class TPage extends TTemplateControl
 	 */
 	public function getIsValid()
 	{
-		if($this->_validated)
-		{
-			if($this->_validators && $this->_validators->getCount())
-			{
-				foreach($this->_validators as $validator)
-					if(!$validator->getIsValid())
+		if ($this->_validated) {
+			if ($this->_validators && $this->_validators->getCount()) {
+				foreach ($this->_validators as $validator) {
+					if (!$validator->getIsValid()) {
 						return false;
+					}
+				}
 			}
 			return true;
-		}
-		else
+		} else {
 			throw new TInvalidOperationException('page_isvalid_unknown');
+		}
 	}
 
 	/**
@@ -533,8 +537,9 @@ class TPage extends TTemplateControl
 	 */
 	public function getTheme()
 	{
-		if(is_string($this->_theme))
+		if (is_string($this->_theme)) {
 			$this->_theme = $this->getService()->getThemeManager()->getTheme($this->_theme);
+		}
 		return $this->_theme;
 	}
 
@@ -553,8 +558,9 @@ class TPage extends TTemplateControl
 	 */
 	public function getStyleSheetTheme()
 	{
-		if(is_string($this->_styleSheet))
+		if (is_string($this->_styleSheet)) {
 			$this->_styleSheet = $this->getService()->getThemeManager()->getTheme($this->_styleSheet);
+		}
 		return $this->_styleSheet;
 	}
 
@@ -574,8 +580,9 @@ class TPage extends TTemplateControl
 	 */
 	public function applyControlSkin($control)
 	{
-		if(($theme = $this->getTheme()) !== null)
+		if (($theme = $this->getTheme()) !== null) {
 			$theme->applySkin($control);
+		}
 	}
 
 	/**
@@ -585,8 +592,9 @@ class TPage extends TTemplateControl
 	 */
 	public function applyControlStyleSheet($control)
 	{
-		if(($theme = $this->getStyleSheetTheme()) !== null)
+		if (($theme = $this->getStyleSheetTheme()) !== null) {
 			$theme->applySkin($control);
+		}
 	}
 
 	/**
@@ -594,11 +602,12 @@ class TPage extends TTemplateControl
 	 */
 	public function getClientScript()
 	{
-		if(!$this->_clientScript) {
+		if (!$this->_clientScript) {
 			$className = $classPath = $this->getService()->getClientScriptManagerClass();
 
-			if($className !== '\Prado\Web\UI\TClientScriptManager' && !is_subclass_of($className, '\Prado\Web\UI\TClientScriptManager'))
+			if ($className !== '\Prado\Web\UI\TClientScriptManager' && !is_subclass_of($className, '\Prado\Web\UI\TClientScriptManager')) {
 				throw new THttpException(404, 'page_csmanagerclass_invalid', $className);
+			}
 
 			$this->_clientScript = new $className($this);
 		}
@@ -671,24 +680,27 @@ class TPage extends TTemplateControl
 		$this->raiseEvent('OnPreRenderComplete', $this, $param);
 		$cs = $this->getClientScript();
 		$theme = $this->getTheme();
-		if($theme instanceof ITheme)
-		{
-			foreach($theme->getStyleSheetFiles() as $url)
+		if ($theme instanceof ITheme) {
+			foreach ($theme->getStyleSheetFiles() as $url) {
 				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
-			foreach($theme->getJavaScriptFiles() as $url)
+			}
+			foreach ($theme->getJavaScriptFiles() as $url) {
 				$cs->registerHeadScriptFile($url, $url);
+			}
 		}
 		$styleSheet = $this->getStyleSheetTheme();
-		if($styleSheet instanceof ITheme)
-		{
-			foreach($styleSheet->getStyleSheetFiles() as $url)
+		if ($styleSheet instanceof ITheme) {
+			foreach ($styleSheet->getStyleSheetFiles() as $url) {
 				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
-			foreach($styleSheet->getJavaScriptFiles() as $url)
+			}
+			foreach ($styleSheet->getJavaScriptFiles() as $url) {
 				$cs->registerHeadScriptFile($url, $url);
+			}
 		}
 
-		if($cs->getRequiresHead() && $this->getHead() === null)
+		if ($cs->getRequiresHead() && $this->getHead() === null) {
 			throw new TConfigurationException('page_head_required');
+		}
 	}
 
 	/**
@@ -702,10 +714,11 @@ class TPage extends TTemplateControl
 	private function getCssMediaType($url)
 	{
 		$segs = explode('.', basename($url));
-		if(isset($segs[2]))
+		if (isset($segs[2])) {
 			return $segs[count($segs) - 2];
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
@@ -727,8 +740,9 @@ class TPage extends TTemplateControl
 	private function determinePostBackMode()
 	{
 		$postData = $this->getRequest();
-		if($postData->contains(self::FIELD_PAGESTATE) || $postData->contains(self::FIELD_POSTBACK_TARGET))
+		if ($postData->contains(self::FIELD_PAGESTATE) || $postData->contains(self::FIELD_POSTBACK_TARGET)) {
 			$this->_postData = $postData;
+		}
 	}
 
 	/**
@@ -810,8 +824,9 @@ class TPage extends TTemplateControl
 		$id = is_string($control) ? $control : $control->getUniqueID();
 		$this->_controlsRegisteredForPostData[$id] = true;
 		$params = func_get_args();
-		foreach($this->getCachingStack() as $item)
+		foreach ($this->getCachingStack() as $item) {
 			$item->registerAction('Page', 'registerRequiresPostData', [$id]);
+		}
 	}
 
 	/**
@@ -819,11 +834,11 @@ class TPage extends TTemplateControl
 	 */
 	public function getPostBackEventTarget()
 	{
-		if($this->_postBackEventTarget === null && $this->_postData !== null)
-		{
+		if ($this->_postBackEventTarget === null && $this->_postData !== null) {
 			$eventTarget = $this->_postData->itemAt(self::FIELD_POSTBACK_TARGET);
-			if(!empty($eventTarget))
+			if (!empty($eventTarget)) {
 				$this->_postBackEventTarget = $this->findControl($eventTarget);
+			}
 		}
 		return $this->_postBackEventTarget;
 	}
@@ -842,10 +857,10 @@ class TPage extends TTemplateControl
 	 */
 	public function getPostBackEventParameter()
 	{
-		if($this->_postBackEventParameter === null && $this->_postData !== null)
-		{
-			if(($this->_postBackEventParameter = $this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER)) === null)
+		if ($this->_postBackEventParameter === null && $this->_postData !== null) {
+			if (($this->_postBackEventParameter = $this->_postData->itemAt(self::FIELD_POSTBACK_PARAMETER)) === null) {
 				$this->_postBackEventParameter = '';
+			}
 		}
 		return $this->_postBackEventParameter;
 	}
@@ -866,41 +881,36 @@ class TPage extends TTemplateControl
 	protected function processPostData($postData, $beforeLoad)
 	{
 		$this->_isLoadingPostData = true;
-		if($beforeLoad)
+		if ($beforeLoad) {
 			$this->_restPostData = new TMap;
-		foreach($postData as $key => $value)
-		{
-			if($this->isSystemPostField($key))
+		}
+		foreach ($postData as $key => $value) {
+			if ($this->isSystemPostField($key)) {
 				continue;
-			elseif($control = $this->findControl($key))
-			{
-				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
-				{
-					if($control->loadPostData($key, $postData))
+			} elseif ($control = $this->findControl($key)) {
+				if ($control instanceof \Prado\Web\UI\IPostBackDataHandler) {
+					if ($control->loadPostData($key, $postData)) {
 						$this->_controlsPostDataChanged[] = $control;
-				}
-				elseif($control instanceof IPostBackEventHandler &&
-					empty($this->_postData[self::FIELD_POSTBACK_TARGET]))
-				{
+					}
+				} elseif ($control instanceof IPostBackEventHandler &&
+					empty($this->_postData[self::FIELD_POSTBACK_TARGET])) {
 					$this->_postData->add(self::FIELD_POSTBACK_TARGET, $key);  // not calling setPostBackEventTarget() because the control may be removed later
 				}
 				unset($this->_controlsRequiringPostData[$key]);
-			}
-			elseif($beforeLoad)
+			} elseif ($beforeLoad) {
 				$this->_restPostData->add($key, $value);
+			}
 		}
 
-		foreach($this->_controlsRequiringPostData as $key => $value)
-		{
-			if($control = $this->findControl($key))
-			{
-				if($control instanceof \Prado\Web\UI\IPostBackDataHandler)
-				{
-					if($control->loadPostData($key, $this->_postData))
+		foreach ($this->_controlsRequiringPostData as $key => $value) {
+			if ($control = $this->findControl($key)) {
+				if ($control instanceof \Prado\Web\UI\IPostBackDataHandler) {
+					if ($control->loadPostData($key, $this->_postData)) {
 						$this->_controlsPostDataChanged[] = $control;
-				}
-				else
+					}
+				} else {
 					throw new TInvalidDataValueException('page_postbackcontrol_invalid', $key);
+				}
 				unset($this->_controlsRequiringPostData[$key]);
 			}
 		}
@@ -920,8 +930,9 @@ class TPage extends TTemplateControl
 	 */
 	protected function raiseChangedEvents()
 	{
-		foreach($this->_controlsPostDataChanged as $control)
+		foreach ($this->_controlsPostDataChanged as $control) {
 			$control->raisePostDataChangedEvent();
+		}
 	}
 
 	/**
@@ -929,10 +940,11 @@ class TPage extends TTemplateControl
 	 */
 	protected function raisePostBackEvent()
 	{
-		if(($postBackHandler = $this->getPostBackEventTarget()) === null)
+		if (($postBackHandler = $this->getPostBackEventTarget()) === null) {
 			$this->validate();
-		elseif($postBackHandler instanceof IPostBackEventHandler)
+		} elseif ($postBackHandler instanceof IPostBackEventHandler) {
 			$postBackHandler->raisePostBackEvent($this->getPostBackEventParameter());
+		}
 	}
 
 	/**
@@ -950,8 +962,9 @@ class TPage extends TTemplateControl
 	 */
 	public function ensureRenderInForm($control)
 	{
-		if(!$this->getIsCallback() && !$this->_inFormRender)
+		if (!$this->getIsCallback() && !$this->_inFormRender) {
 			throw new TConfigurationException('page_control_outofform', get_class($control), $control ? $control->getUniqueID() : null);
+		}
 	}
 
 	/**
@@ -959,8 +972,9 @@ class TPage extends TTemplateControl
 	 */
 	public function beginFormRender($writer)
 	{
-		if($this->_formRendered)
+		if ($this->_formRendered) {
 			throw new TConfigurationException('page_form_duplicated');
+		}
 		$this->_formRendered = true;
 		$this->getClientScript()->registerHiddenField(self::FIELD_PAGESTATE, $this->getClientState());
 		$this->_inFormRender = true;
@@ -971,16 +985,16 @@ class TPage extends TTemplateControl
 	 */
 	public function endFormRender($writer)
 	{
-		if($this->_focus)
-		{
-			if(($this->_focus instanceof TControl) && $this->_focus->getVisible(true))
+		if ($this->_focus) {
+			if (($this->_focus instanceof TControl) && $this->_focus->getVisible(true)) {
 				$focus = $this->_focus->getClientID();
-			else
+			} else {
 				$focus = $this->_focus;
+			}
 			$this->getClientScript()->registerFocusControl($focus);
-		}
-		elseif($this->_postData && ($lastFocus = $this->_postData->itemAt(self::FIELD_LASTFOCUS)) !== null)
+		} elseif ($this->_postData && ($lastFocus = $this->_postData->itemAt(self::FIELD_LASTFOCUS)) !== null) {
 			$this->getClientScript()->registerFocusControl($lastFocus);
+		}
 		$this->_inFormRender = false;
 	}
 
@@ -1023,11 +1037,11 @@ class TPage extends TTemplateControl
 	 */
 	public function setHead(THead $value)
 	{
-		if($this->_head)
+		if ($this->_head) {
 			throw new TInvalidOperationException('page_head_duplicated');
+		}
 		$this->_head = $value;
-		if($this->_title !== null)
-		{
+		if ($this->_title !== null) {
 			$this->_head->setTitle($this->_title);
 			$this->_title = null;
 		}
@@ -1038,10 +1052,11 @@ class TPage extends TTemplateControl
 	 */
 	public function getTitle()
 	{
-		if($this->_head)
+		if ($this->_head) {
 			return $this->_head->getTitle();
-		else
+		} else {
 			return $this->_title === null ? '' : $this->_title;
+		}
 	}
 
 	/**
@@ -1052,10 +1067,11 @@ class TPage extends TTemplateControl
 	 */
 	public function setTitle($value)
 	{
-		if($this->_head)
+		if ($this->_head) {
 			$this->_head->setTitle($value);
-		else
+		} else {
 			$this->_title = $value;
+		}
 	}
 
 	/**
@@ -1107,11 +1123,11 @@ class TPage extends TTemplateControl
 	 */
 	public function getStatePersister()
 	{
-		if($this->_statePersister === null)
-		{
+		if ($this->_statePersister === null) {
 			$this->_statePersister = Prado::createComponent($this->_statePersisterClass);
-			if(!($this->_statePersister instanceof IPageStatePersister))
+			if (!($this->_statePersister instanceof IPageStatePersister)) {
 				throw new TInvalidDataTypeException('page_statepersister_invalid');
+			}
 			$this->_statePersister->setPage($this);
 		}
 		return $this->_statePersister;
@@ -1194,10 +1210,10 @@ class TPage extends TTemplateControl
 	 */
 	public function registerCachingAction($context, $funcName, $funcParams)
 	{
-		if($this->_cachingStack)
-		{
-			foreach($this->_cachingStack as $cache)
+		if ($this->_cachingStack) {
+			foreach ($this->_cachingStack as $cache) {
 				$cache->registerAction($context, $funcName, $funcParams);
+			}
 		}
 	}
 
@@ -1206,8 +1222,9 @@ class TPage extends TTemplateControl
 	 */
 	public function getCachingStack()
 	{
-		if(!$this->_cachingStack)
+		if (!$this->_cachingStack) {
 			$this->_cachingStack = new TStack;
+		}
 		return $this->_cachingStack;
 	}
 
@@ -1216,7 +1233,8 @@ class TPage extends TTemplateControl
 	 */
 	public function flushWriter()
 	{
-		if ($this->_writer)
+		if ($this->_writer) {
 			$this->Response->write($this->_writer->flush());
+		}
 	}
 }

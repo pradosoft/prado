@@ -55,7 +55,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidget()
 	{
-	  return 'dialog';
+		return 'dialog';
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -72,10 +72,9 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -105,12 +104,15 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	{
 		$options = $this->getOptions()->toArray();
 		// always make the dialog a child of the form, or its inner inputs won't be collected
-		if(!isset($options['appendTo']))
+		if (!isset($options['appendTo'])) {
 			$options['appendTo'] = 'form:first';
+		}
 
-		foreach($this->getControls() as $control)
-			if($control instanceof TJuiDialogButton)
+		foreach ($this->getControls() as $control) {
+			if ($control instanceof TJuiDialogButton) {
 				$options['buttons'][] = $control->getPostBackOptions();
+			}
+		}
 
 		return $options;
 	}
@@ -144,7 +146,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onOpen ($params)
+	public function onOpen($params)
 	{
 		$this->raiseEvent('OnOpen', $this, $params);
 	}
@@ -189,12 +191,11 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function render($writer)
 	{
-		if($this->getHasPreRendered() && $this->getActiveControl()->canUpdateClientSide())
-		{
-		  parent::renderContents($writer);
+		if ($this->getHasPreRendered() && $this->getActiveControl()->canUpdateClientSide()) {
+			parent::renderContents($writer);
 			$this->getPage()->getCallbackClient()->replaceContent($this, $writer, false);
-		}
-		else
+		} else {
 			parent::render($writer);
+		}
 	}
 }

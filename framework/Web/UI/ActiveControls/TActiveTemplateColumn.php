@@ -34,14 +34,16 @@ use Prado\Web\UI\WebControls\TTemplateColumn;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
-class TActiveTemplateColumn extends TTemplateColumn {
-	protected function initializeHeaderCell($cell, $columnIndex) {
+class TActiveTemplateColumn extends TTemplateColumn
+{
+	protected function initializeHeaderCell($cell, $columnIndex)
+	{
 		$text = $this->getHeaderText();
 
-		if(($classPath = $this->getHeaderRenderer()) !== '') {
+		if (($classPath = $this->getHeaderRenderer()) !== '') {
 			$control = Prado::createComponent($classPath);
-			if($control instanceof \Prado\IDataRenderer) {
-				if($control instanceof IItemDataRenderer) {
+			if ($control instanceof \Prado\IDataRenderer) {
+				if ($control instanceof IItemDataRenderer) {
 					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
@@ -49,42 +51,41 @@ class TActiveTemplateColumn extends TTemplateColumn {
 				$control->setData($text);
 			}
 			$cell->getControls()->add($control);
+		} elseif ($this->getAllowSorting()) {
+			$sortExpression = $this->getSortExpression();
+			if (($url = $this->getHeaderImageUrl()) !== '') {
+				$button = new TActiveImageButton;
+				$button->setImageUrl($url);
+				$button->setCommandName(TDataGrid::CMD_SORT);
+				$button->setCommandParameter($sortExpression);
+				if ($text !== '') {
+					$button->setAlternateText($text);
+				}
+				$button->setCausesValidation(false);
+				$cell->getControls()->add($button);
+			} elseif ($text !== '') {
+				$button = new TActiveLinkButton;
+				$button->setText($text);
+				$button->setCommandName(TDataGrid::CMD_SORT);
+				$button->setCommandParameter($sortExpression);
+				$button->setCausesValidation(false);
+				$cell->getControls()->add($button);
+			} else {
+				$cell->setText('&nbsp;');
+			}
+		} else {
+			if (($url = $this->getHeaderImageUrl()) !== '') {
+				$image = new TActiveImage;
+				$image->setImageUrl($url);
+				if ($text !== '') {
+					$image->setAlternateText($text);
+				}
+				$cell->getControls()->add($image);
+			} elseif ($text !== '') {
+				$cell->setText($text);
+			} else {
+				$cell->setText('&nbsp;');
+			}
 		}
-		elseif($this->getAllowSorting()) {
-				$sortExpression = $this->getSortExpression();
-				if(($url = $this->getHeaderImageUrl()) !== '') {
-					$button = new TActiveImageButton;
-					$button->setImageUrl($url);
-					$button->setCommandName(TDataGrid::CMD_SORT);
-					$button->setCommandParameter($sortExpression);
-					if($text !== '')
-						$button->setAlternateText($text);
-					$button->setCausesValidation(false);
-					$cell->getControls()->add($button);
-				}
-				elseif($text !== '') {
-						$button = new TActiveLinkButton;
-						$button->setText($text);
-						$button->setCommandName(TDataGrid::CMD_SORT);
-						$button->setCommandParameter($sortExpression);
-						$button->setCausesValidation(false);
-						$cell->getControls()->add($button);
-					}
-					else
-						$cell->setText('&nbsp;');
-			}
-			else {
-				if(($url = $this->getHeaderImageUrl()) !== '') {
-					$image = new TActiveImage;
-					$image->setImageUrl($url);
-					if($text !== '')
-						$image->setAlternateText($text);
-					$cell->getControls()->add($image);
-				}
-				elseif($text !== '')
-						$cell->setText($text);
-					else
-						$cell->setText('&nbsp;');
-			}
 	}
 }

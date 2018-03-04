@@ -80,4 +80,3 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	{
 	}
 }
-

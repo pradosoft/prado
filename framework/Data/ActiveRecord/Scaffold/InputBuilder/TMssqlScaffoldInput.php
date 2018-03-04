@@ -12,13 +12,11 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
-
 class TMssqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'bit':
 				return $this->createBooleanControl($container, $column, $record);
 			case 'text':
@@ -31,27 +29,27 @@ class TMssqlScaffoldInput extends TScaffoldInputCommon
 				return $this->createDateTimeControl($container, $column, $record);
 			default:
 				$control = $this->createDefaultControl($container, $column, $record);
-				if($column->getIsExcluded())
+				if ($column->getIsExcluded()) {
 					$control->setEnabled(false);
+				}
 				return $control;
 		}
 	}
 
 	protected function getControlValue($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'boolean':
 				return $container->findControl(self::DEFAULT_ID)->getChecked();
 			case 'datetime': case 'smalldatetime':
 				return $this->getDateTimeValue($container, $column, $record);
 			default:
 				$value = $this->getDefaultControlValue($container, $column, $record);
-				if(trim($value) === '' && $column->getAllowNull())
+				if (trim($value) === '' && $column->getAllowNull()) {
 					return null;
-				else
+				} else {
 					return $value;
+				}
 		}
 	}
 }
-

@@ -35,15 +35,16 @@ class TPreparedStatementFactory
 	{
 		$this->_preparedStatement = new TPreparedStatement();
 		$this->_preparedStatement->setPreparedSql($this->_commandText);
-		if($this->_statement->parameterMap() !== null)
+		if ($this->_statement->parameterMap() !== null) {
 			$this->createParametersForTextCommand();
+		}
 		return $this->_preparedStatement;
 	}
 
 	protected function createParametersForTextCommand()
 	{
-		foreach($this->_statement->ParameterMap()->getProperties() as $prop)
+		foreach ($this->_statement->ParameterMap()->getProperties() as $prop) {
 			$this->_preparedStatement->getParameterNames()->add($prop->getProperty());
+		}
 	}
 }
-

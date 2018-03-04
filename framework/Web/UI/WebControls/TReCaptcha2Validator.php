@@ -44,10 +44,12 @@ class TReCaptcha2Validator extends TBaseValidator
 	protected function getCaptchaControl()
 	{
 		$control = $this->getValidationTarget();
-		if (!$control)
+		if (!$control) {
 			throw new Exception('No target control specified for TReCaptcha2Validator');
-		if (!($control instanceof TReCaptcha2))
+		}
+		if (!($control instanceof TReCaptcha2)) {
 			throw new Exception('TReCaptcha2Validator only works with TReCaptcha2 controls');
+		}
 		return $control;
 	}
 	public function getClientScriptOptions()
@@ -66,8 +68,7 @@ class TReCaptcha2Validator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
-		if (null === $this->_isvalid)
-		{
+		if (null === $this->_isvalid) {
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
@@ -85,8 +86,7 @@ class TReCaptcha2Validator extends TBaseValidator
 		$cs->registerHiddenField($this->getClientID() . '_1', $value);
 
 		// update validator display
-		if ($control = $this->getValidationTarget())
-		{
+		if ($control = $this->getValidationTarget()) {
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ', [
@@ -109,4 +109,3 @@ class TReCaptcha2Validator extends TBaseValidator
 		}
 	}
 }
-

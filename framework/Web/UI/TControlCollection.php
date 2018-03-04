@@ -60,15 +60,14 @@ class TControlCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TControl)
-		{
+		if ($item instanceof TControl) {
 			parent::insertAt($index, $item);
 			$this->_o->addedControl($item);
-		}
-		elseif(is_string($item) || ($item instanceof IRenderable))
+		} elseif (is_string($item) || ($item instanceof IRenderable)) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('controlcollection_control_required');
+		}
 	}
 
 	/**
@@ -81,8 +80,9 @@ class TControlCollection extends \Prado\Collections\TList
 	public function removeAt($index)
 	{
 		$item = parent::removeAt($index);
-		if($item instanceof TControl)
+		if ($item instanceof TControl) {
 			$this->_o->removedControl($item);
+		}
 		return $item;
 	}
 
@@ -92,7 +92,8 @@ class TControlCollection extends \Prado\Collections\TList
 	public function clear()
 	{
 		parent::clear();
-		if($this->_o instanceof INamingContainer)
+		if ($this->_o instanceof INamingContainer) {
 			$this->_o->clearNamingContainer();
+		}
 	}
 }

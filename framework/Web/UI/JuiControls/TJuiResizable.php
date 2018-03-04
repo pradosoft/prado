@@ -16,7 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-
 /**
  * TJuiResizable class.
  *
@@ -62,7 +61,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidget()
 	{
-	  return 'resizable';
+		return 'resizable';
 	}
 
 	/**
@@ -70,7 +69,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -79,10 +78,9 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -143,7 +141,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onCreate ($params)
+	public function onCreate($params)
 	{
 		$this->raiseEvent('OnCreate', $this, $params);
 	}
@@ -152,7 +150,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnResize event
 	 * @param object $params event parameters
 	 */
-	public function onResize ($params)
+	public function onResize($params)
 	{
 		$this->raiseEvent('OnResize', $this, $params);
 	}
@@ -161,7 +159,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnStart event
 	 * @param object $params event parameters
 	 */
-	public function onStart ($params)
+	public function onStart($params)
 	{
 		$this->raiseEvent('OnStart', $this, $params);
 	}
@@ -170,7 +168,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnStop event
 	 * @param object $params event parameters
 	 */
-	public function onStop ($params)
+	public function onStop($params)
 	{
 		$this->raiseEvent('OnStop', $this, $params);
 	}

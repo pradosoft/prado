@@ -43,9 +43,10 @@ class TObjectProxy
 	 */
 	public function __call($method, $params)
 	{
-		if($this->_handler->hasMethod($method))
+		if ($this->_handler->hasMethod($method)) {
 			return $this->_handler->intercept($method, $params);
-		else
+		} else {
 			return call_user_func_array([$this->_object, $method], $params);
+		}
 	}
 }

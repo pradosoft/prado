@@ -36,36 +36,37 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function callMethod($requestPayload)
 	{
-		try
-		{
+		try {
 			$_request = $this->decode($requestPayload);
 
-			if(isset($_request['jsonrpc']))
-			{
+			if (isset($_request['jsonrpc'])) {
 				$this->_specificationVersion = $_request['jsonrpc'];
-				if($this->_specificationVersion > 2.0)
+				if ($this->_specificationVersion > 2.0) {
 					throw new TRpcException('Unsupported specification version', '-32600');
+				}
 			}
 
-			if(isset($_request['id']))
+			if (isset($_request['id'])) {
 				$this->_id = $_request['id'];
+			}
 
-			if(!isset($_request['method']))
-					throw new TRpcException('Missing request method', '-32600');
+			if (!isset($_request['method'])) {
+				throw new TRpcException('Missing request method', '-32600');
+			}
 
-			if(!isset($_request['params']))
+			if (!isset($_request['params'])) {
 				$parameters = [];
-			else
+			} else {
 				$parameters = $_request['params'];
+			}
 
-			if(!is_array($parameters))
+			if (!is_array($parameters)) {
 				$parameters = [$parameters];
+			}
 
 			// a request without an id is a notification that doesn't need a response
-			if($this->_id !== null)
-			{
-				if($this->_specificationVersion == 2.0)
-				{
+			if ($this->_id !== null) {
+				if ($this->_specificationVersion == 2.0) {
 					return $this->encode([
 						'jsonrpc' => '2.0',
 						'id' => $this->_id,
@@ -79,17 +80,11 @@ class TJsonRpcProtocol extends TRpcProtocol
 					]);
 				}
 			}
-		}
-		catch(TRpcException $e)
-		{
+		} catch (TRpcException $e) {
 			return $this->createErrorResponse($e);
-		}
-		catch(THttpException $e)
-		{
+		} catch (THttpException $e) {
 			throw $e;
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			return $this->createErrorResponse(new TRpcException('An internal error occured', '-32603'));
 		}
 	}
@@ -101,8 +96,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		if($this->_specificationVersion == 2.0)
-		{
+		if ($this->_specificationVersion == 2.0) {
 			return $this->encode([
 				'id' => $this->_id,
 				'result' => null,
@@ -161,8 +155,9 @@ class TJsonRpcProtocol extends TRpcProtocol
 	private static function checkJsonError()
 	{
 		$errnum = json_last_error();
-		if($errnum != JSON_ERROR_NONE)
+		if ($errnum != JSON_ERROR_NONE) {
 			throw new \Exception("JSON error: $msg", $err);
+		}
 	}
 
 	/**
@@ -174,8 +169,9 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function callApiMethod($methodName, $parameters)
 	{
-		if(!isset($this->rpcMethods[$methodName]))
+		if (!isset($this->rpcMethods[$methodName])) {
 			throw new TRpcException('Method "' . $methodName . '" not found', '-32601');
+		}
 
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}

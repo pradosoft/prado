@@ -64,7 +64,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getWidget()
 	{
-	  return 'selectable';
+		return 'selectable';
 	}
 
 	/**
@@ -72,7 +72,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID() . '_0';
+		return $this->getClientID() . '_0';
 	}
 
 	/**
@@ -81,10 +81,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -114,8 +113,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	{
 		$options = $this->getOptions()->toArray();
 		// overload the "OnStop" event to add information about the current selected items
-		if(isset($options['stop']))
-		{
+		if (isset($options['stop'])) {
 			$options['stop'] = new TJavaScriptLiteral('function( event, ui ) { ui.index = new Array(); jQuery(\'#' . $this->getClientID() . ' .ui-selected\').each(function(idx, item){ ui.index.push(item.id) }); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'stop\', event, ui, this); }');
 		}
 		return $options;
@@ -149,7 +147,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onCreate ($params)
+	public function onCreate($params)
 	{
 		$this->raiseEvent('OnCreate', $this, $params);
 	}
@@ -158,7 +156,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnSelected event
 	 * @param object $params event parameters
 	 */
-	public function onSelected ($params)
+	public function onSelected($params)
 	{
 		$this->raiseEvent('OnSelected', $this, $params);
 	}
@@ -167,7 +165,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnSelecting event
 	 * @param object $params event parameters
 	 */
-	public function onSelecting ($params)
+	public function onSelecting($params)
 	{
 		$this->raiseEvent('OnSelecting', $this, $params);
 	}
@@ -176,7 +174,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnStart event
 	 * @param object $params event parameters
 	 */
-	public function onStart ($params)
+	public function onStart($params)
 	{
 		$this->raiseEvent('OnStart', $this, $params);
 	}
@@ -185,7 +183,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnStop event
 	 * @param object $params event parameters
 	 */
-	public function onStop ($params)
+	public function onStop($params)
 	{
 		$this->raiseEvent('OnStop', $this, $params);
 	}
@@ -194,7 +192,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnUnselected event
 	 * @param object $params event parameters
 	 */
-	public function onUnselected ($params)
+	public function onUnselected($params)
 	{
 		$this->raiseEvent('OnUnselected', $this, $params);
 	}
@@ -203,7 +201,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 * Raises the OnUnselecting event
 	 * @param object $params event parameters
 	 */
-	public function onUnselecting ($params)
+	public function onUnselecting($params)
 	{
 		$this->raiseEvent('OnUnselecting', $this, $params);
 	}
@@ -228,8 +226,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	public function dataBind()
 	{
 		parent::dataBind();
-		if($this->getPage()->getIsCallback())
+		if ($this->getPage()->getIsCallback()) {
 			$this->renderSelectables($this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
@@ -237,8 +236,9 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	 */
 	public function getSelectables()
 	{
-		if($this->_repeater === null)
+		if ($this->_repeater === null) {
 			$this->_repeater = $this->createRepeater();
+		}
 		return $this->_repeater;
 	}
 

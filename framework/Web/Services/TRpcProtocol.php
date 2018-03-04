@@ -84,14 +84,17 @@ abstract class TRpcProtocol
 	 */
 	public function callApiMethod($methodName, $parameters)
 	{
-		if(!isset($this->rpcMethods[$methodName]))
+		if (!isset($this->rpcMethods[$methodName])) {
 			throw new TRpcException('Method "' . $methodName . '" not found');
+		}
 
-		if($parameters === null)
+		if ($parameters === null) {
 			$parameters = [];
+		}
 
-		if(!is_array($parameters))
+		if (!is_array($parameters)) {
 			$parameters = [$parameters];
+		}
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}
 }

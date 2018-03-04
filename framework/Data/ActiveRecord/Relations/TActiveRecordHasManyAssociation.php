@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Prado;
 
-
 /**
  * Implements the M-N (many to many) relationship via association table.
  * Consider the <b>entity</b> relationship between Articles and Categories
@@ -121,14 +120,12 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function getAssociationTable()
 	{
-		if($this->_association === null)
-		{
+		if ($this->_association === null) {
 			$gateway = $this->getSourceRecord()->getRecordGateway();
 			$conn = $this->getSourceRecord()->getDbConnection();
 			//table name may include the fk column name separated with a dot.
 			$table = explode('.', $this->getContext()->getAssociationTable());
-			if(count($table) > 1)
-			{
+			if (count($table) > 1) {
 				$columns = preg_replace('/^\((.*)\)/', '\1', $table[1]);
 				$this->_association_columns = preg_split('/\s*[, ]\*/', $columns);
 			}
@@ -142,8 +139,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function getSourceTable()
 	{
-		if($this->_sourceTable === null)
-		{
+		if ($this->_sourceTable === null) {
 			$gateway = $this->getSourceRecord()->getRecordGateway();
 			$this->_sourceTable = $gateway->getRecordTableInfo($this->getSourceRecord());
 		}
@@ -155,8 +151,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function getForeignTable()
 	{
-		if($this->_foreignTable === null)
-		{
+		if ($this->_foreignTable === null) {
 			$gateway = $this->getSourceRecord()->getRecordGateway();
 			$fkObject = $this->getContext()->getForeignRecordFinder();
 			$this->_foreignTable = $gateway->getRecordTableInfo($fkObject);
@@ -195,11 +190,11 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$command = $this->createCommand($criteria, $foreignKeys, $indexValues, $sourceKeys);
 		$srcProps = array_keys($sourceKeys);
 		$collections = [];
-		foreach($this->getCommandBuilder()->onExecuteCommand($command, $command->query()) as $row)
-		{
+		foreach ($this->getCommandBuilder()->onExecuteCommand($command, $command->query()) as $row) {
 			$hash = $this->getObjectHash($row, $srcProps);
-			foreach($srcProps as $column)
+			foreach ($srcProps as $column) {
 				unset($row[$column]);
+			}
 			$obj = $this->createFkObject($type, $row, $foreignKeys);
 			$collections[$hash][] = $obj;
 		}
@@ -215,11 +210,11 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	protected function createFkObject($type, $row, $foreignKeys)
 	{
 		$obj = TActiveRecord::createRecord($type, $row);
-		if(count($this->_association_columns) > 0)
-		{
+		if (count($this->_association_columns) > 0) {
 			$i = 0;
-			foreach($foreignKeys as $ref => $fk)
+			foreach ($foreignKeys as $ref => $fk) {
 				$obj->setColumnValue($ref, $row[$this->_association_columns[$i++]]);
+			}
 		}
 		return $obj;
 	}
@@ -235,8 +230,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$innerJoin = $this->getAssociationJoin($foreignKeys, $indexValues, $sourceKeys);
 		$fkTable = $this->getForeignTable()->getTableFullName();
 		$srcColumns = $this->getSourceColumns($sourceKeys);
-		if(($where = $criteria->getCondition()) === null)
+		if (($where = $criteria->getCondition()) === null) {
 			$where = '1=1';
+		}
 		$sql = "SELECT {$fkTable}.*, {$srcColumns} FROM {$fkTable} {$innerJoin} WHERE {$where}";
 
 		$parameters = $criteria->getParameters()->toArray();
@@ -260,8 +256,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$table = $this->getAssociationTable();
 		$tableName = $table->getTableFullName();
 		$columnNames = array_merge(array_keys($sourceKeys), $this->_association_columns);
-		foreach($columnNames as $name)
+		foreach ($columnNames as $name) {
 			$columns[] = $tableName . '.' . $table->getColumn($name)->getColumnName();
+		}
 		return implode(', ', $columns);
 	}
 
@@ -283,12 +280,12 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$joins = [];
 		$hasAssociationColumns = count($this->_association_columns) > 0;
 		$i = 0;
-		foreach($foreignKeys as $ref => $fk)
-		{
-			if($hasAssociationColumns)
+		foreach ($foreignKeys as $ref => $fk) {
+			if ($hasAssociationColumns) {
 				$refField = $refInfo->getColumn($this->_association_columns[$i++])->getColumnName();
-			else
+			} else {
 				$refField = $refInfo->getColumn($ref)->getColumnName();
+			}
 			$fkField = $fkInfo->getColumn($fk)->getColumnName();
 			$joins[] = "{$fkTable}.{$fkField} = {$refTable}.{$refField}";
 		}
@@ -306,12 +303,12 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObjects = &$obj->{$this->getContext()->getProperty()};
 		$success = true;
-		if(($total = count($fkObjects)) > 0)
-		{
+		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();
 			$builder = $this->getAssociationTableCommandBuilder();
-			for($i = 0;$i < $total;$i++)
+			for ($i = 0;$i < $total;$i++) {
 				$success = $fkObjects[$i]->save() && $success;
+			}
 			return $this->updateAssociationTable($obj, $fkObjects, $builder) && $success;
 		}
 		return $success;
@@ -330,8 +327,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	{
 		$condition = [];
 		$table = $this->getAssociationTable();
-		foreach($data as $name => $value)
+		foreach ($data as $name => $value) {
 			$condition[] = $table->getColumn($name)->getColumnName() . ' = ?';
+		}
 		$command = $builder->createCountCommand(implode(' AND ', $condition), array_values($data));
 		$result = $this->getCommandBuilder()->onExecuteCommand($command, intval($command->queryScalar()));
 		return intval($result) > 0;
@@ -348,11 +346,11 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$source = $this->getSourceRecordValues($obj);
 		$foreignKeys = $this->findForeignKeys($this->getAssociationTable(), $fkObjects[0]);
 		$success = true;
-		foreach($fkObjects as $fkObject)
-		{
+		foreach ($fkObjects as $fkObject) {
 			$data = array_merge($source, $this->getForeignObjectValues($foreignKeys, $fkObject));
-			if(!$this->hasAssociationData($builder, $data))
+			if (!$this->hasAssociationData($builder, $data)) {
 				$success = $this->addAssociationData($builder, $data) && $success;
+			}
 		}
 		return $success;
 	}
@@ -363,16 +361,18 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		$indexValues = $this->getIndexValues(array_values($sourceKeys), $obj);
 		$data = [];
 		$i = 0;
-		foreach($sourceKeys as $name => $srcKey)
+		foreach ($sourceKeys as $name => $srcKey) {
 			$data[$name] = $indexValues[0][$i++];
+		}
 		return $data;
 	}
 
 	private function getForeignObjectValues($foreignKeys, $fkObject)
 	{
 		$data = [];
-		foreach($foreignKeys as $name => $fKey)
+		foreach ($foreignKeys as $name => $fKey) {
 			$data[$name] = $fkObject->getColumnValue($fKey);
+		}
 		return $data;
 	}
 }

@@ -53,16 +53,21 @@ class TPanelStyle extends TStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_backImageUrl === null)
+		if ($this->_backImageUrl === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_backImageUrl";
-		if ($this->_direction === null)
+		}
+		if ($this->_direction === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_direction";
-		if ($this->_horizontalAlign === null)
+		}
+		if ($this->_horizontalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_horizontalAlign";
-		if ($this->_scrollBars === null)
+		}
+		if ($this->_scrollBars === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_scrollBars";
-		if ($this->_wrap === null)
+		}
+		if ($this->_wrap === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_wrap";
+		}
 	}
 
 	/**
@@ -72,29 +77,31 @@ class TPanelStyle extends TStyle
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(($url = trim($this->getBackImageUrl())) !== '')
+		if (($url = trim($this->getBackImageUrl())) !== '') {
 			$this->setStyleField('background-image', 'url(' . $url . ')');
+		}
 
-		switch($this->getScrollBars())
-		{
+		switch ($this->getScrollBars()) {
 			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll'); break;
 			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll'); break;
 			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll'); break;
 			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto'); break;
 		}
 
-		if(($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet)
+		if (($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
 			$this->setStyleField('text-align', strtolower($align));
+		}
 
-		if(!$this->getWrap())
+		if (!$this->getWrap()) {
 			$this->setStyleField('white-space', 'nowrap');
+		}
 
-		if(($direction = $this->getDirection()) !== TContentDirection::NotSet)
-		{
-			if($direction === TContentDirection::LeftToRight)
+		if (($direction = $this->getDirection()) !== TContentDirection::NotSet) {
+			if ($direction === TContentDirection::LeftToRight) {
 				$this->setStyleField('direction', 'ltr');
-			else
+			} else {
 				$this->setStyleField('direction', 'rtl');
+			}
 		}
 
 		parent::addAttributesToRender($writer);
@@ -207,18 +214,22 @@ class TPanelStyle extends TStyle
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TPanelStyle)
-		{
-			if($style->_backImageUrl !== null)
+		if ($style instanceof TPanelStyle) {
+			if ($style->_backImageUrl !== null) {
 				$this->_backImageUrl = $style->_backImageUrl;
-			if($style->_direction !== null)
+			}
+			if ($style->_direction !== null) {
 				$this->_direction = $style->_direction;
-			if($style->_horizontalAlign !== null)
+			}
+			if ($style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($style->_scrollBars !== null)
+			}
+			if ($style->_scrollBars !== null) {
 				$this->_scrollBars = $style->_scrollBars;
-			if($style->_wrap !== null)
+			}
+			if ($style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
@@ -231,18 +242,22 @@ class TPanelStyle extends TStyle
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TPanelStyle)
-		{
-			if($this->_backImageUrl === null && $style->_backImageUrl !== null)
+		if ($style instanceof TPanelStyle) {
+			if ($this->_backImageUrl === null && $style->_backImageUrl !== null) {
 				$this->_backImageUrl = $style->_backImageUrl;
-			if($this->_direction === null && $style->_direction !== null)
+			}
+			if ($this->_direction === null && $style->_direction !== null) {
 				$this->_direction = $style->_direction;
-			if($this->_horizontalAlign === null && $style->_horizontalAlign !== null)
+			}
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
 				$this->_horizontalAlign = $style->_horizontalAlign;
-			if($this->_scrollBars === null && $style->_scrollBars !== null)
+			}
+			if ($this->_scrollBars === null && $style->_scrollBars !== null) {
 				$this->_scrollBars = $style->_scrollBars;
-			if($this->_wrap === null && $style->_wrap !== null)
+			}
+			if ($this->_wrap === null && $style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 }

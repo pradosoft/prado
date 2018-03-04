@@ -11,7 +11,8 @@
 
 namespace Prado\Web\UI\WebControls;
 
-class TRadioButtonItem extends TRadioButton {
+class TRadioButtonItem extends TRadioButton
+{
 	/**
 	 * Override client implementation to avoid emitting the javascript
 	 */

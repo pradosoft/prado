@@ -193,10 +193,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function __get($name)
 	{
-		if(isset($this->_rf[self::RF_NAMED_OBJECTS][$name]))
+		if (isset($this->_rf[self::RF_NAMED_OBJECTS][$name])) {
 			return $this->_rf[self::RF_NAMED_OBJECTS][$name];
-		else
+		} else {
 			return parent::__get($name);
+		}
 	}
 
 	/**
@@ -216,8 +217,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * @return bool wether the control or property exists
 	 * @see __get
 	 */
-	public function __isset($name) {
-		if(isset($this->_rf[self::RF_NAMED_OBJECTS][$name])) {
+	public function __isset($name)
+	{
+		if (isset($this->_rf[self::RF_NAMED_OBJECTS][$name])) {
 			return true;
 		} else {
 			return parent::__isset($name);
@@ -261,12 +263,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getNamingContainer()
 	{
-		if(!$this->_namingContainer && $this->_parent)
-		{
-			if($this->_parent instanceof INamingContainer)
+		if (!$this->_namingContainer && $this->_parent) {
+			if ($this->_parent instanceof INamingContainer) {
 				$this->_namingContainer = $this->_parent;
-			else
+			} else {
 				$this->_namingContainer = $this->_parent->getNamingContainer();
+			}
 		}
 		return $this->_namingContainer;
 	}
@@ -276,12 +278,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getPage()
 	{
-		if(!$this->_page)
-		{
-			if($this->_parent)
+		if (!$this->_page) {
+			if ($this->_parent) {
 				$this->_page = $this->_parent->getPage();
-			elseif($this->_tplControl)
+			} elseif ($this->_tplControl) {
 				$this->_page = $this->_tplControl->getPage();
+			}
 		}
 		return $this->_page;
 	}
@@ -311,8 +313,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getTemplateControl()
 	{
-		if(!$this->_tplControl && $this->_parent)
+		if (!$this->_tplControl && $this->_parent) {
 			$this->_tplControl = $this->_parent->getTemplateControl();
+		}
 		return $this->_tplControl;
 	}
 
@@ -324,10 +327,10 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function getSourceTemplateControl()
 	{
 		$control = $this;
-		while(($control instanceof TControl) && ($control = $control->getTemplateControl()) !== null)
-		{
-			if(($control instanceof TTemplateControl) && $control->getIsSourceTemplateControl())
+		while (($control instanceof TControl) && ($control = $control->getTemplateControl()) !== null) {
+			if (($control instanceof TTemplateControl) && $control->getIsSourceTemplateControl()) {
 				return $control;
+			}
 		}
 		return $this->getPage();
 	}
@@ -365,10 +368,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getID($hideAutoID = true)
 	{
-		if($hideAutoID)
+		if ($hideAutoID) {
 			return ($this->_flags & self::IS_ID_SET) ? $this->_id : '';
-		else
+		} else {
 			return $this->_id;
+		}
 	}
 
 	/**
@@ -377,13 +381,15 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function setID($id)
 	{
-		if(!preg_match(self::ID_FORMAT, $id))
+		if (!preg_match(self::ID_FORMAT, $id)) {
 			throw new TInvalidDataValueException('control_id_invalid', get_class($this), $id);
+		}
 		$this->_id = $id;
 		$this->_flags |= self::IS_ID_SET;
 		$this->clearCachedUniqueID($this instanceof INamingContainer);
-		if($this->_namingContainer)
+		if ($this->_namingContainer) {
 			$this->_namingContainer->clearNameTable();
+		}
 	}
 
 	/**
@@ -395,23 +401,22 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getUniqueID()
 	{
-		if($this->_uid === '' || $this->_uid === null)	// need to build the UniqueID
-		{
+		if ($this->_uid === '' || $this->_uid === null) {	// need to build the UniqueID
 			$this->_uid = '';  // set to not-null, so that clearCachedUniqueID() may take action
-			if($namingContainer = $this->getNamingContainer())
-			{
-				if($this->getPage() === $namingContainer)
+			if ($namingContainer = $this->getNamingContainer()) {
+				if ($this->getPage() === $namingContainer) {
 					return ($this->_uid = $this->_id);
-				elseif(($prefix = $namingContainer->getUniqueID()) === '')
+				} elseif (($prefix = $namingContainer->getUniqueID()) === '') {
 					return $this->_id;
-				else
+				} else {
 					return ($this->_uid = $prefix . self::ID_SEPARATOR . $this->_id);
-			}
-			else	// no naming container
+				}
+			} else {	// no naming container
 				return $this->_id;
-		}
-		else
+			}
+		} else {
 			return $this->_uid;
+		}
 	}
 
 	/**
@@ -458,10 +463,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function setSkinID($value)
 	{
-		if(($this->_flags & self::IS_SKIN_APPLIED) || $this->_stage >= self::CS_CHILD_INITIALIZED)
+		if (($this->_flags & self::IS_SKIN_APPLIED) || $this->_stage >= self::CS_CHILD_INITIALIZED) {
 			throw new TInvalidOperationException('control_skinid_unchangeable', get_class($this));
-		else
+		} else {
 			$this->_rf[self::RF_SKIN_ID] = $value;
+		}
 	}
 
 	/**
@@ -479,10 +485,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getEnableTheming()
 	{
-		if($this->_flags & self::IS_DISABLE_THEMING)
+		if ($this->_flags & self::IS_DISABLE_THEMING) {
 			return false;
-		else
+		} else {
 			return $this->_parent ? $this->_parent->getEnableTheming() : true;
+		}
 	}
 
 	/**
@@ -491,12 +498,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function setEnableTheming($value)
 	{
-		if($this->_stage >= self::CS_CHILD_INITIALIZED)
+		if ($this->_stage >= self::CS_CHILD_INITIALIZED) {
 			throw new TInvalidOperationException('control_enabletheming_unchangeable', get_class($this), $this->getUniqueID());
-		elseif(TPropertyValue::ensureBoolean($value))
+		} elseif (TPropertyValue::ensureBoolean($value)) {
 			$this->_flags &= ~self::IS_DISABLE_THEMING;
-		else
+		} else {
 			$this->_flags |= self::IS_DISABLE_THEMING;
+		}
 	}
 
 	/**
@@ -534,8 +542,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getControls()
 	{
-		if(!isset($this->_rf[self::RF_CONTROLS]))
+		if (!isset($this->_rf[self::RF_CONTROLS])) {
 			$this->_rf[self::RF_CONTROLS] = $this->createControlCollection();
+		}
 		return $this->_rf[self::RF_CONTROLS];
 	}
 
@@ -558,15 +567,16 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getVisible($checkParents = true)
 	{
-		if($checkParents)
-		{
-			for($control = $this;$control;$control = $control->_parent)
-				if(!$control->getVisible(false))
+		if ($checkParents) {
+			for ($control = $this;$control;$control = $control->_parent) {
+				if (!$control->getVisible(false)) {
 					return false;
+				}
+			}
 			return true;
-		}
-		else
+		} else {
 			return $this->getViewState('Visible', true);
+		}
 	}
 
 	/**
@@ -589,15 +599,16 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getEnabled($checkParents = false)
 	{
-		if($checkParents)
-		{
-			for($control = $this;$control;$control = $control->_parent)
-				if(!$control->getViewState('Enabled', true))
+		if ($checkParents) {
+			for ($control = $this;$control;$control = $control->_parent) {
+				if (!$control->getViewState('Enabled', true)) {
 					return false;
+				}
+			}
 			return true;
-		}
-		else
+		} else {
 			return $this->getViewState('Enabled', true);
+		}
 	}
 
 	/**
@@ -613,10 +624,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getHasAttributes()
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->getCount() > 0;
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -627,10 +639,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getAttributes()
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes;
-		else
-		{
+		} else {
 			$attributes = new TAttributeCollection;
 			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
@@ -642,10 +653,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function hasAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->contains($name);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -653,10 +665,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -676,10 +689,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function removeAttribute($name)
 	{
-		if($attributes = $this->getViewState('Attributes', null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->remove($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -687,15 +701,16 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getEnableViewState($checkParents = false)
 	{
-		if($checkParents)
-		{
-			for($control = $this;$control !== null;$control = $control->getParent())
-				if($control->_flags & self::IS_DISABLE_VIEWSTATE)
+		if ($checkParents) {
+			for ($control = $this;$control !== null;$control = $control->getParent()) {
+				if ($control->_flags & self::IS_DISABLE_VIEWSTATE) {
 					return false;
+				}
+			}
 			return true;
-		}
-		else
+		} else {
 			return !($this->_flags & self::IS_DISABLE_VIEWSTATE);
+		}
 	}
 
 	/**
@@ -703,10 +718,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function setEnableViewState($value)
 	{
-		if(TPropertyValue::ensureBoolean($value))
+		if (TPropertyValue::ensureBoolean($value)) {
 			$this->_flags &= ~self::IS_DISABLE_VIEWSTATE;
-		else
+		} else {
 			$this->_flags |= self::IS_DISABLE_VIEWSTATE;
+		}
 	}
 
 	/**
@@ -735,10 +751,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function setControlState($key, $value, $defaultValue = null)
 	{
-		if($value === $defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_rf[self::RF_CONTROLSTATE][$key]);
-		else
+		} else {
 			$this->_rf[self::RF_CONTROLSTATE][$key] = $value;
+		}
 	}
 
 	/**
@@ -772,16 +789,16 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function getViewState($key, $defaultValue = null)
 	{
-		if(isset($this->_viewState[$key]))
+		if (isset($this->_viewState[$key])) {
 			return $this->_viewState[$key] !== null ? $this->_viewState[$key] : $defaultValue;
-		elseif(isset($this->_tempState[$key]))
-		{
-			if(is_object($this->_tempState[$key]) && $this->_trackViewState)
+		} elseif (isset($this->_tempState[$key])) {
+			if (is_object($this->_tempState[$key]) && $this->_trackViewState) {
 				$this->_viewState[$key] = $this->_tempState[$key];
+			}
 			return $this->_tempState[$key];
-		}
-		else
+		} else {
 			return $defaultValue;
+		}
 	}
 
 	/**
@@ -796,18 +813,16 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function setViewState($key, $value, $defaultValue = null)
 	{
-		if($this->_trackViewState)
-		{
+		if ($this->_trackViewState) {
 			unset($this->_tempState[$key]);
 			$this->_viewState[$key] = $value;
-		}
-		else
-		{
+		} else {
 			unset($this->_viewState[$key]);
-			if($value === $defaultValue)
+			if ($value === $defaultValue) {
 				unset($this->_tempState[$key]);
-			else
+			} else {
 				$this->_tempState[$key] = $value;
+			}
 		}
 	}
 
@@ -870,12 +885,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	protected function dataBindProperties()
 	{
 		Prado::trace("Data bind properties", 'Prado\Web\UI\TControl');
-		if(isset($this->_rf[self::RF_DATA_BINDINGS]))
-		{
-			if(($context = $this->getTemplateControl()) === null)
+		if (isset($this->_rf[self::RF_DATA_BINDINGS])) {
+			if (($context = $this->getTemplateControl()) === null) {
 				$context = $this;
-			foreach($this->_rf[self::RF_DATA_BINDINGS] as $property => $expression)
+			}
+			foreach ($this->_rf[self::RF_DATA_BINDINGS] as $property => $expression) {
 				$this->setSubProperty($property, $context->evaluateExpression($expression));
+			}
 		}
 	}
 
@@ -884,12 +900,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function autoDataBindProperties()
 	{
-		if(isset($this->_rf[self::RF_AUTO_BINDINGS]))
-		{
-			if(($context = $this->getTemplateControl()) === null)
+		if (isset($this->_rf[self::RF_AUTO_BINDINGS])) {
+			if (($context = $this->getTemplateControl()) === null) {
 				$context = $this;
-			foreach($this->_rf[self::RF_AUTO_BINDINGS] as $property => $expression)
+			}
+			foreach ($this->_rf[self::RF_AUTO_BINDINGS] as $property => $expression) {
 				$this->setSubProperty($property, $context->evaluateExpression($expression));
+			}
 		}
 	}
 
@@ -899,11 +916,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	protected function dataBindChildren()
 	{
 		Prado::trace("dataBindChildren()", 'Prado\Web\UI\TControl');
-		if(isset($this->_rf[self::RF_CONTROLS]))
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-				if($control instanceof IBindable)
+		if (isset($this->_rf[self::RF_CONTROLS])) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof IBindable) {
 					$control->dataBind();
+				}
+			}
 		}
 	}
 
@@ -922,12 +940,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	final protected function setChildControlsCreated($value)
 	{
-		if($value)
+		if ($value) {
 			$this->_flags |= self::IS_CHILD_CREATED;
-		else
-		{
-			if($this->getHasControls() && ($this->_flags & self::IS_CHILD_CREATED))
+		} else {
+			if ($this->getHasControls() && ($this->_flags & self::IS_CHILD_CREATED)) {
 				$this->getControls()->clear();
+			}
 			$this->_flags &= ~self::IS_CHILD_CREATED;
 		}
 	}
@@ -939,20 +957,17 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function ensureChildControls()
 	{
-		if(!($this->_flags & self::IS_CHILD_CREATED) && !($this->_flags & self::IS_CREATING_CHILD))
-		{
-			try
-			{
+		if (!($this->_flags & self::IS_CHILD_CREATED) && !($this->_flags & self::IS_CREATING_CHILD)) {
+			try {
 				$this->_flags |= self::IS_CREATING_CHILD;
-				if(isset($this->_rf[self::RF_ADAPTER]))
+				if (isset($this->_rf[self::RF_ADAPTER])) {
 					$this->_rf[self::RF_ADAPTER]->createChildControls();
-				else
+				} else {
 					$this->createChildControls();
+				}
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
-			}
-			catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				$this->_flags &= ~self::IS_CREATING_CHILD;
 				$this->_flags |= self::IS_CHILD_CREATED;
 				throw $e;
@@ -985,23 +1000,23 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	{
 		$id = strtr($id, '.', self::ID_SEPARATOR);
 		$container = ($this instanceof INamingContainer) ? $this : $this->getNamingContainer();
-		if(!$container || !$container->getHasControls())
+		if (!$container || !$container->getHasControls()) {
 			return null;
-		if(!isset($container->_rf[self::RF_NAMED_CONTROLS]))
-		{
+		}
+		if (!isset($container->_rf[self::RF_NAMED_CONTROLS])) {
 			$container->_rf[self::RF_NAMED_CONTROLS] = [];
 			$container->fillNameTable($container, $container->_rf[self::RF_CONTROLS]);
 		}
-		if(($pos = strpos($id, self::ID_SEPARATOR)) === false)
+		if (($pos = strpos($id, self::ID_SEPARATOR)) === false) {
 			return isset($container->_rf[self::RF_NAMED_CONTROLS][$id]) ? $container->_rf[self::RF_NAMED_CONTROLS][$id] : null;
-		else
-		{
+		} else {
 			$cid = substr($id, 0, $pos);
 			$sid = substr($id, $pos + 1);
-			if(isset($container->_rf[self::RF_NAMED_CONTROLS][$cid]))
+			if (isset($container->_rf[self::RF_NAMED_CONTROLS][$cid])) {
 				return $container->_rf[self::RF_NAMED_CONTROLS][$cid]->findControl($sid);
-			else
+			} else {
 				return null;
+			}
 		}
 	}
 
@@ -1014,14 +1029,14 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function findControlsByType($type, $strict = true)
 	{
 		$controls = [];
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if(is_object($control) && (get_class($control) === $type || (!$strict && ($control instanceof $type))))
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if (is_object($control) && (get_class($control) === $type || (!$strict && ($control instanceof $type)))) {
 					$controls[] = $control;
-				if(($control instanceof TControl) && $control->getHasControls())
+				}
+				if (($control instanceof TControl) && $control->getHasControls()) {
 					$controls = array_merge($controls, $control->findControlsByType($type, $strict));
+				}
 			}
 		}
 		return $controls;
@@ -1039,14 +1054,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function findControlsByID($id)
 	{
 		$controls = [];
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
-				{
-					if($control->_id === $id)
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
+					if ($control->_id === $id) {
 						$controls[] = $control;
+					}
 					$controls = array_merge($controls, $control->findControlsByID($id));
 				}
 			}
@@ -1074,8 +1087,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function registerObject($name, $object)
 	{
-		if(isset($this->_rf[self::RF_NAMED_OBJECTS][$name]))
+		if (isset($this->_rf[self::RF_NAMED_OBJECTS][$name])) {
 			throw new TInvalidOperationException('control_object_reregistered', $name);
+		}
 		$this->_rf[self::RF_NAMED_OBJECTS][$name] = $object;
 	}
 
@@ -1190,8 +1204,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	final protected function isDescendentOf($ancestor)
 	{
 		$control = $this;
-		while($control !== $ancestor && $control->_parent)
+		while ($control !== $ancestor && $control->_parent) {
 			$control = $control->_parent;
+		}
 		return $control === $ancestor;
 	}
 
@@ -1203,39 +1218,37 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function addedControl($control)
 	{
-		if($control->_parent)
+		if ($control->_parent) {
 			$control->_parent->getControls()->remove($control);
+		}
 		$control->_parent = $this;
 		$control->_page = $this->getPage();
 		$namingContainer = ($this instanceof INamingContainer) ? $this : $this->_namingContainer;
-		if($namingContainer)
-		{
+		if ($namingContainer) {
 			$control->_namingContainer = $namingContainer;
-			if($control->_id === '')
+			if ($control->_id === '') {
 				$control->generateAutomaticID();
-			else
+			} else {
 				$namingContainer->clearNameTable();
+			}
 			$control->clearCachedUniqueID($control instanceof INamingContainer);
 		}
 
-		if($this->_stage >= self::CS_CHILD_INITIALIZED)
-		{
+		if ($this->_stage >= self::CS_CHILD_INITIALIZED) {
 			$control->initRecursive($namingContainer);
-			if($this->_stage >= self::CS_STATE_LOADED)
-			{
-				if(isset($this->_rf[self::RF_CHILD_STATE][$control->_id]))
-				{
+			if ($this->_stage >= self::CS_STATE_LOADED) {
+				if (isset($this->_rf[self::RF_CHILD_STATE][$control->_id])) {
 					$state = $this->_rf[self::RF_CHILD_STATE][$control->_id];
 					unset($this->_rf[self::RF_CHILD_STATE][$control->_id]);
-				}
-				else
+				} else {
 					$state = null;
+				}
 				$control->loadStateRecursive($state, !($this->_flags & self::IS_DISABLE_VIEWSTATE));
-				if($this->_stage >= self::CS_LOADED)
-				{
+				if ($this->_stage >= self::CS_LOADED) {
 					$control->loadRecursive();
-					if($this->_stage >= self::CS_PRERENDERED)
+					if ($this->_stage >= self::CS_PRERENDERED) {
 						$control->preRenderRecursive();
+					}
 				}
 			}
 		}
@@ -1248,18 +1261,20 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function removedControl($control)
 	{
-		if($this->_namingContainer)
+		if ($this->_namingContainer) {
 			$this->_namingContainer->clearNameTable();
+		}
 		$control->unloadRecursive();
 		$control->_parent = null;
 		$control->_page = null;
 		$control->_namingContainer = null;
 		$control->_tplControl = null;
 		//$control->_stage=self::CS_CONSTRUCTED;
-		if(!($control->_flags & self::IS_ID_SET))
+		if (!($control->_flags & self::IS_ID_SET)) {
 			$control->_id = '';
-		else
+		} else {
 			unset($this->_rf[self::RF_NAMED_OBJECTS][$control->_id]);
+		}
 		$control->clearCachedUniqueID(true);
 	}
 
@@ -1271,35 +1286,33 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	protected function initRecursive($namingContainer = null)
 	{
 		$this->ensureChildControls();
-		if($this->getHasControls())
-		{
-			if($this instanceof INamingContainer)
+		if ($this->getHasControls()) {
+			if ($this instanceof INamingContainer) {
 				$namingContainer = $this;
+			}
 			$page = $this->getPage();
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
-				{
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
 					$control->_namingContainer = $namingContainer;
 					$control->_page = $page;
-					if($control->_id === '' && $namingContainer)
+					if ($control->_id === '' && $namingContainer) {
 						$control->generateAutomaticID();
+					}
 					$control->initRecursive($namingContainer);
 				}
 			}
 		}
-		if($this->_stage < self::CS_INITIALIZED)
-		{
+		if ($this->_stage < self::CS_INITIALIZED) {
 			$this->_stage = self::CS_CHILD_INITIALIZED;
-			if(($page = $this->getPage()) && $this->getEnableTheming() && !($this->_flags & self::IS_SKIN_APPLIED))
-			{
+			if (($page = $this->getPage()) && $this->getEnableTheming() && !($this->_flags & self::IS_SKIN_APPLIED)) {
 				$page->applyControlSkin($this);
 				$this->_flags |= self::IS_SKIN_APPLIED;
 			}
-			if(isset($this->_rf[self::RF_ADAPTER]))
+			if (isset($this->_rf[self::RF_ADAPTER])) {
 				$this->_rf[self::RF_ADAPTER]->onInit(null);
-			else
+			} else {
 				$this->onInit(null);
+			}
 			$this->_stage = self::CS_INITIALIZED;
 		}
 	}
@@ -1310,23 +1323,23 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function loadRecursive()
 	{
-		if($this->_stage < self::CS_LOADED)
-		{
-			if(isset($this->_rf[self::RF_ADAPTER]))
+		if ($this->_stage < self::CS_LOADED) {
+			if (isset($this->_rf[self::RF_ADAPTER])) {
 				$this->_rf[self::RF_ADAPTER]->onLoad(null);
-			else
+			} else {
 				$this->onLoad(null);
-		}
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
-					$control->loadRecursive();
 			}
 		}
-		if($this->_stage < self::CS_LOADED)
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
+					$control->loadRecursive();
+				}
+			}
+		}
+		if ($this->_stage < self::CS_LOADED) {
 			$this->_stage = self::CS_LOADED;
+		}
 	}
 
 	/**
@@ -1337,20 +1350,19 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	{
 		$this->autoDataBindProperties();
 
-		if($this->getVisible(false))
-		{
-			if(isset($this->_rf[self::RF_ADAPTER]))
+		if ($this->getVisible(false)) {
+			if (isset($this->_rf[self::RF_ADAPTER])) {
 				$this->_rf[self::RF_ADAPTER]->onPreRender(null);
-			else
+			} else {
 				$this->onPreRender(null);
-			if($this->getHasControls())
-			{
-				foreach($this->_rf[self::RF_CONTROLS] as $control)
-				{
-					if($control instanceof TControl)
+			}
+			if ($this->getHasControls()) {
+				foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+					if ($control instanceof TControl) {
 						$control->preRenderRecursive();
-					elseif($control instanceof TCompositeLiteral)
+					} elseif ($control instanceof TCompositeLiteral) {
 						$control->evaluateDynamicContent();
+					}
 				}
 			}
 		}
@@ -1363,18 +1375,21 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function unloadRecursive()
 	{
-		if(!($this->_flags & self::IS_ID_SET))
+		if (!($this->_flags & self::IS_ID_SET)) {
 			$this->_id = '';
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-				if($control instanceof TControl)
-					$control->unloadRecursive();
 		}
-		if(isset($this->_rf[self::RF_ADAPTER]))
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
+					$control->unloadRecursive();
+				}
+			}
+		}
+		if (isset($this->_rf[self::RF_ADAPTER])) {
 			$this->_rf[self::RF_ADAPTER]->onUnload(null);
-		else
+		} else {
 			$this->onUnload(null);
+		}
 	}
 
 	/**
@@ -1447,10 +1462,10 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	protected function raiseBubbleEvent($sender, $param)
 	{
 		$control = $this;
-		while($control = $control->_parent)
-		{
-			if($control->bubbleEvent($sender, $param))
+		while ($control = $control->_parent) {
+			if ($control->bubbleEvent($sender, $param)) {
 				break;
+			}
 		}
 	}
 
@@ -1499,16 +1514,17 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private function broadcastEventInternal($name, $sender, $param)
 	{
-		if($this->hasEvent($name))
+		if ($this->hasEvent($name)) {
 			$this->raiseEvent($name, $sender, $param->getParameter());
-		if($this instanceof IBroadcastEventReceiver)
+		}
+		if ($this instanceof IBroadcastEventReceiver) {
 			$this->broadcastEventReceived($sender, $param);
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
+		}
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
 					$control->broadcastEventInternal($name, $sender, $param);
+				}
 			}
 		}
 	}
@@ -1532,20 +1548,19 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function traverseChildControls($param, $preCallback = null, $postCallback = null)
 	{
-		if($preCallback !== null)
+		if ($preCallback !== null) {
 			call_user_func($preCallback, $this, $param);
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
-				{
+		}
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
 					$control->traverseChildControls($param, $preCallback, $postCallback);
 				}
 			}
 		}
-		if($postCallback !== null)
+		if ($postCallback !== null) {
 			call_user_func($postCallback, $this, $param);
+		}
 	}
 
 	/**
@@ -1555,12 +1570,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function renderControl($writer)
 	{
-		if($this instanceof IActiveControl || $this->getVisible(false))
-		{
-			if(isset($this->_rf[self::RF_ADAPTER]))
+		if ($this instanceof IActiveControl || $this->getVisible(false)) {
+			if (isset($this->_rf[self::RF_ADAPTER])) {
 				$this->_rf[self::RF_ADAPTER]->render($writer);
-			else
+			} else {
 				$this->render($writer);
+			}
 		}
 	}
 
@@ -1584,16 +1599,15 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function renderChildren($writer)
 	{
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if(is_string($control))
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if (is_string($control)) {
 					$writer->write($control);
-				elseif($control instanceof TControl)
+				} elseif ($control instanceof TControl) {
 					$control->renderControl($writer);
-				elseif($control instanceof IRenderable)
+				} elseif ($control instanceof IRenderable) {
 					$control->render($writer);
+				}
 			}
 		}
 	}
@@ -1624,48 +1638,44 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function loadStateRecursive(&$state, $needViewState = true)
 	{
-		if(is_array($state))
-		{
+		if (is_array($state)) {
 			// A null state means the stateful properties all take default values.
 			// So if the state is enabled, we have to assign the null value.
 			$needViewState = ($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
-			if(isset($state[1]))
-			{
+			if (isset($state[1])) {
 				$this->_rf[self::RF_CONTROLSTATE] = &$state[1];
 				unset($state[1]);
-			}
-			else
+			} else {
 				unset($this->_rf[self::RF_CONTROLSTATE]);
-			if($needViewState)
-			{
-				if(isset($state[0]))
+			}
+			if ($needViewState) {
+				if (isset($state[0])) {
 					$this->_viewState = &$state[0];
-				else
+				} else {
 					$this->_viewState = [];
+				}
 			}
 			unset($state[0]);
-			if($this->getHasControls())
-			{
-				foreach($this->_rf[self::RF_CONTROLS] as $control)
-				{
-					if($control instanceof TControl)
-					{
-						if(isset($state[$control->_id]))
-						{
+			if ($this->getHasControls()) {
+				foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+					if ($control instanceof TControl) {
+						if (isset($state[$control->_id])) {
 							$control->loadStateRecursive($state[$control->_id], $needViewState);
 							unset($state[$control->_id]);
 						}
 					}
 				}
 			}
-			if(!empty($state))
+			if (!empty($state)) {
 				$this->_rf[self::RF_CHILD_STATE] = &$state;
+			}
 		}
 		$this->_stage = self::CS_STATE_LOADED;
-		if(isset($this->_rf[self::RF_ADAPTER]))
+		if (isset($this->_rf[self::RF_ADAPTER])) {
 			$this->_rf[self::RF_ADAPTER]->loadState();
-		else
+		} else {
 			$this->loadState();
+		}
 	}
 
 	/**
@@ -1676,27 +1686,28 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function &saveStateRecursive($needViewState = true)
 	{
-		if(isset($this->_rf[self::RF_ADAPTER]))
+		if (isset($this->_rf[self::RF_ADAPTER])) {
 			$this->_rf[self::RF_ADAPTER]->saveState();
-		else
+		} else {
 			$this->saveState();
+		}
 		$needViewState = ($needViewState && !($this->_flags & self::IS_DISABLE_VIEWSTATE));
 		$state = [];
-		if($this->getHasControls())
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-			{
-				if($control instanceof TControl)
-				{
-					if(count($tmp = &$control->saveStateRecursive($needViewState)))
+		if ($this->getHasControls()) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
+					if (count($tmp = &$control->saveStateRecursive($needViewState))) {
 						$state[$control->_id] = $tmp;
+					}
 				}
 			}
 		}
-		if($needViewState && !empty($this->_viewState))
+		if ($needViewState && !empty($this->_viewState)) {
 			$state[0] = &$this->_viewState;
-		if(isset($this->_rf[self::RF_CONTROLSTATE]))
+		}
+		if (isset($this->_rf[self::RF_CONTROLSTATE])) {
 			$state[1] = &$this->_rf[self::RF_CONTROLSTATE];
+		}
 		return $state;
 	}
 
@@ -1707,13 +1718,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function applyStyleSheetSkin($page)
 	{
-		if($page && !($this->_flags & self::IS_STYLESHEET_APPLIED))
-		{
+		if ($page && !($this->_flags & self::IS_STYLESHEET_APPLIED)) {
 			$page->applyControlStyleSheet($this);
 			$this->_flags |= self::IS_STYLESHEET_APPLIED;
-		}
-		elseif($this->_flags & self::IS_STYLESHEET_APPLIED)
+		} elseif ($this->_flags & self::IS_STYLESHEET_APPLIED) {
 			throw new TInvalidOperationException('control_stylesheet_applied', get_class($this));
+		}
 	}
 
 	/**
@@ -1723,11 +1733,12 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private function clearCachedUniqueID($recursive)
 	{
-		if($recursive && $this->_uid !== null && isset($this->_rf[self::RF_CONTROLS]))
-		{
-			foreach($this->_rf[self::RF_CONTROLS] as $control)
-				if($control instanceof TControl)
+		if ($recursive && $this->_uid !== null && isset($this->_rf[self::RF_CONTROLS])) {
+			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
+				if ($control instanceof TControl) {
 					$control->clearCachedUniqueID($recursive);
+				}
+			}
 		}
 		$this->_uid = null;
 	}
@@ -1738,8 +1749,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	private function generateAutomaticID()
 	{
 		$this->_flags &= ~self::IS_ID_SET;
-		if(!isset($this->_namingContainer->_rf[self::RF_NAMED_CONTROLS_ID]))
+		if (!isset($this->_namingContainer->_rf[self::RF_NAMED_CONTROLS_ID])) {
 			$this->_namingContainer->_rf[self::RF_NAMED_CONTROLS_ID] = 0;
+		}
 		$id = $this->_namingContainer->_rf[self::RF_NAMED_CONTROLS_ID]++;
 		$this->_id = self::AUTOMATIC_ID_PREFIX . $id;
 		$this->_namingContainer->clearNameTable();
@@ -1761,19 +1773,18 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private function fillNameTable($container, $controls)
 	{
-		foreach($controls as $control)
-		{
-			if($control instanceof TControl)
-			{
-				if($control->_id !== '')
-				{
-					if(isset($container->_rf[self::RF_NAMED_CONTROLS][$control->_id]))
+		foreach ($controls as $control) {
+			if ($control instanceof TControl) {
+				if ($control->_id !== '') {
+					if (isset($container->_rf[self::RF_NAMED_CONTROLS][$control->_id])) {
 						throw new TInvalidDataValueException('control_id_nonunique', get_class($control), $control->_id);
-					else
+					} else {
 						$container->_rf[self::RF_NAMED_CONTROLS][$control->_id] = $control;
+					}
 				}
-				if(!($control instanceof INamingContainer) && $control->getHasControls())
+				if (!($control instanceof INamingContainer) && $control->getHasControls()) {
 					$this->fillNameTable($container, $control->_rf[self::RF_CONTROLS]);
+				}
 			}
 		}
 	}

@@ -18,7 +18,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TTimeTriggeredCallback class.
  *
@@ -49,14 +48,16 @@ class TTimeTriggeredCallback extends TCallback
 	public function setInterval($value)
 	{
 		$interval = TPropertyValue::ensureFloat($value);
-		if($interval <= 0)
+		if ($interval <= 0) {
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
+		}
 
-		if($this->getInterval() === $value)
+		if ($this->getInterval() === $value) {
 			return;
+		}
 
 		$this->setViewState('Interval', $interval, 1);
-		if ($this->getActiveControl()->canUpdateClientSide()){
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', [$this, $interval]);
 		}
@@ -85,8 +86,11 @@ class TTimeTriggeredCallback extends TCallback
 	 */
 	public function setStartTimerOnLoad($value)
 	{
-		$this->setViewState('StartTimerOnLoad',
-				TPropertyValue::ensureBoolean($value), false);
+		$this->setViewState(
+			'StartTimerOnLoad',
+				TPropertyValue::ensureBoolean($value),
+			false
+		);
 	}
 
 	/**
@@ -116,8 +120,10 @@ class TTimeTriggeredCallback extends TCallback
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTriggerOptions());
-		if($this->getStartTimerOnLoad()){
+			$this->getClientClassName(),
+			$this->getTriggerOptions()
+		);
+		if ($this->getStartTimerOnLoad()) {
 			$id = $this->getClientID();
 			$code = "Prado.WebUI.TTimeTriggeredCallback.start('{$id}');";
 			$cs = $this->getPage()->getClientScript();

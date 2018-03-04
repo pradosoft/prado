@@ -52,19 +52,20 @@ class TForm extends TControl
 		$writer->addAttribute('method', $this->getMethod());
 		$uri = $this->getRequest()->getRequestURI();
 		$writer->addAttribute('action', str_replace('&', '&amp;', str_replace('&amp;', '&', $uri)));
-		if(($enctype = $this->getEnctype()) !== '')
+		if (($enctype = $this->getEnctype()) !== '') {
 			$writer->addAttribute('enctype', $enctype);
+		}
 
 		$attributes = $this->getAttributes();
 		$attributes->remove('action');
 		$writer->addAttributes($attributes);
 
-		if(($butt = $this->getDefaultButton()) !== '')
-		{
-			if(($button = $this->findControl($butt)) !== null)
+		if (($butt = $this->getDefaultButton()) !== '') {
+			if (($button = $this->findControl($butt)) !== null) {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
-			else
+			} else {
 				throw new TInvalidDataValueException('form_defaultbutton_invalid', $butt);
+			}
 		}
 	}
 
@@ -80,8 +81,7 @@ class TForm extends TControl
 		$writer->renderBeginTag('form');
 
 		$cs = $page->getClientScript();
-		if($page->getClientSupportsJavaScript())
-		{
+		if ($page->getClientSupportsJavaScript()) {
 			$cs->renderHiddenFieldsBegin($writer);
 			$cs->renderScriptFilesBegin($writer);
 			$cs->renderBeginScripts($writer);
@@ -93,9 +93,7 @@ class TForm extends TControl
 
 			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);
-		}
-		else
-		{
+		} else {
 			$cs->renderHiddenFieldsBegin($writer);
 
 			$page->beginFormRender($writer);
@@ -171,4 +169,3 @@ class TForm extends TControl
 		return $this->getUniqueID();
 	}
 }
-

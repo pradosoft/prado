@@ -25,7 +25,8 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-interface IInstanceCheck {
+interface IInstanceCheck
+{
 	/**
 	 * The method checks $this or, if needed, the parameter $instance is of type
 	 * class.  In the case of a Class Behavior, the instance to which the behavior

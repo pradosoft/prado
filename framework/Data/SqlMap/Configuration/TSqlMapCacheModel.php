@@ -81,10 +81,11 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function setImplementation($value)
 	{
-		if (isset(self::$_cacheTypes[$value]))
+		if (isset(self::$_cacheTypes[$value])) {
 			$this->_implementation = $value;
-		else
+		} else {
 			$this->_implementation = TPropertyValue::ensureEnum($value, 'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes');
+		}
 	}
 
 	/**
@@ -109,10 +110,11 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function initialize($cache = null)
 	{
-		if($cache === null)
+		if ($cache === null) {
 			$this->_cache = Prado::createComponent($this->getImplementationClass(), $this);
-		else
+		} else {
 			$this->_cache = $cache;
+		}
 	}
 
 	/**
@@ -121,13 +123,14 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	public function getImplementationClass()
 	{
 		$implementation = $this->_implementation;
-		if (isset(self::$_cacheTypes[$implementation])) return self::$_cacheTypes[$implementation];
+		if (isset(self::$_cacheTypes[$implementation])) {
+			return self::$_cacheTypes[$implementation];
+		}
 
-		switch(TPropertyValue::ensureEnum($implementation, 'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes'))
-		{
+		switch (TPropertyValue::ensureEnum($implementation, 'Prado\\Data\\SqlMap\\Configuration\\TSqlMapCacheTypes')) {
 			case TSqlMapCacheTypes::FIFO: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapFifoCache';
-			case TSqlMapCacheTypes::LRU : return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapLruCache';
-			case TSqlMapCacheTypes::Basic : return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapApplicationCache';
+			case TSqlMapCacheTypes::LRU: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapLruCache';
+			case TSqlMapCacheTypes::Basic: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapApplicationCache';
 		}
 	}
 
@@ -154,14 +157,16 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function get($key)
 	{
-		if($key instanceof TSqlMapCacheKey)
+		if ($key instanceof TSqlMapCacheKey) {
 			$key = $key->getHash();
+		}
 
 		//if flush ?
 		$value = $this->_cache->get($key);
 		$this->_requests++;
-		if($value !== null)
+		if ($value !== null) {
 			$this->_hits++;
+		}
 		return $value;
 	}
 
@@ -171,11 +176,13 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function set($key, $value)
 	{
-		if($key instanceof TSqlMapCacheKey)
+		if ($key instanceof TSqlMapCacheKey) {
 			$key = $key->getHash();
+		}
 
-		if($value !== null)
+		if ($value !== null) {
 			$this->_cache->set($key, $value, $this->_flushInterval);
+		}
 	}
 
 	/**
@@ -183,9 +190,10 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	 */
 	public function getHitRatio()
 	{
-		if($this->_requests != 0)
+		if ($this->_requests != 0) {
 			return $this->_hits / $this->_requests;
-		else
+		} else {
 			return 0;
+		}
 	}
 }

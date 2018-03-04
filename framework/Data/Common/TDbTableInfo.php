@@ -117,8 +117,9 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getColumn($name)
 	{
-		if(($column = $this->_columns->itemAt($name)) !== null)
+		if (($column = $this->_columns->itemAt($name)) !== null) {
 			return $column;
+		}
 		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
 
@@ -128,11 +129,11 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
-		if($this->_names === null)
-		{
+		if ($this->_names === null) {
 			$this->_names = [];
-			foreach($this->getColumns() as $column)
+			foreach ($this->getColumns() as $column) {
 				$this->_names[] = $column->getColumnName();
+			}
 		}
 		return $this->_names;
 	}
@@ -158,11 +159,11 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getLowerCaseColumnNames()
 	{
-		if($this->_lowercase === null)
-		{
+		if ($this->_lowercase === null) {
 			$this->_lowercase = [];
-			foreach($this->getColumns()->getKeys() as $key)
+			foreach ($this->getColumns()->getKeys() as $key) {
 				$this->_lowercase[strtolower($key)] = $key;
+			}
 		}
 		return $this->_lowercase;
 	}

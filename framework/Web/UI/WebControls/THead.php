@@ -73,10 +73,11 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TMetaTag)
+		if ($object instanceof TMetaTag) {
 			$this->getMetaTags()->add($object);
-		else
+		} else {
 			parent::addParsedObject($object);
+		}
 	}
 
 	/**
@@ -135,8 +136,7 @@ class THead extends \Prado\Web\UI\TControl
 	 */
 	public function getMetaTags()
 	{
-		if(($metaTags = $this->getViewState('MetaTags', null)) === null)
-		{
+		if (($metaTags = $this->getViewState('MetaTags', null)) === null) {
 			$metaTags = new TMetaTagCollection;
 			$this->setViewState('MetaTags', $metaTags, null);
 		}
@@ -152,15 +152,15 @@ class THead extends \Prado\Web\UI\TControl
 		$page = $this->getPage();
 		$title = $this->getTitle();
 		$writer->write("<head>\n<title>" . THttpUtility::htmlEncode($title) . "</title>\n");
-		if(($baseUrl = $this->getBaseUrl()) !== '')
+		if (($baseUrl = $this->getBaseUrl()) !== '') {
 			$writer->write('<base href="' . $baseUrl . "\" />\n");
-		if(($icon = $this->getShortcutIcon()) !== '')
+		}
+		if (($icon = $this->getShortcutIcon()) !== '') {
 			$writer->write('<link rel="shortcut icon" href="' . $icon . "\" />\n");
+		}
 
-		if(($metaTags = $this->getMetaTags()) !== null)
-		{
-			foreach($metaTags as $metaTag)
-			{
+		if (($metaTags = $this->getMetaTags()) !== null) {
+			foreach ($metaTags as $metaTag) {
 				$metaTag->render($writer);
 				$writer->writeLine();
 			}
@@ -168,8 +168,7 @@ class THead extends \Prado\Web\UI\TControl
 		$cs = $page->getClientScript();
 		$cs->renderStyleSheetFiles($writer);
 		$cs->renderStyleSheets($writer);
-		if($page->getClientSupportsJavaScript())
-		{
+		if ($page->getClientSupportsJavaScript()) {
 			$cs->renderHeadScriptFiles($writer);
 			$cs->renderHeadScripts($writer);
 		}

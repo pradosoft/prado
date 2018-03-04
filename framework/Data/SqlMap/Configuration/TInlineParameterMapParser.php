@@ -43,8 +43,7 @@ class TInlineParameterMapParser
 		$mappings = [];
 		preg_match_all(self::PARAMETER_TOKEN_REGEXP, $sqlText, $matches);
 
-		for($i = 0, $k = count($matches[1]); $i < $k; $i++)
-		{
+		for ($i = 0, $k = count($matches[1]); $i < $k; $i++) {
 			$mappings[] = $this->parseMapping($matches[1][$i], $scope);
 			$sqlText = str_replace($matches[0][$i], '?', $sqlText);
 		}
@@ -62,20 +61,22 @@ class TInlineParameterMapParser
 		$mapping = new TParameterProperty;
 		$properties = explode(',', $token);
 		$mapping->setProperty(trim(array_shift($properties)));
-		foreach($properties as $property)
-		{
+		foreach ($properties as $property) {
 			$prop = explode('=', $property);
-			$name = trim($prop[0]); $value = trim($prop[1]);
-			if($mapping->canSetProperty($name))
+			$name = trim($prop[0]);
+			$value = trim($prop[1]);
+			if ($mapping->canSetProperty($name)) {
 				$mapping->{'set' . $name}($value);
-			else
-			{
+			} else {
 				throw new TSqlMapUndefinedException(
 						'sqlmap_undefined_property_inline_map',
-						$name, $scope['file'], $scope['node'], $token);
+						$name,
+					$scope['file'],
+					$scope['node'],
+					$token
+				);
 			}
 		}
 		return $mapping;
 	}
 }
-

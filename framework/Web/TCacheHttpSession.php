@@ -57,14 +57,15 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function init($config)
 	{
-		if($this->_cacheModuleID === '')
+		if ($this->_cacheModuleID === '') {
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
-		elseif(($cache = $this->getApplication()->getModule($this->_cacheModuleID)) === null)
+		} elseif (($cache = $this->getApplication()->getModule($this->_cacheModuleID)) === null) {
 			throw new TConfigurationException('cachesession_cachemodule_inexistent', $this->_cacheModuleID);
-		elseif($cache instanceof ICache)
+		} elseif ($cache instanceof ICache) {
 			$this->_cache = $cache;
-		else
+		} else {
 			throw new TConfigurationException('cachesession_cachemodule_invalid', $this->_cacheModuleID);
+		}
 		$this->setUseCustomStorage(true);
 		parent::init($config);
 	}
@@ -150,4 +151,3 @@ class TCacheHttpSession extends THttpSession
 		return $this->_prefix . ':' . $id;
 	}
 }
-

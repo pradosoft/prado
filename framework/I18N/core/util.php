@@ -162,8 +162,7 @@ namespace Prado\I18N\core;
 	 */
 	function I18N_toUTF8($string, $from)
 	{
-		if($from != 'UTF-8')
-		{
+		if ($from != 'UTF-8') {
 			$s = iconv($from, 'UTF-8', $string); //to UTF-8
 			return $s !== false ? $s : $string; //it could return false
 		}
@@ -178,11 +177,9 @@ namespace Prado\I18N\core;
 	 */
 	function I18N_toEncoding($string, $to)
 	{
-		if($to != 'UTF-8')
-		{
+		if ($to != 'UTF-8') {
 			$s = iconv('UTF-8', $to, $string);
 			return $s !== false ? $s : $string;
 		}
 		return $string;
 	}
-	

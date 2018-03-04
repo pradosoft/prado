@@ -81,8 +81,9 @@ class TActiveRecordRelationContext
 	 */
 	public function getRelationForeignKeys()
 	{
-		if($this->_fkeys === null)
+		if ($this->_fkeys === null) {
 			$this->_fkeys = $this->getRelationHandler()->getRelationForeignKeys();
+		}
 		return $this->_fkeys;
 	}
 
@@ -174,15 +175,18 @@ class TActiveRecordRelationContext
 	 */
 	public function getRelationHandler($criteria = null)
 	{
-		if(!$this->hasRecordRelation())
-		{
-			throw new TActiveRecordException('ar_undefined_relation_prop',
-				$this->_property, get_class($this->_record), 'RELATIONS');
+		if (!$this->hasRecordRelation()) {
+			throw new TActiveRecordException(
+				'ar_undefined_relation_prop',
+				$this->_property,
+				get_class($this->_record),
+				'RELATIONS'
+			);
 		}
-		if($criteria === null)
+		if ($criteria === null) {
 			$criteria = new TActiveRecordCriteria($this->getCondition(), $this->getParameters());
-		switch($this->getRelationType())
-		{
+		}
+		switch ($this->getRelationType()) {
 			case TActiveRecord::HAS_MANY:
 				return new TActiveRecordHasMany($this, $criteria);
 			case TActiveRecord::MANY_TO_MANY:
@@ -202,15 +206,12 @@ class TActiveRecordRelationContext
 	public function updateAssociatedRecords($updateBelongsTo = false)
 	{
 		$success = true;
-		foreach($this->_record->getRecordRelations() as $data)
-		{
+		foreach ($this->_record->getRecordRelations() as $data) {
 			list($property, $relation) = $data;
 			$belongsTo = $relation[0] == TActiveRecord::BELONGS_TO;
-			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
-			{
+			if (($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo)) {
 				$obj = $this->getSourceRecord();
-				if(!$this->isEmptyFkObject($obj->getColumnValue($property)))
-				{
+				if (!$this->isEmptyFkObject($obj->getColumnValue($property))) {
 					$context = new TActiveRecordRelationContext($this->getSourceRecord(), $property, $relation);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
 				}
@@ -221,12 +222,12 @@ class TActiveRecordRelationContext
 
 	protected function isEmptyFkObject($obj)
 	{
-		if(is_object($obj))
+		if (is_object($obj)) {
 			return $obj instanceof TList ? $obj->count() === 0 : false;
-		elseif(is_array($obj))
+		} elseif (is_array($obj)) {
 			return count($obj) === 0;
-		else
+		} else {
 			return empty($obj);
+		}
 	}
 }
-

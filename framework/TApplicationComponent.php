@@ -98,8 +98,9 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public function publishAsset($assetPath, $className = null)
 	{
-		if($className === null)
+		if ($className === null) {
 			$className = get_class($this);
+		}
 		$class = new \ReflectionClass($className);
 		$fullPath = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $assetPath;
 		return $this->publishFilePath($fullPath);
@@ -115,4 +116,3 @@ class TApplicationComponent extends \Prado\TComponent
 		return Prado::getApplication()->getAssetManager()->publishFilePath($fullPath, $checkTimestamp);
 	}
 }
-

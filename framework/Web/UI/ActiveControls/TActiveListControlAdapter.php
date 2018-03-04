@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\IListControlAdapter;
 
-
 /**
  * TActiveListControlAdapter class.
  *
@@ -44,20 +43,25 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedIndex($index)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			// if a prompt is set, we mimic the postback behaviour of not counting it
 			// in the index. We assume the prompt is _always_ the first item (Issue #368)
 			$promptValue = $this->getControl()->getPromptValue();
-			if($promptValue === '')
+			if ($promptValue === '') {
 				$promptValue = $this->getControl()->getPromptText();
-			if($promptValue !== '')
+			}
+			if ($promptValue !== '') {
 				$index++;
+			}
 
-			if($index >= 0 && $index <= $this->getControl()->getItemCount())
-			$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Index', $index);
+			if ($index >= 0 && $index <= $this->getControl()->getItemCount()) {
+				$this->getPage()->getCallbackClient()->select(
+					$this->getControl(),
+				'Index',
+				$index
+			);
+			}
 		}
 	}
 
@@ -67,27 +71,32 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedIndices($indices)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$n = $this->getControl()->getItemCount();
 
 			$promptValue = $this->getControl()->getPromptValue();
-			if($promptValue === '')
+			if ($promptValue === '') {
 				$promptValue = $this->getControl()->getPromptText();
+			}
 
 			$list = [];
-			foreach($indices as $index)
-			{
+			foreach ($indices as $index) {
 				$index = intval($index);
-				if($promptValue !== '')
+				if ($promptValue !== '') {
 					$index++;
-				if($index >= 0 && $index <= $n)
+				}
+				if ($index >= 0 && $index <= $n) {
 					$list[] = $index;
+				}
 			}
-			if(count($list) > 0)
+			if (count($list) > 0) {
 				$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Indices', $list);
+					$this->getControl(),
+					'Indices',
+					$list
+				);
+			}
 		}
 	}
 
@@ -97,11 +106,13 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedValue($value)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Value', $value);
+					$this->getControl(),
+				'Value',
+				$value
+			);
 		}
 	}
 
@@ -111,15 +122,19 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function setSelectedValues($values)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$list = [];
-			foreach($values as $value)
+			foreach ($values as $value) {
 				$list[] = $value;
-			if(count($list) > 0)
+			}
+			if (count($list) > 0) {
 				$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Values', $list);
+					$this->getControl(),
+					'Values',
+					$list
+				);
+			}
 		}
 	}
 
@@ -128,11 +143,9 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function clearSelection()
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
-			if($this->getControl() instanceof TActiveDropDownList)
-			{
+			if ($this->getControl() instanceof TActiveDropDownList) {
 				// clearing a TActiveDropDownList's selection actually doesn't select the first item;
 				// we mimic the postback behaviour selecting it (Issue #368)
 				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Index', 0);
@@ -147,12 +160,10 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 	 */
 	public function updateListItems()
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$items = $this->getControl()->getItems();
-			if($items instanceof TActiveListItemCollection
-				&& $items->getListHasChanged())
-			{
+			if ($items instanceof TActiveListItemCollection
+				&& $items->getListHasChanged()) {
 				$items->updateClientSide();
 			}
 		}

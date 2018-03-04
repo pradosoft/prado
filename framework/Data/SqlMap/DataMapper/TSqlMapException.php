@@ -30,12 +30,12 @@ class TSqlMapException extends TException
 		array_shift($args);
 		$n = count($args);
 		$tokens = [];
-		for($i = 0;$i < $n;++$i)
-		{
-			if($args[$i] instanceof SimpleXMLElement)
+		for ($i = 0;$i < $n;++$i) {
+			if ($args[$i] instanceof SimpleXMLElement) {
 				$tokens['{' . $i . '}'] = $this->implodeNode($args[$i]);
-			else
+			} else {
 				$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+			}
 		}
 		parent::__construct(strtr($errorMessage, $tokens));
 	}
@@ -47,8 +47,9 @@ class TSqlMapException extends TException
 	protected function implodeNode($node)
 	{
 		$attributes = [];
-		foreach($node->attributes() as $k => $v)
+		foreach ($node->attributes() as $k => $v) {
 			$attributes[] = $k . '="' . (string)$v . '"';
+		}
 		return '<' . $node->getName() . ' ' . implode(' ', $attributes) . '>';
 	}
 
@@ -60,8 +61,9 @@ class TSqlMapException extends TException
 		$lang = Prado::getPreferredLanguage();
 		$dir = dirname(__FILE__);
 		$msgFile = $dir . '/messages-' . $lang . '.txt';
-		if(!is_file($msgFile))
+		if (!is_file($msgFile)) {
 			$msgFile = $dir . '/messages.txt';
+		}
 		return $msgFile;
 	}
 }

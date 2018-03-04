@@ -50,12 +50,14 @@ abstract class TTriggeredCallback extends TCallback
 	protected function getTargetControl()
 	{
 		$id = $this->getControlID();
-		if(($control = $this->findControl($id)) instanceof TControl)
+		if (($control = $this->findControl($id)) instanceof TControl) {
 			return $control->getClientID();
-		if($id === '')
-		{
+		}
+		if ($id === '') {
 			throw new TConfigurationException(
-				'ttriggeredcallback_invalid_controlid', get_class($this));
+				'ttriggeredcallback_invalid_controlid',
+				get_class($this)
+			);
 		}
 		return $id;
 	}
@@ -71,4 +73,3 @@ abstract class TTriggeredCallback extends TCallback
 		return $options;
 	}
 }
-

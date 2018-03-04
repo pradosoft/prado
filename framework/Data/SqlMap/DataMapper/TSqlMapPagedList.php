@@ -16,7 +16,6 @@ use Prado\Collections\TPagedList;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
-
 /**
  * TSqlMapPagedList implements a list with paging functionality that retrieves
  * data from a SqlMap statement.
@@ -88,8 +87,14 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$limit = $this->getOffsetAndLimit($param);
 		$connection = $this->_statement->getManager()->getDbConnection();
-		$data = $this->_statement->executeQueryForList($connection,
-						$this->_parameter, null, $limit[0], $limit[1], $this->_delegate);
+		$data = $this->_statement->executeQueryForList(
+			$connection,
+						$this->_parameter,
+			null,
+			$limit[0],
+			$limit[1],
+			$this->_delegate
+		);
 		$this->populateData($param, $data);
 	}
 
@@ -120,44 +125,32 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$total = $data instanceof TList ? $data->getCount() : count($data);
 		$pageSize = $this->getPageSize();
-		if($total < 1)
-		{
+		if ($total < 1) {
 			$param->setData($data);
 			$this->_prevPageList = null;
 			$this->_nextPageList = null;
 			return;
 		}
 
-		if($param->getNewPageIndex() < 1)
-		{
+		if ($param->getNewPageIndex() < 1) {
 			$this->_prevPageList = null;
-			if($total <= $pageSize)
-			{
+			if ($total <= $pageSize) {
 				$param->setData($data);
 				$this->_nextPageList = null;
-			}
-			else
-			{
+			} else {
 				$param->setData(array_slice($data, 0, $pageSize));
 				$this->_nextPageList = array_slice($data, $pageSize - 1, $total);
 			}
-		}
-		else
-		{
-			if($total <= $pageSize)
-			{
+		} else {
+			if ($total <= $pageSize) {
 				$this->_prevPageList = array_slice($data, 0, $total);
 				$param->setData([]);
 				$this->_nextPageList = null;
-			}
-			elseif($total <= $pageSize * 2)
-			{
+			} elseif ($total <= $pageSize * 2) {
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $total));
 				$this->_nextPageList = null;
-			}
-			else
-			{
+			} else {
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $pageSize));
 				$this->_nextPageList = array_slice($data, $pageSize * 2, $total - $pageSize * 2);
@@ -209,4 +202,3 @@ class TSqlMapPagedList extends TPagedList
 		return !($this->getIsFirstPage() || $this->getIsLastPage());
 	}
 }
-

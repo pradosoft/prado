@@ -137,8 +137,9 @@ class TMemCache extends TCache
 	 */
 	public function __destruct()
 	{
-		if($this->_cache !== null && !$this->_useMemcached)
+		if ($this->_cache !== null && !$this->_useMemcached) {
 			$this->_cache->close();
+		}
 	}
 
 	/**
@@ -152,31 +153,38 @@ class TMemCache extends TCache
 	 */
 	public function init($config)
 	{
-		if(!extension_loaded('memcache') && !$this->_useMemcached)
+		if (!extension_loaded('memcache') && !$this->_useMemcached) {
 			throw new TConfigurationException('memcache_extension_required');
-		if(!extension_loaded('memcached') && $this->_useMemcached)
+		}
+		if (!extension_loaded('memcached') && $this->_useMemcached) {
 			throw new TConfigurationException('memcached_extension_required');
+		}
 
 		$this->_cache = $this->_useMemcached ? new Memcached : new Memcache;
 		$this->loadConfig($config);
-		if(count($this->_servers))
-		{
-			foreach($this->_servers as $server)
-			{
+		if (count($this->_servers)) {
+			foreach ($this->_servers as $server) {
 				Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', '\Prado\Caching\TMemCache');
-				if($this->_cache->addServer($server['Host'],$server['Port'],$server['Persistent'],
-					$server['Weight'], $server['Timeout'], $server['RetryInterval']) === false)
+				if ($this->_cache->addServer(
+					$server['Host'],
+					$server['Port'],
+					$server['Persistent'],
+					$server['Weight'],
+					$server['Timeout'],
+					$server['RetryInterval']
+				) === false) {
 					throw new TConfigurationException('memcache_connection_failed', $server['Host'], $server['Port']);
+				}
+			}
+		} else {
+			Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
+			if ($this->_cache->addServer($this->_host, $this->_port) === false) {
+				throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
 			}
 		}
-		else
-		{
-			Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
-			if($this->_cache->addServer($this->_host, $this->_port) === false)
-				throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
-		}
-		if($this->_threshold !== 0)
+		if ($this->_threshold !== 0) {
 			$this->_cache->setCompressThreshold($this->_threshold, $this->_minSavings);
+		}
 		$this->_initialized = true;
 		parent::init($config);
 	}
@@ -188,30 +196,31 @@ class TMemCache extends TCache
 	 */
 	private function loadConfig($xml)
 	{
-		if($xml instanceof TXmlElement)
-		{
-			foreach($xml->getElementsByTagName('server') as $serverConfig)
-			{
+		if ($xml instanceof TXmlElement) {
+			foreach ($xml->getElementsByTagName('server') as $serverConfig) {
 				$properties = $serverConfig->getAttributes();
-				if(($host = $properties->remove('Host')) === null)
+				if (($host = $properties->remove('Host')) === null) {
 					throw new TConfigurationException('memcache_serverhost_required');
-				if(($port = $properties->remove('Port')) === null)
+				}
+				if (($port = $properties->remove('Port')) === null) {
 					throw new TConfigurationException('memcache_serverport_required');
-				if(!is_numeric($port))
+				}
+				if (!is_numeric($port)) {
 					throw new TConfigurationException('memcache_serverport_invalid');
+				}
 				$server = ['Host' => $host,'Port' => $port,'Weight' => 1,'Timeout' => 1800,'RetryInterval' => 15,'Persistent' => true];
 				$checks = [
 					'Weight' => 'memcache_serverweight_invalid',
 					'Timeout' => 'memcache_servertimeout_invalid',
 					'RetryInterval' => 'memcach_serverretryinterval_invalid'
 				];
-				foreach($checks as $property => $exception)
-				{
+				foreach ($checks as $property => $exception) {
 					$value = $properties->remove($property);
-					if($value !== null && is_numeric($value))
+					if ($value !== null && is_numeric($value)) {
 						$server[$property] = $value;
-					elseif($value !== null)
+					} elseif ($value !== null) {
 						throw new TConfigurationException($exception);
+					}
 				}
 				$server['Persistent'] = TPropertyValue::ensureBoolean($properties->remove('Persistent'));
 				$this->_servers[] = $server;
@@ -233,10 +242,11 @@ class TMemCache extends TCache
 	 */
 	public function setHost($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('memcache_host_unchangeable');
-		else
+		} else {
 			$this->_host = $value;
+		}
 	}
 
 	/**
@@ -253,10 +263,11 @@ class TMemCache extends TCache
 	 */
 	public function setPort($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('memcache_port_unchangeable');
-		else
+		} else {
 			$this->_port = TPropertyValue::ensureInteger($value);
+		}
 	}
 
 	/**
@@ -273,10 +284,11 @@ class TMemCache extends TCache
 	 */
 	public function setUseMemcached($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('memcache_host_unchangeable');
-		else
+		} else {
 			$this->_useMemcached = $value;
+		}
 	}
 
 	/**
@@ -293,10 +305,11 @@ class TMemCache extends TCache
 	 */
 	public function setThreshold($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('memcache_threshold_unchangeable');
-		else
+		} else {
 			$this->_threshold = TPropertyValue::ensureInteger($value);
+		}
 	}
 
 	/**
@@ -313,10 +326,11 @@ class TMemCache extends TCache
 	 */
 	public function setMinSavings($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('memcache_min_savings_unchangeable');
-		else
+		} else {
 			$this->_minSavings = TPropertyValue::ensureFloat($value);
+		}
 	}
 
 	/**
@@ -341,7 +355,7 @@ class TMemCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		if($this->_useMemcached) {
+		if ($this->_useMemcached) {
 			return $this->_cache->set($key, $value, $expire);
 		} else {
 			return $this->_cache->set($key, $value, 0, $expire);
@@ -359,7 +373,7 @@ class TMemCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-		if($this->_useMemcached) {
+		if ($this->_useMemcached) {
 			$this->_cache->add($key, $value, $expire);
 		} else {
 			return $this->_cache->add($key, $value, 0, $expire);
@@ -386,4 +400,3 @@ class TMemCache extends TCache
 		return $this->_cache->flush();
 	}
 }
-

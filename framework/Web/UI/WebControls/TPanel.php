@@ -70,8 +70,9 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($butt = $this->getDefaultButton()) !== '')
+		if (($butt = $this->getDefaultButton()) !== '') {
 			$writer->addAttribute('id', $this->getClientID());
+		}
 	}
 
 	/**
@@ -203,8 +204,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($text = $this->getGroupingText()) !== '')
-		{
+		if (($text = $this->getGroupingText()) !== '') {
 			$writer->renderBeginTag('fieldset');
 			$writer->renderBeginTag('legend');
 			$writer->write($text);
@@ -218,8 +218,9 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderEndTag($writer)
 	{
-		if($this->getGroupingText() !== '')
+		if ($this->getGroupingText() !== '') {
 			$writer->renderEndTag();
+		}
 		parent::renderEndTag($writer);
 	}
 
@@ -227,13 +228,12 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::render($writer);
 
-		if(($butt = $this->getDefaultButton()) !== '')
-		{
-			if(($button = $this->findControl($butt)) === null)
+		if (($butt = $this->getDefaultButton()) !== '') {
+			if (($button = $this->findControl($butt)) === null) {
 				throw new TInvalidDataValueException('panel_defaultbutton_invalid', $butt);
-			else
+			} else {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+			}
 		}
 	}
 }
-

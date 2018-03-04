@@ -29,18 +29,20 @@ use Prado\Web\UI\WebControls\TRepeater;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
-class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable {
+class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
+{
 
   /**
    * @var string the tag used to render the surrounding container
    */
-  protected $_surroundingTag = 'div';
+	protected $_surroundingTag = 'div';
 
-  /**
-   * Creates a new callback control, sets the adapter to
-   * TActiveControlAdapter.
-   */
-	public function __construct() {
+	/**
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter.
+	 */
+	public function __construct()
+	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
@@ -48,7 +50,8 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	/**
 	 * @return TBaseActiveControl standard active control options.
 	 */
-	public function getActiveControl() {
+	public function getActiveControl()
+	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
@@ -59,9 +62,10 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * itself for rendering in order to get it's content replaced on client side.
 	 * @param Traversable|array|string $value data source object
 	 */
-	public function setDataSource($value) {
+	public function setDataSource($value)
+	{
 		parent::setDataSource($value);
-		if($this->getActiveControl()->canUpdateClientSide()) {
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->renderPager();
 			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 		}
@@ -71,23 +75,26 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * Gets the tag used to render the surrounding container. Defaults to 'div'.
 	 * @return string container tag
 	 */
-	public function getSurroundingTag() {
-	  return $this->_surroundingTag;
+	public function getSurroundingTag()
+	{
+		return $this->_surroundingTag;
 	}
 
 	/**
 	 * Sets the tag used to render the surrounding container.
 	 * @param string $value container tag
 	 */
-	public function setSurroundingTag($value) {
-	  $this->_surroundingTag = TPropertyValue::ensureString($value);
+	public function setSurroundingTag($value)
+	{
+		$this->_surroundingTag = TPropertyValue::ensureString($value);
 	}
 
 	/**
 	 * Returns the id of the surrounding container.
 	 * @return string container id
 	 */
-	public function getSurroundingTagID() {
+	public function getSurroundingTagID()
+	{
 		return $this->getClientID() . '_Container';
 	}
 
@@ -97,12 +104,14 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * Else it will call the {@link renderRepeater()} method which will do the rendering of the repeater.
 	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
-	public function render($writer) {
-		if($this->getHasPreRendered()) {
+	public function render($writer)
+	{
+		if ($this->getHasPreRendered()) {
 			$this->renderRepeater($writer);
-			if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
-		}
-		else {
+			if ($this->getActiveControl()->canUpdateClientSide()) {
+				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
@@ -112,10 +121,11 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */
-	private function renderPager() {
+	private function renderPager()
+	{
 		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
-		foreach($pager as $item) {
-			if($item->ControlToPaginate == $this->ID) {
+		foreach ($pager as $item) {
+			if ($item->ControlToPaginate == $this->ID) {
 				$writer = $this->getResponse()->createHtmlWriter();
 				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}
@@ -128,12 +138,11 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * script to update it's content.
 	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
-	private function renderRepeater($writer) {
+	private function renderRepeater($writer)
+	{
 		$writer->addAttribute('id', $this->getSurroundingTagID());
 		$writer->renderBeginTag($this->getSurroundingTag());
 		parent::render($writer);
 		$writer->renderEndTag();
 	}
-
 }
-

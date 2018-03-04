@@ -35,10 +35,11 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TMetaTag)
+		if ($item instanceof TMetaTag) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('metatagcollection_metatag_invalid');
+		}
 	}
 
 	/**
@@ -49,10 +50,10 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	public function findIndexByID($id)
 	{
 		$index = 0;
-		foreach($this as $item)
-		{
-			if($item->getID() === $id)
+		foreach ($this as $item) {
+			if ($item->getID() === $id) {
 				return $index;
+			}
 			$index++;
 		}
 		return -1;
@@ -65,9 +66,10 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 */
 	public function findMetaTagByID($id)
 	{
-		if(($index = $this->findIndexByID($id)) >= 0)
+		if (($index = $this->findIndexByID($id)) >= 0) {
 			return $this->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 }

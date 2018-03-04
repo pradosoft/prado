@@ -61,17 +61,14 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 		$value = $this->getValidationValue($this->getValidationTarget());
 		$valid = $valid = is_string($value) && strlen($value) <= 254 && parent::evaluateIsValid();
 
-		if($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr'))
-		{
-			if($value !== '')
-			{
-				if(($pos = strpos($value, '@')) !== false)
-				{
+		if ($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr')) {
+			if ($value !== '') {
+				if (($pos = strpos($value, '@')) !== false) {
 					$domain = substr($value, $pos + 1);
 					return $domain === '' ? false : checkdnsrr($domain, 'MX');
-				}
-				else
+				} else {
 					return false;
+				}
 			}
 		}
 		return $valid;
@@ -94,4 +91,3 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 		$this->setViewState('CheckMXRecord', TPropertyValue::ensureBoolean($value), false);
 	}
 }
-

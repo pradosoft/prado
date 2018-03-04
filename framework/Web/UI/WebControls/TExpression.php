@@ -55,8 +55,8 @@ class TExpression extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if($this->_e !== '')
+		if ($this->_e !== '') {
 			$writer->write($this->evaluateExpression($this->_e));
+		}
 	}
 }
-

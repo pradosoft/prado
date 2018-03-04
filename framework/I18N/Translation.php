@@ -20,8 +20,6 @@ use Prado\I18N\core\MessageSource;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
-
 /**
  * Translation class.
  *
@@ -47,31 +45,35 @@ class Translation extends \Prado\TComponent
 		static $saveEventHandlerAttached = false;
 
 		//initialized the default class wide formatter
-		if(!isset(self::$formatters[$catalogue]))
-		{
+		if (!isset(self::$formatters[$catalogue])) {
 			$app = Prado::getApplication()->getGlobalization();
 			$config = $app->getTranslationConfiguration();
-			$source = MessageSource::factory($config['type'],
+			$source = MessageSource::factory(
+				$config['type'],
 											$config['source'],
-											$config['filename']);
+											$config['filename']
+			);
 
 			$source->setCulture($app->getCulture());
 
-			if(isset($config['cache']))
+			if (isset($config['cache'])) {
 				$source->setCache(new MessageCache($config['cache']));
+			}
 
 			self::$formatters[$catalogue] = new MessageFormat($source, $app->getCharset());
 
 			//mark untranslated text
-			if($ps = $config['marker'])
+			if ($ps = $config['marker']) {
 				self::$formatters[$catalogue]->setUntranslatedPS([$ps,$ps]);
+			}
 
 			//save the message on end request
 			// Do it only once !
-			if(!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave']))
-			{
+			if (!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave'])) {
 				Prado::getApplication()->attachEventHandler(
-				'OnEndRequest', ['Translation', 'saveMessages']);
+				'OnEndRequest',
+					['Translation', 'saveMessages']
+				);
 				$saveEventHandlerAttached = true;
 			}
 		}
@@ -94,14 +96,11 @@ class Translation extends \Prado\TComponent
 	{
 		static $onceonly = true;
 
-		if($onceonly)
-		{
-			foreach (self::$formatters as $catalogue => $formatter)
-			{
+		if ($onceonly) {
+			foreach (self::$formatters as $catalogue => $formatter) {
 				$app = Prado::getApplication()->getGlobalization();
 				$config = $app->getTranslationConfiguration();
-				if(isset($config['autosave']))
-				{
+				if (isset($config['autosave'])) {
 					$formatter->getSource()->setCulture($app->getCulture());
 					$formatter->getSource()->save($catalogue);
 				}

@@ -16,7 +16,6 @@ use Prado\Prado;
 use Prado\Web\UI\WebControls\TBaseValidator;
 use Prado\Web\UI\WebControls\TCustomValidator;
 
-
 /**
  * TActiveCustomValidator Class
  *
@@ -36,8 +35,7 @@ use Prado\Web\UI\WebControls\TCustomValidator;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TActiveCustomValidator extends TCustomValidator
-	implements ICallbackEventHandler, IActiveControl
+class TActiveCustomValidator extends TCustomValidator implements ICallbackEventHandler, IActiveControl
 {
 	/**
 	 * @var boolean true if validation is made during a callback request.
@@ -85,8 +83,10 @@ class TActiveCustomValidator extends TCustomValidator
 	 */
 	public function setClientValidationFunction($value)
 	{
-		throw new TNotSupportedException('tactivecustomvalidator_clientfunction_unsupported',
-			get_class($this));
+		throw new TNotSupportedException(
+			'tactivecustomvalidator_clientfunction_unsupported',
+			get_class($this)
+		);
 	}
 
 	/**
@@ -114,8 +114,7 @@ class TActiveCustomValidator extends TCustomValidator
 		// it could have been changed by the clientside validation.
 
 		parent::setIsValid($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.updateActiveCustomValidator';
 			$client->callClientFunction($func, [$this, $value]);
@@ -151,13 +150,13 @@ class TActiveCustomValidator extends TCustomValidator
 	 */
 	public function setErrorMessage($value)
 	{
-		if(parent::getErrorMessage() === $value)
+		if (parent::getErrorMessage() === $value) {
 			return;
+		}
 
 
 		parent::setErrorMessage($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.setErrorMessage';
 			$client->callClientFunction($func, [$this, $value]);

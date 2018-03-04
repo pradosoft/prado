@@ -89,8 +89,9 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TAccordionView)
+		if ($object instanceof TAccordionView) {
 			$this->getControls()->add($object);
+		}
 	}
 
 	/**
@@ -144,33 +145,29 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$activeView = null;
 		$views = $this->getViews();
-		if(($id = $this->getActiveViewID()) !== '')
-		{
-			if(($index = $views->findIndexByID($id)) >= 0)
+		if (($id = $this->getActiveViewID()) !== '') {
+			if (($index = $views->findIndexByID($id)) >= 0) {
 				$activeView = $views->itemAt($index);
-			else
+			} else {
 				throw new TInvalidDataValueException('accordion_activeviewid_invalid', $id);
-		}
-		elseif(($index = $this->getActiveViewIndex()) >= 0)
-		{
-			if($index < $views->getCount())
+			}
+		} elseif (($index = $this->getActiveViewIndex()) >= 0) {
+			if ($index < $views->getCount()) {
 				$activeView = $views->itemAt($index);
-			else
+			} else {
 				throw new TInvalidDataValueException('accordion_activeviewindex_invalid', $index);
-		}
-		else
-		{
-			foreach($views as $index => $view)
-			{
-				if($view->getActive())
-				{
+			}
+		} else {
+			foreach ($views as $index => $view) {
+				if ($view->getActive()) {
 					$activeView = $view;
 					break;
 				}
 			}
 		}
-		if($activeView !== null)
+		if ($activeView !== null) {
 			$this->activateView($activeView);
+		}
 		return $activeView;
 	}
 
@@ -180,10 +177,11 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setActiveView($view)
 	{
-		if($this->getViews()->indexOf($view) >= 0)
+		if ($this->getViews()->indexOf($view) >= 0) {
 			$this->activateView($view);
-		else
+		} else {
 			throw new TInvalidOperationException('accordion_view_inexistent');
+		}
 	}
 
 	/**
@@ -208,7 +206,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getCssClass()
 	{
 		$cssClass = parent::getCssClass();
-			return $cssClass === '' ? 'accordion' : $cssClass;
+		return $cssClass === '' ? 'accordion' : $cssClass;
 	}
 
 	/**
@@ -248,8 +246,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getViewStyle()
 	{
-		if(($style = $this->getViewState('ViewStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('ViewStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('accordion-view');
 			$this->setViewState('ViewStyle', $style, null);
@@ -278,8 +275,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getHeaderStyle()
 	{
-		if(($style = $this->getViewState('HeaderStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('accordion-header');
 			$this->setViewState('HeaderStyle', $style, null);
@@ -308,8 +304,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getActiveHeaderStyle()
 	{
-		if(($style = $this->getViewState('ActiveHeaderStyle', null)) === null)
-		{
+		if (($style = $this->getViewState('ActiveHeaderStyle', null)) === null) {
 			$style = new TStyle;
 			$style->setCssClass('accordion-header-active');
 			$this->setViewState('ActiveHeaderStyle', $style, null);
@@ -342,16 +337,14 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$this->setActiveViewIndex(-1);
 		$this->setActiveViewID('');
-		foreach($this->getViews() as $index => $v)
-		{
-			if($view === $v)
-			{
+		foreach ($this->getViews() as $index => $v) {
+			if ($view === $v) {
 				$this->setActiveViewIndex($index);
 				$this->setActiveViewID($view->getID(false));
 				$view->setActive(true);
-			}
-			else
+			} else {
 				$v->setActive(false);
+			}
 		}
 	}
 
@@ -364,12 +357,10 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function loadPostData($key, $values)
 	{
-		if(($index = $values[$this->getClientID() . '_1']) !== null)
-		{
+		if (($index = $values[$this->getClientID() . '_1']) !== null) {
 			$index = (int)$index;
 			$currentIndex = $this->getActiveViewIndex();
-			if($currentIndex !== $index)
-			{
+			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
 				$this->setActiveViewIndex($index);
 				return $this->_dataChanged = true;
@@ -432,15 +423,15 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$url = $this->getCssUrl();
 
-		if($url === '') {
+		if ($url === '') {
 			return;
 		}
 
-		if($url === 'default') {
+		if ($url === 'default') {
 			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'accordion.css');
 		}
 
-		if($url !== '') {
+		if ($url !== '') {
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
@@ -460,8 +451,9 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$cs->registerEndScript("prado:$id", $code);
 		// ensure an item is always active and visible
 		$index = $this->getActiveViewIndex();
-		if(!$this->getViews()->itemAt($index)->Visible)
+		if (!$this->getViews()->itemAt($index)->Visible) {
 			$index = 0;
+		}
 		$cs->registerHiddenField($id . '_1', $index);
 		$page->registerRequiresPostData($this);
 		$page->registerRequiresPostData($id . "_1");
@@ -487,11 +479,13 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$options['HeaderCssClass'] = $this->getHeaderCssClass();
 		$options['Duration'] = $this->getAnimationDuration();
 
-		if (($viewheight = $this->getViewHeight()) > 0)
+		if (($viewheight = $this->getViewHeight()) > 0) {
 			$options['maxHeight'] = $viewheight;
+		}
 		$views = [];
-		foreach($this->getViews() as $view)
+		foreach ($this->getViews() as $view) {
 			$views[$view->getClientID()] = $view->getVisible() ? '1' : '0';
+		}
 		$options['Views'] = $views;
 
 		return $options;
@@ -527,16 +521,13 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function renderContents($writer)
 	{
 		$views = $this->getViews();
-		if($views->getCount() > 0)
-		{
+		if ($views->getCount() > 0) {
 			$writer->writeLine();
-			foreach($views as $view)
-			{
+			foreach ($views as $view) {
 				$view->renderHeader($writer);
 				$view->renderControl($writer);
 				$writer->writeLine();
 			}
 		}
 	}
-
 }

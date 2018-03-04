@@ -95,10 +95,11 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function setRepeatLayout($value)
 	{
-		if($value !== TRepeatLayout::Table)
+		if ($value !== TRepeatLayout::Table) {
 			throw new TInvalidDataValueException('ratinglist_table_layout_only');
-		else
+		} else {
 			parent::setRepeatLayout($value);
+		}
 	}
 
 	/**
@@ -107,10 +108,11 @@ class TRatingList extends TRadioButtonList
 	public function getRating()
 	{
 		$rating = $this->getViewState('Rating', null);
-		if ($rating === null)
+		if ($rating === null) {
 			return $this->getSelectedIndex() + 1;
-		else
+		} else {
 			return $rating;
+		}
 	}
 
 	/**
@@ -171,15 +173,19 @@ class TRatingList extends TRadioButtonList
 
 	protected function getCaptionControl()
 	{
-		if(($id = $this->getCaptionID()) !== '')
-		{
-			if($control = $this->getPage()->findControl($id))
+		if (($id = $this->getCaptionID()) !== '') {
+			if ($control = $this->getPage()->findControl($id)) {
 				return $control;
-			if($control = $this->getNamingContainer()->findControl($id))
+			}
+			if ($control = $this->getNamingContainer()->findControl($id)) {
 				return $control;
+			}
 		}
 		throw new TInvalidDataValueException(
-			'ratinglist_invalid_caption_id', $id, $this->getID());
+			'ratinglist_invalid_caption_id',
+			$id,
+			$this->getID()
+		);
 	}
 
 	/**
@@ -203,7 +209,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function setRatingStyle($value)
 	{
-	   $this->setViewState('RatingStyle', $value, 'default');
+		$this->setViewState('RatingStyle', $value, 'default');
 	}
 
 	/**
@@ -211,7 +217,7 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function getRatingStyle()
 	{
-	   return $this->getViewState('RatingStyle', 'default');
+		return $this->getViewState('RatingStyle', 'default');
 	}
 
 	/**
@@ -229,8 +235,11 @@ class TRatingList extends TRadioButtonList
 	 */
 	public function setHalfRatingInterval($value)
 	{
-		$this->setViewState('HalfRating',
-				TPropertyValue::ensureArray($value), [0.3, 0.7]);
+		$this->setViewState(
+			'HalfRating',
+				TPropertyValue::ensureArray($value),
+			[0.3, 0.7]
+		);
 	}
 
 	/**
@@ -262,15 +271,14 @@ class TRatingList extends TRadioButtonList
 	 */
 	protected function getCaptionControlID()
 	{
-		if(($id = $this->getCaptionID()) !== '')
-		{
-			if($control = $this->getParent()->findControl($id))
-			{
-				if($control->getVisible(true))
+		if (($id = $this->getCaptionID()) !== '') {
+			if ($control = $this->getParent()->findControl($id)) {
+				if ($control->getVisible(true)) {
 					return $control->getClientID();
-			}
-			else
+				}
+			} else {
 				return $id;
+			}
 		}
 		return '';
 	}
@@ -294,8 +302,9 @@ class TRatingList extends TRadioButtonList
 	{
 		$cs = $this->getPage()->getClientScript();
 		$url = $this->getAssetUrl($style . '.css');
-		if(!$cs->isStyleSheetFileRegistered($url))
+		if (!$cs->isStyleSheetFileRegistered($url)) {
 			$cs->registerStyleSheetFile($url, $url);
+		}
 		return $url;
 	}
 
@@ -308,8 +317,9 @@ class TRatingList extends TRadioButtonList
 	{
 		$types = ['blank', 'selected', 'half', 'combined'];
 		$files = [];
-		foreach($types as $type)
+		foreach ($types as $type) {
 			$files[$type] = $this->getAssetUrl("{$style}_{$type}{$fileExt}");
+		}
 		return $files;
 	}
 
@@ -342,7 +352,9 @@ class TRatingList extends TRadioButtonList
 	{
 		$writer->addAttribute('id', $this->getClientID());
 		$this->getPage()->getClientScript()->registerPostBackControl(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 		parent::render($writer);
 	}
 
@@ -356,4 +368,3 @@ class TRatingList extends TRadioButtonList
 		return 'Prado.WebUI.TRatingList';
 	}
 }
-

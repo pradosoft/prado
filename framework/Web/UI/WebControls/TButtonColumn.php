@@ -220,15 +220,13 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem)
-		{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			$buttonType = $this->getButtonType();
-			if($buttonType === TButtonColumnType::LinkButton)
+			if ($buttonType === TButtonColumnType::LinkButton) {
 				$button = new TLinkButton;
-			elseif($buttonType === TButtonColumnType::PushButton)
+			} elseif ($buttonType === TButtonColumnType::PushButton) {
 				$button = new TButton;
-			else // image button
-			{
+			} else { // image button
 				$button = new TImageButton;
 				$button->setImageUrl($this->getImageUrl());
 				$button->setToolTip($this->getText());
@@ -237,13 +235,14 @@ class TButtonColumn extends TDataGridColumn
 			$button->setCommandName($this->getCommandName());
 			$button->setCausesValidation($this->getCausesValidation());
 			$button->setValidationGroup($this->getValidationGroup());
-			if($this->getDataTextField() !== '' || ($buttonType === TButtonColumnType::ImageButton && $this->getDataImageUrlField() !== ''))
+			if ($this->getDataTextField() !== '' || ($buttonType === TButtonColumnType::ImageButton && $this->getDataImageUrlField() !== '')) {
 				$button->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+			}
 			$cell->getControls()->add($button);
 			$cell->registerObject('Button', $button);
-		}
-		else
+		} else {
 			parent::initializeCell($cell, $columnIndex, $itemType);
+		}
 	}
 
 	/**
@@ -253,16 +252,13 @@ class TButtonColumn extends TDataGridColumn
 	 */
 	public function dataBindColumn($sender, $param)
 	{
-		if($sender instanceof \Prado\Web\UI\IButtonControl)
-		{
-			if(($field = $this->getDataTextField()) !== '')
-			{
+		if ($sender instanceof \Prado\Web\UI\IButtonControl) {
+			if (($field = $this->getDataTextField()) !== '') {
 				$value = $this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
 				$text = $this->formatDataValue($this->getDataTextFormatString(), $value);
 				$sender->setText($text);
 			}
-			if(($sender instanceof TImageButton) && ($field = $this->getDataImageUrlField()) !== '')
-			{
+			if (($sender instanceof TImageButton) && ($field = $this->getDataImageUrlField()) !== '') {
 				$value = $this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
 				$url = $this->formatDataValue($this->getDataImageUrlFormatString(), $value);
 				$sender->setImageUrl($url);
@@ -270,4 +266,3 @@ class TButtonColumn extends TDataGridColumn
 		}
 	}
 }
-

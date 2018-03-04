@@ -38,14 +38,17 @@ class TPageStateFormatter
 	public static function serialize($page, $data)
 	{
 		$sm = $page->getApplication()->getSecurityManager();
-		if($page->getEnableStateValidation())
+		if ($page->getEnableStateValidation()) {
 			$str = $sm->hashData(serialize($data));
-		else
+		} else {
 			$str = serialize($data);
-		if($page->getEnableStateCompression() && extension_loaded('zlib'))
+		}
+		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
 			$str = gzcompress($str);
-		if($page->getEnableStateEncryption())
+		}
+		if ($page->getEnableStateEncryption()) {
 			$str = $sm->encrypt($str);
+		}
 		return base64_encode($str);
 	}
 
@@ -57,22 +60,24 @@ class TPageStateFormatter
 	public static function unserialize($page, $data)
 	{
 		$str = base64_decode($data);
-		if($str === '')
+		if ($str === '') {
 			return null;
-		if($str !== false)
-		{
+		}
+		if ($str !== false) {
 			$sm = $page->getApplication()->getSecurityManager();
-			if($page->getEnableStateEncryption())
+			if ($page->getEnableStateEncryption()) {
 				$str = $sm->decrypt($str);
-			if($page->getEnableStateCompression() && extension_loaded('zlib'))
-				$str = @gzuncompress($str);
-			if($page->getEnableStateValidation())
-			{
-				if(($str = $sm->validateData($str)) !== false)
-					return unserialize($str);
 			}
-			else
+			if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
+				$str = @gzuncompress($str);
+			}
+			if ($page->getEnableStateValidation()) {
+				if (($str = $sm->validateData($str)) !== false) {
+					return unserialize($str);
+				}
+			} else {
 				return unserialize($str);
+			}
 		}
 		return null;
 	}

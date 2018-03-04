@@ -93,10 +93,11 @@ class TCaptcha extends TImage
 	public function setTokenImageTheme($value)
 	{
 		$value = TPropertyValue::ensureInteger($value);
-		if($value >= 0 && $value <= 63)
+		if ($value >= 0 && $value <= 63) {
 			$this->setViewState('TokenImageTheme', $value, 0);
-		else
+		} else {
 			throw new TConfigurationException('captcha_tokenimagetheme_invalid', 0, 63);
+		}
 	}
 
 	/**
@@ -116,10 +117,11 @@ class TCaptcha extends TImage
 	public function setTokenFontSize($value)
 	{
 		$value = TPropertyValue::ensureInteger($value);
-		if($value >= 20 && $value <= 100)
+		if ($value >= 20 && $value <= 100) {
 			$this->setViewState('TokenFontSize', $value, 30);
-		else
+		} else {
 			throw new TConfigurationException('captcha_tokenfontsize_invalid', 20, 100);
+		}
 	}
 
 	/**
@@ -136,10 +138,11 @@ class TCaptcha extends TImage
 	public function setMinTokenLength($value)
 	{
 		$length = TPropertyValue::ensureInteger($value);
-		if($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH)
+		if ($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH) {
 			$this->setViewState('MinTokenLength', $length, 4);
-		else
+		} else {
 			throw new TConfigurationException('captcha_mintokenlength_invalid', self::MIN_TOKEN_LENGTH, self::MAX_TOKEN_LENGTH);
+		}
 	}
 
 	/**
@@ -156,10 +159,11 @@ class TCaptcha extends TImage
 	public function setMaxTokenLength($value)
 	{
 		$length = TPropertyValue::ensureInteger($value);
-		if($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH)
+		if ($length >= self::MIN_TOKEN_LENGTH && $length <= self::MAX_TOKEN_LENGTH) {
 			$this->setViewState('MaxTokenLength', $length, 6);
-		else
+		} else {
 			throw new TConfigurationException('captcha_maxtokenlength_invalid', self::MIN_TOKEN_LENGTH, self::MAX_TOKEN_LENGTH);
+		}
 	}
 
 	/**
@@ -191,8 +195,9 @@ class TCaptcha extends TImage
 	 */
 	public function setTokenAlphabet($value)
 	{
-		if(strlen($value) < 2)
+		if (strlen($value) < 2) {
 			throw new TConfigurationException('captcha_tokenalphabet_invalid');
+		}
 		$this->setViewState('TokenAlphabet', $value, '234578adefhijmnrtABDEFGHJLMNRT');
 	}
 
@@ -249,10 +254,11 @@ class TCaptcha extends TImage
 	 */
 	public function getIsTokenExpired()
 	{
-		if(($expiry = $this->getTokenExpiry()) > 0 && ($start = $this->getViewState('TokenGenerated', 0)) > 0)
+		if (($expiry = $this->getTokenExpiry()) > 0 && ($start = $this->getViewState('TokenGenerated', 0)) > 0) {
 			return $expiry + $start < time();
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -260,8 +266,7 @@ class TCaptcha extends TImage
 	 */
 	public function getPublicKey()
 	{
-		if(($publicKey = $this->getViewState('PublicKey', '')) === '')
-		{
+		if (($publicKey = $this->getViewState('PublicKey', '')) === '') {
 			$publicKey = $this->generateRandomKey();
 			$this->setPublicKey($publicKey);
 		}
@@ -289,16 +294,16 @@ class TCaptcha extends TImage
 	 */
 	protected function getTokenLength()
 	{
-		if(($tokenLength = $this->getViewState('TokenLength')) === null)
-		{
+		if (($tokenLength = $this->getViewState('TokenLength')) === null) {
 			$minLength = $this->getMinTokenLength();
 			$maxLength = $this->getMaxTokenLength();
-			if($minLength > $maxLength)
+			if ($minLength > $maxLength) {
 				$tokenLength = rand($maxLength, $minLength);
-			elseif($minLength < $maxLength)
+			} elseif ($minLength < $maxLength) {
 				$tokenLength = rand($minLength, $maxLength);
-			else
+			} else {
 				$tokenLength = $minLength;
+			}
 			$this->setViewState('TokenLength', $tokenLength);
 		}
 		return $tokenLength;
@@ -309,15 +314,15 @@ class TCaptcha extends TImage
 	 */
 	public function getPrivateKey()
 	{
-		if($this->_privateKey === null)
-		{
+		if ($this->_privateKey === null) {
 			$fileName = $this->generatePrivateKeyFile();
 			$content = file_get_contents($fileName);
 			$matches = [];
-			if(preg_match("/privateKey='(.*?)'/ms", $content, $matches) > 0)
+			if (preg_match("/privateKey='(.*?)'/ms", $content, $matches) > 0) {
 				$this->_privateKey = $matches[1];
-			else
+			} else {
 				throw new TConfigurationException('captcha_privatekey_unknown');
+			}
 		}
 		return $this->_privateKey;
 	}
@@ -330,13 +335,11 @@ class TCaptcha extends TImage
 	public function validate($input)
 	{
 		$number = $this->getViewState('TestNumber', 0);
-		if(!$this->_validated)
-		{
+		if (!$this->_validated) {
 			$this->setViewState('TestNumber', ++$number);
 			$this->_validated = true;
 		}
-		if($this->getIsTokenExpired() || (($limit = $this->getTestLimit()) > 0 && $number > $limit))
-		{
+		if ($this->getIsTokenExpired() || (($limit = $this->getTestLimit()) > 0 && $number > $limit)) {
 			$this->regenerateToken();
 			return false;
 		}
@@ -364,10 +367,10 @@ class TCaptcha extends TImage
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(!self::checkRequirements())
+		if (!self::checkRequirements()) {
 			throw new TConfigurationException('captcha_imagettftext_required');
-		if(!$this->getViewState('TokenGenerated', 0))
-		{
+		}
+		if (!$this->getViewState('TokenGenerated', 0)) {
 			$manager = $this->getApplication()->getAssetManager();
 			$manager->publishFilePath($this->getFontFile());
 			$url = $manager->publishFilePath($this->getCaptchaScriptFile());
@@ -392,8 +395,7 @@ class TCaptcha extends TImage
 		$options['alphabet'] = $this->getTokenAlphabet();
 		$options['fontSize'] = $this->getTokenFontSize();
 		$options['theme'] = $this->getTokenImageTheme();
-		if(($randomSeed = $this->getViewState('RandomSeed', 0)) === 0)
-		{
+		if (($randomSeed = $this->getViewState('RandomSeed', 0)) === 0) {
 			$randomSeed = (int)(microtime(true) * 1000000);
 			$this->setViewState('RandomSeed', $randomSeed);
 		}
@@ -424,8 +426,7 @@ class TCaptcha extends TImage
 		$captchaScript = $this->getCaptchaScriptFile();
 		$path = dirname($this->getApplication()->getAssetManager()->getPublishedPath($captchaScript));
 		$fileName = $path . DIRECTORY_SEPARATOR . 'captcha_key.php';
-		if(!is_file($fileName))
-		{
+		if (!is_file($fileName)) {
 			@mkdir($path);
 			$key = $this->generateRandomKey();
 			$content = "<?php
@@ -466,16 +467,15 @@ class TCaptcha extends TImage
 	 */
 	protected function hash2string($hex, $alphabet = '')
 	{
-		if(strlen($alphabet) < 2)
+		if (strlen($alphabet) < 2) {
 			$alphabet = '234578adefhijmnrtABDEFGHJLMNQRT';
+		}
 		$hexLength = strlen($hex);
 		$base = strlen($alphabet);
 		$result = '';
-		for($i = 0;$i < $hexLength;$i += 6)
-		{
+		for ($i = 0;$i < $hexLength;$i += 6) {
 			$number = hexdec(substr($hex, $i, 6));
-			while($number)
-			{
+			while ($number) {
 				$result .= $alphabet[$number % $base];
 				$number = floor($number / $base);
 			}
@@ -493,4 +493,3 @@ class TCaptcha extends TImage
 		return extension_loaded('gd') && function_exists('imagettftext') && function_exists('imagepng');
 	}
 }
-

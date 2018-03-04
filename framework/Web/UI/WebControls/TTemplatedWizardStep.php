@@ -48,8 +48,9 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	public function createChildControls()
 	{
 		$this->getControls()->clear();
-		if($this->_contentTemplate)
+		if ($this->_contentTemplate) {
 			$this->_contentTemplate->instantiateIn($this);
+		}
 	}
 
 	/**
@@ -108,8 +109,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	 */
 	public function instantiateNavigationTemplate()
 	{
-		if(!$this->_navigationContainer && $this->_navigationTemplate)
-		{
+		if (!$this->_navigationContainer && $this->_navigationTemplate) {
 			$this->_navigationContainer = new TWizardNavigationContainer;
 			$this->_navigationTemplate->instantiateIn($this->_navigationContainer);
 		}

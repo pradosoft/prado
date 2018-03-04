@@ -29,8 +29,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 		//set the culture according to browser language settings
 		$http = new core\HTTPNegotiator();
 		$languages = $http->getLanguages();
-		if(count($languages) > 0)
-		{
+		if (count($languages) > 0) {
 			$this->_detectedLanguage = $languages[0];
 			$this->setCulture($languages[0]);
 		}
@@ -41,4 +40,3 @@ class TGlobalizationAutoDetect extends TGlobalization
 		return $this->_detectedLanguage;
 	}
 }
-

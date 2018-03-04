@@ -52,14 +52,14 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	public function load()
 	{
-		if(($cache = $this->getApplication()->getCache()) !== null && ($value = $cache->get(self::CACHE_NAME)) !== false)
+		if (($cache = $this->getApplication()->getCache()) !== null && ($value = $cache->get(self::CACHE_NAME)) !== false) {
 			return unserialize($value);
-		else
-		{
-			if(($content = @file_get_contents($this->getStateFilePath())) !== false)
+		} else {
+			if (($content = @file_get_contents($this->getStateFilePath())) !== false) {
 				return unserialize($content);
-			else
+			} else {
 				return null;
+			}
 		}
 	}
 
@@ -71,18 +71,16 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	{
 		$content = serialize($state);
 		$saveFile = true;
-		if(($cache = $this->getApplication()->getCache()) !== null)
-		{
-			if($cache->get(self::CACHE_NAME) === $content)
+		if (($cache = $this->getApplication()->getCache()) !== null) {
+			if ($cache->get(self::CACHE_NAME) === $content) {
 				$saveFile = false;
-			else
+			} else {
 				$cache->set(self::CACHE_NAME, $content);
+			}
 		}
-		if($saveFile)
-		{
+		if ($saveFile) {
 			$fileName = $this->getStateFilePath();
 			file_put_contents($fileName, $content, LOCK_EX);
 		}
 	}
-
 }

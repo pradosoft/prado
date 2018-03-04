@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TTemplateControl;
 
-
 /**
  * Base class for Active Record scaffold views.
  *
@@ -59,8 +58,9 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function getRecordPropertyValues($record)
 	{
 		$data = [];
-		foreach($this->getTableInfo()->getColumns() as $name => $column)
+		foreach ($this->getTableInfo()->getColumns() as $name => $column) {
 			$data[] = $record->getColumnValue($name);
+		}
 		return $data;
 	}
 
@@ -71,10 +71,10 @@ abstract class TScaffoldBase extends TTemplateControl
 	protected function getRecordPkValues($record)
 	{
 		$data = [];
-		foreach($this->getTableInfo()->getColumns() as $name => $column)
-		{
-			if($column->getIsPrimaryKey())
+		foreach ($this->getTableInfo()->getColumns() as $name => $column) {
+			if ($column->getIsPrimaryKey()) {
 				$data[] = $record->getColumnValue($name);
+			}
 		}
 		return $data;
 	}
@@ -124,24 +124,26 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function getRecordObject($pk = null)
 	{
-		if($this->_record === null)
-		{
-			if($pk !== null)
-			{
+		if ($this->_record === null) {
+			if ($pk !== null) {
 				$this->_record = $this->getRecordFinder()->findByPk($pk);
-				if($this->_record === null)
-					throw new TConfigurationException('scaffold_invalid_record_pk',
-						$this->getRecordClass(), $pk);
-			}
-			else
-			{
+				if ($this->_record === null) {
+					throw new TConfigurationException(
+						'scaffold_invalid_record_pk',
+						$this->getRecordClass(),
+						$pk
+					);
+				}
+			} else {
 				$class = $this->getRecordClass();
-				if($class !== null)
+				if ($class !== null) {
 					$this->_record = Prado::createComponent($class);
-				else
-				{
-					throw new TConfigurationException('scaffold_invalid_record_class',
-						$this->getRecordClass(), $this->getID());
+				} else {
+					throw new TConfigurationException(
+						'scaffold_invalid_record_class',
+						$this->getRecordClass(),
+						$this->getID()
+					);
 				}
 			}
 		}
@@ -202,11 +204,9 @@ abstract class TScaffoldBase extends TTemplateControl
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getEnableDefaultStyle())
-		{
+		if ($this->getEnableDefaultStyle()) {
 			$url = $this->publishAsset($this->getDefaultStyle() . '.css');
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
 }
-

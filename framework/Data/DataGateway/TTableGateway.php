@@ -19,7 +19,6 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-
 /**
  * TTableGateway class provides several find methods to get data from the database
  * and update, insert, and delete methods.
@@ -93,12 +92,13 @@ class TTableGateway extends \Prado\TComponent
 	public function __construct($table, $connection)
 	{
 		$this->_connection = $connection;
-		if(is_string($table))
+		if (is_string($table)) {
 			$this->setTableName($table);
-		elseif($table instanceof TDbTableInfo)
+		} elseif ($table instanceof TDbTableInfo) {
 			$this->setTableInfo($table);
-		else
+		} else {
 			throw new TDbException('dbtablegateway_invalid_table_info');
+		}
 	}
 
 	/**
@@ -242,8 +242,9 @@ class TTableGateway extends \Prado\TComponent
 	public function findAll($criteria = null, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
-		if($criteria !== null)
+		if ($criteria !== null) {
 			$criteria = $this->getCriteria($criteria, $parameters, $args);
+		}
 		return $this->getCommand()->findAll($criteria);
 	}
 
@@ -261,8 +262,9 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function findByPk($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->findByPk($keys);
 	}
 
@@ -285,8 +287,9 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function findAllByPks($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->findAllByPk($keys);
 	}
 
@@ -333,8 +336,9 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function deleteByPk($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->deleteByPk($keys);
 	}
 
@@ -343,8 +347,9 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function deleteAllByPks($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->deleteByPk($keys);
 	}
 
@@ -357,8 +362,9 @@ class TTableGateway extends \Prado\TComponent
 	public function count($criteria = null, $parameters = [])
 	{
 		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
-		if($criteria !== null)
+		if ($criteria !== null) {
 			$criteria = $this->getCriteria($criteria, $parameters, $args);
+		}
 		return $this->getCommand()->count($criteria);
 	}
 
@@ -414,15 +420,14 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	protected function getCriteria($criteria, $parameters, $args)
 	{
-		if(is_string($criteria))
-		{
+		if (is_string($criteria)) {
 			$useArgs = !is_array($parameters) && is_array($args);
 			return new TSqlCriteria($criteria, $useArgs ? $args : $parameters);
-		}
-		elseif($criteria instanceof TSqlCriteria)
+		} elseif ($criteria instanceof TSqlCriteria) {
 			return $criteria;
-		else
+		} else {
 			throw new TDbException('dbtablegateway_invalid_criteria');
+		}
 	}
 
 	/**
@@ -457,22 +462,23 @@ class TTableGateway extends \Prado\TComponent
 	public function __call($method, $args)
 	{
 		$delete = false;
-		if($findOne = substr(strtolower($method), 0, 6) === 'findby')
+		if ($findOne = substr(strtolower($method), 0, 6) === 'findby') {
 			$condition = $method[6] === '_' ? substr($method, 7) : substr($method, 6);
-		elseif(substr(strtolower($method), 0, 9) === 'findallby')
+		} elseif (substr(strtolower($method), 0, 9) === 'findallby') {
 			$condition = $method[9] === '_' ? substr($method, 10) : substr($method, 9);
-		elseif($delete = substr(strtolower($method), 0, 8) === 'deleteby')
+		} elseif ($delete = substr(strtolower($method), 0, 8) === 'deleteby') {
 			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
-		elseif($delete = substr(strtolower($method), 0, 11) === 'deleteallby')
+		} elseif ($delete = substr(strtolower($method), 0, 11) === 'deleteallby') {
 			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
-		else
+		} else {
 			return null;
+		}
 
 		$criteria = $this->getCommand()->createCriteriaFromString($method, $condition, $args);
-		if($delete)
+		if ($delete) {
 			return $this->deleteAll($criteria);
-		else
+		} else {
 			return $findOne ? $this->find($criteria) : $this->findAll($criteria);
+		}
 	}
 }
-

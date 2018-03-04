@@ -16,7 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-
 /**
  * TJuiProgressbar class.
  *
@@ -56,7 +55,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getWidget()
 	{
-	  return 'progressbar';
+		return 'progressbar';
 	}
 
 	/**
@@ -64,7 +63,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -73,10 +72,9 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getOptions()
 	{
-		if (($options = $this->getViewState('JuiOptions')) === null)
-		{
-		  $options = new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}

@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TRadioButtonList;
 
-
 /**
  * TActiveRadioButtonList class.
  *
@@ -116,7 +115,9 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	{
 		parent::addAttributesToRender($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
@@ -128,5 +129,4 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	{
 		return 'Prado.WebUI.TActiveRadioButtonList';
 	}
-
 }

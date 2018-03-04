@@ -66,8 +66,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function loadPostData($key, $values)
 	{
 		$checked = $this->getChecked();
-		if($newChecked = isset($values[$key]))
+		if ($newChecked = isset($values[$key])) {
 			$this->setValue($values[$key]);
+		}
 		$this->setChecked($newChecked);
 		return $this->_dataChanged = ($newChecked !== $checked);
 	}
@@ -79,8 +80,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onCheckedChanged(null);
 	}
 
@@ -106,8 +108,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getEnabled(true))
+		if ($this->getEnabled(true)) {
 			$this->getPage()->registerRequiresPostData($this);
+		}
 	}
 
 	/**
@@ -293,7 +296,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getSurroundingTag()
 	{
-	return 'span';
+		return 'span';
 	}
 
 	/**
@@ -301,7 +304,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getSurroundingTagID()
 	{
-	return $this->getSpanNeeded() ? $this->getClientID() . '_parent' : $this->getClientID();
+		return $this->getSpanNeeded() ? $this->getClientID() . '_parent' : $this->getClientID();
 	}
 
 	/**
@@ -313,47 +316,47 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function render($writer)
 	{
 		$this->getPage()->ensureRenderInForm($this);
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			$this->getStyle()->addAttributesToRender($writer);
-		if(($tooltip = $this->getToolTip()) !== '')
+		}
+		if (($tooltip = $this->getToolTip()) !== '') {
 			$writer->addAttribute('title', $tooltip);
-		if($this->getHasAttributes())
-		{
+		}
+		if ($this->getHasAttributes()) {
 			$attributes = $this->getAttributes();
 			$value = $attributes->remove('value');
 			// onclick js should only be added to input tag
-			if(($onclick = $attributes->remove('onclick')) === null)
+			if (($onclick = $attributes->remove('onclick')) === null) {
 				$onclick = '';
-			if($attributes->getCount())
+			}
+			if ($attributes->getCount()) {
 				$writer->addAttributes($attributes);
-			if($value !== null)
+			}
+			if ($value !== null) {
 				$attributes->add('value', $value);
-		}
-		else
+			}
+		} else {
 			$onclick = '';
-	if($needspan = $this->getSpanNeeded())
-	{
-	  $writer->addAttribute('id', $this->getSurroundingTagID());
-	  $writer->renderBeginTag($this->getSurroundingTag());
-	}
-		$clientID = $this->getClientID();
-		if(($text = $this->getText()) !== '')
-		{
-			if($this->getTextAlign() === TTextAlign::Left)
-			{
-				$this->renderLabel($writer, $clientID, $text);
-				$this->renderInputTag($writer, $clientID, $onclick);
-			}
-			else
-			{
-				$this->renderInputTag($writer, $clientID, $onclick);
-				$this->renderLabel($writer, $clientID, $text);
-			}
 		}
-		else
+		if ($needspan = $this->getSpanNeeded()) {
+			$writer->addAttribute('id', $this->getSurroundingTagID());
+			$writer->renderBeginTag($this->getSurroundingTag());
+		}
+		$clientID = $this->getClientID();
+		if (($text = $this->getText()) !== '') {
+			if ($this->getTextAlign() === TTextAlign::Left) {
+				$this->renderLabel($writer, $clientID, $text);
+				$this->renderInputTag($writer, $clientID, $onclick);
+			} else {
+				$this->renderInputTag($writer, $clientID, $onclick);
+				$this->renderLabel($writer, $clientID, $text);
+			}
+		} else {
 			$this->renderInputTag($writer, $clientID, $onclick);
-		if($needspan)
+		}
+		if ($needspan) {
 			$writer->renderEndTag();
+		}
 	}
 
 	/**
@@ -361,10 +364,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getLabelAttributes()
 	{
-		if($attributes = $this->getViewState('LabelAttributes', null))
+		if ($attributes = $this->getViewState('LabelAttributes', null)) {
 			return $attributes;
-		else
-		{
+		} else {
 			$attributes = new TAttributeCollection;
 			$this->setViewState('LabelAttributes', $attributes, null);
 			return $attributes;
@@ -376,10 +378,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getInputAttributes()
 	{
-		if($attributes = $this->getViewState('InputAttributes', null))
+		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			return $attributes;
-		else
-		{
+		} else {
 			$attributes = new TAttributeCollection;
 			$this->setViewState('InputAttributes', $attributes, null);
 			return $attributes;
@@ -391,17 +392,17 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function getValueAttribute()
 	{
-		if(($value = $this->getValue()) !== '')
+		if (($value = $this->getValue()) !== '') {
 			return $value;
-		else
-		{
+		} else {
 			$attributes = $this->getViewState('InputAttributes', null);
-			if($attributes && $attributes->contains('value'))
+			if ($attributes && $attributes->contains('value')) {
 				return $attributes->itemAt('value');
-			elseif($this->hasAttribute('value'))
+			} elseif ($this->hasAttribute('value')) {
 				return $this->getAttribute('value');
-			else
+			} else {
 				return '';
+			}
 		}
 	}
 
@@ -427,7 +428,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 *
 	 * @return bool wether this control needs a surrounding span tag
 	 */
-	protected function getSpanNeeded() {
+	protected function getSpanNeeded()
+	{
 		return $this->getText() !== '';
 	}
 
@@ -440,8 +442,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	protected function renderLabel($writer, $clientID, $text)
 	{
 		$writer->addAttribute('for', $clientID);
-		if($attributes = $this->getViewState('LabelAttributes', null))
+		if ($attributes = $this->getViewState('LabelAttributes', null)) {
 			$writer->addAttributes($attributes);
+		}
 		$writer->renderBeginTag('label');
 		$writer->write($text);
 		$writer->renderEndTag();
@@ -455,35 +458,43 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		if($clientID !== '')
+		if ($clientID !== '') {
 			$writer->addAttribute('id', $clientID);
+		}
 		$writer->addAttribute('type', 'checkbox');
-		if(($value = $this->getValueAttribute()) !== '')
+		if (($value = $this->getValueAttribute()) !== '') {
 			$writer->addAttribute('value', $value);
-		if(!empty($onclick))
+		}
+		if (!empty($onclick)) {
 			$writer->addAttribute('onclick', $onclick);
-		if(($uniqueID = $this->getUniqueID()) !== '')
+		}
+		if (($uniqueID = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uniqueID);
-		if($this->getChecked())
+		}
+		if ($this->getChecked()) {
 			$writer->addAttribute('checked', 'checked');
-		if(!$this->getEnabled(true))
+		}
+		if (!$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
+		}
 
 		$page = $this->getPage();
-		if($this->getEnabled(true)
+		if ($this->getEnabled(true)
 			&& $this->getEnableClientScript()
 			&& $this->getAutoPostBack()
-			&& $page->getClientSupportsJavaScript())
-		{
+			&& $page->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 
-		if(($accesskey = $this->getAccessKey()) !== '')
+		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
-		if(($tabindex = $this->getTabIndex()) > 0)
+		}
+		if (($tabindex = $this->getTabIndex()) > 0) {
 			$writer->addAttribute('tabindex', "$tabindex");
-		if($attributes = $this->getViewState('InputAttributes', null))
+		}
+		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			$writer->addAttributes($attributes);
+		}
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}

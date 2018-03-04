@@ -14,7 +14,6 @@ namespace Prado\Data\SqlMap;
 use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
 use Prado\Prado;
 
-
 /**
  * DataMapper client, a fascade to provide access the rest of the DataMapper
  * framework. It provides three core functions:
@@ -260,4 +259,3 @@ class TSqlMapGateway extends \Prado\TComponent
 		$this->getSqlMapManager()->getTypeHandlers()->registerTypeHandler($typeHandler);
 	}
 }
-

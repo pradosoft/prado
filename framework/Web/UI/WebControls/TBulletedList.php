@@ -60,8 +60,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onClick(new TBulletedListEventParameter((int)$param));
 	}
 
@@ -70,8 +71,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	protected function getTagName()
 	{
-		switch($this->getBulletStyle())
-		{
+		switch ($this->getBulletStyle()) {
 			case TBulletStyle::Numbered:
 			case TBulletStyle::LowerAlpha:
 			case TBulletStyle::UpperAlpha:
@@ -100,8 +100,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	protected function addAttributesToRender($writer)
 	{
 		$needStart = false;
-		switch($this->getBulletStyle())
-		{
+		switch ($this->getBulletStyle()) {
 			case TBulletStyle::None:
 				$writer->addStyleAttribute('list-style-type', 'none');
 				$needStart = true;
@@ -140,8 +139,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 				$writer->addStyleAttribute('list-style-image', "url($url)");
 				break;
 		}
-		if($needStart && ($start = $this->getFirstBulletNumber()) != 1)
+		if ($needStart && ($start = $this->getFirstBulletNumber()) != 1) {
 			$writer->addAttribute('start', "$start");
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -249,8 +249,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	public function render($writer)
 	{
-		if($this->getHasItems())
+		if ($this->getHasItems()) {
 			parent::render($writer);
+		}
 	}
 
 	/**
@@ -262,10 +263,10 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		$this->_isEnabled = $this->getEnabled(true);
 		$this->_postBackOptions = $this->getPostBackOptions();
 		$writer->writeLine();
-		foreach($this->getItems() as $index => $item)
-		{
-			if($item->getHasAttributes())
+		foreach ($this->getItems() as $index => $item) {
+			if ($item->getHasAttributes()) {
 				$writer->addAttributes($item->getAttributes());
+			}
 			$writer->renderBeginTag('li');
 			$this->renderBulletText($writer, $item, $index);
 			$writer->renderEndTag();
@@ -281,8 +282,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	protected function renderBulletText($writer, $item, $index)
 	{
-		switch($this->getDisplayMode())
-		{
+		switch ($this->getDisplayMode()) {
 			case TBulletedListDisplayMode::Text:
 				$this->renderTextItem($writer, $item, $index);
 				break;
@@ -297,10 +297,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	protected function renderTextItem($writer, $item, $index)
 	{
-		if($item->getEnabled())
+		if ($item->getEnabled()) {
 			$writer->write(THttpUtility::htmlEncode($item->getText()));
-		else
-		{
+		} else {
 			$writer->addAttribute('disabled', 'disabled');
 			$writer->renderBeginTag('span');
 			$writer->write(THttpUtility::htmlEncode($item->getText()));
@@ -310,16 +309,17 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	protected function renderHyperLinkItem($writer, $item, $index)
 	{
-		if(!$this->_isEnabled || !$item->getEnabled())
+		if (!$this->_isEnabled || !$item->getEnabled()) {
 			$writer->addAttribute('disabled', 'disabled');
-		else
-		{
+		} else {
 			$writer->addAttribute('href', $item->getValue());
-			if(($target = $this->getTarget()) !== '')
+			if (($target = $this->getTarget()) !== '') {
 				$writer->addAttribute('target', $target);
+			}
 		}
-		if(($accesskey = $this->getAccessKey()) !== '')
+		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
+		}
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
 		$writer->renderEndTag();
@@ -327,18 +327,18 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	protected function renderLinkButtonItem($writer, $item, $index)
 	{
-		if(!$this->_isEnabled || !$item->getEnabled())
+		if (!$this->_isEnabled || !$item->getEnabled()) {
 			$writer->addAttribute('disabled', 'disabled');
-		else
-		{
+		} else {
 			$this->_currentRenderItemIndex = $index;
 			$writer->addAttribute('id', $this->getClientID() . $index);
 			$writer->addAttribute('href', "javascript:;//" . $this->getClientID() . $index);
 			$cs = $this->getPage()->getClientScript();
 			$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 		}
-		if(($accesskey = $this->getAccessKey()) !== '')
+		if (($accesskey = $this->getAccessKey()) !== '') {
 			$writer->addAttribute('accesskey', $accesskey);
+		}
 		$writer->renderBeginTag('a');
 		$writer->write(THttpUtility::htmlEncode($item->getText()));
 		$writer->renderEndTag();

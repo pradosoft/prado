@@ -34,9 +34,10 @@ class TDataListItemCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TControl)
+		if ($item instanceof TControl) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('datalistitemcollection_datalistitem_required');
+		}
 	}
 }

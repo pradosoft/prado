@@ -102,8 +102,9 @@ class TPriorityMap extends TMap
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
-		if($data !== null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 		$this->setReadOnly($readOnly);
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
@@ -173,8 +174,9 @@ class TPriorityMap extends TMap
 	/**
 	 * Orders the priority list internally.
 	 */
-	protected function sortPriorities() {
-		if(!$this->_o) {
+	protected function sortPriorities()
+	{
+		if (!$this->_o) {
 			ksort($this->_d, SORT_NUMERIC);
 			$this->_o = true;
 		}
@@ -184,14 +186,17 @@ class TPriorityMap extends TMap
 	 * This flattens the priority map into a flat array [0,...,n-1]
 	 * @return array array of items in the list in priority and index order
 	 */
-	protected function flattenPriorities() {
-		if(is_array($this->_fd))
+	protected function flattenPriorities()
+	{
+		if (is_array($this->_fd)) {
 			return $this->_fd;
+		}
 
 		$this->sortPriorities();
 		$this->_fd = [];
-		foreach($this->_d as $priority => $itemsatpriority)
+		foreach ($this->_d as $priority => $itemsatpriority) {
 			$this->_fd = array_merge($this->_fd, $itemsatpriority);
+		}
 		return $this->_fd;
 	}
 
@@ -221,12 +226,14 @@ class TPriorityMap extends TMap
 	 */
 	public function getPriorityCount($priority = null)
 	{
-		if($priority === null)
+		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
+		}
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		if(!isset($this->_d[$priority]) || !is_array($this->_d[$priority]))
+		if (!isset($this->_d[$priority]) || !is_array($this->_d[$priority])) {
 			return false;
+		}
 		return count($this->_d[$priority]);
 	}
 
@@ -259,12 +266,13 @@ class TPriorityMap extends TMap
 	 */
 	public function itemAt($key, $priority = false)
 	{
-		if($priority === false){
+		if ($priority === false) {
 			$map = $this->flattenPriorities();
 			return isset($map[$key]) ? $map[$key] : null;
 		} else {
-			if($priority === null)
+			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
+			}
 			$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : null;
 		}
@@ -279,12 +287,13 @@ class TPriorityMap extends TMap
 	 */
 	public function setPriorityAt($key, $priority = null)
 	{
-		if($priority === null)
+		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
+		}
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		$oldpriority = $this->priorityAt($key);
-		if($oldpriority !== false && $oldpriority != $priority) {
+		if ($oldpriority !== false && $oldpriority != $priority) {
 			$value = $this->remove($key, $oldpriority);
 			$this->add($key, $value, $priority);
 		}
@@ -298,8 +307,9 @@ class TPriorityMap extends TMap
 	 */
 	public function itemsAtPriority($priority = null)
 	{
-		if($priority === null)
+		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
+		}
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
@@ -313,9 +323,11 @@ class TPriorityMap extends TMap
 	public function priorityOf($item)
 	{
 		$this->sortPriorities();
-		foreach($this->_d as $priority => $items)
-			if(($index = array_search($item, $items, true)) !== false)
+		foreach ($this->_d as $priority => $items) {
+			if (($index = array_search($item, $items, true)) !== false) {
 				return $priority;
+			}
+		}
 		return false;
 	}
 
@@ -327,9 +339,11 @@ class TPriorityMap extends TMap
 	public function priorityAt($key)
 	{
 		$this->sortPriorities();
-		foreach($this->_d as $priority => $items)
-			if(array_key_exists($key, $items))
+		foreach ($this->_d as $priority => $items) {
+			if (array_key_exists($key, $items)) {
 				return $priority;
+			}
+		}
 		return false;
 	}
 
@@ -348,31 +362,32 @@ class TPriorityMap extends TMap
 	 */
 	public function add($key, $value, $priority = null)
 	{
-		if($priority === null)
+		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
+		}
 		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		if(!$this->_r)
-		{
-			foreach($this->_d as $innerpriority => $items)
-				if(array_key_exists($key, $items))
-				{
+		if (!$this->_r) {
+			foreach ($this->_d as $innerpriority => $items) {
+				if (array_key_exists($key, $items)) {
 					unset($this->_d[$innerpriority][$key]);
 					$this->_c--;
-					if(count($this->_d[$innerpriority]) === 0)
+					if (count($this->_d[$innerpriority]) === 0) {
 						unset($this->_d[$innerpriority]);
+					}
 				}
-			if(!isset($this->_d[$priority])) {
+			}
+			if (!isset($this->_d[$priority])) {
 				$this->_d[$priority] = [$key => $value];
 				$this->_o = false;
-			}
-			else
+			} else {
 				$this->_d[$priority][$key] = $value;
+			}
 			$this->_c++;
 			$this->_fd = null;
-		}
-		else
+		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
+		}
 		return $priority;
 	}
 
@@ -390,51 +405,46 @@ class TPriorityMap extends TMap
 	 */
 	public function remove($key, $priority = false)
 	{
-		if(!$this->_r)
-		{
-			if($priority === null)
+		if (!$this->_r) {
+			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
+			}
 
-			if($priority === false)
-			{
+			if ($priority === false) {
 				$this->sortPriorities();
-				foreach($this->_d as $priority => $items)
-					if(array_key_exists($key, $items))
-					{
+				foreach ($this->_d as $priority => $items) {
+					if (array_key_exists($key, $items)) {
 						$value = $this->_d[$priority][$key];
 						unset($this->_d[$priority][$key]);
 						$this->_c--;
-						if(count($this->_d[$priority]) === 0)
-						{
+						if (count($this->_d[$priority]) === 0) {
 							unset($this->_d[$priority]);
 							$this->_o = false;
 						}
 						$this->_fd = null;
 						return $value;
 					}
+				}
 				return null;
-			}
-			else
-			{
+			} else {
 				$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
-				if(isset($this->_d[$priority]) && (isset($this->_d[$priority][$key]) || array_key_exists($key, $this->_d[$priority])))
-				{
+				if (isset($this->_d[$priority]) && (isset($this->_d[$priority][$key]) || array_key_exists($key, $this->_d[$priority]))) {
 					$value = $this->_d[$priority][$key];
 					unset($this->_d[$priority][$key]);
 					$this->_c--;
-					if(count($this->_d[$priority]) === 0) {
+					if (count($this->_d[$priority]) === 0) {
 						unset($this->_d[$priority]);
 						$this->_o = false;
 					}
 					$this->_fd = null;
 					return $value;
-				}
-				else
+				} else {
 					return null;
+				}
 			}
-		}
-		else
+		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -442,9 +452,11 @@ class TPriorityMap extends TMap
 	 */
 	public function clear()
 	{
-		foreach($this->_d as $priority => $items)
-			foreach(array_keys($items) as $key)
+		foreach ($this->_d as $priority => $items) {
+			foreach (array_keys($items) as $key) {
 				$this->remove($key);
+			}
+		}
 	}
 
 	/**
@@ -479,10 +491,10 @@ class TPriorityMap extends TMap
 	{
 		$this->sortPriorities();
 		$items = [];
-		foreach($this->_d as $itemspriority => $itemsatpriority)
-		{
-			if((!$inclusive && $itemspriority >= $priority) || $itemspriority > $priority)
+		foreach ($this->_d as $itemspriority => $itemsatpriority) {
+			if ((!$inclusive && $itemspriority >= $priority) || $itemspriority > $priority) {
 				break;
+			}
 			$items = array_merge($items, $itemsatpriority);
 		}
 		return $items;
@@ -499,10 +511,10 @@ class TPriorityMap extends TMap
 	{
 		$this->sortPriorities();
 		$items = [];
-		foreach($this->_d as $itemspriority => $itemsatpriority)
-		{
-			if((!$inclusive && $itemspriority <= $priority) || $itemspriority < $priority)
+		foreach ($this->_d as $itemspriority => $itemsatpriority) {
+			if ((!$inclusive && $itemspriority <= $priority) || $itemspriority < $priority) {
 				continue;
+			}
 			$items = array_merge($items, $itemsatpriority);
 		}
 		return $items;
@@ -517,25 +529,25 @@ class TPriorityMap extends TMap
 	 */
 	public function copyFrom($data)
 	{
-		if($data instanceof TPriorityMap)
-		{
-			if($this->getCount() > 0)
+		if ($data instanceof TPriorityMap) {
+			if ($this->getCount() > 0) {
 				$this->clear();
-			foreach($data->getPriorities() as $priority) {
-				foreach($data->itemsAtPriority($priority) as $key => $value) {
+			}
+			foreach ($data->getPriorities() as $priority) {
+				foreach ($data->itemsAtPriority($priority) as $key => $value) {
 					$this->add($key, $value, $priority);
 				}
 			}
-		}
-		elseif(is_array($data) || $data instanceof \Traversable)
-		{
-			if($this->getCount() > 0)
+		} elseif (is_array($data) || $data instanceof \Traversable) {
+			if ($this->getCount() > 0) {
 				$this->clear();
-			foreach($data as $key => $value)
+			}
+			foreach ($data as $key => $value) {
 				$this->add($key, $value);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**
@@ -547,21 +559,19 @@ class TPriorityMap extends TMap
 	 */
 	public function mergeWith($data)
 	{
-		if($data instanceof TPriorityMap)
-		{
-			foreach($data->getPriorities() as $priority)
-			{
-				foreach($data->itemsAtPriority($priority) as $key => $value)
+		if ($data instanceof TPriorityMap) {
+			foreach ($data->getPriorities() as $priority) {
+				foreach ($data->itemsAtPriority($priority) as $key => $value) {
 					$this->add($key, $value, $priority);
+				}
 			}
-		}
-		elseif(is_array($data) || $data instanceof \Traversable)
-		{
-			foreach($data as $key => $value)
+		} elseif (is_array($data) || $data instanceof \Traversable) {
+			foreach ($data as $key => $value) {
 				$this->add($key, $value);
-		}
-		elseif($data !== null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**

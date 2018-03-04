@@ -101,12 +101,13 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	public function getProperty($index)
 	{
-		if(is_string($index))
+		if (is_string($index)) {
 			return $this->_propertyMap->itemAt($index);
-		elseif(is_int($index))
+		} elseif (is_int($index)) {
 			return $this->_properties->itemAt($index);
-		else
+		} else {
 			throw new TSqlMapException('sqlmap_index_must_be_string_or_int', $index);
+		}
 	}
 
 	/**
@@ -147,13 +148,15 @@ class TParameterMap extends \Prado\TComponent
 	{
 		$value = $this->getObjectValue($parameterValue, $property);
 
-		if(($handler = $this->createTypeHandler($property, $registry)) !== null)
+		if (($handler = $this->createTypeHandler($property, $registry)) !== null) {
 			$value = $handler->getParameter($value);
+		}
 
 		$value = $this->nullifyDefaultValue($property, $value);
 
-		if(($type = $property->getType()) !== null)
+		if (($type = $property->getType()) !== null) {
 			$value = $registry->convertToType($type, $value);
+		}
 
 		return $value;
 	}
@@ -169,8 +172,9 @@ class TParameterMap extends \Prado\TComponent
 	{
 		$type = $property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
 		$handler = $registry->getTypeHandler($type);
-		if($handler === null && $property->getTypeHandler())
+		if ($handler === null && $property->getTypeHandler()) {
 			$handler = Prado::createComponent($type);
+		}
 		return $handler;
 	}
 
@@ -183,12 +187,9 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	protected function getObjectValue($object, $property)
 	{
-		try
-		{
+		try {
 			return TPropertyAccess::get($object, $property->getProperty());
-		}
-		catch (TInvalidPropertyException $e)
-		{
+		} catch (TInvalidPropertyException $e) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_get_property_for_parameter',
 				$this->getID(),
@@ -207,10 +208,10 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	protected function nullifyDefaultValue($property, $value)
 	{
-		if(($nullValue = $property->getNullValue()) !== null)
-		{
-			if($nullValue === $value)
+		if (($nullValue = $property->getNullValue()) !== null) {
+			if ($nullValue === $value) {
 				$value = null;
+			}
 		}
 		return $value;
 	}

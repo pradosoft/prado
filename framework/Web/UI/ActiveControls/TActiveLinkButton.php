@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLinkButton;
 
-
 /**
  * TActiveLinkButton is the active control counter part to TLinkButton.
  *
@@ -99,12 +98,14 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
@@ -124,10 +125,11 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
 
-		if($this->getEnabled(true))
-		{
+		if ($this->getEnabled(true)) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
 		}
 	}
 
@@ -138,20 +140,20 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 */
 	public function setEnabled($value)
 	{
-		if(parent::getEnabled() === $value)
+		if (parent::getEnabled() === $value) {
 			return;
+		}
 
 		parent::setEnabled($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
-			if($this->getEnabled(true))
-			{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			if ($this->getEnabled(true)) {
 				$nop = "javascript:;//" . $this->getClientID();
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $nop);
 
 				$this->getActiveControl()->registerCallbackClientScript(
-					$this->getClientClassName(), $this->getPostBackOptions());
-
+					$this->getClientClassName(),
+					$this->getPostBackOptions()
+				);
 			} else {
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);
 			}
@@ -166,4 +168,3 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 		return 'Prado.WebUI.TActiveLinkButton';
 	}
 }
-

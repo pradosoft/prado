@@ -33,9 +33,10 @@ class TViewCollection extends \Prado\Web\UI\TControlCollection
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof TView)
+		if ($item instanceof TView) {
 			parent::insertAt($index, $item);
-		else
+		} else {
 			throw new TInvalidDataTypeException('viewcollection_view_required');
+		}
 	}
 }

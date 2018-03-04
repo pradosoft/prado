@@ -12,13 +12,11 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
-
 class TPgsqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'boolean':
 				return $this->createBooleanControl($container, $column, $record);
 			case 'date':
@@ -29,7 +27,7 @@ class TPgsqlScaffoldInput extends TScaffoldInputCommon
 				return $this->createIntegerControl($container, $column, $record);
 			case 'decimal': case 'numeric': case 'real': case 'double precision':
 				return $this->createFloatControl($container, $column, $record);
-			case 'time without time zone' :
+			case 'time without time zone':
 				return $this->createTimeControl($container, $column, $record);
 			case 'timestamp without time zone':
 				return $this->createDateTimeControl($container, $column, $record);
@@ -40,8 +38,7 @@ class TPgsqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		switch(strtolower($column->getDbType()))
-		{
+		switch (strtolower($column->getDbType())) {
 			case 'boolean':
 				return $container->findControl(self::DEFAULT_ID)->getChecked();
 			case 'date':
@@ -55,4 +52,3 @@ class TPgsqlScaffoldInput extends TScaffoldInputCommon
 		}
 	}
 }
-

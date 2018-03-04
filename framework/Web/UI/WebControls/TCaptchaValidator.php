@@ -86,14 +86,15 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	protected function findCaptchaControl()
 	{
-		if(($id = $this->getCaptchaControl()) === '')
+		if (($id = $this->getCaptchaControl()) === '') {
 			throw new TConfigurationException('captchavalidator_captchacontrol_required');
-		elseif(($control = $this->findControl($id)) === null)
+		} elseif (($control = $this->findControl($id)) === null) {
 			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent', $id);
-		elseif(!($control instanceof TCaptcha))
+		} elseif (!($control instanceof TCaptcha)) {
 			throw new TConfigurationException('captchavalidator_captchacontrol_invalid', $id);
-		else
+		} else {
 			return $control;
+		}
 	}
 
 	/**
@@ -104,13 +105,10 @@ class TCaptchaValidator extends TBaseValidator
 	{
 		$options = parent::getClientScriptOptions();
 		$control = $this->findCaptchaControl();
-		if($control->getCaseSensitive())
-		{
+		if ($control->getCaseSensitive()) {
 			$options['TokenHash'] = $this->generateTokenHash($control->getToken());
 			$options['CaseSensitive'] = true;
-		}
-		else
-		{
+		} else {
 			$options['TokenHash'] = $this->generateTokenHash(strtoupper($control->getToken()));
 			$options['CaseSensitive'] = false;
 		}
@@ -119,9 +117,9 @@ class TCaptchaValidator extends TBaseValidator
 
 	private function generateTokenHash($token)
 	{
-		for($h = 0,$i = strlen($token) - 1;$i >= 0;--$i)
+		for ($h = 0,$i = strlen($token) - 1;$i >= 0;--$i) {
 			$h += ord($token[$i]);
+		}
 		return $h;
 	}
 }
-

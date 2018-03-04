@@ -59,8 +59,9 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	public function flushContent()
 	{
-		foreach($this->_writers as $writer)
+		foreach ($this->_writers as $writer) {
 			echo $writer->flush();
+		}
 		parent::flushContent();
 	}
 
@@ -86,8 +87,9 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	public function httpRedirect($url)
 	{
-		if($url[0] === '/')
+		if ($url[0] === '/') {
 			$url = $this->getRequest()->getBaseUrl() . $url;
+		}
 		$this->_redirectUrl = str_replace('&amp;', '&', $url);
 	}
 

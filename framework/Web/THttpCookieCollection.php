@@ -54,14 +54,14 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 */
 	public function insertAt($index, $item)
 	{
-		if($item instanceof THttpCookie)
-		{
+		if ($item instanceof THttpCookie) {
 			parent::insertAt($index, $item);
-			if($this->_o instanceof THttpResponse)
+			if ($this->_o instanceof THttpResponse) {
 				$this->_o->addCookie($item);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidDataTypeException('httpcookiecollection_httpcookie_required');
+		}
 	}
 
 	/**
@@ -74,8 +74,9 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	public function removeAt($index)
 	{
 		$item = parent::removeAt($index);
-		if($this->_o instanceof THttpResponse)
+		if ($this->_o instanceof THttpResponse) {
 			$this->_o->removeCookie($item);
+		}
 		return $item;
 	}
 
@@ -85,10 +86,11 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 */
 	public function itemAt($index)
 	{
-		if(is_int($index))
+		if (is_int($index)) {
 			return parent::itemAt($index);
-		else
+		} else {
 			return $this->findCookieByName($index);
+		}
 	}
 
 	/**
@@ -98,9 +100,11 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 */
 	public function findCookieByName($name)
 	{
-		foreach($this as $cookie)
-			if($cookie->getName() === $name)
+		foreach ($this as $cookie) {
+			if ($cookie->getName() === $name) {
 				return $cookie;
+			}
+		}
 		return null;
 	}
 }

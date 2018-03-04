@@ -163,18 +163,19 @@ class TResultMap extends \Prado\TComponent
 	public function createInstanceOfResult($registry)
 	{
 		$handler = $registry->getTypeHandler($this->getClass());
-		try
-		{
-			if($handler !== null)
+		try {
+			if ($handler !== null) {
 				return $handler->createNewInstance();
-			else
+			} else {
 				return $registry->createInstanceOf($this->getClass());
-		}
-		catch (TSqlMapException $e)
-		{
+			}
+		} catch (TSqlMapException $e) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_create_new_instance',
-					$this->getClass(), get_class($handler), $this->getID());
+					$this->getClass(),
+				get_class($handler),
+				$this->getID()
+			);
 		}
 	}
 
@@ -187,17 +188,16 @@ class TResultMap extends \Prado\TComponent
 	public function resolveSubMap($registry, $row)
 	{
 		$subMap = $this;
-		if(($disc = $this->getDiscriminator()) !== null)
-		{
+		if (($disc = $this->getDiscriminator()) !== null) {
 			$value = $disc->getMapping()->getPropertyValue($registry, $row);
 			$subMap = $disc->getSubMap((string)$value);
 
-			if($subMap === null)
+			if ($subMap === null) {
 				$subMap = $this;
-			elseif($subMap !== $this)
+			} elseif ($subMap !== $this) {
 				$subMap = $subMap->resolveSubMap($registry, $row);
+			}
 		}
 		return $subMap;
 	}
 }
-

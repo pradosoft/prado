@@ -248,10 +248,12 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function initialize($manager)
 	{
-		if(strlen($this->_resultMapName) > 0)
+		if (strlen($this->_resultMapName) > 0) {
 			$this->_resultMap = $manager->getResultMap($this->_resultMapName);
-		if(strlen($this->_parameterMapName) > 0)
+		}
+		if (strlen($this->_parameterMapName) > 0) {
 			$this->_parameterMap = $manager->getParameterMap($this->_parameterMapName);
+		}
 	}
 
 	/**
@@ -260,8 +262,9 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function createInstanceOfListClass($registry)
 	{
-		if(strlen($type = $this->getListClass()) > 0)
+		if (strlen($type = $this->getListClass()) > 0) {
 			return $this->createInstanceOf($registry, $type);
+		}
 		return [];
 	}
 
@@ -275,10 +278,11 @@ class TSqlMapStatement extends \Prado\TComponent
 	protected function createInstanceOf($registry, $type, $row = null)
 	{
 		$handler = $registry->getTypeHandler($type);
-		if($handler !== null)
+		if ($handler !== null) {
 			return $handler->createNewInstance($row);
-		else
+		} else {
 			return $registry->createInstanceOf($type);
+		}
 	}
 
 	/**
@@ -289,28 +293,52 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function createInstanceOfResultClass($registry, $row)
 	{
-		if(strlen($type = $this->getResultClass()) > 0)
+		if (strlen($type = $this->getResultClass()) > 0) {
 			return $this->createInstanceOf($registry, $type, $row);
+		}
 	}
 
 	public function __sleep()
 	{
 		$cn = __CLASS__;
 		$exprops = ["\0$cn\0_resultMap"];
-		if (!$this->_parameterMapName) $exprops[] = "\0$cn\0_parameterMapName";
-		if (!$this->_parameterMap) $exprops[] = "\0$cn\0_parameterMap";
-		if (!$this->_parameterClassName) $exprops[] = "\0$cn\0_parameterClassName";
-		if (!$this->_resultMapName) $exprops[] = "\0$cn\0_resultMapName";
-		if (!$this->_resultMap) $exprops[] = "\0$cn\0_resultMap";
-		if (!$this->_resultClassName) $exprops[] = "\0$cn\0_resultClassName";
-		if (!$this->_cacheModelName) $exprops[] = "\0$cn\0_cacheModelName";
-		if (!$this->_SQL) $exprops[] = "\0$cn\0_SQL";
-		if (!$this->_listClass) $exprops[] = "\0$cn\0_listClass";
-		if (!$this->_typeHandler) $exprops[] = "\0$cn\0_typeHandler";
-		if (!$this->_extendStatement) $exprops[] = "\0$cn\0_extendStatement";
-		if (!$this->_cache) $exprops[] = "\0$cn\0_cache";
+		if (!$this->_parameterMapName) {
+			$exprops[] = "\0$cn\0_parameterMapName";
+		}
+		if (!$this->_parameterMap) {
+			$exprops[] = "\0$cn\0_parameterMap";
+		}
+		if (!$this->_parameterClassName) {
+			$exprops[] = "\0$cn\0_parameterClassName";
+		}
+		if (!$this->_resultMapName) {
+			$exprops[] = "\0$cn\0_resultMapName";
+		}
+		if (!$this->_resultMap) {
+			$exprops[] = "\0$cn\0_resultMap";
+		}
+		if (!$this->_resultClassName) {
+			$exprops[] = "\0$cn\0_resultClassName";
+		}
+		if (!$this->_cacheModelName) {
+			$exprops[] = "\0$cn\0_cacheModelName";
+		}
+		if (!$this->_SQL) {
+			$exprops[] = "\0$cn\0_SQL";
+		}
+		if (!$this->_listClass) {
+			$exprops[] = "\0$cn\0_listClass";
+		}
+		if (!$this->_typeHandler) {
+			$exprops[] = "\0$cn\0_typeHandler";
+		}
+		if (!$this->_extendStatement) {
+			$exprops[] = "\0$cn\0_extendStatement";
+		}
+		if (!$this->_cache) {
+			$exprops[] = "\0$cn\0_cache";
+		}
 
 		return array_diff(parent::__sleep(), $exprops);
 	}
-
 }

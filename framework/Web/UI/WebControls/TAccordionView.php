@@ -45,8 +45,9 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
+		if (!$this->getActive() && $this->getPage()->getClientSupportsJavaScript()) {
 			$this->getStyle()->setStyleField('display', 'none');
+		}
 
 		$this->getStyle()->mergeWith($this->getParent()->getViewStyle());
 
@@ -129,10 +130,11 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderContents($writer)
 	{
-		if(($text = $this->getText()) !== '')
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
-		elseif($this->getHasControls())
+		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
+		}
 	}
 
 	/**
@@ -141,8 +143,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function renderHeader($writer)
 	{
-		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
-		{
+		if ($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript()) {
 			$writer->addAttribute('id', $this->getClientID() . '_0');
 
 			$style = $this->getActive() ? $this->getParent()->getActiveHeaderStyle() : $this->getParent()->getHeaderStyle();
@@ -165,13 +166,16 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	protected function renderHeaderContent($writer)
 	{
 		$url = $this->getNavigateUrl();
-		if(($caption = $this->getCaption()) === '')
+		if (($caption = $this->getCaption()) === '') {
 			$caption = '&nbsp;';
+		}
 
-		if ($url != '')
+		if ($url != '') {
 			$writer->write("<a href=\"{$url}\">");
+		}
 		$writer->write("{$caption}");
-		if ($url != '')
+		if ($url != '') {
 			$writer->write("</a>");
+		}
 	}
 }

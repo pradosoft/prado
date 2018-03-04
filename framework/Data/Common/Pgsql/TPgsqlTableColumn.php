@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Pgsql;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a PostgreSQL database table.
  *
@@ -40,12 +39,11 @@ class TPgsqlTableColumn extends TDbTableColumn
 	public function getPHPType()
 	{
 		$dbtype = strtolower($this->getDbType());
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
+		foreach (self::$types as $type => $dbtypes) {
+			if (in_array($dbtype, $dbtypes)) {
 				return $type;
+			}
 		}
 		return 'string';
 	}
 }
-
