@@ -214,7 +214,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 		if (!$this->_allowPaging || $count <= 0) {
 			return 1;
 		}
-		return (int)(($count + $this->_pageSize - 1) / $this->_pageSize);
+		return (int) (($count + $this->_pageSize - 1) / $this->_pageSize);
 	}
 
 	/**

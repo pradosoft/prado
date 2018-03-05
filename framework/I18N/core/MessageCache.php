@@ -12,7 +12,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__) . '/TCache_Lite.php');
+require_once(__DIR__ . '/TCache_Lite.php');
 
 /**
  * Cache the translation table into the file system.
@@ -80,7 +80,7 @@ class MessageCache
 	 */
 	public function setLifeTime($time)
 	{
-		$this->lifetime = (int)$time;
+		$this->lifetime = (int) $time;
 	}
 
 	/**
@@ -126,7 +126,7 @@ class MessageCache
 		}
 
 
-		$lastmodified = (int)$lastmodified;
+		$lastmodified = (int) $lastmodified;
 
 		if ($lastmodified <= 0 || $lastmodified > filemtime($cache)) {
 			return false;

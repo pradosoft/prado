@@ -336,7 +336,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function loadPostData($key, $values)
 	{
 		if (($index = $values[$this->getClientID() . '_1']) !== null) {
-			$index = (int)$index;
+			$index = (int) $index;
 			$currentIndex = $this->getActiveViewIndex();
 			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
@@ -410,7 +410,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		}
 
 		if ($url === 'default') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'tabpanel.css');
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'tabpanel.css');
 		}
 
 		if ($url !== '') {

@@ -287,7 +287,7 @@ class TPageService extends \Prado\TService
 					}
 				}
 				$pageConfig->loadFromFiles($this->getBasePath());
-				$cache->set(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath, [$pageConfig,$currentTimestamp]);
+				$cache->set(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath, [$pageConfig, $currentTimestamp]);
 			}
 		}
 		return $pageConfig;

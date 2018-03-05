@@ -233,7 +233,7 @@ class TCache_Lite
 	 */
 	public function __construct($options = [null])
 	{
-		$availableOptions = [	'automaticSerialization',
+		$availableOptions = ['automaticSerialization',
 									'fileNameProtection',
 									'memoryCaching',
 									'onlyMemoryCaching',

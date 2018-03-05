@@ -22,12 +22,12 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__) . '/IMessageSource.php');
+require_once(__DIR__ . '/IMessageSource.php');
 
 /**
  * Get the MessageCache class file.
  */
-require_once(dirname(__FILE__) . '/MessageCache.php');
+require_once(__DIR__ . '/MessageCache.php');
 
 /**
  * Abstract MessageSource class.
@@ -126,7 +126,7 @@ abstract class MessageSource implements IMessageSource
 	 */
 	public static function &factory($type, $source = '.', $filename = '')
 	{
-		$types = ['XLIFF','PHP','gettext','Database'];
+		$types = ['XLIFF', 'PHP', 'gettext', 'Database'];
 
 		if (empty($filename) && !in_array($type, $types)) {
 			throw new Exception('Invalid type "' . $type . '", valid types are ' .
@@ -136,7 +136,7 @@ abstract class MessageSource implements IMessageSource
 		$class = 'MessageSource_' . $type;
 
 		if (empty($filename)) {
-			$filename = dirname(__FILE__) . '/' . $class . '.php';
+			$filename = __DIR__ . '/' . $class . '.php';
 		}
 
 		if (is_file($filename) == false) {

@@ -103,7 +103,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	{
 		$client = $this->getPage()->getCallbackClient();
 		$code = $this->getClientClassName() . '.' . $func;
-		$client->callClientFunction($code, [$this,$value]);
+		$client->callClientFunction($code, [$this, $value]);
 	}
 
 	/**

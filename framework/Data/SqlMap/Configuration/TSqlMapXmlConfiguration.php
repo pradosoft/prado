@@ -94,7 +94,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadGlobalProperty($node)
 	{
-		$this->_properties[(string)$node['name']] = (string)$node['value'];
+		$this->_properties[(string) $node['name']] = (string) $node['value'];
 	}
 
 	/**
@@ -123,7 +123,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSqlMappingFiles($node)
 	{
-		if (strlen($resource = (string)$node['resource']) > 0) {
+		if (strlen($resource = (string) $node['resource']) > 0) {
 			if (strpos($resource, '${') !== false) {
 				$resource = $this->replaceProperties($resource);
 			}

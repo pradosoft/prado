@@ -429,7 +429,7 @@ class TTarFileExtractor
 			&& (substr($v_header['filename'], 0, $p_remove_path_size)
 				== $p_remove_path)) {
 					$v_header['filename'] = substr(
-		  	$v_header['filename'],
+			$v_header['filename'],
 										 $p_remove_path_size
 		  );
 				}

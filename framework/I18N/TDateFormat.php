@@ -72,10 +72,10 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * @var array
 	 */
 	private static $_patternPresets = [
-			'fulldate' => 'P','full' => 'P',
-			'longdate' => 'D','long' => 'd',
-			'mediumdate' => 'p','medium' => 'p',
-			'shortdate' => 'd','short' => 'd',
+			'fulldate' => 'P', 'full' => 'P',
+			'longdate' => 'D', 'long' => 'd',
+			'mediumdate' => 'p', 'medium' => 'p',
+			'shortdate' => 'd', 'short' => 'd',
 			'fulltime' => 'Q', 'longtime' => 'T',
 			'mediumtime' => 'q', 'shorttime' => 't'];
 

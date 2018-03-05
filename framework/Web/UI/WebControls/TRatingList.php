@@ -139,7 +139,7 @@ class TRatingList extends TRadioButtonList
 	protected function getRatingIndex($rating)
 	{
 		$interval = $this->getHalfRatingInterval();
-		$base = intval($rating) - 1;
+		$base = (int) $rating - 1;
 		$remainder = $rating - $base - 1;
 		return $remainder > $interval[1] ? $base + 1 : $base;
 	}

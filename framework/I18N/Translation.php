@@ -64,7 +64,7 @@ class Translation extends \Prado\TComponent
 
 			//mark untranslated text
 			if ($ps = $config['marker']) {
-				self::$formatters[$catalogue]->setUntranslatedPS([$ps,$ps]);
+				self::$formatters[$catalogue]->setUntranslatedPS([$ps, $ps]);
 			}
 
 			//save the message on end request

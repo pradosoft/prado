@@ -130,7 +130,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
           	 Options = new Object();
           	 Options.clientID = '{$this->getClientID()}';
           	 Options.targetID = '{$this->_target->getUniqueID()}';
-          	 Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
+          	 Options.errorCode = '" . (int) !$this->getHasAllFiles() . "';
           	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
           	 Options.fileName = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileName') : $this->getFileName(), JSON_HEX_APOS) . "';
              Options.fileSize = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileSize') : $this->getFileSize(), JSON_HEX_APOS) . "';
@@ -219,9 +219,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			$params = $this->popParamsByToken($cp->callbackToken);
 			foreach ($params->files as $index => $file) {
 				$_FILES[$key]['name'][$index] = stripslashes($file['fileName']);
-				$_FILES[$key]['size'][$index] = intval($file['fileSize']);
+				$_FILES[$key]['size'][$index] = (int) ($file['fileSize']);
 				$_FILES[$key]['type'][$index] = $file['fileType'];
-				$_FILES[$key]['error'][$index] = intval($file['errorCode']);
+				$_FILES[$key]['error'][$index] = (int) ($file['errorCode']);
 				$_FILES[$key]['tmp_name'][$index] = $file['localName'];
 			}
 			$this->loadPostData($key, null);
@@ -296,7 +296,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
           	 Options = new Object();
           	 Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
           	 Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';
-			       Options.errorCode = '" . (int)!$this->getHasAllFiles() . "';
+			       Options.errorCode = '" . (int) !$this->getHasAllFiles() . "';
           	 Options.callbackToken = '{$this->pushParamsAndGetToken($params)}';
           	 Options.fileName = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileName') : $this->getFileName(), JSON_HEX_APOS) . "';
              Options.fileSize = '" . TJavaScript::jsonEncode($this->getMultiple() ? array_column($params->files, 'fileSize') : $this->getFileSize(), JSON_HEX_APOS) . "';

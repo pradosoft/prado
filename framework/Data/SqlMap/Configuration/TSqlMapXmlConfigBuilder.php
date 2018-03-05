@@ -31,7 +31,7 @@ abstract class TSqlMapXmlConfigBuilder
 	protected function createObjectFromNode($node)
 	{
 		if (isset($node['class'])) {
-			$obj = Prado::createComponent((string)$node['class']);
+			$obj = Prado::createComponent((string) $node['class']);
 			$this->setObjectPropFromNode($obj, $node, ['class']);
 			return $obj;
 		}
@@ -54,7 +54,7 @@ abstract class TSqlMapXmlConfigBuilder
 		foreach ($node->attributes() as $name => $value) {
 			if (!in_array($name, $except)) {
 				if ($obj->canSetProperty($name)) {
-					$obj->{$name} = (string)$value;
+					$obj->{$name} = (string) $value;
 				} else {
 					throw new TSqlMapConfigurationException(
 						'sqlmap_invalid_property',
@@ -117,7 +117,7 @@ abstract class TSqlMapXmlConfigBuilder
 	protected function getElementByIdValue($document, $tag, $value)
 	{
 		//hack to allow upper case and lower case attribute names.
-		foreach (['id','ID','Id', 'iD'] as $id) {
+		foreach (['id', 'ID', 'Id', 'iD'] as $id) {
 			$xpath = "//{$tag}[@{$id}='{$value}']";
 			foreach ($document->xpath($xpath) as $node) {
 				return $node;

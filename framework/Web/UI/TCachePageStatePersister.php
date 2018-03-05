@@ -183,7 +183,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function save($data)
 	{
-		$timestamp = (string)microtime(true);
+		$timestamp = (string) microtime(true);
 		$key = $this->calculateKey($timestamp);
 		$this->getCache()->add($key, $data, $this->_timeout);
 		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $timestamp));

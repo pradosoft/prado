@@ -30,20 +30,20 @@ class TScaffoldInputBase
 		switch (strtolower($driver)) {
 			case 'sqlite': //sqlite 3
 			case 'sqlite2': //sqlite 2
-				require_once(dirname(__FILE__) . '/TSqliteScaffoldInput.php');
+				require_once(__DIR__ . '/TSqliteScaffoldInput.php');
 				return new TSqliteScaffoldInput($conn);
 			case 'mysqli':
 			case 'mysql':
-				require_once(dirname(__FILE__) . '/TMysqlScaffoldInput.php');
+				require_once(__DIR__ . '/TMysqlScaffoldInput.php');
 				return new TMysqlScaffoldInput($conn);
 			case 'pgsql':
-				require_once(dirname(__FILE__) . '/TPgsqlScaffoldInput.php');
+				require_once(__DIR__ . '/TPgsqlScaffoldInput.php');
 				return new TPgsqlScaffoldInput($conn);
 			case 'mssql':
-				require_once(dirname(__FILE__) . '/TMssqlScaffoldInput.php');
+				require_once(__DIR__ . '/TMssqlScaffoldInput.php');
 				return new TMssqlScaffoldInput($conn);
 			case 'ibm':
-				require_once(dirname(__FILE__) . '/TIbmScaffoldInput.php');
+				require_once(__DIR__ . '/TIbmScaffoldInput.php');
 				return new TIbmScaffoldInput($conn);
 			default:
 				throw new TConfigurationException(

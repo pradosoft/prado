@@ -568,7 +568,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		$startPageIndex = 1;
 		$endPageIndex = $buttonCount;
 		if ($pageIndex > $endPageIndex) {
-			$startPageIndex = ((int)(($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
+			$startPageIndex = ((int) (($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
 			if (($endPageIndex = $startPageIndex + $maxButtonCount - 1) > $pageCount) {
 				$endPageIndex = $pageCount;
 			}
@@ -628,7 +628,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged', [$this,'listIndexChanged']);
+		$list->attachEventHandler('OnSelectedIndexChanged', [$this, 'listIndexChanged']);
 	}
 
 	/**

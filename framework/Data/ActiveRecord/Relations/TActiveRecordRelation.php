@@ -77,7 +77,7 @@ abstract class TActiveRecordRelation
 	{
 		static $stack = [];
 
-		$results = call_user_func_array([$this->getSourceRecord(),$method], $args);
+		$results = call_user_func_array([$this->getSourceRecord(), $method], $args);
 		$validArray = is_array($results) && count($results) > 0;
 		if ($validArray || $results instanceof \ArrayAccess || $results instanceof TActiveRecord) {
 			$this->collectForeignObjects($results);
@@ -175,7 +175,7 @@ abstract class TActiveRecordRelation
 	{
 		$ids = [];
 		foreach ($properties as $property) {
-			$ids[] = is_object($obj) ? (string)$obj->getColumnValue($property) : (string)$obj[$property];
+			$ids[] = is_object($obj) ? (string) $obj->getColumnValue($property) : (string) $obj[$property];
 		}
 		return serialize($ids);
 	}

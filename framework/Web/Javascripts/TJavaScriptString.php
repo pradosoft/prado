@@ -26,6 +26,6 @@ class TJavaScriptString extends TJavaScriptLiteral
 {
 	public function toJavaScriptLiteral()
 	{
-		return TJavaScript::jsonEncode((string)$this->_s, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
+		return TJavaScript::jsonEncode((string) $this->_s, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_TAG);
 	}
 }

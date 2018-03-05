@@ -112,7 +112,7 @@ class TMysqlMetaData extends TDbMetaData
 			$version = $this->getDbConnection()->getAttribute(PDO::ATTR_SERVER_VERSION);
 			$digits = [];
 			preg_match('/(\d+)\.(\d+)\.(\d+)/', $version, $digits);
-			$this->_serverVersion = floatval($digits[1] . '.' . $digits[2] . $digits[3]);
+			$this->_serverVersion = (float) ($digits[1] . '.' . $digits[2] . $digits[3]);
 		}
 		return $this->_serverVersion;
 	}
@@ -160,12 +160,12 @@ class TMysqlMetaData extends TDbMetaData
 			$pscale = [];
 			if (preg_match('/(\d+)(?:,(\d+))?+/', $match[1], $pscale)) {
 				if ($this->isPrecisionType($info['DbType'])) {
-					$info['NumericPrecision'] = intval($pscale[1]);
+					$info['NumericPrecision'] = (int) ($pscale[1]);
 					if (count($pscale) > 2) {
-						$info['NumericScale'] = intval($pscale[2]);
+						$info['NumericScale'] = (int) ($pscale[2]);
 					}
 				} else {
-					$info['ColumnSize'] = intval($pscale[1]);
+					$info['ColumnSize'] = (int) ($pscale[1]);
 				}
 			}
 		}
@@ -294,7 +294,7 @@ class TMysqlMetaData extends TDbMetaData
 		} else {
 			$foreign = $this->findForeignConstraints($schemaName, $tableName);
 		}
-		return [$primary,$foreign];
+		return [$primary, $foreign];
 	}
 
 	/**

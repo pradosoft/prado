@@ -25,7 +25,7 @@ use Prado\I18N\core\Gettext\TGettext;
 /**
  * Get the Gettext class.
  */
-require_once(dirname(__FILE__) . '/Gettext/TGettext.php');
+require_once(__DIR__ . '/Gettext/TGettext.php');
 
 /**
  * MessageSource_gettext class.
@@ -60,7 +60,7 @@ class MessageSource_gettext extends MessageSource
 
 	public function __construct($source)
 	{
-		$this->source = (string)$source;
+		$this->source = (string) $source;
 	}
 
 

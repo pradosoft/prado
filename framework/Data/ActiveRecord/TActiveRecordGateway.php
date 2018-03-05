@@ -372,7 +372,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 				$values[$name] = $value;
 			}
 		}
-		return [$values,$primary];
+		return [$values, $primary];
 	}
 
 	protected function updateAssociatedRecords(TActiveRecord $record, $updateBelongsTo = false)

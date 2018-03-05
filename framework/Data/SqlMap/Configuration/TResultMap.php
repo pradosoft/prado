@@ -190,7 +190,7 @@ class TResultMap extends \Prado\TComponent
 		$subMap = $this;
 		if (($disc = $this->getDiscriminator()) !== null) {
 			$value = $disc->getMapping()->getPropertyValue($registry, $row);
-			$subMap = $disc->getSubMap((string)$value);
+			$subMap = $disc->getSubMap((string) $value);
 
 			if ($subMap === null) {
 				$subMap = $this;

@@ -48,7 +48,7 @@ class TSqlMapException extends TException
 	{
 		$attributes = [];
 		foreach ($node->attributes() as $k => $v) {
-			$attributes[] = $k . '="' . (string)$v . '"';
+			$attributes[] = $k . '="' . (string) $v . '"';
 		}
 		return '<' . $node->getName() . ' ' . implode(' ', $attributes) . '>';
 	}
@@ -59,7 +59,7 @@ class TSqlMapException extends TException
 	protected function getErrorMessageFile()
 	{
 		$lang = Prado::getPreferredLanguage();
-		$dir = dirname(__FILE__);
+		$dir = __DIR__;
 		$msgFile = $dir . '/messages-' . $lang . '.txt';
 		if (!is_file($msgFile)) {
 			$msgFile = $dir . '/messages.txt';

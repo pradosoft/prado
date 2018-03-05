@@ -16,7 +16,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['', '', ], strtolower($column->getDbType())));
 		switch ($dbtype) {
 			case 'date':
 				return $this->createDateControl($container, $column, $record);
@@ -44,7 +44,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 
 	protected function getControlValue($container, $column, $record)
 	{
-		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['','',], strtolower($column->getDbType())));
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['', '', ], strtolower($column->getDbType())));
 		switch ($dbtype) {
 			case 'date':
 				return $container->findControl(self::DEFAULT_ID)->getDate();
@@ -77,7 +77,7 @@ class TMysqlScaffoldInput extends TScaffoldInputCommon
 	protected function getIntBooleanValue($container, $column, $record)
 	{
 		if ($column->getColumnSize() == 1) {
-			return (int)$container->findControl(self::DEFAULT_ID)->getChecked();
+			return (int) $container->findControl(self::DEFAULT_ID)->getChecked();
 		} else {
 			return $this->getDefaultControlValue($container, $column, $record);
 		}

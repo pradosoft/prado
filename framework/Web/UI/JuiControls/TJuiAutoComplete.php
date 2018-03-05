@@ -377,7 +377,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 			for ($i = 0; $i < $items->Count; $i++) {
 				$items->itemAt($i)->render($writer);
 				$item = $writer->flush();
-				$data[] = [ 'id' => $i, 'label' => $item];
+				$data[] = ['id' => $i, 'label' => $item];
 			}
 
 			$this->getResponse()->getAdapter()->setResponseData($data);

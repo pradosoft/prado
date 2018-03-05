@@ -21,7 +21,7 @@ namespace Prado\I18N\core;
 /**
  * Include the CultureInfo class.
  */
-require_once(dirname(__FILE__) . '/CultureInfo.php');
+require_once(__DIR__ . '/CultureInfo.php');
 
 /**
  * HTTPNegotiator class.

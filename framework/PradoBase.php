@@ -120,15 +120,15 @@ class PradoBase
 		/**
 		 * Sets error handler to be Prado::phpErrorHandler
 		 */
-		set_error_handler(['\Prado\PradoBase','phpErrorHandler']);
+		set_error_handler(['\Prado\PradoBase', 'phpErrorHandler']);
 		/**
 		 * Sets shutdown function to be Prado::phpFatalErrorHandler
 		 */
-		register_shutdown_function(['PradoBase','phpFatalErrorHandler']);
+		register_shutdown_function(['PradoBase', 'phpFatalErrorHandler']);
 		/**
 		 * Sets exception handler to be Prado::exceptionHandler
 		 */
-		set_exception_handler(['\Prado\PradoBase','exceptionHandler']);
+		set_exception_handler(['\Prado\PradoBase', 'exceptionHandler']);
 		/**
 		 * Disable php's builtin error reporting to avoid duplicated reports
 		 */
@@ -553,7 +553,7 @@ class PradoBase
 				$languages = [];
 				foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $language) {
 					$array = explode(';q=', trim($language));
-					$languages[trim($array[0])] = isset($array[1]) ? (float)$array[1] : 1.0;
+					$languages[trim($array[0])] = isset($array[1]) ? (float) $array[1] : 1.0;
 				}
 				arsort($languages);
 				$languages = array_keys($languages);

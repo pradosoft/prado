@@ -255,7 +255,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setFromYear($value)
 	{
-		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), intval(@date('Y')) - 5);
+		$this->setViewState('FromYear', TPropertyValue::ensureInteger($value), (int) (@date('Y')) - 5);
 	}
 
 	/**
@@ -263,7 +263,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getFromYear()
 	{
-		return $this->getViewState('FromYear', intval(@date('Y')) - 5);
+		return $this->getViewState('FromYear', (int) (@date('Y')) - 5);
 	}
 
 	/**
@@ -271,7 +271,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setUpToYear($value)
 	{
-		$this->setViewState('UpToYear', TPropertyValue::ensureInteger($value), intval(@date('Y')) + 10);
+		$this->setViewState('UpToYear', TPropertyValue::ensureInteger($value), (int) (@date('Y')) + 10);
 	}
 
 	/**
@@ -279,7 +279,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function getUpToYear()
 	{
-		return $this->getViewState('UpToYear', intval(@date('Y')) + 10);
+		return $this->getViewState('UpToYear', (int) (@date('Y')) + 10);
 	}
 
 	/**
@@ -487,13 +487,13 @@ class TDatePicker extends TTextBox
 		$date = @getdate();
 
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 
 		$order = $formatter->getDayMonthYearOrdering();
 
 		if (isset($values[$key . '$day'])) {
-			$day = intval($values[$key . '$day']);
+			$day = (int) ($values[$key . '$day']);
 		} elseif (in_array('day', $order)) {
 			$day = $date['mday'];
 		} else {
@@ -501,13 +501,13 @@ class TDatePicker extends TTextBox
 		}
 
 		if (isset($values[$key . '$month'])) {
-			$month = intval($values[$key . '$month']) + 1;
+			$month = (int) ($values[$key . '$month']) + 1;
 		} else {
 			$month = $date['mon'];
 		}
 
 		if (isset($values[$key . '$year'])) {
-			$year = intval($values[$key . '$year']);
+			$year = (int) ($values[$key . '$year']);
 		} else {
 			$year = $date['year'];
 		}
@@ -519,7 +519,7 @@ class TDatePicker extends TTextBox
 		//$date = @mktime(0, 0, 0, $month, $day, $year);
 
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
 
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->format($date);
@@ -667,7 +667,7 @@ class TDatePicker extends TTextBox
 	protected function getTimeStampFromText()
 	{
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}

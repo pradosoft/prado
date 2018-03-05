@@ -314,7 +314,7 @@ class TPage extends TTemplateControl
 
 		$callbackEventParameter = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
 		if (strlen($callbackEventParameter) > 0) {
-			$this->_postData[TPage::FIELD_CALLBACK_PARAMETER] = TJavaScript::jsonDecode((string)$callbackEventParameter);
+			$this->_postData[TPage::FIELD_CALLBACK_PARAMETER] = TJavaScript::jsonDecode((string) $callbackEventParameter);
 		}
 
 		// Decode Callback postData from UTF-8 to current Charset

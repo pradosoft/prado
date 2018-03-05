@@ -271,13 +271,13 @@ class TDropDownListColumn extends TDataGridColumn
 				} else {
 					$control = $cell;
 				}
-				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				break;
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
 				if ($this->getDataTextField() !== '' || $this->getDataValueField() !== '') {
-					$cell->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+					$cell->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				}
 				break;
 			default:

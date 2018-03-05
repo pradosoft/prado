@@ -93,8 +93,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit !== null ? (int)$limit : -1;
-		$offset = $offset !== null ? (int)$offset : -1;
+		$limit = $limit !== null ? (int) $limit : -1;
+		$offset = $offset !== null ? (int) $offset : -1;
 		$limitStr = $limit >= 0 ? ' LIMIT ' . $limit : '';
 		$offsetStr = $offset >= 0 ? ' OFFSET ' . $offset : '';
 		return $sql . $limitStr . $offsetStr;
@@ -252,7 +252,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 					if ($k) {
 						$result[] = 'NULL AS ' . $columns[$key]->getColumnName();
 					} else {
-						$result[] = 'NULL' . (is_string($key) ? (' AS ' . (string)$key) : '');
+						$result[] = 'NULL' . (is_string($key) ? (' AS ' . (string) $key) : '');
 					}
 					continue;
 				}
@@ -261,7 +261,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 					if ($k) {
 						$result[] = $value . ' AS ' . $columns[$key]->getColumnName();
 					} else {
-						$result[] = $value . (is_string($key) ? (' AS ' . (string)$key) : '');
+						$result[] = $value . (is_string($key) ? (' AS ' . (string) $key) : '');
 					}
 					continue;
 				}
@@ -292,11 +292,11 @@ class TDbCommandBuilder extends \Prado\TComponent
 				}
 
 				if (!$v && !$k && is_int($key)) {
-					$result[] = is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value);
+					$result[] = is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string) $value);
 					continue;
 				}
 
-				$result[] = (is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string)$value)) . ' AS ' . $key;
+				$result[] = (is_numeric($value) ? $value : $this->getDbConnection()->quoteString((string) $value)) . ' AS ' . $key;
 			}
 		}
 

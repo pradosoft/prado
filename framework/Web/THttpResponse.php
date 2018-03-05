@@ -204,7 +204,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheControl($value)
 	{
-		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none','nocache','private','private_no_expire','public']));
+		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']));
 	}
 
 	/**
@@ -239,7 +239,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCharset($charset)
 	{
-		$this->_charset = (strToLower($charset) === 'false') ? false : (string)$charset;
+		$this->_charset = (strToLower($charset) === 'false') ? false : (string) $charset;
 	}
 
 	/**

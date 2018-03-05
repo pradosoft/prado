@@ -1287,7 +1287,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		$startPageIndex = 1;
 		$endPageIndex = $buttonCount;
 		if ($pageIndex > $endPageIndex) {
-			$startPageIndex = ((int)(($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
+			$startPageIndex = ((int) (($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
 			if (($endPageIndex = $startPageIndex + $maxButtonCount - 1) > $pageCount) {
 				$endPageIndex = $pageCount;
 			}

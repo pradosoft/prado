@@ -58,7 +58,7 @@ class MessageSource_XLIFF extends MessageSource
 	 */
 	public function __construct($source)
 	{
-		$this->source = (string)$source;
+		$this->source = (string) $source;
 	}
 
 	/**
@@ -78,10 +78,10 @@ class MessageSource_XLIFF extends MessageSource
 		$translations = [];
 
 		foreach ($translationUnit as $unit) {
-			$source = (string)$unit->source;
-			$translations[$source][] = (string)$unit->target;
-			$translations[$source][] = (string)$unit['id'];
-			$translations[$source][] = (string)$unit->note;
+			$source = (string) $unit->source;
+			$translations[$source][] = (string) $unit->target;
+			$translations[$source][] = (string) $unit['id'];
+			$translations[$source][] = (string) $unit->note;
 		}
 
 		return $translations;
@@ -284,7 +284,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
 		if (($last = $lastNodes->item(0)) !== null) {
-			$count = (int)$last->getAttribute('id');
+			$count = (int) $last->getAttribute('id');
 		} else {
 			$count = 0;
 		}

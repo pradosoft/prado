@@ -92,7 +92,7 @@ class TPgsqlMetaData extends TDbMetaData
 		if (count($parts = explode('.', str_replace('"', '', $table))) > 1) {
 			return [$parts[0], $parts[1]];
 		} else {
-			return [$this->getDefaultSchema(),$parts[0]];
+			return [$this->getDefaultSchema(), $parts[0]];
 		}
 	}
 
@@ -202,7 +202,7 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':schema', $schemaName);
 		$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar()) === 1;
+		return (int) ($command->queryScalar()) === 1;
 	}
 
 	/**
@@ -242,12 +242,12 @@ EOD;
 		if (preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches)) {
 			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
 			if ($this->isPrecisionType($info['DbType'])) {
-				$info['NumericPrecision'] = intval($matches[1]);
+				$info['NumericPrecision'] = (int) ($matches[1]);
 				if (count($matches) > 2) {
-					$info['NumericScale'] = intval($matches[2]);
+					$info['NumericScale'] = (int) ($matches[2]);
 				}
 			} else {
-				$info['ColumnSize'] = intval($matches[1]);
+				$info['ColumnSize'] = (int) ($matches[1]);
 			}
 		} else {
 			$info['DbType'] = $col['type'];
@@ -353,7 +353,7 @@ EOD;
 					break;
 			}
 		}
-		return [$primary,$foreign];
+		return [$primary, $foreign];
 	}
 
 	/**

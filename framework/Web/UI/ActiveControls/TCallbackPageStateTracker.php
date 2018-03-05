@@ -107,7 +107,7 @@ class TCallbackPageStateTracker
 			if ($new !== $old) {
 				$diff = new $details[0]($new, $old, $this->_nullObject);
 				if (($change = $diff->getDifference()) !== $this->_nullObject) {
-					$changes[] = [$details[1],[$change]];
+					$changes[] = [$details[1], [$change]];
 				}
 			}
 		}

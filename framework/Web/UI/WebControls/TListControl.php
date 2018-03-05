@@ -730,7 +730,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	public function setPromptValue($value)
 	{
-		$this->setViewState('PromptValue', (string)$value, '');
+		$this->setViewState('PromptValue', (string) $value, '');
 	}
 
 	/**

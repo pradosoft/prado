@@ -58,7 +58,7 @@ class TSqlCriteria extends \Prado\TComponent
 		}
 		$this->_parameters = new TAttributeCollection;
 		$this->_parameters->setCaseSensitive(true);
-		$this->_parameters->copyFrom((array)$parameters);
+		$this->_parameters->copyFrom((array) $parameters);
 		$this->_ordersBy = new TAttributeCollection;
 		$this->_ordersBy->setCaseSensitive(true);
 
@@ -159,17 +159,17 @@ class TSqlCriteria extends \Prado\TComponent
 			$value = str_replace($matches[0], '', $value); // remove limit from query
 			if (strpos($matches[1], ',')) { // both offset and limit given
 				list($offset, $limit) = explode(',', $matches[1]);
-				$this->_limit = (int)$limit;
-				$this->_offset = (int)$offset;
+				$this->_limit = (int) $limit;
+				$this->_offset = (int) $offset;
 			} else { // only limit given
-				$this->_limit = (int)$matches[1];
+				$this->_limit = (int) $matches[1];
 			}
 		}
 
 		if (preg_match('/OFFSET\s+(\d+)/i', $value, $matches) > 0) {
 			// condition contains offset
 			$value = str_replace($matches[0], '', $value); // remove offset from query
-			$this->_offset = (int)$matches[1]; // set offset in criteria
+			$this->_offset = (int) $matches[1]; // set offset in criteria
 		}
 
 		$this->_condition = trim($value);
@@ -220,7 +220,7 @@ class TSqlCriteria extends \Prado\TComponent
 		if (is_array($value) || $value instanceof Traversable) {
 			$this->_ordersBy->copyFrom($value);
 		} else {
-			$value = trim(preg_replace('/\s+/', ' ', (string)$value));
+			$value = trim(preg_replace('/\s+/', ' ', (string) $value));
 			$orderBys = [];
 			foreach (explode(',', $value) as $orderBy) {
 				$vs = explode(' ', trim($orderBy));
@@ -268,8 +268,8 @@ class TSqlCriteria extends \Prado\TComponent
 	public function __toString()
 	{
 		$str = '';
-		if (strlen((string)$this->getCondition()) > 0) {
-			$str .= '"' . (string)$this->getCondition() . '"';
+		if (strlen((string) $this->getCondition()) > 0) {
+			$str .= '"' . (string) $this->getCondition() . '"';
 		}
 		$params = [];
 		foreach ($this->getParameters() as $k => $v) {

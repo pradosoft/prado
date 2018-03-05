@@ -320,7 +320,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	public function loadPostData($key, $values)
 	{
 		if ($this->getEnabled(true)) {
-			$index = (int)substr($key, strlen($this->getUniqueID()) + 2);
+			$index = (int) substr($key, strlen($this->getUniqueID()) + 2);
 			$this->ensureDataBound();
 			if ($index >= 0 && $index < $this->getItemCount()) {
 				$item = $this->getItems()->itemAt($index);

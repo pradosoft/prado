@@ -33,7 +33,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 		foreach ($this->getTableInfo()->getColumns() as $column) {
 			if ($column->hasSequence()) {
 				$command = $this->getDbConnection()->createCommand('SELECT @@Identity');
-				return intval($command->queryScalar());
+				return (int) ($command->queryScalar());
 			}
 		}
 	}
@@ -80,8 +80,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit !== null ? intval($limit) : -1;
-		$offset = $offset !== null ? intval($offset) : -1;
+		$limit = $limit !== null ? (int) $limit : -1;
+		$offset = $offset !== null ? (int) $offset : -1;
 		if ($limit > 0 && $offset <= 0) { //just limit
 			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
 		} elseif ($limit > 0 && $offset > 0) {

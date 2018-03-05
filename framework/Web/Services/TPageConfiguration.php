@@ -266,9 +266,9 @@ class TPageConfiguration extends \Prado\TComponent
 				}
 				$filePath = $include['file'];
 				if (isset($this->_includes[$filePath])) {
-					$this->_includes[$filePath] = [$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
+					$this->_includes[$filePath] = [$configPagePath, '(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
 				} else {
-					$this->_includes[$filePath] = [$configPagePath,$when];
+					$this->_includes[$filePath] = [$configPagePath, $when];
 				}
 			}
 		}
@@ -349,9 +349,9 @@ class TPageConfiguration extends \Prado\TComponent
 				throw new TConfigurationException('pageserviceconf_includefile_required');
 			}
 			if (isset($this->_includes[$filePath])) {
-				$this->_includes[$filePath] = [$configPagePath,'(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
+				$this->_includes[$filePath] = [$configPagePath, '(' . $this->_includes[$filePath][1] . ') || (' . $when . ')'];
 			} else {
-				$this->_includes[$filePath] = [$configPagePath,$when];
+				$this->_includes[$filePath] = [$configPagePath, $when];
 			}
 		}
 	}

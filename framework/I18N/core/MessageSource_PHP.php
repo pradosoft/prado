@@ -55,7 +55,7 @@ class MessageSource_PHP extends MessageSource
 	 */
 	public function __construct($source)
 	{
-		$this->source = (string)$source;
+		$this->source = (string) $source;
 	}
 
 	/**
@@ -75,10 +75,10 @@ class MessageSource_PHP extends MessageSource
 		$translations = [];
 
 		foreach ($translationUnit as $k => $unit) {
-			$source = (string)$unit['source'];
-			$translations[$source][] = (string)$unit['target'];
-			$translations[$source][] = (string)$k;
-			$translations[$source][] = array_key_exists('note', $unit) ? (string)$unit['note'] : '';
+			$source = (string) $unit['source'];
+			$translations[$source][] = (string) $unit['target'];
+			$translations[$source][] = (string) $k;
+			$translations[$source][] = array_key_exists('note', $unit) ? (string) $unit['note'] : '';
 		}
 
 		return $translations;

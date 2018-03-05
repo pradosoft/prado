@@ -146,7 +146,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				  ") WHERE {$pradoNUMLIN} >= {$offset} ";
 
 		************************* */
-		$offset = (int)$offset;
+		$offset = (int) $offset;
 		$toReg = $offset + $limit ;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY)) {

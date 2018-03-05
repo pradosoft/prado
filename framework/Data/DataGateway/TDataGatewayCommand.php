@@ -103,7 +103,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function updateByPk($data, $keys)
 	{
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
+		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
 		return $this->update($data, new TSqlCriteria($where, $parameters));
 	}
 	/**
@@ -155,7 +155,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if ($keys === null) {
 			return null;
 		}
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
+		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $parameters));
 		return $this->onExecuteCommand($command, $command->queryRow());
@@ -166,7 +166,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function findAllByPk($keys)
 	{
-		$where = $this->getCompositeKeyCondition((array)$keys);
+		$where = $this->getCompositeKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createFindCommand($where);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		return $this->onExecuteCommand($command, $command->query());
@@ -193,7 +193,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if (count($keys) == 0) {
 			return 0;
 		}
-		$where = $this->getCompositeKeyCondition((array)$keys);
+		$where = $this->getCompositeKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		$command->prepare();
@@ -338,7 +338,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function count($criteria)
 	{
 		if ($criteria === null) {
-			return (int)$this->getBuilder()->createCountCommand()->queryScalar();
+			return (int) $this->getBuilder()->createCountCommand()->queryScalar();
 		}
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
@@ -347,7 +347,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$offset = $criteria->getOffset();
 		$command = $this->getBuilder()->createCountCommand($where, $parameters, $ordering, $limit, $offset);
 		$this->onCreateCommand($command, $criteria);
-		return $this->onExecuteCommand($command, (int)$command->queryScalar());
+		return $this->onExecuteCommand($command, (int) $command->queryScalar());
 	}
 
 	/**

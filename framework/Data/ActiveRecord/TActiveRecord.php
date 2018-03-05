@@ -293,7 +293,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$class = new ReflectionClass($className);
 			$relations = [];
 			foreach ($class->getStaticPropertyValue('RELATIONS') as $key => $value) {
-				$relations[strtolower($key)] = [$key,$value];
+				$relations[strtolower($key)] = [$key, $value];
 			}
 			self::$_relations[$className] = $relations;
 		}
@@ -497,7 +497,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if (func_num_args() > 1) {
 			$keys = func_get_args();
 		}
-		return $this->getRecordGateway()->deleteRecordsByPk($this, (array)$keys);
+		return $this->getRecordGateway()->deleteRecordsByPk($this, (array) $keys);
 	}
 
 	/**
@@ -656,7 +656,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if (func_num_args() > 1) {
 			$keys = func_get_args();
 		}
-		$result = $this->getRecordGateway()->findRecordsByPks($this, (array)$keys);
+		$result = $this->getRecordGateway()->findRecordsByPks($this, (array) $keys);
 		return $this->populateObjects($result);
 	}
 

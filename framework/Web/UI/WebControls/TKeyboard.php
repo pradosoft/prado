@@ -148,7 +148,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	protected function registerStyleSheet()
 	{
 		if (($url = $this->getCssUrl()) === '') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}

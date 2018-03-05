@@ -200,12 +200,12 @@ class TRangeValidator extends TBaseValidator
 		$maxValue = $this->getMaxValue();
 
 		$valid = preg_match('/^[-+]?[0-9]+$/', trim($value));
-		$value = intval($value);
+		$value = (int) $value;
 		if ($minValue !== '') {
-			$valid = $valid && $this->isGreaterThan($value, intval($minValue));
+			$valid = $valid && $this->isGreaterThan($value, (int) $minValue);
 		}
 		if ($maxValue !== '') {
-			$valid = $valid && $this->isLessThan($value, intval($maxValue));
+			$valid = $valid && $this->isLessThan($value, (int) $maxValue);
 		}
 		return $valid;
 	}
@@ -231,12 +231,12 @@ class TRangeValidator extends TBaseValidator
 		$maxValue = $this->getMaxValue();
 
 		$valid = preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
-		$value = floatval($value);
+		$value = (float) $value;
 		if ($minValue !== '') {
-			$valid = $valid && $this->isGreaterThan($value, floatval($minValue));
+			$valid = $valid && $this->isGreaterThan($value, (float) $minValue);
 		}
 		if ($maxValue !== '') {
-			$valid = $valid && $this->isLessThan($value, floatval($maxValue));
+			$valid = $valid && $this->isLessThan($value, (float) $maxValue);
 		}
 		return $valid;
 	}
@@ -319,10 +319,10 @@ class TRangeValidator extends TBaseValidator
 
 		$length = iconv_strlen($value, $charset);
 		if ($minValue !== '') {
-			$valid = $valid && $this->isGreaterThan($length, intval($minValue));
+			$valid = $valid && $this->isGreaterThan($length, (int) $minValue);
 		}
 		if ($maxValue !== '') {
-			$valid = $valid && $this->isLessThan($length, intval($maxValue));
+			$valid = $valid && $this->isLessThan($length, (int) $maxValue);
 		}
 		return $valid;
 	}

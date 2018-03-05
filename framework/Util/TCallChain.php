@@ -51,7 +51,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 */
 	public function addCall($method, $args)
 	{
-		$this->add([$method,$args]);
+		$this->add([$method, $args]);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class TCallChain extends TList implements IDynamicMethods
 	public function __dycall($method, $args)
 	{
 		if ($this->_method == $method) {
-			return call_user_func_array([$this,'call'], $args);
+			return call_user_func_array([$this, 'call'], $args);
 		}
 		return null;
 	}

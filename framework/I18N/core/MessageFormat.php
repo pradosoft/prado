@@ -21,7 +21,7 @@ namespace Prado\I18N\core;
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__) . '/util.php');
+require_once(__DIR__ . '/util.php');
 
 /**
  * MessageFormat class.
@@ -76,7 +76,7 @@ class MessageFormat
 	 * The prefix and suffix to append to untranslated messages.
 	 * @var array
 	 */
-	protected $postscript = ['',''];
+	protected $postscript = ['', ''];
 
 	/**
 	 * Set the default catalogue.

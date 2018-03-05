@@ -196,8 +196,8 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	{
 		$uid = $this->getUniqueID();
 		if (isset($values["{$uid}_x"]) && isset($values["{$uid}_y"])) {
-			$this->_x = intval($values["{$uid}_x"]);
-			$this->_y = intval($values["{$uid}_y"]);
+			$this->_x = (int) ($values["{$uid}_x"]);
+			$this->_y = (int) ($values["{$uid}_y"]);
 			if ($this->getPage()->getPostBackEventTarget() === null) {
 				$this->getPage()->setPostBackEventTarget($this);
 			}

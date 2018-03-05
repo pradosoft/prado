@@ -105,9 +105,9 @@ class TAuthManager extends \Prado\TModule
 			}
 			$this->_userManager = $users;
 		}
-		$application->attachEventHandler('OnAuthentication', [$this,'doAuthentication']);
-		$application->attachEventHandler('OnEndRequest', [$this,'leave']);
-		$application->attachEventHandler('OnAuthorization', [$this,'doAuthorization']);
+		$application->attachEventHandler('OnAuthentication', [$this, 'doAuthentication']);
+		$application->attachEventHandler('OnEndRequest', [$this, 'leave']);
+		$application->attachEventHandler('OnAuthorization', [$this, 'doAuthorization']);
 		$this->_initialized = true;
 	}
 

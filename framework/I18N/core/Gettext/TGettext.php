@@ -101,7 +101,7 @@ class TGettext
 	public static function factory($format, $file = '')
 	{
 		$format = strToUpper($format);
-		$filename = dirname(__FILE__) . '/' . $format . '.php';
+		$filename = __DIR__ . '/' . $format . '.php';
 		if (is_file($filename) == false) {
 			throw new Exception("Class file $file not found");
 		}
@@ -130,7 +130,7 @@ class TGettext
 			throw new Exception("File $pofile doesn't exist.");
 		}
 
-		include_once dirname(__FILE__) . '/PO.php';
+		include_once __DIR__ . '/PO.php';
 
 		$PO = new TGettext_PO($pofile);
 		if (true !== ($e = $PO->load())) {
@@ -266,7 +266,7 @@ class TGettext
 	 */
 	public function toMO()
 	{
-		include_once dirname(__FILE__) . '/MO.php';
+		include_once __DIR__ . '/MO.php';
 		$MO = new TGettext_MO;
 		$MO->fromArray($this->toArray());
 		return $MO;
@@ -280,7 +280,7 @@ class TGettext
 	 */
 	public function toPO()
 	{
-		include_once dirname(__FILE__) . '/PO.php';
+		include_once __DIR__ . '/PO.php';
 		$PO = new TGettext_PO;
 		$PO->fromArray($this->toArray());
 		return $PO;

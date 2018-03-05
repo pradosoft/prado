@@ -100,7 +100,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 		$session = $this->_page->getSession();
 		$session->open();
 		$data = serialize($state);
-		$timestamp = (string)microtime(true);
+		$timestamp = (string) microtime(true);
 		$key = self::STATE_SESSION_KEY . $timestamp;
 		$session->add($key, $data);
 		if (($queue = $session->itemAt(self::QUEUE_SESSION_KEY)) === null) {

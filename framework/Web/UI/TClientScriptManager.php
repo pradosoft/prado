@@ -394,7 +394,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		$this->_endScripts['prado:' . $panelID] = $code;
 		$this->registerPradoScriptInternal('prado');
 
-		$params = [$panelID,$buttonID];
+		$params = [$panelID, $buttonID];
 		$this->_page->registerCachingAction('Page.ClientScript', 'registerDefaultButton', $params);
 	}
 
@@ -515,7 +515,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		if ($media === '') {
 			$this->_styleSheetFiles[$key] = $url;
 		} else {
-			$this->_styleSheetFiles[$key] = [$url,$media];
+			$this->_styleSheetFiles[$key] = [$url, $media];
 		}
 
 		$params = func_get_args();

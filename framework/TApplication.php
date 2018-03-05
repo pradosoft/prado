@@ -307,7 +307,7 @@ class TApplication extends \Prado\TComponent
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID = md5($this->_runtimePath);
 		$this->_parameters = new \Prado\Collections\TMap;
-		$this->_services = [$this->getPageServiceID() => ['TPageService',[],null]];
+		$this->_services = [$this->getPageServiceID() => ['TPageService', [], null]];
 
 		Prado::setPathOfAlias('Application', $this->_basePath);
 	}
@@ -936,7 +936,7 @@ class TApplication extends \Prado\TComponent
 		// keep the key to avoid reuse of the old module id
 		$this->_lazyModules[$id] = null;
 
-		return [$module,$configElement];
+		return [$module, $configElement];
 	}
 	/**
 	 * Applies an application configuration.
@@ -965,7 +965,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		if (empty($this->_services)) {
-			$this->_services = [$this->getPageServiceID() => ['Prado\Web\Services\TPageService',[],null]];
+			$this->_services = [$this->getPageServiceID() => ['Prado\Web\Services\TPageService', [], null]];
 		}
 
 		// load parameters

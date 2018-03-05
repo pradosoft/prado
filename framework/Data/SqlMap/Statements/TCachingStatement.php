@@ -47,7 +47,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null)
 	{
 		$sql = $this->createCommand($connection, $parameter, $skip, $max);
-		$key = $this->getCacheKey([clone($sql), $keyProperty, $valueProperty,$skip, $max]);
+		$key = $this->getCacheKey([clone($sql), $keyProperty, $valueProperty, $skip, $max]);
 		$map = $this->getStatement()->getCache()->get($key);
 		if ($map === null) {
 			$map = $this->_mappedStatement->runQueryForMap(

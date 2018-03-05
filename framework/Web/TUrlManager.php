@@ -96,9 +96,9 @@ class TUrlManager extends \Prado\TModule
 
 		switch ($request->getUrlFormat()) {
 			case THttpRequestUrlFormat::Path:
-				return $request->getApplicationUrl() . '/' . strtr($url, [$amp => '/','?' => '/','=' => $request->getUrlParamSeparator()]);
+				return $request->getApplicationUrl() . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url, [$amp => '/','?' => '/','=' => $request->getUrlParamSeparator()]);
+				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			default:
 				return $request->getApplicationUrl() . '?' . $url;
 		}

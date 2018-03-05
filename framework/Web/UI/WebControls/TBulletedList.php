@@ -63,7 +63,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
 		}
-		$this->onClick(new TBulletedListEventParameter((int)$param));
+		$this->onClick(new TBulletedListEventParameter((int) $param));
 	}
 
 	/**

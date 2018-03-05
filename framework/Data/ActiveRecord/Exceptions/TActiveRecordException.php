@@ -29,7 +29,7 @@ class TActiveRecordException extends TDbException
 	protected function getErrorMessageFile()
 	{
 		$lang = Prado::getPreferredLanguage();
-		$path = dirname(__FILE__);
+		$path = __DIR__;
 		$msgFile = $path . '/messages-' . $lang . '.txt';
 		if (!is_file($msgFile)) {
 			$msgFile = $path . '/messages.txt';

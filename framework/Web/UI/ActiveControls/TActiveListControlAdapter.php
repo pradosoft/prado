@@ -82,7 +82,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 			$list = [];
 			foreach ($indices as $index) {
-				$index = intval($index);
+				$index = (int) $index;
 				if ($promptValue !== '') {
 					$index++;
 				}

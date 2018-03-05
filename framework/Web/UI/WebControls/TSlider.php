@@ -296,7 +296,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function loadPostData($key, $values)
 	{
-		$value = (float)$values[$this->getClientID() . '_1'];
+		$value = (float) $values[$this->getClientID() . '_1'];
 		if ($this->getValue() !== $value) {
 			$this->setValue($value);
 			return $this->_dataChanged = true;
@@ -417,7 +417,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if (($url = $this->getCssUrl()) === '') {
 			$manager = $this->getApplication()->getAssetManager();
 			// publish the assets
-			$url = $manager->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
+			$url = $manager->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'TSlider');
 			$url .= '/TSlider.css';
 		}
 		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);

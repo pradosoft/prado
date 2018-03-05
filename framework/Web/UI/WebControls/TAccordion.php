@@ -358,7 +358,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function loadPostData($key, $values)
 	{
 		if (($index = $values[$this->getClientID() . '_1']) !== null) {
-			$index = (int)$index;
+			$index = (int) $index;
 			$currentIndex = $this->getActiveViewIndex();
 			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
@@ -428,7 +428,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		}
 
 		if ($url === 'default') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'accordion.css');
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'accordion.css');
 		}
 
 		if ($url !== '') {

@@ -104,7 +104,7 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function setThemeClass($class)
 	{
-		$this->_themeClass = $class === null ? self::DEFAULT_THEMECLASS : (string)$class;
+		$this->_themeClass = $class === null ? self::DEFAULT_THEMECLASS : (string) $class;
 	}
 
 	/**

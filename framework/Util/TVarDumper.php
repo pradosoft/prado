@@ -104,7 +104,7 @@ class TVarDumper
 				} else {
 					$id = array_push(self::$_objects, $var);
 					$className = get_class($var);
-					$members = (array)$var;
+					$members = (array) $var;
 					$keys = array_keys($members);
 					$spaces = str_repeat(' ', $level * 4);
 					self::$_output .= "$className#$id\n" . $spaces . '(';

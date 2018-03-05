@@ -130,7 +130,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 			&& $this->getPage()->getClientSupportsJavaScript()) {
 			$this->getActiveControl()->registerCallbackClientScript(
 			$this->getClientClassName(),
-		  	$this->getPostBackOptions()
+			$this->getPostBackOptions()
 		  );
 		}
 	}

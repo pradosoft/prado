@@ -21,13 +21,13 @@ namespace Prado\I18N\core;
 /**
  * Get the NumberFormatInfo class file.
  */
-require_once(dirname(__FILE__) . '/NumberFormatInfo.php');
+require_once(__DIR__ . '/NumberFormatInfo.php');
 
 
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__) . '/util.php');
+require_once(__DIR__ . '/util.php');
 
 
 /**
@@ -125,7 +125,7 @@ class NumberFormat
 			$number = $number * 100;
 		}
 
-		$string = (string)$number;
+		$string = (string) $number;
 
 		$decimal = $this->formatDecimal($string);
 		$integer = $this->formatInteger(abs($number));
@@ -142,7 +142,7 @@ class NumberFormat
 		} elseif ($number < 0) {
 			$suffix = $this->formatInfo->NegativePattern;
 		} else {
-			$suffix = ["",""];
+			$suffix = ["", ""];
 		}
 
 		//append and prepend suffix
@@ -168,12 +168,12 @@ class NumberFormat
 	 */
 	protected function formatInteger($string)
 	{
-		$string = (string)$string;
+		$string = (string) $string;
 
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		//if not decimal digits, assume 0 decimal points.
 		if (is_int($decimalDigits) && $decimalDigits > 0) {
-			$string = (string)round(floatval($string), $decimalDigits);
+			$string = (string) round((float) $string, $decimalDigits);
 		}
 		$dp = strpos($string, '.');
 		if (is_int($dp)) {
@@ -245,8 +245,8 @@ class NumberFormat
 			if ($decimalDigits == -1) {
 				$decimal = substr($string, $dp + 1);
 			} elseif (is_int($decimalDigits)) {
-				$float = round((float)$string, $decimalDigits);
-				if (strpos((string)$float, '.') === false) {
+				$float = round((float) $string, $decimalDigits);
+				if (strpos((string) $float, '.') === false) {
 					$decimal = str_pad($decimal, $decimalDigits, '0');
 				} else {
 					$decimal = substr($float, strpos($float, '.') + 1);

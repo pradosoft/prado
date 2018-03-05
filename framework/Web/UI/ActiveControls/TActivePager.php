@@ -106,7 +106,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged', [$this,'listIndexChanged']);
+		$list->attachEventHandler('OnSelectedIndexChanged', [$this, 'listIndexChanged']);
 		$list->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 	}
 

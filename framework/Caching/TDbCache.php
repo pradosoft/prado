@@ -251,7 +251,7 @@ class TDbCache extends TCache
 
 		$key = 'TDbCache:' . $this->_cacheTable . ':flushed';
 		$now = time();
-		$next = $interval + (integer)$this -> getApplication() -> getGlobalState($key, 0);
+		$next = $interval + (integer) $this -> getApplication() -> getGlobalState($key, 0);
 
 		if ($force || $next <= $now) {
 			if (!$this->_cacheInitialized) {

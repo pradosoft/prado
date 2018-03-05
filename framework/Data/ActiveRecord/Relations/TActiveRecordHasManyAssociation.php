@@ -331,8 +331,8 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 			$condition[] = $table->getColumn($name)->getColumnName() . ' = ?';
 		}
 		$command = $builder->createCountCommand(implode(' AND ', $condition), array_values($data));
-		$result = $this->getCommandBuilder()->onExecuteCommand($command, intval($command->queryScalar()));
-		return intval($result) > 0;
+		$result = $this->getCommandBuilder()->onExecuteCommand($command, (int) ($command->queryScalar()));
+		return (int) $result > 0;
 	}
 
 	private function addAssociationData($builder, $data)

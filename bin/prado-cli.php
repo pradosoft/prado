@@ -276,7 +276,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 	protected function renderIndexFile()
 	{
-		$framework = realpath(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . 'prado.php';
+		$framework = realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . 'prado.php';
 		return '<?php
 
 $frameworkPath=\'' . $framework . '\';
@@ -413,7 +413,7 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 
 	protected function renderUnitTestFixture()
 	{
-		$tester = realpath(dirname(dirname(__FILE__))) . '/tests/test_tools/unit_tests.php';
+		$tester = realpath(dirname(__DIR__)) . '/tests/test_tools/unit_tests.php';
 		return '<?php
 
 include_once \'' . $tester . '\';
@@ -428,7 +428,7 @@ $tester->run(new HtmlReporter());
 
 	protected function renderFunctionalTestFixture()
 	{
-		$tester = realpath(dirname(dirname(__FILE__))) . '/tests/test_tools/functional_tests.php';
+		$tester = realpath(dirname(__DIR__)) . '/tests/test_tools/functional_tests.php';
 		return '<?php
 
 include_once \'' . $tester . '\';
@@ -698,9 +698,9 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			if (Prado::getApplication() !== null) {
 				$app_dir = dirname(Prado::getApplication()->getBasePath());
 			}
-			$args = [$input[0],$input[1], $input[2],$app_dir];
+			$args = [$input[0], $input[1], $input[2], $app_dir];
 			if (count($input) > 3) {
-				$args = [$input[0],$input[1], $input[2],$app_dir,'soap'];
+				$args = [$input[0], $input[1], $input[2], $app_dir, 'soap'];
 			}
 			$cmd = new PradoCommandLineActiveRecordGen;
 			$cmd->performAction($args);

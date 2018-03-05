@@ -272,9 +272,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 		foreach ($items as $item) {
 			if ($item->getHasAttributes()) {
-				$options[] = [$item->getText(),$item->getValue(), $item->getAttributes()->itemAt('Group')];
+				$options[] = [$item->getText(), $item->getValue(), $item->getAttributes()->itemAt('Group')];
 			} else {
-				$options[] = [$item->getText(),$item->getValue()];
+				$options[] = [$item->getText(), $item->getValue()];
 			}
 		}
 		$this->callClientFunction('Prado.Element.setOptions', [$control, $options]);

@@ -218,7 +218,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data) ? array_map([$this,'stripSlashes'], $data) : stripslashes($data);
+		return is_array($data) ? array_map([$this, 'stripSlashes'], $data) : stripslashes($data);
 	}
 
 	/**
@@ -732,7 +732,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function constructUrl($serviceID, $serviceParam, $getItems = null, $encodeAmpersand = true, $encodeGetItems = true)
 	{
 		if ($this->_cookieOnly === null) {
-			$this->_cookieOnly = (int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
+			$this->_cookieOnly = (int) ini_get('session.use_cookies') && (int) ini_get('session.use_only_cookies');
 		}
 		$url = $this->getUrlManagerModule()->constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
 		if (defined('SID') && SID != '' && !$this->_cookieOnly) {

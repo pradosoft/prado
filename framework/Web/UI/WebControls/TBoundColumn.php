@@ -178,7 +178,7 @@ class TBoundColumn extends TDataGridColumn
 				} else {
 					$control = $cell;
 				}
-				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				break;
 			case TListItemType::EditItem:
 				if (!$this->getReadOnly()) {
@@ -207,7 +207,7 @@ class TBoundColumn extends TDataGridColumn
 						$control = $cell;
 					}
 				}
-				$control->attachEventHandler('OnDataBinding', [$this,'dataBindColumn']);
+				$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				break;
 			default:
 				parent::initializeCell($cell, $columnIndex, $itemType);

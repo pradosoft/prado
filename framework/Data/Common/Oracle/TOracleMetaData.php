@@ -64,7 +64,7 @@ class TOracleMetaData extends TDbMetaData
 		if (count($parts = explode('.', str_replace('"', '', $table))) > 1) {
 			return [$parts[0], $parts[1]];
 		} else {
-			return [$this->getDefaultSchema(),$parts[0]];
+			return [$this->getDefaultSchema(), $parts[0]];
 		}
 	}
 
@@ -166,7 +166,7 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':schema',$schemaName);
 		//$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar() === 'VIEW');
+		return (int) ($command->queryScalar() === 'VIEW');
 	}
 
 	/**
@@ -181,7 +181,7 @@ EOD;
 		$info['ColumnName'] = $columnId; //NOT quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
-		if (! (bool)$col['attnotnull']) {
+		if (! (bool) $col['attnotnull']) {
 			$info['AllowNull'] = true;
 		}
 		if (in_array($columnId, $tableInfo->getPrimaryKeys())) {
@@ -190,10 +190,10 @@ EOD;
 		if ($this->isForeignKeyColumn($columnId, $tableInfo)) {
 			$info['IsForeignKey'] = true;
 		}
-		if ((int)$col['atttypmod'] > 0) {
+		if ((int) $col['atttypmod'] > 0) {
 			$info['ColumnSize'] = $col['atttypmod'];
 		} // - 4;
-		if ((bool)$col['atthasdef']) {
+		if ((bool) $col['atthasdef']) {
 			$info['DefaultValue'] = $col['adsrc'];
 		}
 		//
@@ -213,12 +213,12 @@ EOD;
 		if (preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches)) {
 			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
 			if ($this->isPrecisionType($info['DbType'])) {
-				$info['NumericPrecision'] = intval($matches[1]);
+				$info['NumericPrecision'] = (int) ($matches[1]);
 				if (count($matches) > 2) {
-					$info['NumericScale'] = intval($matches[2]);
+					$info['NumericScale'] = (int) ($matches[2]);
 				}
 			} else {
-				$info['ColumnSize'] = intval($matches[1]);
+				$info['ColumnSize'] = (int) ($matches[1]);
 			}
 		} else {
 			$info['DbType'] = $col['type'];
@@ -295,7 +295,7 @@ EOD;
 					break;
 			}
 		}
-		return [$primary,$foreign];
+		return [$primary, $foreign];
 	}
 
 	/**

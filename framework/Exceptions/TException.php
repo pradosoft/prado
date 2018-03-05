@@ -74,7 +74,7 @@ class TException extends \Exception
 		if (!isset(self::$_messageCache[$msgFile])) {
 			if (($entries = @file($msgFile)) !== false) {
 				foreach ($entries as $entry) {
-					list($code, $message) = array_merge(explode('=', $entry, 2), [ '' ]);
+					list($code, $message) = array_merge(explode('=', $entry, 2), ['']);
 					self::$_messageCache[$msgFile][trim($code)] = trim($message);
 				}
 			}

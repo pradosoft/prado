@@ -102,7 +102,7 @@ class TTemplateManager extends \Prado\TModule
 				foreach ($includedFiles as $includedFile) {
 					$timestamps[$includedFile] = filemtime($includedFile);
 				}
-				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName, [$template,$timestamps]);
+				$cache->set(self::TEMPLATE_CACHE_PREFIX . $fileName, [$template, $timestamps]);
 				return $template;
 			}
 		} else {

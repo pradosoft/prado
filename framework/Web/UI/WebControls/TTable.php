@@ -109,7 +109,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 				if (($border = $this->getBorderWidth()) === '') {
 					$border = 1;
 				} else {
-					$border = (int)$border;
+					$border = (int) $border;
 				}
 			}
 		}

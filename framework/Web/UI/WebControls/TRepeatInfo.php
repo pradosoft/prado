@@ -297,7 +297,7 @@ class TRepeatInfo extends \Prado\TComponent
 			$lastColumns = 1;
 		} else {
 			$columns = $this->_repeatColumns;
-			$rows = (int)(($itemCount + $columns - 1) / $columns);
+			$rows = (int) (($itemCount + $columns - 1) / $columns);
 			if ($rows == 0 && $itemCount > 0) {
 				$rows = 1;
 			}

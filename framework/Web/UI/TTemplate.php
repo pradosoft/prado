@@ -341,9 +341,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	protected function configureEvent($control, $name, $value, $contextControl)
 	{
 		if (strpos($value, '.') === false) {
-			$control->attachEventHandler($name, [$contextControl,'TemplateControl.' . $value]);
+			$control->attachEventHandler($name, [$contextControl, 'TemplateControl.' . $value]);
 		} else {
-			$control->attachEventHandler($name, [$contextControl,$value]);
+			$control->attachEventHandler($name, [$contextControl, $value]);
 		}
 	}
 
@@ -486,13 +486,13 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						continue;
 					}
 					if ($matchStart > $textStart) {
-						$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+						$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 					}
 					$textStart = $matchEnd + 1;
 					$type = $match[1][0];
 					$attributes = $this->parseAttributes($match[2][0], $match[2][1]);
 					$class = $this->validateAttributes($type, $attributes);
-					$tpl[$c++] = [$container,$class,$attributes];
+					$tpl[$c++] = [$container, $class, $attributes];
 					if ($str[strlen($str) - 2] !== '/') {  // open tag
 						$stack[] = $type;
 						$container = $c - 1;
@@ -502,7 +502,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						continue;
 					}
 					if ($matchStart > $textStart) {
-						$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+						$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 					}
 					$textStart = $matchEnd + 1;
 					$type = $match[1][0];
@@ -522,7 +522,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						continue;
 					}
 					if ($matchStart > $textStart) {
-						$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+						$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 					}
 					$textStart = $matchEnd + 1;
 					if (isset($tpl[0]) || $this->_directive !== null) {
@@ -534,25 +534,25 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						continue;
 					}
 					if ($matchStart > $textStart) {
-						$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+						$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 					}
 					$textStart = $matchEnd + 1;
 					$literal = trim($match[5][0]);
 					if ($str[2] === '=') {	// expression
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_EXPRESSION,$literal]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_EXPRESSION, $literal]];
 					} elseif ($str[2] === '%') {  // statements
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_STATEMENTS,$literal]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_STATEMENTS, $literal]];
 					} elseif ($str[2] === '#') {
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_DATABINDING,$literal]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_DATABINDING, $literal]];
 					} elseif ($str[2] === '$') {
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_EXPRESSION,"\$this->getApplication()->getParameters()->itemAt('$literal')"]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_EXPRESSION, "\$this->getApplication()->getParameters()->itemAt('$literal')"]];
 					} elseif ($str[2] === '~') {
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_EXPRESSION,"\$this->publishFilePath('$this->_contextPath/$literal')"]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_EXPRESSION, "\$this->publishFilePath('$this->_contextPath/$literal')"]];
 					} elseif ($str[2] === '/') {
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"]];
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_EXPRESSION, "rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"]];
 					} elseif ($str[2] === '[') {
-						$literal = strtr(trim(substr($literal, 0, strlen($literal) - 1)), ["'" => "\'","\\" => "\\\\"]);
-						$tpl[$c++] = [$container,[TCompositeLiteral::TYPE_EXPRESSION,"Prado::localize('$literal')"]];
+						$literal = strtr(trim(substr($literal, 0, strlen($literal) - 1)), ["'" => "\'", "\\" => "\\\\"]);
+						$tpl[$c++] = [$container, [TCompositeLiteral::TYPE_EXPRESSION, "Prado::localize('$literal')"]];
 					}
 				} elseif (strpos($str, '<prop:') === 0) {	// opening property
 					if (strrpos($str, '/>') === strlen($str) - 2) {  //subproperties
@@ -560,7 +560,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 							continue;
 						}
 						if ($matchStart > $textStart) {
-							$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+							$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 						}
 						$textStart = $matchEnd + 1;
 						$prop = strtolower($match[6][0]);
@@ -582,7 +582,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						$stack[] = '@' . $prop;
 						if (!$expectPropEnd) {
 							if ($matchStart > $textStart) {
-								$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+								$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 							}
 							$textStart = $matchEnd + 1;
 							$expectPropEnd = true;
@@ -625,7 +625,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						throw new TConfigurationException('template_comments_forbidden');
 					}
 					if ($matchStart > $textStart) {
-						$tpl[$c++] = [$container,substr($input, $textStart, $matchStart - $textStart)];
+						$tpl[$c++] = [$container, substr($input, $textStart, $matchStart - $textStart)];
 					}
 					$textStart = $matchEnd + 1;
 				} else {
@@ -638,7 +638,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				throw new TConfigurationException('template_closingtag_expected', $tag, "nothing");
 			}
 			if ($textStart < strlen($input)) {
-				$tpl[$c++] = [$container,substr($input, $textStart)];
+				$tpl[$c++] = [$container, substr($input, $textStart)];
 			}
 		} catch (\Exception $e) {
 			if (($e instanceof TException) && ($e instanceof TTemplateException)) {
@@ -664,9 +664,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			if (isset($object[2]) || $object[0] !== $parent) {
 				if ($parent !== null) {
 					if (count($merged[1]) === 1 && is_string($merged[1][0])) {
-						$objects[$id - 1] = [$merged[0],$merged[1][0]];
+						$objects[$id - 1] = [$merged[0], $merged[1][0]];
 					} else {
-						$objects[$id - 1] = [$merged[0],new TCompositeLiteral($merged[1])];
+						$objects[$id - 1] = [$merged[0], new TCompositeLiteral($merged[1])];
 					}
 				}
 				if (isset($object[2])) {
@@ -674,7 +674,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$objects[$id] = $object;
 				} else {
 					$parent = $object[0];
-					$merged = [$parent,[$object[1]]];
+					$merged = [$parent, [$object[1]]];
 				}
 			} else {
 				$merged[1][] = $object[1];
@@ -682,9 +682,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		}
 		if ($parent !== null) {
 			if (count($merged[1]) === 1 && is_string($merged[1][0])) {
-				$objects[$id] = [$merged[0],$merged[1][0]];
+				$objects[$id] = [$merged[0], $merged[1][0]];
 			} else {
-				$objects[$id] = [$merged[0],new TCompositeLiteral($merged[1])];
+				$objects[$id] = [$merged[0], new TCompositeLiteral($merged[1])];
 			}
 		}
 		$tpl = $objects;
@@ -731,7 +731,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	protected function parseTemplateProperty($content, $offset)
 	{
 		$line = $this->_startingLine + count(explode("\n", substr($this->_content, 0, $offset))) - 1;
-		return [self::CONFIG_TEMPLATE,new TTemplate($content, $this->_contextPath, $this->_tplFile, $line, false)];
+		return [self::CONFIG_TEMPLATE, new TTemplate($content, $this->_contextPath, $this->_tplFile, $line, false)];
 	}
 
 	/**
@@ -754,31 +754,31 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$isDataBind = true;
 				}
 				if ($offset > $textStart) {
-					$expr .= ".'" . strtr(substr($value, $textStart, $offset - $textStart), ["'" => "\\'","\\" => "\\\\"]) . "'";
+					$expr .= ".'" . strtr(substr($value, $textStart, $offset - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
 				}
 				$expr .= '.(' . substr($token, 3, $length - 5) . ')';
 				$textStart = $offset + $length;
 			}
 			$length = strlen($value);
 			if ($length > $textStart) {
-				$expr .= ".'" . strtr(substr($value, $textStart, $length - $textStart), ["'" => "\\'","\\" => "\\\\"]) . "'";
+				$expr .= ".'" . strtr(substr($value, $textStart, $length - $textStart), ["'" => "\\'", "\\" => "\\\\"]) . "'";
 			}
 			if ($isDataBind) {
-				return [self::CONFIG_DATABIND,ltrim($expr, '.')];
+				return [self::CONFIG_DATABIND, ltrim($expr, '.')];
 			} else {
-				return [self::CONFIG_EXPRESSION,ltrim($expr, '.')];
+				return [self::CONFIG_EXPRESSION, ltrim($expr, '.')];
 			}
 		} elseif (preg_match('/\\s*(<%~.*?%>|<%\\$.*?%>|<%\\[.*?\\]%>|<%\/.*?%>)\\s*/msS', $value, $matches) && $matches[0] === $value) {
 			$value = $matches[1];
 			if ($value[2] === '~') {
-				return [self::CONFIG_ASSET,trim(substr($value, 3, strlen($value) - 5))];
+				return [self::CONFIG_ASSET, trim(substr($value, 3, strlen($value) - 5))];
 			} elseif ($value[2] === '[') {
-				return [self::CONFIG_LOCALIZATION,trim(substr($value, 3, strlen($value) - 6))];
+				return [self::CONFIG_LOCALIZATION, trim(substr($value, 3, strlen($value) - 6))];
 			} elseif ($value[2] === '$') {
-				return [self::CONFIG_PARAMETER,trim(substr($value, 3, strlen($value) - 5))];
+				return [self::CONFIG_PARAMETER, trim(substr($value, 3, strlen($value) - 5))];
 			} elseif ($value[2] === '/') {
 				$literal = trim(substr($value, 3, strlen($value) - 5));
-				return [self::CONFIG_EXPRESSION,"rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"];
+				return [self::CONFIG_EXPRESSION, "rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"];
 			}
 		} else {
 			return $value;

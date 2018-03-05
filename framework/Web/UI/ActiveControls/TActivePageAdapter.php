@@ -120,7 +120,7 @@ class TActivePageAdapter extends TControlAdapter
 	{
 		$id = $control->getUniqueID();
 		if (!isset($this->_controlsToRender[$id])) {
-			$this->_controlsToRender[$id] = [$control,$writer];
+			$this->_controlsToRender[$id] = [$control, $writer];
 		}
 	}
 

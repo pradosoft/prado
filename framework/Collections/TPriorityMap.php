@@ -140,7 +140,7 @@ class TPriorityMap extends TMap
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp = (string)round(TPropertyValue::ensureFloat($value), $this->_p);
+		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
 
 	/**
@@ -229,7 +229,7 @@ class TPriorityMap extends TMap
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if (!isset($this->_d[$priority]) || !is_array($this->_d[$priority])) {
 			return false;
@@ -273,7 +273,7 @@ class TPriorityMap extends TMap
 			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
 			}
-			$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+			$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : null;
 		}
 	}
@@ -290,7 +290,7 @@ class TPriorityMap extends TMap
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		$oldpriority = $this->priorityAt($key);
 		if ($oldpriority !== false && $oldpriority != $priority) {
@@ -310,7 +310,7 @@ class TPriorityMap extends TMap
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
 	}
@@ -365,7 +365,7 @@ class TPriorityMap extends TMap
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if (!$this->_r) {
 			foreach ($this->_d as $innerpriority => $items) {
@@ -427,7 +427,7 @@ class TPriorityMap extends TMap
 				}
 				return null;
 			} else {
-				$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+				$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 				if (isset($this->_d[$priority]) && (isset($this->_d[$priority][$key]) || array_key_exists($key, $this->_d[$priority]))) {
 					$value = $this->_d[$priority][$key];
 					unset($this->_d[$priority][$key]);

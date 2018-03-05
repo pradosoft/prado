@@ -442,14 +442,14 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this,'filter_prado_fx']);
+		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
 
 		foreach ($fx as $func) {
-			$this->attachEventHandler($func, [$this,$func]);
+			$this->attachEventHandler($func, [$this, $func]);
 		}
 
 		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
-			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this,'__dycall']);
+			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
@@ -479,14 +479,14 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this,'filter_prado_fx']);
+		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
 
 		foreach ($fx as $func) {
-			$this->detachEventHandler($func, [$this,$func]);
+			$this->detachEventHandler($func, [$this, $func]);
 		}
 
 		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
-			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this,'__dycall']);
+			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
@@ -542,7 +542,7 @@ class TComponent
 						$args[0] = new TJavaScriptString($args[0]);
 					}
 				}
-				return call_user_func_array([$this,$jsmethod], $args);
+				return call_user_func_array([$this, $jsmethod], $args);
 			}
 
 			if (($getset == 'set') && method_exists($this, 'getjs' . $propname)) {
@@ -559,11 +559,11 @@ class TComponent
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($behavior_args, $this);
 						}
-						$callchain->addCall([$behavior,$method], $behavior_args);
+						$callchain->addCall([$behavior, $method], $behavior_args);
 					}
 				}
 				if ($callchain->getCount() > 0) {
-					return call_user_func_array([$callchain,'call'], $args);
+					return call_user_func_array([$callchain, 'call'], $args);
 				}
 			} else {
 				foreach ($this->_m->toArray() as $behavior) {
@@ -571,7 +571,7 @@ class TComponent
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($args, $this);
 						}
-						return call_user_func_array([$behavior,$method], $args);
+						return call_user_func_array([$behavior, $method], $args);
 					}
 				}
 			}
@@ -621,7 +621,7 @@ class TComponent
 			return $this->$getter();
 		} elseif (method_exists($this, $jsgetter = 'getjs' . $name)) {
 			// getting a javascript property
-			return (string)$this->$jsgetter();
+			return (string) $this->$jsgetter();
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			// getting an event (handler list)
 			$name = strtolower($name);
@@ -1141,7 +1141,7 @@ class TComponent
 						$method = substr($handler, $pos + 1);
 						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender,$param,$name]);
+								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
 								$response = $object->$method($sender, $param, $name);
 							}
@@ -1162,7 +1162,7 @@ class TComponent
 						}
 						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender,$param,$name]);
+								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
 								$response = $object->$method($sender, $param, $name);
 							}
@@ -1177,11 +1177,11 @@ class TComponent
 				$this->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response);
 
 				if ($postfunction) {
-					$response = call_user_func_array($postfunction, [$sender,$param,$this,$response]);
+					$response = call_user_func_array($postfunction, [$sender, $param, $this, $response]);
 				}
 
 				if ($responsetype & TEventResults::EVENT_RESULT_ALL) {
-					$responses[] = ['sender' => $sender,'param' => $param,'response' => $response];
+					$responses[] = ['sender' => $sender, 'param' => $param, 'response' => $response];
 				} else {
 					$responses[] = $response;
 				}
@@ -1719,7 +1719,7 @@ class TComponent
 	 */
 	public function __sleep()
 	{
-		$a = (array)$this;
+		$a = (array) $this;
 		$a = array_keys($a);
 		$exprops = [];
 		$this->_getZappableSleepProps($exprops);

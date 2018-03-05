@@ -80,7 +80,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	public function setFetchMode($mode)
 	{
 		$params = func_get_args();
-		call_user_func_array([$this->_statement,'setFetchMode'], $params);
+		call_user_func_array([$this->_statement, 'setFetchMode'], $params);
 	}
 
 	/**

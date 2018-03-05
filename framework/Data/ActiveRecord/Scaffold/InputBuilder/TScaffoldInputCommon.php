@@ -93,7 +93,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$value = $this->getRecordPropertyValue($column, $record);
 		$control = new TDropDownList();
 		$years = [];
-		$current = intval(@date('Y'));
+		$current = (int) (@date('Y'));
 		$from = $current - 10;
 		$to = $current + 10;
 		for ($i = $from; $i <= $to; $i++) {
@@ -179,9 +179,9 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		for ($i = 0;$i < 60;$i++) {
 			$mins[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		}
-		$hour = intval(@date('H'));
-		$min = intval(@date('i'));
-		$sec = intval(@date('s'));
+		$hour = (int) (@date('H'));
+		$min = (int) (@date('i'));
+		$sec = (int) (@date('s'));
 		if (!empty($value)) {
 			$match = [];
 			if (preg_match('/(\d+):(\d+):?(\d+)?/', $value, $match)) {
@@ -197,7 +197,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$hcontrol->setDataSource($hours);
 		$hcontrol->setID(self::DEFAULT_ID);
 		$hcontrol->dataBind();
-		$hcontrol->setSelectedValue(intval($hour));
+		$hcontrol->setSelectedValue((int) $hour);
 		$container->Controls[] = $hcontrol;
 		$container->Controls[] = ' : ';
 
@@ -205,7 +205,7 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$mcontrol->setDataSource($mins);
 		$mcontrol->dataBind();
 		$mcontrol->setID('scaffold_time_min');
-		$mcontrol->setSelectedValue(intval($min));
+		$mcontrol->setSelectedValue((int) $min);
 		$container->Controls[] = $mcontrol;
 		$container->Controls[] = ' : ';
 
@@ -213,10 +213,10 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$scontrol->setDataSource($mins);
 		$scontrol->dataBind();
 		$scontrol->setID('scaffold_time_sec');
-		$scontrol->setSelectedValue(intval($sec));
+		$scontrol->setSelectedValue((int) $sec);
 		$container->Controls[] = $scontrol;
 
-		return [$hcontrol,$mcontrol,$scontrol];
+		return [$hcontrol, $mcontrol, $scontrol];
 	}
 
 
@@ -244,10 +244,10 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		if (!empty($value)) {
 			$match = [];
 			if (preg_match('/(\d+):(\d+):?(\d+)?/', substr($value, 11), $match)) {
-				$time[0]->setSelectedValue(intval($match[1]));
-				$time[1]->setSelectedValue(intval($match[2]));
+				$time[0]->setSelectedValue((int) ($match[1]));
+				$time[1]->setSelectedValue((int) ($match[2]));
 				if (isset($match[3])) {
-					$time[2]->setSelectedValue(intval($match[3]));
+					$time[2]->setSelectedValue((int) ($match[3]));
 				}
 			}
 		}

@@ -396,7 +396,7 @@ class TCaptcha extends TImage
 		$options['fontSize'] = $this->getTokenFontSize();
 		$options['theme'] = $this->getTokenImageTheme();
 		if (($randomSeed = $this->getViewState('RandomSeed', 0)) === 0) {
-			$randomSeed = (int)(microtime(true) * 1000000);
+			$randomSeed = (int) (microtime(true) * 1000000);
 			$this->setViewState('RandomSeed', $randomSeed);
 		}
 		$options['randomSeed'] = $this->getChangingTokenBackground() ? 0 : $randomSeed;
@@ -409,12 +409,12 @@ class TCaptcha extends TImage
 	 */
 	protected function getCaptchaScriptFile()
 	{
-		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'captcha.php';
+		return __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'captcha.php';
 	}
 
 	protected function getFontFile()
 	{
-		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'verase.ttf';
+		return __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'verase.ttf';
 	}
 
 	/**

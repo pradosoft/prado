@@ -247,12 +247,12 @@ class TPagedList extends TList
 	{
 		if ($this->_customPaging) {
 			if ($this->_virtualCount >= 0) {
-				return (int)(($this->_virtualCount + $this->_pageSize - 1) / $this->_pageSize);
+				return (int) (($this->_virtualCount + $this->_pageSize - 1) / $this->_pageSize);
 			} else {
 				return -1;
 			}
 		} else {
-			return (int)((parent::getCount() + $this->_pageSize - 1) / $this->_pageSize);
+			return (int) ((parent::getCount() + $this->_pageSize - 1) / $this->_pageSize);
 		}
 	}
 

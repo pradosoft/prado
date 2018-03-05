@@ -153,7 +153,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 		if (empty($value) && $expire === 0) {
 			$this->delete($id);
 		} else {
-			$data = [$value,$dependency];
+			$data = [$value, $dependency];
 			return $this->setValue($this->generateUniqueKey($id), $data, $expire);
 		}
 	}
@@ -172,7 +172,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 		if (empty($value) && $expire === 0) {
 			return false;
 		}
-		$data = [$value,$dependency];
+		$data = [$value, $dependency];
 		return $this->addValue($this->generateUniqueKey($id), $data, $expire);
 	}
 

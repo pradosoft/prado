@@ -140,7 +140,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		if (!$this->_started) {
 			if ($this->_customStorage) {
-				session_set_save_handler([$this,'_open'], [$this,'_close'], [$this,'_read'], [$this,'_write'], [$this,'_destroy'], [$this,'_gc']);
+				session_set_save_handler([$this, '_open'], [$this, '_close'], [$this, '_read'], [$this, '_write'], [$this, '_destroy'], [$this, '_gc']);
 			}
 			if ($this->_cookie !== null) {
 				session_set_cookie_params($this->_cookie->getExpire(), $this->_cookie->getPath(), $this->_cookie->getDomain(), $this->_cookie->getSecure(), $this->_cookie->getHttpOnly());

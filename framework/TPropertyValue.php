@@ -65,7 +65,7 @@ class TPropertyValue
 		if (is_string($value)) {
 			return strcasecmp($value, 'true') == 0 || $value != 0;
 		} else {
-			return (boolean)$value;
+			return (boolean) $value;
 		}
 	}
 
@@ -84,7 +84,7 @@ class TPropertyValue
 		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
 		} else {
-			return (string)$value;
+			return (string) $value;
 		}
 	}
 
@@ -95,7 +95,7 @@ class TPropertyValue
 	 */
 	public static function ensureInteger($value)
 	{
-		return (integer)$value;
+		return (integer) $value;
 	}
 
 	/**
@@ -105,7 +105,7 @@ class TPropertyValue
 	 */
 	public static function ensureFloat($value)
 	{
-		return (float)$value;
+		return (float) $value;
 	}
 
 	/**
@@ -129,7 +129,7 @@ class TPropertyValue
 				return $len > 0 ? [$value] : [];
 			}
 		} else {
-			return (array)$value;
+			return (array) $value;
 		}
 	}
 
@@ -140,7 +140,7 @@ class TPropertyValue
 	 */
 	public static function ensureObject($value)
 	{
-		return (object)$value;
+		return (object) $value;
 	}
 
 	/**

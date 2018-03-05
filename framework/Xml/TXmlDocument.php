@@ -159,7 +159,7 @@ class TXmlDocument extends TXmlElement
 
 		static $bSimpleXml;
 		if ($bSimpleXml === null) {
-			$bSimpleXml = (boolean)function_exists('simplexml_load_string');
+			$bSimpleXml = (boolean) function_exists('simplexml_load_string');
 		}
 
 		if ($bSimpleXml) {

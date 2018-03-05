@@ -350,7 +350,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		$user = $this->getApplication()->getUser();
 		$username = strtolower($user->getName());
 		if (isset($this->_users[$username])) {
-			$data = [$username,md5($username . $this->_users[$username])];
+			$data = [$username, md5($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
 	}

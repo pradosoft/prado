@@ -208,7 +208,7 @@ class TMemCache extends TCache
 				if (!is_numeric($port)) {
 					throw new TConfigurationException('memcache_serverport_invalid');
 				}
-				$server = ['Host' => $host,'Port' => $port,'Weight' => 1,'Timeout' => 1800,'RetryInterval' => 15,'Persistent' => true];
+				$server = ['Host' => $host, 'Port' => $port, 'Weight' => 1, 'Timeout' => 1800, 'RetryInterval' => 15, 'Persistent' => true];
 				$checks = [
 					'Weight' => 'memcache_serverweight_invalid',
 					'Timeout' => 'memcache_servertimeout_invalid',

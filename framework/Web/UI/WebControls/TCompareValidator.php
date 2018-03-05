@@ -195,9 +195,9 @@ class TCompareValidator extends TBaseValidator
 	{
 		switch ($this->getDataType()) {
 			case TValidationDataType::Integer:
-				return [intval($value1), intval($value2)];
+				return [(int) $value1, (int) $value2];
 			case TValidationDataType::Float:
-				return [floatval($value1), floatval($value2)];
+				return [(float) $value1, (float) $value2];
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
 				if ($dateFormat !== '') {

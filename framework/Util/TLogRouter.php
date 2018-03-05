@@ -78,7 +78,7 @@ class TLogRouter extends \Prado\TModule
 			}
 		}
 		$this->loadConfig($config);
-		$this->getApplication()->attachEventHandler('OnEndRequest', [$this,'collectLogs']);
+		$this->getApplication()->attachEventHandler('OnEndRequest', [$this, 'collectLogs']);
 	}
 
 	/**

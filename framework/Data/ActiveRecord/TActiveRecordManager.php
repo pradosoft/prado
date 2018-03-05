@@ -129,7 +129,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	public function setGatewayClass($value)
 	{
 		$this->_gateway = null;
-		$this->_gatewayClass = (string)$value;
+		$this->_gatewayClass = (string) $value;
 	}
 
 	/**

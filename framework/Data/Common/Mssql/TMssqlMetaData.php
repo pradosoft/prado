@@ -121,13 +121,13 @@ EOD;
 		//remove possible delimiters
 		$result = explode('.', preg_replace('/\[|\]|"/', '', $table));
 		if (count($result) === 1) {
-			return [null,null,$result[0]];
+			return [null, null, $result[0]];
 		}
 		if (count($result) === 2) {
-			return [null,$result[0],$result[1]];
+			return [null, $result[0], $result[1]];
 		}
 		if (count($result) > 2) {
-			return [$result[0],$result[1],$result[2]];
+			return [$result[0], $result[1], $result[2]];
 		}
 	}
 
@@ -141,7 +141,7 @@ EOD;
 
 		$info['ColumnName'] = "[$columnId]"; //quote the column names!
 		$info['ColumnId'] = $columnId;
-		$info['ColumnIndex'] = intval($col['ORDINAL_POSITION']) - 1; //zero-based index
+		$info['ColumnIndex'] = (int) ($col['ORDINAL_POSITION']) - 1; //zero-based index
 		if ($col['IS_NULLABLE'] !== 'NO') {
 			$info['AllowNull'] = true;
 		}
@@ -161,13 +161,13 @@ EOD;
 		}
 		$info['DbType'] = $col['DATA_TYPE'];
 		if ($col['CHARACTER_MAXIMUM_LENGTH'] !== null) {
-			$info['ColumnSize'] = intval($col['CHARACTER_MAXIMUM_LENGTH']);
+			$info['ColumnSize'] = (int) ($col['CHARACTER_MAXIMUM_LENGTH']);
 		}
 		if ($col['NUMERIC_PRECISION'] !== null) {
-			$info['NumericPrecision'] = intval($col['NUMERIC_PRECISION']);
+			$info['NumericPrecision'] = (int) ($col['NUMERIC_PRECISION']);
 		}
 		if ($col['NUMERIC_SCALE'] !== null) {
-			$info['NumericScale'] = intval($col['NUMERIC_SCALE']);
+			$info['NumericScale'] = (int) ($col['NUMERIC_SCALE']);
 		}
 		$tableInfo->Columns[$columnId] = new TMssqlTableColumn($info);
 	}
@@ -216,7 +216,7 @@ EOD;
 			$primary[] = $field['field_name'];
 		}
 		$foreign = $this->getForeignConstraints($col);
-		return [$primary,$foreign];
+		return [$primary, $foreign];
 	}
 
 	/**

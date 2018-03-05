@@ -23,12 +23,12 @@ namespace Prado\I18N\core;
 use Exception;
 use Prado\Prado;
 
-require_once(dirname(__FILE__) . '/DateTimeFormatInfo.php');
+require_once(__DIR__ . '/DateTimeFormatInfo.php');
 
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__) . '/util.php');
+require_once(__DIR__ . '/util.php');
 
 /**
  * DateFormat class.
@@ -115,7 +115,7 @@ class DateFormat
 	public function format($time, $pattern = 'F', $charset = 'UTF-8')
 	{
 		if (is_numeric($time)) { //assumes unix epoch
-			$time = floatval($time);
+			$time = (float) $time;
 		} elseif (is_string($time)) {
 			$time = @strtotime($time);
 		}
@@ -449,7 +449,7 @@ class DateFormat
 		}
 
 		$hour = $date->format('G');
-		$ampm = (int)($hour / 12);
+		$ampm = (int) ($hour / 12);
 		return $this->formatInfo->AMPMMarkers[$ampm];
 	}
 

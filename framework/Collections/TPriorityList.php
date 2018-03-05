@@ -128,7 +128,7 @@ class TPriorityList extends TList
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if (!isset($this->_d[$priority]) || !is_array($this->_d[$priority])) {
 			return false;
@@ -150,7 +150,7 @@ class TPriorityList extends TList
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp = (string)round(TPropertyValue::ensureFloat($value), $this->_p);
+		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
 
 	/**
@@ -248,7 +248,7 @@ class TPriorityList extends TList
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
 	}
@@ -264,7 +264,7 @@ class TPriorityList extends TList
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return !isset($this->_d[$priority]) ? false : (
 				isset($this->_d[$priority][$index]) ? $this->_d[$priority][$index] : false
@@ -328,7 +328,7 @@ class TPriorityList extends TList
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if ($preserveCache) {
 			$this->sortPriorities();
@@ -403,7 +403,7 @@ class TPriorityList extends TList
 				if ($priority === null) {
 					$priority = $this->getDefaultPriority();
 				}
-				$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+				$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 				if ($p[0] != $priority) {
 					throw new TInvalidDataValueException('list_item_inexistent');
@@ -452,7 +452,7 @@ class TPriorityList extends TList
 		if ($priority === null) {
 			$priority = $this->getDefaultPriority();
 		}
-		$priority = (string)round(TPropertyValue::ensureFloat($priority), $this->_p);
+		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if (!isset($this->_d[$priority]) || $index < 0 || $index >= count($this->_d[$priority])) {
 			throw new TInvalidDataValueException('list_item_inexistent');
@@ -527,8 +527,8 @@ class TPriorityList extends TList
 		foreach ($this->_d as $priority => $items) {
 			if (($index = array_search($item, $items, true)) !== false) {
 				$absindex += $index;
-				return $withindex ? [$priority,$index,$absindex,
-						'priority' => $priority,'index' => $index,'absindex' => $absindex] : $priority;
+				return $withindex ? [$priority, $index, $absindex,
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex] : $priority;
 			} else {
 				$absindex += count($items);
 			}
@@ -558,8 +558,8 @@ class TPriorityList extends TList
 			if ($index >= ($c = count($items))) {
 				$index -= $c;
 			} else {
-				return $withindex ? [$priority,$index,$absindex,
-						'priority' => $priority,'index' => $index,'absindex' => $absindex] : $priority;
+				return $withindex ? [$priority, $index, $absindex,
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex] : $priority;
 			}
 		}
 		return false;

@@ -138,13 +138,13 @@ class ChoiceFormat
 				} elseif ($string == '+Inf' || $string == 'Inf') {
 					$elements[] = $this->inf;
 				} else {
-					$elements[] = floatval($string);
+					$elements[] = (float) $string;
 				}
 			}
 			$i++;
 		}
 		$total = count($elements);
-		$number = floatval($number);
+		$number = (float) $number;
 
 		if ($leftBracket == '{' && $rightBracket == '}') {
 			return in_array($number, $elements);

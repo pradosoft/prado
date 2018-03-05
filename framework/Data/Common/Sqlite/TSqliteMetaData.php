@@ -112,7 +112,7 @@ class TSqliteMetaData extends TDbMetaData
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar()) === 1;
+		return (int) ($command->queryScalar()) === 1;
 	}
 
 	/**
@@ -151,10 +151,10 @@ class TSqliteMetaData extends TDbMetaData
 		if (is_int($pos = strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match)) {
 			$ps = explode(',', $match[1]);
 			if (count($ps) === 2) {
-				$info['NumericPrecision'] = intval($ps[0]);
-				$info['NumericScale'] = intval($ps[1]);
+				$info['NumericPrecision'] = (int) ($ps[0]);
+				$info['NumericScale'] = (int) ($ps[1]);
 			} else {
-				$info['ColumnSize'] = intval($match[1]);
+				$info['ColumnSize'] = (int) ($match[1]);
 			}
 			$info['DbType'] = substr($type, 0, $pos);
 		}

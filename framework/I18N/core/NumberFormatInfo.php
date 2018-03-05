@@ -23,7 +23,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__) . '/CultureInfo.php');
+require_once(__DIR__ . '/CultureInfo.php');
 
 /**
  * NumberFormatInfo class
@@ -346,7 +346,7 @@ class NumberFormatInfo
 	{
 		$regexp = '/[#,\.0]+/';
 		$result = preg_split($regexp, $pattern);
-		return [$result[0],$result[1]];
+		return [$result[0], $result[1]];
 	}
 
 

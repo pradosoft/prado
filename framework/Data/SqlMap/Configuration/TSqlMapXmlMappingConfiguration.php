@@ -281,11 +281,11 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function processSqlStatement($statement, $node)
 	{
-		$commandText = (string)$node;
+		$commandText = (string) $node;
 		if (strlen($extend = $statement->getExtends()) > 0) {
 			$superNode = $this->getElementByIdValue($this->_document, '*', $extend);
 			if ($superNode !== null) {
-				$commandText = (string)$superNode . $commandText;
+				$commandText = (string) $superNode . $commandText;
 			} else {
 				throw new TSqlMapConfigurationException(
 						'sqlmap_unable_to_find_parent_sql',
@@ -458,10 +458,10 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function loadCacheModel($node)
 	{
 		$cacheModel = new TSqlMapCacheModel;
-		$properties = ['id','implementation'];
+		$properties = ['id', 'implementation'];
 		foreach ($node->attributes() as $name => $value) {
 			if (in_array(strtolower($name), $properties)) {
-				$cacheModel->{'set' . $name}((string)$value);
+				$cacheModel->{'set' . $name}((string) $value);
 			}
 		}
 		$cache = Prado::createComponent($cacheModel->getImplementationClass(), $cacheModel);
@@ -509,19 +509,19 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		foreach ($flushInterval[0]->attributes() as $name => $value) {
 			switch (strToLower($name)) {
 				case 'seconds':
-					$duration += (integer)$value;
+					$duration += (integer) $value;
 				break;
 				case 'minutes':
-					$duration += 60 * (integer)$value;
+					$duration += 60 * (integer) $value;
 				break;
 				case 'hours':
-					$duration += 3600 * (integer)$value;
+					$duration += 3600 * (integer) $value;
 				break;
 				case 'days':
-					$duration += 86400 * (integer)$value;
+					$duration += 86400 * (integer) $value;
 				break;
 				case 'duration':
-					$duration = (integer)$value;
+					$duration = (integer) $value;
 				break 2; // switch, foreach
 			}
 		}
@@ -542,7 +542,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		}
 		foreach ($node->attributes() as $name => $value) {
 			if (strtolower($name) === 'statement') {
-				$this->_FlushOnExecuteStatements[$id][] = (string)$value;
+				$this->_FlushOnExecuteStatements[$id][] = (string) $value;
 			}
 		}
 	}

@@ -18,7 +18,7 @@ define('THEME_HAS_SCRIBBLE', 0x0008);
 define('THEME_MORPH_BACKGROUND', 0x0010);
 define('THEME_SHADOWED_TEXT', 0x0020);
 
-require_once(dirname(__FILE__) . '/captcha_key.php');
+require_once(__DIR__ . '/captcha_key.php');
 
 $token = 'error';
 $theme = 0;
@@ -39,7 +39,7 @@ if (isset($_GET['options'])) {
 			if (($randomSeed = $options['randomSeed']) > 0) {
 				srand($randomSeed);
 			} else {
-				srand((int)(microtime() * 1000000));
+				srand((int) (microtime() * 1000000));
 			}
 			$token = generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive);
 		}
@@ -74,7 +74,7 @@ function hash2string($hex, $alphabet)
 
 function displayToken($token, $fontSize, $theme)
 {
-	if (($fontSize = (int)$fontSize) < 22) {
+	if (($fontSize = (int) $fontSize) < 22) {
 		$fontSize = 22;
 	}
 	if ($fontSize > 100) {
@@ -99,7 +99,7 @@ function displayToken($token, $fontSize, $theme)
 		$theme & THEME_MORPH_BACKGROUND
 	);
 
-	$font = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'verase.ttf';
+	$font = __DIR__ . DIRECTORY_SEPARATOR . 'verase.ttf';
 
 	if (function_exists('imagefilter')) {
 		imagefilter($image, IMG_FILTER_GAUSSIAN_BLUR);
@@ -196,7 +196,7 @@ function addScribble($image, $width, $height)
 			$points[] = rand(30, $height + 30);
 		}
 		imagesetthickness($image, rand(2, 6));
-		imagepolygon($image, $points, intval(count($points) / 2), $color);
+		imagepolygon($image, $points, (int) (count($points) / 2), $color);
 		imagecolordeallocate($image, $color);
 	}
 }

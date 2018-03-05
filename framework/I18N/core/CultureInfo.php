@@ -193,7 +193,7 @@ class CultureInfo
 	 */
 	protected static function dataDir()
 	{
-		return dirname(__FILE__) . '/data/';
+		return __DIR__ . '/data/';
 	}
 
 	/**
@@ -489,7 +489,7 @@ class CultureInfo
 			$elements = $this->findInfo('NumberElements');
 			$patterns = $this->findInfo('NumberPatterns');
 			$currencies = $this->getCurrencies();
-			$data = [	'NumberElements' => $elements,
+			$data = ['NumberElements' => $elements,
 							'NumberPatterns' => $patterns,
 							'Currencies' => $currencies];
 

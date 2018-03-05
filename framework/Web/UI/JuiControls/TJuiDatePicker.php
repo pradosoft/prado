@@ -273,7 +273,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	protected function getTimeStampFromText()
 	{
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(['MMMM', 'MMM'], ['MM','MM'], $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}

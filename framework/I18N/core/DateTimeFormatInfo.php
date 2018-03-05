@@ -23,7 +23,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__) . '/CultureInfo.php');
+require_once(__DIR__ . '/CultureInfo.php');
 
 
 /**
@@ -511,6 +511,6 @@ class DateTimeFormatInfo
 	public function formatDateTime($date, $time)
 	{
 		$pattern = $this->getDateTimeOrderPattern();
-		return str_replace(['{0}','{1}'], [$time, $date], $pattern);
+		return str_replace(['{0}', '{1}'], [$time, $date], $pattern);
 	}
 }

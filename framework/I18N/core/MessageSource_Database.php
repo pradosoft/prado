@@ -43,7 +43,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	public function __construct($source)
 	{
-		$this->_connID = (string)$source;
+		$this->_connID = (string) $source;
 	}
 
 	/**
@@ -99,7 +99,7 @@ class MessageSource_Database extends MessageSource
 		$result = [];
 
 		foreach ($dataReader as $row) {
-			$result[$row['source']] = [$row['target'],$row['id'],$row['comments']];
+			$result[$row['source']] = [$row['target'], $row['id'], $row['comments']];
 		}
 
 		return $result;

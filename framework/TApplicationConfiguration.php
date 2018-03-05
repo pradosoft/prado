@@ -255,7 +255,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				unset($module['properties']);
 			}
 			$properties['id'] = $id;
-			$this->_modules[$id] = [$type,$properties,$module];
+			$this->_modules[$id] = [$type, $properties, $module];
 			$this->_empty = false;
 		}
 	}
@@ -277,9 +277,9 @@ class TApplicationConfiguration extends \Prado\TComponent
 				}
 				$element->setParent(null);
 				if ($id === null) {
-					$this->_modules[] = [$type,$properties->toArray(),$element];
+					$this->_modules[] = [$type, $properties->toArray(), $element];
 				} else {
-					$this->_modules[$id] = [$type,$properties->toArray(),$element];
+					$this->_modules[$id] = [$type, $properties->toArray(), $element];
 				}
 				$this->_empty = false;
 			} else {
@@ -303,7 +303,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 			$properties = isset($service['properties']) ? $service['properties'] : [];
 			unset($service['properties']);
 			$properties['id'] = $id;
-			$this->_services[$id] = [$type,$properties,$service];
+			$this->_services[$id] = [$type, $properties, $service];
 			$this->_empty = false;
 		}
 	}
@@ -325,7 +325,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 					throw new TConfigurationException('appconfig_servicetype_required', $id);
 				}
 				$element->setParent(null);
-				$this->_services[$id] = [$type,$properties->toArray(),$element];
+				$this->_services[$id] = [$type, $properties->toArray(), $element];
 				$this->_empty = false;
 			} else {
 				throw new TConfigurationException('appconfig_services_invalid', $element->getTagName());
@@ -347,7 +347,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 					unset($parameter['class']);
 					$properties = isset($service['properties']) ? $service['properties'] : [];
 					$properties['id'] = $id;
-					$this->_parameters[$id] = [$type,$properties];
+					$this->_parameters[$id] = [$type, $properties];
 				}
 			} else {
 				$this->_parameters[$id] = $parameter;
@@ -375,7 +375,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 						$this->_parameters[$id] = $value;
 					}
 				} else {
-					$this->_parameters[$id] = [$type,$properties->toArray()];
+					$this->_parameters[$id] = [$type, $properties->toArray()];
 				}
 				$this->_empty = false;
 			} else {
